@@ -68,20 +68,20 @@ function LandingPage({onStart}){
     <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(circle,rgba(0,0,0,.04) 1px,transparent 1px)",backgroundSize:"32px 32px",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1}}>
       <div style={{textAlign:"center",maxWidth:820,margin:"0 auto"}}>
-        <div className="anim"><Tag><span style={{width:6,height:6,borderRadius:"50%",background:T.accent,animation:"pulse 2s infinite"}}/>Fuer Handwerker in Oesterreich</Tag></div>
-        <h1 className="anim d1" style={{fontSize:"clamp(3rem,7vw,5rem)",fontWeight:800,lineHeight:1.02,letterSpacing:"-.05em",color:T.dark,marginBottom:28}}>Deine Website<br/>in <span style={{background:"linear-gradient(135deg,#2563eb 0%,#3b82f6 40%,#16a34a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Minuten.</span></h1>
-        <p className="anim d2" style={{fontSize:"clamp(1.1rem,2vw,1.35rem)",color:T.textSub,lineHeight:1.65,maxWidth:580,margin:"0 auto 44px"}}>Mit Impressum nach ECG, DSGVO und Google-Indexierung. 10 Fragen beantworten. Live-Vorschau pruefen. Fertig.</p>
-        <div className="anim d3" style={{display:"flex",gap:16,justifyContent:"center",marginBottom:64}}>
+        <div><Tag><span style={{width:6,height:6,borderRadius:"50%",background:T.accent,animation:"pulse 2s infinite"}}/>Fuer Handwerker in Oesterreich</Tag></div>
+        <h1 style={{fontSize:"clamp(3rem,7vw,5rem)",fontWeight:800,lineHeight:1.02,letterSpacing:"-.05em",color:T.dark,marginBottom:28}}>Deine Website<br/>in <span style={{background:"linear-gradient(135deg,#2563eb 0%,#3b82f6 40%,#16a34a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Minuten.</span></h1>
+        <p style={{fontSize:"clamp(1.1rem,2vw,1.35rem)",color:T.textSub,lineHeight:1.65,maxWidth:580,margin:"0 auto 44px"}}>Mit Impressum nach ECG, DSGVO und Google-Indexierung. 10 Fragen beantworten. Live-Vorschau pruefen. Fertig.</p>
+        <div style={{display:"flex",gap:16,justifyContent:"center",marginBottom:64}}>
           <button onClick={onStart} style={{padding:"18px 40px",borderRadius:T.r,fontSize:"1.05rem",fontWeight:700,border:"none",cursor:"pointer",background:T.dark,color:"#fff",fontFamily:T.font,boxShadow:"0 4px 24px rgba(0,0,0,.18)",transition:"all .3s",letterSpacing:"-.01em"}}>Jetzt Website erstellen &rarr;</button>
           <a href="#how" style={{padding:"18px 32px",borderRadius:T.r,fontSize:"1.05rem",fontWeight:600,textDecoration:"none",color:T.dark,border:`2px solid ${T.bg3}`,background:T.white,transition:"all .3s"}}>So funktioniert's</a>
         </div>
         {/* Bento Stats */}
-        <div className="anim d4" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:T.bg3,borderRadius:T.rLg,overflow:"hidden",maxWidth:520,margin:"0 auto",boxShadow:T.sh2}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:T.bg3,borderRadius:T.rLg,overflow:"hidden",maxWidth:520,margin:"0 auto",boxShadow:T.sh2}}>
           {[{end:10,suffix:" Min",label:"Bis zur fertigen Website"},{end:18,suffix:"\u20AC",label:"Pro Monat, alles inklusive"},{end:120,suffix:"k+",label:"Zielgruppe in Oesterreich"}].map((s,i)=><div key={i} style={{background:T.white,padding:"28px 20px"}}><Counter {...s}/></div>)}
         </div>
       </div>
       {/* Hero Mockup below */}
-      <div className="anim d4" style={{marginTop:80,position:"relative",maxWidth:900,margin:"80px auto 0"}}>
+      <div style={{marginTop:80,position:"relative",maxWidth:900,margin:"80px auto 0"}}>
         <div style={{background:T.white,borderRadius:T.rXl,overflow:"hidden",boxShadow:`${T.sh4}, 0 0 0 1px rgba(0,0,0,.04)`,border:"1px solid rgba(0,0,0,.06)"}}>
           <div style={{display:"flex",alignItems:"center",gap:6,padding:"14px 20px",background:T.bg,borderBottom:"1px solid rgba(0,0,0,.06)"}}>
             {["#ff5f57","#febc2e","#28c840"].map(c=><span key={c} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}
@@ -124,7 +124,7 @@ function LandingPage({onStart}){
       {[{n:"Linktree / Komi",issue:"Kein Google-Ranking. Kein Impressum.",tags:["Kein SEO","Kein ECG"],bg:"#fef2f2",bc:"#fecaca"},{n:"Wix / Jimdo",issue:"Stunden bis Tage. Hohe Lernkurve.",tags:["SEO manuell","Aufwaendig"],bg:"#fffbeb",bc:"#fed7aa"},{n:"Agentur",issue:"Ab 1.500 Euro. Wochen Wartezeit.",tags:["Teuer","Langsam"],bg:"#fef2f2",bc:"#fecaca"}].map((c,i)=><div key={i} className={`anim d${i+1}`} style={{background:T.white,borderRadius:T.rLg,padding:"28px 24px",border:"1px solid rgba(0,0,0,.06)",boxShadow:T.sh1}}><div style={{fontWeight:700,fontSize:"1rem",color:T.dark,marginBottom:8}}>{c.n}</div><div style={{fontSize:".88rem",color:T.red,fontWeight:500,marginBottom:12}}>{c.issue}</div><div style={{display:"flex",gap:6}}>{c.tags.map(t=><span key={t} style={{fontSize:".68rem",padding:"4px 12px",borderRadius:100,fontWeight:600,background:c.bg,color:T.red,border:`1px solid ${c.bc}`}}>{t}</span>)}</div></div>)}
     </div>
     {/* Solution card spanning full width */}
-    <div className="anim d3" style={{marginTop:16,background:"linear-gradient(135deg,#eff4ff,#f0fdf4)",borderRadius:T.rXl,padding:"44px 40px",border:"2px solid rgba(37,99,235,.15)",position:"relative",overflow:"hidden",boxShadow:"0 8px 40px rgba(37,99,235,.08)"}}>
+    <div style={{marginTop:16,background:"linear-gradient(135deg,#eff4ff,#f0fdf4)",borderRadius:T.rXl,padding:"44px 40px",border:"2px solid rgba(37,99,235,.15)",position:"relative",overflow:"hidden",boxShadow:"0 8px 40px rgba(37,99,235,.08)"}}>
       <Glow color="rgba(37,99,235,.06)" top="-50%" right="-20%" size={500}/>
       <div style={{position:"relative",zIndex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:40,alignItems:"center"}}>
         <div>
@@ -224,11 +224,11 @@ function SuccessPage({data,onBack}){
   return(<div style={{minHeight:"100vh",background:"linear-gradient(170deg,#fafbfc 0%,#f0fdf4 50%,#fafbfc 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:T.font,padding:40,textAlign:"center",position:"relative",overflow:"hidden"}}><style>{css}</style>
     <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(circle,rgba(0,0,0,.02) 1px,transparent 1px)",backgroundSize:"28px 28px",pointerEvents:"none"}}/>
     <div style={{position:"relative",zIndex:1}}>
-      <div className="anim" style={{width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#16a34a,#22c55e)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,margin:"0 auto 28px",boxShadow:"0 12px 40px rgba(22,163,74,.2)",color:"#fff"}}>{"\u2713"}</div>
-      <h1 className="anim d1" style={{fontSize:"2.2rem",fontWeight:800,color:T.dark,margin:"0 0 12px",letterSpacing:"-.03em"}}>Website bereit!</h1>
-      <p className="anim d2" style={{fontSize:"1.05rem",color:T.textSub,margin:"0 0 32px",maxWidth:460,lineHeight:1.6}}>In der Vollversion waere Ihre Website jetzt live unter:</p>
-      <div className="anim d3" style={{display:"inline-flex",alignItems:"center",gap:10,background:T.white,border:"2px solid rgba(22,163,74,.15)",borderRadius:T.r,padding:"16px 28px",marginBottom:40,boxShadow:T.sh2}}><span style={{fontSize:"1rem",fontWeight:700,color:T.green,fontFamily:T.mono}}>{sub}.siteready.at</span></div>
-      <div className="anim d4" style={{maxWidth:520,width:"100%",textAlign:"left",marginBottom:40}}>
+      <div style={{width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#16a34a,#22c55e)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,margin:"0 auto 28px",boxShadow:"0 12px 40px rgba(22,163,74,.2)",color:"#fff"}}>{"\u2713"}</div>
+      <h1 style={{fontSize:"2.2rem",fontWeight:800,color:T.dark,margin:"0 0 12px",letterSpacing:"-.03em"}}>Website bereit!</h1>
+      <p style={{fontSize:"1.05rem",color:T.textSub,margin:"0 0 32px",maxWidth:460,lineHeight:1.6}}>In der Vollversion waere Ihre Website jetzt live unter:</p>
+      <div style={{display:"inline-flex",alignItems:"center",gap:10,background:T.white,border:"2px solid rgba(22,163,74,.15)",borderRadius:T.r,padding:"16px 28px",marginBottom:40,boxShadow:T.sh2}}><span style={{fontSize:"1rem",fontWeight:700,color:T.green,fontFamily:T.mono}}>{sub}.siteready.at</span></div>
+      <div style={{maxWidth:520,width:"100%",textAlign:"left",marginBottom:40}}>
         <h3 style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16,textTransform:"uppercase",letterSpacing:".12em"}}>Naechste Schritte</h3>
         {[{t:"KI-Texte generiert",d:"Professionelle Texte fuer Ihren Betrieb.",ok:true},{t:"Impressum & DSGVO",d:"Anwaltlich gepruefte Vorlagen.",ok:true},{t:"Google-Indexierung",d:"Automatisch angemeldet.",ok:true},{t:"Self-Service-Portal",d:"Daten aendern, Logo, Rechnungen.",ok:false},{t:"Custom Domain",d:"Eigene Domain verbinden.",ok:false}].map((s,i)=><div key={i} style={{display:"flex",gap:14,marginBottom:10,padding:"16px 18px",background:T.white,borderRadius:T.rSm,border:"1px solid rgba(0,0,0,.04)",boxShadow:T.sh1}}><div style={{width:32,height:32,borderRadius:"50%",background:s.ok?T.greenLight:T.bg2,color:s.ok?T.green:T.textMuted,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,flexShrink:0,border:`1px solid ${s.ok?"rgba(22,163,74,.12)":"rgba(0,0,0,.04)"}`}}>{s.ok?"\u2713":(i+1)}</div><div><div style={{fontWeight:600,fontSize:".88rem",color:T.dark,marginBottom:2}}>{s.t}</div><div style={{fontSize:".8rem",color:T.textMuted}}>{s.d}</div></div></div>)}
       </div>

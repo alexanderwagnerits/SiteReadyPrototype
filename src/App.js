@@ -71,7 +71,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 }`;
 
 /* ═══ LANDING PAGE ═══ */
-function LandingPage({onStart}){
+function LandingPage({onStart,onPortal}){
   const[scrolled,setScrolled]=useState(false);
   useEffect(()=>{const h=()=>setScrolled(window.scrollY>30);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
   const W=({children,s})=><div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",...s}}>{children}</div>;
@@ -90,6 +90,7 @@ function LandingPage({onStart}){
       <div style={{display:"flex",alignItems:"center",gap:10}}><img src="/icon.png" alt="SR" style={{height:22}}/><span style={{fontSize:"1rem",fontWeight:800,color:T.dark,letterSpacing:"-.02em"}}>SiteReady</span></div>
       <div className="lp-nav-links" style={{display:"flex",gap:32,alignItems:"center"}}>
         {[["#problem","Problem"],["#how","So gehts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:".88rem",fontWeight:500,color:T.textSub,textDecoration:"none"}}>{l}</a>)}
+        <button onClick={onPortal} style={{background:"transparent",color:T.textSub,padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:".85rem",border:"none",cursor:"pointer",fontFamily:T.font}}>Kunden-Portal</button>
         <button onClick={onStart} style={{background:T.dark,color:"#fff",padding:"10px 22px",borderRadius:8,fontWeight:700,fontSize:".88rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em"}}>Jetzt starten</button>
       </div>
     </div>
@@ -442,5 +443,221 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
   </div></div>);
 }
 
+/* ═══ PORTAL LOGIN ═══ */
+function PortalLogin({onBack}){
+  const[email,setEmail]=useState("");
+  const[sent,setSent]=useState(false);
+  const[loading,setLoading]=useState(false);
+  const[err,setErr]=useState("");
+  const send=async()=>{
+    if(!email.trim()||!supabase)return;
+    setLoading(true);setErr("");
+    const{error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
+    setLoading(false);
+    if(error)setErr(error.message);else setSent(true);
+  };
+  return(<div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}><style>{css}</style>
+    <div style={{maxWidth:400,width:"100%",padding:"0 24px"}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:40}}>
+        <img src="/icon.png" alt="SR" style={{height:22}}/><span style={{fontSize:".95rem",fontWeight:800,color:T.dark}}>SiteReady</span>
+      </div>
+      {sent?(<div>
+        <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>E-Mail gesendet</div>
+        <p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Wir haben einen Login-Link an <strong>{email}</strong> gesendet. Bitte pruefen Sie Ihr Postfach.</p>
+        <button onClick={()=>setSent(false)} style={{marginTop:20,padding:"11px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Andere E-Mail versuchen</button>
+      </div>):(<div>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Self-Service-Portal</div>
+        <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:6}}>Portal Login</div>
+        <p style={{color:T.textSub,fontSize:".88rem",lineHeight:1.6,marginBottom:24}}>Geben Sie die E-Mail-Adresse ein, mit der Sie bestellt haben.</p>
+        <Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>
+        {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}
+        <button onClick={send} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
+          {loading?"Wird gesendet...":"Login-Link senden \u2192"}
+        </button>
+        <button onClick={onBack} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>
+          {"\u2190"} Zur Startseite
+        </button>
+      </div>)}
+    </div>
+  </div>);
+}
+
+/* ═══ PORTAL DASHBOARD ═══ */
+function Portal({session,onLogout}){
+  const[tab,setTab]=useState("website");
+  const[order,setOrder]=useState(null);
+  const[saving,setSaving]=useState(false);
+  const[saved,setSaved]=useState(false);
+  const[uploading,setUploading]=useState({});
+  const[assetUrls,setAssetUrls]=useState({});
+
+  useEffect(()=>{
+    if(!supabase||!session?.user?.email)return;
+    supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1)
+      .then(({data})=>{if(data&&data.length>0)setOrder(data[0]);});
+  },[session]);
+
+  const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));
+
+  const save=async()=>{
+    if(!order||!supabase)return;
+    setSaving(true);setSaved(false);
+    await supabase.from("orders").update({
+      firmenname:order.firmenname,adresse:order.adresse,plz:order.plz,ort:order.ort,
+      telefon:order.telefon,leistungen:order.leistungen,notdienst:order.notdienst,
+      kurzbeschreibung:order.kurzbeschreibung,oeffnungszeiten:order.oeffnungszeiten
+    }).eq("id",order.id);
+    setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),3000);
+  };
+
+  const upload=async(key,file)=>{
+    if(!file||!session?.user?.id||!supabase)return;
+    setUploading(u=>({...u,[key]:true}));
+    const ext=file.name.split(".").pop();
+    const path=`${session.user.id}/${key}.${ext}`;
+    const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});
+    if(!error){
+      const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
+      setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
+    }
+    setUploading(u=>({...u,[key]:false}));
+  };
+
+  const sub=order?.subdomain||"ihre-firma";
+  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"}];
+  const ASSETS=[
+    {key:"logo",label:"Logo",desc:"Wird in der Navigation angezeigt"},
+    {key:"hero",label:"Hero-Foto",desc:"Grosses Bild oben auf der Website"},
+    {key:"foto1",label:"Galerie Foto 1",desc:"Erscheint zwischen den Leistungen"},
+    {key:"foto2",label:"Galerie Foto 2",desc:"Erscheint neben Foto 1"},
+    {key:"team",label:"Teamfoto",desc:"Wird in der 'Ueber uns' Sektion angezeigt"},
+  ];
+
+  return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",flexDirection:"column"}}><style>{css}</style>
+    {/* Topbar */}
+    <div style={{background:"#fff",borderBottom:`1px solid ${T.bg3}`,padding:"0 32px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:12}}>
+        <img src="/icon.png" alt="SR" style={{height:22}}/>
+        <span style={{fontSize:".95rem",fontWeight:800,color:T.dark}}>SiteReady</span>
+        <span style={{fontSize:".75rem",color:T.textMuted,background:T.bg,border:`1px solid ${T.bg3}`,padding:"3px 10px",borderRadius:4,fontFamily:T.mono}}>{sub}.siteready.at</span>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:16}}>
+        <span style={{fontSize:".82rem",color:T.textSub}}>{session?.user?.email}</span>
+        <button onClick={onLogout} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Logout</button>
+      </div>
+    </div>
+    {/* Content */}
+    <div style={{maxWidth:860,width:"100%",margin:"0 auto",padding:"32px 24px",flex:1}}>
+      <div style={{marginBottom:4}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:6}}>Self-Service-Portal</div>
+        <h1 style={{fontSize:"1.6rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Willkommen{order?.firmenname?", "+order.firmenname:""}</h1>
+      </div>
+      {/* Tab Nav */}
+      <div style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
+      </div>
+
+      {/* Tab: Website */}
+      {tab==="website"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        {!order?<div style={{color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:(<>
+          <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
+          <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung Ihres Betriebs" rows={2}/>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
+            <div style={{display:"grid",gridTemplateColumns:"100px 1fr",gap:10}}>
+              <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
+              <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
+            </div>
+          </div>
+          <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
+          <Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf der Website angezeigt"/>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginTop:8}}>
+            <button onClick={save} disabled={saving} style={{padding:"12px 28px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":"pointer",transition:"background .2s"}}>
+              {saving?"Wird gespeichert...":"Aenderungen speichern"}
+            </button>
+            {saved&&<span style={{color:T.green,fontWeight:600,fontSize:".85rem"}}>{"\u2713"} Gespeichert</span>}
+          </div>
+        </>)}
+      </div>)}
+
+      {/* Tab: Medien */}
+      {tab==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        {ASSETS.map(a=>{
+          const url=assetUrls[a.key];
+          const busy=uploading[a.key];
+          return(<div key={a.key} style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:20}}>
+            <div style={{width:72,height:72,borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${T.bg3}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              {url?<img src={url} alt={a.label} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{fontSize:"1.4rem"}}>📷</span>}
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>{a.label}</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
+            </div>
+            <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+              {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
+              <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+            </label>
+          </div>);
+        })}
+        <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`,fontSize:".78rem",color:T.textSub}}>
+          Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB.
+        </div>
+      </div>)}
+
+      {/* Tab: Domain */}
+      {tab==="domain"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:10}}>Custom Domain verbinden</div>
+        <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>Eigene Domain statt Subdomain</h2>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.7,marginBottom:24}}>
+          Aktuell ist Ihre Website unter <strong>{sub}.siteready.at</strong> erreichbar. Mit einer eigenen Domain (z.B. <strong>www.{sub}.at</strong>) erscheint Ihre Website noch professioneller.
+        </p>
+        <div style={{marginBottom:24}}>
+          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:10}}>DNS-Eintraege bei Ihrem Domain-Anbieter setzen:</div>
+          <div style={{borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`}}>
+            <div style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",background:T.bg,padding:"10px 16px",fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",gap:16}}>
+              <span>Typ</span><span>Name</span><span>Wert</span>
+            </div>
+            {[
+              {typ:"CNAME",name:"www",wert:"sitereadyprototype.pages.dev"},
+              {typ:"CNAME",name:"@",wert:"sitereadyprototype.pages.dev"},
+            ].map((r,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",padding:"12px 16px",fontSize:".84rem",gap:16,borderTop:`1px solid ${T.bg3}`,fontFamily:T.mono}}>
+              <span style={{color:T.accent,fontWeight:700}}>{r.typ}</span>
+              <span style={{color:T.dark}}>{r.name}</span>
+              <span style={{color:T.textSub}}>{r.wert}</span>
+            </div>)}
+          </div>
+        </div>
+        <div style={{padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}>
+          <div style={{fontSize:".82rem",fontWeight:700,color:T.accent,marginBottom:4}}>Nach der DNS-Aenderung</div>
+          <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>DNS-Aenderungen dauern bis zu 48 Stunden. Sobald alles aktiv ist, schreiben Sie uns an <strong>support@siteready.at</strong> – wir schalten Ihre Domain frei.</div>
+        </div>
+      </div>)}
+    </div>
+  </div>);
+}
+
 /* ═══ APP ═══ */
-export default function App(){const[page,setPage]=useState("landing");const[data,setData]=useState(INIT);if(page==="landing")return<LandingPage onStart={()=>setPage("form")}/>;if(page==="success")return<SuccessPage data={data} onBack={()=>setPage("form")}/>;return<Questionnaire data={data} setData={setData} onComplete={()=>setPage("success")} onBack={()=>setPage("landing")}/>}
+export default function App(){
+  const[page,setPage]=useState("landing");
+  const[data,setData]=useState(INIT);
+  const[session,setSession]=useState(null);
+
+  useEffect(()=>{
+    if(!supabase)return;
+    supabase.auth.getSession().then(({data:{session}})=>{
+      setSession(session);
+      if(session)setPage("portal");
+    });
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+      setSession(session);
+      if(session)setPage("portal");
+    });
+    return()=>subscription.unsubscribe();
+  },[]);
+
+  if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing");}}/>;
+  if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
+  if(page==="landing")return<LandingPage onStart={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;
+  if(page==="success")return<SuccessPage data={data} onBack={()=>setPage("form")}/>;
+  return<Questionnaire data={data} setData={setData} onComplete={()=>setPage("success")} onBack={()=>setPage("landing")}/>;
+}

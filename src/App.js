@@ -1103,17 +1103,33 @@ function Admin({adminKey}){
           {filtered.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Bestellungen.</div>:
           <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:T.bg}}>{["Datum","Firma","E-Mail","Branche","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-              <tbody>{filtered.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
-                <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
-                <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
-                <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textSub}}>{o.email||"—"}</td>
-                <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textSub}}>{o.branche_label||o.branche||"—"}</td>
-                <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                <td style={{padding:"12px 16px",textAlign:"right"}}>
-                  {o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}
-                </td>
-              </tr>)}</tbody>
+              <thead><tr style={{background:T.bg}}>{["Datum","Firma","Deployment","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+              <tbody>{filtered.map((o,i)=>{
+                const built=["in_arbeit","review","live"].includes(o.status);
+                const reviewed=["review","live"].includes(o.status);
+                const isLive=o.status==="live";
+                const DEPLOY_CHECKS=[
+                  {l:"Website",ok:built},{l:"SSL",ok:built},{l:"Impressum",ok:built},{l:"DSGVO",ok:built},
+                  {l:"robots.txt",ok:built},{l:"sitemap.xml",ok:built},{l:"Google",ok:reviewed},{l:"Domain",ok:isLive}
+                ];
+                const done=DEPLOY_CHECKS.filter(c=>c.ok).length;
+                return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
+                  <td style={{padding:"12px 16px"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:7}}>
+                      <div style={{display:"flex",gap:3}}>
+                        {DEPLOY_CHECKS.map((c,j)=><span key={j} title={c.l} style={{display:"inline-block",width:8,height:8,borderRadius:"50%",background:c.ok?T.green:T.bg3,transition:"background .2s"}}/>)}
+                      </div>
+                      <span style={{fontSize:".72rem",color:done===8?T.green:T.textMuted,fontFamily:T.mono,fontWeight:700}}>{done}/8</span>
+                    </div>
+                  </td>
+                  <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
+                  <td style={{padding:"12px 16px",textAlign:"right"}}>
+                    {o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}
+                  </td>
+                </tr>);
+              })}</tbody>
             </table>
           </div>}
         </div>)}

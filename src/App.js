@@ -924,6 +924,8 @@ function Admin({adminKey}){
   const[sel,setSel]=useState(null);
   const[health,setHealth]=useState({});
   const[loading,setLoading]=useState(true);
+  const[sysStatus,setSysStatus]=useState(null);
+  const[sysLoading,setSysLoading]=useState(false);
   const[notiz,setNotiz]=useState({});
   const[notizSaved,setNotizSaved]=useState({});
 
@@ -966,7 +968,8 @@ function Admin({adminKey}){
 
   const filtered=orders.filter(o=>filter==="alle"||o.status===filter);
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
-  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"}];
+  const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLoading(false);};
+  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -1083,6 +1086,47 @@ function Admin({adminKey}){
               </div>
               <p style={{margin:0,fontSize:".85rem",color:T.textSub,lineHeight:1.65,background:T.bg,padding:"12px 14px",borderRadius:T.rSm}}>{t.message}</p>
             </div>)}
+          </div>}
+        </div>)}
+        {/* Tab: APIs */}
+        {!loading&&tab==="apis"&&(<div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>API & Umgebungsstatus</h2>
+            <button onClick={checkSystem} disabled={sysLoading} style={{padding:"8px 18px",border:"none",borderRadius:T.rSm,background:sysLoading?"#94a3b8":T.dark,color:"#fff",cursor:sysLoading?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{sysLoading?"Wird geprueft...":"Alle pruefen"}</button>
+          </div>
+          {!sysStatus&&!sysLoading&&<div style={{color:T.textMuted,padding:"40px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`}}>Klicke "Alle pruefen" um den Status aller APIs zu laden.</div>}
+          {sysStatus&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
+            {/* API Karten */}
+            {[
+              {key:"supabase",label:"Supabase",icon:"🗄️",desc:"Datenbank & Auth",detail:sysStatus.supabase?.latency?`Latenz: ${sysStatus.supabase.latency}ms`:""},
+              {key:"stripe",label:"Stripe",icon:"💳",desc:"Zahlungsabwicklung",detail:sysStatus.stripe?.livemode===false?"Testmodus aktiv":sysStatus.stripe?.livemode===true?"Live-Modus":""},
+              {key:"anthropic",label:"Anthropic (Claude)",icon:"🤖",desc:"KI Website-Import","key":"anthropic"},
+            ].map(({key,label,icon,desc,detail})=>{
+              const s=sysStatus[key];
+              const ok=s?.ok;
+              return(<div key={key} style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${ok?'rgba(22,163,74,.2)':T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:16}}>
+                <div style={{width:44,height:44,borderRadius:10,background:ok?"#f0fdf4":"#fef2f2",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0}}>{icon}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:2}}>{label}</div>
+                  <div style={{fontSize:".78rem",color:T.textMuted}}>{desc}{detail&&<span style={{marginLeft:8,color:T.accent}}>{detail}</span>}</div>
+                  {s?.error&&<div style={{fontSize:".75rem",color:T.red,marginTop:4}}>{s.error}</div>}
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <div style={{width:10,height:10,borderRadius:"50%",background:ok?T.green:T.red,boxShadow:`0 0 0 3px ${ok?"rgba(22,163,74,.15)":"rgba(220,38,38,.15)"}`}}/>
+                  <span style={{fontSize:".82rem",fontWeight:700,color:ok?T.green:T.red}}>{ok?"Verbunden":"Fehler"}</span>
+                </div>
+              </div>);
+            })}
+            {/* Env Vars */}
+            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Environment Variables</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {Object.entries(sysStatus.envvars||{}).map(([k,v])=><div key={k} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:T.rSm,background:v?T.greenLight:"#fef2f2",border:`1px solid ${v?"rgba(22,163,74,.15)":"rgba(220,38,38,.1)"}`}}>
+                  <span style={{fontSize:".72rem",color:v?T.green:T.red,fontWeight:700}}>{v?"\u2713":"\u2717"}</span>
+                  <span style={{fontSize:".78rem",fontFamily:T.mono,color:T.dark}}>{k}</span>
+                </div>)}
+              </div>
+            </div>
           </div>}
         </div>)}
       </div>

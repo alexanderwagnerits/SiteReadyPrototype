@@ -1,4 +1,4 @@
-export async function onRequestPost({request}) {
+export async function onRequestPost({request, env}) {
   try {
     const {url} = await request.json();
     if (!url) return Response.json({error: "URL fehlt"}, {status: 400});
@@ -20,46 +20,66 @@ export async function onRequestPost({request}) {
     const text = await jinaResp.text();
     if (!text || text.length < 50) return Response.json({error: "Keine Inhalte gefunden."}, {status: 400});
 
-    // Aus dem sauberen Text extrahieren
-    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+    // Ersten 4000 Zeichen an Claude schicken
+    const excerpt = text.slice(0, 4000);
 
-    // Firmenname: erste Ueberschrift oder Title-Zeile
-    const titleLine = lines.find(l => l.startsWith("# ") || l.startsWith("Title:"));
-    const firmenname = (titleLine || lines[0] || "")
-      .replace(/^#+ /, "").replace(/^Title:\s*/i, "")
-      .replace(/\s*[-|–|·].*$/, "").trim().slice(0, 60);
+    const anthropicKey = env.ANTHROPIC_API_KEY;
+    if (!anthropicKey) return Response.json({error: "API-Konfigurationsfehler."}, {status: 500});
 
-    // Telefon: AT-Nummern
-    const telMatch = text.match(/(\+43[\s\-]?[\d\s\-\/]{6,18}|0[\d]{2,4}[\s\-\/]?[\d\s\-\/]{4,12})/g) || [];
-    const telefon = telMatch
-      .map(t => t.replace(/\s+/g, " ").trim())
-      .filter(t => t.replace(/\D/g, "").length >= 7)[0] || "";
+    const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 512,
+        messages: [{
+          role: "user",
+          content: `Extrahiere aus folgendem Website-Text die Kontaktdaten eines oesterreichischen Unternehmens.
+Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit diesen Feldern:
+- firmenname: Name des Unternehmens (max 60 Zeichen)
+- telefon: Telefonnummer (oesterreichisches Format, z.B. +43 1 234567 oder 0664 1234567, leer wenn nicht gefunden)
+- email: E-Mail-Adresse (leer wenn nicht gefunden)
+- plz: Postleitzahl 4-stellig (leer wenn nicht gefunden)
+- ort: Ortsname (leer wenn nicht gefunden)
+- adresse: Strassenname mit Hausnummer (leer wenn nicht gefunden)
+- kurzbeschreibung: Kurze Beschreibung was das Unternehmen macht (max 200 Zeichen, leer wenn nicht gefunden)
 
-    // E-Mail
-    const emailMatch = text.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g) || [];
-    const email = emailMatch.filter(e =>
-      !e.includes("example") && !e.includes("sentry") && !e.includes("wixpress") && !e.match(/^\d/)
-    )[0] || "";
+Website-Text:
+${excerpt}`,
+        }],
+      }),
+    });
 
-    // PLZ + Ort (oesterreichisch: 4-stellig)
-    const plzMatch = text.match(/\b(\d{4})\s+([A-ZAEOUE\u00c4\u00d6\u00dc][a-zA-Za\u00e4\u00f6\u00fc\u00df\-\s]{2,30})/);
-    const plz = plzMatch ? plzMatch[1] : "";
-    const ort = plzMatch ? plzMatch[2].trim().replace(/\s{2,}.*/, "").slice(0, 40) : "";
+    if (!claudeResp.ok) {
+      const errText = await claudeResp.text();
+      return Response.json({error: "KI-Analyse fehlgeschlagen: " + errText}, {status: 500});
+    }
 
-    // Strasse
-    const strasseMatch = text.match(/[A-Z\u00c4\u00d6\u00dc][a-z\u00e4\u00f6\u00fc\u00df\-]+(?:gasse|stra(?:ss|\u00df)e|weg|platz|ring|allee|zeile|gasse|stra\u00dfe)[^\n,]{0,15}/i);
-    const adresse = strasseMatch ? strasseMatch[0].trim().slice(0, 60) : "";
+    const claudeData = await claudeResp.json();
+    const rawContent = claudeData.content?.[0]?.text || "{}";
 
-    // Beschreibung: erste laengere Zeile die wie Prosa aussieht
-    const descLine = lines.find(l =>
-      l.length > 40 && l.length < 250 &&
-      !l.startsWith("#") && !l.startsWith("|") &&
-      !l.match(/^[\d\+\(]/) && !l.includes("@") &&
-      l.split(" ").length > 5
-    ) || "";
-    const kurzbeschreibung = descLine.slice(0, 200);
+    let extracted;
+    try {
+      // JSON aus der Antwort parsen (manchmal mit Markdown-Backticks)
+      const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+      extracted = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
+    } catch(e) {
+      extracted = {};
+    }
 
-    return Response.json({firmenname, telefon, email, plz, ort, adresse, kurzbeschreibung});
+    return Response.json({
+      firmenname: extracted.firmenname || "",
+      telefon: extracted.telefon || "",
+      email: extracted.email || "",
+      plz: extracted.plz || "",
+      ort: extracted.ort || "",
+      adresse: extracted.adresse || "",
+      kurzbeschreibung: extracted.kurzbeschreibung || "",
+    });
 
   } catch(e) {
     return Response.json({error: "Import fehlgeschlagen: " + e.message}, {status: 500});

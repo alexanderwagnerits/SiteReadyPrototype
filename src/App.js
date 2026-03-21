@@ -1370,7 +1370,8 @@ function navigate(page,replace=false){
 export default function App(){
   const initPage=()=>{
     const path=window.location.pathname;
-    return ROUTES[path]||"landing";
+    if(path==="/admin")return"admin-check";
+    return ROUTES[path]||"notfound";
   };
   const[page,setPageRaw]=useState(initPage);
   const[data,setData]=useState(INIT);
@@ -1381,7 +1382,7 @@ export default function App(){
 
   useEffect(()=>{
     // Browser Zurueck/Vor
-    const onPop=()=>setPageRaw(ROUTES[window.location.pathname]||"landing");
+    const onPop=()=>setPageRaw(ROUTES[window.location.pathname]||"notfound");
     window.addEventListener("popstate",onPop);
     // Stripe Redirect abfangen
     const p=new URLSearchParams(window.location.search);
@@ -1439,5 +1440,17 @@ export default function App(){
 
   if(page==="landing")return<LandingPage onStart={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;
   if(page==="success")return<SuccessPage data={data} onBack={()=>setPage("form")}/>;
+  if(page==="notfound")return(
+    <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"0 24px"}}><style>{css}</style>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:48}}>
+        <img src="/icon.png" alt="SR" style={{height:22,opacity:.4}}/>
+        <span style={{fontSize:".95rem",fontWeight:800,color:T.dark,opacity:.4}}>SiteReady</span>
+      </div>
+      <div style={{fontSize:"7rem",fontWeight:800,color:T.bg3,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.06em",marginBottom:8}}>404</div>
+      <h1 style={{fontSize:"1.6rem",fontWeight:800,color:T.dark,margin:"0 0 12px",letterSpacing:"-.03em"}}>Seite nicht gefunden</h1>
+      <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,maxWidth:380,margin:"0 0 36px"}}>Die aufgerufene Seite existiert nicht oder wurde verschoben.</p>
+      <button onClick={()=>{window.history.replaceState({},"","/");setPageRaw("landing");}} style={{padding:"13px 32px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:"pointer",boxShadow:"0 2px 16px rgba(0,0,0,.1)"}}>Zur Startseite &rarr;</button>
+    </div>
+  );
   return<Questionnaire data={data} setData={setData} onComplete={()=>setPage("success")} onBack={()=>setPage("landing")}/>;
 }

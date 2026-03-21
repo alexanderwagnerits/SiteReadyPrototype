@@ -6,25 +6,61 @@ export async function onRequestPost({request, env}) {
     let cleanUrl = url.trim();
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
 
-    // Jina AI Reader: wandelt jede Website in sauberes Markdown um
-    const jinaResp = await fetch("https://r.jina.ai/" + cleanUrl, {
-      headers: {
-        "Accept": "text/plain",
-        "X-Return-Format": "text",
-        "User-Agent": "Mozilla/5.0 (compatible; SiteReady/1.0)",
-      },
-    });
+    // Website direkt laden
+    let pageText = "";
+    try {
+      const pageResp = await fetch(cleanUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml",
+          "Accept-Language": "de-AT,de;q=0.9",
+        },
+        redirect: "follow",
+      });
+      if (pageResp.ok) {
+        const html = await pageResp.text();
+        // HTML-Tags entfernen, sauberen Text extrahieren
+        pageText = html
+          .replace(/<script[\s\S]*?<\/script>/gi, " ")
+          .replace(/<style[\s\S]*?<\/style>/gi, " ")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+      }
+    } catch(fetchErr) {
+      // Fallback: Jina AI Reader
+    }
 
-    if (!jinaResp.ok) return Response.json({error: "Website nicht erreichbar."}, {status: 400});
+    // Fallback: Jina AI Reader (fuer JS-gerenderte Seiten)
+    if (!pageText || pageText.length < 100) {
+      try {
+        const jinaResp = await fetch("https://r.jina.ai/" + cleanUrl, {
+          headers: {
+            "Accept": "text/plain",
+            "X-Return-Format": "text",
+          },
+        });
+        if (jinaResp.ok) {
+          pageText = await jinaResp.text();
+        }
+      } catch(jinaErr) {
+        // ignore
+      }
+    }
 
-    const text = await jinaResp.text();
-    if (!text || text.length < 50) return Response.json({error: "Keine Inhalte gefunden."}, {status: 400});
-
-    // Ersten 4000 Zeichen an Claude schicken
-    const excerpt = text.slice(0, 4000);
+    if (!pageText || pageText.length < 50) {
+      return Response.json({error: "Website konnte nicht geladen werden."}, {status: 400});
+    }
 
     const anthropicKey = env.ANTHROPIC_API_KEY;
     if (!anthropicKey) return Response.json({error: "API-Konfigurationsfehler."}, {status: 500});
+
+    // Ersten 4000 Zeichen an Claude schicken
+    const excerpt = pageText.slice(0, 4000);
 
     const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -64,7 +100,6 @@ ${excerpt}`,
 
     let extracted;
     try {
-      // JSON aus der Antwort parsen (manchmal mit Markdown-Backticks)
       const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
       extracted = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
     } catch(e) {

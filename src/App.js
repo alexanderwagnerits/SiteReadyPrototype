@@ -308,7 +308,8 @@ function SuccessPage({data,onBack}){
     const json=await resp.json();
     setSaving(false);
     if(json.error){setSaveErr("Zahlung: "+json.error);return;}
-    // 3. Zu Stripe weiterleiten
+    // 3. E-Mail merken, zu Stripe weiterleiten
+    if(data.email)localStorage.setItem("sr_pending_email",data.email);
     window.location.href=json.url;
   };
   const included=[
@@ -444,8 +445,8 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
 
 /* ═══ PORTAL LOGIN ═══ */
 function PortalLogin({onBack}){
-  const[mode,setMode]=useState("login"); // login | register
-  const[email,setEmail]=useState("");
+  const[mode,setMode]=useState(()=>localStorage.getItem("sr_pending_email")?"register":"login");
+  const[email,setEmail]=useState(()=>localStorage.getItem("sr_pending_email")||"");
   const[pw,setPw]=useState("");
   const[pw2,setPw2]=useState("");
   const[loading,setLoading]=useState(false);
@@ -708,14 +709,21 @@ export default function App(){
   if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing");}}/>;
   if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
 
-  if(paymentStatus==="success")return(
-    <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16,textAlign:"center",padding:"0 24px"}}><style>{css}</style>
-      <div style={{width:64,height:64,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.8rem",marginBottom:8}}>{"\u2713"}</div>
-      <h1 style={{fontSize:"1.8rem",fontWeight:800,color:T.dark,margin:0,letterSpacing:"-.03em"}}>Bezahlung erfolgreich!</h1>
-      <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,maxWidth:420,margin:0}}>Vielen Dank. Ihre Website wird jetzt eingerichtet. Sie erhalten eine E-Mail mit dem Zugang zu Ihrem Self-Service-Portal.</p>
-      <button onClick={()=>setPage("portal-login")} style={{marginTop:8,padding:"13px 28px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:"pointer"}}>Zum Portal &rarr;</button>
+  if(paymentStatus==="success"){
+    const pendingEmail=localStorage.getItem("sr_pending_email")||"";
+    return(
+    <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:0,textAlign:"center",padding:"0 24px"}}><style>{css}</style>
+      <div style={{width:64,height:64,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.8rem",marginBottom:20}}>{"\u2713"}</div>
+      <h1 style={{fontSize:"1.8rem",fontWeight:800,color:T.dark,margin:"0 0 12px",letterSpacing:"-.03em"}}>Bezahlung erfolgreich!</h1>
+      <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,maxWidth:440,margin:"0 0 28px"}}>Vielen Dank. Jetzt noch schnell Ihr Portal-Konto anlegen – damit koennen Sie Logo, Fotos und Daten jederzeit selbst anpassen.</p>
+      {pendingEmail&&<div style={{background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"12px 20px",marginBottom:24,fontSize:".88rem",color:T.textSub}}>
+        Bitte registrieren Sie sich mit: <strong style={{color:T.dark}}>{pendingEmail}</strong>
+      </div>}
+      <button onClick={()=>{localStorage.removeItem("sr_pending_email");setPage("portal-login");}} style={{padding:"13px 32px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".95rem",fontWeight:700,fontFamily:T.font,cursor:"pointer",boxShadow:"0 2px 16px rgba(0,0,0,.12)"}}>
+        Portal-Konto erstellen &rarr;
+      </button>
     </div>
-  );
+  );};
 
   if(paymentStatus==="canceled")return(
     <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16,textAlign:"center",padding:"0 24px"}}><style>{css}</style>

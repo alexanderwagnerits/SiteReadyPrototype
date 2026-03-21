@@ -845,31 +845,48 @@ function Portal({session,onLogout}){
 }
 
 /* ═══ APP ═══ */
+const ROUTES={"/":"landing","/start":"form","/bestellung":"success","/login":"portal-login","/portal":"portal"};
+const PATHS=Object.fromEntries(Object.entries(ROUTES).map(([k,v])=>[v,k]));
+
+function navigate(page,replace=false){
+  const path=PATHS[page]||"/";
+  replace?window.history.replaceState({},"",path):window.history.pushState({},"",path);
+}
+
 export default function App(){
-  const[page,setPage]=useState("landing");
+  const initPage=()=>{
+    const path=window.location.pathname;
+    return ROUTES[path]||"landing";
+  };
+  const[page,setPageRaw]=useState(initPage);
   const[data,setData]=useState(INIT);
   const[session,setSession]=useState(null);
-  const[paymentStatus,setPaymentStatus]=useState(null); // "success"|"canceled"|null
+  const[paymentStatus,setPaymentStatus]=useState(null);
+
+  const setPage=p=>{setPageRaw(p);navigate(p);};
 
   useEffect(()=>{
+    // Browser Zurueck/Vor
+    const onPop=()=>setPageRaw(ROUTES[window.location.pathname]||"landing");
+    window.addEventListener("popstate",onPop);
     // Stripe Redirect abfangen
     const p=new URLSearchParams(window.location.search);
     if(p.get("payment")==="success"){setPaymentStatus("success");window.history.replaceState({},"","/");}
     if(p.get("payment")==="canceled"){setPaymentStatus("canceled");window.history.replaceState({},"","/");}
     // Supabase Auth
-    if(!supabase)return;
+    if(!supabase)return()=>window.removeEventListener("popstate",onPop);
     supabase.auth.getSession().then(({data:{session}})=>{
       setSession(session);
-      if(session)setPage("portal");
+      if(session){setPageRaw("portal");navigate("portal",true);}
     });
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
       setSession(session);
-      if(session)setPage("portal");
+      if(session){setPageRaw("portal");navigate("portal");}
     });
-    return()=>subscription.unsubscribe();
+    return()=>{subscription.unsubscribe();window.removeEventListener("popstate",onPop);};
   },[]);
 
-  if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing");}}/>;
+  if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing")}}/>;
   if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
 
   if(paymentStatus==="success"){

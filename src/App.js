@@ -909,15 +909,6 @@ function Portal({session,onLogout}){
               </div>))}
           </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
         </div>
-        {/* SEO */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>SEO & Rechtliches</div>
-          {[{l:"Google-Indexierung",v:"Angemeldet",ok:true},{l:"SSL / HTTPS",v:"Aktiv",ok:true},{l:"robots.txt",v:"Vorhanden",ok:true},{l:"sitemap.xml",v:"Generiert",ok:true},{l:"Impressum (ECG)",v:"Eingebaut",ok:true},{l:"DSGVO-Erklaerung",v:"Eingebaut",ok:true}].map(({l,v,ok})=>(
-            <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
-              <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
-              <span style={{fontSize:".88rem",color:ok?T.green:T.red,fontWeight:600}}>{ok?"\u2713":"\u2717"} {v}</span>
-            </div>))}
-        </div>
         {/* Abo */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Abonnement</div>

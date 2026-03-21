@@ -909,6 +909,215 @@ function Portal({session,onLogout}){
   </div>);
 }
 
+/* ═══ ADMIN DASHBOARD ═══ */
+const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",review:"Review",live:"Live"};
+const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",review:"#f97316",live:"#16a34a"};
+const STATUS_FLOW=["pending","paid","in_arbeit","review","live"];
+
+function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
+
+function Admin({adminKey}){
+  const[tab,setTab]=useState("bestellungen");
+  const[orders,setOrders]=useState([]);
+  const[tickets,setTickets]=useState([]);
+  const[filter,setFilter]=useState("alle");
+  const[sel,setSel]=useState(null);
+  const[health,setHealth]=useState({});
+  const[loading,setLoading]=useState(true);
+  const[notiz,setNotiz]=useState({});
+  const[notizSaved,setNotizSaved]=useState({});
+
+  useEffect(()=>{load();},[]);
+
+  const load=async()=>{
+    setLoading(true);
+    const r=await fetch(`/api/admin-data?key=${adminKey}`);
+    const j=await r.json();
+    if(j.orders){setOrders(j.orders);const n={};j.orders.forEach(o=>{n[o.id]=o.notiz||""});setNotiz(n);}
+    if(j.tickets)setTickets(j.tickets);
+    setLoading(false);
+  };
+
+  const updateOrder=async(id,fields)=>{
+    await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,...fields})});
+    setOrders(os=>os.map(o=>o.id===id?{...o,...fields}:o));
+    setSel(s=>s?.id===id?{...s,...fields}:s);
+  };
+
+  const updateTicket=async(id,fields)=>{
+    await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,table:"support_requests",...fields})});
+    setTickets(ts=>ts.map(t=>t.id===id?{...t,...fields}:t));
+  };
+
+  const saveNotiz=async(id)=>{
+    await updateOrder(id,{notiz:notiz[id]});
+    setNotizSaved(s=>({...s,[id]:true}));
+    setTimeout(()=>setNotizSaved(s=>({...s,[id]:false})),2000);
+  };
+
+  const nextStatus=s=>{const i=STATUS_FLOW.indexOf(s);return i<STATUS_FLOW.length-1?STATUS_FLOW[i+1]:s;};
+
+  const checkHealth=async(order)=>{
+    const url=`https://${order.subdomain||"test"}.siteready.at`;
+    setHealth(h=>({...h,[order.id]:"checking"}));
+    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});setHealth(h=>({...h,[order.id]:"ok"}));}
+    catch(e){setHealth(h=>({...h,[order.id]:"error"}));}
+  };
+
+  const filtered=orders.filter(o=>filter==="alle"||o.status===filter);
+  const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
+  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"}];
+
+  return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
+    {/* Topbar */}
+    <div style={{background:"#0c0e12",padding:"0 32px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:12}}>
+        <img src="/icon.png" alt="SR" style={{height:20,filter:"brightness(0) invert(1)",opacity:.7}}/>
+        <span style={{fontSize:".88rem",fontWeight:800,color:"#fff",letterSpacing:"-.02em"}}>SiteReady</span>
+        <span style={{fontSize:".72rem",fontWeight:700,color:"#f59e0b",background:"rgba(245,158,11,.15)",padding:"3px 10px",borderRadius:4,letterSpacing:".08em"}}>ADMIN</span>
+      </div>
+      <button onClick={load} style={{padding:"6px 16px",border:"1px solid rgba(255,255,255,.15)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.6)",cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aktualisieren</button>
+    </div>
+
+    <div style={{display:"flex",height:"calc(100vh - 56px)"}}>
+      {/* Sidebar */}
+      <div style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{display:"block",width:"100%",padding:"11px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>{t.label}</button>)}
+        <div style={{margin:"20px 16px 8px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
+          <div style={{fontSize:".68rem",color:T.textMuted,fontWeight:700,letterSpacing:".08em",marginBottom:8}}>STATUS</div>
+          {["alle",...STATUS_FLOW].map(s=>{const c=orders.filter(o=>s==="alle"||o.status===s).length;return(<button key={s} onClick={()=>{setFilter(s);setTab("bestellungen");}} style={{display:"flex",justifyContent:"space-between",width:"100%",padding:"7px 4px",border:"none",background:"transparent",color:filter===s&&tab==="bestellungen"?T.accent:T.textMuted,cursor:"pointer",fontSize:".78rem",fontWeight:filter===s&&tab==="bestellungen"?700:400,fontFamily:T.font}}>
+            <span>{s==="alle"?"Alle":STATUS_LABELS[s]}</span><span style={{background:T.bg3,borderRadius:10,padding:"1px 7px",fontSize:".7rem"}}>{c}</span>
+          </button>);})}
+        </div>
+      </div>
+
+      {/* Main */}
+      <div style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
+        {loading&&<div style={{textAlign:"center",padding:60,color:T.textMuted}}>Wird geladen...</div>}
+
+        {/* Tab: Bestellungen */}
+        {!loading&&tab==="bestellungen"&&(<div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Bestellungen {filter!=="alle"&&`(${STATUS_LABELS[filter]})`}</h2>
+            <span style={{fontSize:".82rem",color:T.textMuted}}>{filtered.length} Eintraege</span>
+          </div>
+          {filtered.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Bestellungen.</div>:
+          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr style={{background:T.bg}}>{["Datum","Firma","E-Mail","Branche","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+              <tbody>{filtered.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
+                <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
+                <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textSub}}>{o.email||"—"}</td>
+                <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textSub}}>{o.branche_label||o.branche||"—"}</td>
+                <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
+                <td style={{padding:"12px 16px",textAlign:"right"}}>
+                  {o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}
+                </td>
+              </tr>)}</tbody>
+            </table>
+          </div>}
+        </div>)}
+
+        {/* Tab: Entwicklung (Kanban) */}
+        {!loading&&tab==="entwicklung"&&(<div>
+          <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Entwicklung</h2>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,alignItems:"start"}}>
+            {["paid","in_arbeit","review","live"].map(s=><div key={s}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s]}}/>
+                <span style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em"}}>{STATUS_LABELS[s]}</span>
+                <span style={{fontSize:".72rem",color:T.textMuted,background:T.bg3,borderRadius:10,padding:"1px 7px"}}>{orders.filter(o=>o.status===s).length}</span>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {orders.filter(o=>o.status===s).map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,padding:"14px 16px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}} onClick={()=>setSel(o)}>
+                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>{o.firmenname||"—"}</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:10}}>{fmtDate(o.created_at)}</div>
+                  {s!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(s)});}} style={{width:"100%",padding:"6px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(s)]} &rarr;</button>}
+                </div>)}
+              </div>
+            </div>)}
+          </div>
+        </div>)}
+
+        {/* Tab: Health */}
+        {!loading&&tab==="health"&&(<div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Website & SSL Health</h2>
+            <button onClick={()=>orders.forEach(o=>checkHealth(o))} style={{padding:"8px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Alle pruefen</button>
+          </div>
+          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+              <tbody>{orders.map((o,i)=>{
+                const url=`${o.subdomain||"—"}.siteready.at`;
+                const h=health[o.id];
+                return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
+                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.accent,fontFamily:T.mono}}>{url}</td>
+                  <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
+                  <td style={{padding:"12px 16px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".78rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".78rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".78rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".78rem"}}>—</span>}</td>
+                  <td style={{padding:"12px 16px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".78rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".78rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".78rem"}}>—</span>}</td>
+                  <td style={{padding:"12px 16px",textAlign:"right"}}><button onClick={()=>checkHealth(o)} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Pruefen</button></td>
+                </tr>);
+              })}</tbody>
+            </table>
+          </div>
+        </div>)}
+
+        {/* Tab: Support */}
+        {!loading&&tab==="support"&&(<div>
+          <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Support-Anfragen</h2>
+          {tickets.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Support-Anfragen.</div>:
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {tickets.map(t=><div key={t.id} style={{background:"#fff",borderRadius:T.r,padding:"18px 22px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:8}}>
+                <div>
+                  <span style={{fontWeight:700,fontSize:".9rem",color:T.dark}}>{t.subject||"Allgemein"}</span>
+                  <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:10}}>{t.email} &middot; {fmtDate(t.created_at)}</span>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{padding:"3px 10px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".72rem",fontWeight:700}}>{t.status==="offen"?"Offen":"Beantwortet"}</span>
+                  {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"})} style={{padding:"4px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Als beantwortet markieren</button>}
+                </div>
+              </div>
+              <p style={{margin:0,fontSize:".85rem",color:T.textSub,lineHeight:1.65,background:T.bg,padding:"12px 14px",borderRadius:T.rSm}}>{t.message}</p>
+            </div>)}
+          </div>}
+        </div>)}
+      </div>
+
+      {/* Detail Drawer */}
+      {sel&&(<div style={{width:380,background:"#fff",borderLeft:`1px solid ${T.bg3}`,overflowY:"auto",padding:24,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+          <h3 style={{margin:0,fontSize:"1rem",fontWeight:800,color:T.dark}}>{sel.firmenname||"—"}</h3>
+          <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.2rem",cursor:"pointer",color:T.textMuted,padding:4}}>&times;</button>
+        </div>
+        <StatusBadge status={sel.status}/>
+        <div style={{marginTop:16,display:"flex",gap:6,flexWrap:"wrap"}}>
+          {STATUS_FLOW.filter(s=>s!==sel.status).map(s=><button key={s} onClick={()=>updateOrder(sel.id,{status:s})} style={{padding:"4px 12px",border:`2px solid ${STATUS_COLORS[s]}33`,borderRadius:T.rSm,background:STATUS_COLORS[s]+"11",color:STATUS_COLORS[s],cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{STATUS_LABELS[s]}</button>)}
+        </div>
+        <div style={{marginTop:20,display:"flex",flexDirection:"column",gap:6}}>
+          {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"7px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".82rem"}}>
+            <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>
+          </div>:null)}
+        </div>
+        {sel.leistungen?.length>0&&<div style={{marginTop:12}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Leistungen</div>
+          {sel.leistungen.map((l,i)=><div key={i} style={{fontSize:".82rem",color:T.dark,padding:"4px 0",borderBottom:`1px solid ${T.bg3}`}}>{l}</div>)}
+        </div>}
+        <div style={{marginTop:16}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>
+          <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={3} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+          <button onClick={()=>saveNotiz(sel.id)} style={{marginTop:6,padding:"7px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>
+            {notizSaved[sel.id]?"\u2713 Gespeichert":"Notiz speichern"}
+          </button>
+        </div>
+      </div>)}
+    </div>
+  </div>);
+}
+
 /* ═══ APP ═══ */
 const ROUTES={"/":"landing","/start":"form","/bestellung":"success","/login":"portal-login","/portal":"portal"};
 const PATHS=Object.fromEntries(Object.entries(ROUTES).map(([k,v])=>[v,k]));
@@ -953,6 +1162,11 @@ export default function App(){
 
   if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing")}}/>;
   if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
+
+  // Admin Dashboard (key-geschuetzt)
+  const adminKey=process.env.REACT_APP_ADMIN_KEY;
+  const urlKey=new URLSearchParams(window.location.search).get("key");
+  if(window.location.pathname==="/admin"&&adminKey&&urlKey===adminKey)return<Admin adminKey={adminKey}/>;
 
   if(paymentStatus==="success"){
     const pendingEmail=localStorage.getItem("sr_pending_email")||"";

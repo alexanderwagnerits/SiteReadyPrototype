@@ -445,34 +445,51 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
 
 /* ═══ PORTAL LOGIN ═══ */
 function PortalLogin({onBack}){
+  const[mode,setMode]=useState("login"); // login | register
   const[email,setEmail]=useState("");
-  const[sent,setSent]=useState(false);
+  const[pw,setPw]=useState("");
+  const[pw2,setPw2]=useState("");
   const[loading,setLoading]=useState(false);
   const[err,setErr]=useState("");
-  const send=async()=>{
-    if(!email.trim()||!supabase)return;
+  const[done,setDone]=useState(false);
+
+  const submit=async()=>{
+    if(!email.trim()||!pw.trim()||!supabase)return;
+    if(mode==="register"&&pw!==pw2){setErr("Passwoerter stimmen nicht ueberein.");return;}
     setLoading(true);setErr("");
-    const{error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
+    if(mode==="login"){
+      const{error}=await supabase.auth.signInWithPassword({email,password:pw});
+      if(error)setErr(error.message==="Invalid login credentials"?"E-Mail oder Passwort falsch.":error.message);
+    } else {
+      const{error}=await supabase.auth.signUp({email,password:pw});
+      if(error)setErr(error.message);else setDone(true);
+    }
     setLoading(false);
-    if(error)setErr(error.message);else setSent(true);
   };
+
   return(<div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}><style>{css}</style>
     <div style={{maxWidth:400,width:"100%",padding:"0 24px"}}>
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:40}}>
         <img src="/icon.png" alt="SR" style={{height:22}}/><span style={{fontSize:".95rem",fontWeight:800,color:T.dark}}>SiteReady</span>
       </div>
-      {sent?(<div>
-        <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>E-Mail gesendet</div>
-        <p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Wir haben einen Login-Link an <strong>{email}</strong> gesendet. Bitte pruefen Sie Ihr Postfach.</p>
-        <button onClick={()=>setSent(false)} style={{marginTop:20,padding:"11px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Andere E-Mail versuchen</button>
+      {done?(<div>
+        <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} Konto erstellt</div>
+        <p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Bitte bestaetigen Sie Ihre E-Mail-Adresse – danach koennen Sie sich anmelden.</p>
+        <button onClick={()=>{setDone(false);setMode("login");}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button>
       </div>):(<div>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Self-Service-Portal</div>
-        <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:6}}>Portal Login</div>
-        <p style={{color:T.textSub,fontSize:".88rem",lineHeight:1.6,marginBottom:24}}>Geben Sie die E-Mail-Adresse ein, mit der Sie bestellt haben.</p>
+        {/* Mode Tabs */}
+        <div style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:24}}>
+          {[{id:"login",label:"Anmelden"},{id:"register",label:"Registrieren"}].map(m=>(
+            <button key={m.id} onClick={()=>{setMode(m.id);setErr("");}} style={{flex:1,padding:"9px",border:"none",background:mode===m.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:mode===m.id?700:500,fontSize:".85rem",color:mode===m.id?T.dark:T.textMuted,boxShadow:mode===m.id?T.sh1:"none",transition:"all .2s"}}>{m.label}</button>
+          ))}
+        </div>
         <Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>
+        <Field label="Passwort" value={pw} onChange={setPw} placeholder={mode==="register"?"Mindestens 6 Zeichen":"Ihr Passwort"} type="password"/>
+        {mode==="register"&&<Field label="Passwort wiederholen" value={pw2} onChange={setPw2} placeholder="Passwort bestaetigen" type="password"/>}
         {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}
-        <button onClick={send} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
-          {loading?"Wird gesendet...":"Login-Link senden \u2192"}
+        <button onClick={submit} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
+          {loading?"...":(mode==="login"?"Anmelden \u2192":"Konto erstellen \u2192")}
         </button>
         <button onClick={onBack} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>
           {"\u2190"} Zur Startseite
@@ -504,8 +521,10 @@ function Portal({session,onLogout}){
     setSaving(true);setSaved(false);
     await supabase.from("orders").update({
       firmenname:order.firmenname,adresse:order.adresse,plz:order.plz,ort:order.ort,
-      telefon:order.telefon,leistungen:order.leistungen,notdienst:order.notdienst,
-      kurzbeschreibung:order.kurzbeschreibung,oeffnungszeiten:order.oeffnungszeiten
+      telefon:order.telefon,leistungen:order.leistungen,extra_leistung:order.extra_leistung,
+      notdienst:order.notdienst,kurzbeschreibung:order.kurzbeschreibung,
+      oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,
+      einsatzgebiet:order.einsatzgebiet,uid_nummer:order.uid_nummer,stil:order.stil,fotos:order.fotos
     }).eq("id",order.id);
     setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),3000);
   };
@@ -560,18 +579,44 @@ function Portal({session,onLogout}){
       {/* Tab: Website */}
       {tab==="website"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
         {!order?<div style={{color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:(<>
+          {/* Grunddaten */}
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Grunddaten</div>
           <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
           <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung Ihres Betriebs" rows={2}/>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-            <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
-            <div style={{display:"grid",gridTemplateColumns:"100px 1fr",gap:10}}>
-              <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
-              <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
-            </div>
+            <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="z.B. Wien & Umgebung"/>
+            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Fuer das Impressum"/>
           </div>
-          <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
-          <Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf der Website angezeigt"/>
-          <div style={{display:"flex",alignItems:"center",gap:12,marginTop:8}}>
+          {/* Kontakt */}
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",margin:"20px 0 14px"}}>Kontakt & Adresse</div>
+          <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
+          <div style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
+            <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
+            <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
+            <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
+          </div>
+          <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten waehlen"/>
+          {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00\nSa: nach Vereinbarung"} rows={2}/>}
+          {/* Leistungen */}
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",margin:"20px 0 14px"}}>Leistungen</div>
+          {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl?(
+            <Checklist label={`${bl.label} – Leistungen`} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen auf Ihrer Website"/>
+          ):(
+            <Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} placeholder={"Leistung 1\nLeistung 2"} rows={4}/>
+          );})()}
+          <Field label="Zusaetzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung, Planung..."/>
+          {/* Design */}
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",margin:"20px 0 14px"}}>Design</div>
+          <StylePicker value={order.stil||"professional"} onChange={upOrder("stil")}/>
+          <div style={{marginTop:16}}>
+            <Toggle label="Fotos auf der Website" checked={!!order.fotos} onChange={upOrder("fotos")} desc="Hero-Foto, Galerie und Teamfoto werden angezeigt"/>
+          </div>
+          {/* Notdienst */}
+          <div style={{marginTop:16}}>
+            <Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf der Website angezeigt"/>
+          </div>
+          {/* Save */}
+          <div style={{display:"flex",alignItems:"center",gap:12,marginTop:24,paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
             <button onClick={save} disabled={saving} style={{padding:"12px 28px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":"pointer",transition:"background .2s"}}>
               {saving?"Wird gespeichert...":"Aenderungen speichern"}
             </button>

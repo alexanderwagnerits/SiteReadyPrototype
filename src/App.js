@@ -1,4 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 /* ═══ DATA ═══ */
 const BRANCHEN = [
@@ -273,7 +279,38 @@ function LandingPage({onStart}){
 
 /* ═══ SUCCESS ═══ */
 function SuccessPage({data,onBack}){
+  const[saving,setSaving]=useState(false);
+  const[saved,setSaved]=useState(false);
+  const[saveErr,setSaveErr]=useState("");
   const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
+  const handleOrder=async()=>{
+    setSaving(true);setSaveErr("");
+    const{error}=await supabase.from("orders").insert({
+      firmenname:data.firmenname,
+      branche:data.branche,
+      branche_label:data.brancheLabel,
+      kurzbeschreibung:data.kurzbeschreibung,
+      bundesland:data.bundesland,
+      leistungen:data.leistungen,
+      extra_leistung:data.extraLeistung,
+      notdienst:data.notdienst,
+      adresse:data.adresse,
+      plz:data.plz,
+      ort:data.ort,
+      telefon:data.telefon,
+      email:data.email,
+      uid_nummer:data.uid,
+      oeffnungszeiten:data.oeffnungszeiten,
+      einsatzgebiet:data.einsatzgebiet,
+      stil:data.stil,
+      fotos:data.fotos,
+      subdomain:sub,
+      status:"pending"
+    });
+    setSaving(false);
+    if(error){setSaveErr("Fehler: "+error.message);}
+    else{setSaved(true);}
+  };
   const included=[
     {t:"Subdomain sofort live",d:`${sub}.siteready.at – sofort erreichbar.`},
     {t:"Texte individuell formuliert",d:"Passend zu Ihrer Branche und Ihrem Betrieb."},
@@ -321,15 +358,22 @@ function SuccessPage({data,onBack}){
               </div>
               <div style={{fontSize:".78rem",color:T.textMuted,marginTop:4}}>12 Monate Mindestlaufzeit &middot; {"\u20AC"}216 / Jahr</div>
             </div>
-            <button disabled style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:"not-allowed",opacity:.45,whiteSpace:"nowrap"}}>Jetzt kaufen &rarr;</button>
+            {saved
+              ?<div style={{display:"flex",alignItems:"center",gap:8,padding:"12px 20px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)"}}>
+                <span style={{color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Bestellung gespeichert</span>
+              </div>
+              :<button onClick={handleOrder} disabled={saving} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":"pointer",whiteSpace:"nowrap",transition:"background .2s"}}>
+                {saving?"Wird gespeichert...":"Jetzt kaufen \u2192"}
+              </button>}
           </div>
+          {saveErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:"#dc2626"}}>{saveErr}</div>}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {included.map((s,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <div style={{width:20,height:20,borderRadius:6,background:T.greenLight,color:T.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"}</div>
               <span style={{fontWeight:600,fontSize:".82rem",color:T.dark}}>{s.t}</span>
             </div>)}
           </div>
-          <div style={{marginTop:12,textAlign:"center",fontSize:".72rem",color:T.textMuted}}>Prototyp – Bezahlung noch nicht aktiv</div>
+          <div style={{marginTop:12,textAlign:"center",fontSize:".72rem",color:T.textMuted}}>Bezahlung folgt – Bestellung wird gespeichert</div>
         </div>
         {/* Portal */}
         <div style={{background:T.bg,borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`}}>

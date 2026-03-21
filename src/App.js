@@ -286,16 +286,19 @@ function SuccessPage({data,onBack}){
   const handleOrder=async()=>{
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
-    // 1. Bestellung in Supabase speichern
-    const{data:inserted,error}=await supabase.from("orders").insert({
+    // 1. Bestellung in Supabase speichern (UUID client-seitig generieren)
+    const orderId=crypto.randomUUID();
+    const{error}=await supabase.from("orders").insert({
+      id:orderId,
       firmenname:data.firmenname,branche:data.branche,branche_label:data.brancheLabel,
       kurzbeschreibung:data.kurzbeschreibung,bundesland:data.bundesland,
       leistungen:data.leistungen,extra_leistung:data.extraLeistung,notdienst:data.notdienst,
       adresse:data.adresse,plz:data.plz,ort:data.ort,telefon:data.telefon,email:data.email,
       uid_nummer:data.uid,oeffnungszeiten:data.oeffnungszeiten,einsatzgebiet:data.einsatzgebiet,
       stil:data.stil,fotos:data.fotos,subdomain:sub,status:"pending"
-    }).select("id").single();
+    });
     if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
+    const inserted={id:orderId};
     // 2. Stripe Checkout Session erstellen
     const resp=await fetch("/api/create-checkout",{
       method:"POST",

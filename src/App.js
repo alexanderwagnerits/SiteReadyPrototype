@@ -529,6 +529,22 @@ function Portal({session,onLogout}){
     if(!supabase||!session?.user?.email)return;
     supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1)
       .then(({data})=>{if(data&&data.length>0)setOrder(data[0]);});
+    // Existierende Assets laden
+    const uid=session.user.id;
+    const keys=["logo","hero","foto1","foto2","team"];
+    const exts=["jpg","jpeg","png","webp","gif"];
+    keys.forEach(async key=>{
+      for(const ext of exts){
+        const path=`${uid}/${key}.${ext}`;
+        const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
+        if(data?.publicUrl){
+          try{
+            const r=await fetch(data.publicUrl,{method:"HEAD"});
+            if(r.ok){setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));break;}
+          }catch(_){}
+        }
+      }
+    });
   },[session]);
 
   const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));

@@ -1337,7 +1337,36 @@ function Admin({adminKey}){
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Leistungen</div>
           {sel.leistungen.map((l,i)=><div key={i} style={{fontSize:".82rem",color:T.dark,padding:"4px 0",borderBottom:`1px solid ${T.bg3}`}}>{l}</div>)}
         </div>}
+        {/* Deployment Checkliste */}
         <div style={{marginTop:16}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Deployment-Status</div>
+          {(()=>{
+            const s=sel.status;
+            const built=["in_arbeit","review","live"].includes(s);
+            const reviewed=["review","live"].includes(s);
+            const live=s==="live";
+            const checks=[
+              {l:"Website erstellt",ok:built,warn:!built&&s==="paid"},
+              {l:"SSL-Zertifikat",ok:built},
+              {l:"Impressum (ECG)",ok:built},
+              {l:"DSGVO-Erklaerung",ok:built},
+              {l:"robots.txt",ok:built},
+              {l:"sitemap.xml",ok:built},
+              {l:"Google-Indexierung",ok:reviewed},
+              {l:"Domain aktiv",ok:live},
+            ];
+            return checks.map(({l,ok,warn})=>{
+              const color=ok?T.green:warn?"#f59e0b":T.textMuted;
+              const icon=ok?"\u2713":warn?"\u23F3":"\u2013";
+              const bg=ok?T.greenLight:warn?"#fef3c7":T.bg;
+              return(<div key={l} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",borderRadius:T.rSm,background:bg,marginBottom:3}}>
+                <span style={{fontSize:".78rem",color:T.dark}}>{l}</span>
+                <span style={{fontSize:".78rem",fontWeight:700,color,fontFamily:T.mono}}>{icon}</span>
+              </div>);
+            });
+          })()}
+        </div>
+        <div style={{marginTop:14}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>
           <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={3} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
           <button onClick={()=>saveNotiz(sel.id)} style={{marginTop:6,padding:"7px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>

@@ -286,31 +286,27 @@ function SuccessPage({data,onBack}){
   const handleOrder=async()=>{
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
-    const{error}=await supabase.from("orders").insert({
-      firmenname:data.firmenname,
-      branche:data.branche,
-      branche_label:data.brancheLabel,
-      kurzbeschreibung:data.kurzbeschreibung,
-      bundesland:data.bundesland,
-      leistungen:data.leistungen,
-      extra_leistung:data.extraLeistung,
-      notdienst:data.notdienst,
-      adresse:data.adresse,
-      plz:data.plz,
-      ort:data.ort,
-      telefon:data.telefon,
-      email:data.email,
-      uid_nummer:data.uid,
-      oeffnungszeiten:data.oeffnungszeiten,
-      einsatzgebiet:data.einsatzgebiet,
-      stil:data.stil,
-      fotos:data.fotos,
-      subdomain:sub,
-      status:"pending"
+    // 1. Bestellung in Supabase speichern
+    const{data:inserted,error}=await supabase.from("orders").insert({
+      firmenname:data.firmenname,branche:data.branche,branche_label:data.brancheLabel,
+      kurzbeschreibung:data.kurzbeschreibung,bundesland:data.bundesland,
+      leistungen:data.leistungen,extra_leistung:data.extraLeistung,notdienst:data.notdienst,
+      adresse:data.adresse,plz:data.plz,ort:data.ort,telefon:data.telefon,email:data.email,
+      uid_nummer:data.uid,oeffnungszeiten:data.oeffnungszeiten,einsatzgebiet:data.einsatzgebiet,
+      stil:data.stil,fotos:data.fotos,subdomain:sub,status:"pending"
+    }).select("id").single();
+    if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
+    // 2. Stripe Checkout Session erstellen
+    const resp=await fetch("/api/create-checkout",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({orderId:inserted.id,firmenname:data.firmenname,email:data.email})
     });
+    const json=await resp.json();
     setSaving(false);
-    if(error){setSaveErr("Fehler: "+error.message);}
-    else{setSaved(true);}
+    if(json.error){setSaveErr("Zahlung: "+json.error);return;}
+    // 3. Zu Stripe weiterleiten
+    window.location.href=json.url;
   };
   const included=[
     {t:"Subdomain sofort live",d:`${sub}.siteready.at – sofort erreichbar.`},
@@ -374,7 +370,7 @@ function SuccessPage({data,onBack}){
               <span style={{fontWeight:600,fontSize:".82rem",color:T.dark}}>{s.t}</span>
             </div>)}
           </div>
-          <div style={{marginTop:12,textAlign:"center",fontSize:".72rem",color:T.textMuted}}>Bezahlung folgt – Bestellung wird gespeichert</div>
+          <div style={{marginTop:12,textAlign:"center",fontSize:".72rem",color:T.textMuted}}>Sichere Zahlung via Stripe &middot; Karte, EPS, PayPal</div>
         </div>
         {/* Portal */}
         <div style={{background:T.bg,borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`}}>
@@ -686,8 +682,14 @@ export default function App(){
   const[page,setPage]=useState("landing");
   const[data,setData]=useState(INIT);
   const[session,setSession]=useState(null);
+  const[paymentStatus,setPaymentStatus]=useState(null); // "success"|"canceled"|null
 
   useEffect(()=>{
+    // Stripe Redirect abfangen
+    const p=new URLSearchParams(window.location.search);
+    if(p.get("payment")==="success"){setPaymentStatus("success");window.history.replaceState({},"","/");}
+    if(p.get("payment")==="canceled"){setPaymentStatus("canceled");window.history.replaceState({},"","/");}
+    // Supabase Auth
     if(!supabase)return;
     supabase.auth.getSession().then(({data:{session}})=>{
       setSession(session);
@@ -702,6 +704,24 @@ export default function App(){
 
   if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing");}}/>;
   if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
+
+  if(paymentStatus==="success")return(
+    <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16,textAlign:"center",padding:"0 24px"}}><style>{css}</style>
+      <div style={{width:64,height:64,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.8rem",marginBottom:8}}>{"\u2713"}</div>
+      <h1 style={{fontSize:"1.8rem",fontWeight:800,color:T.dark,margin:0,letterSpacing:"-.03em"}}>Bezahlung erfolgreich!</h1>
+      <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,maxWidth:420,margin:0}}>Vielen Dank. Ihre Website wird jetzt eingerichtet. Sie erhalten eine E-Mail mit dem Zugang zu Ihrem Self-Service-Portal.</p>
+      <button onClick={()=>setPage("portal-login")} style={{marginTop:8,padding:"13px 28px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:"pointer"}}>Zum Portal &rarr;</button>
+    </div>
+  );
+
+  if(paymentStatus==="canceled")return(
+    <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16,textAlign:"center",padding:"0 24px"}}><style>{css}</style>
+      <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark}}>Zahlung abgebrochen</div>
+      <p style={{color:T.textSub,fontSize:".9rem",maxWidth:380}}>Ihre Bestellung wurde noch nicht abgeschlossen. Sie koennen es jederzeit erneut versuchen.</p>
+      <button onClick={()=>setPaymentStatus(null)} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:"pointer"}}>Zurueck zur Startseite</button>
+    </div>
+  );
+
   if(page==="landing")return<LandingPage onStart={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;
   if(page==="success")return<SuccessPage data={data} onBack={()=>setPage("form")}/>;
   return<Questionnaire data={data} setData={setData} onComplete={()=>setPage("success")} onBack={()=>setPage("landing")}/>;

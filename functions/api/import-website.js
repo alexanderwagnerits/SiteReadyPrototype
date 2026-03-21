@@ -83,6 +83,12 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - ort: Ortsname (leer wenn nicht gefunden)
 - adresse: Strassenname mit Hausnummer (leer wenn nicht gefunden)
 - kurzbeschreibung: Kurze Beschreibung was das Unternehmen macht (max 200 Zeichen, leer wenn nicht gefunden)
+- bundesland: Oesterreichisches Bundesland (wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld, leer wenn nicht erkennbar)
+- unternehmensform: Rechtsform (eu/einzelunternehmen/gmbh/og/kg/ag/verein/gesnbr/sonstige, leer wenn nicht erkennbar)
+- uid: UID-Nummer im Format ATU12345678 (leer wenn nicht gefunden)
+- firmenbuchnummer: Firmenbuchnummer z.B. FN 123456 a (leer wenn nicht gefunden)
+- firmenbuchgericht: Firmenbuchgericht z.B. HG Wien (leer wenn nicht gefunden)
+- gisazahl: GISA-Zahl (Ziffern, leer wenn nicht gefunden)
 
 Website-Text:
 ${excerpt}`,
@@ -114,6 +120,12 @@ ${excerpt}`,
       ort: extracted.ort || "",
       adresse: extracted.adresse || "",
       kurzbeschreibung: extracted.kurzbeschreibung || "",
+      bundesland: extracted.bundesland || "",
+      unternehmensform: extracted.unternehmensform || "",
+      uid: extracted.uid || "",
+      firmenbuchnummer: extracted.firmenbuchnummer || "",
+      firmenbuchgericht: extracted.firmenbuchgericht || "",
+      gisazahl: extracted.gisazahl || "",
     });
 
   } catch(e) {

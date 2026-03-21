@@ -69,12 +69,36 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 }
 @media(max-width:560px){
   .sp-content{padding:16px!important}
+}
+@media(max-width:960px){
+  .ad-wrap{flex-direction:column!important;height:auto!important;min-height:calc(100vh - 56px)!important}
+  .ad-sidebar{width:100%!important;display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;padding:6px 8px!important;border-right:none!important;border-bottom:1px solid #e8ebf0!important;gap:2px!important}
+  .ad-sidebar button{flex:1;width:auto!important;text-align:center!important;padding:8px 10px!important}
+  .ad-status-sec{display:none!important}
+  .ad-main{padding:16px!important}
+  .sp-incl-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:560px){
+  .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important}
+  .lp-cta-section{padding:72px 0!important}
+  .pt-info-row{grid-template-columns:1fr!important}
+  .pt-field-grid{grid-template-columns:1fr!important}
+  .pt-tab-nav{width:100%!important;overflow-x:auto!important}
+  .pt-addr-grid{grid-template-columns:1fr!important}
+}
+.lp-hamburger{display:none}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:960px){
+  .lp-hamburger{display:flex!important;align-items:center;justify-content:center;width:40px;height:40px;border:none;background:transparent;cursor:pointer;border-radius:8px;padding:0;flex-shrink:0}
+  .lp-mob-menu{display:block!important}
 }`;
 
 /* ═══ LANDING PAGE ═══ */
 function LandingPage({onStart,onPortal}){
   const[scrolled,setScrolled]=useState(false);
-  useEffect(()=>{const h=()=>setScrolled(window.scrollY>30);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
+  const[menuOpen,setMenuOpen]=useState(false);
+  useEffect(()=>{const h=()=>{setScrolled(window.scrollY>30);if(window.scrollY>30)setMenuOpen(false)};window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
+  const closeMenu=()=>setMenuOpen(false);
   const W=({children,s})=><div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",...s}}>{children}</div>;
   const Sec=({children,id,alt,s})=><section id={id} className="lp-sec" style={{padding:"112px 0",background:alt?"#f7f8fa":"#fff",...s}}><W>{children}</W></section>;
   const Label=({children})=><div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>{children}</div>;
@@ -94,8 +118,23 @@ function LandingPage({onStart,onPortal}){
         <button onClick={onPortal} style={{background:"transparent",color:T.textSub,padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:".85rem",border:"none",cursor:"pointer",fontFamily:T.font}}>Kunden-Portal</button>
         <button onClick={onStart} style={{background:T.dark,color:"#fff",padding:"10px 22px",borderRadius:8,fontWeight:700,fontSize:".88rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em"}}>Jetzt starten</button>
       </div>
+      <button className="lp-hamburger" onClick={()=>setMenuOpen(o=>!o)} aria-label="Menue" style={{color:T.dark}}>
+        {menuOpen
+          ?<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          :<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
+      </button>
     </div>
   </nav>
+  {/* MOBILE MENU */}
+  {menuOpen&&<div className="lp-mob-menu" style={{display:"none",position:"fixed",top:68,left:0,right:0,zIndex:99,background:"#fff",borderBottom:"1px solid rgba(0,0,0,.08)",boxShadow:"0 12px 40px rgba(0,0,0,.1)",animation:"slideDown .22s cubic-bezier(.16,1,.3,1)"}}>
+    <div style={{padding:"16px 24px",display:"flex",flexDirection:"column",gap:2}}>
+      {[["#problem","Problem"],["#how","So funktionierts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} onClick={closeMenu} style={{fontSize:".95rem",fontWeight:500,color:T.dark,textDecoration:"none",padding:"12px 8px",borderBottom:"1px solid rgba(0,0,0,.05)"}}>{l}</a>)}
+      <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:12}}>
+        <button onClick={()=>{closeMenu();onPortal();}} style={{padding:"12px",borderRadius:8,fontWeight:600,fontSize:".92rem",border:`1.5px solid ${T.bg3}`,background:"#fff",color:T.dark,cursor:"pointer",fontFamily:T.font}}>Kunden-Portal</button>
+        <button onClick={()=>{closeMenu();onStart();}} style={{padding:"12px",borderRadius:8,fontWeight:700,fontSize:".92rem",border:"none",background:T.dark,color:"#fff",cursor:"pointer",fontFamily:T.font}}>Jetzt starten &rarr;</button>
+      </div>
+    </div>
+  </div>}
 
   {/* HERO — Split Layout */}
   <section style={{minHeight:"100vh",display:"flex",alignItems:"center",paddingTop:68,background:"#fff",position:"relative",overflow:"hidden"}}>
@@ -262,7 +301,7 @@ function LandingPage({onStart,onPortal}){
   </Sec>
 
   {/* CTA */}
-  <section style={{padding:"120px 0",textAlign:"center",position:"relative",overflow:"hidden",background:T.dark}}>
+  <section className="lp-cta-section" style={{padding:"120px 0",textAlign:"center",position:"relative",overflow:"hidden",background:T.dark}}>
     <div style={{position:"absolute",top:"-40%",left:"15%",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%)",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1}}>
       <h2 style={{fontSize:"clamp(2.2rem,4.5vw,3.4rem)",fontWeight:800,lineHeight:1.05,letterSpacing:"-.04em",color:"#fff",marginBottom:18}}>Bereit fuer deine Website?</h2>
@@ -273,7 +312,7 @@ function LandingPage({onStart,onPortal}){
 
   {/* FOOTER */}
   <footer style={{padding:"32px 0",borderTop:"1px solid rgba(0,0,0,.06)",background:"#fff"}}>
-    <W><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:8}}><img src="/icon.png" alt="SR" style={{height:16,opacity:.35}}/><span style={{fontSize:".82rem",color:T.textMuted}}>&copy; 2026 SiteReady.at</span></div><div style={{display:"flex",gap:24}}>{["Impressum","Datenschutz","Kontakt"].map(l=><a key={l} href="#" style={{fontSize:".82rem",color:T.textMuted,textDecoration:"none"}}>{l}</a>)}</div></div></W>
+    <W><div className="lp-footer-flex" style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:8}}><img src="/icon.png" alt="SR" style={{height:16,opacity:.35}}/><span style={{fontSize:".82rem",color:T.textMuted}}>&copy; 2026 SiteReady.at</span></div><div style={{display:"flex",gap:24}}>{["Impressum","Datenschutz","Kontakt"].map(l=><a key={l} href="#" style={{fontSize:".82rem",color:T.textMuted,textDecoration:"none"}}>{l}</a>)}</div></div></W>
   </footer>
   </div>);
 }
@@ -370,7 +409,7 @@ function SuccessPage({data,onBack}){
               </button>}
           </div>
           {saveErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:"#dc2626"}}>{saveErr}</div>}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          <div className="sp-incl-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {included.map((s,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <div style={{width:20,height:20,borderRadius:6,background:T.greenLight,color:T.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"}</div>
               <span style={{fontWeight:600,fontSize:".82rem",color:T.dark}}>{s.t}</span>
@@ -616,7 +655,7 @@ function Portal({session,onLogout}){
   );
 
   const InfoRow=({label,value})=>(
-    <div style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
+    <div className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
       <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600,paddingTop:1}}>{label}</span>
       <span style={{fontSize:".88rem",color:value?T.dark:T.textMuted}}>{value||"—"}</span>
     </div>
@@ -649,7 +688,7 @@ function Portal({session,onLogout}){
         <h1 style={{fontSize:"1.6rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Willkommen{order?.firmenname?", "+order.firmenname:""}</h1>
       </div>
       {/* Tab Nav */}
-      <div style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
+      <div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
       </div>
 
@@ -673,11 +712,11 @@ function Portal({session,onLogout}){
           <SectionHeader id="firmenbuch" label="Unternehmen & Impressum"/>
           {editSection==="firmenbuch"?(<>
             <Dropdown label="Unternehmensform" value={order.unternehmensform||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform waehlen"/>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <Field label="UID-Nummer / ATU" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional"/>
               <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456 a" hint="Optional"/>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="z.B. HG Wien" hint="Optional"/>
               <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="z.B. 12345678" hint="Optional"/>
             </div>
@@ -694,7 +733,7 @@ function Portal({session,onLogout}){
           <SectionHeader id="kontakt" label="Kontakt & Adresse"/>
           {editSection==="kontakt"?(<>
             <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
-            <div style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
+            <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
               <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
               <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
               <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
@@ -971,7 +1010,7 @@ function Admin({adminKey}){
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   useEffect(()=>{if(tab==="apis"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
-  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"}];
+  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"},{id:"kosten",label:"Kosten"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -984,11 +1023,11 @@ function Admin({adminKey}){
       <button onClick={load} style={{padding:"6px 16px",border:"1px solid rgba(255,255,255,.15)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.6)",cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aktualisieren</button>
     </div>
 
-    <div style={{display:"flex",height:"calc(100vh - 56px)"}}>
+    <div className="ad-wrap" style={{display:"flex",height:"calc(100vh - 56px)"}}>
       {/* Sidebar */}
-      <div style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
+      <div className="ad-sidebar" style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{display:"block",width:"100%",padding:"11px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>{t.label}</button>)}
-        <div style={{margin:"20px 16px 8px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
+        <div className="ad-status-sec" style={{margin:"20px 16px 8px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
           <div style={{fontSize:".68rem",color:T.textMuted,fontWeight:700,letterSpacing:".08em",marginBottom:8}}>STATUS</div>
           {["alle",...STATUS_FLOW].map(s=>{const c=orders.filter(o=>s==="alle"||o.status===s).length;return(<button key={s} onClick={()=>{setFilter(s);setTab("bestellungen");}} style={{display:"flex",justifyContent:"space-between",width:"100%",padding:"7px 4px",border:"none",background:"transparent",color:filter===s&&tab==="bestellungen"?T.accent:T.textMuted,cursor:"pointer",fontSize:".78rem",fontWeight:filter===s&&tab==="bestellungen"?700:400,fontFamily:T.font}}>
             <span>{s==="alle"?"Alle":STATUS_LABELS[s]}</span><span style={{background:T.bg3,borderRadius:10,padding:"1px 7px",fontSize:".7rem"}}>{c}</span>
@@ -997,7 +1036,7 @@ function Admin({adminKey}){
       </div>
 
       {/* Main */}
-      <div style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
+      <div className="ad-main" style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
         {loading&&<div style={{textAlign:"center",padding:60,color:T.textMuted}}>Wird geladen...</div>}
 
         {/* Tab: Bestellungen */}
@@ -1137,6 +1176,91 @@ function Admin({adminKey}){
             </div>
           </div>}
         </div>)}
+        {/* Tab: Kosten */}
+        {!loading&&tab==="kosten"&&(()=>{
+          const now=new Date();
+          const months6=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleDateString("de-AT",{month:"short",year:"2-digit"}),key:`${d.getFullYear()}-${d.getMonth()}`};});
+          const mData=months6.map(m=>({...m,count:orders.filter(o=>{if(!o.created_at)return false;const d=new Date(o.created_at);return`${d.getFullYear()}-${d.getMonth()}`===m.key;}).length}));
+          const maxC=Math.max(1,...mData.map(m=>m.count));
+          const liveN=orders.filter(o=>o.status==="live").length;
+          const paidN=orders.filter(o=>o.status!=="pending").length;
+          const mrr=liveN*18;
+          const stripeFee=Math.round((mrr*0.014+paidN*0.25)*100)/100;
+          const netto=Math.round((mrr-stripeFee)*100)/100;
+          const sCounts=STATUS_FLOW.map(s=>({s,label:STATUS_LABELS[s],value:orders.filter(o=>o.status===s).length,color:STATUS_COLORS[s]})).filter(d=>d.value>0);
+          const tot=Math.max(1,orders.length);
+          const p2c=(cx,cy,r,deg)=>{const a=(deg-90)*Math.PI/180;return{x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)};};
+          const arc=(cx,cy,iR,oR,s,e)=>{if(e-s>=359.99)e=359.98;const l=e-s>180?1:0;const p1=p2c(cx,cy,oR,s),p2=p2c(cx,cy,oR,e),p3=p2c(cx,cy,iR,e),p4=p2c(cx,cy,iR,s);return`M${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${oR},${oR} 0 ${l} 1 ${p2.x.toFixed(1)},${p2.y.toFixed(1)} L${p3.x.toFixed(1)},${p3.y.toFixed(1)} A${iR},${iR} 0 ${l} 0 ${p4.x.toFixed(1)},${p4.y.toFixed(1)} Z`;};
+          let sa=0;const slices=sCounts.map(d=>{const a=(d.value/tot)*360;const sl={...d,sa,ea:sa+a};sa+=a;return sl;});
+          return(<div>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:20}}>Kosten & Auslastung</h2>
+            {/* KPI Cards */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+              {[{label:"MRR (brutto)",val:`\u20AC${mrr}`,sub:`${liveN} aktive Kunden`,c:T.green},{label:"Stripe-Gebuehren",val:`\u20AC${stripeFee.toFixed(2)}`,sub:"1,4% + \u20AC0,25/Tx",c:T.orange},{label:"Netto-MRR",val:`\u20AC${netto}`,sub:"nach Transaktionsgeb.",c:T.accent},{label:"Bestellungen",val:orders.length,sub:`${paidN} bezahlt`,c:T.dark}].map((k,i)=>(
+                <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                  <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.label}</div>
+                  <div style={{fontSize:"1.7rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.val}</div>
+                  <div style={{fontSize:".73rem",color:T.textMuted,marginTop:5}}>{k.sub}</div>
+                </div>))}
+            </div>
+            {/* Charts */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+              {/* Bar Chart */}
+              <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:18}}>Neue Bestellungen &mdash; letzte 6 Monate</div>
+                <svg viewBox="0 0 340 170" style={{width:"100%",overflow:"visible"}}>
+                  <line x1="0" y1="148" x2="340" y2="148" stroke={T.bg3} strokeWidth="1"/>
+                  {mData.map((m,i)=>{const bW=38,gap=18,x=i*(bW+gap)+10,maxH=120,bH=m.count===0?2:Math.max(8,Math.round((m.count/maxC)*maxH)),y=148-bH;return(<g key={i}>
+                    <rect x={x} y={y} width={bW} height={bH} rx={5} fill={m.count>0?T.accent:"#e8ebf0"} opacity={m.count>0?.85:1}/>
+                    {m.count>0&&<text x={x+bW/2} y={y-7} textAnchor="middle" fontSize="11" fontWeight="700" fill={T.accent} fontFamily={T.mono}>{m.count}</text>}
+                    <text x={x+bW/2} y={163} textAnchor="middle" fontSize="10" fill={T.textMuted}>{m.label}</text>
+                  </g>);})}
+                </svg>
+              </div>
+              {/* Donut Chart */}
+              <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:18}}>Pipeline Auslastung</div>
+                <div style={{display:"flex",alignItems:"center",gap:24}}>
+                  <svg viewBox="0 0 200 200" style={{width:150,flexShrink:0}}>
+                    {slices.length>0?slices.map((sl,i)=><path key={i} d={arc(100,100,52,80,sl.sa,sl.ea)} fill={sl.color} opacity=".9"/>):<circle cx={100} cy={100} r={80} fill="#e8ebf0"/>}
+                    <circle cx={100} cy={100} r={52} fill="#fff"/>
+                    <text x={100} y={94} textAnchor="middle" fontSize="24" fontWeight="800" fill={T.dark} fontFamily={T.mono}>{orders.length}</text>
+                    <text x={100} y={112} textAnchor="middle" fontSize="10" fill={T.textMuted}>gesamt</text>
+                  </svg>
+                  <div style={{display:"flex",flexDirection:"column",gap:8,flex:1}}>
+                    {sCounts.length>0?sCounts.map(d=>(
+                      <div key={d.s} style={{display:"flex",alignItems:"center",gap:8}}>
+                        <span style={{width:10,height:10,borderRadius:"50%",background:d.color,flexShrink:0,display:"inline-block"}}/>
+                        <span style={{fontSize:".8rem",color:T.dark,flex:1}}>{d.label}</span>
+                        <span style={{fontSize:".8rem",fontWeight:700,color:d.color,fontFamily:T.mono}}>{d.value}</span>
+                      </div>)):<span style={{fontSize:".82rem",color:T.textMuted}}>Keine Daten</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Kostentabelle */}
+            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Monatliche Kostenbasis (Schaetzung)</div>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:".84rem"}}>
+                <thead><tr>{["Posten","Art","Kosten/Mo","Hinweis"].map(h=><th key={h} style={{textAlign:"left",padding:"8px 14px",fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {[{p:"Cloudflare Pages",a:"Hosting & Functions",k:"\u20AC0",s:"Free Tier",ok:true},{p:"Supabase",a:"Datenbank & Auth & Storage",k:"\u20AC0",s:"Free (500 MB)",ok:true},{p:"Stripe",a:"Zahlungsabwicklung",k:`\u20AC${stripeFee.toFixed(2)}`,s:"1,4% + \u20AC0,25/Transaktion",ok:true},{p:"Anthropic Claude",a:"Website-Import KI",k:"~\u20AC0,001",s:"Pro Import-Vorgang",ok:true},{p:"Domain siteready.at",a:"Jaehrliche Registrierung",k:"~\u20AC0,83",s:"~\u20AC10 / Jahr",ok:true}].map((r,i)=>(
+                    <tr key={i} style={{background:i%2===0?"#fff":"#fafbfc"}}>
+                      <td style={{padding:"10px 14px",fontWeight:600,color:T.dark}}>{r.p}</td>
+                      <td style={{padding:"10px 14px",color:T.textSub,fontSize:".82rem"}}>{r.a}</td>
+                      <td style={{padding:"10px 14px",fontWeight:700,color:T.dark,fontFamily:T.mono}}>{r.k}</td>
+                      <td style={{padding:"10px 14px"}}><span style={{fontSize:".72rem",padding:"3px 9px",borderRadius:4,background:r.ok?T.greenLight:"#fef2f2",color:r.ok?T.green:T.red,fontWeight:700}}>{r.s}</span></td>
+                    </tr>))}
+                  <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}>
+                    <td colSpan={2} style={{padding:"12px 14px",fontWeight:800,color:T.dark}}>Gesamt variable Kosten</td>
+                    <td style={{padding:"12px 14px",fontWeight:800,color:T.dark,fontFamily:T.mono}}>{"\u20AC"}{(0.83+stripeFee).toFixed(2)}</td>
+                    <td style={{padding:"12px 14px"}}><span style={{fontSize:".72rem",padding:"3px 9px",borderRadius:4,background:T.accentLight,color:T.accent,fontWeight:700}}>Netto-MRR: {"\u20AC"}{netto}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>);
+        })()}
       </div>
 
       {/* Detail Drawer */}

@@ -2,7 +2,7 @@
 
 > Dieses Dokument ist die zentrale Referenz fuer den aktuellen Projektstand.
 > Lies es IMMER zuerst, bevor du am Code arbeitest.
-> Letzte Aktualisierung: 20. Maerz 2026
+> Letzte Aktualisierung: 21. Maerz 2026
 
 ---
 
@@ -10,7 +10,7 @@
 
 SiteReady.at ist ein vollautomatischer Website-Service fuer Einzelunternehmer und Kleinstbetriebe in Oesterreich. Der Kunde beantwortet einen kurzen Fragebogen und erhaelt eine fertige, SEO-optimierte Mini-Website - inklusive Impressum (ECG) und DSGVO-Erklaerung.
 
-**Kernversprechen:** Kein Builder. Kein Chat. Keine Entscheidungen. Nur 10 Fragen - fertig.
+**Kernversprechen:** Kein Builder. Kein Chat. Keine Entscheidungen. Nur ein paar Fragen - fertig.
 
 Es ist KEIN Website-Builder - es ist ein Website-Service. Der Nutzer trifft keine Design-Entscheidungen, er beantwortet nur Fragen.
 
@@ -34,126 +34,350 @@ Es ist KEIN Website-Builder - es ist ein Website-Service. Der Nutzer trifft kein
 
 ### Technologie
 - **Framework:** React (Create React App) - Produktionsziel ist Nuxt.js, Prototyp laeuft auf React
-- **Deployment:** Cloudflare Pages via GitHub Repo
+- **Deployment:** Cloudflare Pages via GitHub Repo (automatisch bei Push auf main)
 - **Repo:** github.com/alexanderwagnerits/SiteReadyPrototype
-- **Alles in einer Datei:** src/App.js (gesamte App)
+- **Live-URL:** https://sitereadyprototype.pages.dev
+- **Admin-URL:** https://sitereadyprototype.pages.dev/admin?key=[REACT_APP_ADMIN_KEY]
+- **Alles in einer Datei:** src/App.js (gesamte App inkl. aller Komponenten)
 
 ### Projektstruktur
 ```
 /
 +-- package.json
-+-- BRIEFING.md          (dieses Dokument)
-+-- CLAUDE.md            (automatischer Kontext fuer Claude Code)
++-- .env.local              (lokale Env Vars - nicht im Git)
 +-- public/
 |   +-- index.html
-|   +-- logo.png         (SiteReady Logo - Wortmarke)
-|   +-- icon.png         (SiteReady Icon - SR Monogramm)
+|   +-- logo.png            (SiteReady Logo - Wortmarke)
+|   +-- icon.png            (SiteReady Icon - SR Monogramm)
+|   +-- _redirects          (Cloudflare SPA Routing: /* /index.html 200)
 +-- src/
-|   +-- index.js         (React Root)
-|   +-- App.js           (GESAMTE APP)
-+-- docs/                (Konzeptdokumente)
+|   +-- index.js            (React Root)
+|   +-- App.js              (GESAMTE APP - alle Komponenten)
++-- functions/
+|   +-- api/
+|       +-- import-website.js      (KI Website-Import via Claude)
+|       +-- create-checkout.js     (Stripe Checkout Session)
+|       +-- get-invoices.js        (Stripe Rechnungen)
+|       +-- stripe-webhook.js      (Stripe Payment Confirmation)
+|       +-- admin-data.js          (Admin: alle Orders + Tickets laden)
+|       +-- admin-update.js        (Admin: Order/Ticket Status aendern)
+|       +-- admin-system.js        (Admin: API Health Monitoring)
++-- docs/
+|   +-- BRIEFING.md         (dieses Dokument)
 ```
 
-### App-Architektur (in App.js)
-
-Die App hat 3 Screens, gesteuert durch State (page):
-
-1. **LandingPage** (page === "landing")
-   - Bitpanda-inspiriertes Premium-Design, heller Hintergrund
-   - Split-Hero: Text links, Browser-Mockup rechts
-   - Sektionen: Hero, Problem, How-it-works (5 Schritte), Design-Varianten, Pricing, Vergleich, Why-Now, CTA
-   - Vollstaendig responsive (CSS Media Queries, Breakpoints 960px + 560px)
-   - Button "Jetzt starten" -> page = "form"
-
-2. **Questionnaire** (page === "form")
-   - Links: Formular-Panel mit Schritt 0 (Website-Import) + Steps 1-4
-   - Rechts: Live-Preview der generierten Kunden-Website
-   - Mobile: Toggle zwischen Formular und Vorschau
-   - Button "Website erstellen" -> page = "success"
-   - Button "Zurueck" -> page = "landing"
-
-3. **SuccessPage** (page === "success")
-   - Bestelluebersicht VOR der Bezahlung (nicht nach)
-   - Zeigt was im Paket enthalten ist + Preis + Kaufbutton (im Prototyp deaktiviert)
-   - Self-Service-Portal Sektion mit optionalen Features nach dem Kauf
-   - Passt auf einen Screen ohne Scrollen (height: 100vh)
+### App-Routen (URL Routing via window.history.pushState)
+| URL | Seite |
+|---|---|
+| `/` | LandingPage |
+| `/start` | Questionnaire (Fragebogen) |
+| `/bestellung` | SuccessPage (Bestelluebersicht) |
+| `/login` | PortalLogin |
+| `/portal` | Self-Service-Portal |
+| `/admin?key=...` | Admin Dashboard |
 
 ---
 
-## 4. Fragebogen-Flow (UMGESETZT)
+## 4. App-Architektur (Komponenten in App.js)
 
-### Schritt 0: Website-Import (optionaler Vorschritt - UMGESETZT)
+### 4.1 LandingPage
+- Bitpanda-inspiriertes Premium-Design, heller Hintergrund
+- Split-Hero: Text links, Browser-Mockup rechts
+- Feature-Badges: Live-Vorschau, Impressum ECG, DSGVO, SEO, SSL, Self-Service-Portal, etc.
+- Sektionen: Hero, Problem, How-it-works (5 Schritte), Design-Varianten, Pricing, Vergleich, Why-Now, CTA
+- Vollstaendig responsive (CSS Media Queries, Breakpoints 960px + 560px)
+- Button "Jetzt starten" -> /start, Button "Portal" -> /login
 
-Vor dem eigentlichen Fragebogen wird der Kunde gefragt:
+### 4.2 Questionnaire (Fragebogen)
+Links: Formular mit Website-Import + 5 Schritte. Rechts: Live-Preview der Kunden-Website.
 
-**"Haben Sie schon eine Website, von der wir Ihre Informationen abrufen koennen?"**
+**Schritt 0: Website-Import (optional)**
+- Kunde gibt bestehende Website-URL ein
+- System ladt Seite via direkten Fetch + Jina AI Fallback
+- Claude AI (claude-haiku) extrahiert strukturierte Daten
+- Befuellt alle Felder automatisch vor (inkl. Unternehmensform, UID, Bundesland)
+- Zwei Hinweis-Boxen: Datenschutz + "Daten pruefen"
+- Button "Ohne Import starten" ueberspringt diesen Schritt
 
-- **Ja:** Kunde gibt URL ein. System extrahiert Daten und befuellt Formularfelder automatisch vor.
-- **Nein / Ueberspringen:** Button "Ohne Import starten" -> normaler Fragebogen mit leeren Feldern.
-
-**Wichtig:**
-- Das ist KEIN separater Weg - optionaler Vorschritt der den normalen Fragebogen vorausfuellt
-- Im Prototyp wird die Extraktion simuliert (setTimeout 2s, befuellt mit Elektriker-Beispieldaten)
-- Der Kunde kann alle vorausgefuellten Felder frei aendern/korrigieren
-
-### Schritt 1: Grunddaten
+**Schritt 1: Grunddaten (01)**
 - Firmenname
-- Branche (Dropdown mit 15 Handwerksbranchen)
-- Kurzbeschreibung (optional, 2-3 Saetze)
-- Bundesland
+- Branche (Dropdown mit Handwerksbranchen)
+- Kurzbeschreibung (optional)
+- Bundesland (setzt Einsatzgebiet automatisch)
 
-### Schritt 2: Leistungen
+**Schritt 2: Leistungen (02)**
 - Branchenspezifische Leistungen als Checklist
-- Zusaetzliche Leistung (Freitext, optional)
+- Freitext fuer zusaetzliche Leistungen
 - 24h Notdienst Toggle
 
-### Schritt 3: Kontakt
-- Strasse & Hausnummer
-- PLZ + Ort
-- Telefon + E-Mail
-- UID-Nummer (fuer Impressum)
+**Schritt 3: Kontakt (03)**
+- Strasse & Hausnummer, PLZ, Ort
+- Telefon, E-Mail
 - Oeffnungszeiten (Dropdown + Custom)
 
-### Schritt 4: Design
-- Stilauswahl: "Wie soll Ihr Betrieb wirken?"
-- 3 Varianten: Professionell, Modern, Bodenstaendig
+**Schritt 4: Unternehmen (04)** ← NEU
+- Unternehmensform (Dropdown: e.U., GmbH, OG, KG, AG, Verein, GesbR, etc.)
+- UID-Nummer / ATU (optional)
+- Firmenbuchnummer (optional)
+- Firmenbuchgericht (optional)
+- GISA-Zahl (optional)
+- Hinweis: alle Felder werden automatisch ins Impressum eingebaut (ECG-konform)
+
+**Schritt 5: Design (05)**
+- Stilauswahl: Professionell / Modern / Bodenstaendig
 - Wird pro Branche automatisch vorgeschlagen
-- **Fotos-Toggle:** "Moechten Sie eigene Fotos auf Ihrer Website?" (UMGESETZT)
-  - OFF: Keine Foto-Platzhalter in der Preview
-  - ON: Hero-Foto, 2er-Galerie und Teamfoto als Platzhalter in der Preview sichtbar
-- **Self-Service-Portal Hinweis:** Info-Box nach dem Toggle erklaert was nach dem Kauf selbst gemacht werden kann
+- Fotos-Toggle: eigene Fotos nach Kauf hochladbar
+
+### 4.3 Preview (Kunden-Website Vorschau)
+- Wird in Echtzeit aus den Formular-Daten gerendert
+- Eigenes Design-System (STYLES_MAP) - NICHT aendern ohne Absprache
+- 3 Varianten: Professional (Blau), Modern (Gruen), Traditional (Warm)
+- Foto-Platzhalter (Hero, Galerie, Teamfoto) wenn Fotos-Toggle aktiv
+- **Impressum-Footer:** zeigt Unternehmensform, UID, Firmenbuchnummer, GISA wenn vorhanden
+
+### 4.4 SuccessPage (Bestelluebersicht VOR Bezahlung)
+- Zeigt Paket, Preis (EUR 18/Monat), enthaltene Features
+- Button "Jetzt kaufen" -> speichert Order in Supabase -> Stripe Checkout
+- Email wird in localStorage gespeichert fuer Post-Payment Account-Erstellung
+- "Zurueck zur Vorschau" Button
+
+### 4.5 PortalLogin
+- Tabs: Anmelden / Registrieren
+- Supabase Auth (signInWithPassword / signUp)
+- Email wird bei Registrierung aus localStorage vorausgefuellt (nach Zahlung)
+- **Passwort vergessen:** vollstaendiger Flow mit Reset-Link via E-Mail
+- Nach Login -> automatisch /portal
+
+### 4.6 Portal (Self-Service-Portal)
+6 Tabs:
+
+**Meine Website**
+- Abschnitte: Grunddaten, Unternehmen & Impressum, Kontakt & Adresse, Leistungen, Design
+- Jeder Abschnitt einzeln editierbar (Bearbeiten/Speichern/Abbrechen)
+- Daten werden aus Supabase `orders` Tabelle geladen (nach Email des eingeloggten Users)
+
+**Logo & Fotos**
+- 5 Upload-Slots: Logo, Hero-Foto, Galerie Foto 1, Galerie Foto 2, Teamfoto
+- Upload zu Supabase Storage (Bucket: customer-assets, Ordner: user-id/)
+- Bereits hochgeladene Bilder werden beim Laden automatisch angezeigt
+- Max 5 MB, JPG/PNG/WebP/GIF
+
+**Custom Domain**
+- DNS-Informationen (CNAME/A-Record) fuer eigene Domain
+- Erklaerung wie Domain verbunden wird
+
+**Rechnungen**
+- Stripe Zahlungshistorie via /api/get-invoices
+- Beleg-Links direkt zu Stripe
+
+**Support**
+- FAQ (5 haeufige Fragen, aufklappbar)
+- Support-Formular speichert in Supabase `support_requests` Tabelle
+- E-Mail + Betreff + Nachricht
+
+**Mein Account**
+- E-Mail-Adresse anzeigen
+- Passwort aendern (supabase.auth.updateUser)
+- Kuendigungsinfo
+
+### 4.7 Post-Payment Flow
+Nach Stripe-Weiterleitung mit `?payment=success`:
+- Gruener Check-Screen mit Danke-Nachricht
+- **Zwei Buttons:** "Jetzt Konto erstellen" + "Bereits registriert? Anmelden"
+- Email aus localStorage vorausgefuellt
+- Bei Abbruch (`?payment=canceled`): Hinweis mit Zurueck-Button
+
+### 4.8 Admin Dashboard
+Erreichbar unter `/admin?key=[REACT_APP_ADMIN_KEY]` (nur fuer Alexander Wagner).
+
+**Tab: Bestellungen**
+- Tabelle aller Orders mit Filter (Alle / Neu / Bezahlt / In Arbeit / Review / Live)
+- Status per Ein-Klick zur naechsten Stufe aendern
+- Detail-Drawer rechts: alle Kundendaten, alle Status-Optionen, interne Notiz
+
+**Tab: Entwicklung (Kanban)**
+- 4 Spalten: Bezahlt / In Arbeit / Review / Live
+- Order-Karten mit "Weiter"-Button zum naechsten Status
+- Klick auf Karte oeffnet Detail-Drawer
+
+**Tab: Health**
+- Alle Orders mit URL-Check (fetch no-cors)
+- HTTP-Status + SSL-Status pro Website
+- "Pruefen" pro Zeile, "Alle pruefen" Button
+
+**Tab: Support**
+- Alle Support-Anfragen aus dem Kunden-Portal
+- Status: Offen / Beantwortet
+- "Als beantwortet markieren" Button
+
+**Tab: APIs (Monitoring)**
+- Automatischer Check beim Tab-Oeffnen
+- Auto-Refresh alle 60 Sekunden
+- Zeitstempel des letzten Checks
+- Checks: Supabase (DB + Latenz), Stripe (API + Modus), Anthropic (Claude API)
+- Environment Variables Uebersicht (alle 7 benoetigten Vars, gruen/rot)
 
 ---
 
-## 5. Bilder-Konzept (UMGESETZT im Prototyp)
+## 5. Datenbank (Supabase)
 
-### Grundprinzip
-Die Kunden-Website verwendet branchenspezifische **Stock-Fotos als Platzhalter**. Der Kunde kann nach der Bezahlung im Self-Service-Portal eigene Bilder hochladen.
+### Projekt
+- **URL:** https://brulvtqeazkgcxkimdve.supabase.co
+- **Region:** EU Frankfurt
+- **RLS:** aktiv auf allen Tabellen
 
-### Foto-Toggle (Schritt 4)
-- Kunde entscheidet ob er Fotos auf der Website haben moechte
-- Preview zeigt/versteckt Platzhalter in Echtzeit basierend auf Toggle-Status
-- Platzhalter passen sich dem gewaehlten Design-Stil an (Farben aus STYLES_MAP)
+### Tabelle: orders
+Wird beim Klick auf "Jetzt kaufen" in der SuccessPage angelegt.
 
-### Platzhalter-Positionen in der Preview
-1. **Hero-Foto:** Rechts im Hero-Bereich (nur Desktop-Preview, nicht compact)
-2. **2er-Galerie:** Zwischen Leistungen und Ueber-uns Sektion
-3. **Teamfoto:** In der Ueber-uns Sektion (nur Desktop-Preview)
+| Spalte | Typ | Beschreibung |
+|---|---|---|
+| id | uuid | Client-seitig generiert (crypto.randomUUID()) |
+| firmenname | text | |
+| branche | text | Branche-Key |
+| branche_label | text | Lesbarer Branche-Name |
+| kurzbeschreibung | text | |
+| bundesland | text | Bundesland-Key |
+| leistungen | text[] | Array der Leistungen |
+| extra_leistung | text | Zusatzleistungen (Freitext) |
+| notdienst | boolean | 24h Notdienst |
+| adresse | text | Strasse & Hausnummer |
+| plz | text | |
+| ort | text | |
+| telefon | text | |
+| email | text | Kunden-Email |
+| uid_nummer | text | UID/ATU |
+| unternehmensform | text | z.B. "gmbh", "eu" |
+| firmenbuchnummer | text | z.B. "FN 123456 a" |
+| gisazahl | text | GISA-Zahl |
+| firmenbuchgericht | text | z.B. "HG Wien" |
+| oeffnungszeiten | text | Dropdown-Key |
+| oeffnungszeiten_custom | text | Freitext wenn custom |
+| einsatzgebiet | text | z.B. "Wien & Umgebung" |
+| stil | text | "professional"/"modern"/"traditional" |
+| fotos | boolean | Fotos gewuenscht |
+| subdomain | text | z.B. "mueller-gmbh" |
+| status | text | pending/paid/in_arbeit/review/live |
+| notiz | text | Interne Admin-Notiz |
+| created_at | timestamptz | |
 
-### Self-Service-Portal (nach Kauf - optional)
-- Logo hochladen
-- Eigene Fotos hochladen (ersetzt Platzhalter)
-- Daten jederzeit anpassen (Adresse, Telefon, Leistungen)
-- Custom Domain verbinden
+**RLS Policies:**
+- INSERT: anon (anonyme Inserts erlaubt)
+- SELECT: authenticated (eingeloggte User sehen eigene Orders via email-Filter)
+- UPDATE: authenticated
+
+### Tabelle: support_requests
+Wird beim Support-Formular im Portal gespeichert.
+
+| Spalte | Typ | Beschreibung |
+|---|---|---|
+| id | uuid | auto-generiert |
+| email | text | Kunden-Email |
+| subject | text | Betreff |
+| message | text | Nachricht |
+| status | text | "offen" / "beantwortet" |
+| created_at | timestamptz | |
+
+### Storage: customer-assets
+- **Bucket:** customer-assets (public)
+- **Struktur:** `{user-id}/{key}.{ext}` (z.B. `abc123/logo.png`)
+- **Keys:** logo, hero, foto1, foto2, team
+- **Max Groesse:** 5 MB
+- **Formate:** JPG, PNG, WebP, GIF
+- **RLS:** authenticated Upload in eigenen Ordner, public Read
+
+### Status-Pipeline (orders.status)
+```
+pending -> paid -> in_arbeit -> review -> live
+```
+- `pending`: Bestellung angelegt, noch nicht bezahlt
+- `paid`: Stripe Webhook hat Zahlung bestaetigt
+- `in_arbeit`: Website wird gebaut (Admin setzt manuell)
+- `review`: Website fertig, wird intern geprueft (Admin setzt manuell)
+- `live`: Website ist live (Admin setzt manuell)
 
 ---
 
-## 6. Geschaeftsmodell
+## 6. Cloudflare Pages Functions (Backend API)
+
+Alle Functions liegen in `functions/api/` und sind unter `/api/...` erreichbar.
+
+### /api/import-website (POST)
+KI-gestuetzte Website-Daten-Extraktion.
+- Laedt Seite direkt via fetch (Browser User-Agent)
+- Fallback: Jina AI Reader (https://r.jina.ai/) fuer JS-gerenderte Seiten
+- Schickt ersten 4000 Zeichen an Claude (claude-haiku-4-5-20251001)
+- Claude extrahiert: firmenname, telefon, email, plz, ort, adresse, kurzbeschreibung, bundesland, unternehmensform, uid, firmenbuchnummer, firmenbuchgericht, gisazahl
+- Env Vars: `ANTHROPIC_API_KEY`
+
+### /api/create-checkout (POST)
+Erstellt Stripe Checkout Session.
+- Parameter: orderId, firmenname, email
+- Erstellt Session mit 1 Monat EUR 18 (mode: payment)
+- metadata[order_id] fuer Webhook-Zuordnung
+- success_url + cancel_url mit payment-Status-Param
+- Env Vars: `STRIPE_SECRET_KEY`, `SITE_URL`
+
+### /api/get-invoices (GET)
+Ladet Stripe Zahlungshistorie fuer einen Kunden.
+- Parameter: email (Query-String)
+- Sucht Stripe Customer by Email, gibt Charges zurueck
+- Env Vars: `STRIPE_SECRET_KEY`
+
+### /api/stripe-webhook (POST)
+Empfaengt Stripe Webhooks.
+- Event: `checkout.session.completed`
+- Liest order_id aus session.metadata
+- Setzt orders.status = "paid" in Supabase
+- Signatur-Verifikation optional (HMAC-SHA256)
+- Env Vars: `STRIPE_WEBHOOK_SECRET` (optional), `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
+
+### /api/admin-data (GET)
+Laedt alle Orders und Support-Tickets fuer Admin Dashboard.
+- Parameter: key (Query-String, muss ADMIN_SECRET entsprechen)
+- Nutzt Supabase Service Key (bypasses RLS)
+- Env Vars: `ADMIN_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
+
+### /api/admin-update (POST)
+Aktualisiert Order oder Support-Ticket.
+- Body: {id, table (optional, default "orders"), ...fields}
+- Parameter: key (Query-String)
+- Env Vars: `ADMIN_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
+
+### /api/admin-system (GET)
+API Health Check fuer Admin Monitoring.
+- Prueft: Supabase (SELECT mit Latenz), Stripe (balance endpoint), Anthropic (models endpoint)
+- Prueft alle Environment Variables auf Vorhandensein
+- Parameter: key (Query-String)
+- Env Vars: alle relevanten Keys
+
+---
+
+## 7. Environment Variables
+
+### Cloudflare Pages (Produktion)
+| Variable | Beschreibung |
+|---|---|
+| `REACT_APP_SUPABASE_URL` | Supabase Projekt-URL |
+| `REACT_APP_SUPABASE_ANON_KEY` | Supabase Publishable Key (fuer React App) |
+| `SUPABASE_URL` | Supabase Projekt-URL (fuer Functions) |
+| `SUPABASE_SERVICE_KEY` | Supabase Secret Key (bypasses RLS) |
+| `STRIPE_SECRET_KEY` | Stripe Secret Key (sk_test_... oder sk_live_...) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe Webhook Signing Secret (whsec_...) |
+| `ANTHROPIC_API_KEY` | Claude API Key |
+| `ADMIN_SECRET` | Admin Dashboard Key (gleicher Wert wie REACT_APP_ADMIN_KEY) |
+| `REACT_APP_ADMIN_KEY` | Admin URL-Key (wird in React-Bundle gebacken) |
+| `SITE_URL` | Vollstaendige Live-URL (fuer Stripe Redirects) |
+
+### Lokal (.env.local - nicht im Git)
+Gleiche Variablen wie oben, zusaetzlich:
+- `REACT_APP_PUBLISHABLE_KEY` (Stripe PK fuer lokale Tests, falls benoetigt)
+
+---
+
+## 8. Geschaeftsmodell
 
 ### Pricing (ENTSCHIEDEN: Variante A)
-Variante B (Setup + Abo) wurde verworfen. Im MVP gilt:
-
-| | SiteReady |
+| | SiteReady Standard |
 |---|---|
 | Setup | Keine |
 | Monatspreis | EUR 18 |
@@ -161,134 +385,89 @@ Variante B (Setup + Abo) wurde verworfen. Im MVP gilt:
 | 1. Jahr | EUR 216 |
 | Ab 2. Jahr | EUR 216 |
 
-Auf der Landingpage wird zusaetzlich eine **"SiteReady Premium" Coming-Soon-Card** gezeigt mit Phase-2-Features (Mehrsprachigkeit, Social Media, Kalender/Buchung, erweiterte Analytics). Kein Preis angegeben, Button deaktiviert.
+Auf der Landingpage wird zusaetzlich eine **"SiteReady Premium" Coming-Soon-Card** gezeigt mit Phase-2-Features. Kein Preis angegeben, Button deaktiviert.
 
 ### Leistungsumfang (alles inklusive)
 - Subdomain (firmenname.siteready.at) sofort live
 - Kein Branding auf der Kunden-Website
-- Impressum (ECG) - anwaltlich geprueft
+- Impressum (ECG) - anwaltlich geprueft, ECG-konform
 - DSGVO-Erklaerung - anwaltlich geprueft
 - SEO Meta-Tags + Schema.org Markup
 - Google Search Console Indexierung
-- Google Maps Einbettung
 - Notdienst/24h Badge
-- Analytics-Dashboard
 - Live-Vorschau vor Bezahlung
 - 3 automatische Design-Varianten
-- Branchenspezifische Fotos als Platzhalter (wenn Fotos-Toggle aktiv)
-- Website-Import (optionaler Vorschritt im Fragebogen)
-
-### Produktions-Flow
-1. Fragebogen (optional: Website-Import als Vorschritt)
-2. Stilauswahl + Fotos-Toggle + Live-Vorschau (rein clientseitig, keine Kosten)
-3. Bestelluebersicht (SuccessPage) - Kunde sieht Paket + Preis vor Bezahlung
-4. Bezahlung (Karte, EPS, PayPal)
-5. Account-Erstellung
-6. Design-Template laden
-7. Texte automatisch generieren - ERST NACH BEZAHLUNG
-8. Rechtstexte (anwaltl. gepruefte Vorlagen + Kundendaten)
-9. Stock-Fotos zuweisen (branchenspezifisch, wenn Fotos aktiv)
-10. Speicherung (EU-Server)
-11. Hosting + SSL
-12. Google-Indexierung automatisch
-13. Website online (firmenname.siteready.at)
+- Website-Import (KI-gestuetzt)
+- Self-Service-Portal (Logo, Fotos, Daten, Domain)
 
 ---
 
-## 7. Tech-Stack (Ziel-Architektur)
+## 9. Design-System
 
-| Komponente | Technologie |
-|---|---|
-| Frontend | Nuxt.js (Ziel), aktuell React-Prototyp |
-| Datenbank & Auth | Supabase (PostgreSQL, EU-Server Frankfurt) |
-| Bezahlung | Stripe (EPS, Karte, PayPal) |
-| Text-Generierung | Intern - nicht kommunizieren |
-| Hosting & CDN | Cloudflare Pages |
-| Indexierung | Google Search Console API |
-| Stock-Fotos | Unsplash API oder eigene Sammlung (zu evaluieren) |
-
-**Hinweis:** Der Tech-Stack ist intern. Gegenueber Endkunden werden keine Tool- oder Technologie-Namen kommuniziert.
-
----
-
-## 8. Design-System
-
-### SiteReady UI (Landing, Fragebogen-Shell, Success)
-- Helles Premium-Theme (NICHT Dark) - inspiriert an Bitpanda-Stil
+### SiteReady UI (Landing, Fragebogen-Shell, Success, Portal)
+- Helles Premium-Theme (NICHT Dark)
 - Font: DM Sans (Primaer), JetBrains Mono (Zahlen/Code)
+- Design-Tokens in `const T = {...}` in App.js
 - Split-Layouts statt zentrierter Bloecke
-- Kein Dot-Grid, keine Glow-Animationen
-- Subtile float-Animation nur bei Badges
 - Responsive: CSS Media Queries in `css` Konstante
-  - Breakpoint 960px: Grids stapeln, Nav-Links ausblenden, Mockup ausblenden
-  - Breakpoint 560px: Noch kompakteres Layout, Stats ausblenden
+  - Breakpoint 960px: Grids stapeln
+  - Breakpoint 560px: Kompaktes Mobile-Layout
 - CSS-Klassen-Konvention: `lp-*` fuer LandingPage, `sp-*` fuer SuccessPage
 
-### LandingPage-Sektionen
-- **Hero:** 2-Spalten (Text links, Browser-Mockup rechts), Klasse `lp-hero-grid`
-- **Problem:** 2-Spalten (4 Problem-Karten links, Loesung rechts), Klasse `lp-problem-grid`
-- **So funktioniert's:** 5 Schritte (Fragebogen, Vorschau, Bezahlen, Live, Portal optional), Klasse `lp-steps-grid`
-- **Design-Varianten:** 3-Spalten, Klasse `lp-variants-grid`
-- **Pricing:** 2-Spalten (Aktuelles Angebot + Coming Soon Premium), Klasse `lp-pricing-grid`
-- **Vergleich:** Tabelle mit overflow-x scroll auf Mobile, Klasse `lp-compare`
-- **Warum jetzt:** 3-Spalten, Klasse `lp-why-grid`
-
 ### Kunden-Website-Preview (NICHT aendern ohne Absprache)
-- Hat eigenes, unabhaengiges Design-System (STYLES_MAP)
+- Eigenes Design-System: `STYLES_MAP` Konstante
 - 3 Varianten: Professional (Blau), Modern (Gruen), Traditional (Warm)
-- Jede Variante hat eigene Farben, Fonts, Border-Radii
-- Foto-Platzhalter passen sich dem jeweiligen Stil an
+- Jede Variante hat eigene Farben, Fonts, Border-Radii, Schatten
+- Foto-Platzhalter passen sich dem Stil an
+- Impressum-Footer zeigt rechtliche Daten wenn vorhanden
 
----
-
-## 9. Was NICHT im MVP ist
-
-Folgendes ist auf Phase 2 oder spaeter verschoben:
-- Self-Service-Portal als eigene App (MVP: nur als Hinweis kommuniziert)
-- Custom Domain (nur Subdomain im MVP - aber im Portal ankuendigen)
-- Gestaffelte Pakete (nur SiteReady Standard im MVP)
-- Mehrsprachigkeit
-- Weitere Branchen-Templates
-- Social Media Paket
-- Kalender-Buchung, Newsletter
-- Expansion nach DE/CH
-- Echte KI-basierte Website-Extraktion (im Prototyp simuliert)
-- Echte Stock-Foto-Integration (im Prototyp Platzhalter)
-
-**Leitprinzip:** Jedes Feature wird nur aufgenommen, wenn es vollautomatisch funktioniert und keinen zusaetzlichen Support erfordert.
+### Konstanten (NICHT aendern ohne Absprache)
+- `BRANCHEN`: Branchenliste mit Leistungen und Stil-Vorschlag
+- `STYLES_MAP`: 3 Design-Varianten der Kunden-Website
+- `INIT`: Initialer Formular-Zustand
+- `BUNDESLAENDER`: Oesterreichische Bundeslaender
+- `UNTERNEHMENSFORMEN`: Oesterreichische Rechtsformen
+- `OEFFNUNGSZEITEN`: Vordefinierte Oeffnungszeiten-Optionen
 
 ---
 
 ## 10. Bekannte Probleme / Technische Schulden
 
-1. Gesamte App in einer Datei (App.js) - sollte in Komponenten aufgeteilt werden
+1. Gesamte App in einer Datei (App.js ~1000+ Zeilen) - sollte in Komponenten aufgeteilt werden
 2. React statt Nuxt.js - Prototyp laeuft auf CRA, Ziel ist Nuxt.js
-3. Keine Umlaute im JS-Code - wegen Build-Problemen ae/oe/ue verwenden
-4. Inline Styles gemischt mit CSS-Klassen (Media Queries) - kein CSS-Framework
+3. Keine Umlaute im JS-Code - wegen Build-Problemen ae/oe/ue/ss verwenden (ASCII only in Strings)
+4. Inline Styles gemischt mit CSS-Klassen - kein CSS-Framework
 5. Kein State Management - einfacher useState
 6. Keine Tests
-7. SuccessPage nicht vollstaendig responsive (height:100vh kann auf kleinen Screens problematisch sein)
+7. Stripe Webhook Signaturpruefung aktuell optional (Fallback ohne Verifikation)
+8. Admin Dashboard Key wird in React-Bundle gebacken (nicht ideal fuer Production)
+9. Health Check via fetch no-cors kann keine genauen HTTP-Status-Codes lesen
 
 ---
 
-## 11. Offene Fragen
+## 11. Offene Punkte / Naechste Schritte
+
+### Sofort
+- Anthropic Credits aufgeladen (done) - Import-Funktion testen
+- Stripe Webhook testen mit echter Zahlung (Testkarte 4242 4242 4242 4242)
+
+### Kurzfristig
+- Subdomain-Aktivierung: generierte Subdomain muss tatsaechlich eingerichtet werden
+- Echte Text-Generierung nach Bezahlung implementieren
+- E-Mail-Bestaetigung nach Kauf (Supabase Auth oder eigener SMTP)
+- Impressum/DSGVO-Templates mit Anwalt erarbeiten
+
+### Mittelfristig
+- 10-20 Pilot-Kunden akquirieren
+- Qualitaetssicherung der KI-Extraktion verbessern
+- Stock-Foto-Integration (Unsplash API oder eigene Sammlung)
+- Custom Domain tatsaechlich aktivieren (Cloudflare DNS API)
+- Nuxt.js Migration planen
 
 ### Business
-- Endgueltige Preisstruktur nach Pilotphase
-- Kuendigungshandling nach 12 Monaten
-- Support-Modell (E-Mail, 48h Antwortzeit)
-- Zeitplan fuer Self-Service-Portal (Phase 2)
-
-### Technik
-- Laufende Wartung, Updates, Sicherheitsluecken
-- Qualitaetssicherung der generierten Texte
-- Stock-Foto-Quelle (Unsplash API vs. eigene Sammlung vs. generiert)
-- Website-Import: Welche Technologie fuer Extraktion? (Scraping, API, automatisch)
-
-### Rechtlich
-- Impressum/DSGVO-Templates mit Anwalt erarbeiten
-- Haftungsrahmen in AGB
-- Lizenzierung der Stock-Fotos klaeren
+- Endgueltige Preisstruktur nach Pilotphase evaluieren
+- Kuendigungshandling nach 12 Monaten definieren
+- Support-Prozess definieren (48h Antwortzeit via support@siteready.at)
 
 ---
 
@@ -300,22 +479,7 @@ Folgendes ist auf Phase 2 oder spaeter verschoben:
 
 ---
 
-## 13. Naechste Schritte (Prototyp)
-
-1. ~~Website-Import Vorschritt im Fragebogen einbauen (Schritt 0)~~ ERLEDIGT
-2. ~~Bild-Platzhalter in der Preview-Komponente einbauen~~ ERLEDIGT
-3. ~~Landingpage aktualisieren (neue Features, Bitpanda-Design)~~ ERLEDIGT
-4. ~~Pricing auf Variante A reduzieren + Coming Soon Card~~ ERLEDIGT
-5. ~~SuccessPage als Bestelluebersicht vor Bezahlung umbauen~~ ERLEDIGT
-6. ~~Responsive Design umsetzen~~ ERLEDIGT
-7. MVP mit echten Testbetrieben validieren
-8. Bezahlung (Stripe) integrieren
-9. Echte Text-Generierung nach Bezahlung implementieren
-10. Self-Service-Portal (Phase 2) planen
-
----
-
-## 14. Referenz-Dokumente
+## 13. Referenz-Dokumente
 
 - SiteReady_Pitch_v9.docx - Aktuelles Pitch-Dokument
 - SiteReady_Architektur.pdf - Technischer Architektur-Flow
@@ -323,4 +487,4 @@ Folgendes ist auf Phase 2 oder spaeter verschoben:
 
 ---
 
-*Bei Widerspruechen zwischen diesem Dokument und dem Code gilt dieses Dokument als aktueller Stand der Planung. Der Code muss entsprechend angepasst werden.*
+*Bei Widerspruechen zwischen diesem Dokument und dem Code gilt der Code als aktueller Stand. Dieses Dokument beschreibt die Intention und den Kontext.*

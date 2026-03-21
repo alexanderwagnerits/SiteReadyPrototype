@@ -968,7 +968,9 @@ function Admin({adminKey}){
 
   const filtered=orders.filter(o=>filter==="alle"||o.status===filter);
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
-  const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLoading(false);};
+  const[sysLastCheck,setSysLastCheck]=useState(null);
+  const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
+  useEffect(()=>{if(tab==="apis"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
   const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
@@ -1091,10 +1093,16 @@ function Admin({adminKey}){
         {/* Tab: APIs */}
         {!loading&&tab==="apis"&&(<div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>API & Umgebungsstatus</h2>
-            <button onClick={checkSystem} disabled={sysLoading} style={{padding:"8px 18px",border:"none",borderRadius:T.rSm,background:sysLoading?"#94a3b8":T.dark,color:"#fff",cursor:sysLoading?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{sysLoading?"Wird geprueft...":"Alle pruefen"}</button>
+            <div>
+              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>API & Umgebungsstatus</h2>
+              {sysLastCheck&&<div style={{fontSize:".72rem",color:T.textMuted}}>Zuletzt geprueft: {sysLastCheck.toLocaleTimeString("de-AT")} &middot; Auto-Refresh alle 60s</div>}
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {sysLoading&&<div style={{width:14,height:14,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
+              <button onClick={checkSystem} disabled={sysLoading} style={{padding:"8px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:sysLoading?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Jetzt pruefen</button>
+            </div>
           </div>
-          {!sysStatus&&!sysLoading&&<div style={{color:T.textMuted,padding:"40px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`}}>Klicke "Alle pruefen" um den Status aller APIs zu laden.</div>}
+          {!sysStatus&&sysLoading&&<div style={{color:T.textMuted,padding:"40px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`}}>Verbindungen werden geprueft...</div>}
           {sysStatus&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
             {/* API Karten */}
             {[

@@ -6,7 +6,7 @@ export async function onRequestPost({request, env}) {
 
     const params = new URLSearchParams({
       "mode": "payment",
-      "automatic_payment_methods[enabled]": "true",
+      "payment_method_types[]": "card",
       "line_items[0][price_data][currency]": "eur",
       "line_items[0][price_data][product_data][name]": "SiteReady Standard",
       "line_items[0][price_data][product_data][description]": `Professionelle Website fuer ${firmenname} – 1. Monat`,

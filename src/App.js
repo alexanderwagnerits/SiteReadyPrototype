@@ -545,7 +545,7 @@ function Portal({session,onLogout}){
   };
 
   const sub=order?.subdomain||"ihre-firma";
-  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"}];
+  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"support",label:"Support"}];
 
   const loadInvoices=async()=>{
     if(invoices!==null||!session?.user?.email)return;
@@ -709,6 +709,84 @@ function Portal({session,onLogout}){
           })}
         </div>)}
       </div>)}
+
+      {/* Tab: Support */}
+      {tab==="support"&&(()=>{
+        const[subject,setSubject]=useState("");
+        const[message,setMessage]=useState("");
+        const[sending,setSending]=useState(false);
+        const[sent,setSent]=useState(false);
+        const[supportErr,setSupportErr]=useState("");
+        const sendSupport=async()=>{
+          if(!message.trim()||!supabase)return;
+          setSending(true);setSupportErr("");
+          const{error}=await supabase.from("support_requests").insert({
+            email:session?.user?.email,subject:subject||"Allgemeine Anfrage",message
+          });
+          setSending(false);
+          if(error)setSupportErr("Fehler: "+error.message);
+          else{setSent(true);setSubject("");setMessage("");}
+        };
+        const FAQ=[
+          {q:"Wie lange dauert es bis meine Website online ist?",a:"Nach der Bezahlung richten wir Ihre Website innerhalb von 24 Stunden ein. Sie erhalten eine E-Mail sobald alles live ist."},
+          {q:"Kann ich den Text auf meiner Website selbst aendern?",a:"Ja – im Self-Service-Portal koennen Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
+          {q:"Was passiert nach 12 Monaten?",a:"Das Abo verlängert sich automatisch monatlich zum selben Preis. Eine Kuendigung ist jederzeit moeglich."},
+          {q:"Kann ich mein Logo hochladen?",a:"Ja, im Tab 'Logo & Fotos' koennen Sie Ihr Logo sowie Hero-Foto, Galerie und Teamfoto hochladen."},
+          {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
+        ];
+        return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+          {/* Kontakt Box */}
+          <div style={{background:T.accentLight,borderRadius:T.r,padding:"24px 28px",border:`1px solid rgba(37,99,235,.12)`,display:"flex",gap:32,flexWrap:"wrap"}}>
+            <div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>E-Mail Support</div>
+              <a href="mailto:support@siteready.at" style={{fontSize:".95rem",fontWeight:700,color:T.dark,textDecoration:"none"}}>support@siteready.at</a>
+              <div style={{fontSize:".78rem",color:T.textSub,marginTop:3}}>Antwort innerhalb von 48 Stunden</div>
+            </div>
+            <div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>Geschaeftszeiten</div>
+              <div style={{fontSize:".88rem",fontWeight:600,color:T.dark}}>Mo – Fr, 09:00 – 17:00</div>
+              <div style={{fontSize:".78rem",color:T.textSub,marginTop:3}}>Oesterreichische Feiertage ausgenommen</div>
+            </div>
+          </div>
+          {/* FAQ */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Haeufige Fragen</div>
+            <div style={{display:"flex",flexDirection:"column",gap:0}}>
+              {FAQ.map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
+                <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
+                  {f.q}<span style={{color:T.textMuted,fontSize:"1rem",marginLeft:12}}>+</span>
+                </summary>
+                <p style={{margin:"10px 0 0",fontSize:".84rem",color:T.textSub,lineHeight:1.7}}>{f.a}</p>
+              </details>)}
+            </div>
+          </div>
+          {/* Kontaktformular */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Nachricht senden</div>
+            {sent?(<div style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:12}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)"}}>
+                <span style={{color:T.green,fontWeight:700}}>{"\u2713"} Nachricht gesendet</span>
+              </div>
+              <p style={{color:T.textSub,fontSize:".88rem",margin:0}}>Wir melden uns innerhalb von 48 Stunden bei Ihnen.</p>
+              <button onClick={()=>setSent(false)} style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Neue Nachricht</button>
+            </div>):(<>
+              <Dropdown label="Betreff" value={subject} onChange={setSubject} options={[
+                {value:"Technisches Problem",label:"Technisches Problem"},
+                {value:"Aenderungswunsch",label:"Aenderungswunsch"},
+                {value:"Frage zur Rechnung",label:"Frage zur Rechnung"},
+                {value:"Custom Domain",label:"Custom Domain"},
+                {value:"Kuendigung",label:"Kuendigung"},
+                {value:"Sonstiges",label:"Sonstiges"},
+              ]} placeholder="Betreff waehlen"/>
+              <Field label="Ihre Nachricht" value={message} onChange={setMessage} placeholder="Beschreiben Sie Ihr Anliegen..." rows={4}/>
+              {supportErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{supportErr}</div>}
+              <button onClick={sendSupport} disabled={sending||!message.trim()} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:(sending||!message.trim())?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:(sending||!message.trim())?"not-allowed":"pointer",transition:"background .2s"}}>
+                {sending?"Wird gesendet...":"Nachricht senden \u2192"}
+              </button>
+            </>)}
+          </div>
+        </div>);
+      })()}
 
       {/* Tab: Medien */}
       {tab==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>

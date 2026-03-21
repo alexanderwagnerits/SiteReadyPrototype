@@ -503,10 +503,12 @@ function PortalLogin({onBack}){
 function Portal({session,onLogout}){
   const[tab,setTab]=useState("website");
   const[order,setOrder]=useState(null);
+  const[editSection,setEditSection]=useState(null);
   const[saving,setSaving]=useState(false);
   const[saved,setSaved]=useState(false);
   const[uploading,setUploading]=useState({});
   const[assetUrls,setAssetUrls]=useState({});
+  const[invoices,setInvoices]=useState(null);
 
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
@@ -543,7 +545,50 @@ function Portal({session,onLogout}){
   };
 
   const sub=order?.subdomain||"ihre-firma";
-  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"}];
+  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"}];
+
+  const loadInvoices=async()=>{
+    if(invoices!==null||!session?.user?.email)return;
+    setInvoices("loading");
+    const r=await fetch(`/api/get-invoices?email=${encodeURIComponent(session.user.email)}`);
+    const j=await r.json();
+    setInvoices(j.charges||[]);
+  };
+  useEffect(()=>{if(tab==="rechnungen")loadInvoices();},[tab]);
+
+  const saveSection=async(section)=>{
+    if(!order||!supabase)return;
+    setSaving(true);setSaved(false);
+    const fields={
+      grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet,uid_nummer:order.uid_nummer},
+      kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom},
+      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst},
+      design:{stil:order.stil,fotos:order.fotos},
+    };
+    await supabase.from("orders").update(fields[section]||{}).eq("id",order.id);
+    setSaving(false);setSaved(section);setTimeout(()=>setSaved(false),3000);
+    setEditSection(null);
+  };
+
+  const SectionHeader=({id,label})=>(
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
+      <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}>
+        {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
+        {editSection===id
+          ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+            <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
+          :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
+      </div>
+    </div>
+  );
+
+  const InfoRow=({label,value})=>(
+    <div style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
+      <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600,paddingTop:1}}>{label}</span>
+      <span style={{fontSize:".88rem",color:value?T.dark:T.textMuted}}>{value||"—"}</span>
+    </div>
+  );
   const ASSETS=[
     {key:"logo",label:"Logo",desc:"Wird in der Navigation angezeigt"},
     {key:"hero",label:"Hero-Foto",desc:"Grosses Bild oben auf der Website"},
@@ -577,52 +622,92 @@ function Portal({session,onLogout}){
       </div>
 
       {/* Tab: Website */}
-      {tab==="website"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-        {!order?<div style={{color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:(<>
-          {/* Grunddaten */}
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Grunddaten</div>
-          <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
-          <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung Ihres Betriebs" rows={2}/>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-            <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="z.B. Wien & Umgebung"/>
-            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Fuer das Impressum"/>
-          </div>
-          {/* Kontakt */}
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",margin:"20px 0 14px"}}>Kontakt & Adresse</div>
-          <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
-          <div style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
-            <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
-            <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
-            <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
-          </div>
-          <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten waehlen"/>
-          {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00\nSa: nach Vereinbarung"} rows={2}/>}
-          {/* Leistungen */}
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",margin:"20px 0 14px"}}>Leistungen</div>
-          {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl?(
-            <Checklist label={`${bl.label} – Leistungen`} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen auf Ihrer Website"/>
-          ):(
-            <Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} placeholder={"Leistung 1\nLeistung 2"} rows={4}/>
-          );})()}
-          <Field label="Zusaetzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung, Planung..."/>
-          {/* Design */}
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",margin:"20px 0 14px"}}>Design</div>
-          <StylePicker value={order.stil||"professional"} onChange={upOrder("stil")}/>
-          <div style={{marginTop:16}}>
-            <Toggle label="Fotos auf der Website" checked={!!order.fotos} onChange={upOrder("fotos")} desc="Hero-Foto, Galerie und Teamfoto werden angezeigt"/>
-          </div>
-          {/* Notdienst */}
-          <div style={{marginTop:16}}>
-            <Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf der Website angezeigt"/>
-          </div>
-          {/* Save */}
-          <div style={{display:"flex",alignItems:"center",gap:12,marginTop:24,paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
-            <button onClick={save} disabled={saving} style={{padding:"12px 28px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":"pointer",transition:"background .2s"}}>
-              {saving?"Wird gespeichert...":"Aenderungen speichern"}
-            </button>
-            {saved&&<span style={{color:T.green,fontWeight:600,fontSize:".85rem"}}>{"\u2713"} Gespeichert</span>}
-          </div>
-        </>)}
+      {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        {/* Grunddaten */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="grunddaten" label="Grunddaten"/>
+          {editSection==="grunddaten"?(<>
+            <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
+            <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
+              <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678"/>
+            </div>
+          </>):(<>
+            <InfoRow label="Firmenname" value={order.firmenname}/>
+            <InfoRow label="Beschreibung" value={order.kurzbeschreibung}/>
+            <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
+            <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
+          </>)}
+        </div>
+        {/* Kontakt */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="kontakt" label="Kontakt & Adresse"/>
+          {editSection==="kontakt"?(<>
+            <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
+            <div style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
+              <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
+              <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
+              <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
+            </div>
+            <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten waehlen"/>
+            {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
+          </>):(<>
+            <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
+            <InfoRow label="Telefon" value={order.telefon}/>
+            <InfoRow label="Oeffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
+          </>)}
+        </div>
+        {/* Leistungen */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="leistungen" label="Leistungen"/>
+          {editSection==="leistungen"?(<>
+            {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
+              ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
+              :<Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
+            <Field label="Zusaetzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
+            <Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/>
+          </>):(<>
+            {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
+            {order.extra_leistung&&<InfoRow label="Zusatz" value={order.extra_leistung}/>}
+            <InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/>
+          </>)}
+        </div>
+        {/* Design */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="design" label="Design"/>
+          {editSection==="design"?(<>
+            <StylePicker value={order.stil||"professional"} onChange={upOrder("stil")}/>
+            <div style={{marginTop:16}}><Toggle label="Fotos auf der Website" checked={!!order.fotos} onChange={upOrder("fotos")} desc="Hero-Foto, Galerie, Teamfoto"/></div>
+          </>):(<>
+            <InfoRow label="Stil" value={STYLES_MAP[order.stil||"professional"]?.label}/>
+            <InfoRow label="Fotos" value={order.fotos?"Ja, mit Fotos":"Nein, ohne Fotos"}/>
+          </>)}
+        </div>
+      </div>)}
+
+      {/* Tab: Rechnungen */}
+      {tab==="rechnungen"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:20}}>Ihre Rechnungen</div>
+        {invoices==="loading"&&<div style={{color:T.textMuted,fontSize:".9rem"}}>Wird geladen...</div>}
+        {Array.isArray(invoices)&&invoices.length===0&&<div style={{color:T.textMuted,fontSize:".9rem"}}>Noch keine Zahlungen vorhanden.</div>}
+        {Array.isArray(invoices)&&invoices.length>0&&(<div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {invoices.map(c=>{
+            const date=new Date(c.created*1000).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"});
+            const amount=(c.amount/100).toFixed(2).replace(".",",");
+            const statusColor=c.status==="succeeded"?T.green:"#f59e0b";
+            const statusLabel=c.status==="succeeded"?"Bezahlt":"Ausstehend";
+            return(<div key={c.id} style={{display:"flex",alignItems:"center",gap:16,padding:"14px 16px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{c.description||"SiteReady Standard"}</div>
+                <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>{date}</div>
+              </div>
+              <div style={{fontWeight:700,fontFamily:T.mono,fontSize:".95rem",color:T.dark}}>{"\u20AC"}{amount}</div>
+              <div style={{padding:"4px 10px",borderRadius:4,background:`${statusColor}18`,color:statusColor,fontSize:".72rem",fontWeight:700}}>{statusLabel}</div>
+              {c.receipt_url&&<a href={c.receipt_url} target="_blank" rel="noreferrer" style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,color:T.textSub,fontSize:".78rem",fontWeight:600,textDecoration:"none",background:"#fff"}}>Beleg</a>}
+            </div>);
+          })}
+        </div>)}
       </div>)}
 
       {/* Tab: Medien */}

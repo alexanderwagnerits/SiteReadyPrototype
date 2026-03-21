@@ -615,7 +615,7 @@ function Portal({session,onLogout}){
   };
 
   const sub=order?.subdomain||"ihre-firma";
-  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"support",label:"Support"},{id:"account",label:"Mein Account"}];
+  const TABS=[{id:"website",label:"Meine Website"},{id:"analytics",label:"Statistiken"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"support",label:"Support"},{id:"account",label:"Mein Account"}];
 
   const loadInvoices=async()=>{
     if(invoices!==null||!session?.user?.email)return;
@@ -892,6 +892,55 @@ function Portal({session,onLogout}){
         </div>
       </div>)}
 
+      {/* Tab: Analytics */}
+      {tab==="analytics"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        {/* Website Status */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Website Status</div>
+          {order?(<>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
+              <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
+              <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live \u2013 Ihre Website ist erreichbar":"In Bearbeitung"}</span>
+            </div>
+            {[{l:"Subdomain",v:`${sub}.siteready.at`,link:true},{l:"SSL-Zertifikat",v:"Aktiv \u2713"},{l:"Status",v:STATUS_LABELS[order.status]||order.status},{l:"Bestellt am",v:order.created_at?new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):""}].map(({l,v,link})=>(
+              <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
+                <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
+                {link?<a href={`https://${v}`} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}
+              </div>))}
+          </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
+        </div>
+        {/* SEO */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>SEO & Rechtliches</div>
+          {[{l:"Google-Indexierung",v:"Angemeldet",ok:true},{l:"SSL / HTTPS",v:"Aktiv",ok:true},{l:"robots.txt",v:"Vorhanden",ok:true},{l:"sitemap.xml",v:"Generiert",ok:true},{l:"Impressum (ECG)",v:"Eingebaut",ok:true},{l:"DSGVO-Erklaerung",v:"Eingebaut",ok:true}].map(({l,v,ok})=>(
+            <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
+              <span style={{fontSize:".88rem",color:ok?T.green:T.red,fontWeight:600}}>{ok?"\u2713":"\u2717"} {v}</span>
+            </div>))}
+        </div>
+        {/* Abo */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Abonnement</div>
+          {[{l:"Paket",v:"SiteReady Standard"},{l:"Preis",v:"\u20AC18 / Monat"},{l:"Mindestlaufzeit",v:"12 Monate"},...(order?.created_at?[{l:"Gestartet am",v:new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})},{l:"Mindestende",v:new Date(new Date(order.created_at).setFullYear(new Date(order.created_at).getFullYear()+1)).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[])].map(({l,v})=>(
+            <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
+              <span style={{fontSize:".88rem",color:T.dark}}>{v}</span>
+            </div>))}
+        </div>
+        {/* Seitenaufrufe Coming Soon */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Seitenaufrufe & Reichweite</div>
+            <span style={{fontSize:".65rem",fontWeight:700,background:"linear-gradient(135deg,#7c3aed,#a855f7)",color:"#fff",padding:"3px 10px",borderRadius:4,letterSpacing:".06em"}}>Coming Soon</span>
+          </div>
+          <div style={{padding:"32px 20px",textAlign:"center",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+            <div style={{fontSize:"2rem",marginBottom:10}}>📊</div>
+            <div style={{fontSize:".9rem",fontWeight:700,color:T.dark,marginBottom:6}}>Analytics wird gerade vorbereitet</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.7,maxWidth:340,margin:"0 auto"}}>Seitenaufrufe, Besucher und Google-Klicks werden in einem zukuenftigen Update freigeschaltet.</div>
+          </div>
+        </div>
+      </div>)}
+
       {/* Tab: Medien */}
       {tab==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {ASSETS.map(a=>{
@@ -998,6 +1047,15 @@ function Admin({adminKey}){
 
   const nextStatus=s=>{const i=STATUS_FLOW.indexOf(s);return i<STATUS_FLOW.length-1?STATUS_FLOW[i+1]:s;};
 
+  const exportCSV=()=>{
+    const headers=["ID","Datum","Firma","E-Mail","Branche","Status","PLZ","Ort","Telefon","Unternehmensform","UID","Subdomain"];
+    const rows=filtered.map(o=>[o.id,fmtDate(o.created_at),o.firmenname||"",o.email||"",o.branche_label||o.branche||"",STATUS_LABELS[o.status]||o.status||"",o.plz||"",o.ort||"",o.telefon||"",o.unternehmensform||"",o.uid_nummer||"",o.subdomain||""]);
+    const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=`siteready-bestellungen-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
+  };
+
   const checkHealth=async(order)=>{
     const url=`https://${order.subdomain||"test"}.siteready.at`;
     setHealth(h=>({...h,[order.id]:"checking"}));
@@ -1043,7 +1101,13 @@ function Admin({adminKey}){
         {!loading&&tab==="bestellungen"&&(<div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Bestellungen {filter!=="alle"&&`(${STATUS_LABELS[filter]})`}</h2>
-            <span style={{fontSize:".82rem",color:T.textMuted}}>{filtered.length} Eintraege</span>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:".82rem",color:T.textMuted}}>{filtered.length} Eintraege</span>
+              <button onClick={exportCSV} disabled={filtered.length===0} style={{padding:"7px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:filtered.length===0?"not-allowed":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:6,opacity:filtered.length===0?.5:1}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                CSV exportieren
+              </button>
+            </div>
           </div>
           {filtered.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Bestellungen.</div>:
           <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>

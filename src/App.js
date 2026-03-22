@@ -682,13 +682,10 @@ function Portal({session,onLogout}){
   };
 
   const SectionHeader=({id,label,badge})=>(
-    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
-      <div style={{display:"flex",alignItems:"center",gap:8}}>
+    <div style={{marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
-        {badge==="instant"&&<span style={{fontSize:".62rem",fontWeight:700,color:"#16a34a",background:"#dcfce7",padding:"2px 8px",borderRadius:4,letterSpacing:".04em",whiteSpace:"nowrap"}}>Sofort aktiv</span>}
-        {badge==="regen"&&<span style={{fontSize:".62rem",fontWeight:700,color:"#d97706",background:"#fef3c7",padding:"2px 8px",borderRadius:4,letterSpacing:".04em",whiteSpace:"nowrap"}}>Neugenierung</span>}
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
         {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
         {regenSent===id&&<span style={{color:"#d97706",fontSize:".78rem",fontWeight:600}}>{"\u2713"} Anfrage gesendet</span>}
         {editSection===id
@@ -698,7 +695,10 @@ function Portal({session,onLogout}){
             :<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
               <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
           :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
+        </div>
       </div>
+      {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"✓"} Aenderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
+      {badge==="regen"&&<div style={{fontSize:".75rem",color:"#d97706",marginTop:6}}>{"↻"} Aenderungen erfordern eine neue Website-Erstellung. Klicken Sie auf "Aenderung beantragen" – wir kuemmern uns innerhalb von 24 Stunden darum.</div>}
     </div>
   );
 
@@ -1041,13 +1041,6 @@ function Portal({session,onLogout}){
               <div><div style={{fontWeight:700,color:"#92400e",fontSize:".9rem"}}>Indexierung aktiv nach Livegang</div><div style={{fontSize:".82rem",color:"#78350f",marginTop:3}}>Sobald Ihre Website live geschaltet wird, entfernen wir die noindex-Markierung und Google kann Ihre Website finden.</div></div>
             </div>
           }
-        </div>
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16}}>Automatisch eingebaut</div>
-          {[{icon:"🏷️",t:"Meta-Tags",d:"Title und Description – optimiert fuer Google."},{icon:"📋",t:"Schema.org LocalBusiness",d:"Strukturierte Daten: Google erkennt Adresse, Telefon und Branche."},{icon:"🗺️",t:"Sitemap",d:"Ihre Website wird ueber die SiteReady-Sitemap von Google gefunden."},{icon:"📱",t:"Mobile-optimiert",d:"Google bewertet mobile Websites hoeher – Ihre Website ist responsive."},{icon:"⚡",t:"Ladezeit",d:"Kein unnoetigter Code, kein Tracking – schnell und leichtgewichtig."}].map((f,i,a)=>(<div key={i} style={{display:"flex",gap:12,padding:"10px 0",borderBottom:i<a.length-1?`1px solid ${T.bg3}`:"none"}}>
-            <span style={{fontSize:"1.1rem",flexShrink:0,marginTop:1}}>{f.icon}</span>
-            <div><div style={{fontWeight:600,fontSize:".84rem",color:T.dark}}>{f.t}</div><div style={{fontSize:".78rem",color:T.textSub,marginTop:2,lineHeight:1.5}}>{f.d}</div></div>
-          </div>))}
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Custom Domain & Google</div>

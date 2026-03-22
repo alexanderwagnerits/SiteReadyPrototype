@@ -1132,7 +1132,6 @@ function Admin({adminKey}){
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
   const[editKunde,setEditKunde]=useState(null);
-  const[archSubTab,setArchSubTab]=useState("system-arch");
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1220,7 +1219,16 @@ function Admin({adminKey}){
   if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung moeglich!",tab:"system"});
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
   if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
-  const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Website Health"},{id:"kosten",label:"Kosten"},{id:"architektur",label:"Architektur"}];
+  const TABS=[
+    {id:"start",label:"Start",section:"ADMIN"},
+    {id:"bestellungen",label:"Bestellungen"},
+    {id:"support",label:"Support"},
+    {id:"system",label:"System",badge:regenBadge},
+    {id:"health",label:"Website Health"},
+    {id:"kosten",label:"Kosten"},
+    {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
+    {id:"arch-flows",label:"Flows"},
+  ];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -1237,15 +1245,11 @@ function Admin({adminKey}){
       {/* Sidebar */}
       <div className="ad-sidebar" style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
         {TABS.map(t=><div key={t.id}>
-          <button onClick={()=>setTab(t.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"11px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>
+          {t.section&&<div style={{padding:"16px 20px 4px",fontSize:".6rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em"}}>{t.section}</div>}
+          <button onClick={()=>setTab(t.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"10px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>
             <span>{t.label}</span>
             {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".65rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
           </button>
-          {t.id==="architektur"&&tab==="architektur"&&[
-            {id:"system-arch",label:"System-Architektur"},
-            {id:"kunden-flow",label:"Kunden-Flow"},
-            {id:"system-flows",label:"System-Flows"},
-          ].map(s=><button key={s.id} onClick={()=>setArchSubTab(s.id)} style={{display:"block",width:"100%",padding:"8px 20px 8px 32px",border:"none",background:archSubTab===s.id?"#e0eaff":"transparent",color:archSubTab===s.id?T.accent:T.textMuted,textAlign:"left",cursor:"pointer",fontSize:".78rem",fontWeight:archSubTab===s.id?700:400,fontFamily:T.font,borderLeft:archSubTab===s.id?`3px solid ${T.accent}`:"3px solid transparent"}}>{s.label}</button>)}
         </div>)}
       </div>
 
@@ -1591,18 +1595,71 @@ function Admin({adminKey}){
         })()}
 
         {/* Tab: Architektur */}
-        {!loading&&tab==="architektur"&&(()=>{
-          const box=(label,sub,color,icon)=>(<div style={{background:"#fff",border:`2px solid ${color}33`,borderRadius:T.rSm,padding:"10px 14px",minWidth:120,flex:"1 1 120px"}}>
-            <div style={{fontSize:"1rem",marginBottom:3}}>{icon}</div>
-            <div style={{fontWeight:700,fontSize:".8rem",color:T.dark}}>{label}</div>
-            {sub&&<div style={{fontSize:".68rem",color:T.textMuted,marginTop:2,fontFamily:T.mono,lineHeight:1.4}}>{sub}</div>}
+        {!loading&&tab==="arch-system"&&(()=>{
+          const chip=(label,sub,color)=>(<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 8px",borderRadius:20,background:color+"14",border:`1px solid ${color}28`,fontSize:".69rem",fontWeight:600,color:T.dark,margin:"2px 3px",whiteSpace:"nowrap"}}>
+            <span style={{width:5,height:5,borderRadius:"50%",background:color,flexShrink:0}}/>
+            {label}{sub&&<span style={{fontSize:".6rem",color:T.textMuted,fontWeight:400}}>· {sub}</span>}
+          </span>);
+          const layer=(title,color,children,note)=>(<div style={{padding:"7px 12px",marginBottom:3,background:color+"07",borderLeft:`3px solid ${color}`,borderRadius:`0 ${T.rSm} ${T.rSm} 0`}}>
+            <div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",gap:0}}>
+              <span style={{fontSize:".6rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginRight:8,flexShrink:0}}>{title}</span>
+              <span style={{display:"inline"}}>{children}</span>
+            </div>
+            {note&&<div style={{marginTop:3,fontSize:".61rem",color,opacity:.65,fontStyle:"italic"}}>{note}</div>}
           </div>);
-          const layer=(title,color,children,note)=>(<div style={{border:`2px dashed ${color}55`,borderRadius:T.r,padding:"12px 14px",marginBottom:6,background:color+"06"}}>
-            <div style={{fontSize:".63rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{title}</div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{children}</div>
-            {note&&<div style={{marginTop:8,fontSize:".68rem",color,opacity:.7}}>{note}</div>}
+          const arr=<div style={{textAlign:"center",color:T.bg3,fontSize:".7rem",margin:"1px 0",lineHeight:1}}>↓</div>;
+          return(<div>
+            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 12px"}}>System-Architektur</h2>
+            {layer("Entwicklung & Deploy","#6366f1",<>
+              {chip("Entwickler","VS Code · Git","#6366f1")}
+              {chip("GitHub","main branch","#6366f1")}
+              {chip("Cloudflare Pages CI/CD","push → build → deploy","#6366f1")}
+            </>,"git push main → automatischer Build & Deploy ~1 Min.")}
+            {arr}
+            {layer("Nutzer","#64748b",<>
+              {chip("Neukunde","Landingpage · Formular · Stripe","#64748b")}
+              {chip("Bestandskunde","Portal-Login","#64748b")}
+              {chip("Admin","/admin?key=...","#64748b")}
+            </>)}
+            {arr}
+            {layer("Cloudflare Pages (Edge/CDN)","#f97316",<>
+              {chip("React SPA","/ · Landing + Formular","#f97316")}
+              {chip("Admin Dashboard","/admin?key=...","#f97316")}
+              {chip("Edge Functions","/api/* · 8 Endpoints","#f97316")}
+              {chip("Website Serving","/s/[subdomain]","#f97316")}
+              {chip("Legal Serving","/s/[subdomain]/impressum","#f97316")}
+            </>,"SSL automatisch · CDN weltweit · robots.txt: /s/* noindex (Prototyp)")}
+            {arr}
+            {layer("Supabase","#2563eb",<>
+              {chip("PostgreSQL","orders-Tabelle","#2563eb")}
+              {chip("Supabase Auth","Portal-Login · JWT","#2563eb")}
+            </>)}
+            {arr}
+            {layer("Externe APIs","#8b5cf6",<>
+              {chip("Anthropic Claude","claude-sonnet-4-6","#8b5cf6")}
+              {chip("Stripe","Checkout · Webhooks","#16a34a")}
+              {chip("Google Fonts","DM Sans · Inter · Source Serif","#f59e0b")}
+              {chip("Google Maps","iframe Embed","#dc2626")}
+            </>)}
+            {arr}
+            {layer("DNS & Domains","#94a3b8",<>
+              {chip("Cloudflare DNS","siteready.at","#94a3b8")}
+              {chip("Kunden-Subdomain","{firma}.siteready.at","#94a3b8")}
+              {chip("Custom Domain","CNAME optional","#94a3b8")}
+            </>)}
+            {arr}
+            {layer("SEO (nach Prototyp)","#94a3b8",<>
+              {chip("Google Search Console","Domain-Verif. · Sitemap · Indexierung","#94a3b8")}
+              {chip("sitemap.xml","geplant · Edge Function","#94a3b8")}
+              {chip("robots.txt","aktiv · /s/* gesperrt","#16a34a")}
+            </>,"noindex aktiv auf allen Kunden-Websites – Prototyp-Phase")}
+            <div style={{marginTop:10,padding:"7px 11px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".69rem",color:"#1e40af",lineHeight:1.7}}>
+              <strong>Serve-time:</strong> E-Mail, Telefon, Adresse live aus Supabase – kein Re-Deploy. &nbsp;<strong>Impressum/Datenschutz:</strong> legal.js frisch aus DB bei jedem Request.
+            </div>
           </div>);
-          const arrow=<div style={{textAlign:"center",color:T.textMuted,fontSize:"1rem",margin:"2px 0"}}>↓</div>;
+        })()}
+
+        {!loading&&tab==="arch-flows"&&(()=>{
           const svc=(label,color)=>(<span style={{display:"inline-block",padding:"2px 7px",borderRadius:3,background:color+"18",color,fontSize:".62rem",fontWeight:800,letterSpacing:".06em",textTransform:"uppercase",marginRight:6,flexShrink:0}}>{label}</span>);
           const step=(service,color,action,detail)=>(<div style={{display:"flex",gap:10,paddingBottom:6}}>
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:18}}>
@@ -1610,101 +1667,42 @@ function Admin({adminKey}){
               <div style={{width:1,flex:1,background:T.bg3,marginTop:3}}/>
             </div>
             <div style={{paddingBottom:8,flex:1}}>
-              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>
-                {svc(service,color)}
-                <span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span>
-              </div>
+              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>{svc(service,color)}<span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span></div>
               {detail&&<div style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}
             </div>
           </div>);
           const lastStep=(service,color,action,detail)=>(<div style={{display:"flex",gap:10}}>
             <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/>
             <div style={{flex:1}}>
-              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>
-                {svc(service,color)}
-                <span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span>
-              </div>
+              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>{svc(service,color)}<span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span></div>
               {detail&&<div style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}
             </div>
           </div>);
           const flowTitle=(icon,label)=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${T.bg3}`}}>
-            <span style={{fontSize:"1.1rem"}}>{icon}</span>
+            <span style={{fontSize:"1rem"}}>{icon}</span>
             <span style={{fontSize:".85rem",fontWeight:800,color:T.dark}}>{label}</span>
           </div>);
-          const flowStep=(icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 90px",minWidth:90,maxWidth:150}}>
+          const flowStep=(icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 90px",minWidth:80,maxWidth:140}}>
             <div style={{width:38,height:38,borderRadius:"50%",background:color+"18",border:`2px solid ${color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>{icon}</div>
             <div style={{fontSize:".7rem",fontWeight:700,color:T.dark,textAlign:"center",lineHeight:1.3}}>{label}</div>
-            {sub&&<div style={{fontSize:".63rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}
+            {sub&&<div style={{fontSize:".62rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}
             {optional&&<span style={{fontSize:".58rem",fontWeight:700,color:T.textMuted,background:T.bg3,padding:"1px 5px",borderRadius:3}}>Optional</span>}
           </div>);
           const flowArrow=<div style={{color:T.textMuted,fontSize:"1rem",alignSelf:"center",flexShrink:0,paddingBottom:16}}>→</div>;
-          const phase=(label,color,children)=>(<div style={{marginBottom:16}}>
-            <div style={{fontSize:".63rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,paddingLeft:2}}>{label}</div>
+          const phase=(label,color,children)=>(<div style={{marginBottom:14}}>
+            <div style={{fontSize:".62rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,paddingLeft:2}}>{label}</div>
             <div style={{display:"flex",alignItems:"flex-start",gap:4,flexWrap:"wrap"}}>{children}</div>
           </div>);
-          const title=(t)=>(<h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 18px"}}>{t}</h2>);
-
           return(<div>
-            {/* System-Architektur */}
-            {archSubTab==="system-arch"&&<div>
-              {title("System-Architektur")}
-              {layer("Entwicklung & Deployment","#6366f1",<>
-                {box("Entwickler","lokal · VS Code · Git","#6366f1","💻")}
-                {box("GitHub","main branch · CI/CD Trigger","#6366f1","🐙")}
-                {box("Cloudflare Pages CI/CD","npm run build · auto-deploy bei Push","#6366f1","🔄")}
-              </>,"Push auf main → automatischer Build & Deploy innerhalb ~1 Minute")}
-              {arrow}
-              {layer("Nutzer","#64748b",<>
-                {box("Neukunde","Landingpage · Formular · Stripe","#64748b","🧑")}
-                {box("Bestandskunde","Portal-Login · Supabase Auth","#64748b","👤")}
-                {box("Admin","Browser · /admin?key=...","#64748b","🔧")}
-              </>)}
-              {arrow}
-              {layer("Cloudflare Pages (Edge / CDN)","#f97316",<>
-                {box("React SPA","/ · Landingpage + Formular","#f97316","⚛️")}
-                {box("Admin Dashboard","/admin?key=ADMIN_SECRET","#f97316","🗂️")}
-                {box("Edge Functions","/api/* · 8 Endpoints","#f97316","⚡")}
-                {box("Website Serving","/s/[subdomain] · index.js","#f97316","🌍")}
-                {box("Legal Serving","/s/[subdomain]/impressum · legal.js","#f97316","📄")}
-              </>,"SSL automatisch · CDN weltweit · robots.txt: /admin + /api/* + /s/* gesperrt")}
-              {arrow}
-              {layer("Datenbank & Auth","#2563eb",<>
-                {box("Supabase","PostgreSQL · orders-Tabelle","#2563eb","🗄️")}
-                {box("Supabase Auth","Portal-Login · JWT-Tokens","#2563eb","🔐")}
-              </>)}
-              {arrow}
-              {layer("Externe APIs","#8b5cf6",<>
-                {box("Anthropic Claude","claude-sonnet-4-6 · Website-Gen.","#8b5cf6","🤖")}
-                {box("Stripe","Checkout · Webhooks · Dashboard","#16a34a","💳")}
-                {box("Google Fonts","CDN · DM Sans, Inter, Source Serif","#f59e0b","🔤")}
-                {box("Google Maps","iframe Embed · Adresse encoded","#dc2626","🗺️")}
-              </>)}
-              {arrow}
-              {layer("DNS & Domain","#94a3b8",<>
-                {box("Cloudflare DNS","siteready.at · A/CNAME Records","#94a3b8","🌐")}
-                {box("Kunden-Subdomain","{firma}.siteready.at","#94a3b8","🔗")}
-                {box("Custom Domain","CNAME → siteready.at · Optional","#94a3b8","🏠")}
-              </>)}
-              {arrow}
-              {layer("SEO-Tools (nach Prototyp)","#94a3b8",<>
-                {box("Google Search Console","Domain-Verif. · Sitemap · Indexierung","#94a3b8","📊")}
-                {box("sitemap.xml","dynamisch via Edge Function · geplant","#94a3b8","🗺️")}
-                {box("robots.txt","aktiv · /s/* Prototyp-gesperrt","#16a34a","🤖")}
-              </>,"Alles in dieser Schicht ist Prototyp-Phase – noindex aktiv auf allen Seiten")}
-              <div style={{marginTop:12,padding:"8px 12px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".72rem",color:"#1e40af",lineHeight:1.7}}>
-                <strong>Serve-time Ersetzung:</strong> E-Mail, Telefon, Adresse live aus Supabase – kein Re-Deploy.<br/>
-                <strong>Impressum &amp; Datenschutz:</strong> legal.js generiert bei jedem Request frisch aus DB – immer aktuell.<br/>
-                <strong>Deploy:</strong> git push main → GitHub → Cloudflare Pages baut + deployed automatisch.
-              </div>
-            </div>}
+            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>Flows</h2>
 
             {/* Kunden-Flow */}
-            {archSubTab==="kunden-flow"&&<div>
-              {title("Kunden-Flow")}
+            <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,marginBottom:16}}>
+              {flowTitle("🧑","Kunden-Flow")}
               {phase("Phase 1 – Bestellung","#2563eb",<>
                 {flowStep("📋","Formular","5 Schritte im Wizard","#2563eb")}
                 {flowArrow}
-                {flowStep("💳","Stripe Checkout","Einmalzahlung €18","#16a34a")}
+                {flowStep("💳","Stripe Checkout","Einmalzahlung \u20ac18","#16a34a")}
                 {flowArrow}
                 {flowStep("✅","Order in DB","Status: paid","#2563eb")}
               </>)}
@@ -1726,61 +1724,61 @@ function Admin({adminKey}){
                 {flowArrow}
                 {flowStep("🧹","Subdomain entfernen","kein Duplicate Content","#94a3b8",true)}
               </>)}
-              <div style={{padding:"8px 12px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".72rem",color:"#92400e"}}>
-                Phase 3 noch nicht aktiv &ndash; noindex auf allen Websites gesetzt. Google Search Console erst nach Freischaltung relevant.
+              <div style={{padding:"7px 10px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".7rem",color:"#92400e"}}>
+                Phase 3 noch nicht aktiv &ndash; noindex auf allen Websites. Google Search Console erst nach Freischaltung relevant.
               </div>
-            </div>}
+            </div>
 
-            {/* System-Flows */}
-            {archSubTab==="system-flows"&&<div>
-              {title("System-Flows")}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-                <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
-                  {flowTitle("💳","Bestellung & Zahlung")}
-                  {step("React SPA","#3b82f6","Supabase INSERT orders","status:pending · alle Formulardaten")}
-                  {step("React SPA","#3b82f6","POST /api/create-checkout","orderId · firmenname · email")}
-                  {step("create-checkout.js","#f97316","Stripe API: Checkout Session","€18,00 · mode:payment · metadata:order_id")}
-                  {step("Stripe","#16a34a","Browser → Checkout-Seite","Zahlungsformular auf stripe.com")}
-                  {step("Stripe","#16a34a","POST /api/stripe-webhook","Event: checkout.session.completed")}
-                  {step("stripe-webhook.js","#f97316","HMAC-SHA256 Signatur pruefen","Timestamp-Check: max. 5 Minuten")}
-                  {step("stripe-webhook.js","#f97316","Supabase PATCH orders","status: → paid")}
-                  {lastStep("stripe-webhook.js","#f97316","ctx.waitUntil: generate-website","POST /api/generate-website im Hintergrund")}
-                </div>
-                <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
-                  {flowTitle("🤖","Website-Generierung")}
-                  {step("Edge Function","#f97316","Supabase GET order by id","alle Kundendaten + Unternehmensform")}
-                  {step("generate-website.js","#8b5cf6","Stil + Branchenpalette waehlen","STYLES_MAP · PALETTES · branchenspez. Farben")}
-                  {step("generate-website.js","#8b5cf6","Nav & Footer JS-Templates bauen","buildNav() + buildFooter() · Impressum/Datenschutz-Links · Serve-time-Variablen")}
-                  {step("generate-website.js","#8b5cf6","System-Prompt aufbauen","Responsive-Regeln · Seitenstruktur · Trust-Bar")}
-                  {step("Claude API","#8b5cf6","POST claude-sonnet-4-6","max_tokens:8192 · system + user message")}
-                  {step("generate-website.js","#f97316","Nav/Footer injizieren","<!-- NAV --> · <!-- FOOTER --> Placeholder ersetzen")}
-                  {step("generate-website.js","#f97316","Google Maps injizieren","<!-- MAPS --> → Google Maps iframe (Adresse URL-encoded)")}
-                  {step("generate-website.js","#f97316","Meta-Tags setzen","title · description · og:* · canonical · robots:noindex")}
-                  {step("generate-website.js","#f97316","Schema.org JSON-LD","@type:LocalBusiness · address · telephone · sameAs")}
-                  {step("generate-website.js","#f97316","Scripts injizieren","ScrollSpy · Float-Call-Button (nur Mobile)")}
-                  {lastStep("Supabase","#2563eb","PATCH orders","website_html · subdomain · status:review · tokens_in/out · cost_eur")}
-                </div>
-                <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
-                  {flowTitle("🌍","Website-Auslieferung")}
-                  {step("Browser","#64748b","GET /s/{subdomain}","Kunde oder Google-Bot")}
-                  {step("index.js","#f97316","Supabase GET orders","?subdomain=eq.{subdomain}&select=*")}
-                  {step("index.js","#f97316","Status-Check","404 kein Eintrag/kein HTML · 503 offline · 200 ok")}
-                  {step("index.js","#f97316","Logo injizieren","id=site-nav-logo → <img src=url_logo>")}
-                  {step("index.js","#f97316","Foto-Slots injizieren","slot-hero · slot-foto1 · slot-foto2 · slot-team")}
-                  {step("index.js","#f97316","Serve-time Variablen ersetzen","{{FIRMENNAME}} {{TEL_HREF}} {{TEL_DISPLAY}} {{EMAIL}} {{ADRESSE_VOLL}} {{OEFFNUNGSZEITEN}} {{SOCIAL_ICONS}}")}
-                  {lastStep("Browser","#64748b","Response: fertiges HTML","Cache-Control: public, max-age=60")}
-                </div>
-                <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
-                  {flowTitle("📄","Impressum & Datenschutz")}
-                  {step("Browser","#64748b","GET /s/{subdomain}/impressum","Link aus Footer der generierten Website")}
-                  {step("legal.js","#f97316","Supabase GET order by subdomain","alle Kundendaten inkl. Unternehmensform")}
-                  {step("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 · unternehmensformspez. Felder · e.U./GmbH/OG/KG/AG/Verein/GesbR")}
-                  {step("legal.js","#2563eb","Datenschutz-Inhalt aufbauen","DSGVO Art.13 · Verantwortlicher vs. Auftragsverarbeiter · Google Fonts · Cloudflare SCCs")}
-                  {step("legal.js","#2563eb","HTML zusammenbauen","Card-Design · kein gespeichertes Template · immer frisch")}
-                  {lastStep("Browser","#64748b","Response: HTML","Aenderungen an Kundendaten sofort sichtbar · kein Re-Deploy")}
+            {/* Technische Flows */}
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Technische Flows</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                {flowTitle("💳","Bestellung & Zahlung")}
+                {step("React SPA","#3b82f6","Supabase INSERT orders","status:pending · alle Formulardaten")}
+                {step("React SPA","#3b82f6","POST /api/create-checkout","orderId · firmenname · email")}
+                {step("create-checkout.js","#f97316","Stripe API: Checkout Session","\u20ac18,00 · mode:payment · metadata:order_id")}
+                {step("Stripe","#16a34a","Browser → Checkout-Seite","Zahlungsformular auf stripe.com")}
+                {step("Stripe","#16a34a","POST /api/stripe-webhook","Event: checkout.session.completed")}
+                {step("stripe-webhook.js","#f97316","HMAC-SHA256 Signatur pruefen","Timestamp-Check: max. 5 Minuten")}
+                {step("stripe-webhook.js","#f97316","Supabase PATCH orders","status: \u2192 paid")}
+                {lastStep("stripe-webhook.js","#f97316","ctx.waitUntil: generate-website","POST /api/generate-website im Hintergrund")}
+              </div>
+              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                {flowTitle("🤖","Website-Generierung")}
+                {step("Edge Function","#f97316","Supabase GET order by id","alle Kundendaten + Unternehmensform")}
+                {step("generate-website.js","#8b5cf6","Stil + Branchenpalette waehlen","STYLES_MAP · PALETTES · branchenspez. Farben")}
+                {step("generate-website.js","#8b5cf6","Nav & Footer JS-Templates bauen","buildNav() + buildFooter() · Impressum/Datenschutz-Links")}
+                {step("generate-website.js","#8b5cf6","System-Prompt aufbauen","Responsive-Regeln · Seitenstruktur · Trust-Bar")}
+                {step("Claude API","#8b5cf6","POST claude-sonnet-4-6","max_tokens:8192 · system + user message")}
+                {step("generate-website.js","#f97316","Nav/Footer + Maps injizieren","<!-- NAV --> · <!-- FOOTER --> · <!-- MAPS --> ersetzen")}
+                {step("generate-website.js","#f97316","Meta-Tags + Schema.org setzen","title · og:* · canonical · robots:noindex · JSON-LD")}
+                {step("generate-website.js","#f97316","Scripts injizieren","ScrollSpy · Float-Call-Button (nur Mobile)")}
+                {lastStep("Supabase","#2563eb","PATCH orders","website_html · status:review · tokens_in/out · cost_eur")}
+              </div>
+              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,gridColumn:"1 / -1"}}>
+                {flowTitle("🌍","Auslieferung (Website + Impressum/Datenschutz)")}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+                  <div>
+                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>GET /s/&#123;subdomain&#125; — index.js</div>
+                    {step("Browser","#64748b","GET /s/{subdomain}","Kunde oder Google-Bot")}
+                    {step("index.js","#f97316","Supabase GET orders","?subdomain=eq.{subdomain}")}
+                    {step("index.js","#f97316","Status-Check","404 kein HTML · 503 offline · 200 ok")}
+                    {step("index.js","#f97316","Logo + Foto-Slots injizieren","site-nav-logo · slot-hero · slot-foto1/2 · slot-team")}
+                    {step("index.js","#f97316","Serve-time Variablen ersetzen","{{FIRMENNAME}} {{TEL_HREF}} {{EMAIL}} {{ADRESSE_VOLL}} {{OEFFNUNGSZEITEN}} {{SOCIAL_ICONS}}")}
+                    {lastStep("Browser","#64748b","Response: fertiges HTML","Cache-Control: public, max-age=60")}
+                  </div>
+                  <div>
+                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>GET /s/&#123;subdomain&#125;/impressum — legal.js</div>
+                    {step("Browser","#64748b","GET /s/{subdomain}/impressum","Link aus Footer der generierten Website")}
+                    {step("legal.js","#f97316","Supabase GET order by subdomain","alle Kundendaten inkl. Unternehmensform")}
+                    {step("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 · e.U./GmbH/OG/KG/AG/Verein/GesbR")}
+                    {step("legal.js","#2563eb","Datenschutz aufbauen","DSGVO Art.13 · Google Fonts · Cloudflare SCCs")}
+                    {step("legal.js","#2563eb","HTML zusammenbauen","kein gespeichertes Template · immer frisch")}
+                    {lastStep("Browser","#64748b","Response: HTML","Aenderungen an Kundendaten sofort sichtbar")}
+                  </div>
                 </div>
               </div>
-            </div>}
+            </div>
           </div>);
         })()}
       </div>

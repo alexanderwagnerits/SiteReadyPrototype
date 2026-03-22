@@ -25,6 +25,18 @@ export async function onRequestPost({request, env}) {
       if (mailtoMatch) emailFromHtml = mailtoMatch[1];
     }
 
+    // Social Media Links direkt aus HTML extrahieren
+    const socialLinks = {facebook:"", instagram:"", linkedin:"", tiktok:""};
+    if (mainHtml) {
+      const hrefs = [...mainHtml.matchAll(/href=["']([^"']+)["']/gi)].map(m => m[1]);
+      for (const h of hrefs) {
+        if (!socialLinks.facebook  && /facebook\.com\//i.test(h)  && !/sharer|share|login|dialog/i.test(h)) socialLinks.facebook  = h;
+        if (!socialLinks.instagram && /instagram\.com\//i.test(h) && !/sharer|share|login/i.test(h))        socialLinks.instagram = h;
+        if (!socialLinks.linkedin  && /linkedin\.com\//i.test(h)  && !/sharer|share|login/i.test(h))        socialLinks.linkedin  = h;
+        if (!socialLinks.tiktok    && /tiktok\.com\//i.test(h)    && !/sharer|share|login/i.test(h))        socialLinks.tiktok    = h;
+      }
+    }
+
     // Impressum-Link aus HTML-Links extrahieren
     let impressumUrl = "";
     if (mainHtml) {
@@ -183,6 +195,10 @@ ${fullText}`,
       gisazahl: extracted.gisazahl || "",
       branche: extracted.branche || "",
       leistungen: Array.isArray(extracted.leistungen) ? extracted.leistungen.slice(0, 8) : [],
+      facebook:  socialLinks.facebook  || "",
+      instagram: socialLinks.instagram || "",
+      linkedin:  socialLinks.linkedin  || "",
+      tiktok:    socialLinks.tiktok    || "",
     });
 
   } catch(e) {

@@ -1429,9 +1429,9 @@ function Admin({adminKey}){
             </button>
           </div>
           {genMsg[sel.id]&&<div style={{marginTop:8,fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
-          {sel.status==="review"&&sel.website_html&&<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{marginTop:8,padding:"8px 16px",border:"none",borderRadius:T.rSm,background:T.green,color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,width:"100%"}}>
-            {"\uD83D\uDE80"} Live setzen
-          </button>}
+          {(()=>{const ready=sel.status==="review"&&!!sel.website_html;return(<button onClick={ready?()=>updateOrder(sel.id,{status:"live"}):undefined} disabled={!ready} style={{marginTop:8,padding:"8px 16px",border:"none",borderRadius:T.rSm,background:ready?T.green:"#e2e8f0",color:ready?"#fff":"#94a3b8",cursor:ready?"pointer":"default",fontSize:".82rem",fontWeight:700,fontFamily:T.font,width:"100%",transition:"background .2s"}}>
+            {"\uD83D\uDE80"} {sel.status==="live"?"Bereits live":ready?"Live setzen":"Live setzen (noch nicht bereit)"}
+          </button>);})()}
         </div>
         <div style={{marginTop:14}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>

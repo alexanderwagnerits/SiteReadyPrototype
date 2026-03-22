@@ -1129,6 +1129,7 @@ function Admin({adminKey}){
   const[healthTime,setHealthTime]=useState({});
   const[healthFilter,setHealthFilter]=useState("alle");
   const[deleteConfirm,setDeleteConfirm]=useState(null);
+  const[regenConfirm,setRegenConfirm]=useState(null);
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1665,10 +1666,24 @@ function Admin({adminKey}){
             {"\uD83D\uDD17"} /s/{sel.subdomain}
           </a>}
           <div>
-            <button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>
-              {genLoading[sel.id]?"Generiert (ca. 30s)...":sel.website_html?"Website neu generieren":"\u2728 Website generieren"}
-            </button>
+            {sel.website_html
+              ?regenConfirm===sel.id
+                ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>
+                  {genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}
+                </button>
+              :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>
+                {genLoading[sel.id]?"Generiert (ca. 30s)...":"\u2728 Website generieren"}
+              </button>
+            }
           </div>
+          {regenConfirm===sel.id&&<div style={{marginTop:8,background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben. "NEU" eintippen:</div>
+            <div style={{display:"flex",gap:6}}>
+              <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+              <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
+            </div>
+          </div>}
           {genMsg[sel.id]&&<div style={{marginTop:8,fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
           {(()=>{const ready=sel.status==="review"&&!!sel.website_html;return(<button onClick={ready?()=>updateOrder(sel.id,{status:"live"}):undefined} disabled={!ready} style={{marginTop:8,padding:"8px 16px",border:"none",borderRadius:T.rSm,background:ready?T.green:"#e2e8f0",color:ready?"#fff":"#94a3b8",cursor:ready?"pointer":"default",fontSize:".82rem",fontWeight:700,fontFamily:T.font,width:"100%",transition:"background .2s"}}>
             {"\uD83D\uDE80"} {sel.status==="live"?"Bereits live":ready?"Live setzen":"Live setzen (noch nicht bereit)"}

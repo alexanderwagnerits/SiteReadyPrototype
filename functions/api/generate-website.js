@@ -23,7 +23,7 @@ function buildNav(o, pal, stil) {
 </style>
 <nav id="sitenav">
 <div class="nav-inner">
-<a href="#" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">${o.firmenname}</a>
+<a href="#" id="site-nav-logo" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">${o.firmenname}</a>
 <div class="nav-links">
 <a href="#leistungen" class="nav-link">Leistungen</a>
 <a href="#ueber-uns" class="nav-link">\u00dcber uns</a>
@@ -339,7 +339,12 @@ E-Mail:         ${o.email || ""}
 Oeffnungszeiten: ${oez}
 
 NOTDIENST:    ${o.notdienst ? "JA - 24/7 Notdienst - SEHR PROMINENT darstellen!" : "Nein"}
-FOTOS:        ${o.fotos ? "Ja - Bildplaetze als gestaltete farbige Platzhalter-Bloecke (CSS background-color + passendem Emoji zentriert, KEINE img-Tags)" : "Nein - Keine Bildplaetze einbauen"}
+FOTOS:        ${o.fotos ? `Ja - Bildplaetze als gestaltete farbige Platzhalter-Bloecke (CSS background-color + Emoji, KEINE img-Tags).
+BILDSLOT-IDs PFLICHT (fuer spaetere Foto-Injektion):
+- Hero-Bildplatz: id="slot-hero" mit style="position:relative;overflow:hidden;min-height:420px"
+- Galerie Foto 1: id="slot-foto1" mit style="position:relative;overflow:hidden;min-height:240px"
+- Galerie Foto 2: id="slot-foto2" mit style="position:relative;overflow:hidden;min-height:240px"
+- Teamfoto:       id="slot-team" mit style="position:relative;overflow:hidden;min-height:280px"` : "Nein - Keine Bildplaetze einbauen"}
 STIL-GEFUEHL: ${stil.feel}
 
 STRUKTUR-PFLICHT: Setze exakt diese Kommentare als Platzhalter:

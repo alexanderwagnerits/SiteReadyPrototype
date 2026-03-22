@@ -1619,6 +1619,10 @@ function Admin({adminKey}){
                       <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
                       <input value={editKunde[k]} onChange={e=>setEditKunde(ev=>({...ev,[k]:e.target.value}))} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
                     </div>)}
+                  <div style={{marginTop:10,padding:"8px 10px",borderRadius:T.rSm,background:"#eff6ff",border:"1px solid #bfdbfe",fontSize:".72rem",color:"#1e40af",lineHeight:1.6}}>
+                    <strong>E-Mail, Telefon, Adresse:</strong> sofort live (serve-time).<br/>
+                    <strong>Subdomain:</strong> URL aendert sich sofort &ndash; danach Website neu generieren.
+                  </div>
                   </div>
                 :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                   {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>

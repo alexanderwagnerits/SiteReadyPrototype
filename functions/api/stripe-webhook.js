@@ -1,4 +1,4 @@
-export async function onRequestPost({request, env}) {
+export async function onRequestPost({request, env, ctx}) {
   const sig = request.headers.get("stripe-signature");
   const body = await request.text();
 
@@ -33,6 +33,17 @@ export async function onRequestPost({request, env}) {
         },
         body: JSON.stringify({status: "paid"}),
       });
+
+      // Website automatisch generieren (im Hintergrund, blockiert Stripe-Response nicht)
+      if (env.SITE_URL && env.ADMIN_SECRET) {
+        ctx.waitUntil(
+          fetch(`${env.SITE_URL}/api/generate-website?key=${env.ADMIN_SECRET}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({order_id: orderId}),
+          }).catch(() => {/* Fehler still ignorieren - wird im Admin neu ausgeloest */})
+        );
+      }
     }
   }
 

@@ -1007,6 +1007,8 @@ function Admin({adminKey}){
   const[sysLoading,setSysLoading]=useState(false);
   const[notiz,setNotiz]=useState({});
   const[notizSaved,setNotizSaved]=useState({});
+  const[genLoading,setGenLoading]=useState({});
+  const[genMsg,setGenMsg]=useState({});
 
   useEffect(()=>{load();},[]);
 
@@ -1037,6 +1039,25 @@ function Admin({adminKey}){
   };
 
   const nextStatus=s=>{const i=STATUS_FLOW.indexOf(s);return i<STATUS_FLOW.length-1?STATUS_FLOW[i+1]:s;};
+
+  const generateWebsite=async(id)=>{
+    setGenLoading(g=>({...g,[id]:true}));
+    setGenMsg(m=>({...m,[id]:""}));
+    try{
+      const r=await fetch(`/api/generate-website?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:id})});
+      const j=await r.json();
+      if(j.ok){
+        setGenMsg(m=>({...m,[id]:"Website erstellt! Status: review"}));
+        await load();
+        setSel(s=>s?.id===id?{...s,status:"review",subdomain:j.subdomain}:s);
+      } else {
+        setGenMsg(m=>({...m,[id]:"Fehler: "+(j.error||"Unbekannt")}));
+      }
+    }catch(e){
+      setGenMsg(m=>({...m,[id]:"Netzwerkfehler: "+e.message}));
+    }
+    setGenLoading(g=>({...g,[id]:false}));
+  };
 
   const exportCSV=()=>{
     const headers=["ID","Datum","Firma","E-Mail","Branche","Status","PLZ","Ort","Telefon","Unternehmensform","UID","Subdomain"];
@@ -1381,6 +1402,19 @@ function Admin({adminKey}){
               </div>);
             });
           })()}
+        </div>
+        {/* Website generieren */}
+        <div style={{marginTop:14,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Website</div>
+          {sel.website_html&&sel.subdomain&&<a href={`/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:".82rem",color:T.green,fontWeight:600,marginBottom:10,textDecoration:"none"}}>
+            {"\uD83D\uDD17"} /s/{sel.subdomain}
+          </a>}
+          <div>
+            <button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>
+              {genLoading[sel.id]?"Generiert (ca. 30s)...":sel.website_html?"Website neu generieren":"\u2728 Website generieren"}
+            </button>
+          </div>
+          {genMsg[sel.id]&&<div style={{marginTop:8,fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
         </div>
         <div style={{marginTop:14}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>

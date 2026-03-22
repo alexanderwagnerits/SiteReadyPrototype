@@ -387,6 +387,47 @@ Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer
   // Eventuelle Impressum-Placeholder entfernen (Impressum ist jetzt auf /s/[sub]/impressum)
   html = html.replace("<!-- IMPRESSUM -->", "");
 
+  // ── <title> + Meta-Description programmatisch ueberschreiben ──
+  const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
+  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Handwerk"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  html = html.replace(/<title>[^<]*<\/title>/i, `<title>${metaTitle}</title>`);
+  html = html.replace(/<meta\s+name=["']description["'][^>]*>/i, "");
+  html = html.replace(/<meta\s+property=["']og:title["'][^>]*>/i, "");
+  html = html.replace(/<meta\s+property=["']og:description["'][^>]*>/i, "");
+  html = html.replace("</head>", `<meta name="description" content="${metaDesc}">
+<meta property="og:title" content="${metaTitle}">
+<meta property="og:description" content="${metaDesc}">
+<meta property="og:type" content="website">
+</head>`);
+
+  // ── Schema.org JSON-LD (LocalBusiness) ──
+  const schemaAddress = {
+    "@type": "PostalAddress",
+    ...(o.adresse          ? {"streetAddress":    o.adresse}          : {}),
+    ...(o.plz              ? {"postalCode":        o.plz}              : {}),
+    ...(o.ort              ? {"addressLocality":   o.ort}              : {}),
+    "addressCountry": "AT",
+  };
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": o.firmenname,
+    "description": metaDesc,
+    "address": schemaAddress,
+    ...(o.telefon ? {"telephone": o.telefon} : {}),
+    ...(o.email   ? {"email":     o.email}   : {}),
+    ...(o.facebook  ? {"sameAs": [o.facebook]}  : {}),
+  };
+  html = html.replace("</head>", `<script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
+
+  // ── Floating Call-Button (Mobile) ──
+  if (o.telefon) {
+    const telHrefFloat = `tel:${o.telefon.replace(/\s/g,"")}`;
+    const floatBtn = `<a href="${telHrefFloat}" id="float-call" aria-label="Jetzt anrufen" style="display:none;position:fixed;bottom:24px;right:20px;z-index:9999;background:${pal.a};color:#fff;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.25);text-decoration:none;font-size:1.4rem;transition:transform .2s">📞</a>
+<script>(function(){var b=document.getElementById('float-call');function s(){b.style.display=window.innerWidth<=768?'flex':'none';}s();window.addEventListener('resize',s);})();</script>`;
+    html = html.replace("</body>", floatBtn + "\n</body>");
+  }
+
   /* ─── In Supabase speichern + Status setzen ─── */
   const save = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`,

@@ -1210,7 +1210,7 @@ function Admin({adminKey}){
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
   if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
   if(regenQueue.length)alerts.push({type:"info",msg:`${regenQueue.length} ausstehende Leistungs-Neugenierung${regenQueue.length>1?"en":""}`,tab:"system"});
-  const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Health"},{id:"kosten",label:"Kosten"}];
+  const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Website Health"},{id:"kosten",label:"Kosten"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}

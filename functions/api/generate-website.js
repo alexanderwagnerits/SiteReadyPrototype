@@ -73,8 +73,8 @@ ${tel ? `<a href="${telHref}" style="color:#fff;font-weight:700;font-size:.9rem;
 <a href="#leistungen" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Leistungen</a>
 <a href="#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">\u00dcber uns</a>
 <a href="#kontakt" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Kontakt</a>
-<a href="#impressum" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Impressum</a>
-<a href="#datenschutz" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Datenschutz</a>
+<a href="/s/${sub}/impressum" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Impressum</a>
+<a href="/s/${sub}/datenschutz" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Datenschutz</a>
 </div>
 </div>
 <div>
@@ -89,8 +89,8 @@ ${o.email ? `<a href="mailto:${o.email}" style="color:rgba(255,255,255,.7);text-
 <div style="border-top:1px solid rgba(255,255,255,.1);padding:20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
 <span style="opacity:.4;font-size:.78rem">&copy; ${year} ${o.firmenname}</span>
 <div style="display:flex;gap:20px">
-<a href="#impressum" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Impressum</a>
-<a href="#datenschutz" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Datenschutz</a>
+<a href="/s/${sub}/impressum" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Impressum</a>
+<a href="/s/${sub}/datenschutz" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Datenschutz</a>
 </div>
 </div>
 </div>
@@ -359,7 +359,7 @@ Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer
   // Markdown-Backticks entfernen falls Claude sie dennoch ausgibt
   html = html.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
-  // Nav + Footer + Impressum injizieren
+  // Nav + Footer injizieren (Impressum/Datenschutz auf eigenen Unterseiten)
   html = html.includes("<!-- NAV -->")
     ? html.replace("<!-- NAV -->", navHtml)
     : html.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
@@ -368,9 +368,8 @@ Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer
     ? html.replace("<!-- FOOTER -->", footerHtml)
     : html.replace(/<\/body>/i, footerHtml + "\n</body>");
 
-  html = html.includes("<!-- IMPRESSUM -->")
-    ? html.replace("<!-- IMPRESSUM -->", impressumHtml)
-    : html.replace(/<\/body>/i, impressumHtml + "\n</body>");
+  // Eventuelle Impressum-Placeholder entfernen (Impressum ist jetzt auf /s/[sub]/impressum)
+  html = html.replace("<!-- IMPRESSUM -->", "");
 
   /* ─── In Supabase speichern + Status setzen ─── */
   const save = await fetch(

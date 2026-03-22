@@ -161,7 +161,7 @@ function LandingPage({onStart,onPortal}){
         <div>
           <div style={{display:"inline-flex",alignItems:"center",gap:7,border:"1px solid rgba(37,99,235,.18)",color:T.accent,padding:"5px 13px",borderRadius:6,fontSize:".72rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:28}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:T.accent,animation:"pulse 2s infinite"}}/>
-            Fuer Handwerker & Kosmetikbetriebe in Oesterreich
+            Professionelle Websites fuer oesterreichische Kleinbetriebe
           </div>
           <h1 style={{fontSize:"clamp(2.6rem,4.5vw,4rem)",fontWeight:800,lineHeight:1.0,letterSpacing:"-.05em",color:T.dark,marginBottom:20}}>Deine Website<br/>in <span style={{background:"linear-gradient(135deg,#1d4ed8,#3b82f6)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Minuten.</span></h1>
           <p style={{fontSize:"1.1rem",color:T.textSub,lineHeight:1.75,maxWidth:440,marginBottom:36}}>Mit Impressum nach ECG, DSGVO und Google-Indexierung. Bestehende Website importieren oder 10 Fragen beantworten. Fertig.</p>
@@ -204,7 +204,7 @@ function LandingPage({onStart,onPortal}){
     <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"start"}}>
       <div>
         <Label>Das Problem</Label>
-        <H2 s={{maxWidth:420}}>Keine gute Option fuer Handwerker & Kosmetikbetriebe.</H2>
+        <H2 s={{maxWidth:420}}>Keine gute Option fuer Kleinbetriebe in Oesterreich.</H2>
         <Sub s={{marginBottom:36,maxWidth:400}}>Jede bestehende Loesung hat einen entscheidenden Haken.</Sub>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
           {[{n:"Linktree / Komi",p:"Gratis–5€",i:"Kein Google-Ranking. Kein Impressum."},{n:"Wix / Jimdo",p:"17–25€/Mo",i:"Stunden bis Tage. Hohe Lernkurve."},{n:"Agentur / Freelancer",p:"ab 1.500€",i:"Wochen Wartezeit. Zu teuer."},{n:"Nur Social Media",p:"Gratis",i:"Kein Google. Abmahnrisiko."}].map((c,i)=><div key={i} style={{padding:"18px 22px",background:"#fff",borderRadius:10,border:"1px solid rgba(0,0,0,.07)",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16}}><div><div style={{fontWeight:700,fontSize:".92rem",color:T.dark,marginBottom:3}}>{c.n}</div><div style={{fontSize:".84rem",color:T.red,fontWeight:500}}>{c.i}</div></div><span style={{fontSize:".75rem",fontFamily:T.mono,color:T.textMuted,flexShrink:0,background:"#f7f8fa",padding:"4px 10px",borderRadius:6}}>{c.p}</span></div>)}
@@ -252,6 +252,56 @@ function LandingPage({onStart,onPortal}){
         <div style={{background:v.g,padding:"44px 28px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.1),transparent 50%)"}}/><h3 style={{fontSize:"1.1rem",fontWeight:700,marginBottom:6,position:"relative"}}>{v.t}</h3><p style={{fontSize:".8rem",opacity:.75,position:"relative"}}>{v.d}</p></div>
         <div style={{padding:"18px 28px",borderTop:"1px solid rgba(0,0,0,.05)"}}><p style={{fontSize:".84rem",color:T.textSub}}>{v.sub}</p></div>
       </div>)}
+    </div>
+  </Sec>
+
+  {/* BRANCHEN TEMPLATES */}
+  <Sec>
+    <div style={{marginBottom:52}}>
+      <Label>Branchen-Templates</Label>
+      <H2 s={{maxWidth:520}}>Massgeschneidert fuer Ihre Branche.</H2>
+      <Sub s={{maxWidth:480}}>Jede Branche bekommt ein eigenes Design, vorbelegte Leistungen und passende Website-Texte – vollautomatisch.</Sub>
+    </div>
+    <div className="lp-branchen-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:20}}>
+      <div style={{borderRadius:14,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.08)",boxShadow:"0 4px 24px rgba(0,0,0,.05)"}}>
+        <div style={{background:"linear-gradient(160deg,#0f2b5b,#1e40af)",padding:"32px 28px",color:"#fff",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.08),transparent 50%)"}}/>
+          <div style={{position:"relative",zIndex:1}}>
+            <div style={{fontSize:"2rem",marginBottom:10}}>{"\uD83D\uDD28"}</div>
+            <h3 style={{fontSize:"1.2rem",fontWeight:800,marginBottom:6,letterSpacing:"-.03em"}}>Handwerk</h3>
+            <p style={{opacity:.75,fontSize:".84rem",lineHeight:1.6}}>Serioeses, professionelles Design. Vertrauensaufbau steht im Vordergrund.</p>
+          </div>
+        </div>
+        <div style={{padding:"22px 28px"}}>
+          <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Verfuegbare Branchen</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gaertner","Klima & Lueftung","Reinigung"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#eff6ff",color:"#1e40af",border:"1px solid rgba(30,64,175,.1)"}}>{b}</span>)}
+          </div>
+        </div>
+      </div>
+      <div style={{borderRadius:14,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.08)",boxShadow:"0 4px 24px rgba(0,0,0,.05)"}}>
+        <div style={{background:"linear-gradient(160deg,#831843,#be185d)",padding:"32px 28px",color:"#fff",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.08),transparent 50%)"}}/>
+          <div style={{position:"relative",zIndex:1}}>
+            <div style={{fontSize:"2rem",marginBottom:10}}>{"\u2728"}</div>
+            <h3 style={{fontSize:"1.2rem",fontWeight:800,marginBottom:6,letterSpacing:"-.03em"}}>Kosmetik & Koerperpflege</h3>
+            <p style={{opacity:.75,fontSize:".84rem",lineHeight:1.6}}>Modernes, elegantes Design. Hochwertige Ausstrahlung und Vertrauenswirkung.</p>
+          </div>
+        </div>
+        <div style={{padding:"22px 28px"}}>
+          <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Verfuegbare Branchen</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fuss- & Koerperpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#fdf2f8",color:"#9d174d",border:"1px solid rgba(157,23,77,.1)"}}>{b}</span>)}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style={{padding:"22px 28px",borderRadius:12,background:"linear-gradient(135deg,#f8faff,#f0fdf4)",border:"1px solid rgba(0,0,0,.07)",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+      <div>
+        <div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:4}}>Weitere Berufsgruppen in Planung</div>
+        <div style={{fontSize:".83rem",color:T.textMuted,lineHeight:1.6}}>Gastronomie, Handel, Dienstleistungen und mehr kommen 2026.</div>
+      </div>
+      <span style={{background:T.accentLight,color:T.accent,fontSize:".71rem",fontWeight:700,padding:"7px 16px",borderRadius:100,letterSpacing:".06em",textTransform:"uppercase",whiteSpace:"nowrap"}}>Coming soon</span>
     </div>
   </Sec>
 
@@ -509,8 +559,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
   <div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.accentLight,color:T.accent,padding:"5px 14px",borderRadius:100,fontSize:".65rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:18}}>Schritt 1 von 2</div>
   <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.02em"}}>Was beschreibt Ihren Betrieb?</h2>
   <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:16}}>Wir passen Design, Leistungen und Website-Texte automatisch an Ihre Branche an.</p>
-  <div style={{marginBottom:20,padding:"9px 12px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".76rem",color:"#92400e",lineHeight:1.6}}><strong>Hinweis:</strong> SiteReady ist aktuell spezialisiert auf Handwerk und Kosmetik & K\u00f6rperpflege. Andere Branchen (z.B. Gastronomie, Handel) werden noch nicht unterst\u00fctzt.</div>
-  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
     {BERUFSGRUPPEN.map(g=>{const on=data.berufsgruppe===g.value;return(<button key={g.value} onClick={()=>onBerufsgruppChange(g.value)} style={{padding:"20px 16px",border:on?`2px solid ${T.accent}`:`1.5px solid ${T.bg3}`,borderRadius:T.r,background:on?T.accentLight:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .2s",boxShadow:on?`0 0 0 4px ${T.accentGlow}`:"none"}}>
       <div style={{fontSize:"1.8rem",marginBottom:8}}>{g.icon}</div>
       <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:4}}>{g.label}</div>
@@ -518,7 +567,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
       {on&&<div style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:4,background:T.accent,color:"#fff",borderRadius:20,padding:"2px 10px",fontSize:".65rem",fontWeight:700}}>&#10003; Ausgew\u00e4hlt</div>}
     </button>);})}
   </div>
-  <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".72rem",color:T.textMuted,textAlign:"center"}}>Weitere Berufsgruppen kommen bald &middot; <span style={{background:T.bg3,padding:"1px 7px",borderRadius:4,fontWeight:700,fontSize:".65rem"}}>Coming soon</span></div>
+  <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".74rem",color:T.textMuted,lineHeight:1.6}}>Aktuell verfuegbar: <strong style={{color:T.text}}>{"\uD83D\uDD28"} Handwerk</strong> & <strong style={{color:T.text}}>{"\u2728"} Kosmetik & K\u00f6rperpflege</strong> &ndash; Weitere Berufsgruppen folgen bald.</div>
 </div>):pages[step]}</div>
     <div style={{padding:"16px 24px",borderTop:`1px solid ${T.bg3}`,display:"flex",justifyContent:showImport?"flex-end":"space-between",background:T.white}}>
       {showImport?(<button onClick={()=>{setShowImport(false);setShowBerufsgruppe(true);}} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Ohne Import starten</button>):showBerufsgruppe?(<><button onClick={()=>{setShowBerufsgruppe(false);setShowImport(true);}} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurueck</button><button onClick={()=>{if(data.berufsgruppe)setShowBerufsgruppe(false);}} disabled={!data.berufsgruppe} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:data.berufsgruppe?T.dark:"#cbd5e1",color:"#fff",cursor:data.berufsgruppe?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:data.berufsgruppe?"0 2px 12px rgba(0,0,0,.12)":"none"}}>Weiter &rarr;</button></>):(<>{step>0?<button onClick={()=>go(step-1)} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurueck</button>:<div/>}{step<STEPS.length-1?<button onClick={()=>go(step+1)} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:"0 2px 12px rgba(0,0,0,.12)"}}>Weiter &rarr;</button>:<button onClick={onComplete} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:"linear-gradient(135deg,#16a34a,#22c55e)",color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:"0 2px 12px rgba(22,163,74,.2)"}}>Website erstellen &rarr;</button>}</>)}

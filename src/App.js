@@ -890,8 +890,8 @@ function Portal({session,onLogout}){
       {/* Onboarding: status===paid */}
       {order?.status==="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"32px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28}}>
         <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#fef9c3",color:"#92400e",padding:"4px 14px",borderRadius:100,fontSize:".65rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:16}}>Zahlung bestaetigt</div>
-        <h2 style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.02em"}}>Moechten Sie eigene Fotos hochladen?</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 24px"}}>Laden Sie jetzt Ihr Logo und bis zu 5 Fotos hoch – oder starten Sie direkt ohne Fotos. Sie koennen Fotos auch spaeter im Portal hochladen und die Website neu generieren lassen.</p>
+        <h2 style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.02em"}}>Fast fertig – Website jetzt erstellen</h2>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 24px"}}>Optional: Laden Sie jetzt Ihr Logo und Fotos hoch – diese erscheinen automatisch auf Ihrer Website. Sie koennen Fotos jederzeit im Portal hochladen oder austauschen, ohne die Website neu zu generieren.</p>
         {/* Logo + Fotos Upload */}
         <div style={{marginBottom:24}}>
           <div style={{fontWeight:700,fontSize:".82rem",color:T.dark,marginBottom:10}}>Logo & Fotos (optional)</div>
@@ -923,16 +923,13 @@ function Portal({session,onLogout}){
             );})}
           </div>
         </div>
-        {/* Buttons */}
-        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+        {/* Button */}
+        <div>
           <button onClick={()=>startBuild(true)} disabled={onboardSaving} style={{padding:"13px 28px",border:"none",borderRadius:T.rSm,background:onboardSaving?"#cbd5e1":"linear-gradient(135deg,#16a34a,#22c55e)",color:"#fff",cursor:onboardSaving?"not-allowed":"pointer",fontSize:".92rem",fontWeight:700,fontFamily:T.font,boxShadow:onboardSaving?"none":"0 2px 12px rgba(22,163,74,.2)"}}>
-            {onboardSaving?"Wird gesendet...":"Website jetzt erstellen \u2192"}
-          </button>
-          <button onClick={()=>startBuild(false)} disabled={onboardSaving} style={{padding:"13px 24px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:onboardSaving?"not-allowed":"pointer",fontSize:".88rem",fontWeight:600,fontFamily:T.font}}>
-            Ohne Fotos starten
+            {onboardSaving?"Wird gesendet...":"Website erstellen \u2192"}
           </button>
         </div>
-        <div style={{marginTop:12,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Ihre Website wird innerhalb von 24h erstellt. Sie erhalten eine E-Mail wenn sie live ist.</div>
+        <div style={{marginTop:12,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Die Erstellung dauert ca. 60 Sekunden. Fotos koennen jederzeit hochgeladen werden.</div>
       </div>)}
 
       {/* Build-Screen: status===in_arbeit */}
@@ -1029,7 +1026,6 @@ function Portal({session,onLogout}){
             <button onClick={()=>setTab("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
           </div>
           <InfoRow label="Stil" value={STYLES_MAP[order.stil||"professional"]?.label}/>
-          <InfoRow label="Fotos" value={order.fotos?"Ja, mit Fotos":"Nein, ohne Fotos"}/>
           <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
             Ein Design-Wechsel ist ein komplettes Redesign Ihrer Website. Schreiben Sie uns kurz ueber den Support-Tab – wir setzen das für Sie um.
           </div>
@@ -1258,8 +1254,8 @@ function Portal({session,onLogout}){
         </div>
         {/* Website aktualisieren */}
         {order?.status&&order.status!=="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>Website aktualisieren</div>
-          <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:14,lineHeight:1.6}}>Sie haben neue Fotos hochgeladen? Wir generieren Ihre Website mit den aktuellen Fotos neu (innerhalb von 24h).</div>
+          <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>Website neu generieren</div>
+          <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:14,lineHeight:1.6}}>Fotos erscheinen automatisch – kein Neu-Generieren noetig. Dieser Button ist fuer Aenderungen an Texten, Design oder Leistungen.</div>
           {order.status==="in_arbeit"
             ?<div style={{fontSize:".82rem",color:"#8b5cf6",fontWeight:600}}>{"\u21BB"} Website wird gerade erstellt...</div>
             :<button onClick={async()=>{

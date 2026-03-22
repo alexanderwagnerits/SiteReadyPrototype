@@ -56,6 +56,18 @@ export async function onRequestGet({params, env}) {
     );
   }
 
+  // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
+  if (o.adresse || o.ort) {
+    const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", \u00d6sterreich");
+    const mapsIframe = `<div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)"><iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="280" style="border:0;display:block" allowfullscreen loading="lazy" title="Standort"></iframe></div>`;
+    html = html.replace(/<!-- MAPS -->/g, mapsIframe);
+    html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, mapsIframe);
+    html = html.replace(/🗺️[^<]*Kartenansicht[^<]*/gi, "");
+  } else {
+    html = html.replace(/<!-- MAPS -->/g, "");
+    html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, "");
+  }
+
   // Galerie serve-time injizieren (vor dem Footer, nur wenn Fotos vorhanden)
   const fotoUrls = [o.url_foto1, o.url_foto2, o.url_foto3, o.url_foto4, o.url_foto5].filter(Boolean);
   if (fotoUrls.length > 0) {

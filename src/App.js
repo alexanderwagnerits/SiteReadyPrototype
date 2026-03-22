@@ -1343,6 +1343,31 @@ function Portal({session,onLogout}){
   </div>);
 }
 
+/* ═══ MARKDOWN RENDERER (fuer Doku-Tab) ═══ */
+function fmtInline(s){
+  return s
+    .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g,"<em>$1</em>")
+    .replace(/`([^`]+)`/g,'<code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:.85em">$1</code>');
+}
+function renderMd(md){
+  if(!md)return'<p style="color:#94a3b8;font-style:italic">Kein Inhalt. Bearbeiten um Text hinzuzufuegen.</p>';
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const lines=md.split("\n");
+  let html="";let inUl=false;
+  for(const line of lines){
+    if(line.startsWith("# ")){if(inUl){html+="</ul>";inUl=false;}html+=`<h1 style="font-size:1.4rem;font-weight:800;color:#0f172a;margin:28px 0 10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0">${fmtInline(esc(line.slice(2)))}</h1>`;}
+    else if(line.startsWith("## ")){if(inUl){html+="</ul>";inUl=false;}html+=`<h2 style="font-size:1.05rem;font-weight:700;color:#0f172a;margin:20px 0 8px">${fmtInline(esc(line.slice(3)))}</h2>`;}
+    else if(line.startsWith("### ")){if(inUl){html+="</ul>";inUl=false;}html+=`<h3 style="font-size:.92rem;font-weight:700;color:#334155;margin:14px 0 6px">${fmtInline(esc(line.slice(4)))}</h3>`;}
+    else if(line.match(/^[-*] /)){if(!inUl){html+='<ul style="margin:6px 0;padding-left:20px">';inUl=true;}html+=`<li style="margin:3px 0;color:#334155;font-size:.87rem;line-height:1.55">${fmtInline(esc(line.slice(2)))}</li>`;}
+    else if(line.match(/^\d+\. /)){if(!inUl){html+='<ul style="margin:6px 0;padding-left:20px;list-style:decimal">';inUl=true;}html+=`<li style="margin:3px 0;color:#334155;font-size:.87rem;line-height:1.55">${fmtInline(esc(line.replace(/^\d+\. /,"")))}</li>`;}
+    else if(line.trim()===""){if(inUl){html+="</ul>";inUl=false;}html+="<div style='height:6px'></div>";}
+    else{if(inUl){html+="</ul>";inUl=false;}html+=`<p style="margin:3px 0;color:#334155;font-size:.87rem;line-height:1.6">${fmtInline(esc(line))}</p>`;}
+  }
+  if(inUl)html+="</ul>";
+  return html;
+}
+
 /* ═══ ADMIN DASHBOARD ═══ */
 const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",review:"Review",live:"Live",offline:"Offline"};
 const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",review:"#f97316",live:"#16a34a",offline:"#64748b"};
@@ -1372,6 +1397,13 @@ function Admin({adminKey}){
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
   const[editKunde,setEditKunde]=useState(null);
+  const[docs,setDocs]=useState([]);
+  const[docsLoading,setDocsLoading]=useState(false);
+  const[selDocId,setSelDocId]=useState(null);
+  const[docEditing,setDocEditing]=useState(false);
+  const[docEditTitle,setDocEditTitle]=useState("");
+  const[docEditContent,setDocEditContent]=useState("");
+  const[docSaving,setDocSaving]=useState(false);
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1452,7 +1484,47 @@ function Admin({adminKey}){
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   useEffect(()=>{if(tab==="system"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
+  useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
   useEffect(()=>{setEditKunde(null);},[sel]);
+
+  const loadDocs=async()=>{
+    setDocsLoading(true);
+    const r=await fetch(`/api/admin-docs?key=${adminKey}`);
+    const j=await r.json();
+    if(Array.isArray(j)){setDocs(j);if(j.length&&!selDocId)setSelDocId(j[0].id);}
+    setDocsLoading(false);
+  };
+  const saveDoc=async()=>{
+    setDocSaving(true);
+    const body=selDocId&&docs.find(d=>d.id===selDocId)?.id===selDocId?{id:selDocId,title:docEditTitle,content:docEditContent}:{title:docEditTitle||"Neue Sektion",content:docEditContent,sort_order:docs.length};
+    const r=await fetch(`/api/admin-docs?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const j=await r.json();
+    if(body.id){setDocs(ds=>ds.map(d=>d.id===body.id?{...d,...body}:d));}
+    else{if(j.id){setDocs(ds=>[...ds,j]);setSelDocId(j.id);}}
+    setDocEditing(false);setDocSaving(false);
+  };
+  const newDoc=()=>{
+    setSelDocId(null);setDocEditTitle("Neue Sektion");setDocEditContent("");setDocEditing(true);
+  };
+  const deleteDoc=async(id)=>{
+    if(!window.confirm("Sektion loeschen?"))return;
+    await fetch(`/api/admin-docs?key=${adminKey}`,{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    const remaining=docs.filter(d=>d.id!==id);
+    setDocs(remaining);
+    setSelDocId(remaining.length?remaining[0].id:null);
+    setDocEditing(false);
+  };
+  const exportMD=()=>{
+    const content=docs.map(d=>`# ${d.title}\n\n${d.content}`).join("\n\n---\n\n");
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([content],{type:"text/markdown"}));
+    a.download="siteready-dokumentation.md";a.click();
+  };
+  const exportPDF=()=>{
+    const w=window.open("","_blank");
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiteReady Dokumentation</title><style>body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 32px;color:#1e293b}h1{font-size:1.4rem;font-weight:800;margin:32px 0 10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}h2{font-size:1.05rem;font-weight:700;margin:20px 0 8px}h3{font-size:.92rem;font-weight:700;margin:14px 0 6px;color:#334155}p,li{font-size:.9rem;line-height:1.6;color:#334155;margin:3px 0}ul,ol{padding-left:20px;margin:6px 0}code{background:#f1f5f9;padding:1px 4px;border-radius:3px;font-family:monospace;font-size:.85em}.section-sep{border:none;border-top:3px solid #e2e8f0;margin:40px 0}@media print{body{margin:20px auto}}</style></head><body>${docs.map((d,i)=>`<h1>${d.title}</h1>${renderMd(d.content)}${i<docs.length-1?'<hr class="section-sep">':"" }`).join("")}</body></html>`);
+    w.document.close();setTimeout(()=>w.print(),300);
+  };
   const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenBadge=stuckOrders.length||null;
   const alerts=[];
@@ -1466,8 +1538,7 @@ function Admin({adminKey}){
     {id:"support",label:"Support"},
     {id:"system",label:"System",badge:regenBadge},
     {id:"kosten",label:"Kosten"},
-    {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
-    {id:"arch-flows",label:"Flows"},
+    {id:"docs",label:"Dokumentation",section:"DOKUMENTATION"},
   ];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
@@ -1835,193 +1906,63 @@ function Admin({adminKey}){
           </div>);
         })()}
 
-        {/* Tab: Architektur */}
-        {!loading&&tab==="arch-system"&&(()=>{
-          const chip=(label,sub,color)=>(<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 8px",borderRadius:20,background:color+"14",border:`1px solid ${color}28`,fontSize:".69rem",fontWeight:600,color:T.dark,margin:"2px 3px",whiteSpace:"nowrap"}}>
-            <span style={{width:5,height:5,borderRadius:"50%",background:color,flexShrink:0}}/>
-            {label}{sub&&<span style={{fontSize:".6rem",color:T.textMuted,fontWeight:400}}>· {sub}</span>}
-          </span>);
-          const layer=(title,color,children,note)=>(<div style={{padding:"7px 12px",marginBottom:3,background:color+"07",borderLeft:`3px solid ${color}`,borderRadius:`0 ${T.rSm} ${T.rSm} 0`}}>
-            <div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",gap:0}}>
-              <span style={{fontSize:".6rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginRight:8,flexShrink:0}}>{title}</span>
-              <span style={{display:"inline"}}>{children}</span>
-            </div>
-            {note&&<div style={{marginTop:3,fontSize:".61rem",color,opacity:.65,fontStyle:"italic"}}>{note}</div>}
-          </div>);
-          const arr=<div style={{textAlign:"center",color:T.bg3,fontSize:".7rem",margin:"1px 0",lineHeight:1}}>↓</div>;
-          return(<div>
-            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 12px"}}>System-Architektur</h2>
-            {layer("Entwicklung & Deploy","#6366f1",<>
-              {chip("Entwickler","VS Code · Git","#6366f1")}
-              {chip("GitHub","main branch","#6366f1")}
-              {chip("Cloudflare Pages CI/CD","push → build → deploy","#6366f1")}
-            </>,"git push main → automatischer Build & Deploy ~1 Min.")}
-            {arr}
-            {layer("Nutzer","#64748b",<>
-              {chip("Neukunde","Landingpage · Formular · Stripe","#64748b")}
-              {chip("Bestandskunde","Portal-Login","#64748b")}
-              {chip("Admin","/admin?key=...","#64748b")}
-            </>)}
-            {arr}
-            {layer("Cloudflare Pages (Edge/CDN)","#f97316",<>
-              {chip("React SPA","/ · Landing + Formular","#f97316")}
-              {chip("Admin Dashboard","/admin?key=...","#f97316")}
-              {chip("Edge Functions","/api/* · 8 Endpoints","#f97316")}
-              {chip("Website Serving","/s/[subdomain]","#f97316")}
-              {chip("Legal Serving","/s/[subdomain]/impressum","#f97316")}
-            </>,"SSL automatisch · CDN weltweit · robots.txt: /s/* noindex (Prototyp)")}
-            {arr}
-            {layer("Supabase","#2563eb",<>
-              {chip("PostgreSQL","orders-Tabelle","#2563eb")}
-              {chip("Supabase Auth","Portal-Login · JWT","#2563eb")}
-            </>)}
-            {arr}
-            {layer("Externe APIs","#8b5cf6",<>
-              {chip("Anthropic Claude","claude-sonnet-4-6","#8b5cf6")}
-              {chip("Stripe","Checkout · Webhooks","#16a34a")}
-              {chip("Google Fonts","DM Sans · Inter · Source Serif","#f59e0b")}
-              {chip("Google Maps","iframe Embed","#dc2626")}
-            </>)}
-            {arr}
-            {layer("DNS & Domains","#94a3b8",<>
-              {chip("Cloudflare DNS","siteready.at","#94a3b8")}
-              {chip("Kunden-Subdomain","{firma}.siteready.at","#94a3b8")}
-              {chip("Custom Domain","CNAME optional","#94a3b8")}
-            </>)}
-            {arr}
-            {layer("SEO (nach Prototyp)","#94a3b8",<>
-              {chip("Google Search Console","Domain-Verif. · Sitemap · Indexierung","#94a3b8")}
-              {chip("sitemap.xml","geplant · Edge Function","#94a3b8")}
-              {chip("robots.txt","aktiv · /s/* gesperrt","#16a34a")}
-            </>,"noindex aktiv auf allen Kunden-Websites – Prototyp-Phase")}
-            <div style={{marginTop:10,padding:"7px 11px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".69rem",color:"#1e40af",lineHeight:1.7}}>
-              <strong>Serve-time:</strong> E-Mail, Telefon, Adresse live aus Supabase – kein Re-Deploy. &nbsp;<strong>Impressum/Datenschutz:</strong> legal.js frisch aus DB bei jedem Request.
-            </div>
-          </div>);
-        })()}
 
-        {!loading&&tab==="arch-flows"&&(()=>{
-          const svc=(label,color)=>(<span style={{display:"inline-block",padding:"2px 7px",borderRadius:3,background:color+"18",color,fontSize:".62rem",fontWeight:800,letterSpacing:".06em",textTransform:"uppercase",marginRight:6,flexShrink:0}}>{label}</span>);
-          const step=(service,color,action,detail)=>(<div style={{display:"flex",gap:10,paddingBottom:6}}>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:18}}>
-              <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/>
-              <div style={{width:1,flex:1,background:T.bg3,marginTop:3}}/>
+        {/* Tab: Dokumentation */}
+        {tab==="docs"&&(<div style={{display:"flex",gap:0,height:"calc(100vh - 160px)",minHeight:400}}>
+          {/* Linke Spalte: Sektions-Liste */}
+          <div style={{width:220,flexShrink:0,borderRight:`1px solid ${T.bg3}`,overflowY:"auto",background:"#fafbfc"}}>
+            <div style={{padding:"14px 12px 8px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontSize:".7rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Sektionen</span>
+              <button onClick={newDoc} title="Neue Sektion" style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:"1.2rem",lineHeight:1,padding:"0 2px",fontWeight:700}}>+</button>
             </div>
-            <div style={{paddingBottom:8,flex:1}}>
-              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>{svc(service,color)}<span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span></div>
-              {detail&&<div style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}
-            </div>
-          </div>);
-          const lastStep=(service,color,action,detail)=>(<div style={{display:"flex",gap:10}}>
-            <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/>
-            <div style={{flex:1}}>
-              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>{svc(service,color)}<span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span></div>
-              {detail&&<div style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}
-            </div>
-          </div>);
-          const flowTitle=(icon,label)=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${T.bg3}`}}>
-            <span style={{fontSize:"1rem"}}>{icon}</span>
-            <span style={{fontSize:".85rem",fontWeight:800,color:T.dark}}>{label}</span>
-          </div>);
-          const flowStep=(icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 90px",minWidth:80,maxWidth:140}}>
-            <div style={{width:38,height:38,borderRadius:"50%",background:color+"18",border:`2px solid ${color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>{icon}</div>
-            <div style={{fontSize:".7rem",fontWeight:700,color:T.dark,textAlign:"center",lineHeight:1.3}}>{label}</div>
-            {sub&&<div style={{fontSize:".62rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}
-            {optional&&<span style={{fontSize:".58rem",fontWeight:700,color:T.textMuted,background:T.bg3,padding:"1px 5px",borderRadius:3}}>Optional</span>}
-          </div>);
-          const flowArrow=<div style={{color:T.textMuted,fontSize:"1rem",alignSelf:"center",flexShrink:0,paddingBottom:16}}>→</div>;
-          const phase=(label,color,children)=>(<div style={{marginBottom:14}}>
-            <div style={{fontSize:".62rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,paddingLeft:2}}>{label}</div>
-            <div style={{display:"flex",alignItems:"flex-start",gap:4,flexWrap:"wrap"}}>{children}</div>
-          </div>);
-          return(<div>
-            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>Flows</h2>
-
-            {/* Kunden-Flow */}
-            <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,marginBottom:16}}>
-              {flowTitle("🧑","Kunden-Flow")}
-              {phase("Phase 1 – Bestellung","#2563eb",<>
-                {flowStep("📋","Formular","5 Schritte im Wizard","#2563eb")}
-                {flowArrow}
-                {flowStep("💳","Stripe Checkout","Einmalzahlung \u20ac18","#16a34a")}
-                {flowArrow}
-                {flowStep("✅","Order in DB","Status: paid","#2563eb")}
-              </>)}
-              {phase("Phase 2 – Produktion","#8b5cf6",<>
-                {flowStep("🤖","Claude generiert","claude-sonnet-4-6","#8b5cf6")}
-                {flowArrow}
-                {flowStep("💾","HTML in Supabase","Status: review","#8b5cf6")}
-                {flowArrow}
-                {flowStep("👁️","Admin Review","Prüfung & Freigabe","#f97316")}
-                {flowArrow}
-                {flowStep("🚀","Live schalten","Status: live","#16a34a")}
-              </>)}
-              {phase("Phase 3 – SEO (nach Prototyp)","#94a3b8",<>
-                {flowStep("🔍","Subdomain indexieren","noindex entfernen","#94a3b8")}
-                {flowArrow}
-                {flowStep("🌐","Custom Domain","CNAME einrichten","#94a3b8",true)}
-                {flowArrow}
-                {flowStep("📈","Domain indexieren","GSC einreichen","#94a3b8",true)}
-                {flowArrow}
-                {flowStep("🧹","Subdomain entfernen","kein Duplicate Content","#94a3b8",true)}
-              </>)}
-              <div style={{padding:"7px 10px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".7rem",color:"#92400e"}}>
-                Phase 3 noch nicht aktiv &ndash; noindex auf allen Websites. Google Search Console erst nach Freischaltung relevant.
+            {docsLoading?<div style={{padding:20,textAlign:"center",color:T.textMuted,fontSize:".78rem"}}>Laden...</div>:
+            docs.length===0?<div style={{padding:"20px 14px",color:T.textMuted,fontSize:".78rem",lineHeight:1.6}}>Noch keine Sektionen.<br/>Mit + starten.</div>:
+            <div style={{padding:"6px 0"}}>
+              {docs.map(d=><div key={d.id} onClick={()=>{setSelDocId(d.id);setDocEditing(false);}} style={{padding:"9px 14px",cursor:"pointer",background:selDocId===d.id?"#fff":"transparent",borderLeft:`3px solid ${selDocId===d.id?T.accent:"transparent"}`,display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
+                <span style={{fontSize:".82rem",fontWeight:selDocId===d.id?700:500,color:selDocId===d.id?T.dark:T.textSub,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.title}</span>
+                <button onClick={e=>{e.stopPropagation();deleteDoc(d.id);}} title="Loeschen" style={{background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:".9rem",padding:"0 2px",lineHeight:1,flexShrink:0,opacity:.6}}>&#215;</button>
+              </div>)}
+            </div>}
+          </div>
+          {/* Rechte Spalte: Inhalt */}
+          <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
+            {/* Header */}
+            <div style={{padding:"14px 24px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:10,background:"#fff",flexShrink:0}}>
+              {docEditing
+                ?<input value={docEditTitle} onChange={e=>setDocEditTitle(e.target.value)} placeholder="Titel" style={{flex:1,fontWeight:800,fontSize:"1rem",color:T.dark,border:"none",outline:"none",fontFamily:T.font,background:"transparent"}}/>
+                :<h2 style={{margin:0,fontSize:"1rem",fontWeight:800,color:T.dark,flex:1}}>{docs.find(d=>d.id===selDocId)?.title||"\u2014"}</h2>
+              }
+              <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                {!docEditing&&docs.length>0&&<>
+                  <button onClick={exportMD} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>MD</button>
+                  <button onClick={exportPDF} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>PDF</button>
+                </>}
+                {!docEditing&&selDocId&&<button onClick={()=>{const d=docs.find(x=>x.id===selDocId);if(d){setDocEditTitle(d.title);setDocEditContent(d.content||"");setDocEditing(true);}}} style={{padding:"5px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bearbeiten</button>}
+                {docEditing&&<>
+                  <button onClick={()=>setDocEditing(false)} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                  <button onClick={saveDoc} disabled={docSaving} style={{padding:"5px 14px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:docSaving?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{docSaving?"Speichert...":"Speichern"}</button>
+                </>}
               </div>
             </div>
-
-            {/* Technische Flows */}
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Technische Flows</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
-                {flowTitle("💳","Bestellung & Zahlung")}
-                {step("React SPA","#3b82f6","Supabase INSERT orders","status:pending · alle Formulardaten")}
-                {step("React SPA","#3b82f6","POST /api/create-checkout","orderId · firmenname · email")}
-                {step("create-checkout.js","#f97316","Stripe API: Checkout Session","\u20ac18,00 · mode:payment · metadata:order_id")}
-                {step("Stripe","#16a34a","Browser → Checkout-Seite","Zahlungsformular auf stripe.com")}
-                {step("Stripe","#16a34a","POST /api/stripe-webhook","Event: checkout.session.completed")}
-                {step("stripe-webhook.js","#f97316","HMAC-SHA256 Signatur prüfen","Timestamp-Check: max. 5 Minuten")}
-                {step("stripe-webhook.js","#f97316","Supabase PATCH orders","status: \u2192 paid")}
-                {lastStep("stripe-webhook.js","#f97316","ctx.waitUntil: generate-website","POST /api/generate-website im Hintergrund")}
+            {/* Inhalt */}
+            {docEditing
+              ?<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",flex:1,minHeight:0}}>
+                <textarea value={docEditContent} onChange={e=>setDocEditContent(e.target.value)} placeholder={"# Titel\n\n## Abschnitt\n\nText hier..."} style={{padding:"20px 24px",border:"none",borderRight:`1px solid ${T.bg3}`,resize:"none",fontFamily:"monospace",fontSize:".83rem",lineHeight:1.65,outline:"none",color:T.dark,background:"#fafbfc"}}/>
+                <div style={{padding:"20px 24px",overflowY:"auto"}} dangerouslySetInnerHTML={{__html:renderMd(docEditContent)}}/>
               </div>
-              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
-                {flowTitle("🤖","Website-Generierung")}
-                {step("Edge Function","#f97316","Supabase GET order by id","alle Kundendaten + Unternehmensform")}
-                {step("generate-website.js","#8b5cf6","Stil + Branchenpalette wählen","STYLES_MAP · PALETTES · branchenspez. Farben")}
-                {step("generate-website.js","#8b5cf6","Nav & Footer JS-Templates bauen","buildNav() + buildFooter() · Impressum/Datenschutz-Links")}
-                {step("generate-website.js","#8b5cf6","System-Prompt aufbauen","Responsive-Regeln · Seitenstruktur · Trust-Bar")}
-                {step("Claude API","#8b5cf6","POST claude-sonnet-4-6","max_tokens:8192 · system + user message")}
-                {step("generate-website.js","#f97316","Nav/Footer + Maps injizieren","<!-- NAV --> · <!-- FOOTER --> · <!-- MAPS --> ersetzen")}
-                {step("generate-website.js","#f97316","Meta-Tags + Schema.org setzen","title · og:* · canonical · robots:noindex · JSON-LD")}
-                {step("generate-website.js","#f97316","Scripts injizieren","ScrollSpy · Float-Call-Button (nur Mobile)")}
-                {lastStep("Supabase","#2563eb","PATCH orders","website_html · status:review · tokens_in/out · cost_eur")}
-              </div>
-              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,gridColumn:"1 / -1"}}>
-                {flowTitle("🌍","Auslieferung (Website + Impressum/Datenschutz)")}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
-                  <div>
-                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>GET /s/&#123;subdomain&#125; — index.js</div>
-                    {step("Browser","#64748b","GET /s/{subdomain}","Kunde oder Google-Bot")}
-                    {step("index.js","#f97316","Supabase GET orders","?subdomain=eq.{subdomain}")}
-                    {step("index.js","#f97316","Status-Check","404 kein HTML · 503 offline · 200 ok")}
-                    {step("index.js","#f97316","Logo + Foto-Slots injizieren","site-nav-logo · slot-hero · slot-foto1/2 · slot-team")}
-                    {step("index.js","#f97316","Serve-time Variablen ersetzen","{{FIRMENNAME}} {{TEL_HREF}} {{EMAIL}} {{ADRESSE_VOLL}} {{OEFFNUNGSZEITEN}} {{SOCIAL_ICONS}}")}
-                    {lastStep("Browser","#64748b","Response: fertiges HTML","Cache-Control: public, max-age=60")}
+              :<div style={{padding:"24px 32px",flex:1,overflowY:"auto"}}>
+                {selDocId
+                  ?<div dangerouslySetInnerHTML={{__html:renderMd(docs.find(d=>d.id===selDocId)?.content||"")}}/>
+                  :<div style={{padding:"60px 0",textAlign:"center",color:T.textMuted}}>
+                    <div style={{fontSize:"2rem",marginBottom:12}}>{"\uD83D\uDCC4"}</div>
+                    <div style={{fontWeight:600,marginBottom:6}}>Keine Sektion ausgewaehlt</div>
+                    <div style={{fontSize:".82rem"}}>Sektion links auswaehlen oder mit + neu anlegen</div>
                   </div>
-                  <div>
-                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>GET /s/&#123;subdomain&#125;/impressum — legal.js</div>
-                    {step("Browser","#64748b","GET /s/{subdomain}/impressum","Link aus Footer der generierten Website")}
-                    {step("legal.js","#f97316","Supabase GET order by subdomain","alle Kundendaten inkl. Unternehmensform")}
-                    {step("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 · e.U./GmbH/OG/KG/AG/Verein/GesbR")}
-                    {step("legal.js","#2563eb","Datenschutz aufbauen","DSGVO Art.13 · Google Fonts · Cloudflare SCCs")}
-                    {step("legal.js","#2563eb","HTML zusammenbauen","kein gespeichertes Template · immer frisch")}
-                    {lastStep("Browser","#64748b","Response: HTML","Änderungen an Kundendaten sofort sichtbar")}
-                  </div>
-                </div>
+                }
               </div>
-            </div>
-          </div>);
-        })()}
+            }
+          </div>
+        </div>)}
       </div>
 
       {/* Detail Drawer */}

@@ -1,7 +1,6 @@
 /* ═══ Nav-Builder ═══ */
 function buildNav(o, pal, stil) {
   const tel = o.telefon || "";
-  const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "#kontakt";
   return `<style>
 #sitenav{position:sticky;top:0;z-index:1000;transition:background .3s,box-shadow .3s}
 #sitenav.scrolled{background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08)}
@@ -23,12 +22,12 @@ function buildNav(o, pal, stil) {
 </style>
 <nav id="sitenav">
 <div class="nav-inner">
-<a href="#" id="site-nav-logo" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">${o.firmenname}</a>
+<a href="#" id="site-nav-logo" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">{{FIRMENNAME}}</a>
 <div class="nav-links">
 <a href="#leistungen" class="nav-link">Leistungen</a>
 <a href="#ueber-uns" class="nav-link">\u00dcber uns</a>
 <a href="#kontakt" class="nav-link">Kontakt</a>
-${tel ? `<a href="${telHref}" class="nav-link nav-cta">${tel}</a>` : ""}
+${tel ? `<a href="{{TEL_HREF}}" class="nav-link nav-cta">{{TEL_DISPLAY}}</a>` : ""}
 </div>
 <button class="hbg" id="hbg" aria-label="Menu">
 <span class="hbg-bar"></span><span class="hbg-bar"></span><span class="hbg-bar"></span>
@@ -38,7 +37,7 @@ ${tel ? `<a href="${telHref}" class="nav-link nav-cta">${tel}</a>` : ""}
 <a href="#leistungen" class="mob-link">Leistungen</a>
 <a href="#ueber-uns" class="mob-link">\u00dcber uns</a>
 <a href="#kontakt" class="mob-link">Kontakt</a>
-${tel ? `<a href="${telHref}" class="mob-cta">${tel} &mdash; Jetzt anrufen</a>` : ""}
+${tel ? `<a href="{{TEL_HREF}}" class="mob-cta">{{TEL_DISPLAY}} &mdash; Jetzt anrufen</a>` : ""}
 </div>
 </nav>
 <script>
@@ -63,24 +62,18 @@ function normSocial(v) {
 }
 
 function buildFooter(o, pal, year, sub) {
-  const adresse = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
-  const tel = o.telefon || "";
-  const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "";
-  const socials = [
-    {url: normSocial(o.facebook),  label:"Facebook",  icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`},
-    {url: normSocial(o.instagram), label:"Instagram", icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`},
-    {url: normSocial(o.linkedin),  label:"LinkedIn",  icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>`},
-    {url: normSocial(o.tiktok),    label:"TikTok",    icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>`},
-  ].filter(s => s.url);
-  const socialHtml = socials.length ? `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">${s.icon}</a>`).join("")}</div>` : "";
+  const tel      = o.telefon || "";
+  const email    = o.email || "";
+  const adresse  = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+  const hasSocials = !!(o.facebook || o.instagram || o.linkedin || o.tiktok);
   return `<footer style="background:var(--primary);color:#fff;padding:56px 0 0;font-family:inherit">
 <div style="max-width:1200px;margin:0 auto;padding:0 24px">
 <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;padding-bottom:48px" class="ft-grid">
 <div>
-<div style="font-weight:800;font-size:1.05rem;margin-bottom:12px;letter-spacing:-.01em">${o.firmenname}</div>
-<p style="opacity:.65;line-height:1.75;font-size:.85rem;margin-bottom:16px;max-width:280px">${o.kurzbeschreibung||""}</p>
-${tel ? `<a href="${telHref}" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">${tel}</a>` : ""}
-${socialHtml}
+<div style="font-weight:800;font-size:1.05rem;margin-bottom:12px;letter-spacing:-.01em">{{FIRMENNAME}}</div>
+<p style="opacity:.65;line-height:1.75;font-size:.85rem;margin-bottom:16px;max-width:280px">{{KURZBESCHREIBUNG}}</p>
+${tel ? `<a href="{{TEL_HREF}}" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">{{TEL_DISPLAY}}</a>` : ""}
+{{SOCIAL_ICONS}}
 </div>
 <div>
 <div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Navigation</div>
@@ -95,14 +88,14 @@ ${socialHtml}
 <div>
 <div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Kontakt</div>
 <div style="display:flex;flex-direction:column;gap:10px;font-size:.88rem;color:rgba(255,255,255,.7)">
-${adresse ? `<span>${adresse}</span>` : ""}
-${tel ? `<a href="${telHref}" style="color:rgba(255,255,255,.85);text-decoration:none;font-weight:600">${tel}</a>` : ""}
-${o.email ? `<a href="mailto:${o.email}" style="color:rgba(255,255,255,.7);text-decoration:none">${o.email}</a>` : ""}
+${adresse ? `<span>{{ADRESSE_VOLL}}</span>` : ""}
+${tel     ? `<a href="{{TEL_HREF}}" style="color:rgba(255,255,255,.85);text-decoration:none;font-weight:600">{{TEL_DISPLAY}}</a>` : ""}
+${email   ? `<a href="mailto:{{EMAIL}}" style="color:rgba(255,255,255,.7);text-decoration:none">{{EMAIL}}</a>` : ""}
 </div>
 </div>
 </div>
 <div style="border-top:1px solid rgba(255,255,255,.1);padding:20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-<span style="opacity:.4;font-size:.78rem">&copy; ${year} ${o.firmenname}</span>
+<span style="opacity:.4;font-size:.78rem">&copy; ${year} {{FIRMENNAME}}</span>
 <div style="display:flex;gap:20px">
 <a href="/s/${sub}/impressum" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Impressum</a>
 <a href="/s/${sub}/datenschutz" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Datenschutz</a>
@@ -352,7 +345,14 @@ STRUKTUR-PFLICHT: Setze exakt diese Kommentare als Platzhalter:
 - <!-- MAPS --> im Kontakt-Abschnitt (nach den Kontaktinfos, vor dem Ende der Sektion) – nur wenn Adresse vorhanden
 - <!-- FOOTER --> nach dem Kontakt-Abschnitt
 Nav, Footer und Maps werden automatisch befuellt. Keinen eigenen Nav/Footer schreiben.
-HERO-ANIMATION: Der animierte Strip (scrollende Keywords) muss auf ALLEN Bildschirmgroessen sichtbar sein – nicht nur Mobile.`;
+HERO-ANIMATION: Der animierte Strip (scrollende Keywords) muss auf ALLEN Bildschirmgroessen sichtbar sein – nicht nur Mobile.
+
+VARIABLEN-PFLICHT: In HERO (CTA-Buttons) und KONTAKT-Sektion ausschliesslich diese Platzhalter verwenden:
+- href="{{TEL_HREF}}" fuer alle tel:-Links
+- {{TEL_DISPLAY}} als sichtbare Telefonnummer
+- {{EMAIL}} in href="mailto:{{EMAIL}}" und als Linktext
+- {{ADRESSE_VOLL}} fuer die vollstaendige Anschrift
+Keine echten Kontaktdaten direkt im generierten HTML – nur diese Platzhalter.`;
 
   /* ─── Claude API Call ─── */
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {

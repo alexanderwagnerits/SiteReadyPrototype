@@ -573,6 +573,7 @@ function Portal({session,onLogout}){
   const[supportSending,setSupportSending]=useState(false);
   const[supportSent,setSupportSent]=useState(false);
   const[supportErr,setSupportErr]=useState("");
+  const[regenSent,setRegenSent]=useState(null);
   const[newPw,setNewPw]=useState("");
   const[newPw2,setNewPw2]=useState("");
   const[pwSaving,setPwSaving]=useState(false);
@@ -654,20 +655,48 @@ function Portal({session,onLogout}){
       firmenbuch:{uid_nummer:order.uid_nummer,unternehmensform:order.unternehmensform,firmenbuchnummer:order.firmenbuchnummer,gisazahl:order.gisazahl,firmenbuchgericht:order.firmenbuchgericht},
       leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst},
       design:{stil:order.stil,fotos:order.fotos},
+      social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
     };
     await supabase.from("orders").update(fields[section]||{}).eq("id",order.id);
     setSaving(false);setSaved(section);setTimeout(()=>setSaved(false),3000);
     setEditSection(null);
   };
 
-  const SectionHeader=({id,label})=>(
+  const requestRegen=async(section)=>{
+    if(!order||!supabase)return;
+    setSaving(true);
+    const fields={
+      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst},
+      design:{stil:order.stil,fotos:order.fotos},
+    };
+    await supabase.from("orders").update({...fields[section],regen_requested:true}).eq("id",order.id);
+    await supabase.from("support_requests").insert({
+      email:session?.user?.email,
+      subject:"Neugenierung: "+(section==="leistungen"?"Leistungen & Notdienst":"Design & Fotos"),
+      message:"Kunde hat "+( section==="leistungen"?"Leistungen/Notdienst":"Design-Stil/Fotos")+" geaendert. Bitte Website neu generieren.",
+      status:"offen",
+    });
+    setOrder(o=>({...o,...fields[section],regen_requested:true}));
+    setSaving(false);setEditSection(null);
+    setRegenSent(section);setTimeout(()=>setRegenSent(null),4000);
+  };
+
+  const SectionHeader=({id,label,badge})=>(
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
-      <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
+        {badge==="instant"&&<span style={{fontSize:".62rem",fontWeight:700,color:"#16a34a",background:"#dcfce7",padding:"2px 8px",borderRadius:4,letterSpacing:".04em",whiteSpace:"nowrap"}}>Sofort aktiv</span>}
+        {badge==="regen"&&<span style={{fontSize:".62rem",fontWeight:700,color:"#d97706",background:"#fef3c7",padding:"2px 8px",borderRadius:4,letterSpacing:".04em",whiteSpace:"nowrap"}}>Neugenierung</span>}
+      </div>
       <div style={{display:"flex",alignItems:"center",gap:8}}>
         {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
+        {regenSent===id&&<span style={{color:"#d97706",fontSize:".78rem",fontWeight:600}}>{"\u2713"} Anfrage gesendet</span>}
         {editSection===id
-          ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-            <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
+          ?badge==="regen"
+            ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+              <button onClick={()=>requestRegen(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:"#d97706",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"\u21BB Aenderung beantragen"}</button></>
+            :<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+              <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
           :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
       </div>
     </div>
@@ -715,7 +744,7 @@ function Portal({session,onLogout}){
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Grunddaten */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="grunddaten" label="Grunddaten"/>
+          <SectionHeader id="grunddaten" label="Grunddaten" badge="instant"/>
           {editSection==="grunddaten"?(<>
             <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
             <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
@@ -728,7 +757,7 @@ function Portal({session,onLogout}){
         </div>
         {/* Firmenbuch & Impressum */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="firmenbuch" label="Unternehmen & Impressum"/>
+          <SectionHeader id="firmenbuch" label="Unternehmen & Impressum" badge="instant"/>
           {editSection==="firmenbuch"?(<>
             <Dropdown label="Unternehmensform" value={order.unternehmensform||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform waehlen"/>
             <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -749,7 +778,7 @@ function Portal({session,onLogout}){
         </div>
         {/* Kontakt */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="kontakt" label="Kontakt & Adresse"/>
+          <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant"/>
           {editSection==="kontakt"?(<>
             <Field label="Strasse & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
             <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
@@ -767,7 +796,7 @@ function Portal({session,onLogout}){
         </div>
         {/* Leistungen */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen"/>
+          <SectionHeader id="leistungen" label="Leistungen" badge="regen"/>
           {editSection==="leistungen"?(<>
             {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
@@ -782,7 +811,7 @@ function Portal({session,onLogout}){
         </div>
         {/* Design */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="design" label="Design"/>
+          <SectionHeader id="design" label="Design" badge="regen"/>
           {editSection==="design"?(<>
             <StylePicker value={order.stil||"professional"} onChange={upOrder("stil")}/>
             <div style={{marginTop:16}}><Toggle label="Fotos auf der Website" checked={!!order.fotos} onChange={upOrder("fotos")} desc="Hero-Foto, Galerie, Teamfoto"/></div>
@@ -791,6 +820,29 @@ function Portal({session,onLogout}){
             <InfoRow label="Fotos" value={order.fotos?"Ja, mit Fotos":"Nein, ohne Fotos"}/>
           </>)}
         </div>
+        {/* Social Media */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="social" label="Social Media" badge="instant"/>
+          {editSection==="social"?(<>
+            <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} placeholder="https://facebook.com/..." hint="Optional"/>
+            <Field label="Instagram" value={order.instagram||""} onChange={upOrder("instagram")} placeholder="https://instagram.com/..." hint="Optional"/>
+            <Field label="LinkedIn" value={order.linkedin||""} onChange={upOrder("linkedin")} placeholder="https://linkedin.com/..." hint="Optional"/>
+            <Field label="TikTok" value={order.tiktok||""} onChange={upOrder("tiktok")} placeholder="https://tiktok.com/..." hint="Optional"/>
+          </>):(<>
+            <InfoRow label="Facebook" value={order.facebook}/>
+            <InfoRow label="Instagram" value={order.instagram}/>
+            <InfoRow label="LinkedIn" value={order.linkedin}/>
+            <InfoRow label="TikTok" value={order.tiktok}/>
+          </>)}
+        </div>
+        {/* Neugenierung-Hinweis */}
+        {order.regen_requested&&<div style={{padding:"14px 18px",background:"#fef3c7",borderRadius:T.r,border:"1px solid #fcd34d",display:"flex",alignItems:"flex-start",gap:12}}>
+          <span style={{fontSize:"1.2rem",flexShrink:0}}>{"\u21BB"}</span>
+          <div>
+            <div style={{fontWeight:700,color:"#92400e",fontSize:".88rem",marginBottom:3}}>Aenderungsanfrage gesendet</div>
+            <div style={{fontSize:".82rem",color:"#78350f",lineHeight:1.5}}>Ihr Aenderungswunsch wurde erfasst. Wir generieren Ihre Website innerhalb von 24h neu und schalten sie danach live.</div>
+          </div>
+        </div>}
       </div>)}
 
       {/* Tab: Rechnungen */}
@@ -1093,8 +1145,9 @@ function Admin({adminKey}){
       const j=await r.json();
       if(j.ok){
         setGenMsg(m=>({...m,[id]:"Website erstellt! Status: review"}));
+        await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,regen_requested:false})});
         await load();
-        setSel(s=>s?.id===id?{...s,status:"review",subdomain:j.subdomain}:s);
+        setSel(s=>s?.id===id?{...s,status:"review",subdomain:j.subdomain,regen_requested:false}:s);
       } else {
         setGenMsg(m=>({...m,[id]:"Fehler: "+(j.error||"Unbekannt")}));
       }
@@ -1181,7 +1234,7 @@ function Admin({adminKey}){
                 const done=DEPLOY_CHECKS.filter(c=>c.ok).length;
                 return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
-                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}{o.regen_requested&&<span title="Neugenierung angefragt" style={{marginLeft:8,fontSize:".65rem",fontWeight:700,color:"#d97706",background:"#fef3c7",padding:"2px 6px",borderRadius:4}}>{"\u21BB"}</span>}</td>
                   <td style={{padding:"12px 16px"}}>
                     <div style={{display:"flex",alignItems:"center",gap:7}}>
                       <div style={{display:"flex",gap:3}}>
@@ -1407,6 +1460,13 @@ function Admin({adminKey}){
           <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.2rem",cursor:"pointer",color:T.textMuted,padding:4}}>&times;</button>
         </div>
         <StatusBadge status={sel.status}/>
+        {sel.regen_requested&&<div style={{display:"flex",alignItems:"flex-start",gap:10,marginTop:10,padding:"10px 14px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fcd34d"}}>
+          <span style={{fontSize:"1rem",flexShrink:0}}>{"\u21BB"}</span>
+          <div>
+            <div style={{fontWeight:700,color:"#92400e",fontSize:".78rem"}}>Neugenierung angefragt</div>
+            <div style={{fontSize:".72rem",color:"#78350f"}}>Kunde hat Aenderungen eingereicht</div>
+          </div>
+        </div>}
         <div style={{marginTop:16,display:"flex",gap:6,flexWrap:"wrap"}}>
           {STATUS_FLOW.filter(s=>s!==sel.status).map(s=><button key={s} onClick={()=>updateOrder(sel.id,{status:s})} style={{padding:"4px 12px",border:`2px solid ${STATUS_COLORS[s]}33`,borderRadius:T.rSm,background:STATUS_COLORS[s]+"11",color:STATUS_COLORS[s],cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{STATUS_LABELS[s]}</button>)}
         </div>

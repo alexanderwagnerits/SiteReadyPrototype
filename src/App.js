@@ -301,7 +301,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:4}}>Weitere Berufsgruppen in Planung</div>
         <div style={{fontSize:".83rem",color:T.textMuted,lineHeight:1.6}}>Gastronomie, Handel, Dienstleistungen und mehr kommen 2026.</div>
       </div>
-      <a href="mailto:newsletter@siteready.at?subject=Newsletter%20SiteReady%20neue%20Berufsgruppen" style={{display:"inline-block",padding:"10px 20px",borderRadius:8,fontSize:".84rem",fontWeight:700,fontFamily:T.font,background:T.dark,color:"#fff",textDecoration:"none",whiteSpace:"nowrap"}}>Newsletter abonnieren &rarr;</a>
+      <button disabled style={{padding:"10px 20px",borderRadius:8,fontSize:".84rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,background:T.dark,color:"#fff",border:"none",opacity:.85,whiteSpace:"nowrap"}}>Newsletter abonnieren &amp; informiert bleiben</button>
     </div>
   </Sec>
 
@@ -339,7 +339,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:28}}>
           {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><span style={{color:"#a855f7",fontWeight:700,fontSize:".84rem"}}>{"\u23F3"}</span>{f}</div>)}
         </div>
-        <a href="mailto:newsletter@siteready.at?subject=Newsletter%20SiteReady%20Premium" style={{display:"block",width:"100%",padding:14,borderRadius:8,fontSize:".92rem",fontWeight:700,fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",textAlign:"center",textDecoration:"none",boxSizing:"border-box"}}>Newsletter abonnieren &amp; informiert bleiben</a>
+        <button disabled style={{width:"100%",padding:14,borderRadius:8,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",opacity:.8}}>Newsletter abonnieren &amp; informiert bleiben</button>
       </div>
     </div>
     <p style={{textAlign:"center",fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"28px auto 0",lineHeight:1.7}}>12 Monate Mindestlaufzeit. Kündbar nach Ablauf. Preise inkl. MwSt.</p>

@@ -1590,7 +1590,7 @@ function Admin({adminKey}){
       </div>
 
       {/* Detail Drawer */}
-      {sel&&(<div style={{width:380,background:"#fff",borderLeft:`1px solid ${T.bg3}`,overflowY:"auto",padding:24,flexShrink:0}}>
+      {sel&&(<div style={{width:520,background:"#fff",borderLeft:`1px solid ${T.bg3}`,overflowY:"auto",padding:28,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
           <h3 style={{margin:0,fontSize:"1rem",fontWeight:800,color:T.dark}}>{sel.firmenname||"—"}</h3>
           <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.2rem",cursor:"pointer",color:T.textMuted,padding:4}}>&times;</button>

@@ -1104,8 +1104,8 @@ function Portal({session,onLogout}){
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */
-const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",review:"Review",live:"Live"};
-const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",review:"#f97316",live:"#16a34a"};
+const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",review:"Review",live:"Live",offline:"Offline"};
+const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",review:"#f97316",live:"#16a34a",offline:"#64748b"};
 const STATUS_FLOW=["pending","paid","in_arbeit","review","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
@@ -1144,6 +1144,13 @@ function Admin({adminKey}){
     await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,...fields})});
     setOrders(os=>os.map(o=>o.id===id?{...o,...fields}:o));
     setSel(s=>s?.id===id?{...s,...fields}:s);
+  };
+
+  const deleteOrder=async(id)=>{
+    if(!window.confirm("Kunden wirklich loeschen? Diese Aktion kann nicht rueckgaengig gemacht werden."))return;
+    await fetch(`/api/admin-delete?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    setOrders(os=>os.filter(o=>o.id!==id));
+    setSel(null);
   };
 
   const updateTicket=async(id,fields)=>{
@@ -1665,6 +1672,13 @@ function Admin({adminKey}){
           {(()=>{const ready=sel.status==="review"&&!!sel.website_html;return(<button onClick={ready?()=>updateOrder(sel.id,{status:"live"}):undefined} disabled={!ready} style={{marginTop:8,padding:"8px 16px",border:"none",borderRadius:T.rSm,background:ready?T.green:"#e2e8f0",color:ready?"#fff":"#94a3b8",cursor:ready?"pointer":"default",fontSize:".82rem",fontWeight:700,fontFamily:T.font,width:"100%",transition:"background .2s"}}>
             {"\uD83D\uDE80"} {sel.status==="live"?"Bereits live":ready?"Live setzen":"Live setzen (noch nicht bereit)"}
           </button>);})()}
+          <div style={{display:"flex",gap:8,marginTop:8}}>
+            {sel.status==="offline"
+              ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128994; Wieder online</button>
+              :<button onClick={()=>updateOrder(sel.id,{status:"offline"})} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128683; Offline nehmen</button>
+            }
+            <button onClick={()=>deleteOrder(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden loeschen</button>
+          </div>
         </div>
         <div style={{marginTop:14}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>

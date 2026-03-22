@@ -96,6 +96,36 @@ export async function onRequestPost({request, env}) {
       return Response.json({error: "Website konnte nicht geladen werden."}, {status: 400});
     }
 
+    // Emails aus pageText extrahieren (fängt auch JS-gerenderte Emails via Jina)
+    for (const m of pageText.matchAll(emailRegex)) {
+      allEmails.add(m[0].toLowerCase());
+    }
+
+    // Kontakt-Seite fetchen (zusaetzliche Email-Quelle)
+    const kontaktTargets = ["/kontakt", "/contact", "/kontakt.html", "/contact.html", "/de/kontakt"].map(p => base + p);
+    for (const kUrl of kontaktTargets) {
+      try {
+        const r = await fetch(kUrl, {
+          headers: {"User-Agent": "Mozilla/5.0", "Accept": "text/html"},
+          redirect: "follow", signal: AbortSignal.timeout(6000),
+        });
+        if (r.ok) {
+          const html = await r.text();
+          for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
+            allEmails.add(m[1].toLowerCase());
+          }
+          const visText = html
+            .replace(/<script[\s\S]*?<\/script>/gi, " ")
+            .replace(/<style[\s\S]*?<\/style>/gi, " ")
+            .replace(/<[^>]+>/g, " ");
+          for (const m of visText.matchAll(emailRegex)) {
+            allEmails.add(m[0].toLowerCase());
+          }
+          break; // erste erfolgreiche Kontakt-Seite reicht
+        }
+      } catch(e) { /* ignore */ }
+    }
+
     // Impressum laden
     let impressumText = "";
     const impressumTargets = impressumUrl

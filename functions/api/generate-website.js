@@ -217,6 +217,7 @@ const STIL = {
 };
 
 export async function onRequestPost({request, env}) {
+  try {
   const url = new URL(request.url);
   const key = url.searchParams.get("key");
   if (!key || key !== env.ADMIN_SECRET) {
@@ -387,4 +388,7 @@ Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer
   );
 
   return Response.json({ok: save.ok, subdomain: sub, status: "review"});
+  } catch(e) {
+    return Response.json({error: "Interner Fehler: " + e.message}, {status: 500});
+  }
 }

@@ -588,7 +588,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
       <div style={{fontSize:"1.8rem",marginBottom:8}}>{g.icon}</div>
       <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:4}}>{g.label}</div>
       <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{g.desc}</div>
-      {on&&<div style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:4,background:T.accent,color:"#fff",borderRadius:20,padding:"2px 10px",fontSize:".65rem",fontWeight:700}}>&#10003; Ausgew\u00e4hlt</div>}
+      {on&&<div style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:4,background:T.accent,color:"#fff",borderRadius:20,padding:"2px 10px",fontSize:".65rem",fontWeight:700}}>{"\u2713 Ausgewaehlt"}</div>}
     </button>);})}
   </div>
   <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".74rem",color:T.textMuted,lineHeight:1.6}}>Aktuell verfügbar: <strong style={{color:T.text}}>Handwerk</strong> & <strong style={{color:T.text}}>Kosmetik & Körperpflege</strong> &ndash; Weitere Berufsgruppen folgen bald.</div>

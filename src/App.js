@@ -1219,7 +1219,7 @@ function Admin({adminKey}){
   if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung moeglich!",tab:"system"});
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
   if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
-  const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Website Health"},{id:"kosten",label:"Kosten"}];
+  const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Website Health"},{id:"kosten",label:"Kosten"},{id:"architektur",label:"Architektur"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -1578,6 +1578,81 @@ function Admin({adminKey}){
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>);
+        })()}
+
+        {/* Tab: Architektur */}
+        {!loading&&tab==="architektur"&&(()=>{
+          const box=(label,sub,color,icon)=>(<div style={{background:"#fff",border:`2px solid ${color}33`,borderRadius:T.rSm,padding:"10px 14px",minWidth:130,flex:"1 1 130px"}}>
+            <div style={{fontSize:"1.1rem",marginBottom:4}}>{icon}</div>
+            <div style={{fontWeight:700,fontSize:".82rem",color:T.dark}}>{label}</div>
+            {sub&&<div style={{fontSize:".7rem",color:T.textMuted,marginTop:2,fontFamily:T.mono}}>{sub}</div>}
+          </div>);
+          const layer=(title,color,children)=>(<div style={{border:`2px dashed ${color}`,borderRadius:T.r,padding:"14px 16px",marginBottom:8,background:color+"08"}}>
+            <div style={{fontSize:".65rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{title}</div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{children}</div>
+          </div>);
+          const arrow=<div style={{textAlign:"center",color:T.textMuted,fontSize:"1.1rem",margin:"4px 0"}}>↓</div>;
+          const flowStep=(num,icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 100px",minWidth:100,maxWidth:160}}>
+            <div style={{width:40,height:40,borderRadius:"50%",background:color+"18",border:`2px solid ${color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem"}}>{icon}</div>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.dark,textAlign:"center",lineHeight:1.3}}>{label}</div>
+            {sub&&<div style={{fontSize:".65rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}
+            {optional&&<span style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,background:T.bg3,padding:"1px 5px",borderRadius:3}}>Optional</span>}
+          </div>);
+          const flowArrow=<div style={{color:T.textMuted,fontSize:"1.1rem",alignSelf:"center",flexShrink:0,paddingBottom:20}}>→</div>;
+          const phase=(label,color,children)=>(<div style={{marginBottom:20}}>
+            <div style={{fontSize:".65rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10,paddingLeft:4}}>{label}</div>
+            <div style={{display:"flex",alignItems:"flex-start",gap:6,flexWrap:"wrap"}}>{children}</div>
+          </div>);
+          return(<div>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Architektur &amp; Prozess</h2>
+            {/* System-Architektur */}
+            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:20}}>
+              <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16}}>System-Architektur</div>
+              {layer("Nutzer","#64748b",<>{box("Kunde","Browser / Mobil","#64748b","🧑")}{box("Admin","Browser (key-gesichert)","#64748b","🔧")}</>)}
+              {arrow}
+              {layer("Cloudflare Pages (Edge / CDN)","#f97316",<>{box("React SPA","/ (Landingpage + Formular)","#f97316","⚛️")}{box("Admin Dashboard","/admin?key=...","#f97316","🗂️")}{box("Edge Functions","/api/* (Checkout, Generate...)","#f97316","⚡")}{box("Website Serving","/s/[subdomain]","#f97316","🌍")}</>)}
+              {arrow}
+              {layer("Externe Services","#2563eb",<>{box("Supabase","PostgreSQL + Auth","#2563eb","🗄️")}{box("Anthropic Claude","claude-sonnet-4-6","#8b5cf6","🤖")}{box("Stripe","Payments (Checkout)","#16a34a","💳")}{box("Google Fonts","CDN (DM Sans, Inter...)","#f59e0b","🔤")}</>)}
+              {arrow}
+              {layer("DNS / Domain","#94a3b8",<>{box("siteready.at","Subdomain pro Kunde","#94a3b8","🔗")}{box("Custom Domain","CNAME → siteready.at","#94a3b8","🌐")}</>,)}
+              <div style={{marginTop:12,padding:"8px 12px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".72rem",color:"#1e40af",lineHeight:1.6}}>
+                <strong>Serve-time Ersetzung:</strong> E-Mail, Telefon, Adresse werden bei jedem Aufruf live aus Supabase eingesetzt &ndash; kein Re-Deploy noetig.&nbsp;
+                <strong>Impressum &amp; Datenschutz</strong> werden serverseitig generiert (legal.js) und sind immer aktuell.
+              </div>
+            </div>
+            {/* Kunden-Flow */}
+            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16}}>Kunden-Flow</div>
+              {phase("Phase 1 – Bestellung","#2563eb",<>
+                {flowStep(1,"📋","Formular","5 Schritte im Wizard","#2563eb")}
+                {flowArrow}
+                {flowStep(2,"💳","Stripe Checkout","Einmalzahlung","#16a34a")}
+                {flowArrow}
+                {flowStep(3,"✅","Order in DB","Status: paid","#2563eb")}
+              </>)}
+              {phase("Phase 2 – Produktion","#8b5cf6",<>
+                {flowStep(4,"🤖","Claude generiert","claude-sonnet-4-6","#8b5cf6")}
+                {flowArrow}
+                {flowStep(5,"💾","HTML in Supabase","Status: review","#8b5cf6")}
+                {flowArrow}
+                {flowStep(6,"👁️","Admin Review","Pruefung & Freigabe","#f97316")}
+                {flowArrow}
+                {flowStep(7,"🚀","Live schalten","Status: live","#16a34a")}
+              </>)}
+              {phase("Phase 3 – SEO (nach Prototyp)","#94a3b8",<>
+                {flowStep(8,"🔍","Subdomain indexieren","noindex entfernen","#94a3b8")}
+                {flowArrow}
+                {flowStep(9,"🌐","Custom Domain","CNAME einrichten","#94a3b8",true)}
+                {flowArrow}
+                {flowStep(10,"📈","Domain indexieren","GSC einreichen","#94a3b8",true)}
+                {flowArrow}
+                {flowStep(11,"🧹","Subdomain entfernen","kein Duplicate Content","#94a3b8",true)}
+              </>)}
+              <div style={{marginTop:4,padding:"8px 12px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".72rem",color:"#92400e"}}>
+                Phase 3 ist im Prototyp noch nicht aktiv &ndash; noindex-Tag ist auf allen Websites gesetzt.
+              </div>
             </div>
           </div>);
         })()}

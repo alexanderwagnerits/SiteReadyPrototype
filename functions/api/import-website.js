@@ -26,6 +26,13 @@ export async function onRequestPost({request, env}) {
       for (const m of mainHtml.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
         allEmails.add(m[1].toLowerCase());
       }
+      // JSON-LD Structured Data (schema.org) – vor dem Script-Strippen parsen
+      for (const m of mainHtml.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+        try {
+          const ldText = m[1];
+          for (const em of ldText.matchAll(emailRegex)) allEmails.add(em[0].toLowerCase());
+        } catch(_) {}
+      }
       // Plain-text Emails im sichtbaren Inhalt
       const visibleText = mainHtml
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -113,6 +120,9 @@ export async function onRequestPost({request, env}) {
           const html = await r.text();
           for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
             allEmails.add(m[1].toLowerCase());
+          }
+          for (const m of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+            try { for (const em of m[1].matchAll(emailRegex)) allEmails.add(em[0].toLowerCase()); } catch(_) {}
           }
           const visText = html
             .replace(/<script[\s\S]*?<\/script>/gi, " ")

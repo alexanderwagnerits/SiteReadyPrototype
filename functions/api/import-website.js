@@ -6,50 +6,39 @@ export async function onRequestPost({request, env}) {
     let cleanUrl = url.trim();
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
 
-    // Website direkt laden
+    // Jina AI Reader als Primaerquelle (strukturierter Text, erkennt E-Mails/Links besser)
     let pageText = "";
     try {
-      const pageResp = await fetch(cleanUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "text/html,application/xhtml+xml",
-          "Accept-Language": "de-AT,de;q=0.9",
-        },
-        redirect: "follow",
+      const jinaResp = await fetch("https://r.jina.ai/" + cleanUrl, {
+        headers: {"Accept": "text/plain", "X-Return-Format": "text"},
+        signal: AbortSignal.timeout(10000),
       });
-      if (pageResp.ok) {
-        const html = await pageResp.text();
-        // HTML-Tags entfernen, sauberen Text extrahieren
-        pageText = html
-          .replace(/<script[\s\S]*?<\/script>/gi, " ")
-          .replace(/<style[\s\S]*?<\/style>/gi, " ")
-          .replace(/<[^>]+>/g, " ")
-          .replace(/&nbsp;/g, " ")
-          .replace(/&amp;/g, "&")
-          .replace(/&lt;/g, "<")
-          .replace(/&gt;/g, ">")
-          .replace(/\s{2,}/g, " ")
-          .trim();
-      }
-    } catch(fetchErr) {
-      // Fallback: Jina AI Reader
-    }
+      if (jinaResp.ok) pageText = await jinaResp.text();
+    } catch(jinaErr) { /* ignore */ }
 
-    // Fallback: Jina AI Reader (fuer JS-gerenderte Seiten)
+    // Fallback: Website direkt laden
     if (!pageText || pageText.length < 100) {
       try {
-        const jinaResp = await fetch("https://r.jina.ai/" + cleanUrl, {
+        const pageResp = await fetch(cleanUrl, {
           headers: {
-            "Accept": "text/plain",
-            "X-Return-Format": "text",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "text/html,application/xhtml+xml",
+            "Accept-Language": "de-AT,de;q=0.9",
           },
+          redirect: "follow",
+          signal: AbortSignal.timeout(10000),
         });
-        if (jinaResp.ok) {
-          pageText = await jinaResp.text();
+        if (pageResp.ok) {
+          const html = await pageResp.text();
+          pageText = html
+            .replace(/<script[\s\S]*?<\/script>/gi, " ")
+            .replace(/<style[\s\S]*?<\/style>/gi, " ")
+            .replace(/<[^>]+>/g, " ")
+            .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+            .replace(/\s{2,}/g, " ").trim();
         }
-      } catch(jinaErr) {
-        // ignore
-      }
+      } catch(fetchErr) { /* ignore */ }
     }
 
     if (!pageText || pageText.length < 50) {
@@ -73,7 +62,7 @@ export async function onRequestPost({request, env}) {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 512,
+        max_tokens: 1024,
         messages: [{
           role: "user",
           content: `Extrahiere aus folgendem Website-Text die Kontaktdaten eines oesterreichischen Unternehmens.
@@ -92,6 +81,7 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - firmenbuchgericht: Firmenbuchgericht z.B. HG Wien (leer wenn nicht gefunden)
 - gisazahl: GISA-Zahl (Ziffern, leer wenn nicht gefunden)
 - branche: Handwerksbranche (NUR einen dieser exakten Werte: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige)
+- leistungen: Array mit max. 8 konkreten Leistungen/Dienstleistungen des Unternehmens (z.B. ["Elektroinstallation","Beleuchtung","Photovoltaik"]), leeres Array wenn nicht erkennbar
 
 Website-Text:
 ${excerpt}`,
@@ -130,6 +120,7 @@ ${excerpt}`,
       firmenbuchgericht: extracted.firmenbuchgericht || "",
       gisazahl: extracted.gisazahl || "",
       branche: extracted.branche || "",
+      leistungen: Array.isArray(extracted.leistungen) ? extracted.leistungen.slice(0, 8) : [],
     });
 
   } catch(e) {

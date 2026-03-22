@@ -68,7 +68,7 @@ export async function onRequestGet({params, env}) {
     html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, "");
   }
 
-  // Galerie serve-time injizieren (vor dem Footer, nur wenn Fotos vorhanden)
+  // Galerie serve-time injizieren (zwischen Ueber-uns und Kontakt via <!-- GALERIE -->, Fallback vor Footer)
   const fotoUrls = [o.url_foto1, o.url_foto2, o.url_foto3, o.url_foto4, o.url_foto5].filter(Boolean);
   if (fotoUrls.length > 0) {
     const items = fotoUrls.map(url =>
@@ -82,7 +82,13 @@ export async function onRequestGet({params, env}) {
       `<h2 style="font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:800;color:var(--primary);margin:0 0 32px">Bilder aus unserem Betrieb</h2>` +
       `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">${items}</div>` +
       `</div></section>`;
-    html = html.replace(/<footer[\s>]/i, galleryHtml + "\n<footer ");
+    if (html.includes("<!-- GALERIE -->")) {
+      html = html.replace(/<!-- GALERIE -->/g, galleryHtml);
+    } else {
+      html = html.replace(/<footer[\s>]/i, galleryHtml + "\n<footer ");
+    }
+  } else {
+    html = html.replace(/<!-- GALERIE -->/g, "");
   }
 
   // ── Serve-time Variablen-Ersetzung (Sofort-Updates ohne Re-Generierung) ──

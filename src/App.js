@@ -1217,18 +1217,41 @@ function Portal({session,onLogout}){
       {tab==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Logo */}
         {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
-          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:20}}>
-            <div style={{width:72,height:72,borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${T.bg3}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              {url?<img src={url} alt="Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>:<span style={{fontSize:"1.4rem"}}>🏷️</span>}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
+              </div>
+              <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
+                <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+              </label>
             </div>
-            <div style={{flex:1}}>
-              <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
-              <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
+            {url&&(<div style={{marginBottom:12}}>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div>
+                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
+                  <div style={{background:"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
+                    <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
+                  </div>
+                </div>
+                <div>
+                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Hell (Briefkopf etc.)</div>
+                  <div style={{background:"#fff",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center",border:`1px solid ${T.bg3}`}}>
+                    <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
+                  </div>
+                </div>
+              </div>
+            </div>)}
+            {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
+              <div style={{fontSize:"1.8rem",marginBottom:6}}>{"🏷️"}</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Logo hochgeladen</div>
+            </div>)}
+            <div style={{fontSize:".73rem",color:T.textMuted,marginTop:4}}>
+              {"Empfohlen: PNG mit transparentem Hintergrund, mind. 400 \u00d7 150 px – damit das Logo auf dem dunklen Nav-Hintergrund sauber aussieht."}
             </div>
-            <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-              {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-              <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
-            </label>
           </div>
         );})()}
         {/* Fotos */}

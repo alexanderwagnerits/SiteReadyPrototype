@@ -281,7 +281,10 @@ export async function onRequestPost({request, env}) {
     : "Handwerksbetrieb";
 
   const leistungen = [...(o.leistungen || [])];
-  if (o.extra_leistung?.trim()) leistungen.push(o.extra_leistung.trim());
+  if (o.extra_leistung?.trim()) {
+    const extras = o.extra_leistung.split(/[,\n]+/).map(s => s.trim()).filter(Boolean);
+    leistungen.push(...extras);
+  }
   const oez = o.oeffnungszeiten_custom || o.oeffnungszeiten || "Nach Vereinbarung";
   const year = new Date().getFullYear();
   const impressumHtml = buildImpressum(o, pal, year);
@@ -306,7 +309,7 @@ KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Strikt
 KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden. Verstoss ist inakzeptabel.
 LEISTUNGEN – ABSOLUTE PFLICHT: Zeige AUSSCHLIESSLICH die exakt uebergebenen Leistungen. Keine zusaetzlichen Leistungen erfinden, hinzufuegen oder ergaenzen. Exakt ${leistungen.length} Leistungs-Cards – nicht mehr, nicht weniger.
 META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
-STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt.
+STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt. Setze <!-- GALERIE --> als eigene Zeile ZWISCHEN den Sektionen UEBER-UNS und KONTAKT (die Galerie wird automatisch eingefuegt wenn Fotos vorhanden sind).
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}

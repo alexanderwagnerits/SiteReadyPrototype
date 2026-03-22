@@ -1,0 +1,10 @@
+# SiteReady - robots.txt
+# Prototyp-Phase: /s/* wird gesperrt (noindex aktiv auf allen Kunden-Websites)
+# SEO-Freischaltung erfolgt nach Abschluss der Prototyp-Phase
+
+User-agent: *
+Disallow: /admin
+Disallow: /api/
+Disallow: /s/
+
+Allow: /

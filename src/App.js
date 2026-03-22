@@ -8,29 +8,29 @@ const supabase = (process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SU
 /* ═══ DATA ═══ */
 const BRANCHEN = [
   // Handwerk
-  { value:"elektro",         gruppe:"handwerk", label:"Elektroinstallationen",            leistungen:["Elektroinstallationen","Stoerungsbehebung & Reparatur","Smart Home Systeme","Photovoltaik & Speicher","Beleuchtungstechnik","Notdienst 24/7"],stil:"professional" },
-  { value:"installateur",    gruppe:"handwerk", label:"Installateur / Heizung / Sanitaer", leistungen:["Heizungsinstallation & Wartung","Sanitaerinstallationen","Rohrreinigung","Badsanierung","Waermepumpen","Notdienst 24/7"],stil:"professional" },
+  { value:"elektro",         gruppe:"handwerk", label:"Elektroinstallationen",            leistungen:["Elektroinstallationen","Störungsbehebung & Reparatur","Smart Home Systeme","Photovoltaik & Speicher","Beleuchtungstechnik","Notdienst 24/7"],stil:"professional" },
+  { value:"installateur",    gruppe:"handwerk", label:"Installateur / Heizung / Sanitär", leistungen:["Heizungsinstallation & Wartung","Sanitärinstallationen","Rohrreinigung","Badsanierung","Wärmepumpen","Notdienst 24/7"],stil:"professional" },
   { value:"maler",           gruppe:"handwerk", label:"Malerei & Anstrich",                leistungen:["Innenmalerei","Fassadenanstrich","Tapezierarbeiten","Lackierarbeiten","Schimmelbehandlung","Farbberatung"],stil:"modern" },
-  { value:"tischler",        gruppe:"handwerk", label:"Tischlerei",                        leistungen:["Moebel nach Mass","Kuechenbau","Innenausbau","Fenster & Tueren","Reparaturen","Restaurierung"],stil:"traditional" },
+  { value:"tischler",        gruppe:"handwerk", label:"Tischlerei",                        leistungen:["Möbel nach Maß","Küchenbau","Innenausbau","Fenster & Türen","Reparaturen","Restaurierung"],stil:"traditional" },
   { value:"fliesenleger",    gruppe:"handwerk", label:"Fliesenleger",                      leistungen:["Fliesenverlegung","Badsanierung","Natursteinarbeiten","Terrassenplatten","Abdichtungen","Reparaturen"],stil:"modern" },
-  { value:"schlosser",       gruppe:"handwerk", label:"Schlosserei / Metallbau",           leistungen:["Stahl- & Metallbau","Gelaender & Zaeune","Tore & Tueren","Schweissarbeiten","Reparaturen","Sonderanfertigungen"],stil:"professional" },
-  { value:"dachdecker",      gruppe:"handwerk", label:"Dachdecker / Spengler",             leistungen:["Dachsanierung","Dachdaemmung","Flachdach","Dachrinnen & Spenglerarbeiten","Dachfenster","Notdienst"],stil:"traditional" },
-  { value:"zimmerei",        gruppe:"handwerk", label:"Zimmerei",                          leistungen:["Dachstuehle & Holzbau","Carports & Terrassen","Aufstockungen","Holzfassaden","Sanierung & Altholz","Sonderanfertigungen"],stil:"traditional" },
+  { value:"schlosser",       gruppe:"handwerk", label:"Schlosserei / Metallbau",           leistungen:["Stahl- & Metallbau","Geländer & Zäune","Tore & Türen","Schweißarbeiten","Reparaturen","Sonderanfertigungen"],stil:"professional" },
+  { value:"dachdecker",      gruppe:"handwerk", label:"Dachdecker / Spengler",             leistungen:["Dachsanierung","Dachdämmung","Flachdach","Dachrinnen & Spenglerarbeiten","Dachfenster","Notdienst"],stil:"traditional" },
+  { value:"zimmerei",        gruppe:"handwerk", label:"Zimmerei",                          leistungen:["Dachstühle & Holzbau","Carports & Terrassen","Aufstockungen","Holzfassaden","Sanierung & Altholz","Sonderanfertigungen"],stil:"traditional" },
   { value:"maurer",          gruppe:"handwerk", label:"Maurer / Baumeister",               leistungen:["Rohbau & Mauerwerk","Zu- & Umbauten","Sanierung & Renovierung","Fassadenarbeiten","Estricharbeiten","Abbrucharbeiten"],stil:"professional" },
   { value:"bodenleger",      gruppe:"handwerk", label:"Bodenleger / Parkett",              leistungen:["Parkettverlegung","Laminat & Vinyl","Schleifen & Versiegeln","Teppichboden","Reparaturen","Bodenberatung"],stil:"modern" },
-  { value:"glaser",          gruppe:"handwerk", label:"Glaser",                            leistungen:["Glasreparaturen","Isolierglas","Spiegel & Glasmoebel","Duschwaende","Glasfassaden","Notdienst"],stil:"modern" },
-  { value:"gaertner",        gruppe:"handwerk", label:"Gaertner / Landschaftsbau",         leistungen:["Gartengestaltung","Pflasterarbeiten","Bepflanzung & Pflege","Bewaesserungssysteme","Zaunbau","Baumschnitt & Pflege"],stil:"modern" },
-  { value:"klima",           gruppe:"handwerk", label:"Klimatechnik / Lueftung",           leistungen:["Klimaanlagen Installation","Lueftungsanlagen","Wartung & Service","Waermepumpen","Kuehltechnik","Notdienst"],stil:"professional" },
-  { value:"reinigung",       gruppe:"handwerk", label:"Reinigung / Gebaeudeservice",       leistungen:["Gebaeudereinigung","Fensterreinigung","Grundreinigung","Teppichreinigung","Fassadenreinigung","Winterdienst"],stil:"modern" },
+  { value:"glaser",          gruppe:"handwerk", label:"Glaser",                            leistungen:["Glasreparaturen","Isolierglas","Spiegel & Glasmöbel","Duschwände","Glasfassaden","Notdienst"],stil:"modern" },
+  { value:"gaertner",        gruppe:"handwerk", label:"Gärtner / Landschaftsbau",         leistungen:["Gartengestaltung","Pflasterarbeiten","Bepflanzung & Pflege","Bewässerungssysteme","Zaunbau","Baumschnitt & Pflege"],stil:"modern" },
+  { value:"klima",           gruppe:"handwerk", label:"Klimatechnik / Lüftung",           leistungen:["Klimaanlagen Installation","Lüftungsanlagen","Wartung & Service","Wärmepumpen","Kühltechnik","Notdienst"],stil:"professional" },
+  { value:"reinigung",       gruppe:"handwerk", label:"Reinigung / Gebäudeservice",       leistungen:["Gebäudereinigung","Fensterreinigung","Grundreinigung","Teppichreinigung","Fassadenreinigung","Winterdienst"],stil:"modern" },
   { value:"sonstige",        gruppe:"handwerk", label:"Sonstige Handwerksbranche",         leistungen:[],stil:"professional" },
   // Kosmetik & Körperpflege
   { value:"kosmetik",        gruppe:"kosmetik", label:"Kosmetikstudio",                    leistungen:["Gesichtsbehandlungen","Körperpflege & Peeling","Waxing & Haarentfernung","Anti-Aging-Behandlungen","Augenbrauen & Wimpern","Beratung & Pflegeroutine"],stil:"modern" },
-  { value:"friseur",         gruppe:"kosmetik", label:"Friseursalon",                      leistungen:["Haarschnitt Damen & Herren","Faerben & Straehnchen","Hochzeitsstyling","Haarbehandlungen","Kinder-Haarschnitt","Bartpflege"],stil:"modern" },
-  { value:"nagel",           gruppe:"kosmetik", label:"Nagelstudio",                       leistungen:["Gel-Naegel & Shellac","Nagelverlaengerung","Nail Art & Design","Nagelreparatur","Fusspflege & Nagellack","Beratung"],stil:"modern" },
+  { value:"friseur",         gruppe:"kosmetik", label:"Friseursalon",                      leistungen:["Haarschnitt Damen & Herren","Färben & Strähnchen","Hochzeitsstyling","Haarbehandlungen","Kinder-Haarschnitt","Bartpflege"],stil:"modern" },
+  { value:"nagel",           gruppe:"kosmetik", label:"Nagelstudio",                       leistungen:["Gel-Nägel & Shellac","Nagelverlängerung","Nail Art & Design","Nagelreparatur","Fußpflege & Nagellack","Beratung"],stil:"modern" },
   { value:"massage",         gruppe:"kosmetik", label:"Massage & Wellness",                leistungen:["Klassische Massage","Sportmassage","Entspannungsmassage","Hot-Stone-Massage","Triggerpunkt-Therapie","Lymphdrainage"],stil:"modern" },
   { value:"tattoo",          gruppe:"kosmetik", label:"Tattoo & Piercing",                 leistungen:["Custom Tattoos","Cover-ups & Korrekturen","Piercing","Beratung & Design","Pflege & Nachsorge","Laser-Entfernung"],stil:"professional" },
-  { value:"fusspflege",      gruppe:"kosmetik", label:"Fuss- & Körperpflege",             leistungen:["Medizinische Fusspflege","Nagelpflege & Korrektur","Hornhautentfernung","Fusspeeling & Entspannungsbad","Gels & Lack","Beratung"],stil:"professional" },
-  { value:"permanent_makeup",gruppe:"kosmetik", label:"Permanent Make-up & Wimpern",       leistungen:["Microblading","Permanent Make-up Lippen","Wimpernverlaengerung","Wimpernlifting","Augenbrauen-Styling","Touch-up & Nachbehandlung"],stil:"modern" },
+  { value:"fusspflege",      gruppe:"kosmetik", label:"Fuß- & Körperpflege",             leistungen:["Medizinische Fußpflege","Nagelpflege & Korrektur","Hornhautentfernung","Fußpeeling & Entspannungsbad","Gels & Lack","Beratung"],stil:"professional" },
+  { value:"permanent_makeup",gruppe:"kosmetik", label:"Permanent Make-up & Wimpern",       leistungen:["Microblading","Permanent Make-up Lippen","Wimpernverlängerung","Wimpernlifting","Augenbrauen-Styling","Touch-up & Nachbehandlung"],stil:"modern" },
   { value:"sonstige_kosmetik",gruppe:"kosmetik",label:"Sonstige Kosmetik & Körperpflege", leistungen:[],stil:"modern" },
 ];
 const BERUFSGRUPPEN=[
@@ -40,13 +40,13 @@ const BERUFSGRUPPEN=[
 const KOSMETIK_SET=new Set(["kosmetik","friseur","nagel","massage","tattoo","fusspflege","permanent_makeup","sonstige_kosmetik"]);
 const getBrancheGruppe=b=>KOSMETIK_SET.has(b)?"kosmetik":"handwerk";
 const GRUPPE_BADGE={handwerk:{icon:"\uD83D\uDD28",label:"Handwerk",c:"#92400e",bg:"#fef3c7"},kosmetik:{icon:"\u2728",label:"Kosmetik",c:"#831843",bg:"#fdf2f8"}};
-const BUNDESLAENDER=[{value:"wien",label:"Wien"},{value:"noe",label:"Niederösterreich"},{value:"ooe",label:"Oberösterreich"},{value:"stmk",label:"Steiermark"},{value:"sbg",label:"Salzburg"},{value:"tirol",label:"Tirol"},{value:"ktn",label:"Kaernten"},{value:"vbg",label:"Vorarlberg"},{value:"bgld",label:"Burgenland"}];
+const BUNDESLAENDER=[{value:"wien",label:"Wien"},{value:"noe",label:"Niederösterreich"},{value:"ooe",label:"Oberösterreich"},{value:"stmk",label:"Steiermark"},{value:"sbg",label:"Salzburg"},{value:"tirol",label:"Tirol"},{value:"ktn",label:"Kärnten"},{value:"vbg",label:"Vorarlberg"},{value:"bgld",label:"Burgenland"}];
 const OEFFNUNGSZEITEN=[{value:"mo-fr-8-17",label:"Mo-Fr: 08:00-17:00"},{value:"mo-fr-7-16",label:"Mo-Fr: 07:00-16:00"},{value:"mo-fr-8-18",label:"Mo-Fr: 08:00-18:00"},{value:"mo-sa-8-17",label:"Mo-Sa: 08:00-17:00"},{value:"mo-sa-8-12",label:"Mo-Fr: 08:00-17:00, Sa: 08:00-12:00"},{value:"vereinbarung",label:"Nach Vereinbarung"},{value:"custom",label:"Eigene Zeiten eingeben"}];
 const UNTERNEHMENSFORMEN=[{value:"eu",label:"Einzelunternehmen (e.U.)"},{value:"einzelunternehmen",label:"Einzelunternehmen (nicht eingetragen)"},{value:"gmbh",label:"GmbH"},{value:"og",label:"OG"},{value:"kg",label:"KG"},{value:"ag",label:"AG"},{value:"verein",label:"Verein"},{value:"gesnbr",label:"GesbR"}];
 const STYLES_MAP={
   professional:{label:"Professionell & serioes",desc:"Klare Linien, gedämpfte Farben",primary:"#0f2b5b",accent:"#2563eb",accentSoft:"rgba(37,99,235,0.07)",bg:"#f8fafc",cardBg:"#fff",text:"#0f172a",textMuted:"#64748b",textLight:"#94a3b8",borderColor:"#e2e8f0",font:"'Inter',system-ui,sans-serif",radius:"6px",radiusLg:"10px",heroGradient:"linear-gradient(160deg,#0f2b5b 0%,#1e40af 50%,#2563eb 100%)",heroOverlay:"radial-gradient(circle at 70% 20%,rgba(255,255,255,0.08) 0%,transparent 60%)",shadow:"0 1px 3px rgba(15,43,91,0.06)",badgeBg:"#dbeafe",badgeText:"#1e40af"},
   modern:{label:"Modern & frisch",desc:"Helle Akzente, frische Farbpalette",primary:"#065f46",accent:"#10b981",accentSoft:"rgba(16,185,129,0.07)",bg:"#f0fdf4",cardBg:"#fff",text:"#052e16",textMuted:"#4b7c6a",textLight:"#86b5a1",borderColor:"#d1fae5",font:"'DM Sans',system-ui,sans-serif",radius:"12px",radiusLg:"16px",heroGradient:"linear-gradient(135deg,#065f46 0%,#047857 40%,#10b981 100%)",heroOverlay:"radial-gradient(ellipse at 80% 30%,rgba(255,255,255,0.12) 0%,transparent 50%)",shadow:"0 1px 3px rgba(6,95,70,0.06)",badgeBg:"#d1fae5",badgeText:"#065f46"},
-  traditional:{label:"Bodenständig & vertraut",desc:"Warme Toene, solider Auftritt",primary:"#78350f",accent:"#d97706",accentSoft:"rgba(217,119,6,0.07)",bg:"#fffbeb",cardBg:"#fff",text:"#451a03",textMuted:"#92713a",textLight:"#b8a070",borderColor:"#fde68a",font:"'Source Serif 4',Georgia,serif",radius:"4px",radiusLg:"8px",heroGradient:"linear-gradient(160deg,#78350f 0%,#92400e 50%,#b45309 100%)",heroOverlay:"radial-gradient(circle at 30% 80%,rgba(255,255,255,0.06) 0%,transparent 50%)",shadow:"0 1px 3px rgba(120,53,15,0.06)",badgeBg:"#fef3c7",badgeText:"#92400e"},
+  traditional:{label:"Bodenständig & vertraut",desc:"Warme Töne, solider Auftritt",primary:"#78350f",accent:"#d97706",accentSoft:"rgba(217,119,6,0.07)",bg:"#fffbeb",cardBg:"#fff",text:"#451a03",textMuted:"#92713a",textLight:"#b8a070",borderColor:"#fde68a",font:"'Source Serif 4',Georgia,serif",radius:"4px",radiusLg:"8px",heroGradient:"linear-gradient(160deg,#78350f 0%,#92400e 50%,#b45309 100%)",heroOverlay:"radial-gradient(circle at 30% 80%,rgba(255,255,255,0.06) 0%,transparent 50%)",shadow:"0 1px 3px rgba(120,53,15,0.06)",badgeBg:"#fef3c7",badgeText:"#92400e"},
 };
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
 const INIT={berufsgruppe:"",firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,fotos:false,stil:"professional"};
@@ -135,7 +135,7 @@ function LandingPage({onStart,onPortal}){
         <button onClick={onPortal} style={{background:"transparent",color:T.textSub,padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:".85rem",border:"none",cursor:"pointer",fontFamily:T.font}}>Kunden-Portal</button>
         <button onClick={onStart} style={{background:T.dark,color:"#fff",padding:"10px 22px",borderRadius:8,fontWeight:700,fontSize:".88rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em"}}>Jetzt starten</button>
       </div>
-      <button className="lp-hamburger" onClick={()=>setMenuOpen(o=>!o)} aria-label="Menue" style={{color:T.dark}}>
+      <button className="lp-hamburger" onClick={()=>setMenuOpen(o=>!o)} aria-label="Menü" style={{color:T.dark}}>
         {menuOpen
           ?<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           :<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
@@ -248,7 +248,7 @@ function LandingPage({onStart,onPortal}){
       <Sub s={{maxWidth:460}}>Wie soll Ihr Betrieb wirken? SiteReady waehlt das passende Design automatisch.</Sub>
     </div>
     <div className="lp-variants-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {[{t:"Professionell & seriös",d:"Klare Linien, gedämpfte Farben, serifenlos",g:"linear-gradient(160deg,#0f2b5b,#2563eb)",sub:"Elektriker, Installateure, Baumeister"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Farbpalette",g:"linear-gradient(135deg,#065f46,#10b981)",sub:"Maler, Fliesenleger, Gaertner"},{t:"Bodenständig & vertraut",d:"Warme Toene, kraeftige Schrift, solider Auftritt",g:"linear-gradient(160deg,#78350f,#b45309)",sub:"Tischler, Zimmerer, Dachdecker"}].map((v,i)=><div key={i} style={{borderRadius:12,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)"}}>
+      {[{t:"Professionell & seriös",d:"Klare Linien, gedämpfte Farben, serifenlos",g:"linear-gradient(160deg,#0f2b5b,#2563eb)",sub:"Elektriker, Installateure, Baumeister"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Farbpalette",g:"linear-gradient(135deg,#065f46,#10b981)",sub:"Maler, Fliesenleger, Gärtner"},{t:"Bodenständig & vertraut",d:"Warme Töne, kräftige Schrift, solider Auftritt",g:"linear-gradient(160deg,#78350f,#b45309)",sub:"Tischler, Zimmerer, Dachdecker"}].map((v,i)=><div key={i} style={{borderRadius:12,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)"}}>
         <div style={{background:v.g,padding:"44px 28px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.1),transparent 50%)"}}/><h3 style={{fontSize:"1.1rem",fontWeight:700,marginBottom:6,position:"relative"}}>{v.t}</h3><p style={{fontSize:".8rem",opacity:.75,position:"relative"}}>{v.d}</p></div>
         <div style={{padding:"18px 28px",borderTop:"1px solid rgba(0,0,0,.05)"}}><p style={{fontSize:".84rem",color:T.textSub}}>{v.sub}</p></div>
       </div>)}
@@ -275,7 +275,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{padding:"22px 28px"}}>
           <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Verfügbare Branchen</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gaertner","Klima & Lueftung","Reinigung"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#eff6ff",color:"#1e40af",border:"1px solid rgba(30,64,175,.1)"}}>{b}</span>)}
+            {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gaertner","Klima & Lüftung","Reinigung"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#eff6ff",color:"#1e40af",border:"1px solid rgba(30,64,175,.1)"}}>{b}</span>)}
           </div>
         </div>
       </div>
@@ -291,7 +291,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{padding:"22px 28px"}}>
           <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Verfügbare Branchen</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fuss- & Körperpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#fdf2f8",color:"#9d174d",border:"1px solid rgba(157,23,77,.1)"}}>{b}</span>)}
+            {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fuß- & Körperpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#fdf2f8",color:"#9d174d",border:"1px solid rgba(157,23,77,.1)"}}>{b}</span>)}
           </div>
         </div>
       </div>
@@ -425,7 +425,7 @@ function SuccessPage({data,onBack}){
   const portal=[
     {t:"Logo hochladen",d:"Wird oben in der Navigation angezeigt."},
     {t:"Bilder hochladen",d:"Eigene Fotos ersetzen die Platzhalter auf Ihrer Website."},
-    {t:"Daten jederzeit anpassen",d:"Adresse, Telefon, Leistungen – aenderbar wenn sich etwas aendert."},
+    {t:"Daten jederzeit anpassen",d:"Adresse, Telefon, Leistungen – änderbar wenn sich etwas ändert."},
     {t:"Custom Domain verbinden",d:"z.B. www.ihre-firma.at statt der Subdomain."},
   ];
   return(<div className="sp-page" style={{height:"100vh",background:"#fff",fontFamily:T.font,display:"flex",flexDirection:"column",overflow:"hidden"}}><style>{css}</style>
@@ -520,7 +520,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
   const legalOk=(()=>{const uf=data.unternehmensform;if(!uf)return false;const needsFB=["eu","gmbh","og","kg","ag"].includes(uf);if(needsFB&&(!data.firmenbuchnummer?.trim()||!data.firmenbuchgericht?.trim()))return false;if(uf==="gmbh"&&!data.geschaeftsfuehrer?.trim())return false;if(uf==="ag"&&!data.vorstand?.trim())return false;if(uf==="verein"&&!data.zvr_zahl?.trim())return false;return true;})();
   const stepValid=[!!(data.firmenname?.trim()&&data.branche&&data.bundesland),!!(data.leistungen?.length>0||data.extraLeistung?.trim()),!!(data.adresse?.trim()&&data.plz?.trim()&&data.ort?.trim()&&data.telefon?.trim()&&data.email?.trim()&&data.oeffnungszeiten),legalOk,true];
   const pages=[<>
-    <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Mueller GmbH" required/>
+    <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
     <Dropdown label="Branche" value={data.branche} onChange={onBrancheChange} options={filteredBranchen} placeholder="Branche wählen" hint="Leistungen und Stil werden vorgeschlagen" required/>
     {(data.branche==="sonstige"||data.branche==="sonstige_kosmetik")&&<Field label="Ihre Branche" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder={data.berufsgruppe==="kosmetik"?"z.B. Beautysalon, Spa, ...":"z.B. Spenglerei, Stuckateur, ..."}/>}
     <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Optional"/>
@@ -534,8 +534,8 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
 {uf==="verein"&&<><Field label="ZVR-Zahl" value={data.zvr_zahl} onChange={up("zvr_zahl")} placeholder="z.B. 123456789" required/><Field label="Vertretungsbefugte Organe" value={data.vertretungsorgane} onChange={up("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}
 {hasFB&&<Toggle label="Gesellschaft in Liquidation" checked={!!data.liquidation} onChange={v=>up("liquidation")(v?"in Liquidation":"")} desc="Nur wenn zutreffend"/>}
 <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="UID-Nummer / ATU" value={data.uid} onChange={up("uid")} placeholder="ATU12345678" hint="Optional"/><Field label="GISA-Zahl" value={data.gisazahl} onChange={up("gisazahl")} placeholder="z.B. 12345678" hint="Optional"/></div>
-<div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Aufsichtsbehoerde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63" hint="Optional"/><Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien" hint="Optional"/></div>
-<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstuetzte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div></>);})()}</>,<><p style={{fontSize:".88rem",color:T.textSub,margin:"0 0 6px",lineHeight:1.6}}>Basierend auf Ihrer Branche empfehlen wir:</p><p style={{fontSize:"1rem",fontWeight:700,color:T.dark,margin:"0 0 16px"}}>{STYLES_MAP[data.stil]?.label||"Professionell"}</p><StylePicker value={data.stil} onChange={up("stil")}/><div style={{marginTop:20}}><Toggle label="Moechten Sie eigene Fotos auf Ihrer Website?" checked={data.fotos} onChange={up("fotos")} desc="Teamfoto und Arbeitsfotos – nach Bestellung in Ihrem Portal hochladbar"/><div style={{marginTop:8,padding:"10px 12px",background:"#fffbeb",borderRadius:T.rSm,border:"1px solid #fcd34d",fontSize:".78rem",color:"#92400e"}}>⚠️ Diese Einstellung beeinflusst die Website-Struktur und kann nach der Erstellung nicht mehr geaendert werden. Logo-Upload ist immer möglich.</div></div><div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:6}}>Nach dem Kauf – Self-Service-Portal</div><div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>Logo hochladen &middot; Eigene Fotos hochladen &middot; Custom Domain verbinden – alles selbst, jederzeit.</div></div></>];
+<div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Aufsichtsbehörde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63" hint="Optional"/><Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien" hint="Optional"/></div>
+<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstützte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div></>);})()}</>,<><p style={{fontSize:".88rem",color:T.textSub,margin:"0 0 6px",lineHeight:1.6}}>Basierend auf Ihrer Branche empfehlen wir:</p><p style={{fontSize:"1rem",fontWeight:700,color:T.dark,margin:"0 0 16px"}}>{STYLES_MAP[data.stil]?.label||"Professionell"}</p><StylePicker value={data.stil} onChange={up("stil")}/><div style={{marginTop:20}}><Toggle label="Möchten Sie eigene Fotos auf Ihrer Website?" checked={data.fotos} onChange={up("fotos")} desc="Teamfoto und Arbeitsfotos – nach Bestellung in Ihrem Portal hochladbar"/><div style={{marginTop:8,padding:"10px 12px",background:"#fffbeb",borderRadius:T.rSm,border:"1px solid #fcd34d",fontSize:".78rem",color:"#92400e"}}>⚠️ Diese Einstellung beeinflusst die Website-Struktur und kann nach der Erstellung nicht mehr geändert werden. Logo-Upload ist immer möglich.</div></div><div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:6}}>Nach dem Kauf – Self-Service-Portal</div><div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>Logo hochladen &middot; Eigene Fotos hochladen &middot; Custom Domain verbinden – alles selbst, jederzeit.</div></div></>];
 
   const formPanel=(<div style={{display:"flex",flexDirection:"column",background:T.bg,borderRight:isMobile?"none":`1px solid ${T.bg3}`,height:isMobile?"100vh":"100%",overflow:isMobile?"hidden":"visible",fontFamily:T.font}}>
     <div style={{padding:"20px 24px 0"}}>
@@ -594,7 +594,7 @@ function PortalLogin({onBack}){
   const submitForgot=async()=>{if(!email){setErr("Bitte E-Mail eingeben.");return;}setLoading(true);setErr("");const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+"/portal"});if(error)setErr(error.message);else setForgotDone(true);setLoading(false);};
   const submit=async()=>{
     if(!email.trim()||!pw.trim()||!supabase)return;
-    if(mode==="register"&&pw!==pw2){setErr("Passwoerter stimmen nicht ueberein.");return;}
+    if(mode==="register"&&pw!==pw2){setErr("Passwörter stimmen nicht überein.");return;}
     setLoading(true);setErr("");
     if(mode==="login"){
       const{error}=await supabase.auth.signInWithPassword({email,password:pw});
@@ -611,9 +611,9 @@ function PortalLogin({onBack}){
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:40}}>
         <img src="/icon.png" alt="SR" style={{height:22}}/><span style={{fontSize:".95rem",fontWeight:800,color:T.dark}}>SiteReady</span>
       </div>
-      {forgotDone?(<div><div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} E-Mail gesendet</div><p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Pruefen Sie Ihren Posteingang – Sie erhalten in Kuerze einen Link zum Zurücksetzen Ihres Passworts.</p><button onClick={()=>{setForgotDone(false);setForgotPw(false);}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button></div>):forgotPw?(<div><div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:8}}>Passwort zurücksetzen</div><p style={{color:T.textSub,fontSize:".85rem",marginBottom:20}}>Geben Sie Ihre E-Mail-Adresse ein – wir senden Ihnen einen Link.</p><Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>{err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}<button onClick={submitForgot} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12}}>{loading?"...":"Link senden \u2192"}</button><button onClick={()=>{setForgotPw(false);setErr("");}} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>Abbrechen</button></div>):(done?(<div>
+      {forgotDone?(<div><div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} E-Mail gesendet</div><p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Prüfen Sie Ihren Posteingang – Sie erhalten in Kürze einen Link zum Zurücksetzen Ihres Passworts.</p><button onClick={()=>{setForgotDone(false);setForgotPw(false);}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button></div>):forgotPw?(<div><div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:8}}>Passwort zurücksetzen</div><p style={{color:T.textSub,fontSize:".85rem",marginBottom:20}}>Geben Sie Ihre E-Mail-Adresse ein – wir senden Ihnen einen Link.</p><Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>{err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}<button onClick={submitForgot} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12}}>{loading?"...":"Link senden \u2192"}</button><button onClick={()=>{setForgotPw(false);setErr("");}} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>Abbrechen</button></div>):(done?(<div>
         <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} Konto erstellt</div>
-        <p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Bitte bestaetigen Sie Ihre E-Mail-Adresse – danach können Sie sich anmelden.</p>
+        <p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Bitte bestätigen Sie Ihre E-Mail-Adresse – danach können Sie sich anmelden.</p>
         <button onClick={()=>{setDone(false);setMode("login");}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button>
       </div>):(<div>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Self-Service-Portal</div>
@@ -626,7 +626,7 @@ function PortalLogin({onBack}){
         <Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>
         <Field label="Passwort" value={pw} onChange={setPw} placeholder={mode==="register"?"Mindestens 6 Zeichen":"Ihr Passwort"} type="password"/>
         {mode==="login"&&!forgotPw&&<div style={{textAlign:"right",marginTop:-14,marginBottom:16}}><button onClick={()=>{setForgotPw(true);setErr("");}} style={{background:"none",border:"none",color:T.accent,fontSize:".78rem",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Passwort vergessen?</button></div>}
-        {mode==="register"&&<Field label="Passwort wiederholen" value={pw2} onChange={setPw2} placeholder="Passwort bestaetigen" type="password"/>}
+        {mode==="register"&&<Field label="Passwort wiederholen" value={pw2} onChange={setPw2} placeholder="Passwort bestätigen" type="password"/>}
         {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}
         <button onClick={submit} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
           {loading?"...":(mode==="login"?"Anmelden \u2192":"Konto erstellen \u2192")}
@@ -761,7 +761,7 @@ function Portal({session,onLogout}){
       const j=await r.json();
       if(r.status===429){
         const nextDate=new Date(j.next_available).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"});
-        setRegenErr(`Limit erreicht. Naechste Neugenierung möglich ab ${nextDate}.`);
+        setRegenErr(`Limit erreicht. Nächste Neugenierung möglich ab ${nextDate}.`);
       } else if(!r.ok||!j.ok){
         setRegenErr("Fehler: "+(j.error||"Unbekannt"));
       } else {
@@ -797,11 +797,11 @@ function Portal({session,onLogout}){
             :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
         </div>
       </div>
-      {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"✓"} Aenderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
+      {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"✓"} Änderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
       {badge==="regen"&&<div style={{fontSize:".75rem",color:regenLeft>0?"#d97706":"#dc2626",marginTop:6}}>
         {regenLeft>0
-          ?`\u21BB ${regenLeft} von 2 Website-Neugestaltungen dieses Monats verfügbar. Aenderungen werden automatisch uebernommen, das kann einen Moment dauern.`
-          :`\u26A0 Limit erreicht. Naechste Neugestaltung möglich ab ${nextRegenDate?nextRegenDate.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"bald"}.`}
+          ?`\u21BB ${regenLeft} von 2 Website-Neugestaltungen dieses Monats verfügbar. Änderungen werden automatisch übernommen, das kann einen Moment dauern.`
+          :`\u26A0 Limit erreicht. Nächste Neugestaltung möglich ab ${nextRegenDate?nextRegenDate.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"bald"}.`}
       </div>}
       {regenErr&&<div style={{fontSize:".78rem",color:"#dc2626",marginTop:6,fontWeight:600}}>{"\u26A0"} {regenErr}</div>}
     </div>
@@ -906,7 +906,7 @@ function Portal({session,onLogout}){
             {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
               :<Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
-            <Field label="Zusaetzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
+            <Field label="Zusätzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
             <Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/>
           </>):(<>
             {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
@@ -946,7 +946,7 @@ function Portal({session,onLogout}){
           <span style={{fontSize:"1.2rem",flexShrink:0}}>{"\u21BB"}</span>
           <div>
             <div style={{fontWeight:700,color:"#92400e",fontSize:".88rem",marginBottom:3}}>Aenderungsanfrage gesendet</div>
-            <div style={{fontSize:".82rem",color:"#78350f",lineHeight:1.5}}>Ihr Aenderungswunsch wurde erfasst. Wir generieren Ihre Website innerhalb von 24h neu und schalten sie danach live.</div>
+            <div style={{fontSize:".82rem",color:"#78350f",lineHeight:1.5}}>Ihr Änderungswunsch wurde erfasst. Wir generieren Ihre Website innerhalb von 24h neu und schalten sie danach live.</div>
           </div>
         </div>}
       </div>)}
@@ -984,19 +984,19 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".78rem",color:T.textSub,marginTop:3}}>Antwort innerhalb von 48 Stunden</div>
           </div>
           <div>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>Geschaeftszeiten</div>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>Geschäftszeiten</div>
             <div style={{fontSize:".88rem",fontWeight:600,color:T.dark}}>Mo – Fr, 09:00 – 17:00</div>
             <div style={{fontSize:".78rem",color:T.textSub,marginTop:3}}>Österreichische Feiertage ausgenommen</div>
           </div>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Haeufige Fragen</div>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Häufige Fragen</div>
           {[
             {q:"Wie lange dauert es bis meine Website online ist?",a:"Nach der Bezahlung richten wir Ihre Website innerhalb von 24 Stunden ein. Sie erhalten eine E-Mail sobald alles live ist."},
-            {q:"Kann ich den Text auf meiner Website selbst aendern?",a:"Ja – im Self-Service-Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
-            {q:"Was passiert nach 12 Monaten?",a:"Das Abo verlaengert sich automatisch monatlich zum selben Preis. Eine Kuendigung ist jederzeit möglich."},
+            {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Self-Service-Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
+            {q:"Was passiert nach 12 Monaten?",a:"Das Abo verlaengert sich automatisch monatlich zum selben Preis. Eine Kündigung ist jederzeit möglich."},
             {q:"Kann ich mein Logo hochladen?",a:"Ja, im Tab 'Logo & Fotos' können Sie Ihr Logo sowie Hero-Foto, Galerie und Teamfoto hochladen."},
-            {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
+            {q:"Wie verbinde ich meine eigene Domain?",a:"Die nötigen DNS-Einträge finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
           ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
             <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
               {f.q}<span style={{color:T.textMuted,fontSize:"1.1rem",marginLeft:12,flexShrink:0}}>+</span>
@@ -1013,10 +1013,10 @@ function Portal({session,onLogout}){
           </div>):(<>
             <Dropdown label="Betreff" value={supportSubject} onChange={setSupportSubject} options={[
               {value:"Technisches Problem",label:"Technisches Problem"},
-              {value:"Aenderungswunsch",label:"Aenderungswunsch"},
+              {value:"Änderungswunsch",label:"Änderungswunsch"},
               {value:"Frage zur Rechnung",label:"Frage zur Rechnung"},
               {value:"Custom Domain",label:"Custom Domain"},
-              {value:"Kuendigung",label:"Kuendigung"},
+              {value:"Kündigung",label:"Kündigung"},
               {value:"Sonstiges",label:"Sonstiges"},
             ]} placeholder="Betreff wählen"/>
             <Field label="Ihre Nachricht" value={supportMsg} onChange={setSupportMsg} placeholder="Beschreiben Sie Ihr Anliegen..." rows={4}/>
@@ -1044,13 +1044,13 @@ function Portal({session,onLogout}){
           <InfoRow label="Abonnement" value="SiteReady Standard \u2013 \u20AC18 / Monat"/>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Passwort aendern</div>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Passwort ändern</div>
           <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
-          <Field label="Passwort bestaetigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
+          <Field label="Passwort bestätigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
           {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{pwErr}</div>}
           <div style={{display:"flex",alignItems:"center",gap:12}}>
             <button onClick={async()=>{
-              if(!newPw||newPw!==newPw2){setPwErr("Passwoerter stimmen nicht ueberein.");return;}
+              if(!newPw||newPw!==newPw2){setPwErr("Passwörter stimmen nicht überein.");return;}
               if(newPw.length<6){setPwErr("Mindestens 6 Zeichen.");return;}
               setPwSaving(true);setPwErr("");
               const{error}=await supabase.auth.updateUser({password:newPw});
@@ -1064,8 +1064,8 @@ function Portal({session,onLogout}){
           </div>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>Kuendigung</div>
-          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.7,margin:"0 0 14px"}}>Für eine Kuendigung schreiben Sie bitte an <strong>support@siteready.at</strong>. Bitte beachten Sie die Mindestlaufzeit von 12 Monaten.</p>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>Kündigung</div>
+          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.7,margin:"0 0 14px"}}>Für eine Kündigung schreiben Sie bitte an <strong>support@siteready.at</strong>. Bitte beachten Sie die Mindestlaufzeit von 12 Monaten.</p>
         </div>
       </div>)}
 
@@ -1104,7 +1104,7 @@ function Portal({session,onLogout}){
           <div style={{padding:"32px 20px",textAlign:"center",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
             <div style={{fontSize:"2rem",marginBottom:10}}>📊</div>
             <div style={{fontSize:".9rem",fontWeight:700,color:T.dark,marginBottom:6}}>Analytics wird gerade vorbereitet</div>
-            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.7,maxWidth:340,margin:"0 auto"}}>Seitenaufrufe, Besucher und Google-Klicks werden in einem zukuenftigen Update freigeschaltet.</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.7,maxWidth:340,margin:"0 auto"}}>Seitenaufrufe, Besucher und Google-Klicks werden in einem zukünftigen Update freigeschaltet.</div>
           </div>
         </div>
       </div>)}
@@ -1123,7 +1123,7 @@ function Portal({session,onLogout}){
               <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
             </div>
             <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-              {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
+              {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
               <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
             </label>
           </div>);
@@ -1150,7 +1150,7 @@ function Portal({session,onLogout}){
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Custom Domain & Google</div>
-          <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7,margin:0}}>Wenn Sie eine eigene Domain verbinden, kuemmern wir uns auch um die Google-Indexierung für Ihre Domain. Schreiben Sie uns nach der DNS-Umstellung an <strong>support@siteready.at</strong>.</p>
+          <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7,margin:0}}>Wenn Sie eine eigene Domain verbinden, kümmern wir uns auch um die Google-Indexierung für Ihre Domain. Schreiben Sie uns nach der DNS-Umstellung an <strong>support@siteready.at</strong>.</p>
         </div>
       </div>)}
       {tab==="domain"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -1160,7 +1160,7 @@ function Portal({session,onLogout}){
           Aktuell ist Ihre Website unter <strong>{sub}.siteready.at</strong> erreichbar. Mit einer eigenen Domain (z.B. <strong>www.{sub}.at</strong>) erscheint Ihre Website noch professioneller.
         </p>
         <div style={{marginBottom:24}}>
-          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:10}}>DNS-Eintraege bei Ihrem Domain-Anbieter setzen:</div>
+          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:10}}>DNS-Einträge bei Ihrem Domain-Anbieter setzen:</div>
           <div style={{borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`}}>
             <div style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",background:T.bg,padding:"10px 16px",fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",gap:16}}>
               <span>Typ</span><span>Name</span><span>Wert</span>
@@ -1177,7 +1177,7 @@ function Portal({session,onLogout}){
         </div>
         <div style={{padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}>
           <div style={{fontSize:".82rem",fontWeight:700,color:T.accent,marginBottom:4}}>Nach der DNS-Aenderung</div>
-          <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>DNS-Aenderungen dauern bis zu 48 Stunden. Sobald alles aktiv ist, schreiben Sie uns an <strong>support@siteready.at</strong> – wir schalten Ihre Domain frei.</div>
+          <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>DNS-Änderungen dauern bis zu 48 Stunden. Sobald alles aktiv ist, schreiben Sie uns an <strong>support@siteready.at</strong> – wir schalten Ihre Domain frei.</div>
         </div>
       </div>)}
     </div>
@@ -1356,7 +1356,7 @@ function Admin({adminKey}){
           return(<div>
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Übersicht</h2>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>{setTab("bestellungen");setFilter("live");setView("tabelle");}},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent,a:()=>{setTab("bestellungen");setFilter("alle");setView("kanban");}},{l:"Review ausstehend",v:reviewN,s:"Warten auf Pruefung",c:"#d97706",a:()=>{setTab("bestellungen");setFilter("review");setView("tabelle");}},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")}].map((k,i)=>(
+              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>{setTab("bestellungen");setFilter("live");setView("tabelle");}},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent,a:()=>{setTab("bestellungen");setFilter("alle");setView("kanban");}},{l:"Review ausstehend",v:reviewN,s:"Warten auf Prüfung",c:"#d97706",a:()=>{setTab("bestellungen");setFilter("review");setView("tabelle");}},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")}].map((k,i)=>(
                 <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}}>
                   <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
                   <div style={{fontSize:"1.9rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
@@ -1549,7 +1549,7 @@ function Admin({adminKey}){
             return rows.length===0?<div style={{padding:40,textAlign:"center",color:T.textMuted}}>{healthFilter==="fehler"?"Keine Fehler gefunden.":"Keine Websites mit Subdomain."}</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL","Geprueft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL","Geprüft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{rows.map((o,i)=>{
                   const h=health[o.id];const ht=healthTime[o.id];
                   const url=`${o.subdomain}.siteready.at`;
@@ -1562,7 +1562,7 @@ function Admin({adminKey}){
                     <td style={{padding:"10px 14px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px",fontSize:".72rem",color:T.textMuted}}>{ht?ht.toLocaleTimeString("de-AT",{hour:"2-digit",minute:"2-digit"}):"—"}</td>
-                    <td style={{padding:"10px 14px",textAlign:"right"}}><button onClick={()=>checkHealth(o)} style={{padding:"4px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Pruefen</button></td>
+                    <td style={{padding:"10px 14px",textAlign:"right"}}><button onClick={()=>checkHealth(o)} style={{padding:"4px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Prüfen</button></td>
                   </tr>);
                 })}</tbody>
               </table>
@@ -1590,7 +1590,7 @@ function Admin({adminKey}){
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:20}}>Kosten & Auslastung</h2>
             {/* KPI Cards */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-              {[{label:"MRR (brutto)",val:`\u20AC${mrr}`,sub:`${liveN} aktive Kunden`,c:T.green},{label:"Stripe-Gebuehren",val:`\u20AC${stripeFee.toFixed(2)}`,sub:"1,4% + \u20AC0,25/Tx",c:T.orange},{label:"Netto-MRR",val:`\u20AC${netto}`,sub:"nach Transaktionsgeb.",c:T.accent},{label:"Bestellungen",val:orders.length,sub:`${paidN} bezahlt`,c:T.dark}].map((k,i)=>(
+              {[{label:"MRR (brutto)",val:`\u20AC${mrr}`,sub:`${liveN} aktive Kunden`,c:T.green},{label:"Stripe-Gebühren",val:`\u20AC${stripeFee.toFixed(2)}`,sub:"1,4% + \u20AC0,25/Tx",c:T.orange},{label:"Netto-MRR",val:`\u20AC${netto}`,sub:"nach Transaktionsgeb.",c:T.accent},{label:"Bestellungen",val:orders.length,sub:`${paidN} bezahlt`,c:T.dark}].map((k,i)=>(
                 <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
                   <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.label}</div>
                   <div style={{fontSize:"1.7rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.val}</div>
@@ -1792,7 +1792,7 @@ function Admin({adminKey}){
                 {flowArrow}
                 {flowStep("💾","HTML in Supabase","Status: review","#8b5cf6")}
                 {flowArrow}
-                {flowStep("👁️","Admin Review","Pruefung & Freigabe","#f97316")}
+                {flowStep("👁️","Admin Review","Prüfung & Freigabe","#f97316")}
                 {flowArrow}
                 {flowStep("🚀","Live schalten","Status: live","#16a34a")}
               </>)}
@@ -1855,7 +1855,7 @@ function Admin({adminKey}){
                     {step("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 · e.U./GmbH/OG/KG/AG/Verein/GesbR")}
                     {step("legal.js","#2563eb","Datenschutz aufbauen","DSGVO Art.13 · Google Fonts · Cloudflare SCCs")}
                     {step("legal.js","#2563eb","HTML zusammenbauen","kein gespeichertes Template · immer frisch")}
-                    {lastStep("Browser","#64748b","Response: HTML","Aenderungen an Kundendaten sofort sichtbar")}
+                    {lastStep("Browser","#64748b","Response: HTML","Änderungen an Kundendaten sofort sichtbar")}
                   </div>
                 </div>
               </div>
@@ -1875,7 +1875,7 @@ function Admin({adminKey}){
             </div>
             <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
           </div>
-          {/* Status-Buttons: nur vorwaerts */}
+          {/* Status-Buttons: nur vorwärts */}
           <div style={{padding:"12px 28px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
             {STATUS_FLOW.slice(STATUS_FLOW.indexOf(sel.status)+1).map(s=><button key={s} onClick={()=>updateOrder(sel.id,{status:s})} style={{padding:"4px 12px",border:`2px solid ${STATUS_COLORS[s]}33`,borderRadius:T.rSm,background:STATUS_COLORS[s]+"11",color:STATUS_COLORS[s],cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{STATUS_LABELS[s]} &rarr;</button>)}
             {sel.status!=="pending"&&<button onClick={()=>updateOrder(sel.id,{status:STATUS_FLOW[STATUS_FLOW.indexOf(sel.status)-1]})} style={{marginLeft:"auto",padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.textMuted,cursor:"pointer",fontSize:".7rem",fontFamily:T.font}}>&#8592; Zurück</button>}
@@ -1902,7 +1902,7 @@ function Admin({adminKey}){
                     </div>)}
                   <div style={{marginTop:10,padding:"8px 10px",borderRadius:T.rSm,background:"#eff6ff",border:"1px solid #bfdbfe",fontSize:".72rem",color:"#1e40af",lineHeight:1.6}}>
                     <strong>E-Mail, Telefon, Adresse:</strong> sofort live (serve-time).<br/>
-                    <strong>Subdomain:</strong> URL aendert sich sofort &ndash; danach Website neu generieren.
+                    <strong>Subdomain:</strong> URL ändert sich sofort &ndash; danach Website neu generieren.
                   </div>
                   </div>
                 :<div style={{display:"flex",flexDirection:"column",gap:0}}>
@@ -1933,7 +1933,7 @@ function Admin({adminKey}){
                   }
                 </div>
                 {regenConfirm===sel.id&&<div style={{marginTop:8,background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
-                  <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben. "NEU" eintippen:</div>
+                  <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird überschrieben. "NEU" eintippen:</div>
                   <div style={{display:"flex",gap:6}}>
                     <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
                     <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
@@ -1948,14 +1948,14 @@ function Admin({adminKey}){
                   }
                   {deleteConfirm===sel.id
                     ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                    :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden loeschen</button>
+                    :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden löschen</button>
                   }
                 </div>
                 {deleteConfirm===sel.id&&<div style={{marginTop:8,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
-                  <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestätigung "LOESCHEN" eintippen:</div>
+                  <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestätigung "LÖSCHEN" eintippen:</div>
                   <div style={{display:"flex",gap:6}}>
-                    <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                    <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
+                    <input id="del-confirm-input" autoFocus placeholder="LÖSCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+                    <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LÖSCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Löschen</button>
                   </div>
                 </div>}
               </div>
@@ -1982,10 +1982,10 @@ function Admin({adminKey}){
               const idx=STATUS_FLOW.indexOf(st);
               const hasHtml=!!sel.website_html;
               const steps=[
-                {key:"pending",label:"Schritt 1 – Formular",icon:"📋",detail:`Fragebogen ausgefuellt und Bestellung erstellt.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
+                {key:"pending",label:"Schritt 1 – Formular",icon:"📋",detail:`Fragebogen ausgefüllt und Bestellung erstellt.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
                 {key:"paid",label:"Schritt 2 – Zahlung",icon:"💳",detail:"Stripe-Zahlung eingegangen. Bestellung freigeschaltet für Generierung.",meta:[["Zahlungsweg","Stripe"],["Betrag","laut Stripe-Dashboard"]]},
-                {key:"in_arbeit",label:"Schritt 3 – Generierung",icon:"🤖",detail:`Claude ${hasHtml?"hat HTML generiert":sel.last_error?"ist fehlgeschlagen":"noch ausstehend"}.`,error:sel.last_error||null,meta:hasHtml?[["Modell","claude-sonnet-4-6"],["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],["Subdomain",sel.subdomain||"—"],["HTML-Groesse",sel.website_html?`${Math.round(sel.website_html.length/1024)} KB`:"—"]]:[["Status",sel.last_error?"Fehlgeschlagen":"Noch nicht generiert"],["Subdomain",sel.subdomain||"—"]]},
-                {key:"review",label:"Schritt 4 – Review",icon:"👁️",detail:"Website liegt bereit zur Admin-Pruefung. Nach Freigabe wird sie live geschaltet.",meta:[["URL",sel.subdomain?`/s/${sel.subdomain}`:"—"],["Neugen. Leistungen (30d)",`${[sel.last_regen_at,sel.prev_regen_at].filter(d=>{if(!d)return false;return new Date(d).getTime()>Date.now()-30*24*60*60*1000;}).length}/2 verwendet`]]},
+                {key:"in_arbeit",label:"Schritt 3 – Generierung",icon:"🤖",detail:`Claude ${hasHtml?"hat HTML generiert":sel.last_error?"ist fehlgeschlagen":"noch ausstehend"}.`,error:sel.last_error||null,meta:hasHtml?[["Modell","claude-sonnet-4-6"],["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],["Subdomain",sel.subdomain||"—"],["HTML-Größe",sel.website_html?`${Math.round(sel.website_html.length/1024)} KB`:"—"]]:[["Status",sel.last_error?"Fehlgeschlagen":"Noch nicht generiert"],["Subdomain",sel.subdomain||"—"]]},
+                {key:"review",label:"Schritt 4 – Review",icon:"👁️",detail:"Website liegt bereit zur Admin-Prüfung. Nach Freigabe wird sie live geschaltet.",meta:[["URL",sel.subdomain?`/s/${sel.subdomain}`:"—"],["Neugen. Leistungen (30d)",`${[sel.last_regen_at,sel.prev_regen_at].filter(d=>{if(!d)return false;return new Date(d).getTime()>Date.now()-30*24*60*60*1000;}).length}/2 verwendet`]]},
                 {key:"live",label:"Schritt 5 – Live",icon:"🚀",detail:"Website ist oeffentlich erreichbar. noindex-Tag aktiv (Prototyp-Phase).",meta:[["Status",st==="live"?"Online":"Noch nicht live"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
@@ -2095,7 +2095,7 @@ export default function App(){
   if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing")}}/>;
   if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
 
-  // Admin Dashboard (key-geschuetzt)
+  // Admin Dashboard (key-geschützt)
   const adminKey=process.env.REACT_APP_ADMIN_KEY;
   const urlKey=new URLSearchParams(window.location.search).get("key");
   if(window.location.pathname==="/admin"&&adminKey&&urlKey===adminKey)return<Admin adminKey={adminKey}/>;

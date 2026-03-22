@@ -214,7 +214,7 @@ function LandingPage({onStart,onPortal}){
       <H2>Fuenf Schritte. Null Aufwand.</H2>
     </div>
     <div className="lp-steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:16}}>
-      {[{n:"01",i:"\uD83D\uDCCB",t:"Fragebogen",d:"Bestehende Website importieren oder 10 Fragen zu Branche, Kontakt und Stil beantworten."},{n:"02",i:"\uD83D\uDC41\uFE0F",t:"Live-Vorschau",d:"Ihre Website entsteht live im Browser – sichtbar noch vor der Bezahlung."},{n:"03",i:"\uD83D\uDCB3",t:"Bezahlen",d:"Sicher per Karte, EPS oder PayPal. Danach laeuft alles vollautomatisch."},{n:"04",i:"\uD83D\uDE80",t:"Sofort live",d:"SSL aktiv, Google-Indexierung angemeldet. Ihre Website ist innerhalb von Minuten erreichbar."},{n:"05",i:"\u2699\uFE0F",t:"Anpassen (optional)",d:"Im Self-Service-Portal: Logo, Fotos und Custom Domain jederzeit selbst hinzufuegen."}].map((s,i)=><div key={i} style={{padding:"28px 22px",background:i===4?"#fafafa":"#f7f8fa",borderRadius:12,position:"relative",overflow:"hidden",border:i===4?"1px dashed rgba(0,0,0,.08)":"none"}}>
+      {[{n:"01",i:"\uD83D\uDCCB",t:"Fragebogen",d:"Bestehende Website importieren oder 10 Fragen zu Branche, Kontakt und Stil beantworten."},{n:"02",i:"\uD83D\uDC41\uFE0F",t:"Live-Vorschau",d:"Ihre Website entsteht live im Browser – sichtbar noch vor der Bezahlung."},{n:"03",i:"\uD83D\uDCB3",t:"Bezahlen",d:"Sicher per Karte, EPS oder PayPal. Danach laeuft alles vollautomatisch."},{n:"04",i:"\uD83D\uDE80",t:"Sofort live",d:"SSL aktiv. Ihre Website ist innerhalb von Minuten erreichbar und fuer Google sichtbar."},{n:"05",i:"\u2699\uFE0F",t:"Anpassen (optional)",d:"Im Self-Service-Portal: Logo, Fotos und Custom Domain jederzeit selbst hinzufuegen."}].map((s,i)=><div key={i} style={{padding:"28px 22px",background:i===4?"#fafafa":"#f7f8fa",borderRadius:12,position:"relative",overflow:"hidden",border:i===4?"1px dashed rgba(0,0,0,.08)":"none"}}>
         <div style={{fontFamily:T.mono,fontSize:"3rem",fontWeight:800,color:"rgba(0,0,0,.05)",position:"absolute",top:12,right:16,lineHeight:1,letterSpacing:"-.05em"}}>{s.n}</div>
         <div style={{width:42,height:42,borderRadius:10,background:i===4?T.bg3:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.15rem",marginBottom:18}}>{s.i}</div>
         <h3 style={{fontSize:".95rem",fontWeight:700,color:i===4?T.textSub:T.dark,marginBottom:8}}>{s.t}</h3>
@@ -363,7 +363,7 @@ function SuccessPage({data,onBack}){
     {t:"Texte individuell formuliert",d:"Passend zu Ihrer Branche und Ihrem Betrieb."},
     {t:"Impressum (ECG) inklusive",d:"Anwaltlich geprueft und eingebaut."},
     {t:"DSGVO inklusive",d:"Anwaltlich geprueft und eingebaut."},
-    {t:"SEO & Google-Indexierung",d:"Automatisch angemeldet nach dem Kauf."},
+    {t:"SEO & Google-Indexierung",d:"Ihre Website ist fuer Google sichtbar sobald sie live geschaltet wird."},
     ...(data.fotos?[{t:"Branchenfotos als Platzhalter",d:"Passende Fotos fuer Ihre Branche bereits eingebaut."}]:[]),
   ];
   const portal=[
@@ -634,7 +634,7 @@ function Portal({session,onLogout}){
   };
 
   const sub=order?.subdomain||"ihre-firma";
-  const TABS=[{id:"website",label:"Meine Website"},{id:"analytics",label:"Statistiken"},{id:"medien",label:"Logo & Fotos"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"support",label:"Support"},{id:"account",label:"Mein Account"}];
+  const TABS=[{id:"website",label:"Meine Website"},{id:"analytics",label:"Statistiken"},{id:"medien",label:"Logo & Fotos"},{id:"seo",label:"SEO & Google"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"support",label:"Support"},{id:"account",label:"Mein Account"}];
 
   const loadInvoices=async()=>{
     if(invoices!==null||!session?.user?.email)return;
@@ -976,6 +976,32 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Tab: Domain */}
+      {tab==="seo"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>Google Indexierung</div>
+          {order?.status==="live"
+            ?<div style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:`1px solid rgba(22,163,74,.2)`}}>
+              <span style={{fontSize:"1.4rem"}}>✓</span>
+              <div><div style={{fontWeight:700,color:T.green,fontSize:".9rem"}}>Ihre Website ist fuer Google sichtbar</div><div style={{fontSize:".82rem",color:T.textSub,marginTop:3}}>Google kann Ihre Website unter <strong>{sub}.siteready.at</strong> indexieren und in den Suchergebnissen anzeigen.</div></div>
+            </div>
+            :<div style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fcd34d"}}>
+              <span style={{fontSize:"1.4rem"}}>⏳</span>
+              <div><div style={{fontWeight:700,color:"#92400e",fontSize:".9rem"}}>Indexierung aktiv nach Livegang</div><div style={{fontSize:".82rem",color:"#78350f",marginTop:3}}>Sobald Ihre Website live geschaltet wird, entfernen wir die noindex-Markierung und Google kann Ihre Website finden.</div></div>
+            </div>
+          }
+        </div>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16}}>Automatisch eingebaut</div>
+          {[{icon:"🏷️",t:"Meta-Tags",d:"Title und Description – optimiert fuer Google."},{icon:"📋",t:"Schema.org LocalBusiness",d:"Strukturierte Daten: Google erkennt Adresse, Telefon und Branche."},{icon:"🗺️",t:"Sitemap",d:"Ihre Website wird ueber die SiteReady-Sitemap von Google gefunden."},{icon:"📱",t:"Mobile-optimiert",d:"Google bewertet mobile Websites hoeher – Ihre Website ist responsive."},{icon:"⚡",t:"Ladezeit",d:"Kein unnoetigter Code, kein Tracking – schnell und leichtgewichtig."}].map((f,i,a)=>(<div key={i} style={{display:"flex",gap:12,padding:"10px 0",borderBottom:i<a.length-1?`1px solid ${T.bg3}`:"none"}}>
+            <span style={{fontSize:"1.1rem",flexShrink:0,marginTop:1}}>{f.icon}</span>
+            <div><div style={{fontWeight:600,fontSize:".84rem",color:T.dark}}>{f.t}</div><div style={{fontSize:".78rem",color:T.textSub,marginTop:2,lineHeight:1.5}}>{f.d}</div></div>
+          </div>))}
+        </div>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Custom Domain & Google</div>
+          <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7,margin:0}}>Wenn Sie eine eigene Domain verbinden, kuemmern wir uns auch um die Google-Indexierung fuer Ihre Domain. Schreiben Sie uns nach der DNS-Umstellung an <strong>support@siteready.at</strong>.</p>
+        </div>
+      </div>)}
       {tab==="domain"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:10}}>Custom Domain verbinden</div>
         <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>Eigene Domain statt Subdomain</h2>
@@ -1408,7 +1434,7 @@ function Admin({adminKey}){
               {l:"DSGVO-Erklaerung",ok:built},
               {l:"robots.txt",ok:built},
               {l:"sitemap.xml",ok:built},
-              {l:"Google-Indexierung",ok:reviewed},
+              {l:"Google-Indexierung",ok:live,warn:reviewed&&!live},
               {l:"Domain aktiv",ok:live},
             ];
             return checks.map(({l,ok,warn})=>{

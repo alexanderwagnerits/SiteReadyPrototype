@@ -40,7 +40,14 @@ export async function onRequestGet({params, env}) {
     );
   }
 
-  // Kein langer Cache da Fotos jederzeit geaendert werden koennen
+  // noindex entfernen wenn live (Google darf indexieren)
+  if (o.status === "live") {
+    html = html.replace(
+      /<meta\s+name=["']robots["']\s+content=["']noindex,nofollow["']\s*\/?>/i,
+      '<meta name="robots" content="index,follow">'
+    );
+  }
+
   return new Response(html, {
     status: 200,
     headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60"},

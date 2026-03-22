@@ -396,45 +396,6 @@ STRUKTUR-PFLICHT (Kommentare exakt so setzen):
 VARIABLEN-PFLICHT (in Hero und Kontakt nur diese Platzhalter, KEINE echten Daten):
 {{TEL_HREF}} · {{TEL_DISPLAY}} · {{EMAIL}} · {{ADRESSE_VOLL}}`;
 
-  /* ─── User Message ─── */
-  const user = `Erstelle die Website fuer diesen Betrieb:
-
-FIRMA:         ${o.firmenname}
-BRANCHE:       ${o.branche_label || o.branche}
-EINSATZGEBIET: ${o.einsatzgebiet || o.bundesland || "Oesterreich"}
-BESCHREIBUNG:  ${o.kurzbeschreibung || `Ihr zuverlaessiger ${o.branche_label || "Handwerks"}-Betrieb in ${o.ort || "Oesterreich"}`}
-
-LEISTUNGEN (${leistungen.length}):
-${leistungen.map((l, i) => `${i + 1}. ${l}`).join("\n")}
-
-KONTAKT:
-Adresse:        ${[o.adresse, o.plz, o.ort].filter(Boolean).join(", ") || "Auf Anfrage"}
-Telefon:        ${o.telefon || ""}
-E-Mail:         ${o.email || ""}
-Oeffnungszeiten: ${oez}
-
-NOTDIENST:    ${o.notdienst ? "JA - 24/7 Notdienst - SEHR PROMINENT darstellen!" : "Nein"}
-FOTOS:        ${o.fotos ? `Ja - Bildplaetze als gestaltete farbige Platzhalter-Bloecke (CSS background-color + Emoji, KEINE img-Tags).
-BILDSLOT-IDs PFLICHT (fuer spaetere Foto-Injektion):
-- Hero-Bildplatz: id="slot-hero" mit style="position:relative;overflow:hidden;min-height:420px"
-- Galerie Foto 1: id="slot-foto1" mit style="position:relative;overflow:hidden;min-height:240px"
-- Galerie Foto 2: id="slot-foto2" mit style="position:relative;overflow:hidden;min-height:240px"
-- Teamfoto:       id="slot-team" mit style="position:relative;overflow:hidden;min-height:280px"` : "Nein - Keine Bildplaetze einbauen"}
-STIL-GEFUEHL: ${stil.feel}
-
-STRUKTUR-PFLICHT: Setze exakt diese Kommentare als Platzhalter:
-- <!-- NAV --> direkt nach <body>
-- <!-- MAPS --> im Kontakt-Abschnitt (nach den Kontaktinfos, vor dem Ende der Sektion) – nur wenn Adresse vorhanden
-- <!-- FOOTER --> nach dem Kontakt-Abschnitt
-Nav, Footer und Maps werden automatisch befuellt. Keinen eigenen Nav/Footer schreiben.
-HERO-ANIMATION: Der animierte Strip (scrollende Keywords) muss auf ALLEN Bildschirmgroessen sichtbar sein – nicht nur Mobile.
-
-VARIABLEN-PFLICHT: In HERO (CTA-Buttons) und KONTAKT-Sektion ausschliesslich diese Platzhalter verwenden:
-- href="{{TEL_HREF}}" fuer alle tel:-Links
-- {{TEL_DISPLAY}} als sichtbare Telefonnummer
-- {{EMAIL}} in href="mailto:{{EMAIL}}" und als Linktext
-- {{ADRESSE_VOLL}} fuer die vollstaendige Anschrift
-Keine echten Kontaktdaten direkt im generierten HTML – nur diese Platzhalter.`;
 
   /* ─── Claude API Call ─── */
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {

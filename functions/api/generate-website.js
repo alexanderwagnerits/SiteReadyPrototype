@@ -209,18 +209,27 @@ const STIL = {
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
     r: "6px", rLg: "12px",
     feel: "serioes, klar, vertrauenswuerdig, geschaeftlich professionell",
+    heroDecor: "3 horizontale Accent-Linien oben rechts (position:absolute, top:48px, right:32px, width:48px/72px/36px, height:2px, background:var(--accent), opacity:.4, gestaffelt mit margin-bottom:8px).",
+    cardStyle: "border-left:3px solid var(--accent); box-shadow:0 1px 8px rgba(0,0,0,.06); padding:28px 24px. Hover: transform:translateY(-3px), box-shadow:0 8px 24px rgba(0,0,0,.1).",
+    ueberStyle: "Checkmark-Liste: Listenpunkte mit einem einfachen Haken (vor dem Text, Farbe var(--accent), font-weight:700). Sachlicher, direkter Ton.",
   },
   modern: {
     font: "DM Sans",
     url: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap",
     r: "14px", rLg: "24px",
     feel: "modern, frisch, dynamisch, leicht, einladend",
+    heroDecor: "Grosser Hintergrund-Blob: position:absolute, width:480px, height:480px, border-radius:60% 40% 55% 45%, background:var(--accent), opacity:.1, top:-80px, right:-80px, filter:blur(64px), pointer-events:none.",
+    cardStyle: "border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,.07); padding:32px 28px; overflow:hidden. Farbiger Top-Streifen: before-Element oder border-top:4px solid var(--accent). Hover: transform:translateY(-4px), box-shadow:0 12px 32px rgba(0,0,0,.1).",
+    ueberStyle: "Kleine runde Icons (36px, background:var(--accent)22, color:var(--accent), border-radius:50%, display:inline-flex, align-items:center, justify-content:center) vor jedem Vorteilspunkt. Freundlicher, einladender Ton.",
   },
   traditional: {
     font: "Source Serif 4",
     url: "https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700;8..60,800&display=swap",
     r: "4px", rLg: "8px",
     feel: "bodenstaendig, erfahren, vertrauenswuerdig, handwerklich solide",
+    heroDecor: "Klassischer Akzent-Unterstrich direkt unter H1: display:block, width:80px, height:3px, background:var(--accent), margin:16px 0 24px.",
+    cardStyle: "border:1px solid var(--sep); border-top:3px solid var(--accent); padding:28px 24px. Hover: background:#fafaf8, box-shadow:0 4px 16px rgba(0,0,0,.06).",
+    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (–) in Akzentfarbe als Marker. Ruhiger, solider Ton.",
   },
 };
 
@@ -261,15 +270,24 @@ export async function onRequestPost({request, env}) {
   const navHtml      = buildNav(o, pal, stil);
   const footerHtml   = buildFooter(o, pal, year, sub);
 
+  /* ─── Trust-Bar Items (nur echte Daten) ─── */
+  const trustItems = [];
+  if (o.notdienst) trustItems.push("🚨 24/7 Notdienst");
+  trustItems.push(`📍 ${o.einsatzgebiet || o.bundesland || "Oesterreich"}`);
+  if (leistungen.length >= 3) trustItems.push(`✔ ${leistungen.length} Leistungsbereiche`);
+  const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
+  if (trustItems.length < 3) trustItems.push(`🕐 ${oezLabel}`);
+  const trustBar = trustItems.slice(0, 3).join("  ·  ");
+
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
 Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen Handwerksbetrieb.
 
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
 KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Striktes Token-Budget.
-KEINE ERFUNDENEN FAKTEN: Keine erfundenen Zahlen, Statistiken oder Behauptungen. Nur echte Kundendaten.
+KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden. Verstoss ist inakzeptabel.
 META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
-STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt. Kein eigener Nav, kein eigener Footer, kein Impressum.
+STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt.
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}
@@ -277,42 +295,106 @@ Akzentfarbe:   ${pal.a}
 Hintergrund:   ${pal.bg}
 Trennfarbe:    ${pal.s}
 Schriftart:    ${stil.font}
-Border-Radius: ${stil.r} (small), ${stil.rLg} (large)
+Border-Radius: ${stil.r} (klein), ${stil.rLg} (gross)
 Feeling:       ${stil.feel}
+Stil-Dekoration Hero: ${stil.heroDecor}
+Stil-Cards:    ${stil.cardStyle}
+Stil-Ueber-Uns: ${stil.ueberStyle}
 
-CSS Custom Properties im :root definieren:
---primary, --accent, --bg, --sep, --text, --textMuted, --white
+CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text, --textMuted, --white
+
+═══ RESPONSIVE – NICHT VERHANDELBAR ═══
+- Mobile-First. Jede Sektion funktioniert perfekt auf 320px bis 1400px.
+- Breakpoints: 640px (Mobile→Tablet), 900px (Tablet→Desktop)
+- Zweispaltige Layouts: auf Mobile immer einspaltig (grid-template-columns:1fr)
+- Schriftgroessen mit clamp(): H1 clamp(2.2rem,6vw,4.5rem), H2 clamp(1.4rem,3.5vw,2.2rem)
+- Padding Sektionen: Desktop 96px 0, Mobile 64px 0
+- Grid Cards: auto-fill minmax(260px,1fr) – kollabiert korrekt auf Mobile
+- Kein horizontales Scrollen auf irgendeiner Breite
+- Touch-freundliche Tap-Targets: min. 44px Hoehe auf interaktiven Elementen
+- Alle @media-Queries in einem gebundelten <style>-Block am Ende des <head>
 
 ═══ TECHNISCHE ANFORDERUNGEN ═══
-- Valides HTML5 mit semantischen Tags (nav, main, section, footer, article, address)
+- Valides HTML5 (nav, main, section, footer, article, address)
 - Google Fonts @import im <style>-Tag: ${stil.url}
-- Vollstaendig RESPONSIVE (Mobile-First, Breakpoints: 640px, 900px, 1200px)
 - CSS Grid und Flexbox fuer Layouts
 - html { scroll-behavior: smooth; }
-- Hamburger-Navigation fuer Mobile (inline <script>, max. 15 Zeilen)
-- Hover-Transitions: transition: all 0.2s ease auf interaktiven Elementen
+- Hover-Transitions: transition: all 0.2s ease
 - Meta-Tags: charset, viewport, description, og:title
-- Performant: keine externen Ressourcen ausser Google Fonts
+- Keine externen Ressourcen ausser Google Fonts
 
 ═══ QUALITAETSSTANDARDS ═══
-- Grosszuegiger Whitespace: Sektionen haben padding: 96px 0 (Desktop), 64px 0 (Mobile)
 - Starke visuelle Hierarchie durch Schriftgroessen und Gewichte
 - Conversion-optimiert: Telefonnummer mind. 3x sichtbar (nav, hero, kontakt)
-- Keine generischen Placeholder-Texte wie [Firmenname] - echte Daten einsetzen
-- Beschreibungstexte pro Leistung SELBER VERFASSEN (1 Satz, branchenspezifisch)
-- Professionell und fertig wirkend - nicht wie ein Template
+- Leistungs-Beschreibungen SELBST VERFASSEN (1 Satz, branchenspezifisch, konkret)
+- Professionell und fertig wirkend – nicht wie ein Template
 
 ═══ SEITENSTRUKTUR ═══
 
-HERO: min-height:100vh, background:var(--primary) mit Gradient-Overlay.${o.notdienst ? " NOTDIENST-BADGE: gruener Puls-Punkt + '24/7 Notdienst' (rgba-Hintergrund)." : ""} H1 Firmenname (clamp(2.8rem,6vw,5rem), weiss, font-weight:900). Subtitle Branche+Einsatzgebiet (weiss, opacity:.8). 2 CTA-Buttons. Scroll-Indikator.
+HERO: min-height:100vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
+${o.notdienst ? "NOTDIENST-BADGE: pulsierender gruener Punkt (CSS keyframes pulse) + '24/7 Notdienst' Text, rgba-weiss-Hintergrund, prominent platziert." : ""}
+Dekorations-Element: ${stil.heroDecor}
+H1: Firmenname, clamp(2.2rem,6vw,4.5rem), font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
+Subtitle: Branche + Einsatzgebiet, color:rgba(255,255,255,.75), clamp(.95rem,2.5vw,1.2rem).
+TRUST-BAR: Direkt nach Subtitle – flex-row, gap:24px, flex-wrap:wrap – die 3 Punkte aus den uebergebenen TRUST-ITEMS anzeigen (opacity:.85, font-size:.85rem, color:#fff). Exakt diese Texte verwenden, nichts hinzuerfinden.
+2 CTA-Buttons: Primaer (background:var(--accent), Anrufen, href="{{TEL_HREF}}") + Ghost (border:2px solid rgba(255,255,255,.5), color:#fff, href="#leistungen"). Mobile: beide Buttons 100% Breite, gestapelt.
+Animierter Keyword-Strip unter den Buttons: CSS-only marquee-Animation, Branche-Keywords, sichtbar auf ALLEN Bildschirmgroessen (overflow:hidden, white-space:nowrap).
 
-LEISTUNGEN: weisser Hintergrund. Grid auto-fill minmax(260px,1fr). Cards mit Emoji-Icon, H3, 1 Satz Beschreibung (selbst verfassen!), Hover-Lift.
+LEISTUNGEN: background:#fff. Section-Label: kleine Oberschrift ("Unser Leistungsangebot", font-size:.72rem, font-weight:700, letter-spacing:.1em, text-transform:uppercase, color:var(--accent)).
+H2 in Primaerfarbe. Grid: display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px.
+Card-Stil: ${stil.cardStyle}
+Jede Card: Emoji (font-size:2rem, margin-bottom:12px), H3 (Primaerfarbe, font-weight:700, margin-bottom:8px), 1 Satz Beschreibung (SELBST VERFASSEN, konkret, branchenspezifisch, color:var(--textMuted)).
 
-UEBER UNS: var(--bg) Hintergrund. Zweispaltig: Text+Vorteile links (3-4 Punkte warum dieser Betrieb), rechts dekorative Karte (var(--primary), weiss) mit Leistungsueberblick oder Kontaktaufruf. KEINE erfundenen Zahlen oder Statistiken.
+UEBER UNS: background:var(--bg). Zweispaltig desktop (3fr 2fr), einspaltig mobile.
+Links: Section-Label + H2 + Kurzbeschreibungs-Text (aus echten Daten) + 3-4 Vorteile im Stil "${stil.ueberStyle}".
+Vorteile NUR aus echten Daten ableiten: Leistungspalette, Einsatzgebiet, Oeffnungszeiten, Notdienst. KEINE erfundenen Jahre/Kunden/Zahlen.
+Rechts: Karte (background:var(--primary), color:#fff, border-radius:${stil.rLg}, padding:32px 28px) mit: Oeffnungszeiten-Block, Einsatzgebiet-Zeile, Telefon als grosser weisser Link.
 
-KONTAKT: weiss. Zweispaltig: Kontaktinfos (tel: Link, mailto:) links, CTA-Karte rechts. Kein Formular.
+KONTAKT: background:#fff. Zweispaltig desktop (1fr 1fr), einspaltig mobile.
+Links: H2, Adressblock ({{ADRESSE_VOLL}}), Telefon als grosser klickbarer Link ({{TEL_HREF}}/{{TEL_DISPLAY}}, font-size:1.5rem, font-weight:800, color:var(--accent)), E-Mail-Link, Oeffnungszeiten.
+Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): kurzer Aufruf-Satz + grosser Anruf-Button (background:var(--accent)).
+<!-- MAPS --> Platzhalter nach den Kontaktinfos.
 
-KONTAKT: weiss. Zweispaltig: Kontaktinfos (tel: Link, mailto:) links, CTA-Karte rechts. Kein Formular.`;
+${o.telefon ? `STICKY MOBILE CTA: Fixer Anruf-Button am unteren Bildschirmrand. Nur auf Mobile sichtbar (@media(max-width:640px){display:flex} sonst display:none). position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent); color:#fff; padding:16px 24px; font-weight:800; font-size:1rem; text-align:center; text-decoration:none; display:none. Inhalt: "📞 Jetzt anrufen – {{TEL_DISPLAY}}" als <a href="{{TEL_HREF}}">. body bekommt padding-bottom:64px auf Mobile damit Inhalt nicht verdeckt wird.` : ""}`;
+
+  /* ─── User Message ─── */
+  const user = `Erstelle die Website fuer diesen Betrieb:
+
+FIRMA:         ${o.firmenname}
+BRANCHE:       ${o.branche_label || o.branche}
+EINSATZGEBIET: ${o.einsatzgebiet || o.bundesland || "Oesterreich"}
+BESCHREIBUNG:  ${o.kurzbeschreibung || `Ihr zuverlaessiger ${o.branche_label || "Handwerks"}-Betrieb in ${o.ort || "Oesterreich"}`}
+
+LEISTUNGEN (${leistungen.length}):
+${leistungen.map((l, i) => `${i + 1}. ${l}`).join("\n")}
+
+KONTAKT:
+Adresse:         ${[o.adresse, o.plz, o.ort].filter(Boolean).join(", ") || "Auf Anfrage"}
+Telefon:         ${o.telefon || ""}
+E-Mail:          ${o.email || ""}
+Oeffnungszeiten: ${oezLabel}
+
+NOTDIENST: ${o.notdienst ? "JA – 24/7 Notdienst – SEHR PROMINENT darstellen!" : "Nein"}
+
+TRUST-ITEMS (exakt diese 3 Punkte im Trust-Bar verwenden, nichts aendern):
+${trustBar}
+
+FOTOS: ${o.fotos ? `Ja – Bildplaetze als farbige CSS-Platzhalter-Bloecke (background-color + Emoji, KEINE img-Tags).
+BILDSLOT-IDs PFLICHT:
+- Hero: id="slot-hero" style="position:relative;overflow:hidden;min-height:420px"
+- Foto 1: id="slot-foto1" style="position:relative;overflow:hidden;min-height:240px"
+- Foto 2: id="slot-foto2" style="position:relative;overflow:hidden;min-height:240px"
+- Team: id="slot-team" style="position:relative;overflow:hidden;min-height:280px"` : "Nein – keine Bildplaetze"}
+
+STIL-FEELING: ${stil.feel}
+
+STRUKTUR-PFLICHT (Kommentare exakt so setzen):
+- <!-- NAV --> direkt nach <body>
+- <!-- MAPS --> im Kontakt-Abschnitt nach den Kontaktinfos (nur wenn Adresse vorhanden)
+- <!-- FOOTER --> nach dem Kontakt-Abschnitt
+
+VARIABLEN-PFLICHT (in Hero und Kontakt nur diese Platzhalter, KEINE echten Daten):
+{{TEL_HREF}} · {{TEL_DISPLAY}} · {{EMAIL}} · {{ADRESSE_VOLL}}`;
 
   /* ─── User Message ─── */
   const user = `Erstelle die Website fuer diesen Betrieb:

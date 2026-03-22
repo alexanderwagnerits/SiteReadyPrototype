@@ -1128,6 +1128,7 @@ function Admin({adminKey}){
   const[search,setSearch]=useState("");
   const[healthTime,setHealthTime]=useState({});
   const[healthFilter,setHealthFilter]=useState("alle");
+  const[deleteConfirm,setDeleteConfirm]=useState(null);
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1147,9 +1148,9 @@ function Admin({adminKey}){
   };
 
   const deleteOrder=async(id)=>{
-    if(!window.confirm("Kunden wirklich loeschen? Diese Aktion kann nicht rueckgaengig gemacht werden."))return;
     await fetch(`/api/admin-delete?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
     setOrders(os=>os.filter(o=>o.id!==id));
+    setDeleteConfirm(null);
     setSel(null);
   };
 
@@ -1677,8 +1678,18 @@ function Admin({adminKey}){
               ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128994; Wieder online</button>
               :<button onClick={()=>updateOrder(sel.id,{status:"offline"})} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128683; Offline nehmen</button>
             }
-            <button onClick={()=>deleteOrder(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden loeschen</button>
+            {deleteConfirm===sel.id
+              ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+              :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden loeschen</button>
+            }
           </div>
+          {deleteConfirm===sel.id&&<div style={{marginTop:8,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
+            <div style={{display:"flex",gap:6}}>
+              <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+              <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
+            </div>
+          </div>}
         </div>
         <div style={{marginTop:14}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>

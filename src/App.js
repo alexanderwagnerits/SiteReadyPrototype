@@ -1131,6 +1131,7 @@ function Admin({adminKey}){
   const[deleteConfirm,setDeleteConfirm]=useState(null);
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
+  const[editKunde,setEditKunde]=useState(null);
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1177,9 +1178,8 @@ function Admin({adminKey}){
       const j=await r.json();
       if(j.ok){
         setGenMsg(m=>({...m,[id]:"Website erstellt! Status: review"}));
-        await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,regen_requested:false})});
         await load();
-        setSel(s=>s?.id===id?{...s,status:"review",subdomain:j.subdomain,regen_requested:false}:s);
+        setSel(s=>s?.id===id?{...s,status:"review",subdomain:j.subdomain}:s);
       } else {
         setGenMsg(m=>({...m,[id]:"Fehler: "+(j.error||"Unbekannt")}));
       }
@@ -1212,14 +1212,13 @@ function Admin({adminKey}){
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   useEffect(()=>{if(tab==="system"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","review"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
+  useEffect(()=>{setEditKunde(null);},[sel]);
   const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
-  const regenQueue=orders.filter(o=>o.regen_requested);
-  const regenBadge=(stuckOrders.length+regenQueue.length)||null;
+  const regenBadge=stuckOrders.length||null;
   const alerts=[];
   if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung moeglich!",tab:"system"});
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
   if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
-  if(regenQueue.length)alerts.push({type:"info",msg:`${regenQueue.length} ausstehende Leistungs-Neugenierung${regenQueue.length>1?"en":""}`,tab:"system"});
   const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Website Health"},{id:"kosten",label:"Kosten"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
@@ -1264,8 +1263,8 @@ function Admin({adminKey}){
           return(<div>
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Uebersicht</h2>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent},{l:"Review ausstehend",v:reviewN,s:"Warten auf Pruefung",c:"#d97706"},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange}].map((k,i)=>(
-                <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>{setTab("bestellungen");setFilter("live");setView("tabelle");}},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent,a:()=>{setTab("bestellungen");setFilter("alle");setView("kanban");}},{l:"Review ausstehend",v:reviewN,s:"Warten auf Pruefung",c:"#d97706",a:()=>{setTab("bestellungen");setFilter("review");setView("tabelle");}},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")}].map((k,i)=>(
+                <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}}>
                   <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
                   <div style={{fontSize:"1.9rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
                   <div style={{fontSize:".73rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
@@ -1304,7 +1303,7 @@ function Admin({adminKey}){
 
         {/* Tab: Bestellungen */}
         {!loading&&tab==="bestellungen"&&(()=>{
-          const sf=search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders;
+          const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Bestellungen</h2>
@@ -1312,6 +1311,10 @@ function Admin({adminKey}){
                 <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{padding:"7px 30px 7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",width:200,background:"#fff"}}/>
                 {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:"1rem",lineHeight:1,padding:0}}>&times;</button>}
               </div>
+              {filter!=="alle"&&<div style={{display:"flex",alignItems:"center",gap:4,padding:"5px 10px",background:STATUS_COLORS[filter]+"15",border:`1px solid ${STATUS_COLORS[filter]}33`,borderRadius:T.rSm}}>
+                <span style={{fontSize:".72rem",fontWeight:700,color:STATUS_COLORS[filter]}}>{STATUS_LABELS[filter]}</span>
+                <button onClick={()=>setFilter("alle")} style={{background:"none",border:"none",cursor:"pointer",color:STATUS_COLORS[filter],fontSize:"1rem",lineHeight:1,padding:"0 0 0 2px",fontWeight:700}}>&times;</button>
+              </div>}
               <div style={{display:"flex",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
                 {["kanban","tabelle"].map(v=><button key={v} onClick={()=>setView(v)} style={{padding:"6px 14px",border:"none",background:view===v?T.dark:"#fff",color:view===v?"#fff":T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>{v==="kanban"?"Kanban":"Tabelle"}</button>)}
               </div>
@@ -1341,7 +1344,7 @@ function Admin({adminKey}){
                 <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{sf.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
-                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}{o.regen_requested&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:700,color:"#d97706",background:"#fef3c7",padding:"2px 6px",borderRadius:4}}>{"\u21BB"}</span>}</td>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
                   <td style={{padding:"12px 16px",textAlign:"right"}}>{o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}</td>
                 </tr>)}</tbody>
@@ -1383,7 +1386,7 @@ function Admin({adminKey}){
             </div>
           </div>
           {/* Aktionen */}
-          {(stuckOrders.length>0||regenQueue.length>0)&&<div style={{marginBottom:24}}>
+          {stuckOrders.length>0&&<div style={{marginBottom:24}}>
             <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Aktionen erforderlich</div>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
@@ -1393,16 +1396,6 @@ function Admin({adminKey}){
                 </div>
                 <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
                   {genLoading[o.id]?"Generiert...":"Website generieren"}
-                </button>
-                {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green}}>{genMsg[o.id]}</div>}
-              </div>)}
-              {regenQueue.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
-                <div style={{flex:1}}>
-                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Leistungs-Regen ausstehend &middot; <StatusBadge status={o.status}/></div>
-                </div>
-                <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
-                  {genLoading[o.id]?"Generiert...":"Neu generieren"}
                 </button>
                 {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green}}>{genMsg[o.id]}</div>}
               </div>)}
@@ -1598,7 +1591,6 @@ function Admin({adminKey}){
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <h3 style={{margin:0,fontSize:"1.1rem",fontWeight:800,color:T.dark}}>{sel.firmenname||"—"}</h3>
               <StatusBadge status={sel.status}/>
-              {sel.regen_requested&&<span style={{background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:T.rSm,padding:"2px 8px",fontSize:".7rem",fontWeight:700,color:"#92400e"}}>{"\u21BB"} Neugen. angefragt</span>}
             </div>
             <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
           </div>
@@ -1611,17 +1603,29 @@ function Admin({adminKey}){
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
             {/* Linke Spalte: Infos */}
             <div style={{padding:28,borderRight:`1px solid ${T.bg3}`}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>Kundendaten</div>
-              <div style={{display:"flex",flexDirection:"column",gap:0}}>
-                {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
-                  <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>
-                </div>:null)}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
+                {!editKunde
+                  ?<button onClick={()=>setEditKunde({email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||"",subdomain:sel.subdomain||""})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">✏️</button>
+                  :<div style={{display:"flex",gap:6}}>
+                    <button onClick={async()=>{await updateOrder(sel.id,editKunde);setEditKunde(null);}} style={{padding:"3px 10px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
+                    <button onClick={()=>setEditKunde(null)} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                  </div>
+                }
               </div>
-              {/* Deployment Checkliste */}
-              <div style={{marginTop:20}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Deployment-Status</div>
-                {(()=>{const s=sel.status;const built=["in_arbeit","review","live"].includes(s);const reviewed=["review","live"].includes(s);const live=s==="live";return[{l:"Website erstellt",ok:built,warn:!built&&s==="paid"},{l:"SSL-Zertifikat",ok:built},{l:"Impressum (ECG)",ok:built},{l:"DSGVO-Erklaerung",ok:built},{l:"Google-Indexierung",ok:live,warn:reviewed&&!live},{l:"Domain aktiv",ok:live}].map(({l,ok,warn})=>{const color=ok?T.green:warn?"#f59e0b":T.textMuted;const icon=ok?"\u2713":warn?"\u23F3":"\u2013";const bg=ok?T.greenLight:warn?"#fef3c7":T.bg;return(<div key={l} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",borderRadius:T.rSm,background:bg,marginBottom:3}}><span style={{fontSize:".78rem",color:T.dark}}>{l}</span><span style={{fontSize:".78rem",fontWeight:700,color,fontFamily:T.mono}}>{icon}</span></div>);});})()}
-              </div>
+              {editKunde
+                ?<div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {[["E-Mail","email"],["Telefon","telefon"],["Adresse","adresse"],["PLZ","plz"],["Ort","ort"],["Subdomain","subdomain"]].map(([l,k])=><div key={k} style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
+                      <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
+                      <input value={editKunde[k]} onChange={e=>setEditKunde(ev=>({...ev,[k]:e.target.value}))} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
+                    </div>)}
+                  </div>
+                :<div style={{display:"flex",flexDirection:"column",gap:0}}>
+                  {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                    <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>
+                  </div>:null)}
+                </div>
+              }
             </div>
             {/* Rechte Spalte: Website-Aktionen */}
             <div style={{padding:28}}>

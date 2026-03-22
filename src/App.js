@@ -921,10 +921,10 @@ function Portal({session,onLogout}){
               <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
               <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live \u2013 Ihre Website ist erreichbar":"In Bearbeitung"}</span>
             </div>
-            {[{l:"Subdomain",v:`${sub}.siteready.at`,link:true},{l:"SSL-Zertifikat",v:"Aktiv \u2713"},{l:"Status",v:STATUS_LABELS[order.status]||order.status},{l:"Bestellt am",v:order.created_at?new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):""}].map(({l,v,link})=>(
+            {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"SSL-Zertifikat",v:"Aktiv \u2713"},{l:"Status",v:STATUS_LABELS[order.status]||order.status},{l:"Bestellt am",v:order.created_at?new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):""}].map(({l,v,link})=>(
               <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
                 <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
-                {link?<a href={`https://${v}`} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}
+                {link?<a href={v} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}
               </div>))}
           </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
         </div>
@@ -1114,7 +1114,7 @@ function Admin({adminKey}){
   };
 
   const checkHealth=async(order)=>{
-    const url=`https://${order.subdomain||"test"}.siteready.at`;
+    const url=`https://sitereadyprototype.pages.dev/s/${order.subdomain||"test"}`;
     setHealth(h=>({...h,[order.id]:"checking"}));
     try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});setHealth(h=>({...h,[order.id]:"ok"}));}
     catch(e){setHealth(h=>({...h,[order.id]:"error"}));}
@@ -1451,7 +1451,7 @@ function Admin({adminKey}){
         {/* Website generieren */}
         <div style={{marginTop:14,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Website</div>
-          {sel.website_html&&sel.subdomain&&<a href={`/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:".82rem",color:T.green,fontWeight:600,marginBottom:10,textDecoration:"none"}}>
+          {sel.website_html&&sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:".82rem",color:T.green,fontWeight:600,marginBottom:10,textDecoration:"none"}}>
             {"\uD83D\uDD17"} /s/{sel.subdomain}
           </a>}
           <div>

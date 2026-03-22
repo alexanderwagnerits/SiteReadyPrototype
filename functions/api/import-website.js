@@ -46,17 +46,19 @@ export async function onRequestPost({request, env}) {
     }
 
     // Impressum-Seite zusaetzlich laden (Unternehmensinfos stehen meist dort)
-    const impressumUrls = [cleanUrl.replace(/\/$/, "") + "/impressum", cleanUrl.replace(/\/$/, "") + "/impressum.html"];
-    for (const impUrl of impressumUrls) {
+    const base = cleanUrl.replace(/\/$/, "");
+    const impressumCandidates = ["/impressum", "/impressum.html", "/datenschutz-impressum", "/ueber-uns", "/about", "/kontakt"];
+    for (const path of impressumCandidates) {
       try {
-        const impResp = await fetch("https://r.jina.ai/" + impUrl, {
+        const impResp = await fetch("https://r.jina.ai/" + base + path, {
           headers: {"Accept": "text/plain", "X-Return-Format": "text"},
           signal: AbortSignal.timeout(8000),
         });
         if (impResp.ok) {
           const impText = await impResp.text();
-          if (impText && impText.length > 100) {
-            pageText += "\n\n=== IMPRESSUM ===\n" + impText.slice(0, 3000);
+          // Pruefe ob Impressum-Inhalt vorhanden (UID/FN/GISA/Medieninhaber)
+          if (impText && impText.length > 100 && /ATU|FN\s*\d|GISA|Medieninhaber|Firmenbuch|Gewerbe/i.test(impText)) {
+            pageText += "\n\n=== IMPRESSUM ===\n" + impText.slice(0, 4000);
             break;
           }
         }
@@ -80,7 +82,7 @@ export async function onRequestPost({request, env}) {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1024,
+        max_tokens: 2048,
         messages: [{
           role: "user",
           content: `Extrahiere aus folgendem Website-Text die Kontaktdaten eines oesterreichischen Unternehmens.
@@ -123,6 +125,11 @@ ${excerpt}`,
       extracted = {};
     }
 
+    // Unternehmensform normalisieren (Claude gibt manchmal "GmbH" statt "gmbh")
+    const ufRaw = (extracted.unternehmensform || "").toLowerCase().replace(/[\s.]/g, "");
+    const ufMap = {"eu":"eu","einzelunternehmen":"einzelunternehmen","gmbh":"gmbh","og":"og","kg":"kg","ag":"ag","verein":"verein","gesnbr":"gesnbr","gesbr":"gesnbr"};
+    const unternehmensform = ufMap[ufRaw] || (ufRaw.includes("gmbh")?"gmbh":ufRaw.includes("eu")?"eu":ufRaw.includes("einzelunternehmen")?"einzelunternehmen":extracted.unternehmensform||"");
+
     return Response.json({
       firmenname: extracted.firmenname || "",
       telefon: extracted.telefon || "",
@@ -132,7 +139,7 @@ ${excerpt}`,
       adresse: extracted.adresse || "",
       kurzbeschreibung: extracted.kurzbeschreibung || "",
       bundesland: extracted.bundesland || "",
-      unternehmensform: extracted.unternehmensform || "",
+      unternehmensform,
       uid: extracted.uid || "",
       firmenbuchnummer: extracted.firmenbuchnummer || "",
       firmenbuchgericht: extracted.firmenbuchgericht || "",

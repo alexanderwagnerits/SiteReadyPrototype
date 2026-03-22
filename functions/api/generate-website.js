@@ -553,11 +553,11 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
         "Prefer": "return=minimal",
       },
-      body: JSON.stringify({website_html: html, subdomain: sub, status: "review", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null}),
+      body: JSON.stringify({website_html: html, subdomain: sub, status: "live", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null}),
     }
   );
 
-  return Response.json({ok: save.ok, subdomain: sub, status: "review"});
+  return Response.json({ok: save.ok, subdomain: sub, status: "live"});
   } catch(e) {
     try {
       await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {

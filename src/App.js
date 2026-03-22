@@ -747,10 +747,19 @@ function Portal({session,onLogout}){
   };
 
   const startBuild=async(withFotos)=>{
-    if(!order||!supabase)return;
+    if(!supabase||!session)return;
     setOnboardSaving(true);
-    await supabase.from("orders").update({fotos:withFotos,regen_requested:true}).eq("id",order.id);
-    setOrder(o=>({...o,fotos:withFotos,regen_requested:true,status:"in_arbeit"}));
+    const{data:{session:s}}=await supabase.auth.getSession();
+    const token=s?.access_token;
+    try{
+      const r=await fetch("/api/start-build",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
+        body:JSON.stringify({fotos:withFotos}),
+      });
+      const j=await r.json();
+      if(j.ok||r.ok)setOrder(o=>({...o,fotos:withFotos,regen_requested:false,status:"in_arbeit"}));
+    }catch(_){}
     setOnboardSaving(false);
   };
 
@@ -926,8 +935,19 @@ function Portal({session,onLogout}){
         <div style={{marginTop:12,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Ihre Website wird innerhalb von 24h erstellt. Sie erhalten eine E-Mail wenn sie live ist.</div>
       </div>)}
 
+      {/* Build-Screen: status===in_arbeit */}
+      {order?.status==="in_arbeit"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28,textAlign:"center"}}>
+        <div style={{width:56,height:56,borderRadius:"50%",border:`3px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",margin:"0 auto 24px"}}/>
+        <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 10px"}}>Ihre Website wird erstellt</h2>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 28px"}}>Die KI generiert gerade Ihre individuelle Website. Das dauert ca. 30–60 Sekunden.</p>
+        <button onClick={async()=>{
+          const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
+          if(data&&data[0])setOrder(data[0]);
+        }} style={{padding:"11px 24px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Status aktualisieren</button>
+      </div>)}
+
       {/* Tab Nav */}
-      {order?.status!=="paid"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
+      {order?.status!=="paid"&&order?.status!=="in_arbeit"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
       </div>}
 
@@ -1240,9 +1260,15 @@ function Portal({session,onLogout}){
         {order?.status&&order.status!=="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>Website aktualisieren</div>
           <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:14,lineHeight:1.6}}>Sie haben neue Fotos hochgeladen? Wir generieren Ihre Website mit den aktuellen Fotos neu (innerhalb von 24h).</div>
-          {order.regen_requested
-            ?<div style={{fontSize:".82rem",color:"#92400e",fontWeight:600}}>{"\u21BB"} Anfrage bereits gesendet – wir kuemmern uns!</div>
-            :<button onClick={async()=>{if(!order||!supabase)return;await supabase.from("orders").update({regen_requested:true}).eq("id",order.id);setOrder(o=>({...o,regen_requested:true}));}} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Website aktualisieren</button>
+          {order.status==="in_arbeit"
+            ?<div style={{fontSize:".82rem",color:"#8b5cf6",fontWeight:600}}>{"\u21BB"} Website wird gerade erstellt...</div>
+            :<button onClick={async()=>{
+              if(!supabase||!session)return;
+              const{data:{session:s}}=await supabase.auth.getSession();
+              const token=s?.access_token;
+              await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify({})});
+              setOrder(o=>({...o,status:"in_arbeit",regen_requested:false}));
+            }} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Website aktualisieren</button>
           }
         </div>)}
       </div>)}
@@ -1301,7 +1327,7 @@ function Portal({session,onLogout}){
 /* ═══ ADMIN DASHBOARD ═══ */
 const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",review:"Review",live:"Live",offline:"Offline"};
 const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",review:"#f97316",live:"#16a34a",offline:"#64748b"};
-const STATUS_FLOW=["pending","paid","in_arbeit","review","live"];
+const STATUS_FLOW=["pending","paid","in_arbeit","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
 
@@ -1372,9 +1398,9 @@ function Admin({adminKey}){
       const r=await fetch(`/api/generate-website?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:id})});
       const j=await r.json();
       if(j.ok){
-        setGenMsg(m=>({...m,[id]:"Website erstellt! Status: review"}));
+        setGenMsg(m=>({...m,[id]:"Website erstellt! Status: live"}));
         await load();
-        setSel(s=>s?.id===id?{...s,status:"review",subdomain:j.subdomain}:s);
+        setSel(s=>s?.id===id?{...s,status:"live",subdomain:j.subdomain}:s);
       } else {
         setGenMsg(m=>({...m,[id]:"Fehler: "+(j.error||"Unbekannt")}));
       }

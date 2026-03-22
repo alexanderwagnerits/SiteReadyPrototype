@@ -1428,7 +1428,7 @@ function Admin({adminKey}){
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   useEffect(()=>{if(tab==="system"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
-  useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","review"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
+  useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
   useEffect(()=>{setEditKunde(null);},[sel]);
   const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenBadge=stuckOrders.length||null;
@@ -1439,9 +1439,9 @@ function Admin({adminKey}){
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"bestellungen",label:"Bestellungen"},
+    {id:"health",label:"Website Health"},
     {id:"support",label:"Support"},
     {id:"system",label:"System",badge:regenBadge},
-    {id:"health",label:"Website Health"},
     {id:"kosten",label:"Kosten"},
     {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
     {id:"arch-flows",label:"Flows"},
@@ -1532,9 +1532,11 @@ function Admin({adminKey}){
 
         {/* Tab: Bestellungen */}
         {!loading&&tab==="bestellungen"&&(()=>{
-          const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
+          const BESTELL_STATUS=["pending","paid","in_arbeit"];
+          const baseOrders=orders.filter(o=>BESTELL_STATUS.includes(o.status));
+          const sf=(search?baseOrders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):baseOrders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Bestellungen</h2>
               <div style={{position:"relative"}}>
                 <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{padding:"7px 30px 7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",width:200,background:"#fff"}}/>
@@ -1551,8 +1553,9 @@ function Admin({adminKey}){
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
               </button>
             </div>
-            {view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12,alignItems:"start"}}>
-              {STATUS_FLOW.map(s=>{const cols=sf.filter(o=>o.status===s);return(<div key={s}>
+            <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:16}}>Zeigt Bestellungen in Bearbeitung. Live & Offline Websites sind unter <button onClick={()=>setTab("health")} style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:".72rem",fontWeight:700,padding:0,fontFamily:T.font}}>Website Health</button> sichtbar.</div>
+            {view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,alignItems:"start"}}>
+              {BESTELL_STATUS.map(s=>{const cols=sf.filter(o=>o.status===s);return(<div key={s}>
                 <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}>
                   <div style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0}}/>
                   <span style={{fontSize:".72rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em"}}>{STATUS_LABELS[s]}</span>
@@ -1671,17 +1674,17 @@ function Admin({adminKey}){
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:10}}>
             <div>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 3px"}}>Website Health</h2>
-              <div style={{fontSize:".72rem",color:T.textMuted}}>Live & Review Websites werden beim Oeffnen automatisch geprüft</div>
+              <div style={{fontSize:".72rem",color:T.textMuted}}>Live & Offline Websites – werden beim Oeffnen automatisch geprueft</div>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               <div style={{display:"flex",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
                 {["alle","fehler"].map(f=><button key={f} onClick={()=>setHealthFilter(f)} style={{padding:"6px 12px",border:"none",background:healthFilter===f?T.dark:"#fff",color:healthFilter===f?"#fff":T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{f==="alle"?"Alle":"Nur Fehler"}</button>)}
               </div>
-              <button onClick={()=>orders.filter(o=>o.subdomain).forEach(o=>checkHealth(o))} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Alle prüfen</button>
+              <button onClick={()=>orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o))} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Alle prüfen</button>
             </div>
           </div>
           {(()=>{
-            const rows=orders.filter(o=>o.subdomain).filter(o=>healthFilter==="fehler"?health[o.id]==="error":true);
+            const rows=orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).filter(o=>healthFilter==="fehler"?health[o.id]==="error":true);
             return rows.length===0?<div style={{padding:40,textAlign:"center",color:T.textMuted}}>{healthFilter==="fehler"?"Keine Fehler gefunden.":"Keine Websites mit Subdomain."}</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>

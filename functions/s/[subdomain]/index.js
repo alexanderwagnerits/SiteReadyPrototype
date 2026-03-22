@@ -56,20 +56,21 @@ export async function onRequestGet({params, env}) {
     );
   }
 
-  // Foto-Slots injizieren: <img> wird absolut in den Platzhalter-Div eingefuegt
-  const slots = [
-    {id: "slot-hero",  url: o.url_hero},
-    {id: "slot-foto1", url: o.url_foto1},
-    {id: "slot-foto2", url: o.url_foto2},
-    {id: "slot-team",  url: o.url_team},
-  ];
-  for (const slot of slots) {
-    if (!slot.url) continue;
-    // Fuge img direkt nach dem oeffnenden Tag ein (ueberdeckt Platzhalter-Inhalt)
-    html = html.replace(
-      new RegExp(`(<[^>]+id="${slot.id}"[^>]*>)`),
-      `$1<img src="${slot.url}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:block">`
-    );
+  // Galerie serve-time injizieren (vor dem Footer, nur wenn Fotos vorhanden)
+  const fotoUrls = [o.url_foto1, o.url_foto2, o.url_foto3, o.url_foto4, o.url_foto5].filter(Boolean);
+  if (fotoUrls.length > 0) {
+    const items = fotoUrls.map(url =>
+      `<div style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:#e2e8f0">` +
+      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">` +
+      `</div>`
+    ).join("");
+    const galleryHtml = `<section id="galerie" style="padding:80px 0;background:var(--bg,#f8fafc)">` +
+      `<div style="max-width:1200px;margin:0 auto;padding:0 24px">` +
+      `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">Einblicke</div>` +
+      `<h2 style="font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:800;color:var(--primary);margin:0 0 32px">Bilder aus unserem Betrieb</h2>` +
+      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">${items}</div>` +
+      `</div></section>`;
+    html = html.replace(/<footer[\s>]/i, galleryHtml + "\n<footer ");
   }
 
   // ── Serve-time Variablen-Ersetzung (Sofort-Updates ohne Re-Generierung) ──

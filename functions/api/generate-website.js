@@ -2,7 +2,7 @@
 function buildNav(o, pal, stil) {
   const tel = o.telefon || "";
   return `<style>
-#sitenav{position:sticky;top:0;z-index:1000;transition:background .3s,box-shadow .3s}
+#sitenav{position:sticky;top:0;z-index:1000;background:var(--primary);transition:background .3s,box-shadow .3s}
 #sitenav.scrolled{background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08)}
 #sitenav.scrolled .nav-logo{color:var(--primary)!important}
 #sitenav.scrolled .nav-link{color:var(--primary)!important}
@@ -397,12 +397,7 @@ NOTDIENST: ${o.notdienst && berufsgruppe === "handwerk" ? "JA – 24/7 Notdienst
 TRUST-ITEMS (exakt diese 3 Punkte im Trust-Bar verwenden, nichts aendern):
 ${trustBar}
 
-FOTOS: ${o.fotos ? `Ja – Bildplaetze als farbige CSS-Platzhalter-Bloecke (background-color + Emoji, KEINE img-Tags).
-BILDSLOT-IDs PFLICHT:
-- Hero: id="slot-hero" style="position:relative;overflow:hidden;min-height:420px"
-- Foto 1: id="slot-foto1" style="position:relative;overflow:hidden;min-height:240px"
-- Foto 2: id="slot-foto2" style="position:relative;overflow:hidden;min-height:240px"
-- Team: id="slot-team" style="position:relative;overflow:hidden;min-height:280px"` : "Nein – keine Bildplaetze"}
+FOTOS: Nein – keine Bildplaetze oder Platzhalter generieren. Eine Foto-Galerie wird automatisch nach dem Kontakt-Abschnitt eingefuegt falls Fotos vorhanden sind.
 
 STIL-FEELING: ${stil.feel}
 

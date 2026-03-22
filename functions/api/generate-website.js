@@ -55,7 +55,7 @@ document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventLi
 }
 
 /* ═══ Footer-Builder ═══ */
-function buildFooter(o, pal, year) {
+function buildFooter(o, pal, year, sub) {
   const adresse = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   const tel = o.telefon || "";
   const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "";
@@ -251,7 +251,7 @@ export async function onRequestPost({request, env}) {
   const year = new Date().getFullYear();
   const impressumHtml = buildImpressum(o, pal, year);
   const navHtml      = buildNav(o, pal, stil);
-  const footerHtml   = buildFooter(o, pal, year);
+  const footerHtml   = buildFooter(o, pal, year, sub);
 
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.

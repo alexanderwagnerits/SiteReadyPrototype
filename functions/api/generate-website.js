@@ -1,3 +1,81 @@
+/* ═══ Impressum-Builder (ECG-konform, rechtsformspezifisch) ═══ */
+function buildImpressum(o, pal, year) {
+  const uf = o.unternehmensform || "";
+  const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
+  const firmaVoll = o.firmenname + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
+  const sitz = [o.plz, o.ort].filter(Boolean).join(" ");
+  const adresse = [o.adresse, sitz].filter(Boolean).join(", ");
+  const rows = [];
+  const add = (l, v) => { if (v && String(v).trim()) rows.push([l, String(v).trim()]); };
+
+  add("Medieninhaber & Herausgeber", firmaVoll);
+
+  if (uf === "einzelunternehmen") {
+    add("Inhaber", o.firmenname); add("Anschrift", adresse);
+    add("Unternehmensgegenstand", o.unternehmensgegenstand);
+  } else if (uf === "eu") {
+    add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);
+    add("Firmenbuchgericht", o.firmenbuchgericht);
+    if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
+  } else if (uf === "gmbh") {
+    add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);
+    add("Firmenbuchgericht", o.firmenbuchgericht);
+    add("Gesch\u00e4ftsf\u00fchrer", o.geschaeftsfuehrer);
+    if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
+  } else if (uf === "og" || uf === "kg") {
+    add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);
+    add("Firmenbuchgericht", o.firmenbuchgericht);
+    if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
+  } else if (uf === "ag") {
+    add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);
+    add("Firmenbuchgericht", o.firmenbuchgericht);
+    add("Vorstand", o.vorstand); add("Aufsichtsrat", o.aufsichtsrat);
+    if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
+  } else if (uf === "verein") {
+    add("Vereinsname", o.firmenname); add("Sitz", sitz);
+    add("ZVR-Zahl", o.zvr_zahl);
+    add("Vertretungsbefugte Organe", o.vertretungsorgane);
+  } else if (uf === "gesnbr") {
+    add("Bezeichnung", o.firmenname); add("Anschrift", adresse);
+    add("Unternehmensgegenstand", o.unternehmensgegenstand);
+    add("Gesellschafter", o.gesellschafter);
+  } else {
+    add("Anschrift", adresse);
+  }
+
+  add("Telefon", o.telefon); add("E-Mail", o.email);
+  add("UID-Nummer", o.uid_nummer); add("GISA-Zahl", o.gisazahl);
+
+  if (o.aufsichtsbehoerde) {
+    add("Aufsichtsbeh\u00f6rde", o.aufsichtsbehoerde);
+  } else if (uf !== "verein" && uf !== "gesnbr") {
+    add("Aufsichtsbeh\u00f6rde", "Zust\u00e4ndige Bezirksverwaltungsbeh\u00f6rde");
+  }
+  if (o.kammer_berufsrecht) {
+    add("Kammer / Berufsrecht", o.kammer_berufsrecht);
+  } else if (uf !== "verein" && uf !== "gesnbr" && uf !== "einzelunternehmen") {
+    add("Mitglied der", "Wirtschaftskammer \u00d6sterreich");
+    add("Berufsrecht", "Gewerbeordnung (www.ris.bka.gv.at)");
+  }
+
+  const tRows = rows.map(([l,v]) =>
+    `<tr><td style="padding:7px 20px 7px 0;font-weight:600;white-space:nowrap;vertical-align:top;color:${pal.p};font-size:.85rem">${l}</td><td style="padding:7px 0;color:#374151;font-size:.85rem">${v}</td></tr>`
+  ).join("");
+
+  const dsgvo = `Diese Website verwendet keine Cookies au\u00dfer technisch notwendigen. Es findet kein Tracking statt. Ihre personenbezogenen Daten werden ausschlie\u00dflich zur Bearbeitung Ihrer Anfragen genutzt und nicht an Dritte weitergegeben. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Verantwortlicher: ${firmaVoll}, ${adresse}.`;
+
+  return `<section id="impressum" style="background:#f8fafc;padding:64px 0;border-top:2px solid ${pal.s}">
+<div style="max-width:960px;margin:0 auto;padding:0 24px">
+<h2 style="font-size:1.3rem;font-weight:800;color:${pal.p};margin-bottom:24px;letter-spacing:-.01em">Impressum</h2>
+<table style="border-collapse:collapse;width:100%">${tRows}</table>
+<div id="datenschutz" style="margin-top:48px;padding-top:40px;border-top:1px solid ${pal.s}">
+<h3 style="font-size:1rem;font-weight:700;color:${pal.p};margin-bottom:12px">Datenschutzerkl\u00e4rung</h3>
+<p style="font-size:.85rem;line-height:1.8;color:#4b5563;max-width:720px">${dsgvo}</p>
+</div>
+<p style="margin-top:32px;font-size:.78rem;color:#9ca3af">&copy; ${year} ${o.firmenname}</p>
+</div></section>`;
+}
+
 /* ═══ Branchenspezifische Farbpaletten ═══ */
 const PALETTES = {
   elektro:      {p:"#0c1d3d", a:"#f59e0b", bg:"#f8faff", s:"#e2e8f0"},
@@ -70,13 +148,17 @@ export async function onRequestPost({request, env}) {
   if (o.extra_leistung?.trim()) leistungen.push(o.extra_leistung.trim());
   const oez = o.oeffnungszeiten_custom || o.oeffnungszeiten || "Nach Vereinbarung";
   const year = new Date().getFullYear();
+  const impressumHtml = buildImpressum(o, pal, year);
 
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
 Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen Handwerksbetrieb.
 
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
-KOMPAKTHEIT: Schreibe CSS und HTML kompakt (keine Kommentare, keine Leerzeilen zwischen Regeln, kurze aber lesbare Klassennamen). Ziel: maximale visuelle Qualitaet bei minimalem Code-Volumen. Du hast ein striktes Token-Budget.
+KOMPAKTHEIT: CSS und HTML kompakt schreiben (keine Kommentare, kurze Klassennamen). Maximale visuelle Qualitaet bei minimalem Code-Volumen. Striktes Token-Budget.
+KEINE ERFUNDENEN FAKTEN: Keine "15+ Jahre Erfahrung", keine Projektzahlen, keine Kundenzufriedenheitswerte, keine erfundenen Statistiken. Nur echte Kundendaten verwenden.
+IMPRESSUM: Der mitgelieferte IMPRESSUM-HTML-Block wird EXAKT und UNVERAENDERT direkt vor </body> eingefuegt. Keinen eigenen Impressum-Abschnitt schreiben.
+META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}
@@ -117,22 +199,13 @@ HERO: min-height:100vh, background:var(--primary) mit Gradient-Overlay.${o.notdi
 
 LEISTUNGEN: weisser Hintergrund. Grid auto-fill minmax(260px,1fr). Cards mit Emoji-Icon, H3, 1 Satz Beschreibung (selbst verfassen!), Hover-Lift.
 
-UEBER UNS: var(--bg) Hintergrund. Zweispaltig: Text+Facts links, Stats-Karte (var(--primary), weiss) rechts mit geschaetzten Zahlen.
+UEBER UNS: var(--bg) Hintergrund. Zweispaltig: Text+Vorteile links (3-4 Punkte warum dieser Betrieb), rechts dekorative Karte (var(--primary), weiss) mit Leistungsueberblick oder Kontaktaufruf. KEINE erfundenen Zahlen oder Statistiken.
 
 KONTAKT: weiss. Zweispaltig: Kontaktinfos (tel: Link, mailto:) links, CTA-Karte rechts. Kein Formular.
 
-FOOTER: var(--primary), weiss. Dreispaltig. Impressum-Abschnitt (ECG): Medieninhaber, Adresse, alle vorhandenen Felder, WKO-Mitglied, Gewerbeordnung. Datenschutz-Hinweis.
-
-DATENSCHUTZ: Kurze DSGVO-Erklaerung (keine Cookies ausser technisch notwendige, kein Tracking, Kontaktdaten nur zur Kontaktaufnahme genutzt)`;
+FOOTER: var(--primary), weiss. Dreispaltig (Logo+Kurzbeschreibung | Navigation | Kontakt). Kein Impressum im Footer - nur Links "#impressum" und "#datenschutz".`;
 
   /* ─── User Message ─── */
-  const impressum = [
-    o.unternehmensform ? `Unternehmensform: ${o.unternehmensform}` : null,
-    o.uid_nummer       ? `UID-Nummer: ${o.uid_nummer}` : null,
-    o.firmenbuchnummer ? `Firmenbuchnummer: ${o.firmenbuchnummer}${o.firmenbuchgericht ? `, ${o.firmenbuchgericht}` : ""}` : null,
-    o.gisazahl         ? `GISA-Zahl: ${o.gisazahl}` : null,
-  ].filter(Boolean).join("\n") || "(keine weiteren Angaben)";
-
   const user = `Erstelle die Website fuer diesen Betrieb:
 
 FIRMA:         ${o.firmenname}
@@ -153,10 +226,8 @@ NOTDIENST:    ${o.notdienst ? "JA - 24/7 Notdienst - SEHR PROMINENT darstellen!"
 FOTOS:        ${o.fotos ? "Ja - Bildplaetze als gestaltete farbige Platzhalter-Bloecke (CSS background-color + passendem Emoji zentriert, KEINE img-Tags)" : "Nein - Keine Bildplaetze einbauen"}
 STIL-GEFUEHL: ${stil.feel}
 
-IMPRESSUM-DATEN:
-${impressum}
-
-Copyright: © ${year} ${o.firmenname}`;
+WICHTIG: Setze am Ende des <body> (nach dem Footer) exakt diesen Kommentar: <!-- IMPRESSUM -->
+Das Impressum wird automatisch dort eingefuegt.`;
 
   /* ─── Claude API Call ─── */
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -184,6 +255,13 @@ Copyright: © ${year} ${o.firmenname}`;
 
   // Markdown-Backticks entfernen falls Claude sie dennoch ausgibt
   html = html.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+
+  // Impressum programmatisch injizieren (ersetzt Placeholder oder haengt vor </body> an)
+  if (html.includes("<!-- IMPRESSUM -->")) {
+    html = html.replace("<!-- IMPRESSUM -->", impressumHtml);
+  } else {
+    html = html.replace(/<\/body>/i, impressumHtml + "\n</body>");
+  }
 
   /* ─── In Supabase speichern + Status setzen ─── */
   const save = await fetch(

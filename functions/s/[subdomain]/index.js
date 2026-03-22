@@ -29,7 +29,7 @@ export async function onRequestGet({params, env}) {
   if (!subdomain) return new Response("Not Found", {status: 404});
 
   const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=website_html,firmenname,status,url_logo,url_hero,url_foto1,url_foto2,url_team,telefon,email,adresse,plz,ort,kurzbeschreibung,oeffnungszeiten,oeffnungszeiten_custom,facebook,instagram,linkedin,tiktok,einsatzgebiet`,
+    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=*`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
   if (!r.ok) return new Response("Fehler beim Laden", {status: 502});

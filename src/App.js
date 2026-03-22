@@ -1654,6 +1654,97 @@ function Admin({adminKey}){
                 Phase 3 ist im Prototyp noch nicht aktiv &ndash; noindex-Tag ist auf allen Websites gesetzt.
               </div>
             </div>
+
+            {/* System-Flows */}
+            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:20}}>
+              <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:20}}>System-Flows</div>
+              {(()=>{
+                const svc=(label,color)=>(<span style={{display:"inline-block",padding:"2px 7px",borderRadius:3,background:color+"18",color,fontSize:".62rem",fontWeight:800,letterSpacing:".06em",textTransform:"uppercase",marginRight:6,flexShrink:0}}>{label}</span>);
+                const step=(service,color,action,detail)=>(<div style={{display:"flex",gap:10,paddingBottom:6}}>
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:18}}>
+                    <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/>
+                    <div style={{width:1,flex:1,background:T.bg3,marginTop:3}}/>
+                  </div>
+                  <div style={{paddingBottom:8,flex:1}}>
+                    <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>
+                      {svc(service,color)}
+                      <span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span>
+                    </div>
+                    {detail&&<div style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}
+                  </div>
+                </div>);
+                const lastStep=(service,color,action,detail)=>(<div style={{display:"flex",gap:10}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>
+                      {svc(service,color)}
+                      <span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span>
+                    </div>
+                    {detail&&<div style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}
+                  </div>
+                </div>);
+                const flowTitle=(icon,label,color)=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${T.bg3}`}}>
+                  <span style={{fontSize:"1.1rem"}}>{icon}</span>
+                  <span style={{fontSize:".82rem",fontWeight:800,color:T.dark}}>{label}</span>
+                  <div style={{flex:1,height:1,background:T.bg3,marginLeft:4}}/>
+                </div>);
+                return(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+
+                  {/* Flow 1: Bestellung & Zahlung */}
+                  <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                    {flowTitle("💳","Bestellung & Zahlung","#16a34a")}
+                    {step("React SPA","#3b82f6","Supabase INSERT orders","status: pending, alle Formulardaten")}
+                    {step("React SPA","#3b82f6","POST /api/create-checkout","orderId, firmenname, email")}
+                    {step("create-checkout.js","#f97316","Stripe API: Checkout Session","€18,00 · mode: payment · metadata: order_id")}
+                    {step("Stripe","#16a34a","Browser → Checkout-Seite","Zahlungsformular auf stripe.com")}
+                    {step("Stripe","#16a34a","POST /api/stripe-webhook","Event: checkout.session.completed")}
+                    {step("stripe-webhook.js","#f97316","HMAC-SHA256 Signatur prüfen","Timestamp-Check: max. 5 Minuten")}
+                    {step("stripe-webhook.js","#f97316","Supabase PATCH orders","status: → paid")}
+                    {lastStep("stripe-webhook.js","#f97316","ctx.waitUntil: generate-website","POST /api/generate-website (Hintergrund, blockiert Stripe nicht)")}
+                  </div>
+
+                  {/* Flow 2: Website-Generierung */}
+                  <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                    {flowTitle("🤖","Website-Generierung","#8b5cf6")}
+                    {step("Edge Function","#f97316","Supabase GET order by id","alle Kundendaten + Unternehmensform")}
+                    {step("generate-website.js","#8b5cf6","Stil + Palette auswählen","STYLES_MAP · PALETTES · branchenspez. Farben")}
+                    {step("generate-website.js","#8b5cf6","Nav & Footer aus JS-Templates bauen","buildNav() + buildFooter() mit Serve-time-Variablen")}
+                    {step("generate-website.js","#8b5cf6","System-Prompt aufbauen","Responsive-Regeln · Struktur · Trust-Bar")}
+                    {step("Claude API","#8b5cf6","POST claude-sonnet-4-6","max_tokens:8192 · system + user message")}
+                    {step("generate-website.js","#f97316","Nav/Footer injizieren","<!-- NAV --> · <!-- FOOTER --> Placeholder ersetzen")}
+                    {step("generate-website.js","#f97316","Google Maps injizieren","<!-- MAPS --> → iframe embed (Adresse encoded)")}
+                    {step("generate-website.js","#f97316","Meta-Tags überschreiben","title · description · og:* · canonical · robots:noindex")}
+                    {step("generate-website.js","#f97316","Schema.org JSON-LD","@type:LocalBusiness · name · address · telephone")}
+                    {step("generate-website.js","#f97316","Scripts injizieren","ScrollSpy · Float-Call-Button (Mobile)")}
+                    {lastStep("Supabase","#2563eb","PATCH orders","website_html · subdomain · status:review · tokens · cost_eur")}
+                  </div>
+
+                  {/* Flow 3: Website-Auslieferung */}
+                  <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                    {flowTitle("🌍","Website-Auslieferung (index.js)","#f97316")}
+                    {step("Browser","#64748b","GET /s/{subdomain}","")}
+                    {step("index.js","#f97316","Supabase GET orders","?subdomain=eq.{subdomain}&select=*")}
+                    {step("index.js","#f97316","Status-Check","404 (not found/kein HTML) · 503 (offline) · 200")}
+                    {step("index.js","#f97316","Logo injizieren","id=\"site-nav-logo\" → <img src=url_logo>")}
+                    {step("index.js","#f97316","Foto-Slots injizieren","slot-hero · slot-foto1 · slot-foto2 · slot-team")}
+                    {step("index.js","#f97316","Serve-time Variablen ersetzen","{{FIRMENNAME}} {{TEL_HREF}} {{TEL_DISPLAY}} {{EMAIL}} {{ADRESSE_VOLL}} {{OEFFNUNGSZEITEN}} {{SOCIAL_ICONS}}")}
+                    {lastStep("Browser","#64748b","Response: HTML","Cache-Control: public, max-age=60")}
+                  </div>
+
+                  {/* Flow 4: Impressum & Datenschutz */}
+                  <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                    {flowTitle("📄","Impressum & Datenschutz (legal.js)","#2563eb")}
+                    {step("Browser","#64748b","GET /s/{subdomain}/impressum","")}
+                    {step("legal.js","#f97316","Supabase GET order by subdomain","alle Kundendaten inkl. Unternehmensform")}
+                    {step("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 Pflichtangaben · unternehmensformspez. Felder (e.U./GmbH/OG/KG/AG/Verein)")}
+                    {step("legal.js","#2563eb","Datenschutz-Template befüllen","DSGVO Art.13 · Verantwortlicher vs. Auftragsverarbeiter · Google Fonts Hinweis · Cloudflare SCCs")}
+                    {step("legal.js","#2563eb","Beide Sektionen in HTML einbetten","Card-Design · kein gespeichertes Template")}
+                    {lastStep("Browser","#64748b","Response: HTML","Immer aktuell – Änderungen an Kundendaten sofort sichtbar, kein Re-Deploy")}
+                  </div>
+
+                </div>);
+              })()}
+            </div>
           </div>);
         })()}
       </div>

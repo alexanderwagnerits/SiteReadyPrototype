@@ -378,26 +378,28 @@ function SuccessPage({data,onBack}){
   const[saving,setSaving]=useState(false);
   const[saved,setSaved]=useState(false);
   const[saveErr,setSaveErr]=useState("");
+  const[vorname,setVorname]=useState("");
+  const[nachname,setNachname]=useState("");
   const[pw,setPw]=useState("");
   const[pw2,setPw2]=useState("");
   const[pwTouched,setPwTouched]=useState(false);
   const[pw2Touched,setPw2Touched]=useState(false);
   const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
-  const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
-  const regOk=pw.length>=8&&pw===pw2;
+  const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwoerter stimmen nicht ueberein":"";
+  const regOk=vorname.trim().length>0&&nachname.trim().length>0&&pw.length>=8&&pw===pw2;
   const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
   const handleOrder=async()=>{
-    if(!regOk){setSaveErr("Bitte Passwort korrekt eingeben.");return;}
+    if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausf\u00fcllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // 0. Account erstellen
-    const{data:authData,error:authErr}=await supabase.auth.signUp({email:data.email,password:pw,options:{data:{firmenname:data.firmenname}}});
+    const{data:authData,error:authErr}=await supabase.auth.signUp({email:data.email,password:pw,options:{data:{firmenname:data.firmenname,vorname,nachname}}});
     if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);return;}
     const userId=authData?.user?.id||null;
     // 1. Bestellung in Supabase speichern (UUID client-seitig generieren)
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
-      id:orderId,user_id:userId,
+      id:orderId,user_id:userId,vorname,nachname,
       firmenname:data.firmenname,branche:data.branche,branche_label:data.brancheLabel,berufsgruppe:data.berufsgruppe,
       kurzbeschreibung:data.kurzbeschreibung,bundesland:data.bundesland,
       leistungen:data.leistungen,extra_leistung:data.extraLeistung,notdienst:data.notdienst,meisterbetrieb:data.meisterbetrieb,kostenvoranschlag:data.kostenvoranschlag,buchungslink:data.buchungslink||null,hausbesuche:data.hausbesuche,terminvereinbarung:data.terminvereinbarung,
@@ -484,6 +486,16 @@ function SuccessPage({data,onBack}){
           {/* Registrierung */}
           <div style={{marginBottom:20}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Account erstellen</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+              <div>
+                <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:T.textSub}}>Vorname <span style={{color:"#ef4444"}}>*</span></label>
+                <input value={vorname} onChange={e=>setVorname(e.target.value)} placeholder="Alexander" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:14,fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+              </div>
+              <div>
+                <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:T.textSub}}>Nachname <span style={{color:"#ef4444"}}>*</span></label>
+                <input value={nachname} onChange={e=>setNachname(e.target.value)} placeholder="Wagner" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:14,fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+              </div>
+            </div>
             <div style={{marginBottom:10}}>
               <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:T.textSub}}>E-Mail</label>
               <div style={{padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:14,background:"#f8fafc",color:T.textMuted,fontFamily:T.font}}>{data.email||"–"}</div>

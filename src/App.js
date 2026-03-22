@@ -356,17 +356,6 @@ function LandingPage({onStart,onPortal}){
     </div>
   </Sec>
 
-  {/* WHY NOW */}
-  <Sec>
-    <div style={{marginBottom:52}}>
-      <Label>Warum jetzt</Label>
-      <H2>Der perfekte Zeitpunkt.</H2>
-    </div>
-    <div className="lp-why-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14}}>
-      {[{i:"\uD83D\uDCB0",t:"Vollautomatisch",d:"Von der Eingabe bis zur fertigen Website – kein manueller Schritt."},{i:"\u2696\uFE0F",t:"DSGVO-Bewusstsein",d:"Abmahnwellen haben das Thema gebracht."},{i:"\uD83D\uDCF1",t:"Link-in-Bio gesättigt",d:"Löst das SEO-Problem nicht."},{i:"\uD83C\uDDE6\uD83C\uDDF9",t:"Markt unbesetzt",d:"ECG + DSGVO + SEO für AT."},{i:"\uD83C\uDF10",t:"Domain gesichert",d:"siteready.at reserviert."},{i:"\uD83D\uDE80",t:"Bootstrapped",d:"Break-even ab Tag 1 möglich."}].map((c,i)=><div key={i} style={{background:"#f7f8fa",borderRadius:10,padding:"24px 22px"}}><div style={{fontSize:"1.3rem",marginBottom:12}}>{c.i}</div><h3 style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:5}}>{c.t}</h3><p style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>{c.d}</p></div>)}
-    </div>
-  </Sec>
-
   {/* CTA */}
   <section className="lp-cta-section" style={{padding:"120px 0",textAlign:"center",position:"relative",overflow:"hidden",background:T.dark}}>
     <div style={{position:"absolute",top:"-40%",left:"15%",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%)",pointerEvents:"none"}}/>

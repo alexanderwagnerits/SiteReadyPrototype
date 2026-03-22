@@ -164,7 +164,7 @@ function LandingPage({onStart,onPortal}){
             Professionelle Websites für österreichische Kleinbetriebe
           </div>
           <h1 style={{fontSize:"clamp(2.6rem,4.5vw,4rem)",fontWeight:800,lineHeight:1.0,letterSpacing:"-.05em",color:T.dark,marginBottom:20}}>Deine Website<br/>in <span style={{background:"linear-gradient(135deg,#1d4ed8,#3b82f6)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Minuten.</span></h1>
-          <p style={{fontSize:"1.1rem",color:T.textSub,lineHeight:1.75,maxWidth:440,marginBottom:36}}>Mit Impressum nach ECG, DSGVO und Google-Indexierung. Bestehende Website importieren oder 10 Fragen beantworten. Fertig.</p>
+          <p style={{fontSize:"1.1rem",color:T.textSub,lineHeight:1.75,maxWidth:440,marginBottom:36}}>Mit Impressum nach ECG, DSGVO und Google-Indexierung. Bestehende Website importieren oder in 10 Minuten ausfüllen. Fertig.</p>
           <div style={{display:"flex",gap:12,marginBottom:52}}>
             <button onClick={onStart} style={{padding:"14px 30px",borderRadius:8,fontSize:".98rem",fontWeight:700,border:"none",cursor:"pointer",background:T.dark,color:"#fff",fontFamily:T.font,letterSpacing:"-.01em",boxShadow:"0 2px 16px rgba(0,0,0,.14)"}}>Jetzt Website erstellen &rarr;</button>
             <a href="#how" style={{padding:"14px 22px",borderRadius:8,fontSize:".98rem",fontWeight:600,textDecoration:"none",color:T.dark,border:`1.5px solid ${T.bg3}`,background:"#fff",display:"inline-flex",alignItems:"center"}}>So funktionierts</a>
@@ -361,7 +361,7 @@ function LandingPage({onStart,onPortal}){
     <div style={{position:"absolute",top:"-40%",left:"15%",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%)",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1}}>
       <h2 style={{fontSize:"clamp(2.2rem,4.5vw,3.4rem)",fontWeight:800,lineHeight:1.05,letterSpacing:"-.04em",color:"#fff",marginBottom:18}}>Bereit für deine Website?</h2>
-      <p style={{fontSize:"1.05rem",color:"rgba(255,255,255,.5)",marginBottom:40,maxWidth:420,margin:"0 auto 40px",lineHeight:1.7}}>10 Fragen. Wenige Minuten. Fertig.</p>
+      <p style={{fontSize:"1.05rem",color:"rgba(255,255,255,.5)",marginBottom:40,maxWidth:420,margin:"0 auto 40px",lineHeight:1.7}}>10 Minuten. Kein Aufwand. Fertig.</p>
       <button onClick={onStart} style={{background:"#fff",color:T.dark,padding:"16px 44px",borderRadius:8,fontSize:"1rem",fontWeight:800,border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em"}}>Jetzt starten &rarr;</button>
     </W>
   </section>
@@ -398,7 +398,7 @@ function SuccessPage({data,onBack}){
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
       id:orderId,user_id:userId,
-      firmenname:data.firmenname,branche:data.branche,branche_label:data.brancheLabel,
+      firmenname:data.firmenname,branche:data.branche,branche_label:data.brancheLabel,berufsgruppe:data.berufsgruppe,
       kurzbeschreibung:data.kurzbeschreibung,bundesland:data.bundesland,
       leistungen:data.leistungen,extra_leistung:data.extraLeistung,notdienst:data.notdienst,meisterbetrieb:data.meisterbetrieb,kostenvoranschlag:data.kostenvoranschlag,buchungslink:data.buchungslink||null,hausbesuche:data.hausbesuche,terminvereinbarung:data.terminvereinbarung,
       adresse:data.adresse,plz:data.plz,ort:data.ort,telefon:data.telefon,email:data.email,
@@ -708,7 +708,10 @@ function Portal({session,onLogout}){
       telefon:order.telefon,leistungen:order.leistungen,extra_leistung:order.extra_leistung,
       notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,kurzbeschreibung:order.kurzbeschreibung,
       oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,
-      einsatzgebiet:order.einsatzgebiet,uid_nummer:order.uid_nummer,stil:order.stil,fotos:order.fotos
+      einsatzgebiet:order.einsatzgebiet,uid_nummer:order.uid_nummer,
+      unternehmensform:order.unternehmensform,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,
+      facebook:order.facebook||null,instagram:order.instagram||null,linkedin:order.linkedin||null,tiktok:order.tiktok||null,
+      stil:order.stil,fotos:order.fotos
     }).eq("id",order.id);
     setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),3000);
   };
@@ -921,13 +924,13 @@ function Portal({session,onLogout}){
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
               :<Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
             <Field label="Zusätzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
-            {order.berufsgruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
-            {order.berufsgruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
+            {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
+            {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
           </>):(<>
             {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
             {order.extra_leistung&&<InfoRow label="Zusatz" value={order.extra_leistung}/>}
-            {order.berufsgruppe==="handwerk"&&<><InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/><InfoRow label="Meisterbetrieb" value={order.meisterbetrieb?"Ja":"Nein"}/><InfoRow label="Kostenloser KV" value={order.kostenvoranschlag?"Ja":"Nein"}/></>}
-            {order.berufsgruppe==="kosmetik"&&<><InfoRow label="Buchungslink" value={order.buchungslink||"—"}/><InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/><InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/></>}
+            {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/><InfoRow label="Meisterbetrieb" value={order.meisterbetrieb?"Ja":"Nein"}/><InfoRow label="Kostenloser KV" value={order.kostenvoranschlag?"Ja":"Nein"}/></>}
+            {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><InfoRow label="Buchungslink" value={order.buchungslink||"—"}/><InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/><InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/></>}
           </>)}
         </div>
         {/* Design */}
@@ -1985,6 +1988,7 @@ function Admin({adminKey}){
                   }
                 </div>
                 {deleteConfirm===sel.id&&<div style={{marginTop:8,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
+                  <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung – unwiderruflich:</strong> Es werden gelöscht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
                   <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestätigung "LÖSCHEN" eintippen:</div>
                   <div style={{display:"flex",gap:6}}>
                     <input id="del-confirm-input" autoFocus placeholder="LÖSCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>

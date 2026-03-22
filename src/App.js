@@ -1130,6 +1130,7 @@ function Admin({adminKey}){
   const[healthFilter,setHealthFilter]=useState("alle");
   const[deleteConfirm,setDeleteConfirm]=useState(null);
   const[regenConfirm,setRegenConfirm]=useState(null);
+  const[showProzess,setShowProzess]=useState(false);
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1620,12 +1621,6 @@ function Admin({adminKey}){
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Deployment-Status</div>
                 {(()=>{const s=sel.status;const built=["in_arbeit","review","live"].includes(s);const reviewed=["review","live"].includes(s);const live=s==="live";return[{l:"Website erstellt",ok:built,warn:!built&&s==="paid"},{l:"SSL-Zertifikat",ok:built},{l:"Impressum (ECG)",ok:built},{l:"DSGVO-Erklaerung",ok:built},{l:"Google-Indexierung",ok:live,warn:reviewed&&!live},{l:"Domain aktiv",ok:live}].map(({l,ok,warn})=>{const color=ok?T.green:warn?"#f59e0b":T.textMuted;const icon=ok?"\u2713":warn?"\u23F3":"\u2013";const bg=ok?T.greenLight:warn?"#fef3c7":T.bg;return(<div key={l} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",borderRadius:T.rSm,background:bg,marginBottom:3}}><span style={{fontSize:".78rem",color:T.dark}}>{l}</span><span style={{fontSize:".78rem",fontWeight:700,color,fontFamily:T.mono}}>{icon}</span></div>);});})()}
               </div>
-              {/* Interne Notiz */}
-              <div style={{marginTop:20}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Interne Notiz</div>
-                <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={3} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
-                <button onClick={()=>saveNotiz(sel.id)} style={{marginTop:6,padding:"7px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{notizSaved[sel.id]?"\u2713 Gespeichert":"Notiz speichern"}</button>
-              </div>
             </div>
             {/* Rechte Spalte: Website-Aktionen */}
             <div style={{padding:28}}>
@@ -1673,7 +1668,65 @@ function Admin({adminKey}){
                   </div>
                 </div>}
               </div>
+              {/* Interne Notiz */}
+              <div style={{marginTop:16,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
+                  <button onClick={()=>saveNotiz(sel.id)} title="Speichern" style={{background:"none",border:"none",cursor:"pointer",padding:4,color:notizSaved[sel.id]?T.green:T.textMuted,fontSize:"1rem",lineHeight:1}}>
+                    {notizSaved[sel.id]?"✓":"✏️"}
+                  </button>
+                </div>
+                <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={3} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
+              </div>
             </div>
+          </div>
+          {/* Prozess-Details aufklappbar */}
+          <div style={{borderTop:`1px solid ${T.bg3}`}}>
+            <button onClick={()=>setShowProzess(p=>!p)} style={{width:"100%",padding:"12px 28px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontSize:".82rem",fontWeight:700,color:T.textMuted,fontFamily:T.font}}>
+              <span>&#128269; Technische Details &amp; Prozess-Timeline</span>
+              <span style={{transition:"transform .2s",display:"inline-block",transform:showProzess?"rotate(180deg)":"rotate(0deg)"}}>&#9660;</span>
+            </button>
+            {showProzess&&(()=>{
+              const st=sel.status;
+              const idx=STATUS_FLOW.indexOf(st);
+              const hasHtml=!!sel.website_html;
+              const steps=[
+                {key:"pending",label:"Schritt 1 – Formular",icon:"📋",detail:`Fragebogen ausgefuellt und Bestellung erstellt.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
+                {key:"paid",label:"Schritt 2 – Zahlung",icon:"💳",detail:"Stripe-Zahlung eingegangen. Bestellung freigeschaltet fuer Generierung.",meta:[["Zahlungsweg","Stripe"],["Betrag","laut Stripe-Dashboard"]]},
+                {key:"in_arbeit",label:"Schritt 3 – Generierung",icon:"🤖",detail:`Claude ${hasHtml?"hat HTML generiert":"generiert gerade oder noch ausstehend"}.`,meta:hasHtml?[["Modell","claude-sonnet-4-6"],["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],["Subdomain",sel.subdomain||"—"],["HTML-Groesse",sel.website_html?`${Math.round(sel.website_html.length/1024)} KB`:"—"]]:[["Status","Noch nicht generiert"],["Subdomain",sel.subdomain||"—"]]},
+                {key:"review",label:"Schritt 4 – Review",icon:"👁️",detail:"Website liegt bereit zur Admin-Pruefung. Nach Freigabe wird sie live geschaltet.",meta:[["URL",sel.subdomain?`/s/${sel.subdomain}`:"—"],["Neugen. Leistungen (30d)",`${[sel.last_regen_at,sel.prev_regen_at].filter(d=>{if(!d)return false;return new Date(d).getTime()>Date.now()-30*24*60*60*1000;}).length}/2 verwendet`]]},
+                {key:"live",label:"Schritt 5 – Live",icon:"🚀",detail:"Website ist oeffentlich erreichbar. noindex-Tag aktiv (Prototyp-Phase).",meta:[["Status",st==="live"?"Online":"Noch nicht live"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
+              ];
+              return(<div style={{padding:"0 28px 28px"}}>
+                {steps.map((step,i)=>{
+                  const done=STATUS_FLOW.indexOf(step.key)<=idx;
+                  const current=step.key===st;
+                  const pending=STATUS_FLOW.indexOf(step.key)>idx;
+                  const lineColor=done?T.green:current?"#f59e0b":"#e2e8f0";
+                  const dotBg=done?T.green:current?"#f59e0b":"#e2e8f0";
+                  const dotColor=done||current?"#fff":T.textMuted;
+                  return(<div key={step.key} style={{display:"flex",gap:16,paddingBottom:i<steps.length-1?24:0}}>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+                      <div style={{width:32,height:32,borderRadius:"50%",background:dotBg,color:dotColor,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,flexShrink:0}}>{done?"✓":current?"●":i+1}</div>
+                      {i<steps.length-1&&<div style={{width:2,flex:1,minHeight:24,background:lineColor,marginTop:4}}/>}
+                    </div>
+                    <div style={{flex:1,paddingTop:4}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                        <span style={{fontSize:".88rem",fontWeight:700,color:pending?T.textMuted:T.dark}}>{step.icon} {step.label}</span>
+                        {current&&<span style={{background:"#fef3c7",color:"#92400e",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>Aktuell</span>}
+                      </div>
+                      <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:8,lineHeight:1.5}}>{step.detail}</div>
+                      {(!pending||current)&&<div style={{background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"8px 12px",display:"flex",flexDirection:"column",gap:4}}>
+                        {step.meta.map(([l,v])=><div key={l} style={{display:"flex",gap:12,fontSize:".75rem"}}>
+                          <span style={{color:T.textMuted,fontWeight:600,minWidth:120,flexShrink:0}}>{l}</span>
+                          <span style={{color:T.dark,fontFamily:l.includes("Token")||l.includes("Kosten")||l.includes("URL")||l.includes("Subdomain")?T.mono:"inherit"}}>{v}</span>
+                        </div>)}
+                      </div>}
+                    </div>
+                  </div>);
+                })}
+              </div>);
+            })()}
           </div>
         </div>
       </div>)}

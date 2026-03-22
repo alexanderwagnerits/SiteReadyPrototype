@@ -1111,7 +1111,7 @@ const STATUS_FLOW=["pending","paid","in_arbeit","review","live"];
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
 
 function Admin({adminKey}){
-  const[tab,setTab]=useState("bestellungen");
+  const[tab,setTab]=useState("start");
   const[orders,setOrders]=useState([]);
   const[tickets,setTickets]=useState([]);
   const[filter,setFilter]=useState("alle");
@@ -1124,6 +1124,10 @@ function Admin({adminKey}){
   const[notizSaved,setNotizSaved]=useState({});
   const[genLoading,setGenLoading]=useState({});
   const[genMsg,setGenMsg]=useState({});
+  const[view,setView]=useState("kanban");
+  const[search,setSearch]=useState("");
+  const[healthTime,setHealthTime]=useState({});
+  const[healthFilter,setHealthFilter]=useState("alle");
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1189,6 +1193,7 @@ function Admin({adminKey}){
     setHealth(h=>({...h,[order.id]:"checking"}));
     try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});setHealth(h=>({...h,[order.id]:"ok"}));}
     catch(e){setHealth(h=>({...h,[order.id]:"error"}));}
+    setHealthTime(t=>({...t,[order.id]:new Date()}));
   };
 
   const filtered=orders.filter(o=>filter==="alle"||o.status===filter);
@@ -1196,6 +1201,7 @@ function Admin({adminKey}){
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   useEffect(()=>{if(tab==="system"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
+  useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","review"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
   const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenQueue=orders.filter(o=>o.regen_requested);
   const regenBadge=(stuckOrders.length+regenQueue.length)||null;
@@ -1204,7 +1210,7 @@ function Admin({adminKey}){
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
   if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
   if(regenQueue.length)alerts.push({type:"info",msg:`${regenQueue.length} ausstehende Leistungs-Neugenierung${regenQueue.length>1?"en":""}`,tab:"system"});
-  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"kosten",label:"Kosten"}];
+  const TABS=[{id:"start",label:"Start"},{id:"bestellungen",label:"Bestellungen"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"health",label:"Health"},{id:"kosten",label:"Kosten"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -1237,72 +1243,102 @@ function Admin({adminKey}){
           </div>)}
         </div>}
 
+        {/* Tab: Start */}
+        {!loading&&tab==="start"&&(()=>{
+          const liveN=orders.filter(o=>o.status==="live").length;
+          const reviewN=orders.filter(o=>o.status==="review").length;
+          const mrr=liveN*18;
+          const new30=orders.filter(o=>o.created_at&&Date.now()-new Date(o.created_at).getTime()<30*24*60*60*1000).length;
+          const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
+          const recent=[...orders].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+          return(<div>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Uebersicht</h2>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent},{l:"Review ausstehend",v:reviewN,s:"Warten auf Pruefung",c:"#d97706"},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange}].map((k,i)=>(
+                <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                  <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
+                  <div style={{fontSize:"1.9rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
+                  <div style={{fontSize:".73rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
+                </div>))}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Pipeline</div>
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0,display:"inline-block"}}/>
+                    <span style={{fontSize:".8rem",color:T.dark,width:80}}>{STATUS_LABELS[s]}</span>
+                    <div style={{flex:1,height:6,background:T.bg3,borderRadius:3,overflow:"hidden"}}>
+                      <div style={{width:`${pct}%`,height:"100%",background:STATUS_COLORS[s],borderRadius:3,transition:"width .4s"}}/>
+                    </div>
+                    <span style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,fontFamily:T.mono,width:24,textAlign:"right"}}>{n}</span>
+                  </div>);})}
+                </div>
+              </div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Letzte Bestellungen</div>
+                {recent.length===0?<div style={{color:T.textMuted,fontSize:".82rem"}}>Noch keine Bestellungen.</div>:
+                <div style={{display:"flex",flexDirection:"column",gap:0}}>
+                  {recent.map((o,i)=><div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<recent.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"\u2014"}</div>
+                      <div style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(o.created_at)}</div>
+                    </div>
+                    <StatusBadge status={o.status}/>
+                  </div>)}
+                </div>}
+              </div>
+            </div>
+          </div>);
+        })()}
+
         {/* Tab: Bestellungen */}
-        {!loading&&tab==="bestellungen"&&(<div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Bestellungen {filter!=="alle"&&`(${STATUS_LABELS[filter]})`}</h2>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <span style={{fontSize:".82rem",color:T.textMuted}}>{filtered.length} Eintraege</span>
-              <button onClick={exportCSV} disabled={filtered.length===0} style={{padding:"7px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:filtered.length===0?"not-allowed":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:6,opacity:filtered.length===0?.5:1}}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                CSV exportieren
+        {!loading&&tab==="bestellungen"&&(()=>{
+          const sf=search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders;
+          return(<div>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Bestellungen</h2>
+              <div style={{position:"relative"}}>
+                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{padding:"7px 30px 7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",width:200,background:"#fff"}}/>
+                {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:"1rem",lineHeight:1,padding:0}}>&times;</button>}
+              </div>
+              <div style={{display:"flex",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                {["kanban","tabelle"].map(v=><button key={v} onClick={()=>setView(v)} style={{padding:"6px 14px",border:"none",background:view===v?T.dark:"#fff",color:view===v?"#fff":T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>{v==="kanban"?"Kanban":"Tabelle"}</button>)}
+              </div>
+              <button onClick={exportCSV} disabled={orders.length===0} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:5,opacity:orders.length===0?.5:1}}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
               </button>
             </div>
-          </div>
-          {filtered.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Bestellungen.</div>:
-          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-            <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:T.bg}}>{["Datum","Firma","Deployment","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-              <tbody>{filtered.map((o,i)=>{
-                const built=["in_arbeit","review","live"].includes(o.status);
-                const reviewed=["review","live"].includes(o.status);
-                const isLive=o.status==="live";
-                const DEPLOY_CHECKS=[
-                  {l:"Website",ok:built},{l:"SSL",ok:built},{l:"Impressum",ok:built},{l:"DSGVO",ok:built},
-                  {l:"robots.txt",ok:built},{l:"sitemap.xml",ok:built},{l:"Google",ok:reviewed},{l:"Domain",ok:isLive}
-                ];
-                const done=DEPLOY_CHECKS.filter(c=>c.ok).length;
-                return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+            {view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12,alignItems:"start"}}>
+              {STATUS_FLOW.map(s=>{const cols=sf.filter(o=>o.status===s);return(<div key={s}>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0}}/>
+                  <span style={{fontSize:".72rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em"}}>{STATUS_LABELS[s]}</span>
+                  <span style={{fontSize:".68rem",color:T.textMuted,background:T.bg3,borderRadius:10,padding:"1px 6px"}}>{cols.length}</span>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  {cols.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,padding:"12px 14px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}} onClick={()=>setSel(o)}>
+                    <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,marginBottom:2}}>{o.firmenname||"—"}</div>
+                    <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:8}}>{fmtDate(o.created_at)}</div>
+                    {s!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(s)});}} style={{width:"100%",padding:"5px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(s)]} &rarr;</button>}
+                  </div>)}
+                </div>
+              </div>);})}
+            </div>}
+            {view==="tabelle"&&(sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{sf.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
-                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}{o.regen_requested&&<span title="Neugenierung angefragt" style={{marginLeft:8,fontSize:".65rem",fontWeight:700,color:"#d97706",background:"#fef3c7",padding:"2px 6px",borderRadius:4}}>{"\u21BB"}</span>}</td>
-                  <td style={{padding:"12px 16px"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:7}}>
-                      <div style={{display:"flex",gap:3}}>
-                        {DEPLOY_CHECKS.map((c,j)=><span key={j} title={c.l} style={{display:"inline-block",width:8,height:8,borderRadius:"50%",background:c.ok?T.green:T.bg3,transition:"background .2s"}}/>)}
-                      </div>
-                      <span style={{fontSize:".72rem",color:done===8?T.green:T.textMuted,fontFamily:T.mono,fontWeight:700}}>{done}/8</span>
-                    </div>
-                  </td>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}{o.regen_requested&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:700,color:"#d97706",background:"#fef3c7",padding:"2px 6px",borderRadius:4}}>{"\u21BB"}</span>}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                  <td style={{padding:"12px 16px",textAlign:"right"}}>
-                    {o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}
-                  </td>
-                </tr>);
-              })}</tbody>
-            </table>
-          </div>}
-        </div>)}
-
-        {/* Tab: Entwicklung (Kanban) */}
-        {!loading&&tab==="entwicklung"&&(<div>
-          <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Entwicklung</h2>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,alignItems:"start"}}>
-            {["paid","in_arbeit","review","live"].map(s=><div key={s}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                <div style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s]}}/>
-                <span style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em"}}>{STATUS_LABELS[s]}</span>
-                <span style={{fontSize:".72rem",color:T.textMuted,background:T.bg3,borderRadius:10,padding:"1px 7px"}}>{orders.filter(o=>o.status===s).length}</span>
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {orders.filter(o=>o.status===s).map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,padding:"14px 16px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}} onClick={()=>setSel(o)}>
-                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>{o.firmenname||"—"}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:10}}>{fmtDate(o.created_at)}</div>
-                  {s!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(s)});}} style={{width:"100%",padding:"6px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(s)]} &rarr;</button>}
-                </div>)}
-              </div>
+                  <td style={{padding:"12px 16px",textAlign:"right"}}>{o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}</td>
+                </tr>)}</tbody>
+              </table>
             </div>)}
-          </div>
-        </div>)}
+          </div>);
+        })()}
 
         {/* Tab: Support */}
         {!loading&&tab==="support"&&(<div>
@@ -1387,30 +1423,6 @@ function Admin({adminKey}){
               })}
             </div>
           </div>}
-          {/* Website Health */}
-          <div style={{marginBottom:24}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Website Health</div>
-              <button onClick={()=>orders.filter(o=>o.subdomain).forEach(o=>checkHealth(o))} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Alle pruefen</button>
-            </div>
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL",""].map(h=><th key={h} style={{padding:"9px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{orders.map((o,i)=>{
-                  const url=o.subdomain?`${o.subdomain}.siteready.at`:"—";
-                  const h=health[o.id];
-                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
-                    <td style={{padding:"10px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
-                    <td style={{padding:"10px 14px",fontSize:".78rem",color:T.accent,fontFamily:T.mono}}>{url}</td>
-                    <td style={{padding:"10px 14px"}}><StatusBadge status={o.status}/></td>
-                    <td style={{padding:"10px 14px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
-                    <td style={{padding:"10px 14px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
-                    <td style={{padding:"10px 14px",textAlign:"right"}}>{o.subdomain&&<button onClick={()=>checkHealth(o)} style={{padding:"4px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Pruefen</button>}</td>
-                  </tr>);
-                })}</tbody>
-              </table>
-            </div>
-          </div>
           {/* Env Vars */}
           {sysStatus&&<div>
             <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Environment Variables</div>
@@ -1422,6 +1434,46 @@ function Admin({adminKey}){
             </div>
           </div>}
         </div>)}
+        {/* Tab: Health */}
+        {!loading&&tab==="health"&&(<div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:10}}>
+            <div>
+              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 3px"}}>Website Health</h2>
+              <div style={{fontSize:".72rem",color:T.textMuted}}>Live & Review Websites werden beim Oeffnen automatisch geprueft</div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{display:"flex",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                {["alle","fehler"].map(f=><button key={f} onClick={()=>setHealthFilter(f)} style={{padding:"6px 12px",border:"none",background:healthFilter===f?T.dark:"#fff",color:healthFilter===f?"#fff":T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{f==="alle"?"Alle":"Nur Fehler"}</button>)}
+              </div>
+              <button onClick={()=>orders.filter(o=>o.subdomain).forEach(o=>checkHealth(o))} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Alle pruefen</button>
+            </div>
+          </div>
+          {(()=>{
+            const rows=orders.filter(o=>o.subdomain).filter(o=>healthFilter==="fehler"?health[o.id]==="error":true);
+            return rows.length===0?<div style={{padding:40,textAlign:"center",color:T.textMuted}}>{healthFilter==="fehler"?"Keine Fehler gefunden.":"Keine Websites mit Subdomain."}</div>:
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL","Geprueft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{rows.map((o,i)=>{
+                  const h=health[o.id];const ht=healthTime[o.id];
+                  const url=`${o.subdomain}.siteready.at`;
+                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:h==="error"?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
+                    <td style={{padding:"10px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
+                    <td style={{padding:"10px 14px",fontSize:".78rem",fontFamily:T.mono}}>
+                      <a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none"}}>{url}</a>
+                    </td>
+                    <td style={{padding:"10px 14px"}}><StatusBadge status={o.status}/></td>
+                    <td style={{padding:"10px 14px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
+                    <td style={{padding:"10px 14px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
+                    <td style={{padding:"10px 14px",fontSize:".72rem",color:T.textMuted}}>{ht?ht.toLocaleTimeString("de-AT",{hour:"2-digit",minute:"2-digit"}):"—"}</td>
+                    <td style={{padding:"10px 14px",textAlign:"right"}}><button onClick={()=>checkHealth(o)} style={{padding:"4px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Pruefen</button></td>
+                  </tr>);
+                })}</tbody>
+              </table>
+            </div>;
+          })()}
+        </div>)}
+
         {/* Tab: Kosten */}
         {!loading&&tab==="kosten"&&(()=>{
           const now=new Date();
@@ -1508,21 +1560,18 @@ function Admin({adminKey}){
             })()}
             {/* Kostentabelle */}
             <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Monatliche Kostenbasis (Schaetzung)</div>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Monatliche Kostenbasis</div>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:".84rem"}}>
-                <thead><tr>{["Posten","Art","Kosten/Mo","Hinweis"].map(h=><th key={h} style={{textAlign:"left",padding:"8px 14px",fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr>{["Posten","Kosten/Mo"].map(h=><th key={h} style={{textAlign:"left",padding:"8px 14px",fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>
-                  {[{p:"Cloudflare Pages",a:"Hosting & Functions",k:"\u20AC0",s:"Free Tier",ok:true},{p:"Supabase",a:"Datenbank & Auth & Storage",k:"\u20AC0",s:"Free (500 MB)",ok:true},{p:"Stripe",a:"Zahlungsabwicklung",k:`\u20AC${stripeFee.toFixed(2)}`,s:"1,4% + \u20AC0,25/Transaktion",ok:true},{p:"Anthropic Claude",a:"Website-Import KI",k:"~\u20AC0,001",s:"Pro Import-Vorgang",ok:true},{p:"Domain siteready.at",a:"Jaehrliche Registrierung",k:"~\u20AC0,83",s:"~\u20AC10 / Jahr",ok:true}].map((r,i)=>(
+                  {[{p:"Cloudflare Pages",k:"\u20AC0"},{p:"Supabase",k:"\u20AC0"},{p:"Stripe",k:`\u20AC${stripeFee.toFixed(2)}`},{p:"Anthropic Claude",k:`\u20AC${(orders.reduce((a,o)=>a+(o.cost_eur||0),0)/Math.max(1,new Date().getMonth())).toFixed(3)}`},{p:"Domain siteready.at",k:"~\u20AC0,83"}].map((r,i)=>(
                     <tr key={i} style={{background:i%2===0?"#fff":"#fafbfc"}}>
                       <td style={{padding:"10px 14px",fontWeight:600,color:T.dark}}>{r.p}</td>
-                      <td style={{padding:"10px 14px",color:T.textSub,fontSize:".82rem"}}>{r.a}</td>
                       <td style={{padding:"10px 14px",fontWeight:700,color:T.dark,fontFamily:T.mono}}>{r.k}</td>
-                      <td style={{padding:"10px 14px"}}><span style={{fontSize:".72rem",padding:"3px 9px",borderRadius:4,background:r.ok?T.greenLight:"#fef2f2",color:r.ok?T.green:T.red,fontWeight:700}}>{r.s}</span></td>
                     </tr>))}
                   <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}>
-                    <td colSpan={2} style={{padding:"12px 14px",fontWeight:800,color:T.dark}}>Gesamt variable Kosten</td>
+                    <td style={{padding:"12px 14px",fontWeight:800,color:T.dark}}>Gesamt</td>
                     <td style={{padding:"12px 14px",fontWeight:800,color:T.dark,fontFamily:T.mono}}>{"\u20AC"}{(0.83+stripeFee).toFixed(2)}</td>
-                    <td style={{padding:"12px 14px"}}><span style={{fontSize:".72rem",padding:"3px 9px",borderRadius:4,background:T.accentLight,color:T.accent,fontWeight:700}}>Netto-MRR: {"\u20AC"}{netto}</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -1582,14 +1631,9 @@ function Admin({adminKey}){
             });
           })()}
         </div>
-        {/* Leistungen & Neugenierungen */}
+        {/* Neugenierungen Leistungen */}
         <div style={{marginTop:14,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Leistungen & Neugenierungen</div>
-          {sel.leistungen?.length>0&&<div style={{marginBottom:10}}>
-            {sel.leistungen.map((l,i)=><div key={i} style={{fontSize:".78rem",color:T.dark,padding:"3px 0",borderBottom:`1px solid ${T.bg3}`}}>{l}</div>)}
-            {sel.extra_leistung&&<div style={{fontSize:".75rem",color:T.textSub,padding:"3px 0",fontStyle:"italic"}}>+ {sel.extra_leistung}</div>}
-            {sel.notdienst&&<div style={{fontSize:".72rem",color:T.green,marginTop:4,fontWeight:600}}>Notdienst 24/7</div>}
-          </div>}
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Neugenierungen Leistungen (30 Tage)</div>
           {(()=>{
             const ago30=Date.now()-30*24*60*60*1000;
             const dates=[sel.last_regen_at,sel.prev_regen_at].filter(Boolean).map(d=>new Date(d));

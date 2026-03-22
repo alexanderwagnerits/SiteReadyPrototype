@@ -349,9 +349,10 @@ STIL-GEFUEHL: ${stil.feel}
 
 STRUKTUR-PFLICHT: Setze exakt diese Kommentare als Platzhalter:
 - <!-- NAV --> direkt nach <body>
+- <!-- MAPS --> im Kontakt-Abschnitt (nach den Kontaktinfos, vor dem Ende der Sektion) – nur wenn Adresse vorhanden
 - <!-- FOOTER --> nach dem Kontakt-Abschnitt
-- <!-- IMPRESSUM --> nach <!-- FOOTER -->
-Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer/Impressum schreiben.`;
+Nav, Footer und Maps werden automatisch befuellt. Keinen eigenen Nav/Footer schreiben.
+HERO-ANIMATION: Der animierte Strip (scrollende Keywords) muss auf ALLEN Bildschirmgroessen sichtbar sein – nicht nur Mobile.`;
 
   /* ─── Claude API Call ─── */
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -389,41 +390,77 @@ Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer
     ? html.replace("<!-- FOOTER -->", footerHtml)
     : html.replace(/<\/body>/i, footerHtml + "\n</body>");
 
-  // Eventuelle Impressum-Placeholder entfernen (Impressum ist jetzt auf /s/[sub]/impressum)
+  // Impressum-Placeholder entfernen
   html = html.replace("<!-- IMPRESSUM -->", "");
 
-  // ── <title> + Meta-Description programmatisch ueberschreiben ──
+  // ── Tel:-Links korrigieren (Claude generiert manchmal falsche Nummern) ──
+  if (o.telefon) {
+    const telNorm = o.telefon.replace(/\s/g, "");
+    html = html.replace(/href="tel:[^"]*"/gi, `href="tel:${telNorm}"`);
+    html = html.replace(/href='tel:[^']*'/gi, `href='tel:${telNorm}'`);
+  }
+
+  // ── Google Maps injizieren (<!-- MAPS --> Placeholder) ──
+  if (o.adresse || o.ort) {
+    const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", Österreich");
+    const mapsHtml = `<div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)">
+<iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="280" style="border:0;display:block" allowfullscreen loading="lazy" title="Standort ${o.firmenname}"></iframe>
+</div>`;
+    html = html.includes("<!-- MAPS -->")
+      ? html.replace("<!-- MAPS -->", mapsHtml)
+      : html.replace(/<\/section>\s*(<section[^>]*id="kontakt"|<section[^>]*class="[^"]*kontakt)/i, mapsHtml + "\n</section>\n$1");
+  } else {
+    html = html.replace("<!-- MAPS -->", "");
+  }
+
+  // ── <title> + Meta-Tags programmatisch ueberschreiben ──
   const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
   const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Handwerk"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
   html = html.replace(/<title>[^<]*<\/title>/i, `<title>${metaTitle}</title>`);
   html = html.replace(/<meta\s+name=["']description["'][^>]*>/i, "");
   html = html.replace(/<meta\s+property=["']og:title["'][^>]*>/i, "");
   html = html.replace(/<meta\s+property=["']og:description["'][^>]*>/i, "");
+  html = html.replace(/<meta\s+property=["']og:url["'][^>]*>/i, "");
   html = html.replace("</head>", `<meta name="description" content="${metaDesc}">
 <meta property="og:title" content="${metaTitle}">
 <meta property="og:description" content="${metaDesc}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="${siteUrl}">
+<link rel="canonical" href="${siteUrl}">
 </head>`);
 
   // ── Schema.org JSON-LD (LocalBusiness) ──
   const schemaAddress = {
     "@type": "PostalAddress",
-    ...(o.adresse          ? {"streetAddress":    o.adresse}          : {}),
-    ...(o.plz              ? {"postalCode":        o.plz}              : {}),
-    ...(o.ort              ? {"addressLocality":   o.ort}              : {}),
+    ...(o.adresse ? {"streetAddress":   o.adresse} : {}),
+    ...(o.plz     ? {"postalCode":       o.plz}     : {}),
+    ...(o.ort     ? {"addressLocality":  o.ort}     : {}),
     "addressCountry": "AT",
   };
+  const sameAs = [o.facebook, o.instagram, o.linkedin, o.tiktok].filter(Boolean).map(normSocial);
   const schema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": o.firmenname,
     "description": metaDesc,
+    "url": siteUrl,
     "address": schemaAddress,
     ...(o.telefon ? {"telephone": o.telefon} : {}),
     ...(o.email   ? {"email":     o.email}   : {}),
-    ...(o.facebook  ? {"sameAs": [o.facebook]}  : {}),
+    ...(o.ort     ? {"areaServed": o.ort}    : {}),
+    ...(sameAs.length ? {"sameAs": sameAs}   : {}),
   };
   html = html.replace("</head>", `<script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
+
+  // ── Nav Scroll-Spy (aktiver Link hervorgehoben) ──
+  const scrollSpy = `<script>(function(){
+var links=document.querySelectorAll('.nav-link[href^="#"]');
+var secs=[].map.call(links,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);
+function upd(){var sy=window.scrollY+100;var cur=secs.reduce(function(a,s){return s.offsetTop<=sy?s:a},secs[0]);links.forEach(function(l){var act=cur&&'#'+cur.id===l.getAttribute('href');l.style.opacity=act?'1':'';l.style.fontWeight=act?'700':'';});}
+window.addEventListener('scroll',upd,{passive:true});upd();
+})();</script>`;
+  html = html.replace("</body>", scrollSpy + "\n</body>");
 
   // ── Floating Call-Button (Mobile) ──
   if (o.telefon) {

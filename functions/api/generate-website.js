@@ -304,6 +304,7 @@ Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer ei
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
 KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Striktes Token-Budget.
 KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden. Verstoss ist inakzeptabel.
+LEISTUNGEN – ABSOLUTE PFLICHT: Zeige AUSSCHLIESSLICH die exakt uebergebenen Leistungen. Keine zusaetzlichen Leistungen erfinden, hinzufuegen oder ergaenzen. Exakt ${leistungen.length} Leistungs-Cards – nicht mehr, nicht weniger.
 META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
 STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt.
 

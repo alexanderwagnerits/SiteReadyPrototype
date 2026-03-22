@@ -7,7 +7,7 @@ export async function onRequestPost({request, env}) {
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
     const base = new URL(cleanUrl).origin;
 
-    // 1. Hauptseite als HTML laden (fuer Link-Extraktion + mailto)
+    // 1. Hauptseite als HTML laden
     let mainHtml = "";
     let pageText = "";
     try {
@@ -18,11 +18,22 @@ export async function onRequestPost({request, env}) {
       if (r.ok) mainHtml = await r.text();
     } catch(e) { /* ignore */ }
 
-    // Email direkt aus mailto-Links extrahieren (zuverlaessiger als KI-Suche)
-    let emailFromHtml = "";
+    // Alle E-Mail-Adressen aus HTML sammeln (mailto + plain text)
+    const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+    const allEmails = new Set();
     if (mainHtml) {
-      const mailtoMatch = mainHtml.match(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/i);
-      if (mailtoMatch) emailFromHtml = mailtoMatch[1];
+      // mailto: Links
+      for (const m of mainHtml.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
+        allEmails.add(m[1].toLowerCase());
+      }
+      // Plain-text Emails im sichtbaren Inhalt
+      const visibleText = mainHtml
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
+        .replace(/<[^>]+>/g, " ");
+      for (const m of visibleText.matchAll(emailRegex)) {
+        allEmails.add(m[0].toLowerCase());
+      }
     }
 
     // Social Media Links direkt aus HTML extrahieren
@@ -48,7 +59,6 @@ export async function onRequestPost({request, env}) {
           break;
         }
       }
-      // Fallback: Link-Text pruefen
       if (!impressumUrl) {
         const anchorMatches = [...mainHtml.matchAll(/<a[^>]+href=["']([^"']+)["'][^>]*>([^<]+)<\/a>/gi)];
         for (const m of anchorMatches) {
@@ -86,7 +96,7 @@ export async function onRequestPost({request, env}) {
       return Response.json({error: "Website konnte nicht geladen werden."}, {status: 400});
     }
 
-    // Impressum laden (gefundener Link oder Jina-Fallback mit bekannten Patterns)
+    // Impressum laden
     let impressumText = "";
     const impressumTargets = impressumUrl
       ? [impressumUrl]
@@ -94,17 +104,22 @@ export async function onRequestPost({request, env}) {
 
     for (const impUrl of impressumTargets) {
       try {
-        // Zuerst direkt laden
         const r = await fetch(impUrl, {
           headers: {"User-Agent": "Mozilla/5.0", "Accept": "text/html"},
           redirect: "follow", signal: AbortSignal.timeout(8000),
         });
         if (r.ok) {
           const html = await r.text();
-          // Email aus Impressum-Seite extrahieren wenn noch keine gefunden
-          if (!emailFromHtml) {
-            const m = html.match(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/i);
-            if (m) emailFromHtml = m[1];
+          // Auch Impressum-Emails sammeln
+          for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
+            allEmails.add(m[1].toLowerCase());
+          }
+          const impVisText = html
+            .replace(/<script[\s\S]*?<\/script>/gi, " ")
+            .replace(/<style[\s\S]*?<\/style>/gi, " ")
+            .replace(/<[^>]+>/g, " ");
+          for (const m of impVisText.matchAll(emailRegex)) {
+            allEmails.add(m[0].toLowerCase());
           }
           const text = html
             .replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
@@ -118,6 +133,11 @@ export async function onRequestPost({request, env}) {
       } catch(e) { /* ignore */ }
     }
 
+    // Spam-Emails filtern (no-reply, info@siteready etc.)
+    const filteredEmails = [...allEmails].filter(e =>
+      !/noreply|no-reply|donotreply|support@stripe|mailer|bounce|postmaster|webmaster|siteready/i.test(e)
+    );
+
     const anthropicKey = env.ANTHROPIC_API_KEY;
     if (!anthropicKey) return Response.json({error: "API-Konfigurationsfehler."}, {status: 500});
 
@@ -125,6 +145,10 @@ export async function onRequestPost({request, env}) {
     const fullText = impressumText
       ? mainExcerpt + "\n\n=== IMPRESSUM ===\n" + impressumText
       : mainExcerpt + "\n\n" + pageText.slice(-2000);
+
+    const emailHint = filteredEmails.length > 0
+      ? `\n\nGefundene E-Mail-Adressen auf der Website: ${filteredEmails.join(", ")}\nWaehle die primaere Kontakt-E-Mail des Unternehmens (nicht no-reply, nicht Drittanbieter).`
+      : "";
 
     const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -138,7 +162,7 @@ export async function onRequestPost({request, env}) {
 Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit diesen Feldern:
 - firmenname: Name des Unternehmens (max 60 Zeichen)
 - telefon: Telefonnummer (oesterreichisches Format, leer wenn nicht gefunden)
-- email: E-Mail-Adresse (leer wenn nicht gefunden)
+- email: Primaere Kontakt-E-Mail-Adresse des Unternehmens (leer wenn nicht gefunden)
 - plz: Postleitzahl 4-stellig (leer wenn nicht gefunden)
 - ort: Ortsname (leer wenn nicht gefunden)
 - adresse: Strassenname mit Hausnummer (leer wenn nicht gefunden)
@@ -153,7 +177,7 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - leistungen: Array mit max. 8 konkreten Leistungen (z.B. ["Elektroinstallation","Beleuchtung"]), leeres Array wenn nicht erkennbar
 
 Website-Text:
-${fullText}`,
+${fullText}${emailHint}`,
         }],
       }),
     });
@@ -179,10 +203,17 @@ ${fullText}`,
     const ufMap = {"eu":"eu","einzelunternehmen":"einzelunternehmen","gmbh":"gmbh","og":"og","kg":"kg","ag":"ag","verein":"verein","gesnbr":"gesnbr","gesbr":"gesnbr"};
     const unternehmensform = ufMap[ufRaw] || (ufRaw.includes("gmbh")?"gmbh":ufRaw.includes("eu")?"eu":ufRaw.includes("einzelunternehmen")?"einzelunternehmen":extracted.unternehmensform||"");
 
+    // Email: Claude-Wahl nehmen, aber nur wenn sie in den gefundenen Emails vorkommt
+    // Sonst erste gefundene Email als Fallback
+    const claudeEmail = (extracted.email || "").toLowerCase();
+    const finalEmail = filteredEmails.includes(claudeEmail)
+      ? claudeEmail
+      : (claudeEmail || filteredEmails[0] || "");
+
     return Response.json({
       firmenname: extracted.firmenname || "",
       telefon: extracted.telefon || "",
-      email: emailFromHtml || extracted.email || "",
+      email: finalEmail,
       plz: extracted.plz || "",
       ort: extracted.ort || "",
       adresse: extracted.adresse || "",

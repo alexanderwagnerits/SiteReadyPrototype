@@ -1,3 +1,103 @@
+/* ═══ Nav-Builder ═══ */
+function buildNav(o, pal, stil) {
+  const tel = o.telefon || "";
+  const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "#kontakt";
+  return `<style>
+#sitenav{position:sticky;top:0;z-index:1000;transition:background .3s,box-shadow .3s}
+#sitenav.scrolled{background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08)}
+#sitenav.scrolled .nav-logo{color:var(--primary)!important}
+#sitenav.scrolled .nav-link{color:var(--primary)!important}
+#sitenav.scrolled .hbg-bar{background:var(--primary)!important}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
+.nav-link:hover{opacity:.7}
+.nav-cta{background:var(--accent);color:#fff!important;padding:9px 18px;border-radius:${stil.r};font-weight:700;font-size:.85rem;white-space:nowrap}
+.nav-cta:hover{opacity:.85!important}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
+.hbg-bar{width:24px;height:2px;background:rgba(255,255,255,.9);border-radius:2px;transition:background .3s}
+.mob-menu{display:none;position:fixed;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:16px 24px 24px;z-index:999}
+.mob-link{display:block;padding:12px 0;font-size:1rem;font-weight:600;color:var(--primary);text-decoration:none;border-bottom:1px solid #f1f5f9}
+.mob-cta{display:block;margin-top:16px;background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:${stil.r};font-weight:700;font-size:1rem;text-decoration:none}
+@media(max-width:768px){.nav-links{display:none}.hbg{display:flex}}
+</style>
+<nav id="sitenav">
+<div class="nav-inner">
+<a href="#" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">${o.firmenname}</a>
+<div class="nav-links">
+<a href="#leistungen" class="nav-link">Leistungen</a>
+<a href="#ueber-uns" class="nav-link">\u00dcber uns</a>
+<a href="#kontakt" class="nav-link">Kontakt</a>
+${tel ? `<a href="${telHref}" class="nav-link nav-cta">${tel}</a>` : ""}
+</div>
+<button class="hbg" id="hbg" aria-label="Menu">
+<span class="hbg-bar"></span><span class="hbg-bar"></span><span class="hbg-bar"></span>
+</button>
+</div>
+<div class="mob-menu" id="mob-menu">
+<a href="#leistungen" class="mob-link">Leistungen</a>
+<a href="#ueber-uns" class="mob-link">\u00dcber uns</a>
+<a href="#kontakt" class="mob-link">Kontakt</a>
+${tel ? `<a href="${telHref}" class="mob-cta">${tel} &mdash; Jetzt anrufen</a>` : ""}
+</div>
+</nav>
+<script>
+(function(){
+var nav=document.getElementById('sitenav');
+var btn=document.getElementById('hbg');
+var mob=document.getElementById('mob-menu');
+var open=false;
+btn.addEventListener('click',function(){open=!open;mob.style.display=open?'block':'none';});
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>40);if(window.scrollY>40&&open){open=false;mob.style.display='none';}});
+document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){open=false;mob.style.display='none';});});
+})();
+</script>`;
+}
+
+/* ═══ Footer-Builder ═══ */
+function buildFooter(o, pal, year) {
+  const adresse = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+  const tel = o.telefon || "";
+  const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "";
+  return `<footer style="background:var(--primary);color:#fff;padding:56px 0 0;font-family:inherit">
+<div style="max-width:1200px;margin:0 auto;padding:0 24px">
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;padding-bottom:48px" class="ft-grid">
+<div>
+<div style="font-weight:800;font-size:1.05rem;margin-bottom:12px;letter-spacing:-.01em">${o.firmenname}</div>
+<p style="opacity:.65;line-height:1.75;font-size:.85rem;margin-bottom:16px;max-width:280px">${o.kurzbeschreibung||""}</p>
+${tel ? `<a href="${telHref}" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">${tel}</a>` : ""}
+</div>
+<div>
+<div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Navigation</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<a href="#leistungen" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Leistungen</a>
+<a href="#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">\u00dcber uns</a>
+<a href="#kontakt" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Kontakt</a>
+<a href="#impressum" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Impressum</a>
+<a href="#datenschutz" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Datenschutz</a>
+</div>
+</div>
+<div>
+<div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Kontakt</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:.88rem;color:rgba(255,255,255,.7)">
+${adresse ? `<span>${adresse}</span>` : ""}
+${tel ? `<a href="${telHref}" style="color:rgba(255,255,255,.85);text-decoration:none;font-weight:600">${tel}</a>` : ""}
+${o.email ? `<a href="mailto:${o.email}" style="color:rgba(255,255,255,.7);text-decoration:none">${o.email}</a>` : ""}
+</div>
+</div>
+</div>
+<div style="border-top:1px solid rgba(255,255,255,.1);padding:20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+<span style="opacity:.4;font-size:.78rem">&copy; ${year} ${o.firmenname}</span>
+<div style="display:flex;gap:20px">
+<a href="#impressum" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Impressum</a>
+<a href="#datenschutz" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Datenschutz</a>
+</div>
+</div>
+</div>
+</footer>
+<style>@media(max-width:768px){.ft-grid{grid-template-columns:1fr!important}}</style>`;
+}
+
 /* ═══ Impressum-Builder (ECG-konform, rechtsformspezifisch) ═══ */
 function buildImpressum(o, pal, year) {
   const uf = o.unternehmensform || "";
@@ -149,16 +249,18 @@ export async function onRequestPost({request, env}) {
   const oez = o.oeffnungszeiten_custom || o.oeffnungszeiten || "Nach Vereinbarung";
   const year = new Date().getFullYear();
   const impressumHtml = buildImpressum(o, pal, year);
+  const navHtml      = buildNav(o, pal, stil);
+  const footerHtml   = buildFooter(o, pal, year);
 
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
 Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen Handwerksbetrieb.
 
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
-KOMPAKTHEIT: CSS und HTML kompakt schreiben (keine Kommentare, kurze Klassennamen). Maximale visuelle Qualitaet bei minimalem Code-Volumen. Striktes Token-Budget.
-KEINE ERFUNDENEN FAKTEN: Keine "15+ Jahre Erfahrung", keine Projektzahlen, keine Kundenzufriedenheitswerte, keine erfundenen Statistiken. Nur echte Kundendaten verwenden.
-IMPRESSUM: Der mitgelieferte IMPRESSUM-HTML-Block wird EXAKT und UNVERAENDERT direkt vor </body> eingefuegt. Keinen eigenen Impressum-Abschnitt schreiben.
+KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Striktes Token-Budget.
+KEINE ERFUNDENEN FAKTEN: Keine erfundenen Zahlen, Statistiken oder Behauptungen. Nur echte Kundendaten.
 META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
+STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt. Kein eigener Nav, kein eigener Footer, kein Impressum.
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}
@@ -193,8 +295,6 @@ CSS Custom Properties im :root definieren:
 
 ═══ SEITENSTRUKTUR ═══
 
-NAV: sticky, Logo links (Firmenname, font-weight:800), rechts Anker-Links + Tel-CTA-Button (var(--accent)). Scrolled: weiss + box-shadow per JS. Mobile: Hamburger-Toggle mit Slide-Down-Menue.
-
 HERO: min-height:100vh, background:var(--primary) mit Gradient-Overlay.${o.notdienst ? " NOTDIENST-BADGE: gruener Puls-Punkt + '24/7 Notdienst' (rgba-Hintergrund)." : ""} H1 Firmenname (clamp(2.8rem,6vw,5rem), weiss, font-weight:900). Subtitle Branche+Einsatzgebiet (weiss, opacity:.8). 2 CTA-Buttons. Scroll-Indikator.
 
 LEISTUNGEN: weisser Hintergrund. Grid auto-fill minmax(260px,1fr). Cards mit Emoji-Icon, H3, 1 Satz Beschreibung (selbst verfassen!), Hover-Lift.
@@ -203,7 +303,7 @@ UEBER UNS: var(--bg) Hintergrund. Zweispaltig: Text+Vorteile links (3-4 Punkte w
 
 KONTAKT: weiss. Zweispaltig: Kontaktinfos (tel: Link, mailto:) links, CTA-Karte rechts. Kein Formular.
 
-FOOTER: var(--primary), weiss. Dreispaltig (Logo+Kurzbeschreibung | Navigation | Kontakt). Kein Impressum im Footer - nur Links "#impressum" und "#datenschutz".`;
+KONTAKT: weiss. Zweispaltig: Kontaktinfos (tel: Link, mailto:) links, CTA-Karte rechts. Kein Formular.`;
 
   /* ─── User Message ─── */
   const user = `Erstelle die Website fuer diesen Betrieb:
@@ -226,8 +326,11 @@ NOTDIENST:    ${o.notdienst ? "JA - 24/7 Notdienst - SEHR PROMINENT darstellen!"
 FOTOS:        ${o.fotos ? "Ja - Bildplaetze als gestaltete farbige Platzhalter-Bloecke (CSS background-color + passendem Emoji zentriert, KEINE img-Tags)" : "Nein - Keine Bildplaetze einbauen"}
 STIL-GEFUEHL: ${stil.feel}
 
-WICHTIG: Setze am Ende des <body> (nach dem Footer) exakt diesen Kommentar: <!-- IMPRESSUM -->
-Das Impressum wird automatisch dort eingefuegt.`;
+STRUKTUR-PFLICHT: Setze exakt diese Kommentare als Platzhalter:
+- <!-- NAV --> direkt nach <body>
+- <!-- FOOTER --> nach dem Kontakt-Abschnitt
+- <!-- IMPRESSUM --> nach <!-- FOOTER -->
+Nav, Footer und Impressum werden automatisch befuellt. Keinen eigenen Nav/Footer/Impressum schreiben.`;
 
   /* ─── Claude API Call ─── */
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -256,12 +359,18 @@ Das Impressum wird automatisch dort eingefuegt.`;
   // Markdown-Backticks entfernen falls Claude sie dennoch ausgibt
   html = html.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
-  // Impressum programmatisch injizieren (ersetzt Placeholder oder haengt vor </body> an)
-  if (html.includes("<!-- IMPRESSUM -->")) {
-    html = html.replace("<!-- IMPRESSUM -->", impressumHtml);
-  } else {
-    html = html.replace(/<\/body>/i, impressumHtml + "\n</body>");
-  }
+  // Nav + Footer + Impressum injizieren
+  html = html.includes("<!-- NAV -->")
+    ? html.replace("<!-- NAV -->", navHtml)
+    : html.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
+
+  html = html.includes("<!-- FOOTER -->")
+    ? html.replace("<!-- FOOTER -->", footerHtml)
+    : html.replace(/<\/body>/i, footerHtml + "\n</body>");
+
+  html = html.includes("<!-- IMPRESSUM -->")
+    ? html.replace("<!-- IMPRESSUM -->", impressumHtml)
+    : html.replace(/<\/body>/i, impressumHtml + "\n</body>");
 
   /* ─── In Supabase speichern + Status setzen ─── */
   const save = await fetch(

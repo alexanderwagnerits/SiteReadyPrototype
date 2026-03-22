@@ -45,6 +45,24 @@ export async function onRequestPost({request, env}) {
       return Response.json({error: "Website konnte nicht geladen werden."}, {status: 400});
     }
 
+    // Impressum-Seite zusaetzlich laden (Unternehmensinfos stehen meist dort)
+    const impressumUrls = [cleanUrl.replace(/\/$/, "") + "/impressum", cleanUrl.replace(/\/$/, "") + "/impressum.html"];
+    for (const impUrl of impressumUrls) {
+      try {
+        const impResp = await fetch("https://r.jina.ai/" + impUrl, {
+          headers: {"Accept": "text/plain", "X-Return-Format": "text"},
+          signal: AbortSignal.timeout(8000),
+        });
+        if (impResp.ok) {
+          const impText = await impResp.text();
+          if (impText && impText.length > 100) {
+            pageText += "\n\n=== IMPRESSUM ===\n" + impText.slice(0, 3000);
+            break;
+          }
+        }
+      } catch(e) { /* ignore */ }
+    }
+
     const anthropicKey = env.ANTHROPIC_API_KEY;
     if (!anthropicKey) return Response.json({error: "API-Konfigurationsfehler."}, {status: 500});
 

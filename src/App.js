@@ -378,10 +378,21 @@ function SuccessPage({data,onBack}){
   const[saving,setSaving]=useState(false);
   const[saved,setSaved]=useState(false);
   const[saveErr,setSaveErr]=useState("");
+  const[pw,setPw]=useState("");
+  const[pw2,setPw2]=useState("");
+  const[pwTouched,setPwTouched]=useState(false);
+  const[pw2Touched,setPw2Touched]=useState(false);
+  const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
+  const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
+  const regOk=pw.length>=8&&pw===pw2;
   const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
   const handleOrder=async()=>{
+    if(!regOk){setSaveErr("Bitte Passwort korrekt eingeben.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
+    // 0. Account erstellen
+    const{error:authErr}=await supabase.auth.signUp({email:data.email,password:pw,options:{data:{firmenname:data.firmenname}}});
+    if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);return;}
     // 1. Bestellung in Supabase speichern (UUID client-seitig generieren)
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
@@ -465,9 +476,27 @@ function SuccessPage({data,onBack}){
               ?<div style={{display:"flex",alignItems:"center",gap:8,padding:"12px 20px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)"}}>
                 <span style={{color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Bestellung gespeichert</span>
               </div>
-              :<button onClick={handleOrder} disabled={saving} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":"pointer",whiteSpace:"nowrap",transition:"background .2s"}}>
-                {saving?"Wird gespeichert...":"Jetzt kaufen \u2192"}
+              :<button onClick={handleOrder} disabled={saving||!regOk} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":!regOk?"#cbd5e1":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":!regOk?"not-allowed":"pointer",whiteSpace:"nowrap",transition:"background .2s"}}>
+                {saving?"Wird verarbeitet...":"Jetzt kaufen \u2192"}
               </button>}
+          </div>
+          {/* Registrierung */}
+          <div style={{marginBottom:20}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Account erstellen</div>
+            <div style={{marginBottom:10}}>
+              <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:T.textSub}}>E-Mail</label>
+              <div style={{padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:14,background:"#f8fafc",color:T.textMuted,fontFamily:T.font}}>{data.email||"–"}</div>
+            </div>
+            <div style={{marginBottom:10}}>
+              <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:pwErr?"#ef4444":T.textSub}}>Passwort{" "}<span style={{color:"#ef4444"}}>*</span></label>
+              <input type="password" value={pw} onChange={e=>setPw(e.target.value)} onBlur={()=>setPwTouched(true)} placeholder="Mindestens 8 Zeichen" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${pwErr?"#ef4444":T.bg3}`,borderRadius:T.rSm,fontSize:14,fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+              {pwErr&&<div style={{marginTop:4,fontSize:".72rem",color:"#ef4444"}}>{pwErr}</div>}
+            </div>
+            <div>
+              <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:pw2Err?"#ef4444":T.textSub}}>Passwort bestätigen{" "}<span style={{color:"#ef4444"}}>*</span></label>
+              <input type="password" value={pw2} onChange={e=>setPw2(e.target.value)} onBlur={()=>setPw2Touched(true)} placeholder="Passwort wiederholen" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${pw2Err?"#ef4444":T.bg3}`,borderRadius:T.rSm,fontSize:14,fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+              {pw2Err&&<div style={{marginTop:4,fontSize:".72rem",color:"#ef4444"}}>{pw2Err}</div>}
+            </div>
           </div>
           {saveErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:"#dc2626"}}>{saveErr}</div>}
           <div className="sp-incl-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
@@ -563,7 +592,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
   <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".74rem",color:T.textMuted,lineHeight:1.6}}>Aktuell verfügbar: <strong style={{color:T.text}}>Handwerk</strong> & <strong style={{color:T.text}}>Kosmetik & Körperpflege</strong> &ndash; Weitere Berufsgruppen folgen bald.</div>
 </div>):pages[step]}</div>
     <div style={{padding:"16px 24px",borderTop:`1px solid ${T.bg3}`,display:"flex",justifyContent:showImport?"flex-end":"space-between",background:T.white}}>
-      {showImport?(<button onClick={()=>{setShowImport(false);setShowBerufsgruppe(true);}} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Ohne Import starten</button>):showBerufsgruppe?(<><button onClick={()=>{setShowBerufsgruppe(false);setShowImport(true);}} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button><button onClick={()=>{if(data.berufsgruppe)setShowBerufsgruppe(false);}} disabled={!data.berufsgruppe} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:data.berufsgruppe?T.dark:"#cbd5e1",color:"#fff",cursor:data.berufsgruppe?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:data.berufsgruppe?"0 2px 12px rgba(0,0,0,.12)":"none"}}>Weiter &rarr;</button></>):(<>{step>0?<button onClick={()=>go(step-1)} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button>:<div/>}{step<STEPS.length-1?<button onClick={()=>go(step+1)} disabled={!stepValid[step]} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:stepValid[step]?T.dark:"#cbd5e1",color:"#fff",cursor:stepValid[step]?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid[step]?"0 2px 12px rgba(0,0,0,.12)":"none",transition:"background .2s"}}>Weiter &rarr;</button>:<button onClick={onComplete} disabled={!stepValid[step]} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:stepValid[step]?"linear-gradient(135deg,#16a34a,#22c55e)":"#cbd5e1",color:"#fff",cursor:stepValid[step]?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid[step]?"0 2px 12px rgba(22,163,74,.2)":"none",transition:"background .2s"}}>Website erstellen &rarr;</button>}</>)}
+      {showImport?(<button onClick={()=>{setShowImport(false);setShowBerufsgruppe(true);}} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Ohne Import starten</button>):showBerufsgruppe?(<><button onClick={()=>{setShowBerufsgruppe(false);setShowImport(true);}} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button><button onClick={()=>{if(data.berufsgruppe)setShowBerufsgruppe(false);}} disabled={!data.berufsgruppe} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:data.berufsgruppe?T.dark:"#cbd5e1",color:"#fff",cursor:data.berufsgruppe?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:data.berufsgruppe?"0 2px 12px rgba(0,0,0,.12)":"none"}}>Weiter &rarr;</button></>):(<>{step>0?<button onClick={()=>go(step-1)} style={{padding:"12px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button>:<div/>}{step<STEPS.length-1?<button onClick={()=>go(step+1)} disabled={!stepValid[step]} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:stepValid[step]?T.dark:"#cbd5e1",color:"#fff",cursor:stepValid[step]?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid[step]?"0 2px 12px rgba(0,0,0,.12)":"none",transition:"background .2s"}}>Weiter &rarr;</button>:<button onClick={onComplete} disabled={!stepValid.every(v=>v)} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:stepValid.every(v=>v)?"linear-gradient(135deg,#16a34a,#22c55e)":"#cbd5e1",color:"#fff",cursor:stepValid.every(v=>v)?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid.every(v=>v)?"0 2px 12px rgba(22,163,74,.2)":"none",transition:"background .2s"}}>Website erstellen &rarr;</button>}</>)}
     </div>
   </div>);
 
@@ -582,27 +611,19 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
 
 /* ═══ PORTAL LOGIN ═══ */
 function PortalLogin({onBack}){
-  const[mode,setMode]=useState(()=>localStorage.getItem("sr_pending_email")?"register":"login");
   const[email,setEmail]=useState(()=>localStorage.getItem("sr_pending_email")||"");
   const[pw,setPw]=useState("");
-  const[pw2,setPw2]=useState("");
   const[loading,setLoading]=useState(false);
   const[err,setErr]=useState("");
-  const[done,setDone]=useState(false);
-  const[forgotPw,setForgotPw]=useState(false);const[forgotDone,setForgotDone]=useState(false);
+  const[forgotPw,setForgotPw]=useState(false);
+  const[forgotDone,setForgotDone]=useState(false);
 
   const submitForgot=async()=>{if(!email){setErr("Bitte E-Mail eingeben.");return;}setLoading(true);setErr("");const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+"/portal"});if(error)setErr(error.message);else setForgotDone(true);setLoading(false);};
   const submit=async()=>{
     if(!email.trim()||!pw.trim()||!supabase)return;
-    if(mode==="register"&&pw!==pw2){setErr("Passwörter stimmen nicht überein.");return;}
     setLoading(true);setErr("");
-    if(mode==="login"){
-      const{error}=await supabase.auth.signInWithPassword({email,password:pw});
-      if(error)setErr(error.message==="Invalid login credentials"?"E-Mail oder Passwort falsch.":error.message);
-    } else {
-      const{error}=await supabase.auth.signUp({email,password:pw});
-      if(error)setErr(error.message);else setDone(true);
-    }
+    const{error}=await supabase.auth.signInWithPassword({email,password:pw});
+    if(error)setErr(error.message==="Invalid login credentials"?"E-Mail oder Passwort falsch.":error.message);
     setLoading(false);
   };
 
@@ -611,30 +632,20 @@ function PortalLogin({onBack}){
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:40}}>
         <img src="/icon.png" alt="SR" style={{height:22}}/><span style={{fontSize:".95rem",fontWeight:800,color:T.dark}}>SiteReady</span>
       </div>
-      {forgotDone?(<div><div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} E-Mail gesendet</div><p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Prüfen Sie Ihren Posteingang – Sie erhalten in Kürze einen Link zum Zurücksetzen Ihres Passworts.</p><button onClick={()=>{setForgotDone(false);setForgotPw(false);}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button></div>):forgotPw?(<div><div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:8}}>Passwort zurücksetzen</div><p style={{color:T.textSub,fontSize:".85rem",marginBottom:20}}>Geben Sie Ihre E-Mail-Adresse ein – wir senden Ihnen einen Link.</p><Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>{err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}<button onClick={submitForgot} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12}}>{loading?"...":"Link senden \u2192"}</button><button onClick={()=>{setForgotPw(false);setErr("");}} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>Abbrechen</button></div>):(done?(<div>
-        <div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} Konto erstellt</div>
-        <p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Bitte bestätigen Sie Ihre E-Mail-Adresse – danach können Sie sich anmelden.</p>
-        <button onClick={()=>{setDone(false);setMode("login");}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button>
-      </div>):(<div>
+      {forgotDone?(<div><div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} E-Mail gesendet</div><p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Prüfen Sie Ihren Posteingang – Sie erhalten in Kürze einen Link zum Zurücksetzen Ihres Passworts.</p><button onClick={()=>{setForgotDone(false);setForgotPw(false);}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button></div>):forgotPw?(<div><div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:8}}>Passwort zurücksetzen</div><p style={{color:T.textSub,fontSize:".85rem",marginBottom:20}}>Geben Sie Ihre E-Mail-Adresse ein – wir senden Ihnen einen Link.</p><Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>{err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}<button onClick={submitForgot} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12}}>{loading?"...":"Link senden \u2192"}</button><button onClick={()=>{setForgotPw(false);setErr("");}} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>Abbrechen</button></div>):(<div>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Self-Service-Portal</div>
-        {/* Mode Tabs */}
-        <div style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:24}}>
-          {[{id:"login",label:"Anmelden"},{id:"register",label:"Registrieren"}].map(m=>(
-            <button key={m.id} onClick={()=>{setMode(m.id);setErr("");}} style={{flex:1,padding:"9px",border:"none",background:mode===m.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:mode===m.id?700:500,fontSize:".85rem",color:mode===m.id?T.dark:T.textMuted,boxShadow:mode===m.id?T.sh1:"none",transition:"all .2s"}}>{m.label}</button>
-          ))}
-        </div>
+        <h2 style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Anmelden</h2>
         <Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>
-        <Field label="Passwort" value={pw} onChange={setPw} placeholder={mode==="register"?"Mindestens 6 Zeichen":"Ihr Passwort"} type="password"/>
-        {mode==="login"&&!forgotPw&&<div style={{textAlign:"right",marginTop:-14,marginBottom:16}}><button onClick={()=>{setForgotPw(true);setErr("");}} style={{background:"none",border:"none",color:T.accent,fontSize:".78rem",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Passwort vergessen?</button></div>}
-        {mode==="register"&&<Field label="Passwort wiederholen" value={pw2} onChange={setPw2} placeholder="Passwort bestätigen" type="password"/>}
+        <Field label="Passwort" value={pw} onChange={setPw} placeholder="Ihr Passwort" type="password"/>
+        <div style={{textAlign:"right",marginTop:-14,marginBottom:16}}><button onClick={()=>{setForgotPw(true);setErr("");}} style={{background:"none",border:"none",color:T.accent,fontSize:".78rem",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Passwort vergessen?</button></div>
         {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}
         <button onClick={submit} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
-          {loading?"...":(mode==="login"?"Anmelden \u2192":"Konto erstellen \u2192")}
+          {loading?"...":"Anmelden \u2192"}
         </button>
         <button onClick={onBack} style={{width:"100%",padding:"12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>
           {"\u2190"} Zur Startseite
         </button>
-      </div>))}
+      </div>)}
     </div>
   </div>);
 }

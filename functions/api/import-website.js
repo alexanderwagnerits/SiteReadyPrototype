@@ -203,12 +203,15 @@ ${fullText}${emailHint}`,
     const ufMap = {"eu":"eu","einzelunternehmen":"einzelunternehmen","gmbh":"gmbh","og":"og","kg":"kg","ag":"ag","verein":"verein","gesnbr":"gesnbr","gesbr":"gesnbr"};
     const unternehmensform = ufMap[ufRaw] || (ufRaw.includes("gmbh")?"gmbh":ufRaw.includes("eu")?"eu":ufRaw.includes("einzelunternehmen")?"einzelunternehmen":extracted.unternehmensform||"");
 
-    // Email: Claude-Wahl nehmen, aber nur wenn sie in den gefundenen Emails vorkommt
-    // Sonst erste gefundene Email als Fallback
+    // Email: zuerst pruefen ob eine Email die gleiche Domain wie die Website hat
+    const siteDomain = new URL(cleanUrl).hostname.replace(/^www\./, "");
+    const domainMatch = filteredEmails.find(e => e.split("@")[1] === siteDomain);
+
     const claudeEmail = (extracted.email || "").toLowerCase();
-    const finalEmail = filteredEmails.includes(claudeEmail)
-      ? claudeEmail
-      : (claudeEmail || filteredEmails[0] || "");
+    const finalEmail = domainMatch
+      || (filteredEmails.includes(claudeEmail) ? claudeEmail : "")
+      || filteredEmails[0]
+      || "";
 
     return Response.json({
       firmenname: extracted.firmenname || "",

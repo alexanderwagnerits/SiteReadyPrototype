@@ -7,6 +7,10 @@ const PALETTES = {
   glaser:{p:"#0c4a6e",a:"#0891b2",bg:"#f0f9ff"}, gaertner:{p:"#14532d",a:"#15803d",bg:"#f0fdf4"},
   klima:{p:"#0c2340",a:"#0284c7",bg:"#f0f9ff"}, reinigung:{p:"#0f2942",a:"#0ea5e9",bg:"#f8fbff"},
   sonstige:{p:"#1e293b",a:"#3b82f6",bg:"#f8fafc"},
+  kosmetik:{p:"#4a1942",a:"#c026d3",bg:"#fdf4ff"}, friseur:{p:"#1c1917",a:"#b45309",bg:"#fffbeb"},
+  nagel:{p:"#831843",a:"#db2777",bg:"#fdf2f8"}, massage:{p:"#134e4a",a:"#0d9488",bg:"#f0fdfa"},
+  tattoo:{p:"#1c1c2e",a:"#7c3aed",bg:"#f5f3ff"}, fusspflege:{p:"#0f2942",a:"#0ea5e9",bg:"#f0f9ff"},
+  permanent_makeup:{p:"#3d0066",a:"#9333ea",bg:"#faf5ff"}, sonstige_kosmetik:{p:"#831843",a:"#ec4899",bg:"#fdf2f8"},
 };
 
 function buildImpressumRows(o) {

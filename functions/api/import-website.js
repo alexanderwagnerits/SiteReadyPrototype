@@ -149,7 +149,7 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - firmenbuchnummer: Firmenbuchnummer z.B. FN 123456 a (leer wenn nicht gefunden)
 - firmenbuchgericht: Firmenbuchgericht z.B. HG Wien (leer wenn nicht gefunden)
 - gisazahl: GISA-Zahl (nur Ziffern, leer wenn nicht gefunden)
-- branche: Handwerksbranche (NUR einen dieser Werte: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige)
+- branche: Branche des Betriebs (NUR einen dieser Werte – Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige – Kosmetik & Koerperpflege: kosmetik/friseur/nagel/massage/tattoo/fusspflege/permanent_makeup/sonstige_kosmetik)
 - leistungen: Array mit max. 8 konkreten Leistungen (z.B. ["Elektroinstallation","Beleuchtung"]), leeres Array wenn nicht erkennbar
 
 Website-Text:

@@ -186,22 +186,36 @@ function buildImpressum(o, pal, year) {
 
 /* ═══ Branchenspezifische Farbpaletten ═══ */
 const PALETTES = {
-  elektro:      {p:"#0c1d3d", a:"#f59e0b", bg:"#f8faff", s:"#e2e8f0"},
-  installateur: {p:"#1a3050", a:"#dc2626", bg:"#f8fafc", s:"#e2e8f0"},
-  maler:        {p:"#2c3e50", a:"#e67e22", bg:"#fffef9", s:"#f0e6d3"},
-  tischler:     {p:"#4a2c0a", a:"#d97706", bg:"#fefaf0", s:"#fde68a"},
-  fliesenleger: {p:"#0f3460", a:"#0891b2", bg:"#f0fdfe", s:"#cffafe"},
-  schlosser:    {p:"#1c1c2e", a:"#64748b", bg:"#f1f5f9", s:"#e2e8f0"},
-  dachdecker:   {p:"#3b1f0a", a:"#b45309", bg:"#fff8f0", s:"#fde68a"},
-  zimmerei:     {p:"#1a3c28", a:"#a16207", bg:"#f7fdf0", s:"#d1fae5"},
-  maurer:       {p:"#2d2d2d", a:"#ea580c", bg:"#fafafa", s:"#e5e7eb"},
-  bodenleger:   {p:"#2d1b69", a:"#b45309", bg:"#fdf8ff", s:"#e9d5ff"},
-  glaser:       {p:"#0c4a6e", a:"#0891b2", bg:"#f0f9ff", s:"#bae6fd"},
-  gaertner:     {p:"#14532d", a:"#15803d", bg:"#f0fdf4", s:"#bbf7d0"},
-  klima:        {p:"#0c2340", a:"#0284c7", bg:"#f0f9ff", s:"#bae6fd"},
-  reinigung:    {p:"#0f2942", a:"#0ea5e9", bg:"#f8fbff", s:"#bae6fd"},
-  sonstige:     {p:"#1e293b", a:"#3b82f6", bg:"#f8fafc", s:"#dbeafe"},
+  // Handwerk
+  elektro:          {p:"#0c1d3d", a:"#f59e0b", bg:"#f8faff", s:"#e2e8f0"},
+  installateur:     {p:"#1a3050", a:"#dc2626", bg:"#f8fafc", s:"#e2e8f0"},
+  maler:            {p:"#2c3e50", a:"#e67e22", bg:"#fffef9", s:"#f0e6d3"},
+  tischler:         {p:"#4a2c0a", a:"#d97706", bg:"#fefaf0", s:"#fde68a"},
+  fliesenleger:     {p:"#0f3460", a:"#0891b2", bg:"#f0fdfe", s:"#cffafe"},
+  schlosser:        {p:"#1c1c2e", a:"#64748b", bg:"#f1f5f9", s:"#e2e8f0"},
+  dachdecker:       {p:"#3b1f0a", a:"#b45309", bg:"#fff8f0", s:"#fde68a"},
+  zimmerei:         {p:"#1a3c28", a:"#a16207", bg:"#f7fdf0", s:"#d1fae5"},
+  maurer:           {p:"#2d2d2d", a:"#ea580c", bg:"#fafafa", s:"#e5e7eb"},
+  bodenleger:       {p:"#2d1b69", a:"#b45309", bg:"#fdf8ff", s:"#e9d5ff"},
+  glaser:           {p:"#0c4a6e", a:"#0891b2", bg:"#f0f9ff", s:"#bae6fd"},
+  gaertner:         {p:"#14532d", a:"#15803d", bg:"#f0fdf4", s:"#bbf7d0"},
+  klima:            {p:"#0c2340", a:"#0284c7", bg:"#f0f9ff", s:"#bae6fd"},
+  reinigung:        {p:"#0f2942", a:"#0ea5e9", bg:"#f8fbff", s:"#bae6fd"},
+  sonstige:         {p:"#1e293b", a:"#3b82f6", bg:"#f8fafc", s:"#dbeafe"},
+  // Kosmetik & Koerperpflege
+  kosmetik:         {p:"#4a1942", a:"#c026d3", bg:"#fdf4ff", s:"#f5d0fe"},
+  friseur:          {p:"#1c1917", a:"#b45309", bg:"#fffbeb", s:"#fde68a"},
+  nagel:            {p:"#831843", a:"#db2777", bg:"#fdf2f8", s:"#fbcfe8"},
+  massage:          {p:"#134e4a", a:"#0d9488", bg:"#f0fdfa", s:"#ccfbf1"},
+  tattoo:           {p:"#1c1c2e", a:"#7c3aed", bg:"#f5f3ff", s:"#ede9fe"},
+  fusspflege:       {p:"#0f2942", a:"#0ea5e9", bg:"#f0f9ff", s:"#bae6fd"},
+  permanent_makeup: {p:"#3d0066", a:"#9333ea", bg:"#faf5ff", s:"#e9d5ff"},
+  sonstige_kosmetik:{p:"#831843", a:"#ec4899", bg:"#fdf2f8", s:"#fbcfe8"},
 };
+
+/* Berufsgruppe aus Branche ableiten (kein separates DB-Feld noetig) */
+const KOSMETIK_BRANCHEN = new Set(["kosmetik","friseur","nagel","massage","tattoo","fusspflege","permanent_makeup","sonstige_kosmetik"]);
+const getBerufsgruppe = branche => KOSMETIK_BRANCHEN.has(branche) ? "kosmetik" : "handwerk";
 
 const STIL = {
   professional: {
@@ -258,9 +272,13 @@ export async function onRequestPost({request, env}) {
   const o = rows[0];
 
   /* Konfiguration */
-  const pal  = PALETTES[o.branche] || PALETTES.sonstige;
-  const stil = STIL[o.stil]        || STIL.professional;
-  const sub  = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  const pal          = PALETTES[o.branche] || PALETTES.sonstige;
+  const stil         = STIL[o.stil]        || STIL.professional;
+  const sub          = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  const berufsgruppe = getBerufsgruppe(o.branche);
+  const betriebstyp  = berufsgruppe === "kosmetik"
+    ? "Kosmetik- und Koerperpflegebetrieb"
+    : "Handwerksbetrieb";
 
   const leistungen = [...(o.leistungen || [])];
   if (o.extra_leistung?.trim()) leistungen.push(o.extra_leistung.trim());
@@ -272,8 +290,8 @@ export async function onRequestPost({request, env}) {
 
   /* ─── Trust-Bar Items (nur echte Daten) ─── */
   const trustItems = [];
-  if (o.notdienst) trustItems.push("🚨 24/7 Notdienst");
-  trustItems.push(`📍 ${o.einsatzgebiet || o.bundesland || "Oesterreich"}`);
+  if (o.notdienst && berufsgruppe === "handwerk") trustItems.push("\uD83D\uDEA8 24/7 Notdienst");
+  trustItems.push(`\uD83D\uDCCD ${o.einsatzgebiet || o.bundesland || "Oesterreich"}`);
   if (leistungen.length >= 3) trustItems.push(`✔ ${leistungen.length} Leistungsbereiche`);
   const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
   if (trustItems.length < 3) trustItems.push(`🕐 ${oezLabel}`);
@@ -281,7 +299,7 @@ export async function onRequestPost({request, env}) {
 
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
-Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen Handwerksbetrieb.
+Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen ${betriebstyp}.
 
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
 KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Striktes Token-Budget.
@@ -332,7 +350,7 @@ CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text, --text
 ═══ SEITENSTRUKTUR ═══
 
 HERO: min-height:100vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
-${o.notdienst ? "NOTDIENST-BADGE: pulsierender gruener Punkt (CSS keyframes pulse) + '24/7 Notdienst' Text, rgba-weiss-Hintergrund, prominent platziert." : ""}
+${o.notdienst && berufsgruppe === "handwerk" ? "NOTDIENST-BADGE: pulsierender gruener Punkt (CSS keyframes pulse) + '24/7 Notdienst' Text, rgba-weiss-Hintergrund, prominent platziert." : ""}
 Dekorations-Element: ${stil.heroDecor}
 H1: Firmenname, clamp(2.2rem,6vw,4.5rem), font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
 Subtitle: Branche + Einsatzgebiet, color:rgba(255,255,255,.75), clamp(.95rem,2.5vw,1.2rem).
@@ -363,7 +381,7 @@ ${o.telefon ? `STICKY MOBILE CTA: Fixer Anruf-Button am unteren Bildschirmrand. 
 FIRMA:         ${o.firmenname}
 BRANCHE:       ${o.branche_label || o.branche}
 EINSATZGEBIET: ${o.einsatzgebiet || o.bundesland || "Oesterreich"}
-BESCHREIBUNG:  ${o.kurzbeschreibung || `Ihr zuverlaessiger ${o.branche_label || "Handwerks"}-Betrieb in ${o.ort || "Oesterreich"}`}
+BESCHREIBUNG:  ${o.kurzbeschreibung || (berufsgruppe === "kosmetik" ? `Ihr ${o.branche_label || "Kosmetik"}-Studio in ${o.ort || "Oesterreich"}` : `Ihr zuverlaessiger ${o.branche_label || "Handwerks"}-Betrieb in ${o.ort || "Oesterreich"}`)}
 
 LEISTUNGEN (${leistungen.length}):
 ${leistungen.map((l, i) => `${i + 1}. ${l}`).join("\n")}
@@ -374,7 +392,7 @@ Telefon:         ${o.telefon || ""}
 E-Mail:          ${o.email || ""}
 Oeffnungszeiten: ${oezLabel}
 
-NOTDIENST: ${o.notdienst ? "JA – 24/7 Notdienst – SEHR PROMINENT darstellen!" : "Nein"}
+NOTDIENST: ${o.notdienst && berufsgruppe === "handwerk" ? "JA – 24/7 Notdienst – SEHR PROMINENT darstellen!" : "Nein"}
 
 TRUST-ITEMS (exakt diese 3 Punkte im Trust-Bar verwenden, nichts aendern):
 ${trustBar}
@@ -469,7 +487,7 @@ VARIABLEN-PFLICHT (in Hero und Kontakt nur diese Platzhalter, KEINE echten Daten
 
   // ── <title> + Meta-Tags programmatisch ueberschreiben ──
   const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
-  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Handwerk"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || (berufsgruppe === "kosmetik" ? "Kosmetik" : "Handwerk")} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
   const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
   html = html.replace(/<title>[^<]*<\/title>/i, `<title>${metaTitle}</title>`);
   html = html.replace(/<meta\s+name=["']description["'][^>]*>/i, "");

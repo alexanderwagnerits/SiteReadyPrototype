@@ -574,6 +574,8 @@ function Portal({session,onLogout}){
   const[supportSent,setSupportSent]=useState(false);
   const[supportErr,setSupportErr]=useState("");
   const[regenSent,setRegenSent]=useState(null);
+  const[regenLoading,setRegenLoading]=useState(null);
+  const[regenErr,setRegenErr]=useState(null);
   const[newPw,setNewPw]=useState("");
   const[newPw2,setNewPw2]=useState("");
   const[pwSaving,setPwSaving]=useState(false);
@@ -663,23 +665,38 @@ function Portal({session,onLogout}){
   };
 
   const requestRegen=async(section)=>{
-    if(!order||!supabase)return;
-    setSaving(true);
+    if(!order||!supabase||!session)return;
+    setRegenLoading(section);setRegenErr(null);setEditSection(null);
     const fields={
       leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst},
       design:{stil:order.stil,fotos:order.fotos},
     };
-    await supabase.from("orders").update({...fields[section],regen_requested:true}).eq("id",order.id);
-    await supabase.from("support_requests").insert({
-      email:session?.user?.email,
-      subject:"Neugenierung: "+(section==="leistungen"?"Leistungen & Notdienst":"Design & Fotos"),
-      message:"Kunde hat "+( section==="leistungen"?"Leistungen/Notdienst":"Design-Stil/Fotos")+" geaendert. Bitte Website neu generieren.",
-      status:"offen",
-    });
-    setOrder(o=>({...o,...fields[section],regen_requested:true}));
-    setSaving(false);setEditSection(null);
-    setRegenSent(section);setTimeout(()=>setRegenSent(null),4000);
+    try{
+      const r=await fetch("/api/request-regen",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+        body:JSON.stringify({section,data:fields[section]}),
+      });
+      const j=await r.json();
+      if(r.status===429){
+        const nextDate=new Date(j.next_available).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"});
+        setRegenErr(`Limit erreicht. Naechste Neugenierung moeglich ab ${nextDate}.`);
+      } else if(!r.ok||!j.ok){
+        setRegenErr("Fehler: "+(j.error||"Unbekannt"));
+      } else {
+        const{data:updated}=await supabase.from("orders").select("*").eq("id",order.id).limit(1);
+        if(updated?.[0])setOrder(updated[0]);
+        setRegenSent(section);setTimeout(()=>setRegenSent(null),5000);
+      }
+    }catch(e){
+      setRegenErr("Netzwerkfehler: "+e.message);
+    }
+    setRegenLoading(null);
   };
+
+  const regenUsed=order?[order.last_regen_at,order.prev_regen_at].filter(Boolean).filter(d=>new Date(d).getTime()>Date.now()-30*24*60*60*1000).length:0;
+  const regenLeft=Math.max(0,2-regenUsed);
+  const nextRegenDate=regenLeft===0&&order?(()=>{const dates=[order.last_regen_at,order.prev_regen_at].filter(Boolean).map(d=>new Date(d).getTime()).filter(t=>t>Date.now()-30*24*60*60*1000).sort((a,b)=>a-b);return dates[0]?new Date(dates[0]+30*24*60*60*1000):null;})():null;
 
   const SectionHeader=({id,label,badge})=>(
     <div style={{marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
@@ -687,18 +704,25 @@ function Portal({session,onLogout}){
         <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
         {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
-        {regenSent===id&&<span style={{color:"#d97706",fontSize:".78rem",fontWeight:600}}>{"\u2713"} Anfrage gesendet</span>}
-        {editSection===id
-          ?badge==="regen"
-            ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-              <button onClick={()=>requestRegen(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:"#d97706",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"\u21BB Aenderung beantragen"}</button></>
-            :<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-              <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
-          :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
+        {regenSent===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Website wird neu erstellt</span>}
+        {regenLoading===id
+          ?<span style={{color:"#d97706",fontSize:".78rem",fontWeight:600}}>Website wird erstellt...</span>
+          :editSection===id
+            ?badge==="regen"
+              ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                <button onClick={()=>requestRegen(id)} disabled={regenLeft===0} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:regenLeft===0?"#94a3b8":"#d97706",color:"#fff",cursor:regenLeft===0?"not-allowed":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{"\u21BB"} Jetzt neu generieren</button></>
+              :<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
+            :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
         </div>
       </div>
       {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"✓"} Aenderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
-      {badge==="regen"&&<div style={{fontSize:".75rem",color:"#d97706",marginTop:6}}>{"↻"} Aenderungen erfordern eine neue Website-Erstellung. Klicken Sie auf "Aenderung beantragen" – wir kuemmern uns innerhalb von 24 Stunden darum.</div>}
+      {badge==="regen"&&<div style={{fontSize:".75rem",color:regenLeft>0?"#d97706":"#dc2626",marginTop:6}}>
+        {regenLeft>0
+          ?`\u21BB ${regenLeft} von 2 Website-Neugestaltungen dieses Monats verfuegbar. Aenderungen werden in ca. 30 Sekunden automatisch uebernommen.`
+          :`\u26A0 Limit erreicht. Naechste Neugestaltung moeglich ab ${nextRegenDate?nextRegenDate.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"bald"}.`}
+      </div>}
+      {regenErr&&<div style={{fontSize:".78rem",color:"#dc2626",marginTop:6,fontWeight:600}}>{"\u26A0"} {regenErr}</div>}
     </div>
   );
 
@@ -1499,6 +1523,25 @@ function Admin({adminKey}){
                 <span style={{fontSize:".78rem",fontWeight:700,color,fontFamily:T.mono}}>{icon}</span>
               </div>);
             });
+          })()}
+        </div>
+        {/* Regen-Kontingent */}
+        <div style={{marginTop:14,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Neugenierungen (30 Tage)</div>
+          {(()=>{
+            const ago30=Date.now()-30*24*60*60*1000;
+            const dates=[sel.last_regen_at,sel.prev_regen_at].filter(Boolean).map(d=>new Date(d));
+            const recent=dates.filter(d=>d.getTime()>ago30);
+            const used=recent.length;
+            const nextFree=used>=2?new Date(recent.sort((a,b)=>a-b)[0].getTime()+30*24*60*60*1000):null;
+            return(<>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                {[0,1].map(i=><div key={i} style={{width:12,height:12,borderRadius:"50%",background:i<used?"#d97706":"#e2e8f0"}}/>)}
+                <span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{used}/2 verwendet</span>
+                {nextFree&&<span style={{fontSize:".72rem",color:T.textMuted}}>Slot frei ab {nextFree.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"})}</span>}
+              </div>
+              {dates.map((d,i)=><div key={i} style={{fontSize:".72rem",color:T.textMuted,padding:"2px 0"}}>{i===0?"Zuletzt":"Davor"}: {d.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>)}
+            </>);
           })()}
         </div>
         {/* Website generieren */}

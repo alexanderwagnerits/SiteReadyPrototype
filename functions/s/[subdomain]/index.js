@@ -40,13 +40,13 @@ export async function onRequestGet({params, env}) {
     );
   }
 
-  // noindex entfernen wenn live (Google darf indexieren)
-  if (o.status === "live") {
-    html = html.replace(
-      /<meta\s+name=["']robots["']\s+content=["']noindex,nofollow["']\s*\/?>/i,
-      '<meta name="robots" content="index,follow">'
-    );
-  }
+  // TODO: noindex entfernen wenn live (aktivieren wenn Prototyp-Phase abgeschlossen)
+  // if (o.status === "live") {
+  //   html = html.replace(
+  //     /<meta\s+name=["']robots["']\s+content=["']noindex,nofollow["']\s*\/?>/i,
+  //     '<meta name="robots" content="index,follow">'
+  //   );
+  // }
 
   return new Response(html, {
     status: 200,

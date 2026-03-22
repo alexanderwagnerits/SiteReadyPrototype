@@ -102,6 +102,11 @@ Anforderungen:
       return Response.json({error: "KI-Fehler: " + (err.error?.message || aiRes.status)}, {status: 500});
     }
     const aiData = await aiRes.json();
+    const usage = aiData.usage || {};
+    const tokIn = usage.input_tokens || 0;
+    const tokOut = usage.output_tokens || 0;
+    // Sonnet $3/1M in + $15/1M out, ~0.92 EUR/USD
+    const addCostEur = Math.round(((tokIn * 3 + tokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
     let newSection = (aiData.content?.[0]?.text || "").replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
     // 6. Leistungen-Sektion im gespeicherten HTML ersetzen
@@ -129,6 +134,9 @@ Anforderungen:
         prev_regen_at: order.last_regen_at || null,
         last_regen_at: now.toISOString(),
         regen_requested: false,
+        tokens_in: (order.tokens_in || 0) + tokIn,
+        tokens_out: (order.tokens_out || 0) + tokOut,
+        cost_eur: Math.round(((order.cost_eur || 0) + addCostEur) * 10000) / 10000,
       }),
     });
 

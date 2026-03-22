@@ -1125,7 +1125,7 @@ function Admin({adminKey}){
   const[genLoading,setGenLoading]=useState({});
   const[genMsg,setGenMsg]=useState({});
 
-  useEffect(()=>{load();},[]);
+  useEffect(()=>{load();checkSystem();},[]);
 
   const load=async()=>{
     setLoading(true);
@@ -1196,7 +1196,15 @@ function Admin({adminKey}){
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   useEffect(()=>{if(tab==="apis"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
-  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"},{id:"kosten",label:"Kosten"}];
+  const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
+  const regenQueue=orders.filter(o=>o.regen_requested);
+  const regenBadge=(stuckOrders.length+regenQueue.length)||null;
+  const alerts=[];
+  if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung moeglich!",tab:"apis"});
+  else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"apis"});
+  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"regen"});
+  if(regenQueue.length)alerts.push({type:"info",msg:`${regenQueue.length} ausstehende Leistungs-Neugenierung${regenQueue.length>1?"en":""}`,tab:"regen"});
+  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"regen",label:"Regen / Stuck",badge:regenBadge},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"},{id:"kosten",label:"Kosten"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -1212,7 +1220,10 @@ function Admin({adminKey}){
     <div className="ad-wrap" style={{display:"flex",height:"calc(100vh - 56px)"}}>
       {/* Sidebar */}
       <div className="ad-sidebar" style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
-        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{display:"block",width:"100%",padding:"11px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>{t.label}</button>)}
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"11px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>
+          <span>{t.label}</span>
+          {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".65rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
+        </button>)}
         <div className="ad-status-sec" style={{margin:"20px 16px 8px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
           <div style={{fontSize:".68rem",color:T.textMuted,fontWeight:700,letterSpacing:".08em",marginBottom:8}}>STATUS</div>
           {["alle",...STATUS_FLOW].map(s=>{const c=orders.filter(o=>s==="alle"||o.status===s).length;return(<button key={s} onClick={()=>{setFilter(s);setTab("bestellungen");}} style={{display:"flex",justifyContent:"space-between",width:"100%",padding:"7px 4px",border:"none",background:"transparent",color:filter===s&&tab==="bestellungen"?T.accent:T.textMuted,cursor:"pointer",fontSize:".78rem",fontWeight:filter===s&&tab==="bestellungen"?700:400,fontFamily:T.font}}>
@@ -1224,6 +1235,13 @@ function Admin({adminKey}){
       {/* Main */}
       <div className="ad-main" style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
         {loading&&<div style={{textAlign:"center",padding:60,color:T.textMuted}}>Wird geladen...</div>}
+        {!loading&&alerts.length>0&&<div style={{marginBottom:20,display:"flex",flexDirection:"column",gap:6}}>
+          {alerts.map((a,i)=><div key={i} onClick={a.tab?()=>setTab(a.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:T.rSm,background:a.type==="error"?"#fef2f2":a.type==="warn"?"#fefce8":"#eff6ff",border:`1px solid ${a.type==="error"?"#fecaca":a.type==="warn"?"#fde68a":"#bfdbfe"}`,cursor:a.tab?"pointer":"default"}}>
+            <span style={{display:"inline-block",width:8,height:8,borderRadius:"50%",flexShrink:0,background:a.type==="error"?"#dc2626":a.type==="warn"?"#f59e0b":"#3b82f6"}}/>
+            <span style={{fontSize:".82rem",fontWeight:600,color:a.type==="error"?"#dc2626":a.type==="warn"?"#92400e":"#1e40af",flex:1}}>{a.msg}</span>
+            {a.tab&&<span style={{fontSize:".72rem",color:T.textMuted,whiteSpace:"nowrap"}}>Details &rarr;</span>}
+          </div>)}
+        </div>}
 
         {/* Tab: Bestellungen */}
         {!loading&&tab==="bestellungen"&&(<div>
@@ -1337,6 +1355,49 @@ function Admin({adminKey}){
             </div>)}
           </div>}
         </div>)}
+        {/* Tab: Regen / Stuck */}
+        {!loading&&tab==="regen"&&(<div>
+          <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Aktionen erforderlich</h2>
+          {stuckOrders.length===0&&regenQueue.length===0&&<div style={{padding:60,textAlign:"center",color:T.textMuted}}>Alles in Ordnung \u2013 keine ausstehenden Aktionen.</div>}
+          {stuckOrders.length>0&&<div style={{marginBottom:20}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Stuck Orders \u2013 bezahlt &gt; 2h ({stuckOrders.length})</div>
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Branche",""].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{stuckOrders.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
+                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted}}>{fmtDate(o.created_at)}</td>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
+                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textSub}}>{o.branche_label||o.branche||"\u2014"}</td>
+                  <td style={{padding:"12px 16px",textAlign:"right"}}>
+                    <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>
+                      {genLoading[o.id]?"Generiert...":"Website generieren"}
+                    </button>
+                    {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green,marginTop:4}}>{genMsg[o.id]}</div>}
+                  </td>
+                </tr>)}</tbody>
+              </table>
+            </div>
+          </div>}
+          {regenQueue.length>0&&<div>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Regen-Anfragen ausstehend ({regenQueue.length})</div>
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:T.bg}}>{["Firma","Status",""].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{regenQueue.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
+                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
+                  <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
+                  <td style={{padding:"12px 16px",textAlign:"right"}}>
+                    <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>
+                      {genLoading[o.id]?"Generiert...":"Neu generieren"}
+                    </button>
+                    {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green,marginTop:4}}>{genMsg[o.id]}</div>}
+                  </td>
+                </tr>)}</tbody>
+              </table>
+            </div>
+          </div>}
+        </div>)}
+
         {/* Tab: APIs */}
         {!loading&&tab==="apis"&&(<div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
@@ -1446,6 +1507,28 @@ function Admin({adminKey}){
                 </div>
               </div>
             </div>
+            {/* Claude Echtkosten */}
+            {(()=>{
+              const totalCostEur=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
+              const totalTokIn=orders.reduce((a,o)=>a+(o.tokens_in||0),0);
+              const totalTokOut=orders.reduce((a,o)=>a+(o.tokens_out||0),0);
+              const withData=orders.filter(o=>o.tokens_in>0).length;
+              return(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
+                <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:12}}>
+                  <div style={{fontSize:".78rem",fontWeight:700,color:T.dark}}>Claude API \u2013 gemessene Kosten (Sonnet)</div>
+                  <span style={{fontSize:".72rem",color:T.textMuted}}>{withData}/{orders.length} Generierungen getrackt</span>
+                </div>
+                {totalCostEur>0?(
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
+                    {[{l:"Gesamt kumuliert",v:`\u20AC${totalCostEur.toFixed(4)}`,c:T.orange},{l:"Input-Tokens",v:totalTokIn.toLocaleString("de-AT"),c:T.accent},{l:"Output-Tokens",v:totalTokOut.toLocaleString("de-AT"),c:T.accent}].map((k,i)=>(
+                      <div key={i} style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                        <div style={{fontSize:".65rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>{k.l}</div>
+                        <div style={{fontSize:"1.2rem",fontWeight:800,color:k.c,fontFamily:T.mono}}>{k.v}</div>
+                      </div>))}
+                  </div>
+                ):<div style={{fontSize:".82rem",color:T.textMuted}}>Noch keine Token-Daten \u2013 werden ab der naechsten Generierung erfasst.</div>}
+              </div>);
+            })()}
             {/* Kostentabelle */}
             <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
               <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Monatliche Kostenbasis (Schaetzung)</div>

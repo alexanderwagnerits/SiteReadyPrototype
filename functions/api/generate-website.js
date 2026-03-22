@@ -376,6 +376,11 @@ Keine echten Kontaktdaten direkt im generierten HTML – nur diese Platzhalter.`
   }
 
   const aiData = await aiRes.json();
+  const usage = aiData.usage || {};
+  const tokIn = usage.input_tokens || 0;
+  const tokOut = usage.output_tokens || 0;
+  // Sonnet $3/1M in + $15/1M out, ~0.92 EUR/USD
+  const costEur = Math.round(((tokIn * 3 + tokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
   let html = aiData.content?.[0]?.text || "";
 
   // Markdown-Backticks entfernen falls Claude sie dennoch ausgibt
@@ -481,7 +486,7 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
         "Prefer": "return=minimal",
       },
-      body: JSON.stringify({website_html: html, subdomain: sub, status: "review"}),
+      body: JSON.stringify({website_html: html, subdomain: sub, status: "review", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur}),
     }
   );
 

@@ -36,8 +36,10 @@ export async function onRequestGet({request, env}) {
     });
     results.anthropic = {ok: r.ok, status: r.status};
     if (!r.ok) {
-      const j = await r.json();
+      const j = await r.json().catch(() => ({}));
       results.anthropic.error = j.error?.message;
+      // 402 = no credits; type credit_limit_exceeded = quota exhausted
+      results.anthropic.billing = r.status === 402 || (j.error?.type || "").includes("credit");
     }
   } catch(e) {
     results.anthropic = {ok: false, error: e.message};

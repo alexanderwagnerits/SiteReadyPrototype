@@ -1706,6 +1706,12 @@ function Admin({adminKey}){
                 {key:"review",label:"Schritt 4 – Review",icon:"👁️",detail:"Website liegt bereit zur Admin-Pruefung. Nach Freigabe wird sie live geschaltet.",meta:[["URL",sel.subdomain?`/s/${sel.subdomain}`:"—"],["Neugen. Leistungen (30d)",`${[sel.last_regen_at,sel.prev_regen_at].filter(d=>{if(!d)return false;return new Date(d).getTime()>Date.now()-30*24*60*60*1000;}).length}/2 verwendet`]]},
                 {key:"live",label:"Schritt 5 – Live",icon:"🚀",detail:"Website ist oeffentlich erreichbar. noindex-Tag aktiv (Prototyp-Phase).",meta:[["Status",st==="live"?"Online":"Noch nicht live"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
+              const futureSteps=[
+                {num:6,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},
+                {num:7,label:"Custom Domain Onboarding",icon:"🌐",optional:true,detail:"Kundeneigene Domain (z.B. firma.at) via CNAME/A-Record auf siteready.at zeigen lassen. SSL wird automatisch von Cloudflare ausgestellt."},
+                {num:8,label:"Custom Domain indexieren",icon:"📈",optional:true,detail:"noindex auf der Custom Domain entfernen. Google Search Console einreichen. Dauert typisch 1–4 Wochen bis zur vollstaendigen Indexierung."},
+                {num:9,label:"Subdomain aus Google entfernen",icon:"🧹",optional:true,detail:"Sobald die Custom Domain indexiert ist: noindex auf der Subdomain wieder aktivieren (oder 301-Redirect setzen). Verhindert Duplicate-Content-Penaltys."},
+              ];
               return(<div style={{padding:"0 28px 28px"}}>
                 {steps.map((step,i)=>{
                   const done=STATUS_FLOW.indexOf(step.key)<=idx;
@@ -1715,10 +1721,10 @@ function Admin({adminKey}){
                   const lineColor=done?T.green:hasErr?"#ef4444":current?"#f59e0b":"#e2e8f0";
                   const dotBg=done?T.green:hasErr?"#ef4444":current?"#f59e0b":"#e2e8f0";
                   const dotColor=done||current||hasErr?"#fff":T.textMuted;
-                  return(<div key={step.key} style={{display:"flex",gap:16,paddingBottom:i<steps.length-1?24:0}}>
+                  return(<div key={step.key} style={{display:"flex",gap:16,paddingBottom:24}}>
                     <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
                       <div style={{width:32,height:32,borderRadius:"50%",background:dotBg,color:dotColor,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,flexShrink:0}}>{done?"✓":current?"●":i+1}</div>
-                      {i<steps.length-1&&<div style={{width:2,flex:1,minHeight:24,background:lineColor,marginTop:4}}/>}
+                      <div style={{width:2,flex:1,minHeight:24,background:lineColor,marginTop:4}}/>
                     </div>
                     <div style={{flex:1,paddingTop:4}}>
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
@@ -1736,6 +1742,22 @@ function Admin({adminKey}){
                     </div>
                   </div>);
                 })}
+                {futureSteps.map((step,i)=>(
+                  <div key={step.num} style={{display:"flex",gap:16,paddingBottom:i<futureSteps.length-1?24:0,opacity:.5}}>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+                      <div style={{width:32,height:32,borderRadius:"50%",background:"#e2e8f0",color:T.textMuted,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,flexShrink:0}}>{step.num}</div>
+                      {i<futureSteps.length-1&&<div style={{width:2,flex:1,minHeight:24,background:"#e2e8f0",marginTop:4}}/>}
+                    </div>
+                    <div style={{flex:1,paddingTop:4}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                        <span style={{fontSize:".88rem",fontWeight:700,color:T.textMuted}}>{step.icon} {step.label}</span>
+                        {step.optional&&<span style={{background:T.bg3,color:T.textMuted,fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Optional</span>}
+                        <span style={{background:"#fef3c7",color:"#92400e",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Prototyp</span>
+                      </div>
+                      <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>{step.detail}</div>
+                    </div>
+                  </div>
+                ))}
               </div>);
             })()}
           </div>

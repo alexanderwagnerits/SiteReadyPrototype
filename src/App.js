@@ -719,7 +719,7 @@ function Portal({session,onLogout}){
       {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"✓"} Aenderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
       {badge==="regen"&&<div style={{fontSize:".75rem",color:regenLeft>0?"#d97706":"#dc2626",marginTop:6}}>
         {regenLeft>0
-          ?`\u21BB ${regenLeft} von 2 Website-Neugestaltungen dieses Monats verfuegbar. Aenderungen werden in ca. 30 Sekunden automatisch uebernommen.`
+          ?`\u21BB ${regenLeft} von 2 Website-Neugestaltungen dieses Monats verfuegbar. Aenderungen werden automatisch uebernommen, das kann einen Moment dauern.`
           :`\u26A0 Limit erreicht. Naechste Neugestaltung moeglich ab ${nextRegenDate?nextRegenDate.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"bald"}.`}
       </div>}
       {regenErr&&<div style={{fontSize:".78rem",color:"#dc2626",marginTop:6,fontWeight:600}}>{"\u26A0"} {regenErr}</div>}
@@ -835,14 +835,15 @@ function Portal({session,onLogout}){
         </div>
         {/* Design */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="design" label="Design" badge="regen"/>
-          {editSection==="design"?(<>
-            <StylePicker value={order.stil||"professional"} onChange={upOrder("stil")}/>
-            <div style={{marginTop:16}}><Toggle label="Fotos auf der Website" checked={!!order.fotos} onChange={upOrder("fotos")} desc="Hero-Foto, Galerie, Teamfoto"/></div>
-          </>):(<>
-            <InfoRow label="Stil" value={STYLES_MAP[order.stil||"professional"]?.label}/>
-            <InfoRow label="Fotos" value={order.fotos?"Ja, mit Fotos":"Nein, ohne Fotos"}/>
-          </>)}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Design & Stil</div>
+            <button onClick={()=>setTab("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
+          </div>
+          <InfoRow label="Stil" value={STYLES_MAP[order.stil||"professional"]?.label}/>
+          <InfoRow label="Fotos" value={order.fotos?"Ja, mit Fotos":"Nein, ohne Fotos"}/>
+          <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
+            Ein Design-Wechsel ist ein komplettes Redesign Ihrer Website. Schreiben Sie uns kurz ueber den Support-Tab – wir setzen das fuer Sie um.
+          </div>
         </div>
         {/* Social Media */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>

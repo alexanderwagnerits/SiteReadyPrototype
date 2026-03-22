@@ -1195,16 +1195,16 @@ function Admin({adminKey}){
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
-  useEffect(()=>{if(tab==="apis"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
+  useEffect(()=>{if(tab==="system"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
   const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenQueue=orders.filter(o=>o.regen_requested);
   const regenBadge=(stuckOrders.length+regenQueue.length)||null;
   const alerts=[];
-  if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung moeglich!",tab:"apis"});
-  else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"apis"});
-  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"regen"});
-  if(regenQueue.length)alerts.push({type:"info",msg:`${regenQueue.length} ausstehende Leistungs-Neugenierung${regenQueue.length>1?"en":""}`,tab:"regen"});
-  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"regen",label:"Regen / Stuck",badge:regenBadge},{id:"entwicklung",label:"Entwicklung"},{id:"health",label:"Health"},{id:"support",label:"Support"},{id:"apis",label:"APIs"},{id:"kosten",label:"Kosten"}];
+  if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung moeglich!",tab:"system"});
+  else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
+  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
+  if(regenQueue.length)alerts.push({type:"info",msg:`${regenQueue.length} ausstehende Leistungs-Neugenierung${regenQueue.length>1?"en":""}`,tab:"system"});
+  const TABS=[{id:"bestellungen",label:"Bestellungen"},{id:"entwicklung",label:"Entwicklung"},{id:"support",label:"Support"},{id:"system",label:"System",badge:regenBadge},{id:"kosten",label:"Kosten"}];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     {/* Topbar */}
@@ -1224,12 +1224,6 @@ function Admin({adminKey}){
           <span>{t.label}</span>
           {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".65rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
         </button>)}
-        <div className="ad-status-sec" style={{margin:"20px 16px 8px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>
-          <div style={{fontSize:".68rem",color:T.textMuted,fontWeight:700,letterSpacing:".08em",marginBottom:8}}>STATUS</div>
-          {["alle",...STATUS_FLOW].map(s=>{const c=orders.filter(o=>s==="alle"||o.status===s).length;return(<button key={s} onClick={()=>{setFilter(s);setTab("bestellungen");}} style={{display:"flex",justifyContent:"space-between",width:"100%",padding:"7px 4px",border:"none",background:"transparent",color:filter===s&&tab==="bestellungen"?T.accent:T.textMuted,cursor:"pointer",fontSize:".78rem",fontWeight:filter===s&&tab==="bestellungen"?700:400,fontFamily:T.font}}>
-            <span>{s==="alle"?"Alle":STATUS_LABELS[s]}</span><span style={{background:T.bg3,borderRadius:10,padding:"1px 7px",fontSize:".7rem"}}>{c}</span>
-          </button>);})}
-        </div>
       </div>
 
       {/* Main */}
@@ -1310,31 +1304,6 @@ function Admin({adminKey}){
           </div>
         </div>)}
 
-        {/* Tab: Health */}
-        {!loading&&tab==="health"&&(<div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Website & SSL Health</h2>
-            <button onClick={()=>orders.forEach(o=>checkHealth(o))} style={{padding:"8px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Alle pruefen</button>
-          </div>
-          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-            <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-              <tbody>{orders.map((o,i)=>{
-                const url=`${o.subdomain||"—"}.siteready.at`;
-                const h=health[o.id];
-                return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
-                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
-                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.accent,fontFamily:T.mono}}>{url}</td>
-                  <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                  <td style={{padding:"12px 16px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".78rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".78rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".78rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".78rem"}}>—</span>}</td>
-                  <td style={{padding:"12px 16px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".78rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".78rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".78rem"}}>—</span>}</td>
-                  <td style={{padding:"12px 16px",textAlign:"right"}}><button onClick={()=>checkHealth(o)} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Pruefen</button></td>
-                </tr>);
-              })}</tbody>
-            </table>
-          </div>
-        </div>)}
-
         {/* Tab: Support */}
         {!loading&&tab==="support"&&(<div>
           <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Support-Anfragen</h2>
@@ -1355,93 +1324,101 @@ function Admin({adminKey}){
             </div>)}
           </div>}
         </div>)}
-        {/* Tab: Regen / Stuck */}
-        {!loading&&tab==="regen"&&(<div>
-          <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Aktionen erforderlich</h2>
-          {stuckOrders.length===0&&regenQueue.length===0&&<div style={{padding:60,textAlign:"center",color:T.textMuted}}>Alles in Ordnung \u2013 keine ausstehenden Aktionen.</div>}
-          {stuckOrders.length>0&&<div style={{marginBottom:20}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Stuck Orders \u2013 bezahlt &gt; 2h ({stuckOrders.length})</div>
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Branche",""].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{stuckOrders.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
-                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted}}>{fmtDate(o.created_at)}</td>
-                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
-                  <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textSub}}>{o.branche_label||o.branche||"\u2014"}</td>
-                  <td style={{padding:"12px 16px",textAlign:"right"}}>
-                    <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>
-                      {genLoading[o.id]?"Generiert...":"Website generieren"}
-                    </button>
-                    {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green,marginTop:4}}>{genMsg[o.id]}</div>}
-                  </td>
-                </tr>)}</tbody>
-              </table>
-            </div>
-          </div>}
-          {regenQueue.length>0&&<div>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Regen-Anfragen ausstehend ({regenQueue.length})</div>
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","Status",""].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{regenQueue.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
-                  <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
-                  <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                  <td style={{padding:"12px 16px",textAlign:"right"}}>
-                    <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>
-                      {genLoading[o.id]?"Generiert...":"Neu generieren"}
-                    </button>
-                    {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green,marginTop:4}}>{genMsg[o.id]}</div>}
-                  </td>
-                </tr>)}</tbody>
-              </table>
-            </div>
-          </div>}
-        </div>)}
-
-        {/* Tab: APIs */}
-        {!loading&&tab==="apis"&&(<div>
+        {/* Tab: System */}
+        {!loading&&tab==="system"&&(<div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
             <div>
-              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>API & Umgebungsstatus</h2>
-              {sysLastCheck&&<div style={{fontSize:".72rem",color:T.textMuted}}>Zuletzt geprueft: {sysLastCheck.toLocaleTimeString("de-AT")} &middot; Auto-Refresh alle 60s</div>}
+              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>System</h2>
+              {sysLastCheck&&<div style={{fontSize:".72rem",color:T.textMuted}}>APIs zuletzt geprueft: {sysLastCheck.toLocaleTimeString("de-AT")} &middot; Auto-Refresh 60s</div>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               {sysLoading&&<div style={{width:14,height:14,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
-              <button onClick={checkSystem} disabled={sysLoading} style={{padding:"8px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:sysLoading?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Jetzt pruefen</button>
+              <button onClick={checkSystem} disabled={sysLoading} style={{padding:"7px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:sysLoading?"wait":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>APIs pruefen</button>
             </div>
           </div>
-          {!sysStatus&&sysLoading&&<div style={{color:T.textMuted,padding:"40px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`}}>Verbindungen werden geprueft...</div>}
-          {sysStatus&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
-            {/* API Karten */}
-            {[
-              {key:"supabase",label:"Supabase",icon:"🗄️",desc:"Datenbank & Auth",detail:sysStatus.supabase?.latency?`Latenz: ${sysStatus.supabase.latency}ms`:""},
-              {key:"stripe",label:"Stripe",icon:"💳",desc:"Zahlungsabwicklung",detail:sysStatus.stripe?.livemode===false?"Testmodus aktiv":sysStatus.stripe?.livemode===true?"Live-Modus":""},
-              {key:"anthropic",label:"Anthropic (Claude)",icon:"🤖",desc:"KI Website-Import","key":"anthropic"},
-            ].map(({key,label,icon,desc,detail})=>{
-              const s=sysStatus[key];
-              const ok=s?.ok;
-              return(<div key={key} style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${ok?'rgba(22,163,74,.2)':T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:16}}>
-                <div style={{width:44,height:44,borderRadius:10,background:ok?"#f0fdf4":"#fef2f2",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0}}>{icon}</div>
+          {/* Aktionen */}
+          {(stuckOrders.length>0||regenQueue.length>0)&&<div style={{marginBottom:24}}>
+            <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Aktionen erforderlich</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:2}}>{label}</div>
-                  <div style={{fontSize:".78rem",color:T.textMuted}}>{desc}{detail&&<span style={{marginLeft:8,color:T.accent}}>{detail}</span>}</div>
-                  {s?.error&&<div style={{fontSize:".75rem",color:T.red,marginTop:4}}>{s.error}</div>}
+                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</div>
+                  <div style={{fontSize:".75rem",color:"#92400e",marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} \u2013 Website noch nicht generiert</div>
                 </div>
-                <div style={{display:"flex",alignItems:"center",gap:6}}>
-                  <div style={{width:10,height:10,borderRadius:"50%",background:ok?T.green:T.red,boxShadow:`0 0 0 3px ${ok?"rgba(22,163,74,.15)":"rgba(220,38,38,.15)"}`}}/>
-                  <span style={{fontSize:".82rem",fontWeight:700,color:ok?T.green:T.red}}>{ok?"Verbunden":"Fehler"}</span>
+                <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
+                  {genLoading[o.id]?"Generiert...":"Website generieren"}
+                </button>
+                {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green}}>{genMsg[o.id]}</div>}
+              </div>)}
+              {regenQueue.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Leistungs-Regen ausstehend &middot; <StatusBadge status={o.status}/></div>
                 </div>
-              </div>);
-            })}
-            {/* Env Vars */}
-            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Environment Variables</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                {Object.entries(sysStatus.envvars||{}).map(([k,v])=><div key={k} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:T.rSm,background:v?T.greenLight:"#fef2f2",border:`1px solid ${v?"rgba(22,163,74,.15)":"rgba(220,38,38,.1)"}`}}>
-                  <span style={{fontSize:".72rem",color:v?T.green:T.red,fontWeight:700}}>{v?"\u2713":"\u2717"}</span>
-                  <span style={{fontSize:".78rem",fontFamily:T.mono,color:T.dark}}>{k}</span>
-                </div>)}
-              </div>
+                <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
+                  {genLoading[o.id]?"Generiert...":"Neu generieren"}
+                </button>
+                {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green}}>{genMsg[o.id]}</div>}
+              </div>)}
+            </div>
+          </div>}
+          {/* API Status */}
+          {(!sysStatus&&sysLoading)&&<div style={{color:T.textMuted,padding:"40px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,marginBottom:16}}>Verbindungen werden geprueft...</div>}
+          {sysStatus&&<div style={{marginBottom:24}}>
+            <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>API-Status</div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {[
+                {key:"supabase",label:"Supabase",desc:"Datenbank & Auth",detail:sysStatus.supabase?.latency?`${sysStatus.supabase.latency}ms`:""},
+                {key:"stripe",label:"Stripe",desc:"Zahlungsabwicklung",detail:sysStatus.stripe?.livemode===false?"Testmodus":sysStatus.stripe?.livemode===true?"Live":""},
+                {key:"anthropic",label:"Anthropic (Claude)",desc:"KI-Generierung",detail:sysStatus.anthropic?.billing?"Guthaben aufgebraucht!":""},
+              ].map(({key,label,desc,detail})=>{
+                const s=sysStatus[key];const ok=s?.ok;
+                const isBilling=key==="anthropic"&&s?.billing;
+                return(<div key={key} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:`1px solid ${isBilling?"#fecaca":ok?"rgba(22,163,74,.2)":T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:isBilling?"#dc2626":ok?T.green:T.red,boxShadow:`0 0 0 3px ${isBilling?"rgba(220,38,38,.15)":ok?"rgba(22,163,74,.15)":"rgba(220,38,38,.15)"}`,flexShrink:0}}/>
+                  <div style={{flex:1}}>
+                    <span style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{label}</span>
+                    <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{desc}</span>
+                    {detail&&<span style={{fontSize:".75rem",marginLeft:8,color:isBilling?"#dc2626":T.accent,fontWeight:600}}>{detail}</span>}
+                    {s?.error&&!isBilling&&<div style={{fontSize:".72rem",color:T.red,marginTop:2}}>{s.error}</div>}
+                  </div>
+                  <span style={{fontSize:".78rem",fontWeight:700,color:ok?T.green:T.red}}>{ok?"OK":"Fehler"}</span>
+                </div>);
+              })}
+            </div>
+          </div>}
+          {/* Website Health */}
+          <div style={{marginBottom:24}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Website Health</div>
+              <button onClick={()=>orders.filter(o=>o.subdomain).forEach(o=>checkHealth(o))} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Alle pruefen</button>
+            </div>
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL",""].map(h=><th key={h} style={{padding:"9px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{orders.map((o,i)=>{
+                  const url=o.subdomain?`${o.subdomain}.siteready.at`:"—";
+                  const h=health[o.id];
+                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc"}}>
+                    <td style={{padding:"10px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
+                    <td style={{padding:"10px 14px",fontSize:".78rem",color:T.accent,fontFamily:T.mono}}>{url}</td>
+                    <td style={{padding:"10px 14px"}}><StatusBadge status={o.status}/></td>
+                    <td style={{padding:"10px 14px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
+                    <td style={{padding:"10px 14px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
+                    <td style={{padding:"10px 14px",textAlign:"right"}}>{o.subdomain&&<button onClick={()=>checkHealth(o)} style={{padding:"4px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Pruefen</button>}</td>
+                  </tr>);
+                })}</tbody>
+              </table>
+            </div>
+          </div>
+          {/* Env Vars */}
+          {sysStatus&&<div>
+            <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Environment Variables</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+              {Object.entries(sysStatus.envvars||{}).map(([k,v])=><div key={k} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:T.rSm,background:v?T.greenLight:"#fef2f2",border:`1px solid ${v?"rgba(22,163,74,.15)":"rgba(220,38,38,.1)"}`}}>
+                <span style={{fontSize:".72rem",color:v?T.green:T.red,fontWeight:700}}>{v?"\u2713":"\u2717"}</span>
+                <span style={{fontSize:".78rem",fontFamily:T.mono,color:T.dark}}>{k}</span>
+              </div>)}
             </div>
           </div>}
         </div>)}
@@ -1576,10 +1553,6 @@ function Admin({adminKey}){
             <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>
           </div>:null)}
         </div>
-        {sel.leistungen?.length>0&&<div style={{marginTop:12}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Leistungen</div>
-          {sel.leistungen.map((l,i)=><div key={i} style={{fontSize:".82rem",color:T.dark,padding:"4px 0",borderBottom:`1px solid ${T.bg3}`}}>{l}</div>)}
-        </div>}
         {/* Deployment Checkliste */}
         <div style={{marginTop:16}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Deployment-Status</div>
@@ -1609,9 +1582,14 @@ function Admin({adminKey}){
             });
           })()}
         </div>
-        {/* Regen-Kontingent */}
+        {/* Leistungen & Neugenierungen */}
         <div style={{marginTop:14,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Neugenierungen (30 Tage)</div>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Leistungen & Neugenierungen</div>
+          {sel.leistungen?.length>0&&<div style={{marginBottom:10}}>
+            {sel.leistungen.map((l,i)=><div key={i} style={{fontSize:".78rem",color:T.dark,padding:"3px 0",borderBottom:`1px solid ${T.bg3}`}}>{l}</div>)}
+            {sel.extra_leistung&&<div style={{fontSize:".75rem",color:T.textSub,padding:"3px 0",fontStyle:"italic"}}>+ {sel.extra_leistung}</div>}
+            {sel.notdienst&&<div style={{fontSize:".72rem",color:T.green,marginTop:4,fontWeight:600}}>Notdienst 24/7</div>}
+          </div>}
           {(()=>{
             const ago30=Date.now()-30*24*60*60*1000;
             const dates=[sel.last_regen_at,sel.prev_regen_at].filter(Boolean).map(d=>new Date(d));
@@ -1619,12 +1597,12 @@ function Admin({adminKey}){
             const used=recent.length;
             const nextFree=used>=2?new Date(recent.sort((a,b)=>a-b)[0].getTime()+30*24*60*60*1000):null;
             return(<>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                {[0,1].map(i=><div key={i} style={{width:12,height:12,borderRadius:"50%",background:i<used?"#d97706":"#e2e8f0"}}/>)}
-                <span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{used}/2 verwendet</span>
-                {nextFree&&<span style={{fontSize:".72rem",color:T.textMuted}}>Slot frei ab {nextFree.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"})}</span>}
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                {[0,1].map(i=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:i<used?"#d97706":"#e2e8f0"}}/>)}
+                <span style={{fontSize:".75rem",color:T.dark,fontWeight:600}}>{used}/2 Neugenierungen (30 Tage)</span>
+                {nextFree&&<span style={{fontSize:".7rem",color:T.textMuted}}>frei ab {nextFree.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"})}</span>}
               </div>
-              {dates.map((d,i)=><div key={i} style={{fontSize:".72rem",color:T.textMuted,padding:"2px 0"}}>{i===0?"Zuletzt":"Davor"}: {d.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>)}
+              {dates.map((d,i)=><div key={i} style={{fontSize:".7rem",color:T.textMuted,padding:"1px 0"}}>{i===0?"Zuletzt":"Davor"}: {d.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>)}
             </>);
           })()}
         </div>

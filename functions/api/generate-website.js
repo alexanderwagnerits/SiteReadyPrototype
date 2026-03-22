@@ -76,6 +76,7 @@ export async function onRequestPost({request, env}) {
 Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen Handwerksbetrieb.
 
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
+KOMPAKTHEIT: Schreibe CSS und HTML kompakt (keine Kommentare, keine Leerzeilen zwischen Regeln, kurze aber lesbare Klassennamen). Ziel: maximale visuelle Qualitaet bei minimalem Code-Volumen. Du hast ein striktes Token-Budget.
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}
@@ -108,61 +109,19 @@ CSS Custom Properties im :root definieren:
 - Beschreibungstexte pro Leistung SELBER VERFASSEN (1 Satz, branchenspezifisch)
 - Professionell und fertig wirkend - nicht wie ein Template
 
-═══ SEITENSTRUKTUR (Reihenfolge einhalten) ═══
+═══ SEITENSTRUKTUR ═══
 
-### NAV (sticky)
-- position: sticky; top: 0; z-index: 1000
-- Beim Scrollen: weiss + box-shadow (via JS scroll-event + CSS class)
-- Desktop links: Logo = Firmenname (font-weight:800, color:var(--primary))
-- Desktop rechts: Anker-Links (Leistungen, Ueber uns, Kontakt) + CTA-Button mit Telefon (background: var(--accent), weisse Schrift, border-radius)
-- Mobile: nur Logo + Hamburger-Icon (3 Balken / X toggle)
-- Mobile-Menue: volle Breite, slide-down, alle Links gestapelt + grosser Anruf-Button
+NAV: sticky, Logo links (Firmenname, font-weight:800), rechts Anker-Links + Tel-CTA-Button (var(--accent)). Scrolled: weiss + box-shadow per JS. Mobile: Hamburger-Toggle mit Slide-Down-Menue.
 
-### HERO (min-height: 100vh)
-- Hintergrund: dramatischer Gradient aus var(--primary) mit CSS-Radial-Gradienten als Overlay fuer Tiefe
-- Dekorative Elemente: 2-3 grosse halbtransparente Kreise/Rechtecke (opacity: 0.06-0.12, position:absolute) fuer visuelle Tiefe
-- Zentrierter Content (max-width: 860px)
-${o.notdienst ? "- NOTDIENST-BADGE ganz oben: animierter gruener Puls-Punkt + Text '24/7 Notdienst - Wir sind immer fuer Sie da' (background: rgba(255,255,255,0.12), border: 1px solid rgba(255,255,255,0.25))" : ""}
-- H1: Firmenname (clamp(2.8rem, 6vw, 5.5rem), font-weight:900, weiss, letter-spacing:-0.03em)
-- Subtitle: Branche + Einsatzgebiet (font-size: clamp(1rem, 2vw, 1.4rem), weiss, opacity:0.8)
-- Kurzbeschreibung wenn vorhanden (max-width:560px, weiss, opacity:0.7, line-height:1.7)
-- 2 CTA-Buttons (gap: 16px): Primaer = weiss mit Primaerfarbe-Text + Telefon, Sekundaer = transparent mit weissem Border
-- Scroll-Indikator unten zentriert (animierter Pfeil oder chevron)
+HERO: min-height:100vh, background:var(--primary) mit Gradient-Overlay.${o.notdienst ? " NOTDIENST-BADGE: gruener Puls-Punkt + '24/7 Notdienst' (rgba-Hintergrund)." : ""} H1 Firmenname (clamp(2.8rem,6vw,5rem), weiss, font-weight:900). Subtitle Branche+Einsatzgebiet (weiss, opacity:.8). 2 CTA-Buttons. Scroll-Indikator.
 
-### LEISTUNGEN (background: white)
-- Sektion-Header: Kleine Label-Zeile (font-size:.75rem, uppercase, letter-spacing:.15em, Akzentfarbe) + H2 (gross, bold) + kurze Subtitle
-- Grid: repeat(auto-fill, minmax(280px, 1fr)) mit gap:24px
-- Jede Card:
-  * Grosses Icon-Emoji oder dekoratives CSS-Element oben (48px x 48px, background:var(--bg), border-radius:${stil.r})
-  * Leistungsname als H3 (font-weight:700)
-  * 1-saetzige Beschreibung (selbst verfassen, branchenspezifisch)
-  * Card: background:var(--bg), border:1px solid var(--sep), padding:32px 28px, border-radius:${stil.rLg}
-  * Hover: transform:translateY(-6px), box-shadow:0 20px 60px rgba(0,0,0,.1)
+LEISTUNGEN: weisser Hintergrund. Grid auto-fill minmax(260px,1fr). Cards mit Emoji-Icon, H3, 1 Satz Beschreibung (selbst verfassen!), Hover-Lift.
 
-### UEBER UNS (background: var(--bg))
-- Zweispaltig Desktop: Links Textcontent, Rechts visuelles Element
-- Text links: Label + H2 + Beschreibung + 3-4 Key-Facts als Icon-Liste (✓ oder branchentypische Emojis)
-- Rechts: Elegante Karte/Box mit Primaerfarbe als Hintergrund, weisser Text, 2-3 Zahlen/Fakten (z.B. "15+ Jahre Erfahrung", "500+ Projekte", "Kundenzufriedenheit 100%") - Zahlen SINNVOLL SCHAETZEN basierend auf Branche
-- Mobile: stacked, Karte zuerst
+UEBER UNS: var(--bg) Hintergrund. Zweispaltig: Text+Facts links, Stats-Karte (var(--primary), weiss) rechts mit geschaetzten Zahlen.
 
-### KONTAKT (background: white)
-- Zweispaltig: Links Kontaktinfos, Rechts grosse Call-to-Action Karte
-- Links: Adresse (mit Karten-Emoji), Telefon (als klickbarer grosser Link, tel:), E-Mail (mailto:), Oeffnungszeiten (strukturiert), Einsatzgebiet
-- Rechts: Grosse Karte (background:linear-gradient aus Primaerfarbe, weiss), prominenter "Jetzt anrufen" Button, Kurz-Info
-- Kein Kontaktformular (keine Server-seitige Verarbeitung noetig)
+KONTAKT: weiss. Zweispaltig: Kontaktinfos (tel: Link, mailto:) links, CTA-Karte rechts. Kein Formular.
 
-### FOOTER (background: var(--primary))
-- Weisse Schrift
-- Dreispaltig Desktop (Logo+Kurzbeschreibung | Navigation | Kontakt), Mobile: gestapelt
-- Trennlinie
-- Untere Zeile: Copyright + Impressum-Section + Datenschutz-Hinweis
-
-IMPRESSUM (ECG-konform, alle vorhandenen Felder befuellen):
-Medieninhaber & Herausgeber: [Firmenname][Unternehmensform]
-Adresse, Tel, E-Mail, alle optionalen Felder die vorhanden sind
-Mitglied der Wirtschaftskammer Oesterreich
-Berufsrecht: Gewerbeordnung (www.ris.bka.gv.at)
-Aufsichtsbehoerde: zust. Bezirksverwaltungsbehoerde
+FOOTER: var(--primary), weiss. Dreispaltig. Impressum-Abschnitt (ECG): Medieninhaber, Adresse, alle vorhandenen Felder, WKO-Mitglied, Gewerbeordnung. Datenschutz-Hinweis.
 
 DATENSCHUTZ: Kurze DSGVO-Erklaerung (keine Cookies ausser technisch notwendige, kein Tracking, Kontaktdaten nur zur Kontaktaufnahme genutzt)`;
 

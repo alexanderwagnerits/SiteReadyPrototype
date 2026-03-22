@@ -59,8 +59,10 @@ export async function onRequestPost({request, env}) {
     const anthropicKey = env.ANTHROPIC_API_KEY;
     if (!anthropicKey) return Response.json({error: "API-Konfigurationsfehler."}, {status: 500});
 
-    // Ersten 4000 Zeichen an Claude schicken
-    const excerpt = pageText.slice(0, 4000);
+    // Anfang (fuer Firmenname/Kontakt) + Ende (fuer Impressum) kombinieren
+    const start = pageText.slice(0, 5000);
+    const end = pageText.length > 5000 ? "\n\n[...]\n\n" + pageText.slice(-3000) : "";
+    const excerpt = (start + end).slice(0, 10000);
 
     const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -89,6 +91,7 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - firmenbuchnummer: Firmenbuchnummer z.B. FN 123456 a (leer wenn nicht gefunden)
 - firmenbuchgericht: Firmenbuchgericht z.B. HG Wien (leer wenn nicht gefunden)
 - gisazahl: GISA-Zahl (Ziffern, leer wenn nicht gefunden)
+- branche: Handwerksbranche (NUR einen dieser exakten Werte: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige)
 
 Website-Text:
 ${excerpt}`,
@@ -126,6 +129,7 @@ ${excerpt}`,
       firmenbuchnummer: extracted.firmenbuchnummer || "",
       firmenbuchgericht: extracted.firmenbuchgericht || "",
       gisazahl: extracted.gisazahl || "",
+      branche: extracted.branche || "",
     });
 
   } catch(e) {

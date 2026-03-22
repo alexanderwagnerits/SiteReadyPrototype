@@ -1587,8 +1587,7 @@ function Admin({adminKey}){
                 <div style={{display:"flex",flexDirection:"column",gap:6}}>
                   {cols.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,padding:"12px 14px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}} onClick={()=>setSel(o)}>
                     <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,marginBottom:2}}>{o.firmenname||"—"}</div>
-                    <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:8}}>{fmtDate(o.created_at)}</div>
-                    {s!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(s)});}} style={{width:"100%",padding:"5px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(s)]} &rarr;</button>}
+                    <div style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(o.created_at)}</div>
                   </div>)}
                 </div>
               </div>);})}
@@ -1596,12 +1595,11 @@ function Admin({adminKey}){
             {view==="tabelle"&&(sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status",""].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{sf.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
                   <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                  <td style={{padding:"12px 16px",textAlign:"right"}}>{o.status!=="live"&&<button onClick={e=>{e.stopPropagation();updateOrder(o.id,{status:nextStatus(o.status)});}} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{STATUS_LABELS[nextStatus(o.status)]} &rarr;</button>}</td>
                 </tr>)}</tbody>
               </table>
             </div>)}
@@ -1714,7 +1712,7 @@ function Admin({adminKey}){
                 <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL","Geprüft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{rows.map((o,i)=>{
                   const h=health[o.id];const ht=healthTime[o.id];
-                  const url=`${o.subdomain}.siteready.at`;
+                  const url=`sitereadyprototype.pages.dev/s/${o.subdomain}`;
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:h==="error"?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
                     <td style={{padding:"10px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
                     <td style={{padding:"10px 14px",fontSize:".78rem",fontFamily:T.mono}}>
@@ -2036,11 +2034,6 @@ function Admin({adminKey}){
               <StatusBadge status={sel.status}/>
             </div>
             <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
-          </div>
-          {/* Status-Buttons: nur vorwärts */}
-          <div style={{padding:"12px 28px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-            {STATUS_FLOW.slice(STATUS_FLOW.indexOf(sel.status)+1).map(s=><button key={s} onClick={()=>updateOrder(sel.id,{status:s})} style={{padding:"4px 12px",border:`2px solid ${STATUS_COLORS[s]}33`,borderRadius:T.rSm,background:STATUS_COLORS[s]+"11",color:STATUS_COLORS[s],cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{STATUS_LABELS[s]} &rarr;</button>)}
-            {sel.status!=="pending"&&<button onClick={()=>updateOrder(sel.id,{status:STATUS_FLOW[STATUS_FLOW.indexOf(sel.status)-1]})} style={{marginLeft:"auto",padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.textMuted,cursor:"pointer",fontSize:".7rem",fontFamily:T.font}}>&#8592; Zurück</button>}
           </div>
           {/* Zwei Spalten */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>

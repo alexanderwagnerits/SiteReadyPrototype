@@ -415,7 +415,13 @@ VARIABLEN-PFLICHT (in Hero und Kontakt nur diese Platzhalter, KEINE echten Daten
 
   if (!aiRes.ok) {
     const err = await aiRes.json().catch(() => ({}));
-    return Response.json({error: "KI-Fehler: " + (err.error?.message || aiRes.status)}, {status: 500});
+    const errMsg = "Claude API Fehler: " + (err.error?.message || `HTTP ${aiRes.status}`);
+    await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
+      method: "PATCH",
+      headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
+      body: JSON.stringify({last_error: errMsg}),
+    });
+    return Response.json({error: errMsg}, {status: 500});
   }
 
   const aiData = await aiRes.json();
@@ -529,12 +535,19 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
         "Prefer": "return=minimal",
       },
-      body: JSON.stringify({website_html: html, subdomain: sub, status: "review", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur}),
+      body: JSON.stringify({website_html: html, subdomain: sub, status: "review", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null}),
     }
   );
 
   return Response.json({ok: save.ok, subdomain: sub, status: "review"});
   } catch(e) {
+    try {
+      await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
+        method: "PATCH",
+        headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
+        body: JSON.stringify({last_error: "Interner Fehler: " + e.message}),
+      });
+    } catch(_) {}
     return Response.json({error: "Interner Fehler: " + e.message}, {status: 500});
   }
 }

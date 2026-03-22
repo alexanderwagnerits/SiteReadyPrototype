@@ -1602,9 +1602,10 @@ function Admin({adminKey}){
             </div>
             <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
           </div>
-          {/* Status-Buttons */}
-          <div style={{padding:"12px 28px",borderBottom:`1px solid ${T.bg3}`,display:"flex",gap:6,flexWrap:"wrap"}}>
-            {STATUS_FLOW.filter(s=>s!==sel.status).map(s=><button key={s} onClick={()=>updateOrder(sel.id,{status:s})} style={{padding:"4px 12px",border:`2px solid ${STATUS_COLORS[s]}33`,borderRadius:T.rSm,background:STATUS_COLORS[s]+"11",color:STATUS_COLORS[s],cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{STATUS_LABELS[s]}</button>)}
+          {/* Status-Buttons: nur vorwaerts */}
+          <div style={{padding:"12px 28px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+            {STATUS_FLOW.slice(STATUS_FLOW.indexOf(sel.status)+1).map(s=><button key={s} onClick={()=>updateOrder(sel.id,{status:s})} style={{padding:"4px 12px",border:`2px solid ${STATUS_COLORS[s]}33`,borderRadius:T.rSm,background:STATUS_COLORS[s]+"11",color:STATUS_COLORS[s],cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{STATUS_LABELS[s]} &rarr;</button>)}
+            {sel.status!=="pending"&&<button onClick={()=>updateOrder(sel.id,{status:STATUS_FLOW[STATUS_FLOW.indexOf(sel.status)-1]})} style={{marginLeft:"auto",padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.textMuted,cursor:"pointer",fontSize:".7rem",fontFamily:T.font}}>&#8592; Zurueck</button>}
           </div>
           {/* Zwei Spalten */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
@@ -1693,7 +1694,7 @@ function Admin({adminKey}){
               const steps=[
                 {key:"pending",label:"Schritt 1 – Formular",icon:"📋",detail:`Fragebogen ausgefuellt und Bestellung erstellt.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
                 {key:"paid",label:"Schritt 2 – Zahlung",icon:"💳",detail:"Stripe-Zahlung eingegangen. Bestellung freigeschaltet fuer Generierung.",meta:[["Zahlungsweg","Stripe"],["Betrag","laut Stripe-Dashboard"]]},
-                {key:"in_arbeit",label:"Schritt 3 – Generierung",icon:"🤖",detail:`Claude ${hasHtml?"hat HTML generiert":"generiert gerade oder noch ausstehend"}.`,meta:hasHtml?[["Modell","claude-sonnet-4-6"],["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],["Subdomain",sel.subdomain||"—"],["HTML-Groesse",sel.website_html?`${Math.round(sel.website_html.length/1024)} KB`:"—"]]:[["Status","Noch nicht generiert"],["Subdomain",sel.subdomain||"—"]]},
+                {key:"in_arbeit",label:"Schritt 3 – Generierung",icon:"🤖",detail:`Claude ${hasHtml?"hat HTML generiert":sel.last_error?"ist fehlgeschlagen":"noch ausstehend"}.`,error:sel.last_error||null,meta:hasHtml?[["Modell","claude-sonnet-4-6"],["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],["Subdomain",sel.subdomain||"—"],["HTML-Groesse",sel.website_html?`${Math.round(sel.website_html.length/1024)} KB`:"—"]]:[["Status",sel.last_error?"Fehlgeschlagen":"Noch nicht generiert"],["Subdomain",sel.subdomain||"—"]]},
                 {key:"review",label:"Schritt 4 – Review",icon:"👁️",detail:"Website liegt bereit zur Admin-Pruefung. Nach Freigabe wird sie live geschaltet.",meta:[["URL",sel.subdomain?`/s/${sel.subdomain}`:"—"],["Neugen. Leistungen (30d)",`${[sel.last_regen_at,sel.prev_regen_at].filter(d=>{if(!d)return false;return new Date(d).getTime()>Date.now()-30*24*60*60*1000;}).length}/2 verwendet`]]},
                 {key:"live",label:"Schritt 5 – Live",icon:"🚀",detail:"Website ist oeffentlich erreichbar. noindex-Tag aktiv (Prototyp-Phase).",meta:[["Status",st==="live"?"Online":"Noch nicht live"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
@@ -1702,9 +1703,10 @@ function Admin({adminKey}){
                   const done=STATUS_FLOW.indexOf(step.key)<=idx;
                   const current=step.key===st;
                   const pending=STATUS_FLOW.indexOf(step.key)>idx;
-                  const lineColor=done?T.green:current?"#f59e0b":"#e2e8f0";
-                  const dotBg=done?T.green:current?"#f59e0b":"#e2e8f0";
-                  const dotColor=done||current?"#fff":T.textMuted;
+                  const hasErr=!!step.error&&!done;
+                  const lineColor=done?T.green:hasErr?"#ef4444":current?"#f59e0b":"#e2e8f0";
+                  const dotBg=done?T.green:hasErr?"#ef4444":current?"#f59e0b":"#e2e8f0";
+                  const dotColor=done||current||hasErr?"#fff":T.textMuted;
                   return(<div key={step.key} style={{display:"flex",gap:16,paddingBottom:i<steps.length-1?24:0}}>
                     <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
                       <div style={{width:32,height:32,borderRadius:"50%",background:dotBg,color:dotColor,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,flexShrink:0}}>{done?"✓":current?"●":i+1}</div>
@@ -1715,7 +1717,8 @@ function Admin({adminKey}){
                         <span style={{fontSize:".88rem",fontWeight:700,color:pending?T.textMuted:T.dark}}>{step.icon} {step.label}</span>
                         {current&&<span style={{background:"#fef3c7",color:"#92400e",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>Aktuell</span>}
                       </div>
-                      <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:8,lineHeight:1.5}}>{step.detail}</div>
+                      <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:step.error?6:8,lineHeight:1.5}}>{step.detail}</div>
+                      {step.error&&<div style={{marginBottom:8,padding:"8px 12px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".75rem",color:"#991b1b",fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}>{step.error}</div>}
                       {(!pending||current)&&<div style={{background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"8px 12px",display:"flex",flexDirection:"column",gap:4}}>
                         {step.meta.map(([l,v])=><div key={l} style={{display:"flex",gap:12,fontSize:".75rem"}}>
                           <span style={{color:T.textMuted,fontWeight:600,minWidth:120,flexShrink:0}}>{l}</span>

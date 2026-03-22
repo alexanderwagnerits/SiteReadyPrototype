@@ -49,7 +49,7 @@ const STYLES_MAP={
   traditional:{label:"Bodenständig & vertraut",desc:"Warme Töne, solider Auftritt",primary:"#78350f",accent:"#d97706",accentSoft:"rgba(217,119,6,0.07)",bg:"#fffbeb",cardBg:"#fff",text:"#451a03",textMuted:"#92713a",textLight:"#b8a070",borderColor:"#fde68a",font:"'Source Serif 4',Georgia,serif",radius:"4px",radiusLg:"8px",heroGradient:"linear-gradient(160deg,#78350f 0%,#92400e 50%,#b45309 100%)",heroOverlay:"radial-gradient(circle at 30% 80%,rgba(255,255,255,0.06) 0%,transparent 50%)",shadow:"0 1px 3px rgba(120,53,15,0.06)",badgeBg:"#fef3c7",badgeText:"#92400e"},
 };
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
-const INIT={berufsgruppe:"",firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,fotos:false,stil:"professional"};
+const INIT={berufsgruppe:"",firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,fotos:true,stil:"professional"};
 
 /* ═══ TOKENS ═══ */
 const T={bg:"#fafbfc",bg2:"#f0f2f5",bg3:"#e8ebf0",white:"#ffffff",dark:"#0c0e12",dark2:"#1a1d24",text:"#1a1d24",textSub:"#4b5162",textMuted:"#8b919e",accent:"#2563eb",accentLight:"#eff4ff",accentGlow:"rgba(37,99,235,0.12)",green:"#16a34a",greenLight:"#f0fdf4",greenGlow:"rgba(22,163,74,0.1)",red:"#dc2626",orange:"#ea580c",r:"14px",rSm:"10px",rLg:"22px",rXl:"28px",font:"'DM Sans',-apple-system,sans-serif",mono:"'JetBrains Mono',monospace",sh1:"0 1px 2px rgba(0,0,0,0.04)",sh2:"0 4px 24px rgba(0,0,0,0.06)",sh3:"0 16px 48px rgba(0,0,0,0.08)",sh4:"0 24px 80px rgba(0,0,0,0.1)"};
@@ -566,7 +566,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
 {hasFB&&<Toggle label="Gesellschaft in Liquidation" checked={!!data.liquidation} onChange={v=>up("liquidation")(v?"in Liquidation":"")} desc="Nur wenn zutreffend"/>}
 <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="UID-Nummer / ATU" value={data.uid} onChange={up("uid")} placeholder="ATU12345678" hint="Optional"/><Field label="GISA-Zahl" value={data.gisazahl} onChange={up("gisazahl")} placeholder="z.B. 12345678" hint="Optional"/></div>
 <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Aufsichtsbehörde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63" hint="Optional"/><Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien" hint="Optional"/></div>
-<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstützte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div></>);})()}</>,<><p style={{fontSize:".88rem",color:T.textSub,margin:"0 0 6px",lineHeight:1.6}}>Basierend auf Ihrer Branche empfehlen wir:</p><p style={{fontSize:"1rem",fontWeight:700,color:T.dark,margin:"0 0 16px"}}>{STYLES_MAP[data.stil]?.label||"Professionell"}</p><StylePicker value={data.stil} onChange={up("stil")}/><div style={{marginTop:20}}><Toggle label="Möchten Sie eigene Fotos auf Ihrer Website?" checked={data.fotos} onChange={up("fotos")} desc="Teamfoto und Arbeitsfotos – nach Bestellung in Ihrem Portal hochladbar"/><div style={{marginTop:8,padding:"10px 12px",background:"#fffbeb",borderRadius:T.rSm,border:"1px solid #fcd34d",fontSize:".78rem",color:"#92400e"}}>⚠️ Diese Einstellung beeinflusst die Website-Struktur und kann nach der Erstellung nicht mehr geändert werden. Logo-Upload ist immer möglich.</div></div><div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:6}}>Nach dem Kauf – Self-Service-Portal</div><div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>Logo hochladen &middot; Eigene Fotos hochladen &middot; Custom Domain verbinden – alles selbst, jederzeit.</div></div></>];
+<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstützte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div></>);})()}</>,<><p style={{fontSize:".88rem",color:T.textSub,margin:"0 0 6px",lineHeight:1.6}}>Basierend auf Ihrer Branche empfehlen wir:</p><p style={{fontSize:"1rem",fontWeight:700,color:T.dark,margin:"0 0 16px"}}>{STYLES_MAP[data.stil]?.label||"Professionell"}</p><StylePicker value={data.stil} onChange={up("stil")}/><div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:6}}>Nach dem Kauf – Self-Service-Portal</div><div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>Logo hochladen &middot; Eigene Fotos hochladen &middot; Custom Domain verbinden – alles selbst, jederzeit.</div></div></>];
 
   const formPanel=(<div style={{display:"flex",flexDirection:"column",background:T.bg,borderRight:isMobile?"none":`1px solid ${T.bg3}`,height:isMobile?"100vh":"100%",overflow:isMobile?"hidden":"visible",fontFamily:T.font}}>
     <div style={{padding:"20px 24px 0"}}>
@@ -675,6 +675,7 @@ function Portal({session,onLogout}){
   const[pwSaving,setPwSaving]=useState(false);
   const[pwSaved,setPwSaved]=useState(false);
   const[pwErr,setPwErr]=useState("");
+  const[onboardSaving,setOnboardSaving]=useState(false);
 
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
@@ -731,6 +732,14 @@ function Portal({session,onLogout}){
       if(col&&order?.id)supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id).then(()=>{});
     }
     setUploading(u=>({...u,[key]:false}));
+  };
+
+  const startBuild=async(withFotos)=>{
+    if(!order||!supabase)return;
+    setOnboardSaving(true);
+    await supabase.from("orders").update({fotos:withFotos,regen_requested:true}).eq("id",order.id);
+    setOrder(o=>({...o,fotos:withFotos,regen_requested:true,status:"in_arbeit"}));
+    setOnboardSaving(false);
   };
 
   const sub=order?.subdomain||"ihre-firma";
@@ -857,10 +866,58 @@ function Portal({session,onLogout}){
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:6}}>Self-Service-Portal</div>
         <h1 style={{fontSize:"1.6rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Willkommen{order?.firmenname?", "+order.firmenname:""}</h1>
       </div>
+      {/* Onboarding: status===paid */}
+      {order?.status==="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"32px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28}}>
+        <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#fef9c3",color:"#92400e",padding:"4px 14px",borderRadius:100,fontSize:".65rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:16}}>Zahlung bestaetigt</div>
+        <h2 style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.02em"}}>Moechten Sie eigene Fotos hochladen?</h2>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 24px"}}>Laden Sie jetzt Ihr Logo und bis zu 5 Fotos hoch – oder starten Sie direkt ohne Fotos. Sie koennen Fotos auch spaeter im Portal hochladen und die Website neu generieren lassen.</p>
+        {/* Logo + Fotos Upload */}
+        <div style={{marginBottom:24}}>
+          <div style={{fontWeight:700,fontSize:".82rem",color:T.dark,marginBottom:10}}>Logo & Fotos (optional)</div>
+          {/* Logo */}
+          {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
+            <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:12,padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+              <div style={{width:56,height:56,borderRadius:T.rSm,background:url?"#000":T.bg2,border:`1.5px dashed ${T.bg3}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {url?<img src={url} alt="Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:3}}/>:<span style={{fontSize:"1.2rem"}}>🏷️</span>}
+              </div>
+              <div style={{flex:1}}><div style={{fontWeight:600,fontSize:".85rem",color:T.dark}}>Logo</div><div style={{fontSize:".74rem",color:T.textMuted}}>Am besten quadratisch oder Querformat</div></div>
+              <label style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
+                <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+              </label>
+            </div>
+          );})()}
+          {/* Fotos */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
+            {ASSETS.slice(1).map(a=>{const url=assetUrls[a.key];const busy=uploading[a.key];return(
+              <div key={a.key} style={{display:"flex",flexDirection:"column",gap:4}}>
+                <div style={{aspectRatio:"1",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {url?<img src={url} alt={a.label} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{fontSize:"1.4rem"}}>📷</span>}
+                </div>
+                <label style={{display:"block",textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".68rem",fontWeight:600,fontFamily:T.font}}>
+                  {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+                </label>
+              </div>
+            );})}
+          </div>
+        </div>
+        {/* Buttons */}
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+          <button onClick={()=>startBuild(true)} disabled={onboardSaving} style={{padding:"13px 28px",border:"none",borderRadius:T.rSm,background:onboardSaving?"#cbd5e1":"linear-gradient(135deg,#16a34a,#22c55e)",color:"#fff",cursor:onboardSaving?"not-allowed":"pointer",fontSize:".92rem",fontWeight:700,fontFamily:T.font,boxShadow:onboardSaving?"none":"0 2px 12px rgba(22,163,74,.2)"}}>
+            {onboardSaving?"Wird gesendet...":"Website jetzt erstellen \u2192"}
+          </button>
+          <button onClick={()=>startBuild(false)} disabled={onboardSaving} style={{padding:"13px 24px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:onboardSaving?"not-allowed":"pointer",fontSize:".88rem",fontWeight:600,fontFamily:T.font}}>
+            Ohne Fotos starten
+          </button>
+        </div>
+        <div style={{marginTop:12,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Ihre Website wird innerhalb von 24h erstellt. Sie erhalten eine E-Mail wenn sie live ist.</div>
+      </div>)}
+
       {/* Tab Nav */}
-      <div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
+      {order?.status!=="paid"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
-      </div>
+      </div>}
 
       {/* Tab: Website */}
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
@@ -1167,6 +1224,15 @@ function Portal({session,onLogout}){
         <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`,fontSize:".78rem",color:T.textSub}}>
           Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.
         </div>
+        {/* Website aktualisieren */}
+        {order?.status&&order.status!=="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>Website aktualisieren</div>
+          <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:14,lineHeight:1.6}}>Sie haben neue Fotos hochgeladen? Wir generieren Ihre Website mit den aktuellen Fotos neu (innerhalb von 24h).</div>
+          {order.regen_requested
+            ?<div style={{fontSize:".82rem",color:"#92400e",fontWeight:600}}>{"\u21BB"} Anfrage bereits gesendet – wir kuemmern uns!</div>
+            :<button onClick={async()=>{if(!order||!supabase)return;await supabase.from("orders").update({regen_requested:true}).eq("id",order.id);setOrder(o=>({...o,regen_requested:true}));}} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Website aktualisieren</button>
+          }
+        </div>)}
       </div>)}
 
       {/* Tab: Domain */}

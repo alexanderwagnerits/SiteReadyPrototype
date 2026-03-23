@@ -997,29 +997,6 @@ function Portal({session,onLogout}){
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
       </div>}
 
-      {/* Globaler Website-Aktualisieren-Button */}
-      {order?.status&&order.status!=="pending"&&(
-        <div style={{background:"#fff",borderRadius:T.r,padding:"14px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,gap:12,flexWrap:"wrap"}}>
-          <div>
-            <div style={{fontWeight:700,fontSize:".85rem",color:T.dark}}>Website neu generieren</div>
-            <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Fuer Aenderungen an Texten, Design oder Leistungen. Fotos erscheinen automatisch.</div>
-          </div>
-          {order.status==="trial"
-            ?<div style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:"#8b5cf6",fontWeight:600,flexShrink:0}}>
-              <span>&#128274;</span> Neu-Generierung ab aktivem Abo
-              <button onClick={()=>setShowPlanModal(true)} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abonnieren</button>
-            </div>
-            :<button onClick={async()=>{
-              if(!supabase||!session)return;
-              const{data:{session:s}}=await supabase.auth.getSession();
-              const token=s?.access_token;
-              await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify({})});
-              setOrder(o=>({...o,status:"pending",regen_requested:false}));
-            }} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>{"Website aktualisieren \u2192"}</button>
-          }
-        </div>
-      )}
-
       {/* Tab: Website */}
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Website URL Card */}

@@ -319,8 +319,8 @@ function LandingPage({onStart,onPortal}){
         <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
         {/* Toggle */}
         <div style={{display:"flex",background:T.bg,borderRadius:8,padding:3,marginBottom:24,width:"100%"}}>
-          {[["monthly","Monatlich"],["yearly","Jaehrlich"]].map(([val,lbl])=>(
-            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"8px 0",border:"none",borderRadius:6,background:pricingYearly===(val==="yearly")?"#fff":"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",boxShadow:pricingYearly===(val==="yearly")?T.sh1:"none",transition:"all .2s",position:"relative"}}>
+          {[["monthly","Monatlich"],["yearly","J\u00e4hrlich"]].map(([val,lbl])=>(
+            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"8px 0",border:`1.5px solid ${pricingYearly===(val==="yearly")?"#cbd5e1":"transparent"}`,borderRadius:6,background:pricingYearly===(val==="yearly")?"#fff":"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",boxShadow:pricingYearly===(val==="yearly")?T.sh1:"none",transition:"all .2s",position:"relative"}}>
               {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"1px 6px",borderRadius:4}}>-15%</span>}
             </button>
           ))}
@@ -350,7 +350,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:28}}>
           {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><span style={{color:"#a855f7",fontWeight:700}}>{"\u23F3"}</span>{f}</div>)}
         </div>
-        <button disabled style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",opacity:.8}}>Informiert bleiben</button>
+        <button disabled style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",opacity:.8}}>Newsletter abonnieren &amp; informiert bleiben</button>
       </div>
     </div>
     <p style={{textAlign:"center",fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"24px auto 0",lineHeight:1.7}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Preise inkl. MwSt.</p>
@@ -944,7 +944,7 @@ function Portal({session,onLogout}){
             </button>
             <button onClick={()=>subscribe("yearly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.accent}`,borderRadius:T.r,background:T.accentLight,cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,position:"relative"}}>
               <div style={{position:"absolute",top:-10,right:16,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".06em"}}>15% RABATT</div>
-              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>Jaehrlich</div>
+              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>J\u00e4hrlich</div>
               <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}183.60<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Jahr</span></div>
               <div style={{fontSize:".76rem",color:T.textMuted}}>{"\u20AC"}15.30/Monat &middot; Laufzeit 12 Monate</div>
             </button>
@@ -2195,7 +2195,7 @@ function Admin({adminKey}){
               const steps=[
                 {key:"pending",label:"Schritt 1 \u2013 Formular & Generierung",icon:"📋",detail:`Fragebogen ausgefuellt, Account erstellt, Website-Generierung automatisch gestartet.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`]].filter(Boolean),error:sel.last_error||null},
                 {key:"trial",label:"Schritt 2 \u2013 Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen \u2013 Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
-                {key:"live",label:"Schritt 3 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"Jaehrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
+                {key:"live",label:"Schritt 3 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"J\u00e4hrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
                 {num:6,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},

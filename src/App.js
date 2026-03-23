@@ -988,7 +988,7 @@ function Portal({session,onLogout}){
           <InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/>
           <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
           <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
-            Impressum-Daten sind rechtlich relevant. Aenderungen werden von uns geprueft und innerhalb von 24h umgesetzt.
+            Impressum-Daten sind rechtlich relevant. Aenderungen werden von uns geprueft und innerhalb von 48h umgesetzt.
           </div>
         </div>
         {/* Kontakt */}

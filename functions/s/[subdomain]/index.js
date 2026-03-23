@@ -59,7 +59,9 @@ export async function onRequestGet({params, env}) {
   // Hero-Bild: erste Section bekommt id="sr-hero", dann CSS-Override mit Bild
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
   if (o.url_hero) {
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.52),rgba(0,0,0,.42)),url('${o.url_hero}') center/cover no-repeat!important}</style>`;
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.55)),url('${o.url_hero}') center/cover no-repeat!important}` +
+      `#sr-hero h1,#hero h1,#sr-hero h2,#hero h2,#sr-hero p,#hero p{text-shadow:0 2px 12px rgba(0,0,0,.55)}` +
+      `</style>`;
     html = html.replace('</head>', heroStyle + '</head>');
   }
 
@@ -79,8 +81,8 @@ export async function onRequestGet({params, env}) {
   const fotoUrls = [o.url_foto1, o.url_foto2, o.url_foto3, o.url_foto4, o.url_foto5].filter(Boolean);
   if (fotoUrls.length > 0) {
     const items = fotoUrls.map(url =>
-      `<div style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:#e2e8f0">` +
-      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">` +
+      `<div style="overflow:hidden;border-radius:8px;background:#e2e8f0;line-height:0">` +
+      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:auto;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">` +
       `</div>`
     ).join("");
     const galleryHtml = `<section id="galerie" style="padding:80px 0;background:var(--bg,#f8fafc)">` +

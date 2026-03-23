@@ -702,6 +702,9 @@ function Portal({session,onLogout}){
   const[onboardSaving,setOnboardSaving]=useState(false);
   const[showPlanModal,setShowPlanModal]=useState(false);
   const[subscribing,setSubscribing]=useState(false);
+  const[toastMsg,setToastMsg]=useState(null);
+  const[deleting,setDeleting]=useState({});
+  const showToast=(msg)=>{setToastMsg(msg);setTimeout(()=>setToastMsg(null),2500);};
 
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
@@ -763,6 +766,21 @@ function Portal({session,onLogout}){
     setUploading(u=>({...u,[key]:false}));
   };
 
+  const deleteAsset=async(key)=>{
+    if(!session?.user?.id||!supabase||!order?.id)return;
+    setDeleting(d=>({...d,[key]:true}));
+    const exts=["jpg","jpeg","png","webp","gif"];
+    for(const ext of exts){
+      await supabase.storage.from("customer-assets").remove([`${session.user.id}/${key}.${ext}`]).catch(()=>{});
+    }
+    const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
+    const col=colMap[key];
+    if(col)await supabase.from("orders").update({[col]:null}).eq("id",order.id);
+    setAssetUrls(u=>{const n={...u};delete n[key];return n;});
+    setDeleting(d=>({...d,[key]:false}));
+    showToast("Bild gel\u00f6scht");
+  };
+
   const startBuild=async(withFotos)=>{
     if(!supabase||!session)return;
     setOnboardSaving(true);
@@ -817,7 +835,7 @@ function Portal({session,onLogout}){
       grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
       kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom},
       firmenbuch:{uid_nummer:order.uid_nummer,unternehmensform:order.unternehmensform,firmenbuchnummer:order.firmenbuchnummer,gisazahl:order.gisazahl,firmenbuchgericht:order.firmenbuchgericht},
-      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst},
+      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
       design:{stil:order.stil,fotos:order.fotos},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
     };
@@ -830,7 +848,7 @@ function Portal({session,onLogout}){
     if(!order||!supabase||!session)return;
     setRegenLoading(section);setRegenErr(null);setEditSection(null);
     const fields={
-      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst},
+      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
       design:{stil:order.stil,fotos:order.fotos},
     };
     try{
@@ -957,6 +975,8 @@ function Portal({session,onLogout}){
         </div>
       </div>)}
 
+      {/* Toast */}
+      {toastMsg&&<div style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:"#4ade80"}}>&#10003;</span>{toastMsg}</div>}
       {/* Build-Screen: status===pending (Generierung laeuft) */}
       {order?.status==="pending"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28,textAlign:"center"}}>
         <div style={{width:56,height:56,borderRadius:"50%",border:`3px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",margin:"0 auto 24px"}}/>
@@ -975,6 +995,19 @@ function Portal({session,onLogout}){
 
       {/* Tab: Website */}
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
+        {/* Website URL Card */}
+        {order.website_html&&order.subdomain&&<div style={{background:"linear-gradient(135deg,#f0f9ff,#e0f2fe)",borderRadius:T.r,padding:"18px 24px",border:"1px solid #bae6fd",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:".65rem",fontWeight:700,color:"#0369a1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:3}}>Ihre Website ist online</div>
+            <div style={{fontSize:".88rem",fontFamily:T.mono,color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sub}.siteready.at</div>
+          </div>
+          <div style={{display:"flex",gap:8,flexShrink:0}}>
+            <button onClick={()=>{navigator.clipboard.writeText(`https://${sub}.siteready.at`);showToast("URL kopiert!");}} style={{padding:"8px 14px",border:"2px solid #bae6fd",borderRadius:T.rSm,background:"#fff",color:"#0369a1",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Kopieren</button>
+            <a href={`https://sitereadyprototype.pages.dev/s/${order.subdomain}`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:"#0ea5e9",color:"#fff",fontSize:".78rem",fontWeight:700,fontFamily:T.font,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}>Website \u00f6ffnen \u2192</a>
+          </div>
+        </div>}
+        {/* Onboarding-Checkliste */}
+        {(()=>{const checks=[{label:"Website erstellt",done:!!order.website_html},{label:"Logo hochgeladen",done:!!assetUrls.logo,tab:"medien"},{label:"Kontakt vollst\u00e4ndig",done:!!(order.telefon&&order.adresse),tab:"website"},{label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien"}];const done=checks.filter(c=>c.done).length;if(done===checks.length)return null;return(<div style={{background:"#fff",borderRadius:T.r,padding:"18px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Erste Schritte</div><div style={{fontSize:".72rem",color:T.textSub,fontWeight:600}}>{done}/{checks.length}</div></div><div style={{display:"flex",flexDirection:"column",gap:6}}>{checks.map((c,i)=><div key={i} onClick={c.tab&&!c.done?()=>setTab(c.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 0",cursor:c.tab&&!c.done?"pointer":"default"}}><div style={{width:18,height:18,borderRadius:"50%",background:c.done?"#16a34a":"#e2e8f0",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".65rem",fontWeight:800,flexShrink:0}}>{c.done?"\u2713":""}</div><span style={{fontSize:".84rem",color:c.done?T.textMuted:T.dark,flex:1}}>{c.label}</span>{c.tab&&!c.done&&<span style={{fontSize:".72rem",color:T.accent,fontWeight:700}}>\u2192</span>}</div>)}</div></div>);})()}
         {/* Grunddaten */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="grunddaten" label="Grunddaten" badge="instant"/>
@@ -1027,21 +1060,24 @@ function Portal({session,onLogout}){
             <InfoRow label="Oeffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
           </>)}
         </div>
-        {/* Leistungen */}
+        {/* Leistungen & Texte */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
+          <SectionHeader id="leistungen" label="Leistungen & Texte" badge="instant"/>
           {editSection==="leistungen"?(<>
             {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
               :<Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
-            <Field label="Zusätzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
+            {(order.leistungen||[]).length>1&&<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Reihenfolge</label>{(order.leistungen||[]).map((l,i)=><div key={l} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${T.bg3}`}}><span style={{flex:1,fontSize:".84rem",color:T.dark}}>{l}</span><button onClick={()=>{if(i>0){const a=[...order.leistungen];[a[i-1],a[i]]=[a[i],a[i-1]];upOrder("leistungen")(a);}}} disabled={i===0} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===0?"default":"pointer",color:i===0?T.bg3:T.textSub,fontFamily:T.font}}>&#9650;</button><button onClick={()=>{if(i<(order.leistungen||[]).length-1){const a=[...order.leistungen];[a[i],a[i+1]]=[a[i+1],a[i]];upOrder("leistungen")(a);}}} disabled={i===(order.leistungen||[]).length-1} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===(order.leistungen||[]).length-1?"default":"pointer",color:i===(order.leistungen||[]).length-1?T.bg3:T.textSub,fontFamily:T.font}}>&#9660;</button></div>)}</div>}
+            <Field label="Zus\u00e4tzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
+            {order.text_ueber_uns!=null&&<><div style={{margin:"20px 0 16px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>KI-Texte bearbeiten</div></div><Field label="\u00dcber uns \u2013 Text" value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint="Kurze Beschreibung im \u00dcber-uns Abschnitt"/><div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Vorteile</div>{(order.text_vorteile||["","","",""]).map((v,i)=>(<Field key={i} label={`Vorteil ${i+1}`} value={v||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>))}{(()=>{const ls=[...(order.leistungen||[]),...(order.extra_leistung?.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean)||[])];return ls.length>0?(<><div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Leistungs-Beschreibungen</div>{ls.map(l=><Field key={l} label={l} value={(order.leistungen_beschreibungen||{})[l]||""} onChange={val=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=val;upOrder("leistungen_beschreibungen")(m);}} rows={2} hint="1 Satz"/>)}</>):null;})()}</>}
           </>):(<>
             {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
             {order.extra_leistung&&<InfoRow label="Zusatz" value={order.extra_leistung}/>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/><InfoRow label="Meisterbetrieb" value={order.meisterbetrieb?"Ja":"Nein"}/><InfoRow label="Kostenloser KV" value={order.kostenvoranschlag?"Ja":"Nein"}/></>}
-            {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><InfoRow label="Buchungslink" value={order.buchungslink||"—"}/><InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/><InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/></>}
+            {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><InfoRow label="Buchungslink" value={order.buchungslink||"\u2014"}/><InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/><InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/></>}
+            {order.text_ueber_uns!=null&&<InfoRow label="KI-Texte" value={`\u00dcber-uns + ${Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).length:0} Vorteile + ${Object.keys(order.leistungen_beschreibungen||{}).length} Beschreibungen`}/>}
           </>)}
         </div>
         {/* Design */}
@@ -1070,22 +1106,7 @@ function Portal({session,onLogout}){
             <InfoRow label="TikTok" value={order.tiktok}/>
           </>)}
         </div>
-        {/* KI-Texte */}
-        {order.text_ueber_uns!=null&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="ki-texte" label="KI-Texte bearbeiten" badge="instant"/>
-          {editSection==="ki-texte"?(<>
-            <Field label="Ueber uns – Text" value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint="Kurze Beschreibung Ihres Betriebs im Ueber-uns Abschnitt"/>
-            <div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Vorteile (je eine Zeile)</div>
-            {(order.text_vorteile||["","","",""]).map((v,i)=>(
-              <Field key={i} label={`Vorteil ${i+1}`} value={v||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>
-            ))}
-            {(()=>{const ls=[...(order.leistungen||[]),...(order.extra_leistung?.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean)||[])];return ls.length>0?(<><div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Leistungs-Beschreibungen</div>{ls.map(l=><Field key={l} label={l} value={(order.leistungen_beschreibungen||{})[l]||""} onChange={val=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=val;upOrder("leistungen_beschreibungen")(m);}} rows={2} hint="1 Satz Beschreibung"/>)}</>):null;})()}
-          </>):(<>
-            <InfoRow label="Ueber uns" value={order.text_ueber_uns}/>
-            {Array.isArray(order.text_vorteile)&&order.text_vorteile.slice(0,2).map((v,i)=><InfoRow key={i} label={i===0?"Vorteile":""} value={v}/>)}
-            <InfoRow label="Beschreibungen" value={Object.keys(order.leistungen_beschreibungen||{}).length?`${Object.keys(order.leistungen_beschreibungen).length} Leistungen`:null}/>
-          </>)}
-        </div>}
+
         {/* Neugenierung-Hinweis */}
         {order.regen_requested&&<div style={{padding:"14px 18px",background:"#fef3c7",borderRadius:T.r,border:"1px solid #fcd34d",display:"flex",alignItems:"flex-start",gap:12}}>
           <span style={{fontSize:"1.2rem",flexShrink:0}}>{"\u21BB"}</span>
@@ -1264,10 +1285,13 @@ function Portal({session,onLogout}){
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
               </div>
-              <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
-              </label>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                  {busy?"L\u00e4dt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+                </label>
+                {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"\u00d7"}</button>}
+              </div>
             </div>
             {url&&(<div style={{marginBottom:12}}>
               <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
@@ -1303,10 +1327,13 @@ function Portal({session,onLogout}){
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Hero-Bild <span style={{fontSize:".72rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild fuer den oberen Bereich der Website</div>
               </div>
-              <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
-              </label>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                  {busy?"L\u00e4dt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
+                </label>
+                {url&&<button onClick={()=>deleteAsset("hero")} disabled={deleting["hero"]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"\u00d7"}</button>}
+              </div>
             </div>
             {url&&<div style={{borderRadius:T.rSm,overflow:"hidden",height:120,background:"#000",position:"relative"}}>
               <img src={url} alt="Hero" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
@@ -1331,10 +1358,13 @@ function Portal({session,onLogout}){
                 <div style={{aspectRatio:"1",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
                   {url?<img src={url} alt={a.label} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{fontSize:"1.6rem"}}>📷</span>}
                 </div>
-                <label style={{display:"block",textAlign:"center",padding:"7px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
-                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
-                </label>
+                <div style={{display:"flex",gap:4}}>
+                  <label style={{flex:1,display:"block",textAlign:"center",padding:"7px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
+                    {busy?"L\u00e4dt...":url?"Ersetzen":"Hochladen"}
+                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+                  </label>
+                  {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"7px 8px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"\u00d7"}</button>}
+                </div>
               </div>
             );})}
           </div>

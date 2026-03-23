@@ -1408,8 +1408,8 @@ function Admin({adminKey}){
   const[kE,setKE]=useState({gruendung:2000,stammkapital:10000,anwaltskosten:5000,security:2000,freelancer:2000,stb:800,marketing:3000,puffer:1500,foerderquote:30});
   const[kL,setKL]=useState({supabase:25,cloudflare:20,claude:90,ms365:22,ads:200,stb:125,versicherung:50,puffer:50});
   const[kK,setKK]=useState({stripe_pct:1.4,stripe_fix:0.25,claude_cost:0.12,storage_onb:0.01,regen:0.04,storage_mo:0.03,cf_bw:0.02,email:0.01,preis:18,laufzeit:12});
-  const[kP,setKP]=useState({neukunden:[100,300,700],churn:[20,20,20],preis:[18,18,18],mkt_mo:[200,500,1000],weiterentw:[1000,1000,1000],hosting:[400,600,1200],stb:[2000,2500,3000],einmalkosten:16300});
-  const[kB,setKB]=useState({fixkosten:0,preis:18,variable:0.58});
+  const[kP,setKP]=useState({neukunden:[100,300,700],churn:[20,20,20],mkt_mo:[200,500,1000],weiterentw:[1000,1000,1000],hosting:[400,600,1200],stb:[2000,2500,3000]});
+  const[kB,setKB]=useState({fixkosten:0});
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1948,12 +1948,13 @@ function Admin({adminKey}){
           const marge=(kK.preis||0)>0?db_mo/(kK.preis)*100:0;
           const umsatzLaufzeit=(kK.preis||0)*(kK.laufzeit||0);
           const kostenLaufzeit=onbGesamt+laufKunde*(kK.laufzeit||0);
+          const stripePerKunde=Math.round((kK.preis*(kK.laufzeit/12)*(kK.stripe_pct/100)+kK.stripe_fix)*100)/100;
           const aktiv=[0,0,0],durch=[0,0,0],umsatz=[0,0,0],claudeK=[0,0,0],stripeK=[0,0,0],mktK=[0,0,0],gesamtK=[0,0,0],gv=[0,0,0];
-          for(let i=0;i<3;i++){const prev=i===0?0:aktiv[i-1];aktiv[i]=Math.round(prev*(1-(kP.churn[i]||0)/100)+(kP.neukunden[i]||0));durch[i]=Math.round((prev+aktiv[i])/2);umsatz[i]=durch[i]*(kP.preis[i]||0)*12;claudeK[i]=Math.round((kP.neukunden[i]||0)*0.30);stripeK[i]=Math.round((kP.neukunden[i]||0)*3.27);mktK[i]=(kP.mkt_mo[i]||0)*12;gesamtK[i]=claudeK[i]+stripeK[i]+(kP.hosting[i]||0)+mktK[i]+(kP.stb[i]||0)+600+(kP.weiterentw[i]||0);gv[i]=umsatz[i]-gesamtK[i];}
+          for(let i=0;i<3;i++){const prev=i===0?0:aktiv[i-1];aktiv[i]=Math.round(prev*(1-(kP.churn[i]||0)/100)+(kP.neukunden[i]||0));durch[i]=Math.round((prev+aktiv[i])/2);umsatz[i]=durch[i]*kK.preis*12;claudeK[i]=Math.round((kP.neukunden[i]||0)*kK.claude_cost*100)/100;stripeK[i]=Math.round((kP.neukunden[i]||0)*stripePerKunde*100)/100;mktK[i]=(kP.mkt_mo[i]||0)*12;gesamtK[i]=claudeK[i]+stripeK[i]+(kP.hosting[i]||0)+mktK[i]+(kP.stb[i]||0)+600+(kP.weiterentw[i]||0);gv[i]=umsatz[i]-gesamtK[i];}
           const kumGewinn=[gv[0],gv[0]+gv[1],gv[0]+gv[1]+gv[2]];
-          const kumNachEinmal=kumGewinn.map(k=>k-(kP.einmalkosten||0));
-          const kumMitFoerd=kumGewinn.map(k=>k-((kP.einmalkosten||0)-foerderbetrag));
-          const db_kunde=(kB.preis||0)-(kB.variable||0);
+          const kumNachEinmal=kumGewinn.map(k=>k-echteKosten);
+          const kumMitFoerd=kumGewinn.map(k=>k-(echteKosten-foerderbetrag));
+          const db_kunde=kK.preis-laufKunde;
           const breakeven=(kB.fixkosten||0)===0?0:Math.ceil((kB.fixkosten||0)/Math.max(0.01,db_kunde));
           const fmt=v=>"EUR "+Number(v).toLocaleString("de-AT",{minimumFractionDigits:0,maximumFractionDigits:2});
           const fmtN=v=>Number(v).toLocaleString("de-AT",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -2100,7 +2101,8 @@ function Admin({adminKey}){
                 <thead><tr><th style={th2}>Parameter / Kennzahl</th><th style={{...th2,textAlign:"right"}}>Jahr 1</th><th style={{...th2,textAlign:"right"}}>Jahr 2</th><th style={{...th2,textAlign:"right"}}>Jahr 3</th></tr></thead>
                 <tbody>
                   <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Annahmen</td></tr>
-                  {[{l:"Neukunden pro Jahr",k:"neukunden"},{l:"Churn-Rate (%)",k:"churn"},{l:"Monatspreis (EUR)",k:"preis"},{l:"Marketing pro Monat (EUR)",k:"mkt_mo"},{l:"Weiterentwicklung pro Jahr (EUR)",k:"weiterentw"},{l:"Hosting & Infrastruktur (EUR/Jahr)",k:"hosting"},{l:"Steuerberater & Sonstiges (EUR/Jahr)",k:"stb"}].map((r,ri)=>(
+                  <tr style={{background:"#fff"}}><td style={td2()}>Monatspreis (EUR)</td><td style={{...tdM(),color:T.accent,fontStyle:"italic"}} colSpan={3}>EUR {fmtN(kK.preis)} &nbsp;<span style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.font}}>← aus "Kosten pro Kunde"</span></td></tr>
+                  {[{l:"Neukunden pro Jahr",k:"neukunden"},{l:"Churn-Rate (%)",k:"churn"},{l:"Marketing pro Monat (EUR)",k:"mkt_mo"},{l:"Weiterentwicklung pro Jahr (EUR)",k:"weiterentw"},{l:"Hosting & Infrastruktur (EUR/Jahr)",k:"hosting"},{l:"Steuerberater & Sonstiges (EUR/Jahr)",k:"stb"}].map((r,ri)=>(
                     <tr key={r.k} style={{background:ri%2===0?"#fff":"#fafbfc"}}>
                       <td style={td2()}>{r.l}</td>
                       {[0,1,2].map(i=>(<td key={i} style={{padding:"5px 14px",textAlign:"right"}}>{inp(kP[r.k][i],v=>setKP(p=>{const arr=[...p[r.k]];arr[i]=v;return{...p,[r.k]:arr};}))}</td>))}
@@ -2112,8 +2114,8 @@ function Admin({adminKey}){
                   <tr style={{background:"#fff"}}><td style={td2()}>Durchschn. aktive Kunden</td>{durch.map((v,i)=><td key={i} style={tdM()}>{v.toLocaleString("de-AT")}</td>)}</tr>
                   <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Gewinn & Verlust</td></tr>
                   <tr style={{background:"#fff"}}><td style={td2(true)}>Umsatz</td>{umsatz.map((v,i)=><td key={i} style={tdM(true)}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Claude API (EUR 0,30 pro Neukunde)</td>{claudeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Stripe Gebuehren (EUR 3,27 pro Neukunde)</td>{stripeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Claude API (EUR {fmtN(kK.claude_cost)} pro Neukunde)</td>{claudeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Stripe Gebuehren (EUR {fmtN(stripePerKunde)} pro Neukunde)</td>{stripeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
                   <tr style={{background:"#fafbfc"}}><td style={td2()}>Hosting & Infrastruktur</td>{kP.hosting.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
                   <tr style={{background:"#fff"}}><td style={td2()}>Marketing</td>{mktK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
                   <tr style={{background:"#fafbfc"}}><td style={td2()}>Steuerberater & Sonstiges</td>{kP.stb.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
@@ -2125,8 +2127,8 @@ function Admin({adminKey}){
                   <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Kumuliert</td></tr>
                   <tr style={{background:"#fff"}}><td style={td2()}>Kumulierter Gewinn</td>{kumGewinn.map((v,i)=><td key={i} style={tdM(false,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
                   <tr style={{background:"#fafbfc"}}>
-                    <td style={td2()}><div style={{display:"flex",alignItems:"center",gap:8}}>Einmalkosten (ohne Stammkapital)<input type="number" value={kP.einmalkosten} onChange={e=>setKP(p=>({...p,einmalkosten:+e.target.value||0}))} style={{background:"#fffde7",border:`1px solid ${T.bg3}`,borderRadius:3,padding:"2px 5px",fontFamily:T.mono,fontSize:".78rem",width:75,textAlign:"right",outline:"none"}}/></div></td>
-                    {[0,1,2].map(i=><td key={i} style={tdM()}>{fmt(kP.einmalkosten)}</td>)}
+                    <td style={td2()}>Einmalkosten (ohne Stammkapital) <span style={{fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>← aus "Einmalkosten"</span></td>
+                    {[0,1,2].map(i=><td key={i} style={{...tdM(),color:T.accent,fontStyle:"italic"}}>{fmt(echteKosten)}</td>)}
                   </tr>
                   <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>KUMULIERT NACH EINMALKOSTEN</td>{kumNachEinmal.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
                   <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Mit KMU Digital Foerderung</td></tr>
@@ -2141,8 +2143,8 @@ function Admin({adminKey}){
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   <tbody>
                     <tr style={{background:"#fff"}}><td style={td2()}>Fixkosten pro Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.fixkosten,v=>setKB(p=>({...p,fixkosten:v})))}</td></tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Umsatz pro Kunde / Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.preis,v=>setKB(p=>({...p,preis:v})))}</td></tr>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Variable Kosten pro Kunde / Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.variable,v=>setKB(p=>({...p,variable:v})))}</td></tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Umsatz pro Kunde / Monat <span style={{fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>← aus "Kosten pro Kunde"</span></td><td style={{...tdM(),color:T.accent,fontStyle:"italic"}}>EUR {fmtN(kK.preis)}</td></tr>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Variable Kosten pro Kunde / Monat <span style={{fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>← aus "Kosten pro Kunde"</span></td><td style={{...tdM(),color:T.accent,fontStyle:"italic"}}>EUR {fmtN(laufKunde)}</td></tr>
                     <tr style={{background:T.bg,borderTop:`1px solid ${T.bg3}`}}><td style={td2(true)}>Deckungsbeitrag pro Kunde / Monat</td><td style={tdM(true)}>EUR {fmtN(db_kunde)}</td></tr>
                     <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true,T.green)}>BREAK-EVEN: Anzahl Kunden</td><td style={{...tdM(true,T.green)}}>{breakeven} <span style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.font,fontWeight:400}}>Fixkosten / Deckungsbeitrag</span></td></tr>
                   </tbody>

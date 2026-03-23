@@ -699,6 +699,10 @@ function Portal({session,onLogout}){
   const[pwSaving,setPwSaving]=useState(false);
   const[pwSaved,setPwSaved]=useState(false);
   const[pwErr,setPwErr]=useState("");
+  const[newEmail,setNewEmail]=useState("");
+  const[emailSaving,setEmailSaving]=useState(false);
+  const[emailSent,setEmailSent]=useState(false);
+  const[emailErr,setEmailErr]=useState("");
   const[onboardSaving,setOnboardSaving]=useState(false);
   const[showPlanModal,setShowPlanModal]=useState(false);
   const[subscribing,setSubscribing]=useState(false);
@@ -993,6 +997,29 @@ function Portal({session,onLogout}){
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
       </div>}
 
+      {/* Globaler Website-Aktualisieren-Button */}
+      {order?.status&&order.status!=="pending"&&(
+        <div style={{background:"#fff",borderRadius:T.r,padding:"14px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,gap:12,flexWrap:"wrap"}}>
+          <div>
+            <div style={{fontWeight:700,fontSize:".85rem",color:T.dark}}>Website neu generieren</div>
+            <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Fuer Aenderungen an Texten, Design oder Leistungen. Fotos erscheinen automatisch.</div>
+          </div>
+          {order.status==="trial"
+            ?<div style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:"#8b5cf6",fontWeight:600,flexShrink:0}}>
+              <span>&#128274;</span> Neu-Generierung ab aktivem Abo
+              <button onClick={()=>setShowPlanModal(true)} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abonnieren</button>
+            </div>
+            :<button onClick={async()=>{
+              if(!supabase||!session)return;
+              const{data:{session:s}}=await supabase.auth.getSession();
+              const token=s?.access_token;
+              await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify({})});
+              setOrder(o=>({...o,status:"pending",regen_requested:false}));
+            }} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>{"Website aktualisieren \u2192"}</button>
+          }
+        </div>
+      )}
+
       {/* Tab: Website */}
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Website URL Card */}
@@ -1003,7 +1030,7 @@ function Portal({session,onLogout}){
           </div>
           <div style={{display:"flex",gap:8,flexShrink:0}}>
             <button onClick={()=>{navigator.clipboard.writeText(`https://${sub}.siteready.at`);showToast("URL kopiert!");}} style={{padding:"8px 14px",border:"2px solid #bae6fd",borderRadius:T.rSm,background:"#fff",color:"#0369a1",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Kopieren</button>
-            <a href={`https://sitereadyprototype.pages.dev/s/${order.subdomain}`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:"#0ea5e9",color:"#fff",fontSize:".78rem",fontWeight:700,fontFamily:T.font,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}>Website \u00f6ffnen \u2192</a>
+            <a href={`https://sitereadyprototype.pages.dev/s/${order.subdomain}`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:"#0ea5e9",color:"#fff",fontSize:".78rem",fontWeight:700,fontFamily:T.font,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}>{"Website \u00f6ffnen \u2192"}</a>
           </div>
         </div>}
         {/* Onboarding-Checkliste */}
@@ -1156,21 +1183,6 @@ function Portal({session,onLogout}){
           </div>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Häufige Fragen</div>
-          {[
-            {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
-            {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Self-Service-Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
-            {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kuendbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
-            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, im Tab 'Logo & Fotos' können Sie Ihr Logo sowie bis zu 5 eigene Fotos hochladen – Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt."},
-            {q:"Wie verbinde ich meine eigene Domain?",a:"Die nötigen DNS-Einträge finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
-          ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
-            <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
-              {f.q}<span style={{color:T.textMuted,fontSize:"1.1rem",marginLeft:12,flexShrink:0}}>+</span>
-            </summary>
-            <p style={{margin:"10px 0 0",fontSize:".84rem",color:T.textSub,lineHeight:1.7}}>{f.a}</p>
-          </details>)}
-        </div>
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Nachricht senden</div>
           {supportSent?(<div style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:12}}>
             <div style={{padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)",color:T.green,fontWeight:700}}>{"\u2713"} Nachricht gesendet</div>
@@ -1179,12 +1191,12 @@ function Portal({session,onLogout}){
           </div>):(<>
             <Dropdown label="Betreff" value={supportSubject} onChange={setSupportSubject} options={[
               {value:"Technisches Problem",label:"Technisches Problem"},
-              {value:"Änderungswunsch",label:"Änderungswunsch"},
+              {value:"Aenderungswunsch",label:"Aenderungswunsch"},
               {value:"Frage zur Rechnung",label:"Frage zur Rechnung"},
               {value:"Custom Domain",label:"Custom Domain"},
-              {value:"Kündigung",label:"Kündigung"},
+              {value:"Kuendigung",label:"Kuendigung"},
               {value:"Sonstiges",label:"Sonstiges"},
-            ]} placeholder="Betreff wählen"/>
+            ]} placeholder="Betreff waehlen"/>
             <Field label="Ihre Nachricht" value={supportMsg} onChange={setSupportMsg} placeholder="Beschreiben Sie Ihr Anliegen..." rows={4}/>
             {supportErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{supportErr}</div>}
             <button onClick={async()=>{
@@ -1199,6 +1211,21 @@ function Portal({session,onLogout}){
             </button>
           </>)}
         </div>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"H\u00e4ufige Fragen"}</div>
+          {[
+            {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
+            {q:"Kann ich den Text auf meiner Website selbst aendern?",a:"Ja – im Self-Service-Portal koennen Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
+            {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kuendbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
+            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, im Tab 'Logo & Fotos' koennen Sie Ihr Logo sowie bis zu 5 eigene Fotos hochladen – Betriebsfotos, Team, Arbeitsproben, Atmosphaere. Sie entscheiden was passt."},
+            {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
+          ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
+            <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
+              {f.q}<span style={{color:T.textMuted,fontSize:"1.1rem",marginLeft:12,flexShrink:0}}>+</span>
+            </summary>
+            <p style={{margin:"10px 0 0",fontSize:".84rem",color:T.textSub,lineHeight:1.7}}>{f.a}</p>
+          </details>)}
+        </div>
       </div>)}
 
       {/* Tab: Account */}
@@ -1209,24 +1236,52 @@ function Portal({session,onLogout}){
           <InfoRow label="Mitglied seit" value={session?.user?.created_at?new Date(session.user.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):""}/>
           <InfoRow label="Abonnement" value={`SiteReady Standard \u2013 ${order?.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":"\u20AC18 / Monat"}`}/>
         </div>
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Passwort ändern</div>
-          <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
-          <Field label="Passwort bestätigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
-          {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{pwErr}</div>}
-          <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <button onClick={async()=>{
-              if(!newPw||newPw!==newPw2){setPwErr("Passwörter stimmen nicht überein.");return;}
-              if(newPw.length<6){setPwErr("Mindestens 6 Zeichen.");return;}
-              setPwSaving(true);setPwErr("");
-              const{error}=await supabase.auth.updateUser({password:newPw});
-              setPwSaving(false);
-              if(error)setPwErr(error.message);
-              else{setPwSaved(true);setNewPw("");setNewPw2("");setTimeout(()=>setPwSaved(false),3000);}
-            }} disabled={pwSaving} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:pwSaving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:pwSaving?"wait":"pointer"}}>
-              {pwSaving?"...":"Passwort speichern"}
-            </button>
-            {pwSaved&&<span style={{color:T.green,fontWeight:600,fontSize:".85rem"}}>{"\u2713"} Gespeichert</span>}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Passwort \u00e4ndern"}</div>
+            <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
+            <Field label="Passwort best\u00e4tigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
+            {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{pwErr}</div>}
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <button onClick={async()=>{
+                if(!newPw||newPw!==newPw2){setPwErr("Passwoerter stimmen nicht ueberein.");return;}
+                if(newPw.length<6){setPwErr("Mindestens 6 Zeichen.");return;}
+                setPwSaving(true);setPwErr("");
+                const{error}=await supabase.auth.updateUser({password:newPw});
+                setPwSaving(false);
+                if(error)setPwErr(error.message);
+                else{setPwSaved(true);setNewPw("");setNewPw2("");setTimeout(()=>setPwSaved(false),3000);}
+              }} disabled={pwSaving} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:pwSaving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:pwSaving?"wait":"pointer"}}>
+                {pwSaving?"...":"Passwort speichern"}
+              </button>
+              {pwSaved&&<span style={{color:T.green,fontWeight:600,fontSize:".85rem"}}>{"\u2713"} Gespeichert</span>}
+            </div>
+          </div>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"E-Mail-Adresse \u00e4ndern"}</div>
+            {emailSent
+              ?<div style={{display:"flex",flexDirection:"column",gap:12}}>
+                <div style={{padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)",color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Best\u00e4tigungslink gesendet</div>
+                <p style={{color:T.textSub,fontSize:".84rem",margin:0,lineHeight:1.6}}>Bitte pr\u00fcfen Sie Ihren Posteingang und klicken Sie auf den Best\u00e4tigungslink um die neue E-Mail-Adresse zu aktivieren.</p>
+                <button onClick={()=>setEmailSent(false)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Neue Anfrage</button>
+              </div>
+              :<>
+                <Field label="Neue E-Mail-Adresse" value={newEmail} onChange={setNewEmail} placeholder="neue@email.at" type="email"/>
+                {emailErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{emailErr}</div>}
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  <button onClick={async()=>{
+                    if(!newEmail||!newEmail.includes("@")){setEmailErr("Bitte g\u00fcltige E-Mail eingeben.");return;}
+                    setEmailSaving(true);setEmailErr("");
+                    const{error}=await supabase.auth.updateUser({email:newEmail});
+                    setEmailSaving(false);
+                    if(error)setEmailErr(error.message);
+                    else{setEmailSent(true);setNewEmail("");}
+                  }} disabled={emailSaving} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:emailSaving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:emailSaving?"wait":"pointer"}}>
+                    {emailSaving?"...":"Best\u00e4tigungslink senden"}
+                  </button>
+                </div>
+              </>
+            }
           </div>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -1372,28 +1427,16 @@ function Portal({session,onLogout}){
         <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(37,99,235,.12)`,fontSize:".78rem",color:T.textSub}}>
           Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.
         </div>
-        {/* Website aktualisieren */}
-        {order?.status&&order.status!=="pending"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>Website neu generieren</div>
-          <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:14,lineHeight:1.6}}>Fotos erscheinen automatisch – kein Neu-Generieren noetig. Dieser Button ist fuer Aenderungen an Texten, Design oder Leistungen.</div>
-          {order.status==="trial"
-            ?<div style={{fontSize:".82rem",color:"#8b5cf6",fontWeight:600,display:"flex",alignItems:"center",gap:10}}>
-              <span>🔒</span> Neu-Generierung ab aktivem Abo verfuegbar.
-              <button onClick={()=>setShowPlanModal(true)} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abonnieren</button>
-            </div>
-            :<button onClick={async()=>{
-              if(!supabase||!session)return;
-              const{data:{session:s}}=await supabase.auth.getSession();
-              const token=s?.access_token;
-              await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify({})});
-              setOrder(o=>({...o,status:"pending",regen_requested:false}));
-            }} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Website aktualisieren</button>
-          }
-        </div>)}
       </div>)}
 
       {/* Tab: Domain */}
-      {tab==="seo"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {tab==="seo"&&order?.status==="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"40px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,textAlign:"center"}}>
+        <div style={{fontSize:"2rem",marginBottom:16}}>&#128274;</div>
+        <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>SEO & Google ab aktivem Abo</h2>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:20,maxWidth:340,margin:"0 auto 20px"}}>Google-Indexierung und SEO-Einstellungen sind nach dem Abo-Abschluss aktiv.</p>
+        <button onClick={()=>setShowPlanModal(true)} style={{padding:"11px 24px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".88rem",fontWeight:700,fontFamily:T.font}}>{"Jetzt abonnieren \u2192"}</button>
+      </div>)}
+      {tab==="seo"&&order?.status!=="trial"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>Google Indexierung</div>
           {order?.status==="live"
@@ -1704,7 +1747,7 @@ function Admin({adminKey}){
           const mrrYearly=orders.filter(o=>o.status==="live"&&o.subscription_plan==="yearly").length*(183.6/12);
           const mrr=Math.round((mrrMonthly+mrrYearly)*100)/100;
           const openTickets=tickets.filter(t=>t.status==="offen");
-          const expiringTrials=orders.filter(o=>o.status==="trial"&&o.trial_expires_at).map(o=>({...o,tl:Math.ceil((new Date(o.trial_expires_at)-Date.now())/(1000*60*60*24))})).filter(o=>o.tl<=7).sort((a,b)=>a.tl-b.tl);
+          const expiringTrials=orders.filter(o=>o.status==="trial").map(o=>{const exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);return{...o,tl:exp?Math.ceil((new Date(exp)-Date.now())/(1000*60*60*24)):999};}).filter(o=>o.tl<=7).sort((a,b)=>a.tl-b.tl);
           const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
           return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
             {/* KPI Cards */}
@@ -1817,7 +1860,7 @@ function Admin({adminKey}){
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status","Trial"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{sf.map((o,i)=>{const tl=o.status==="trial"&&o.trial_expires_at?Math.ceil((new Date(o.trial_expires_at)-Date.now())/(1000*60*60*24)):null;const tc=tl===null?null:tl<=1?"#dc2626":tl<=3?"#d97706":T.green;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                <tbody>{sf.map((o,i)=>{const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;const tc=tl===null?null:tl<=1?"#dc2626":tl<=3?"#d97706":T.green;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
                   <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
@@ -2225,7 +2268,7 @@ function Admin({adminKey}){
                   {(()=>{
                     const planLabel=sel.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":sel.subscription_plan==="monthly"?"\u20AC18 / Monat":null;
                     const planColor=sel.subscription_plan==="yearly"?T.green:sel.subscription_plan==="monthly"?T.accent:null;
-                    const trialLeft=sel.trial_expires_at?Math.ceil((new Date(sel.trial_expires_at)-Date.now())/(1000*60*60*24)):null;
+                    const _selExp=sel.trial_expires_at||(sel.created_at?new Date(new Date(sel.created_at).getTime()+7*24*60*60*1000).toISOString():null);const trialLeft=sel.status==="trial"&&_selExp?Math.ceil((new Date(_selExp)-Date.now())/(1000*60*60*24)):null;
                     return(<>
                       {planLabel&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                         <span style={{color:T.textMuted,fontWeight:600}}>Abo-Plan</span>

@@ -114,7 +114,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 function LandingPage({onStart,onPortal}){
   const[scrolled,setScrolled]=useState(false);
   const[menuOpen,setMenuOpen]=useState(false);
-  const[pricingYearly,setPricingYearly]=useState(false);
+  const[pricingYearly,setPricingYearly]=useState(true);
   useEffect(()=>{const h=()=>{setScrolled(window.scrollY>30);if(window.scrollY>30)setMenuOpen(false)};window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
   const closeMenu=()=>setMenuOpen(false);
   const W=({children,s})=><div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",...s}}>{children}</div>;
@@ -318,10 +318,11 @@ function LandingPage({onStart,onPortal}){
       <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:"2px solid rgba(37,99,235,.2)",boxShadow:"0 8px 40px rgba(37,99,235,.07)"}}>
         <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
         {/* Toggle */}
-        <div style={{display:"flex",background:T.bg,borderRadius:8,padding:3,marginBottom:24,width:"100%"}}>
+        <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,marginBottom:24,width:"100%",position:"relative"}}>
+          <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:7,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
           {[["monthly","Monatlich"],["yearly","J\u00e4hrlich"]].map(([val,lbl])=>(
-            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"8px 0",border:`1.5px solid ${pricingYearly===(val==="yearly")?"#cbd5e1":"transparent"}`,borderRadius:6,background:pricingYearly===(val==="yearly")?"#fff":"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",boxShadow:pricingYearly===(val==="yearly")?T.sh1:"none",transition:"all .2s",position:"relative"}}>
-              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"1px 6px",borderRadius:4}}>-15%</span>}
+            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:7,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textSub,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1}}>
+              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:pricingYearly?"rgba(37,99,235,0.12)":T.accentLight,padding:"2px 7px",borderRadius:4,transition:"background .25s"}}>-15%</span>}
             </button>
           ))}
         </div>
@@ -338,7 +339,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:24}}>
           {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700}}>{"\u2713"}</span>{f}</div>)}
         </div>
-        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Kostenlos testen \u2192</button>
+        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Kostenlos testen {"\u2192"}</button>
       </div>
       {/* Premium Coming Soon */}
       <div style={{background:"#fafafa",borderRadius:14,padding:"36px 28px",position:"relative",border:"1px solid rgba(124,58,237,.15)"}}>
@@ -484,7 +485,7 @@ function SuccessPage({data,onBack}){
                 <span style={{fontSize:"2.6rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.04em",lineHeight:1}}>{"\u20AC"}0</span>
                 <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>heute</span>
               </div>
-              <div style={{fontSize:".78rem",color:T.textMuted,marginTop:4}}>Danach ab {"\u20AC"}18\u2009/Monat &middot; Karte erst nach 7 Tagen belastet &middot; jederzeit kuendbar</div>
+              <div style={{fontSize:".78rem",color:T.textMuted,marginTop:4}}>Ab {"\u20AC"}15.30/Monat (jährl.) oder {"\u20AC"}18/Monat (monatl.) &middot; Karte erst nach 7 Tagen belastet</div>
             </div>
             {saved
               ?<div style={{display:"flex",alignItems:"center",gap:8,padding:"12px 20px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)"}}>
@@ -1117,9 +1118,9 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Häufige Fragen</div>
           {[
-            {q:"Wie lange dauert es bis meine Website online ist?",a:"Nach der Bezahlung richten wir Ihre Website innerhalb von 24 Stunden ein. Sie erhalten eine E-Mail sobald alles live ist."},
+            {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
             {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Self-Service-Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
-            {q:"Was passiert nach 12 Monaten?",a:"Das Abo verlaengert sich automatisch monatlich zum selben Preis. Eine Kündigung ist jederzeit möglich."},
+            {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kuendbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
             {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, im Tab 'Logo & Fotos' können Sie Ihr Logo sowie bis zu 5 eigene Fotos hochladen – Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt."},
             {q:"Wie verbinde ich meine eigene Domain?",a:"Die nötigen DNS-Einträge finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
           ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
@@ -1166,7 +1167,7 @@ function Portal({session,onLogout}){
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Account-Daten</div>
           <InfoRow label="E-Mail-Adresse" value={session?.user?.email}/>
           <InfoRow label="Mitglied seit" value={session?.user?.created_at?new Date(session.user.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):""}/>
-          <InfoRow label="Abonnement" value="SiteReady Standard \u2013 \u20AC18 / Monat"/>
+          <InfoRow label="Abonnement" value={`SiteReady Standard \u2013 ${order?.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":"\u20AC18 / Monat"}`}/>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Passwort ändern</div>
@@ -1190,7 +1191,7 @@ function Portal({session,onLogout}){
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>Kündigung</div>
-          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.7,margin:"0 0 14px"}}>Für eine Kündigung schreiben Sie bitte an <strong>support@siteready.at</strong>. Bitte beachten Sie die Mindestlaufzeit von 12 Monaten.</p>
+          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.7,margin:"0 0 14px"}}>Für eine Kündigung schreiben Sie bitte an <strong>support@siteready.at</strong>.{order?.subscription_plan==="yearly"?" Bitte beachten Sie die Mindestlaufzeit von 12 Monaten.":" Das Monatsabo ist jederzeit kuendbar."}</p>
         </div>
       </div>)}
 
@@ -1214,7 +1215,7 @@ function Portal({session,onLogout}){
         {/* Abo */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Abonnement</div>
-          {[{l:"Paket",v:"SiteReady Standard"},{l:"Preis",v:"\u20AC18 / Monat"},{l:"Mindestlaufzeit",v:"12 Monate"},...(order?.created_at?[{l:"Gestartet am",v:new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})},{l:"Mindestende",v:new Date(new Date(order.created_at).setFullYear(new Date(order.created_at).getFullYear()+1)).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[])].map(({l,v})=>(
+          {[{l:"Paket",v:"SiteReady Standard"},{l:"Preis",v:order?.subscription_plan==="yearly"?"\u20AC183.60 / Jahr (\u20AC15.30/Monat)":"\u20AC18 / Monat"},{l:"Laufzeit",v:order?.subscription_plan==="yearly"?"12 Monate, dann monatlich":"Monatlich kuendbar"},...(order?.created_at?[{l:"Gestartet am",v:new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[]),...(order?.created_at&&order?.subscription_plan==="yearly"?[{l:"Mindestende",v:new Date(new Date(order.created_at).setFullYear(new Date(order.created_at).getFullYear()+1)).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[])].map(({l,v})=>(
             <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
               <span style={{fontSize:".88rem",color:T.dark}}>{v}</span>

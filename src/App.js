@@ -204,10 +204,10 @@ function LandingPage({onStart,onPortal}){
     <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"start"}}>
       <div>
         <Label>Das Problem</Label>
-        <H2 s={{maxWidth:420}}>Keine gute Option für Kleinbetriebe in Österreich.</H2>
-        <Sub s={{marginBottom:36,maxWidth:400}}>Jede bestehende Lösung hat einen entscheidenden Haken.</Sub>
+        <H2 s={{maxWidth:420}}>Handwerker wollen Kunden – nicht stundenlang Webdesign.</H2>
+        <Sub s={{marginBottom:36,maxWidth:400}}>Wer hat schon Zeit fuer Builder, Agentur-Briefings und DSGVO-Texte?</Sub>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          {[{n:"Linktree / Komi",p:"Gratis–5€",i:"Kein Google-Ranking. Kein Impressum."},{n:"Wix / Jimdo",p:"17–25€/Mo",i:"Stunden bis Tage. Hohe Lernkurve."},{n:"Agentur / Freelancer",p:"ab 1.500€",i:"Wochen Wartezeit. Zu teuer."},{n:"Nur Social Media",p:"Gratis",i:"Kein Google. Abmahnrisiko."}].map((c,i)=><div key={i} style={{padding:"18px 22px",background:"#fff",borderRadius:10,border:"1px solid rgba(0,0,0,.07)",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16}}><div><div style={{fontWeight:700,fontSize:".92rem",color:T.dark,marginBottom:3}}>{c.n}</div><div style={{fontSize:".84rem",color:T.red,fontWeight:500}}>{c.i}</div></div><span style={{fontSize:".75rem",fontFamily:T.mono,color:T.textMuted,flexShrink:0,background:"#f7f8fa",padding:"4px 10px",borderRadius:6}}>{c.p}</span></div>)}
+          {[{e:"🕐",t:"Keine Zeit",d:"Der Alltag auf der Baustelle laesst keinen Raum fuer Webdesign."},{e:"💸",t:"Zu teuer",d:"Eine Agentur kostet \u20AC1.500\u20135.000 einmalig \u2013 zu viel fuer einen Kleinbetrieb."},{e:"😤",t:"Zu kompliziert",d:"Baukasten-Tools verlangen eigene Texte, eigenes Design und stundenlange Einarbeitung."},{e:"⚠️",t:"Rechtlich riskant",d:"Fehlendes Impressum oder DSGVO-Text kann teuer werden \u2013 wer soll das pruefen?"}].map((c,i)=><div key={i} style={{padding:"18px 22px",background:"#fff",borderRadius:10,border:"1px solid rgba(0,0,0,.07)",display:"flex",alignItems:"flex-start",gap:16}}><span style={{fontSize:"1.4rem",flexShrink:0,marginTop:1}}>{c.e}</span><div><div style={{fontWeight:700,fontSize:".92rem",color:T.dark,marginBottom:3}}>{c.t}</div><div style={{fontSize:".84rem",color:T.textMuted}}>{c.d}</div></div></div>)}
         </div>
       </div>
       <div>
@@ -216,7 +216,7 @@ function LandingPage({onStart,onPortal}){
           <h3 style={{fontSize:"2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.04em"}}>SiteReady.at</h3>
           <p style={{fontSize:"1rem",color:T.textSub,lineHeight:1.75,marginBottom:24}}>Kein Builder. Ein Service. Du beantwortest Fragen, wir liefern die fertige Website.</p>
           <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:28}}>
-            {["Live-Vorschau vor Kauf","Impressum ECG-konform","DSGVO automatisch","SEO & Google-Index","SSL inklusive","Kein Branding","Website-Import","Self-Service-Portal","Eigene Domain möglich","Österreich-spezifisch"].map(l=><span key={l} style={{fontSize:".75rem",padding:"6px 13px",borderRadius:6,fontWeight:600,background:"#fff",color:T.green,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"} {l}</span>)}
+            {["Website fertig in Minuten","Live-Vorschau vor Kauf","Impressum ECG-konform","DSGVO automatisch","SSL inklusive","Kein Branding","Website-Import","Self-Service-Portal","Eigene Domain moeglich","Oesterreich-spezifisch"].map(l=><span key={l} style={{fontSize:".75rem",padding:"6px 13px",borderRadius:6,fontWeight:600,background:"#fff",color:T.green,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"} {l}</span>)}
           </div>
           <button onClick={onStart} style={{padding:"12px 24px",borderRadius:8,fontSize:".92rem",fontWeight:700,border:"none",cursor:"pointer",background:T.dark,color:"#fff",fontFamily:T.font}}>Jetzt testen &rarr;</button>
         </div>

@@ -1756,12 +1756,13 @@ function Admin({adminKey}){
             {view==="tabelle"&&(sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{sf.map((o,i)=><tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status","Abo"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{sf.map((o,i)=>{const pc=o.subscription_plan==="yearly"?T.green:o.subscription_plan==="monthly"?T.accent:null;const pl=o.subscription_plan==="yearly"?"J\u00e4hrlich":o.subscription_plan==="monthly"?"Monatlich":null;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
                   <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                </tr>)}</tbody>
+                  <td style={{padding:"12px 16px"}}>{pl?<span style={{padding:"2px 8px",borderRadius:4,background:pc+"22",color:pc,fontWeight:700,fontSize:".75rem"}}>{pl}</span>:<span style={{color:T.textMuted,fontSize:".82rem"}}>—</span>}</td>
+                </tr>);})}</tbody>
               </table>
             </div>)}
           </div>);
@@ -1870,16 +1871,19 @@ function Admin({adminKey}){
             return rows.length===0?<div style={{padding:40,textAlign:"center",color:T.textMuted}}>{healthFilter==="fehler"?"Keine Fehler gefunden.":"Keine Websites mit Subdomain."}</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL","Geprüft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","Abo","HTTP","SSL","Geprüft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{rows.map((o,i)=>{
                   const h=health[o.id];const ht=healthTime[o.id];
                   const url=`sitereadyprototype.pages.dev/s/${o.subdomain}`;
+                  const pc=o.subscription_plan==="yearly"?T.green:o.subscription_plan==="monthly"?T.accent:null;
+                  const pl=o.subscription_plan==="yearly"?"J\u00e4hrlich":o.subscription_plan==="monthly"?"Monatlich":null;
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:h==="error"?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
                     <td style={{padding:"10px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
                     <td style={{padding:"10px 14px",fontSize:".78rem",fontFamily:T.mono}}>
                       <a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none"}}>{url}</a>
                     </td>
                     <td style={{padding:"10px 14px"}}><StatusBadge status={o.status}/></td>
+                    <td style={{padding:"10px 14px"}}>{pl?<span style={{padding:"2px 8px",borderRadius:4,background:pc+"22",color:pc,fontWeight:700,fontSize:".72rem"}}>{pl}</span>:<span style={{color:T.textMuted,fontSize:".78rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px",fontSize:".72rem",color:T.textMuted}}>{ht?ht.toLocaleTimeString("de-AT",{hour:"2-digit",minute:"2-digit"}):"—"}</td>
@@ -2161,6 +2165,24 @@ function Admin({adminKey}){
                   </div>
                 :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                   {(()=>{const gb=GRUPPE_BADGE[getBrancheGruppe(sel.branche)];return(<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}><span style={{color:T.textMuted,fontWeight:500}}>Berufsgruppe</span><span style={{display:"inline-flex",alignItems:"center",gap:5}}><span style={{padding:"1px 8px",borderRadius:20,background:gb.bg,color:gb.c,fontSize:".72rem",fontWeight:700}}>{gb.icon} {gb.label}</span></span></div>);})()}
+                  {(()=>{
+                    const planLabel=sel.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":sel.subscription_plan==="monthly"?"\u20AC18 / Monat":null;
+                    const planColor=sel.subscription_plan==="yearly"?T.green:sel.subscription_plan==="monthly"?T.accent:null;
+                    const trialLeft=sel.trial_expires_at?Math.ceil((new Date(sel.trial_expires_at)-Date.now())/(1000*60*60*24)):null;
+                    return(<>
+                      {planLabel&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                        <span style={{color:T.textMuted,fontWeight:600}}>Abo-Plan</span>
+                        <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+                          <span style={{padding:"2px 8px",borderRadius:4,background:planColor+"22",color:planColor,fontWeight:700,fontSize:".75rem"}}>{planLabel}</span>
+                          {sel.stripe_customer_id&&<span style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono}}>{sel.stripe_customer_id}</span>}
+                        </span>
+                      </div>}
+                      {trialLeft!==null&&sel.status==="trial"&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                        <span style={{color:T.textMuted,fontWeight:600}}>Trial</span>
+                        <span style={{color:trialLeft>0?T.dark:T.red,fontWeight:600}}>{trialLeft>0?`${trialLeft} Tag(e) verbleibend`:"Abgelaufen"}</span>
+                      </div>}
+                    </>);
+                  })()}
                   {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                     <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>
                   </div>:null)}

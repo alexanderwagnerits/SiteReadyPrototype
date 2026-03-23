@@ -10,7 +10,7 @@ export async function onRequest({request, env}) {
   };
 
   if (request.method === "GET") {
-    const r = await fetch(`${env.SUPABASE_URL}/rest/v1/docs?select=*&order=sort_order.asc,created_at.asc`, {headers: h});
+    const r = await fetch(`${env.SUPABASE_URL}/rest/v1/docs?select=*&order=sort_order.asc`, {headers: h});
     return Response.json(await r.json());
   }
 

@@ -950,17 +950,6 @@ function Portal({session,onLogout}){
 
       {/* Tab: Website */}
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
-        {/* Website URL Card */}
-        {order.website_html&&order.subdomain&&<div style={{background:"linear-gradient(135deg,#f0f9ff,#e0f2fe)",borderRadius:T.r,padding:"18px 24px",border:"1px solid #bae6fd",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:".65rem",fontWeight:700,color:"#0369a1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:3}}>Ihre Website ist online</div>
-            <div style={{fontSize:".88rem",fontFamily:T.mono,color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sub}.siteready.at</div>
-          </div>
-          <div style={{display:"flex",gap:8,flexShrink:0}}>
-            <button onClick={()=>{navigator.clipboard.writeText(`https://${sub}.siteready.at`);showToast("URL kopiert!");}} style={{padding:"8px 14px",border:"2px solid #bae6fd",borderRadius:T.rSm,background:"#fff",color:"#0369a1",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Kopieren</button>
-            <a href={`https://sitereadyprototype.pages.dev/s/${order.subdomain}`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:"#0ea5e9",color:"#fff",fontSize:".78rem",fontWeight:700,fontFamily:T.font,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}>{"Website \u00f6ffnen \u2192"}</a>
-          </div>
-        </div>}
         {/* Website Status */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Website Status</div>
@@ -1028,9 +1017,6 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
           {editSection==="leistungen"?(<>
-            {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
-              ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
-              :<Field label="Leistungen" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
               <label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Reihenfolge & Beschreibung"}</label>
               {(order.leistungen||[]).map((l,i,arr)=>(
@@ -1047,9 +1033,12 @@ function Portal({session,onLogout}){
             <div style={{marginBottom:16}}>
               <label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Zus\u00e4tzliche Leistungen"}</label>
               {(order.extra_leistung?.split("\n").filter(s=>s.trim())||[]).map((item,i,arr)=>(
-                <div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
-                  <input value={item} onChange={e=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="z.B. Beratung" style={{flex:1,padding:"9px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none"}}/>
-                  <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{padding:"9px 12px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{"\u00d7"}</button>
+                <div key={i} style={{marginBottom:8,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"10px 12px",background:T.bg}}>
+                  <div style={{display:"flex",gap:8,marginBottom:6}}>
+                    <input value={item} onChange={e=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="z.B. Beratung" style={{flex:1,padding:"7px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none"}}/>
+                    <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{padding:"7px 10px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{"\u00d7"}</button>
+                  </div>
+                  <input value={(order.leistungen_beschreibungen||{})[item]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[item]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional, 1 Satz)" style={{width:"100%",padding:"7px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
                 </div>
               ))}
               <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{padding:"7px 14px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>{"+ Leistung hinzuf\u00fcgen"}</button>

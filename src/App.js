@@ -1754,7 +1754,7 @@ function Admin({adminKey}){
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
               {[
                 {l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>setTab("health")},
-                {l:"Trials aktiv",v:trialN,s:expiringTrials.filter(o=>o.tl<=3).length>0?`${expiringTrials.filter(o=>o.tl<=3).length} laufen in \u22643d ab`:"Alle noch frisch",c:"#7c3aed",a:()=>{setTab("bestellungen");setFilter("trial");}},
+                {l:"Trials aktiv",v:trialN,s:expiringTrials.filter(o=>o.tl<=4).length>0?`${expiringTrials.filter(o=>o.tl<=4).length} laufen in \u22644d ab`:"Alle noch frisch",c:"#7c3aed",a:()=>{setTab("bestellungen");setFilter("trial");}},
                 {l:"Offene Tickets",v:openTickets.length,s:openTickets.length===0?"Alles beantwortet":"Bitte pruefen",c:openTickets.length>0?T.red:T.textMuted,a:()=>setTab("support")},
                 {l:"KI-Kosten",v:`\u20AC${totalCost.toFixed(2)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")},
               ].map((k,i)=>(
@@ -1772,7 +1772,7 @@ function Admin({adminKey}){
                 {expiringTrials.length===0
                   ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>Kein Trial l\u00e4uft in 7 Tagen ab.</div>
                   :<div style={{display:"flex",flexDirection:"column",gap:0}}>
-                    {expiringTrials.map((o,i)=>{const tc=o.tl<=1?"#dc2626":o.tl<=3?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
+                    {expiringTrials.map((o,i)=>{const tc=o.tl<=2?"#dc2626":o.tl<=4?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"\u2014"}</div>
                         <div style={{fontSize:".72rem",color:T.textMuted}}>{o.email}</div>
@@ -1860,7 +1860,7 @@ function Admin({adminKey}){
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status","Trial"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{sf.map((o,i)=>{const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;const tc=tl===null?null:tl<=1?"#dc2626":tl<=3?"#d97706":T.green;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                <tbody>{sf.map((o,i)=>{const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;const tc=tl===null?null:tl<=2?"#dc2626":tl<=4?"#d97706":T.green;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
                   <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>

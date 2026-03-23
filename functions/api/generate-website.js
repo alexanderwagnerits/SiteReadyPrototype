@@ -552,7 +552,7 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
         "Prefer": "return=minimal",
       },
-      body: JSON.stringify({website_html: html, subdomain: sub, status: "live", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null}),
+      body: JSON.stringify({website_html: html, subdomain: sub, status: "trial", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null}),
     }
   );
 

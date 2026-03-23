@@ -26,8 +26,9 @@ export async function onRequestPost({request, env, ctx}) {
     if (!orders.length) return Response.json({error: "Keine Bestellung gefunden"}, {status: 404});
     const order = orders[0];
 
-    // 4. Status auf in_arbeit setzen + optionales fotos-Flag
-    const patch = {status: "in_arbeit", regen_requested: false};
+    // 4. trial_expires_at setzen (7 Tage ab jetzt), Status bleibt pending bis Generierung fertig
+    const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const patch = {regen_requested: false, trial_expires_at: trialExpiresAt};
     if (fotos !== null) patch.fotos = fotos;
 
     await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order.id}`, {
@@ -41,7 +42,7 @@ export async function onRequestPost({request, env, ctx}) {
       body: JSON.stringify(patch),
     });
 
-    // 5. Website-Generierung im Hintergrund starten
+    // 5. Website-Generierung im Hintergrund starten (setzt status: trial nach Abschluss)
     if (env.SITE_URL && env.ADMIN_SECRET) {
       ctx.waitUntil(
         fetch(`${env.SITE_URL}/api/generate-website?key=${env.ADMIN_SECRET}`, {

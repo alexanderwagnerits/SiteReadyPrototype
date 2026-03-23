@@ -1,7 +1,6 @@
-export async function onRequestPost({request, env, ctx}) {
+export async function onRequestPost({request, env}) {
   const sig = request.headers.get("stripe-signature");
   const body = await request.text();
-
 
   let event;
   if (env.STRIPE_WEBHOOK_SECRET) {
@@ -11,30 +10,75 @@ export async function onRequestPost({request, env, ctx}) {
       return new Response("Signatur ungueltig: " + e.message, {status: 400});
     }
   } else {
-    // Fallback ohne Signaturpruefung (nur fuer Entwicklung)
     try { event = JSON.parse(body); } catch(e) {
       return new Response("JSON ungueltig", {status: 400});
     }
   }
 
-  // checkout.session.completed → Order auf "paid" setzen
+  const sb = env.SUPABASE_URL;
+  const sbKey = env.SUPABASE_SERVICE_KEY;
+  const headers = {
+    "Content-Type": "application/json",
+    "apikey": sbKey,
+    "Authorization": `Bearer ${sbKey}`,
+    "Prefer": "return=minimal",
+  };
+
+  // Hilfsfunktion: Order per orderId updaten
+  const patchOrder = async (orderId, patch) => {
+    if (!orderId) return;
+    await fetch(`${sb}/rest/v1/orders?id=eq.${orderId}`, {
+      method: "PATCH", headers,
+      body: JSON.stringify(patch),
+    });
+  };
+
+  // Hilfsfunktion: Order per stripe_customer_id finden
+  const findOrderByCustomer = async (customerId) => {
+    const r = await fetch(
+      `${sb}/rest/v1/orders?stripe_customer_id=eq.${encodeURIComponent(customerId)}&select=id,status&limit=1`,
+      {headers: {"apikey": sbKey, "Authorization": `Bearer ${sbKey}`}}
+    );
+    const rows = await r.json();
+    return rows[0] || null;
+  };
+
+  // checkout.session.completed → stripe_customer_id + subscription_id speichern
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     const orderId = session.metadata?.order_id;
-
-    if (orderId && env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
-      await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": env.SUPABASE_SERVICE_KEY,
-          "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
-          "Prefer": "return=minimal",
-        },
-        body: JSON.stringify({status: "paid"}),
+    if (orderId && sb && sbKey) {
+      await patchOrder(orderId, {
+        stripe_customer_id: session.customer || null,
+        subscription_id: session.subscription || null,
+        subscription_plan: session.metadata?.plan || "monthly",
       });
+    }
+  }
 
-      // Kein Auto-Generate mehr – Kunde entscheidet im Portal ob mit/ohne Fotos
+  // invoice.payment_succeeded → erster Zahlungseingang nach Trial → status: live
+  if (event.type === "invoice.payment_succeeded") {
+    const invoice = event.data.object;
+    const customerId = invoice.customer;
+    // Nur verarbeiten wenn billing_reason = subscription_cycle oder subscription_create (nicht trial)
+    if (customerId && sb && sbKey) {
+      const order = await findOrderByCustomer(customerId);
+      if (order && order.status === "trial") {
+        await patchOrder(order.id, {status: "live"});
+      }
+    }
+  }
+
+  // customer.subscription.deleted → Abo gekuendigt/expired → wenn noch trial: nichts tun (cleanup-job macht das)
+  // Wenn live: auf offline setzen
+  if (event.type === "customer.subscription.deleted") {
+    const sub = event.data.object;
+    const customerId = sub.customer;
+    if (customerId && sb && sbKey) {
+      const order = await findOrderByCustomer(customerId);
+      if (order && order.status === "live") {
+        await patchOrder(order.id, {status: "offline"});
+      }
     }
   }
 
@@ -63,7 +107,6 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
 
   if (hex !== expectedSig) throw new Error("Signatur stimmt nicht ueberein");
 
-  // Timestamp nicht aelter als 5 Minuten
   const now = Math.floor(Date.now() / 1000);
   if (Math.abs(now - parseInt(timestamp)) > 300) throw new Error("Webhook zu alt");
 

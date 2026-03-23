@@ -415,19 +415,18 @@ function SuccessPage({data,onBack}){
       facebook:data.facebook||null,instagram:data.instagram||null,linkedin:data.linkedin||null,tiktok:data.tiktok||null
     });
     if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
-    const inserted={id:orderId};
-    // 2. Stripe Checkout Session erstellen
-    const resp=await fetch("/api/create-checkout",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({orderId:inserted.id,firmenname:data.firmenname,email:data.email})
-    });
-    const json=await resp.json();
+    // 2. Website-Generierung starten (laeuft im Hintergrund, setzt status:trial nach Abschluss)
+    const token=authData?.session?.access_token;
+    if(token){
+      await fetch("/api/start-build",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
+        body:JSON.stringify({})
+      });
+    }
     setSaving(false);
-    if(json.error){setSaveErr("Zahlung: "+json.error);return;}
-    // 3. E-Mail merken, zu Stripe weiterleiten
-    if(data.email)localStorage.setItem("sr_pending_email",data.email);
-    window.location.href=json.url;
+    // 3. Direkt zum Portal weiterleiten
+    window.location.href="/portal";
   };
   const included=[
     {t:"Subdomain sofort live",d:`${sub}.siteready.at – sofort erreichbar.`},
@@ -469,19 +468,19 @@ function SuccessPage({data,onBack}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`2px solid rgba(37,99,235,.15)`,boxShadow:T.sh2}}>
           <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:20,paddingBottom:20,borderBottom:`1px solid ${T.bg3}`}}>
             <div>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:10}}>Monatliches Abo – Inklusive</div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:10}}>7 Tage kostenlos testen</div>
               <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                <span style={{fontSize:"2.6rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.04em",lineHeight:1}}>{"\u20AC"}18</span>
-                <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
+                <span style={{fontSize:"2.6rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.04em",lineHeight:1}}>{"\u20AC"}0</span>
+                <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>heute</span>
               </div>
-              <div style={{fontSize:".78rem",color:T.textMuted,marginTop:4}}>12 Monate Mindestlaufzeit &middot; {"\u20AC"}216 / Jahr</div>
+              <div style={{fontSize:".78rem",color:T.textMuted,marginTop:4}}>Danach ab {"\u20AC"}18\u2009/Monat &middot; Karte erst nach 7 Tagen belastet &middot; jederzeit kuendbar</div>
             </div>
             {saved
               ?<div style={{display:"flex",alignItems:"center",gap:8,padding:"12px 20px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)"}}>
-                <span style={{color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Bestellung gespeichert</span>
+                <span style={{color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Weiterleitung...</span>
               </div>
               :<button onClick={handleOrder} disabled={saving||!regOk} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:saving?"#94a3b8":!regOk?"#cbd5e1":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":!regOk?"not-allowed":"pointer",whiteSpace:"nowrap",transition:"background .2s"}}>
-                {saving?"Wird verarbeitet...":"Jetzt kaufen \u2192"}
+                {saving?"Website wird erstellt...":"Kostenlos starten \u2192"}
               </button>}
           </div>
           {/* Registrierung */}
@@ -689,6 +688,8 @@ function Portal({session,onLogout}){
   const[pwSaved,setPwSaved]=useState(false);
   const[pwErr,setPwErr]=useState("");
   const[onboardSaving,setOnboardSaving]=useState(false);
+  const[showPlanModal,setShowPlanModal]=useState(false);
+  const[subscribing,setSubscribing]=useState(false);
 
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
@@ -763,6 +764,24 @@ function Portal({session,onLogout}){
     }catch(_){}
     setOnboardSaving(false);
   };
+
+  const subscribe=async(plan)=>{
+    if(!order||!supabase)return;
+    setSubscribing(true);
+    const{data:{session:s}}=await supabase.auth.getSession();
+    const resp=await fetch("/api/create-checkout",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({orderId:order.id,firmenname:order.firmenname,email:order.email,plan,trial_expires_at:order.trial_expires_at})
+    });
+    const json=await resp.json();
+    if(json.url)window.location.href=json.url;
+    else setSubscribing(false);
+  };
+
+  const trialDaysLeft=order?.trial_expires_at
+    ?Math.max(0,Math.ceil((new Date(order.trial_expires_at)-Date.now())/(1000*60*60*24)))
+    :0;
 
   const sub=order?.subdomain||"ihre-firma";
   const TABS=[{id:"website",label:"Meine Website"},{id:"analytics",label:"Statistiken"},{id:"medien",label:"Logo & Fotos"},{id:"seo",label:"SEO & Google"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"support",label:"Support"},{id:"account",label:"Mein Account"}];
@@ -888,56 +907,46 @@ function Portal({session,onLogout}){
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:6}}>Self-Service-Portal</div>
         <h1 style={{fontSize:"1.6rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Willkommen{order?.firmenname?", "+order.firmenname:""}</h1>
       </div>
-      {/* Onboarding: status===paid */}
-      {order?.status==="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"32px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28}}>
-        <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#fef9c3",color:"#92400e",padding:"4px 14px",borderRadius:100,fontSize:".65rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:16}}>Zahlung bestaetigt</div>
-        <h2 style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.02em"}}>Fast fertig – Website jetzt erstellen</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 24px"}}>Optional: Laden Sie jetzt Ihr Logo und Fotos hoch – diese erscheinen automatisch auf Ihrer Website. Sie koennen Fotos jederzeit im Portal hochladen oder austauschen, ohne die Website neu zu generieren.</p>
-        {/* Logo + Fotos Upload */}
-        <div style={{marginBottom:24}}>
-          <div style={{fontWeight:700,fontSize:".82rem",color:T.dark,marginBottom:10}}>Logo & Fotos (optional)</div>
-          {/* Logo */}
-          {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
-            <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:12,padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-              <div style={{width:56,height:56,borderRadius:T.rSm,background:url?"#000":T.bg2,border:`1.5px dashed ${T.bg3}`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                {url?<img src={url} alt="Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:3}}/>:<span style={{fontSize:"1.2rem"}}>🏷️</span>}
-              </div>
-              <div style={{flex:1}}><div style={{fontWeight:600,fontSize:".85rem",color:T.dark}}>Logo</div><div style={{fontSize:".74rem",color:T.textMuted}}>Am besten quadratisch oder Querformat</div></div>
-              <label style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
-              </label>
-            </div>
-          );})()}
-          {/* Fotos */}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
-            {ASSETS.slice(1).map(a=>{const url=assetUrls[a.key];const busy=uploading[a.key];return(
-              <div key={a.key} style={{display:"flex",flexDirection:"column",gap:4}}>
-                <div style={{aspectRatio:"1",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {url?<img src={url} alt={a.label} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{fontSize:"1.4rem"}}>📷</span>}
-                </div>
-                <label style={{display:"block",textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".68rem",fontWeight:600,fontFamily:T.font}}>
-                  {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
-                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
-                </label>
-              </div>
-            );})}
-          </div>
-        </div>
-        {/* Button */}
+      {/* Trial-Banner */}
+      {order?.status==="trial"&&(<div style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
         <div>
-          <button onClick={()=>startBuild(true)} disabled={onboardSaving} style={{padding:"13px 28px",border:"none",borderRadius:T.rSm,background:onboardSaving?"#cbd5e1":"linear-gradient(135deg,#16a34a,#22c55e)",color:"#fff",cursor:onboardSaving?"not-allowed":"pointer",fontSize:".92rem",fontWeight:700,fontFamily:T.font,boxShadow:onboardSaving?"none":"0 2px 12px rgba(22,163,74,.2)"}}>
-            {onboardSaving?"Wird gesendet...":"Website erstellen \u2192"}
-          </button>
+          <div style={{fontWeight:800,fontSize:"1rem",color:"#fff",marginBottom:4}}>
+            {trialDaysLeft>0?`Testphase: noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:"Testphase abgelaufen"}
+          </div>
+          <div style={{fontSize:".82rem",color:"rgba(255,255,255,.75)"}}>Jetzt abonnieren – Karte wird erst nach der Testphase belastet.</div>
         </div>
-        <div style={{marginTop:12,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Die Erstellung dauert ca. 60 Sekunden. Fotos koennen jederzeit hochgeladen werden.</div>
+        <button onClick={()=>setShowPlanModal(true)} style={{padding:"11px 24px",border:"2px solid rgba(255,255,255,.4)",borderRadius:T.rSm,background:"rgba(255,255,255,.15)",color:"#fff",cursor:"pointer",fontSize:".88rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",backdropFilter:"blur(4px)"}}>
+          Jetzt abonnieren \u2192
+        </button>
       </div>)}
 
-      {/* Build-Screen: status===in_arbeit */}
-      {order?.status==="in_arbeit"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28,textAlign:"center"}}>
+      {/* Plan-Modal */}
+      {showPlanModal&&(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>setShowPlanModal(false)}>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"36px 32px",maxWidth:480,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
+          <div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:6}}>Plan waehlen</div>
+          <div style={{fontSize:".85rem",color:T.textSub,marginBottom:28}}>Karte wird erst nach der Testphase belastet. Jederzeit kuendbar.</div>
+          <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24}}>
+            <button onClick={()=>subscribe("monthly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.r,background:"#fff",cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .2s"}}>
+              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>Monatlich</div>
+              <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}18<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Monat</span></div>
+              <div style={{fontSize:".76rem",color:T.textMuted}}>Monatlich kuendbar</div>
+            </button>
+            <button onClick={()=>subscribe("yearly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.accent}`,borderRadius:T.r,background:T.accentLight,cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,position:"relative"}}>
+              <div style={{position:"absolute",top:-10,right:16,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".06em"}}>20% RABATT</div>
+              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>Jaehrlich</div>
+              <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}172.80<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Jahr</span></div>
+              <div style={{fontSize:".76rem",color:T.textMuted}}>{"\u20AC"}14.40/Monat &middot; Laufzeit 12 Monate</div>
+            </button>
+          </div>
+          <button onClick={()=>setShowPlanModal(false)} style={{width:"100%",padding:"11px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+        </div>
+      </div>)}
+
+      {/* Build-Screen: status===pending (Generierung laeuft) */}
+      {order?.status==="pending"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28,textAlign:"center"}}>
         <div style={{width:56,height:56,borderRadius:"50%",border:`3px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",margin:"0 auto 24px"}}/>
         <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 10px"}}>Ihre Website wird erstellt</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 28px"}}>Die KI generiert gerade Ihre individuelle Website. Das dauert ca. 30–60 Sekunden.</p>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 28px"}}>Die KI generiert gerade Ihre individuelle Website. Das dauert ca. 30\u201360 Sekunden.</p>
         <button onClick={async()=>{
           const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
           if(data&&data[0])setOrder(data[0]);
@@ -945,7 +954,7 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Tab Nav */}
-      {order?.status!=="paid"&&order?.status!=="in_arbeit"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
+      {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
       </div>}
 
@@ -1277,17 +1286,20 @@ function Portal({session,onLogout}){
           Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.
         </div>
         {/* Website aktualisieren */}
-        {order?.status&&order.status!=="paid"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        {order?.status&&order.status!=="pending"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,marginBottom:4}}>Website neu generieren</div>
           <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:14,lineHeight:1.6}}>Fotos erscheinen automatisch – kein Neu-Generieren noetig. Dieser Button ist fuer Aenderungen an Texten, Design oder Leistungen.</div>
-          {order.status==="in_arbeit"
-            ?<div style={{fontSize:".82rem",color:"#8b5cf6",fontWeight:600}}>{"\u21BB"} Website wird gerade erstellt...</div>
+          {order.status==="trial"
+            ?<div style={{fontSize:".82rem",color:"#8b5cf6",fontWeight:600,display:"flex",alignItems:"center",gap:10}}>
+              <span>🔒</span> Neu-Generierung ab aktivem Abo verfuegbar.
+              <button onClick={()=>setShowPlanModal(true)} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abonnieren</button>
+            </div>
             :<button onClick={async()=>{
               if(!supabase||!session)return;
               const{data:{session:s}}=await supabase.auth.getSession();
               const token=s?.access_token;
               await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify({})});
-              setOrder(o=>({...o,status:"in_arbeit",regen_requested:false}));
+              setOrder(o=>({...o,status:"pending",regen_requested:false}));
             }} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Website aktualisieren</button>
           }
         </div>)}
@@ -1313,7 +1325,13 @@ function Portal({session,onLogout}){
           <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7,margin:0}}>Wenn Sie eine eigene Domain verbinden, kümmern wir uns auch um die Google-Indexierung für Ihre Domain. Schreiben Sie uns nach der DNS-Umstellung an <strong>support@siteready.at</strong>.</p>
         </div>
       </div>)}
-      {tab==="domain"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+      {tab==="domain"&&order?.status==="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"40px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,textAlign:"center"}}>
+        <div style={{fontSize:"2rem",marginBottom:16}}>🔒</div>
+        <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>Custom Domain ab aktivem Abo</h2>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:20,maxWidth:340,margin:"0 auto 20px"}}>Verbinden Sie Ihre eigene Domain nachdem Sie ein Abo abgeschlossen haben.</p>
+        <button onClick={()=>setShowPlanModal(true)} style={{padding:"11px 24px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".88rem",fontWeight:700,fontFamily:T.font}}>Jetzt abonnieren \u2192</button>
+      </div>)}
+      {tab==="domain"&&order?.status!=="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:10}}>Custom Domain verbinden</div>
         <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>Eigene Domain statt Subdomain</h2>
         <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.7,marginBottom:24}}>
@@ -1371,9 +1389,9 @@ function renderMd(md){
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */
-const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",live:"Live",offline:"Offline"};
-const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
-const STATUS_FLOW=["pending","paid","in_arbeit","live"];
+const STATUS_LABELS={pending:"Wird erstellt",trial:"Testphase",live:"Live",offline:"Offline"};
+const STATUS_COLORS={pending:"#f59e0b",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
+const STATUS_FLOW=["pending","trial","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
 
@@ -1537,12 +1555,12 @@ function Admin({adminKey}){
     w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiteReady – ${title}</title><style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;max-width:960px;margin:32px auto;padding:0 24px;color:#1e293b;font-size:.82rem}h1,h2{font-weight:800;color:#1e293b}button{display:none!important}@media print{body{margin:16px auto}}</style></head><body>${el.innerHTML}</body></html>`);
     w.document.close();setTimeout(()=>w.print(),400);
   };
-  const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
+  const stuckOrders=orders.filter(o=>o.status==="pending"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenBadge=stuckOrders.length||null;
   const alerts=[];
   if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung möglich!",tab:"system"});
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
-  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h bezahlt \u2013 Website-Generierung ausstehend`,tab:"system"});
+  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h in Generierung \u2013 bitte pruefen`,tab:"system"});
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"bestellungen",label:"Bestellungen"},
@@ -1641,7 +1659,7 @@ function Admin({adminKey}){
 
         {/* Tab: Bestellungen */}
         {!loading&&tab==="bestellungen"&&(()=>{
-          const BESTELL_STATUS=["pending","paid","in_arbeit"];
+          const BESTELL_STATUS=["pending","trial"];
           const baseOrders=orders.filter(o=>BESTELL_STATUS.includes(o.status));
           const sf=(search?baseOrders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):baseOrders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>

@@ -1404,6 +1404,12 @@ function Admin({adminKey}){
   const[docEditTitle,setDocEditTitle]=useState("");
   const[docEditContent,setDocEditContent]=useState("");
   const[docSaving,setDocSaving]=useState(false);
+  const[kalkulTab,setKalkulTab]=useState("einmal");
+  const[kE,setKE]=useState({gruendung:2000,stammkapital:10000,anwaltskosten:5000,security:2000,freelancer:2000,stb:800,marketing:3000,puffer:1500,foerderquote:30});
+  const[kL,setKL]=useState({supabase:25,cloudflare:20,claude:90,ms365:22,ads:200,stb:125,versicherung:50,puffer:50});
+  const[kK,setKK]=useState({stripe_pct:1.4,stripe_fix:0.25,claude_cost:0.12,storage_onb:0.01,regen:0.04,storage_mo:0.03,cf_bw:0.02,email:0.01,preis:18,laufzeit:12});
+  const[kP,setKP]=useState({neukunden:[100,300,700],churn:[20,20,20],preis:[18,18,18],mkt_mo:[200,500,1000],weiterentw:[1000,1000,1000],hosting:[400,600,1200],stb:[2000,2500,3000],einmalkosten:16300});
+  const[kB,setKB]=useState({fixkosten:0,preis:18,variable:0.58});
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1538,7 +1544,8 @@ function Admin({adminKey}){
     {id:"support",label:"Support"},
     {id:"system",label:"System",badge:regenBadge},
     {id:"kosten",label:"Kosten"},
-    {id:"docs",label:"Dokumentation",section:"DOKUMENTATION"},
+    {id:"kalkulation",label:"Kalkulation",section:"PLANUNG"},
+    {id:"docs",label:"Dokumentation"},
   ];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
@@ -1906,6 +1913,244 @@ function Admin({adminKey}){
           </div>);
         })()}
 
+
+        {/* Tab: Kalkulation */}
+        {tab==="kalkulation"&&(()=>{
+          const einmalItems=[
+            {l:"FlexCo Gruendung (Notar, Gericht, Gewerbe)",k:"gruendung",note:"Notar, Firmenbuch, Gewerbeanmeldung"},
+            {l:"FlexCo Stammkapital (bleibt in der Firma)",k:"stammkapital",note:"Eigenkapital, kein Aufwand – bleibt in der Firma"},
+            {l:"Anwaltskosten (AGB, Vorlagen, Beratung)",k:"anwaltskosten",note:"AGB + Impressum/DSGVO-Vorlagen + Haftungsberatung"},
+            {l:"Security Audit / Penetration Test",k:"security",note:"Externe Firma vor Launch"},
+            {l:"Freelancer-Entwicklung (punktuell)",k:"freelancer",note:"z.B. Stripe, Supabase – Hauptarbeit Eigenleistung"},
+            {l:"Steuerberater (Erstberatung + Setup)",k:"stb",note:"Rechtsform-Beratung, Buchhaltung einrichten"},
+            {l:"Marketing (Marktangang)",k:"marketing",note:"Landingpage, Werbematerial, erstes Ads-Budget"},
+            {l:"Puffer",k:"puffer",note:"Ca. 10% fuer Unvorhergesehenes"},
+          ];
+          const gesamt=einmalItems.reduce((s,r)=>s+(kE[r.k]||0),0);
+          const echteKosten=gesamt-(kE.stammkapital||0);
+          const foerderbetrag=Math.min(echteKosten*(kE.foerderquote/100),6000);
+          const laufItems=[
+            {l:"Supabase Pro (DB + Auth + Storage)",k:"supabase",note:"PostgreSQL EU-Frankfurt"},
+            {l:"Cloudflare Pro",k:"cloudflare",note:"USD 20/Mo, WAF + erweitertes Caching + DDoS"},
+            {l:"Claude Max (Entwicklung)",k:"claude",note:"Fuer Claude Code + Chat"},
+            {l:"Microsoft 365 Business Premium",k:"ms365",note:"Mail + Office pro Person"},
+            {l:"Google Ads / Meta Ads",k:"ads",note:"Skaliert mit Wachstum"},
+            {l:"Steuerberater (quartalsmaessig)",k:"stb",note:"Ca. EUR 500/Quartal"},
+            {l:"Versicherung (Berufshaftpflicht)",k:"versicherung",note:"Schaetzung"},
+            {l:"Puffer",k:"puffer",note:"Unvorhergesehenes"},
+          ];
+          const laufGesamt=laufItems.reduce((s,r)=>s+(kL[r.k]||0),0);
+          const stripeOnb=Math.round((216*(kK.stripe_pct/100)+kK.stripe_fix)*100)/100;
+          const onbGesamt=stripeOnb+(kK.claude_cost||0)+(kK.storage_onb||0);
+          const laufKunde=(kK.regen||0)+(kK.storage_mo||0)+(kK.cf_bw||0)+(kK.email||0);
+          const db_mo=(kK.preis||0)-laufKunde;
+          const db_yr=db_mo*12;
+          const marge=(kK.preis||0)>0?db_mo/(kK.preis)*100:0;
+          const umsatzLaufzeit=(kK.preis||0)*(kK.laufzeit||0);
+          const kostenLaufzeit=onbGesamt+laufKunde*(kK.laufzeit||0);
+          const aktiv=[0,0,0],durch=[0,0,0],umsatz=[0,0,0],claudeK=[0,0,0],stripeK=[0,0,0],mktK=[0,0,0],gesamtK=[0,0,0],gv=[0,0,0];
+          for(let i=0;i<3;i++){const prev=i===0?0:aktiv[i-1];aktiv[i]=Math.round(prev*(1-(kP.churn[i]||0)/100)+(kP.neukunden[i]||0));durch[i]=Math.round((prev+aktiv[i])/2);umsatz[i]=durch[i]*(kP.preis[i]||0)*12;claudeK[i]=Math.round((kP.neukunden[i]||0)*0.30);stripeK[i]=Math.round((kP.neukunden[i]||0)*3.27);mktK[i]=(kP.mkt_mo[i]||0)*12;gesamtK[i]=claudeK[i]+stripeK[i]+(kP.hosting[i]||0)+mktK[i]+(kP.stb[i]||0)+600+(kP.weiterentw[i]||0);gv[i]=umsatz[i]-gesamtK[i];}
+          const kumGewinn=[gv[0],gv[0]+gv[1],gv[0]+gv[1]+gv[2]];
+          const kumNachEinmal=kumGewinn.map(k=>k-(kP.einmalkosten||0));
+          const kumMitFoerd=kumGewinn.map(k=>k-((kP.einmalkosten||0)-foerderbetrag));
+          const db_kunde=(kB.preis||0)-(kB.variable||0);
+          const breakeven=(kB.fixkosten||0)===0?0:Math.ceil((kB.fixkosten||0)/Math.max(0.01,db_kunde));
+          const fmt=v=>"EUR "+Number(v).toLocaleString("de-AT",{minimumFractionDigits:0,maximumFractionDigits:2});
+          const fmtN=v=>Number(v).toLocaleString("de-AT",{minimumFractionDigits:2,maximumFractionDigits:2});
+          const inp=(v,setter)=>(<input type="number" value={v} onChange={e=>setter(+e.target.value||0)} style={{background:"#fffde7",border:`1px solid ${T.bg3}`,borderRadius:3,padding:"3px 6px",fontFamily:T.mono,fontSize:".82rem",width:90,textAlign:"right",outline:"none",color:T.dark}}/>);
+          const th2={textAlign:"left",padding:"8px 14px",fontSize:".67rem",fontWeight:700,color:"#fff",textTransform:"uppercase",letterSpacing:".08em",background:"#1e3a5f"};
+          const td2=(bold,col)=>({padding:"7px 14px",fontWeight:bold?700:500,color:col||T.dark,fontSize:".83rem"});
+          const tdM=(bold,col)=>({...td2(bold,col),fontFamily:T.mono,textAlign:"right"});
+          const subTabs=[{id:"einmal",label:"Einmalkosten"},{id:"laufend",label:"Laufende Kosten"},{id:"kunde",label:"Kosten pro Kunde"},{id:"plan",label:"3-Jahres-Plan"},{id:"breakeven",label:"Break-Even"}];
+          return(<div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Kalkulation</h2>
+              <div style={{fontSize:".72rem",color:T.textMuted,background:T.bg3,padding:"4px 10px",borderRadius:T.rSm}}>Gelbe Felder = editierbar · Berechnung automatisch</div>
+            </div>
+            <div style={{display:"flex",gap:0,marginBottom:20,borderBottom:`2px solid ${T.bg3}`}}>
+              {subTabs.map(st=>(
+                <button key={st.id} onClick={()=>setKalkulTab(st.id)} style={{padding:"8px 16px",border:"none",background:kalkulTab===st.id?T.accent:"transparent",color:kalkulTab===st.id?"#fff":T.textMuted,borderRadius:`${T.rSm} ${T.rSm} 0 0`,cursor:"pointer",fontWeight:kalkulTab===st.id?700:500,fontSize:".82rem",fontFamily:T.font,marginBottom:-2,borderBottom:kalkulTab===st.id?`2px solid ${T.accent}`:"none"}}>
+                  {st.label}
+                </button>
+              ))}
+            </div>
+            {kalkulTab==="einmal"&&<div>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1,marginBottom:16}}>
+                <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>
+                  <div style={{fontWeight:800,color:T.dark}}>Einmalkosten vor Launch</div>
+                  <div style={{fontSize:".73rem",color:T.textMuted,marginTop:2}}>Gelbe Felder aendern – Summen berechnen sich automatisch.</div>
+                </div>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Betrag</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
+                  <tbody>
+                    {einmalItems.map((r,i)=>(<tr key={r.k} style={{background:i%2===0?"#fff":"#fafbfc"}}>
+                      <td style={td2()}>{r.l}</td>
+                      <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kE[r.k],v=>setKE(p=>({...p,[r.k]:v})))}</td>
+                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>{r.note}</td>
+                    </tr>))}
+                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>GESAMT EINMALKOSTEN (inkl. Stammkapital)</td><td style={tdM(true)}>{fmt(gesamt)}</td><td/></tr>
+                    <tr style={{background:T.bg}}><td style={td2(true)}>Davon echte Kosten (ohne Stammkapital)</td><td style={tdM(true)}>{fmt(echteKosten)}</td><td/></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>KMU Digital Foerderung</div></div>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <tbody>
+                    <tr style={{background:"#fff"}}>
+                      <td style={td2()}>Foerderquote</td>
+                      <td style={{padding:"5px 14px",textAlign:"right"}}><div style={{display:"flex",alignItems:"center",gap:6,justifyContent:"flex-end"}}>{inp(kE.foerderquote,v=>setKE(p=>({...p,foerderquote:Math.min(100,v)})))}<span style={{fontSize:".78rem",color:T.textMuted}}>%</span></div></td>
+                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>30% der Projektkosten, max EUR 6.000</td>
+                    </tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Foerderbetrag</td><td style={tdM()}>{fmt(foerderbetrag)}</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Basis: echte Kosten ohne Stammkapital</td></tr>
+                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>KAPITALBEDARF OHNE FOERDERUNG</td><td style={tdM(true)}>{fmt(gesamt)}</td><td/></tr>
+                    <tr style={{background:T.bg}}><td style={td2(true,T.green)}>KAPITALBEDARF MIT FOERDERUNG</td><td style={tdM(true,T.green)}>{fmt(gesamt-foerderbetrag)}</td><td/></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>}
+            {kalkulTab==="laufend"&&<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>
+                <div style={{fontWeight:800,color:T.dark}}>Monatliche laufende Kosten</div>
+                <div style={{fontSize:".73rem",color:T.textMuted,marginTop:2}}>Pro Monat eintragen – Jahressumme berechnet sich automatisch.</div>
+              </div>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Pro Monat</th><th style={{...th2,textAlign:"right"}}>Pro Jahr</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
+                <tbody>
+                  {laufItems.map((r,i)=>(<tr key={r.k} style={{background:i%2===0?"#fff":"#fafbfc"}}>
+                    <td style={td2()}>{r.l}</td>
+                    <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kL[r.k],v=>setKL(p=>({...p,[r.k]:v})))}</td>
+                    <td style={tdM()}>{fmt((kL[r.k]||0)*12)}</td>
+                    <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>{r.note}</td>
+                  </tr>))}
+                  <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>GESAMT LAUFENDE KOSTEN</td><td style={tdM(true)}>{fmt(laufGesamt)}</td><td style={tdM(true)}>{fmt(laufGesamt*12)}</td><td/></tr>
+                </tbody>
+              </table>
+            </div>}
+            {kalkulTab==="kunde"&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>Einmalige Onboarding-Kosten (pro Neukunde)</div></div>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Betrag</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
+                  <tbody>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Website-Import (Claude Haiku)</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Optional, Jina + Haiku Extraktion</td></tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Fragebogen + Live-Vorschau</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Rein clientseitig, keine Kosten</td></tr>
+                    <tr style={{background:"#fff"}}>
+                      <td style={td2()}>Stripe Gebuehr ({kK.stripe_pct}% von EUR 216 + EUR {kK.stripe_fix})</td>
+                      <td style={{padding:"5px 14px",textAlign:"right"}}><div style={{display:"flex",gap:4,justifyContent:"flex-end",alignItems:"center"}}><span style={{fontSize:".72rem",color:T.textMuted}}>{kK.stripe_pct}%+</span>{inp(kK.stripe_fix,v=>setKK(p=>({...p,stripe_fix:v})))}</div></td>
+                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Einmalzahlung EUR 216 fuer 12 Monate</td>
+                    </tr>
+                    <tr style={{background:"#fafbfc"}}>
+                      <td style={td2()}>Website-Generierung (Claude Sonnet)</td>
+                      <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK.claude_cost,v=>setKK(p=>({...p,claude_cost:v})))}</td>
+                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Claude Sonnet 4.6, ca. 8192 Tokens</td>
+                    </tr>
+                    <tr style={{background:"#fff"}}>
+                      <td style={td2()}>Supabase Storage Setup</td>
+                      <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK.storage_onb,v=>setKK(p=>({...p,storage_onb:v})))}</td>
+                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Ca. 25 MB pro Kunde (Logo + Fotos)</td>
+                    </tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Google Indexierung</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Search Console API kostenlos</td></tr>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Willkommens-E-Mail</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Supabase Auth kostenlos</td></tr>
+                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>ONBOARDING-KOSTEN PRO NEUKUNDE</td><td style={tdM(true)}>EUR {fmtN(onbGesamt)}</td><td/></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>Laufende Kosten pro Kunde / Monat</div></div>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Betrag</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
+                  <tbody>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Stripe Transaktionsgebuehr</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Entfaellt – Gebuehr bei Onboarding (Jahresvorauszahlung)</td></tr>
+                    {[{l:"Re-Generierung (anteilig)",k:"regen",note:"Max 2x/30 Tage, nicht jeder nutzt es"},{l:"Supabase Storage (anteilig)",k:"storage_mo",note:"Laufender Speicher fuer Fotos + HTML"},{l:"Cloudflare Bandbreite (anteilig)",k:"cf_bw",note:"Minimal bei statischen Seiten"},{l:"E-Mail-Versand (anteilig)",k:"email",note:"Rechnungs-E-Mails, Notifications"}].map((r,i)=>(
+                      <tr key={r.k} style={{background:i%2===0?"#fafbfc":"#fff"}}>
+                        <td style={td2()}>{r.l}</td>
+                        <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK[r.k],v=>setKK(p=>({...p,[r.k]:v})))}</td>
+                        <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>{r.note}</td>
+                      </tr>
+                    ))}
+                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>LAUFENDE KOSTEN PRO KUNDE / MONAT</td><td style={tdM(true)}>EUR {fmtN(laufKunde)}</td><td/></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>Deckungsbeitrag &amp; Customer Lifetime Value</div></div>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <tbody>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Umsatz pro Kunde / Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK.preis,v=>setKK(p=>({...p,preis:v})))}</td></tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Variable Kosten / Monat</td><td style={tdM()}>EUR {fmtN(laufKunde)}</td></tr>
+                    <tr style={{background:T.bg}}><td style={td2(true)}>DECKUNGSBEITRAG / MONAT</td><td style={tdM(true,T.green)}>EUR {fmtN(db_mo)}</td></tr>
+                    <tr style={{background:T.bg}}><td style={td2(true)}>DECKUNGSBEITRAG / JAHR</td><td style={tdM(true,T.green)}>EUR {fmtN(db_yr)}</td></tr>
+                    <tr style={{background:T.bg}}><td style={td2(true)}>Marge pro Kunde</td><td style={tdM(true,T.green)}>{marge.toFixed(1)}%</td></tr>
+                    <tr><td colSpan={2} style={{padding:"12px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".82rem"}}>Customer Lifetime Value</td></tr>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Mindestlaufzeit</td><td style={{padding:"5px 14px",textAlign:"right"}}><div style={{display:"flex",gap:6,justifyContent:"flex-end",alignItems:"center"}}>{inp(kK.laufzeit,v=>setKK(p=>({...p,laufzeit:v})))}<span style={{fontSize:".78rem",color:T.textMuted}}>Monate</span></div></td></tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Umsatz (Mindestlaufzeit)</td><td style={tdM()}>EUR {fmtN(umsatzLaufzeit)}</td></tr>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Gesamtkosten (Mindestlaufzeit)</td><td style={tdM()}>EUR {fmtN(kostenLaufzeit)}</td></tr>
+                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true,T.green)}>GEWINN PRO KUNDE (Mindestlaufzeit)</td><td style={tdM(true,T.green)}>EUR {fmtN(umsatzLaufzeit-kostenLaufzeit)}</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>}
+            {kalkulTab==="plan"&&<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>
+                <div style={{fontWeight:800,color:T.dark}}>3-Jahres-Finanzplan</div>
+                <div style={{fontSize:".73rem",color:T.textMuted,marginTop:2}}>Gelbe Felder aendern – alles andere berechnet sich automatisch.</div>
+              </div>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr><th style={th2}>Parameter / Kennzahl</th><th style={{...th2,textAlign:"right"}}>Jahr 1</th><th style={{...th2,textAlign:"right"}}>Jahr 2</th><th style={{...th2,textAlign:"right"}}>Jahr 3</th></tr></thead>
+                <tbody>
+                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Annahmen</td></tr>
+                  {[{l:"Neukunden pro Jahr",k:"neukunden"},{l:"Churn-Rate (%)",k:"churn"},{l:"Monatspreis (EUR)",k:"preis"},{l:"Marketing pro Monat (EUR)",k:"mkt_mo"},{l:"Weiterentwicklung pro Jahr (EUR)",k:"weiterentw"},{l:"Hosting & Infrastruktur (EUR/Jahr)",k:"hosting"},{l:"Steuerberater & Sonstiges (EUR/Jahr)",k:"stb"}].map((r,ri)=>(
+                    <tr key={r.k} style={{background:ri%2===0?"#fff":"#fafbfc"}}>
+                      <td style={td2()}>{r.l}</td>
+                      {[0,1,2].map(i=>(<td key={i} style={{padding:"5px 14px",textAlign:"right"}}>{inp(kP[r.k][i],v=>setKP(p=>{const arr=[...p[r.k]];arr[i]=v;return{...p,[r.k]:arr};}))}</td>))}
+                    </tr>
+                  ))}
+                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Kundenentwicklung</td></tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Bestandskunden Vorjahr</td>{[0,1,2].map(i=><td key={i} style={tdM()}>{(i===0?0:aktiv[i-1]).toLocaleString("de-AT")}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}><td style={td2(true)}>Aktive Kunden (Jahresende)</td>{aktiv.map((v,i)=><td key={i} style={tdM(true)}>{v.toLocaleString("de-AT")}</td>)}</tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Durchschn. aktive Kunden</td>{durch.map((v,i)=><td key={i} style={tdM()}>{v.toLocaleString("de-AT")}</td>)}</tr>
+                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Gewinn & Verlust</td></tr>
+                  <tr style={{background:"#fff"}}><td style={td2(true)}>Umsatz</td>{umsatz.map((v,i)=><td key={i} style={tdM(true)}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Claude API (EUR 0,30 pro Neukunde)</td>{claudeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Stripe Gebuehren (EUR 3,27 pro Neukunde)</td>{stripeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Hosting & Infrastruktur</td>{kP.hosting.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Marketing</td>{mktK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Steuerberater & Sonstiges</td>{kP.stb.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Versicherung</td>{[600,600,600].map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Weiterentwicklung</td>{kP.weiterentw.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:T.bg,borderTop:`1px solid ${T.bg3}`}}><td style={td2(true)}>Gesamtkosten</td>{gesamtK.map((v,i)=><td key={i} style={tdM(true)}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:T.bg}}><td style={td2(true)}>GEWINN / VERLUST</td>{gv.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:T.bg}}><td style={td2()}>Marge</td>{umsatz.map((u,i)=><td key={i} style={tdM(false,u>0&&gv[i]>=0?T.green:T.dark)}>{u>0?(gv[i]/u*100).toFixed(1)+"%":"-"}</td>)}</tr>
+                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Kumuliert</td></tr>
+                  <tr style={{background:"#fff"}}><td style={td2()}>Kumulierter Gewinn</td>{kumGewinn.map((v,i)=><td key={i} style={tdM(false,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
+                  <tr style={{background:"#fafbfc"}}>
+                    <td style={td2()}><div style={{display:"flex",alignItems:"center",gap:8}}>Einmalkosten (ohne Stammkapital)<input type="number" value={kP.einmalkosten} onChange={e=>setKP(p=>({...p,einmalkosten:+e.target.value||0}))} style={{background:"#fffde7",border:`1px solid ${T.bg3}`,borderRadius:3,padding:"2px 5px",fontFamily:T.mono,fontSize:".78rem",width:75,textAlign:"right",outline:"none"}}/></div></td>
+                    {[0,1,2].map(i=><td key={i} style={tdM()}>{fmt(kP.einmalkosten)}</td>)}
+                  </tr>
+                  <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>KUMULIERT NACH EINMALKOSTEN</td>{kumNachEinmal.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
+                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Mit KMU Digital Foerderung</td></tr>
+                  <tr style={{background:T.bg}}><td style={td2(true)}>KUMULIERT NACH FOERDERUNG</td>{kumMitFoerd.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
+                  <tr><td colSpan={4} style={{padding:"6px 14px",fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>Kein Gruendergehalt beruecksichtigt. Stammkapital nicht in den Kosten.</td></tr>
+                </tbody>
+              </table>
+            </div>}
+            {kalkulTab==="breakeven"&&<div style={{maxWidth:560}}>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+                <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:T.dark}}>Break-Even Analyse</div></div>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <tbody>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Fixkosten pro Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.fixkosten,v=>setKB(p=>({...p,fixkosten:v})))}</td></tr>
+                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Umsatz pro Kunde / Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.preis,v=>setKB(p=>({...p,preis:v})))}</td></tr>
+                    <tr style={{background:"#fff"}}><td style={td2()}>Variable Kosten pro Kunde / Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.variable,v=>setKB(p=>({...p,variable:v})))}</td></tr>
+                    <tr style={{background:T.bg,borderTop:`1px solid ${T.bg3}`}}><td style={td2(true)}>Deckungsbeitrag pro Kunde / Monat</td><td style={tdM(true)}>EUR {fmtN(db_kunde)}</td></tr>
+                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true,T.green)}>BREAK-EVEN: Anzahl Kunden</td><td style={{...tdM(true,T.green)}}>{breakeven} <span style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.font,fontWeight:400}}>Fixkosten / Deckungsbeitrag</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>}
+          </div>);
+        })()}
 
         {/* Tab: Dokumentation */}
         {tab==="docs"&&(<div style={{display:"flex",gap:0,height:"calc(100vh - 160px)",minHeight:400}}>

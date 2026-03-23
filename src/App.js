@@ -102,6 +102,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .pt-field-grid{grid-template-columns:1fr!important}
   .pt-tab-nav{width:100%!important;overflow-x:auto!important}
   .pt-addr-grid{grid-template-columns:1fr!important}
+  .pt-photo-grid{grid-template-columns:repeat(3,1fr)!important}
 }
 .lp-hamburger{display:none}
 @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
@@ -921,7 +922,7 @@ function Portal({session,onLogout}){
             </button>
             <button onClick={()=>subscribe("yearly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.accent}`,borderRadius:T.r,background:T.accentLight,cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,position:"relative"}}>
               <div style={{position:"absolute",top:-10,right:16,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".06em"}}>15% RABATT</div>
-              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>J\u00e4hrlich</div>
+              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>{"J\u00e4hrlich"}</div>
               <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}183.60<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Jahr</span></div>
               <div style={{fontSize:".76rem",color:T.textMuted}}>{"\u20AC"}15.30/Monat &middot; Laufzeit 12 Monate</div>
             </button>
@@ -944,8 +945,8 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Tab Nav */}
-      {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content"}}>
-        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s"}}>{t.label}</button>)}
+      {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content",flexWrap:"nowrap"}}>
+        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s",whiteSpace:"nowrap",flexShrink:0}}>{t.label}</button>)}
       </div>}
 
       {/* Tab: Website */}
@@ -1034,16 +1035,16 @@ function Portal({session,onLogout}){
             </div>}
             <div style={{marginBottom:16}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Zus\u00e4tzliche Leistungen"}</div>
-              {(order.extra_leistung?.split("\n").filter(s=>s.trim())||[]).map((item,i,arr)=>(
+              {(order.extra_leistung?.split("\n")||[]).map((item,i,arr)=>(
                 <div key={i} style={{marginBottom:8,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:`1px solid ${T.bg3}`}}>
-                    <input value={item} onChange={e=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="Name der Leistung" style={{flex:1,padding:"4px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
-                    <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
+                    <input value={item} onChange={e=>{const a=[...(order.extra_leistung?.split("\n")||[])];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="Name der Leistung" style={{flex:1,padding:"4px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
+                    <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
                   </div>
                   <textarea value={(order.leistungen_beschreibungen||{})[item]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[item]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional)" rows={2} style={{width:"100%",padding:"9px 12px",border:"none",resize:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box",lineHeight:1.5}}/>
                 </div>
               ))}
-              <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzuf\u00fcgen"}</button>
+              <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzuf\u00fcgen"}</button>
             </div>
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
@@ -1223,8 +1224,8 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"E-Mail-Adresse \u00e4ndern"}</div>
             {emailSent
               ?<div style={{display:"flex",flexDirection:"column",gap:12}}>
-                <div style={{padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)",color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Best\u00e4tigungslink gesendet</div>
-                <p style={{color:T.textSub,fontSize:".84rem",margin:0,lineHeight:1.6}}>Bitte pr\u00fcfen Sie Ihren Posteingang und klicken Sie auf den Best\u00e4tigungslink um die neue E-Mail-Adresse zu aktivieren.</p>
+                <div style={{padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)",color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713 Best\u00e4tigungslink gesendet"}</div>
+                <p style={{color:T.textSub,fontSize:".84rem",margin:0,lineHeight:1.6}}>{"Bitte pr\u00fcfen Sie Ihren Posteingang und klicken Sie auf den Best\u00e4tigungslink um die neue E-Mail-Adresse zu aktivieren."}</p>
                 <button onClick={()=>setEmailSent(false)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Neue Anfrage</button>
               </div>
               :<>
@@ -1329,7 +1330,7 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Ihre Fotos</div>
           <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Laden Sie bis zu 5 Fotos hoch – Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt.</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
+          <div className="pt-photo-grid" style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
             {ASSETS.slice(1).map(a=>{const url=assetUrls[a.key];const busy=uploading[a.key];return(
               <div key={a.key} style={{display:"flex",flexDirection:"column",gap:6}}>
                 <div style={{aspectRatio:"1",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
@@ -1704,7 +1705,7 @@ function Admin({adminKey}){
               <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Trials ablaufend (7 Tage)</div>
                 {expiringTrials.length===0
-                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>Kein Trial l\u00e4uft in 7 Tagen ab.</div>
+                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>{"Kein Trial l\u00e4uft in 7 Tagen ab."}</div>
                   :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                     {expiringTrials.map((o,i)=>{const tc=o.tl<=2?"#dc2626":o.tl<=4?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
                       <div style={{flex:1,minWidth:0}}>

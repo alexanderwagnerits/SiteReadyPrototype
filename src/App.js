@@ -835,8 +835,8 @@ function Portal({session,onLogout}){
     const fields={
       grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
       kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom},
-      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung},
-      texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
+      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
+      texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
       design:{stil:order.stil,fotos:order.fotos},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
     };
@@ -1015,14 +1015,35 @@ function Portal({session,onLogout}){
           {editSection==="leistungen"?(<>
             {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
-              :<Field label="Leistungen (eine pro Zeile)" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
-            {(order.leistungen||[]).length>1&&<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Reihenfolge</label>{(order.leistungen||[]).map((l,i)=><div key={l} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${T.bg3}`}}><span style={{flex:1,fontSize:".84rem",color:T.dark}}>{l}</span><button onClick={()=>{if(i>0){const a=[...order.leistungen];[a[i-1],a[i]]=[a[i],a[i-1]];upOrder("leistungen")(a);}}} disabled={i===0} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===0?"default":"pointer",color:i===0?T.bg3:T.textSub,fontFamily:T.font}}>&#9650;</button><button onClick={()=>{if(i<(order.leistungen||[]).length-1){const a=[...order.leistungen];[a[i],a[i+1]]=[a[i+1],a[i]];upOrder("leistungen")(a);}}} disabled={i===(order.leistungen||[]).length-1} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===(order.leistungen||[]).length-1?"default":"pointer",color:i===(order.leistungen||[]).length-1?T.bg3:T.textSub,fontFamily:T.font}}>&#9660;</button></div>)}</div>}
-            <Field label="Zus\u00e4tzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
+              :<Field label="Leistungen" value={(order.leistungen||[]).join("\n")} onChange={v=>upOrder("leistungen")(v.split("\n").filter(l=>l.trim()))} rows={4}/>;})()}
+            {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
+              <label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Reihenfolge & Beschreibung"}</label>
+              {(order.leistungen||[]).map((l,i,arr)=>(
+                <div key={l} style={{marginBottom:8,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"10px 12px",background:T.bg}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                    <span style={{flex:1,fontSize:".85rem",fontWeight:600,color:T.dark}}>{l}</span>
+                    <button onClick={()=>{if(i>0){const a=[...arr];[a[i-1],a[i]]=[a[i],a[i-1]];upOrder("leistungen")(a);}}} disabled={i===0} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===0?"default":"pointer",color:i===0?T.bg3:T.textSub,fontFamily:T.font}}>&#9650;</button>
+                    <button onClick={()=>{if(i<arr.length-1){const a=[...arr];[a[i],a[i+1]]=[a[i+1],a[i]];upOrder("leistungen")(a);}}} disabled={i===arr.length-1} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===arr.length-1?"default":"pointer",color:i===arr.length-1?T.bg3:T.textSub,fontFamily:T.font}}>&#9660;</button>
+                  </div>
+                  <input value={(order.leistungen_beschreibungen||{})[l]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional, 1 Satz)" style={{width:"100%",padding:"7px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+                </div>
+              ))}
+            </div>}
+            <div style={{marginBottom:16}}>
+              <label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Zus\u00e4tzliche Leistungen"}</label>
+              {(order.extra_leistung?.split("\n").filter(s=>s.trim())||[]).map((item,i,arr)=>(
+                <div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
+                  <input value={item} onChange={e=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="z.B. Beratung" style={{flex:1,padding:"9px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none"}}/>
+                  <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{padding:"9px 12px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{"\u00d7"}</button>
+                </div>
+              ))}
+              <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{padding:"7px 14px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>{"+ Leistung hinzuf\u00fcgen"}</button>
+            </div>
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
           </>):(<>
             {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
-            {order.extra_leistung&&<InfoRow label="Zusatz" value={order.extra_leistung}/>}
+            {order.extra_leistung?.split("\n").filter(s=>s.trim()).map((l,i)=><InfoRow key={i} label={i===0?"Zusatz":""} value={l}/>)}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/><InfoRow label="Meisterbetrieb" value={order.meisterbetrieb?"Ja":"Nein"}/><InfoRow label="Kostenloser KV" value={order.kostenvoranschlag?"Ja":"Nein"}/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><InfoRow label="Buchungslink" value={order.buchungslink||"\u2014"}/><InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/><InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/></>}
           </>)}
@@ -1031,14 +1052,12 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="texte" label="Website-Texte" badge="instant"/>
           {editSection==="texte"?(<>
-            <Field label="\u00dcber uns" value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint="Kurzer Vorstellungstext im \u00dcber-uns Bereich"/>
-            <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Vorteile (werden als Liste angezeigt)</div>
+            <Field label={"\u00dcber uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im \u00dcber-uns Bereich"}/>
+            <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
             {[0,1,2,3].map(i=><Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>)}
-            {(()=>{const ls=[...(order.leistungen||[]),...(order.extra_leistung?.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean)||[])];return ls.length>0?(<><div style={{marginTop:4,marginBottom:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Leistungs-Beschreibungen</div>{ls.map(l=><Field key={l} label={l} value={(order.leistungen_beschreibungen||{})[l]||""} onChange={val=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=val;upOrder("leistungen_beschreibungen")(m);}} rows={2} hint="1 Satz"/>)}</>):null;})()}
           </>):order.text_ueber_uns!=null?(<>
-            <InfoRow label="\u00dcber uns" value={order.text_ueber_uns||"\u2014"}/>
+            <InfoRow label={"\u00dcber uns"} value={order.text_ueber_uns||"\u2014"}/>
             <InfoRow label="Vorteile" value={Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).join(" \u00b7 "):"\u2014"}/>
-            <InfoRow label="Beschreibungen" value={`${Object.keys(order.leistungen_beschreibungen||{}).length} Leistungen beschrieben`}/>
           </>):(
             <div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>
               Texte werden automatisch bei der Website-Generierung erstellt und koennen danach hier bearbeitet werden.

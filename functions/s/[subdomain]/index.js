@@ -56,6 +56,13 @@ export async function onRequestGet({params, env}) {
     );
   }
 
+  // Hero-Bild: erste Section bekommt id="sr-hero", dann CSS-Override mit Bild
+  html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
+  if (o.url_hero) {
+    const heroStyle = `<style>#sr-hero{background:linear-gradient(rgba(0,0,0,.52),rgba(0,0,0,.42)),url('${o.url_hero}') center/cover no-repeat!important}</style>`;
+    html = html.replace('</head>', heroStyle + '</head>');
+  }
+
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
   if (o.adresse || o.ort) {
     const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", \u00d6sterreich");
@@ -80,8 +87,9 @@ export async function onRequestGet({params, env}) {
       `<div style="max-width:1200px;margin:0 auto;padding:0 24px">` +
       `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">Einblicke</div>` +
       `<h2 style="font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:800;color:var(--primary);margin:0 0 32px">Bilder aus unserem Betrieb</h2>` +
-      `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">${items}</div>` +
-      `</div></section>`;
+      `<div class="sr-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">${items}</div>` +
+      `</div></section>` +
+      `<style>@media(max-width:560px){.sr-gallery-grid{grid-template-columns:1fr 1fr!important}}</style>`;
     if (html.includes("<!-- GALERIE -->")) {
       html = html.replace(/<!-- GALERIE -->/g, galleryHtml);
     } else {
@@ -89,6 +97,37 @@ export async function onRequestGet({params, env}) {
     }
   } else {
     html = html.replace(/<!-- GALERIE -->/g, "");
+  }
+
+  // Kontaktformular serve-time injizieren (vor Footer)
+  const contactForm = `<section id="kontakt-formular" style="padding:80px 0;background:#fff">` +
+    `<div style="max-width:640px;margin:0 auto;padding:0 24px">` +
+    `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent,#2563eb);margin-bottom:8px">Kontaktformular</div>` +
+    `<h2 style="font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:800;color:var(--primary,#1e293b);margin:0 0 8px">Schreiben Sie uns</h2>` +
+    `<p style="color:var(--textMuted,#64748b);margin:0 0 32px;font-size:.95rem">Wir melden uns schnellstmoeglich bei Ihnen zurueck.</p>` +
+    `<div id="sr-form-wrap">` +
+    `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
+    `<div class="sr-fg2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">` +
+    `<div><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">Name *</label>` +
+    `<input required type="text" placeholder="Ihr Name" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></div>` +
+    `<div><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">E-Mail *</label>` +
+    `<input required type="email" placeholder="ihre@email.at" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></div>` +
+    `</div>` +
+    `<div style="margin-bottom:16px"><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">Telefon</label>` +
+    `<input type="tel" placeholder="+43 ..." style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></div>` +
+    `<div style="margin-bottom:24px"><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">Nachricht *</label>` +
+    `<textarea required rows="5" placeholder="Ihre Nachricht..." style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;resize:vertical;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></textarea></div>` +
+    `<button type="submit" style="background:var(--accent,#2563eb);color:#fff;border:none;padding:14px 32px;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Nachricht senden</button>` +
+    `</form></div>` +
+    `<div id="sr-form-ok" style="display:none;text-align:center;padding:48px 20px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">` +
+    `<div style="font-size:2.5rem;margin-bottom:12px">&#10003;</div>` +
+    `<h3 style="font-size:1.3rem;font-weight:800;color:var(--primary,#1e293b);margin:0 0 8px">Vielen Dank!</h3>` +
+    `<p style="color:#15803d;margin:0">Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.</p>` +
+    `</div>` +
+    `</div></section>` +
+    `<style>@media(max-width:560px){.sr-fg2{grid-template-columns:1fr!important}}</style>`;
+  if (html.includes('<footer')) {
+    html = html.replace(/<footer[\s\n>]/i, contactForm + '\n<footer ');
   }
 
   // ── Serve-time Variablen-Ersetzung (Sofort-Updates ohne Re-Generierung) ──

@@ -709,7 +709,7 @@ function Portal({session,onLogout}){
       .then(({data})=>{if(data&&data.length>0)setOrder(data[0]);});
     // Existierende Assets laden
     const uid=session.user.id;
-    const keys=["logo","foto1","foto2","foto3","foto4","foto5"];
+    const keys=["logo","hero","foto1","foto2","foto3","foto4","foto5"];
     const exts=["jpg","jpeg","png","webp","gif"];
     keys.forEach(async key=>{
       for(const ext of exts){
@@ -753,7 +753,7 @@ function Portal({session,onLogout}){
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
       // URL in orders-Tabelle speichern (für Serve-time Injection)
-      const colMap={logo:"url_logo",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
+      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
       const col=colMap[key];
       if(col&&order?.id)supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id).then(()=>{});
     }
@@ -1274,6 +1274,32 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".73rem",color:T.textMuted,marginTop:4}}>
               {"Empfohlen: PNG mit transparentem Hintergrund, mind. 400 \u00d7 150 px – damit das Logo auf dem dunklen Nav-Hintergrund sauber aussieht."}
             </div>
+          </div>
+        );})()}
+        {/* Hero-Bild */}
+        {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];return(
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Hero-Bild <span style={{fontSize:".72rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild fuer den oberen Bereich der Website</div>
+              </div>
+              <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                {busy?"Laedt...":url?"Ersetzen":"Hochladen"}
+                <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
+              </label>
+            </div>
+            {url&&<div style={{borderRadius:T.rSm,overflow:"hidden",height:120,background:"#000",position:"relative"}}>
+              <img src={url} alt="Hero" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
+              <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{color:"#fff",fontWeight:700,fontSize:".78rem",background:"rgba(0,0,0,.45)",padding:"4px 10px",borderRadius:4}}>Vorschau</span>
+              </div>
+            </div>}
+            {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
+              <div style={{fontSize:"1.6rem",marginBottom:4}}>{"🌄"}</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Hero-Bild hochgeladen – Farbverlauf bleibt aktiv</div>
+            </div>}
+            <div style={{fontSize:".73rem",color:T.textMuted,marginTop:8}}>Empfohlen: JPG, mind. 1920 &times; 1080 px. Das Bild wird mit einem dunklen Overlay versehen sodass der Text gut lesbar bleibt.</div>
           </div>
         );})()}
         {/* Fotos */}

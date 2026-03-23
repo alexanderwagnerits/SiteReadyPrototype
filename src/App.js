@@ -958,7 +958,7 @@ function Portal({session,onLogout}){
               <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
               <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live \u2013 Ihre Website ist erreichbar":"In Bearbeitung"}</span>
             </div>
-            {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"SSL-Zertifikat",v:"Aktiv \u2713"},{l:"Status",v:STATUS_LABELS[order.status]||order.status}].map(({l,v,link})=>(
+            {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"Status",v:STATUS_LABELS[order.status]||order.status}].map(({l,v,link})=>(
               <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
                 <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
                 {link?<a href={v} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}
@@ -1018,30 +1018,32 @@ function Portal({session,onLogout}){
           <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
           {editSection==="leistungen"?(<>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
-              <label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Reihenfolge & Beschreibung"}</label>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Reihenfolge & Beschreibung"}</div>
               {(order.leistungen||[]).map((l,i,arr)=>(
-                <div key={l} style={{marginBottom:8,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"10px 12px",background:T.bg}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                    <span style={{flex:1,fontSize:".85rem",fontWeight:600,color:T.dark}}>{l}</span>
-                    <button onClick={()=>{if(i>0){const a=[...arr];[a[i-1],a[i]]=[a[i],a[i-1]];upOrder("leistungen")(a);}}} disabled={i===0} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===0?"default":"pointer",color:i===0?T.bg3:T.textSub,fontFamily:T.font}}>&#9650;</button>
-                    <button onClick={()=>{if(i<arr.length-1){const a=[...arr];[a[i],a[i+1]]=[a[i+1],a[i]];upOrder("leistungen")(a);}}} disabled={i===arr.length-1} style={{width:26,height:26,border:`1px solid ${T.bg3}`,borderRadius:4,background:"#fff",cursor:i===arr.length-1?"default":"pointer",color:i===arr.length-1?T.bg3:T.textSub,fontFamily:T.font}}>&#9660;</button>
+                <div key={l} style={{marginBottom:8,background:"#fff",border:`1px solid ${T.bg3}`,borderLeft:`3px solid ${T.accent}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>
+                    <span style={{flex:1,fontSize:".88rem",fontWeight:700,color:T.dark}}>{l}</span>
+                    <div style={{display:"flex",gap:4}}>
+                      <button onClick={()=>{if(i>0){const a=[...arr];[a[i-1],a[i]]=[a[i],a[i-1]];upOrder("leistungen")(a);}}} disabled={i===0} style={{width:24,height:24,border:`1px solid ${T.bg3}`,borderRadius:4,background:i===0?T.bg:"#fff",cursor:i===0?"default":"pointer",color:i===0?T.bg3:T.textSub,fontSize:".7rem",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>&#9650;</button>
+                      <button onClick={()=>{if(i<arr.length-1){const a=[...arr];[a[i],a[i+1]]=[a[i+1],a[i]];upOrder("leistungen")(a);}}} disabled={i===arr.length-1} style={{width:24,height:24,border:`1px solid ${T.bg3}`,borderRadius:4,background:i===arr.length-1?T.bg:"#fff",cursor:i===arr.length-1?"default":"pointer",color:i===arr.length-1?T.bg3:T.textSub,fontSize:".7rem",fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>&#9660;</button>
+                    </div>
                   </div>
-                  <input value={(order.leistungen_beschreibungen||{})[l]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional, 1 Satz)" style={{width:"100%",padding:"7px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+                  <textarea value={(order.leistungen_beschreibungen||{})[l]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional)" rows={2} style={{width:"100%",padding:"9px 12px",border:"none",resize:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box",lineHeight:1.5}}/>
                 </div>
               ))}
             </div>}
             <div style={{marginBottom:16}}>
-              <label style={{display:"block",marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Zus\u00e4tzliche Leistungen"}</label>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Zus\u00e4tzliche Leistungen"}</div>
               {(order.extra_leistung?.split("\n").filter(s=>s.trim())||[]).map((item,i,arr)=>(
-                <div key={i} style={{marginBottom:8,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"10px 12px",background:T.bg}}>
-                  <div style={{display:"flex",gap:8,marginBottom:6}}>
-                    <input value={item} onChange={e=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="z.B. Beratung" style={{flex:1,padding:"7px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none"}}/>
-                    <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{padding:"7px 10px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{"\u00d7"}</button>
+                <div key={i} style={{marginBottom:8,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:`1px solid ${T.bg3}`}}>
+                    <input value={item} onChange={e=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];a[i]=e.target.value;upOrder("extra_leistung")(a.join("\n"));}} placeholder="Name der Leistung" style={{flex:1,padding:"4px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
+                    <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")(a.filter((_,j)=>j!==i).join("\n"));}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
                   </div>
-                  <input value={(order.leistungen_beschreibungen||{})[item]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[item]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional, 1 Satz)" style={{width:"100%",padding:"7px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+                  <textarea value={(order.leistungen_beschreibungen||{})[item]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[item]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional)" rows={2} style={{width:"100%",padding:"9px 12px",border:"none",resize:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box",lineHeight:1.5}}/>
                 </div>
               ))}
-              <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{padding:"7px 14px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>{"+ Leistung hinzuf\u00fcgen"}</button>
+              <button onClick={()=>{const a=order.extra_leistung?.split("\n").filter(s=>s.trim())||[];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzuf\u00fcgen"}</button>
             </div>
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}

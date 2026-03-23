@@ -835,8 +835,8 @@ function Portal({session,onLogout}){
     const fields={
       grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
       kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom},
-      firmenbuch:{uid_nummer:order.uid_nummer,unternehmensform:order.unternehmensform,firmenbuchnummer:order.firmenbuchnummer,gisazahl:order.gisazahl,firmenbuchgericht:order.firmenbuchgericht},
-      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
+      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung},
+      texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
       design:{stil:order.stil,fotos:order.fotos},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
     };
@@ -978,24 +978,18 @@ function Portal({session,onLogout}){
         </div>
         {/* Firmenbuch & Impressum */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="firmenbuch" label="Unternehmen & Impressum" badge="instant"/>
-          {editSection==="firmenbuch"?(<>
-            <Dropdown label="Unternehmensform" value={order.unternehmensform||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
-            <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <Field label="UID-Nummer / ATU" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional"/>
-              <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456 a" hint="Optional"/>
-            </div>
-            <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="z.B. HG Wien" hint="Optional"/>
-              <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="z.B. 12345678" hint="Optional"/>
-            </div>
-          </>):(<>
-            <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===order.unternehmensform)?.label||order.unternehmensform}/>
-            <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
-            <InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/>
-            <InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/>
-            <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
-          </>)}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Unternehmen & Impressum</div>
+            <button onClick={()=>setTab("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
+          </div>
+          <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===order.unternehmensform)?.label||order.unternehmensform}/>
+          <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
+          <InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/>
+          <InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/>
+          <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
+          <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
+            Impressum-Daten sind rechtlich relevant. Aenderungen werden von uns geprueft und innerhalb von 24h umgesetzt.
+          </div>
         </div>
         {/* Kontakt */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -1015,9 +1009,9 @@ function Portal({session,onLogout}){
             <InfoRow label="Oeffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
           </>)}
         </div>
-        {/* Leistungen & Texte */}
+        {/* Leistungen */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen & Texte" badge="instant"/>
+          <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
           {editSection==="leistungen"?(<>
             {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
@@ -1026,14 +1020,30 @@ function Portal({session,onLogout}){
             <Field label="Zus\u00e4tzliche Leistung" value={order.extra_leistung||""} onChange={upOrder("extra_leistung")} placeholder="z.B. Beratung..."/>
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
-            {order.text_ueber_uns!=null&&<><div style={{margin:"20px 0 16px",paddingTop:20,borderTop:`1px solid ${T.bg3}`}}><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>KI-Texte bearbeiten</div></div><Field label="\u00dcber uns \u2013 Text" value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint="Kurze Beschreibung im \u00dcber-uns Abschnitt"/><div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Vorteile</div>{(order.text_vorteile||["","","",""]).map((v,i)=>(<Field key={i} label={`Vorteil ${i+1}`} value={v||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>))}{(()=>{const ls=[...(order.leistungen||[]),...(order.extra_leistung?.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean)||[])];return ls.length>0?(<><div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Leistungs-Beschreibungen</div>{ls.map(l=><Field key={l} label={l} value={(order.leistungen_beschreibungen||{})[l]||""} onChange={val=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=val;upOrder("leistungen_beschreibungen")(m);}} rows={2} hint="1 Satz"/>)}</>):null;})()}</>}
           </>):(<>
             {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
             {order.extra_leistung&&<InfoRow label="Zusatz" value={order.extra_leistung}/>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/><InfoRow label="Meisterbetrieb" value={order.meisterbetrieb?"Ja":"Nein"}/><InfoRow label="Kostenloser KV" value={order.kostenvoranschlag?"Ja":"Nein"}/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><InfoRow label="Buchungslink" value={order.buchungslink||"\u2014"}/><InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/><InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/></>}
-            {order.text_ueber_uns!=null&&<InfoRow label="KI-Texte" value={`\u00dcber-uns + ${Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).length:0} Vorteile + ${Object.keys(order.leistungen_beschreibungen||{}).length} Beschreibungen`}/>}
           </>)}
+        </div>
+        {/* Website-Texte */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="texte" label="Website-Texte" badge="instant"/>
+          {editSection==="texte"?(<>
+            <Field label="\u00dcber uns" value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint="Kurzer Vorstellungstext im \u00dcber-uns Bereich"/>
+            <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Vorteile (werden als Liste angezeigt)</div>
+            {[0,1,2,3].map(i=><Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>)}
+            {(()=>{const ls=[...(order.leistungen||[]),...(order.extra_leistung?.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean)||[])];return ls.length>0?(<><div style={{marginTop:4,marginBottom:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Leistungs-Beschreibungen</div>{ls.map(l=><Field key={l} label={l} value={(order.leistungen_beschreibungen||{})[l]||""} onChange={val=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=val;upOrder("leistungen_beschreibungen")(m);}} rows={2} hint="1 Satz"/>)}</>):null;})()}
+          </>):order.text_ueber_uns!=null?(<>
+            <InfoRow label="\u00dcber uns" value={order.text_ueber_uns||"\u2014"}/>
+            <InfoRow label="Vorteile" value={Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).join(" \u00b7 "):"\u2014"}/>
+            <InfoRow label="Beschreibungen" value={`${Object.keys(order.leistungen_beschreibungen||{}).length} Leistungen beschrieben`}/>
+          </>):(
+            <div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>
+              Texte werden automatisch bei der Website-Generierung erstellt und koennen danach hier bearbeitet werden.
+            </div>
+          )}
         </div>
         {/* Design */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>

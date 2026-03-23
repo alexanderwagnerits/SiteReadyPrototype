@@ -1350,6 +1350,7 @@ function fmtInline(s){
     .replace(/\*(.+?)\*/g,"<em>$1</em>")
     .replace(/`([^`]+)`/g,'<code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:.85em">$1</code>');
 }
+function slugify(s){return"sec-"+s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
 function renderMd(md){
   if(!md)return'<p style="color:#94a3b8;font-style:italic">Kein Inhalt. Bearbeiten um Text hinzuzufuegen.</p>';
   const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -1357,7 +1358,7 @@ function renderMd(md){
   let html="";let inUl=false;
   for(const line of lines){
     if(line.startsWith("# ")){if(inUl){html+="</ul>";inUl=false;}html+=`<h1 style="font-size:1.4rem;font-weight:800;color:#0f172a;margin:28px 0 10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0">${fmtInline(esc(line.slice(2)))}</h1>`;}
-    else if(line.startsWith("## ")){if(inUl){html+="</ul>";inUl=false;}html+=`<h2 style="font-size:1.05rem;font-weight:700;color:#0f172a;margin:20px 0 8px">${fmtInline(esc(line.slice(3)))}</h2>`;}
+    else if(line.startsWith("## ")){if(inUl){html+="</ul>";inUl=false;}const _h2t=line.slice(3);html+=`<h2 id="${slugify(_h2t)}" style="font-size:1.05rem;font-weight:700;color:#0f172a;margin:20px 0 8px;padding-top:8px">${fmtInline(esc(_h2t))}</h2>`;}
     else if(line.startsWith("### ")){if(inUl){html+="</ul>";inUl=false;}html+=`<h3 style="font-size:.92rem;font-weight:700;color:#334155;margin:14px 0 6px">${fmtInline(esc(line.slice(4)))}</h3>`;}
     else if(line.match(/^[-*] /)){if(!inUl){html+='<ul style="margin:6px 0;padding-left:20px">';inUl=true;}html+=`<li style="margin:3px 0;color:#334155;font-size:.87rem;line-height:1.55">${fmtInline(esc(line.slice(2)))}</li>`;}
     else if(line.match(/^\d+\. /)){if(!inUl){html+='<ul style="margin:6px 0;padding-left:20px;list-style:decimal">';inUl=true;}html+=`<li style="margin:3px 0;color:#334155;font-size:.87rem;line-height:1.55">${fmtInline(esc(line.replace(/^\d+\. /,"")))}</li>`;}
@@ -1404,12 +1405,6 @@ function Admin({adminKey}){
   const[docEditTitle,setDocEditTitle]=useState("");
   const[docEditContent,setDocEditContent]=useState("");
   const[docSaving,setDocSaving]=useState(false);
-  const[kalkulTab,setKalkulTab]=useState("einmal");
-  const[kE,setKE]=useState({gruendung:2000,stammkapital:10000,anwaltskosten:5000,security:2000,freelancer:2000,stb:800,marketing:3000,puffer:1500,foerderquote:30});
-  const[kL,setKL]=useState({supabase:25,cloudflare:20,claude:90,ms365:22,ads:200,stb:125,versicherung:50,puffer:50});
-  const[kK,setKK]=useState({stripe_pct:1.4,stripe_fix:0.25,claude_cost:0.12,storage_onb:0.01,regen:0.04,storage_mo:0.03,cf_bw:0.02,email:0.01,preis:18,laufzeit:12});
-  const[kP,setKP]=useState({neukunden:[100,300,700],churn:[20,20,20],mkt_mo:[200,500,1000],weiterentw:[1000,1000,1000],hosting:[400,600,1200],stb:[2000,2500,3000]});
-  const[kB,setKB]=useState({fixkosten:0});
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1502,11 +1497,11 @@ function Admin({adminKey}){
   };
   const saveDoc=async()=>{
     setDocSaving(true);
-    const body=selDocId&&docs.find(d=>d.id===selDocId)?.id===selDocId?{id:selDocId,title:docEditTitle,content:docEditContent}:{title:docEditTitle||"Neue Sektion",content:docEditContent,sort_order:docs.length};
-    const r=await fetch(`/api/admin-docs?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    const j=await r.json();
-    if(body.id){setDocs(ds=>ds.map(d=>d.id===body.id?{...d,...body}:d));}
-    else{if(j.id){setDocs(ds=>[...ds,j]);setSelDocId(j.id);}}
+    const id=docs[0]?.id;
+    if(!id){setDocSaving(false);return;}
+    const body={id,title:docEditTitle,content:docEditContent};
+    await fetch(`/api/admin-docs?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    setDocs(ds=>ds.map(d=>d.id===id?{...d,...body}:d));
     setDocEditing(false);setDocSaving(false);
   };
   const newDoc=()=>{
@@ -1521,14 +1516,14 @@ function Admin({adminKey}){
     setDocEditing(false);
   };
   const exportMD=()=>{
-    const content=docs.map(d=>`# ${d.title}\n\n${d.content}`).join("\n\n---\n\n");
+    const content=docs[0]?.content||"";
     const a=document.createElement("a");
     a.href=URL.createObjectURL(new Blob([content],{type:"text/markdown"}));
     a.download="siteready-dokumentation.md";a.click();
   };
   const exportPDF=()=>{
     const w=window.open("","_blank");
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiteReady Dokumentation</title><style>body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 32px;color:#1e293b}h1{font-size:1.4rem;font-weight:800;margin:32px 0 10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}h2{font-size:1.05rem;font-weight:700;margin:20px 0 8px}h3{font-size:.92rem;font-weight:700;margin:14px 0 6px;color:#334155}p,li{font-size:.9rem;line-height:1.6;color:#334155;margin:3px 0}ul,ol{padding-left:20px;margin:6px 0}code{background:#f1f5f9;padding:1px 4px;border-radius:3px;font-family:monospace;font-size:.85em}.section-sep{border:none;border-top:3px solid #e2e8f0;margin:40px 0}@media print{body{margin:20px auto}}</style></head><body>${docs.map((d,i)=>`<h1>${d.title}</h1>${renderMd(d.content)}${i<docs.length-1?'<hr class="section-sep">':"" }`).join("")}</body></html>`);
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiteReady Dokumentation</title><style>body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 32px;color:#1e293b}h1{font-size:1.4rem;font-weight:800;margin:32px 0 10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}h2{font-size:1.05rem;font-weight:700;margin:20px 0 8px}h3{font-size:.92rem;font-weight:700;margin:14px 0 6px;color:#334155}p,li{font-size:.9rem;line-height:1.6;color:#334155;margin:3px 0}ul,ol{padding-left:20px;margin:6px 0}code{background:#f1f5f9;padding:1px 4px;border-radius:3px;font-family:monospace;font-size:.85em}@media print{body{margin:20px auto}}</style></head><body>${renderMd(docs[0]?.content||"")}</body></html>`);
     w.document.close();setTimeout(()=>w.print(),300);
   };
   const stuckOrders=orders.filter(o=>o.status==="paid"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
@@ -2003,56 +1998,45 @@ function Admin({adminKey}){
 
         {/* Tab: Dokumentation */}
         {tab==="docs"&&(<div style={{display:"flex",gap:0,height:"calc(100vh - 160px)",minHeight:400}}>
-          {/* Linke Spalte: Sektions-Liste */}
+          {/* Linke Spalte: Inhaltsverzeichnis */}
           <div style={{width:220,flexShrink:0,borderRight:`1px solid ${T.bg3}`,overflowY:"auto",background:"#fafbfc"}}>
-            <div style={{padding:"14px 12px 8px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <span style={{fontSize:".7rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Sektionen</span>
-              <button onClick={newDoc} title="Neue Sektion" style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:"1.2rem",lineHeight:1,padding:"0 2px",fontWeight:700}}>+</button>
+            <div style={{padding:"14px 12px 8px",borderBottom:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".7rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Inhalt</span>
             </div>
-            {docsLoading?<div style={{padding:20,textAlign:"center",color:T.textMuted,fontSize:".78rem"}}>Laden...</div>:
-            docs.length===0?<div style={{padding:"20px 14px",color:T.textMuted,fontSize:".78rem",lineHeight:1.6}}>Noch keine Sektionen.<br/>Mit + starten.</div>:
-            <div style={{padding:"6px 0"}}>
-              {docs.map(d=><div key={d.id} onClick={()=>{setSelDocId(d.id);setDocEditing(false);}} style={{padding:"9px 14px",cursor:"pointer",background:selDocId===d.id?"#fff":"transparent",borderLeft:`3px solid ${selDocId===d.id?T.accent:"transparent"}`,display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
-                <span style={{fontSize:".82rem",fontWeight:selDocId===d.id?700:500,color:selDocId===d.id?T.dark:T.textSub,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.title}</span>
-                <button onClick={e=>{e.stopPropagation();deleteDoc(d.id);}} title="Loeschen" style={{background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:".9rem",padding:"0 2px",lineHeight:1,flexShrink:0,opacity:.6}}>&#215;</button>
-              </div>)}
-            </div>}
+            {docsLoading
+              ?<div style={{padding:20,textAlign:"center",color:T.textMuted,fontSize:".78rem"}}>Laden...</div>
+              :<div style={{padding:"6px 0"}}>
+                {(docs[0]?.content||"").split("\n").filter(l=>l.startsWith("## ")).map((l,i)=>{
+                  const title=l.slice(3);
+                  const id=slugify(title);
+                  return <div key={i} onClick={()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}} style={{padding:"8px 14px",cursor:"pointer",fontSize:".8rem",fontWeight:500,color:T.textSub,lineHeight:1.4,userSelect:"none"}}>{title}</div>;
+                })}
+              </div>
+            }
           </div>
-          {/* Rechte Spalte: Inhalt */}
-          <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
-            {/* Header */}
+          {/* Rechte Spalte: Dokument */}
+          <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
             <div style={{padding:"14px 24px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:10,background:"#fff",flexShrink:0}}>
-              {docEditing
-                ?<input value={docEditTitle} onChange={e=>setDocEditTitle(e.target.value)} placeholder="Titel" style={{flex:1,fontWeight:800,fontSize:"1rem",color:T.dark,border:"none",outline:"none",fontFamily:T.font,background:"transparent"}}/>
-                :<h2 style={{margin:0,fontSize:"1rem",fontWeight:800,color:T.dark,flex:1}}>{docs.find(d=>d.id===selDocId)?.title||"\u2014"}</h2>
-              }
+              <h2 style={{margin:0,fontSize:"1rem",fontWeight:800,color:T.dark,flex:1}}>SiteReady Dokumentation</h2>
               <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-                {!docEditing&&docs.length>0&&<>
+                {!docEditing&&<>
                   <button onClick={exportMD} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>MD</button>
                   <button onClick={exportPDF} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>PDF</button>
+                  <button onClick={()=>{const d=docs[0];if(d){setDocEditTitle(d.title);setDocEditContent(d.content||"");setDocEditing(true);}}} style={{padding:"5px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bearbeiten</button>
                 </>}
-                {!docEditing&&selDocId&&<button onClick={()=>{const d=docs.find(x=>x.id===selDocId);if(d){setDocEditTitle(d.title);setDocEditContent(d.content||"");setDocEditing(true);}}} style={{padding:"5px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bearbeiten</button>}
                 {docEditing&&<>
                   <button onClick={()=>setDocEditing(false)} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
                   <button onClick={saveDoc} disabled={docSaving} style={{padding:"5px 14px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:docSaving?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{docSaving?"Speichert...":"Speichern"}</button>
                 </>}
               </div>
             </div>
-            {/* Inhalt */}
             {docEditing
               ?<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",flex:1,minHeight:0}}>
                 <textarea value={docEditContent} onChange={e=>setDocEditContent(e.target.value)} placeholder={"# Titel\n\n## Abschnitt\n\nText hier..."} style={{padding:"20px 24px",border:"none",borderRight:`1px solid ${T.bg3}`,resize:"none",fontFamily:"monospace",fontSize:".83rem",lineHeight:1.65,outline:"none",color:T.dark,background:"#fafbfc"}}/>
                 <div style={{padding:"20px 24px",overflowY:"auto"}} dangerouslySetInnerHTML={{__html:renderMd(docEditContent)}}/>
               </div>
               :<div style={{padding:"24px 32px",flex:1,overflowY:"auto"}}>
-                {selDocId
-                  ?<div dangerouslySetInnerHTML={{__html:renderMd(docs.find(d=>d.id===selDocId)?.content||"")}}/>
-                  :<div style={{padding:"60px 0",textAlign:"center",color:T.textMuted}}>
-                    <div style={{fontSize:"2rem",marginBottom:12}}>{"\uD83D\uDCC4"}</div>
-                    <div style={{fontWeight:600,marginBottom:6}}>Keine Sektion ausgewaehlt</div>
-                    <div style={{fontSize:".82rem"}}>Sektion links auswaehlen oder mit + neu anlegen</div>
-                  </div>
-                }
+                <div dangerouslySetInnerHTML={{__html:renderMd(docs[0]?.content||"")}}/>
               </div>
             }
           </div>

@@ -1029,7 +1029,7 @@ function Portal({session,onLogout}){
         </div>
         {/* Leistungen */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen" badge="regen"/>
+          <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
           {editSection==="leistungen"?(<>
             {(()=>{const bl=BRANCHEN.find(b=>b.value===order.branche);return bl
               ?<Checklist label={bl.label} options={bl.leistungen} selected={order.leistungen||[]} onChange={upOrder("leistungen")} hint="Aktive Leistungen"/>
@@ -2191,11 +2191,6 @@ function Admin({adminKey}){
             </div>
             {/* Rechte Spalte: Website-Aktionen */}
             <div style={{padding:28}}>
-              {/* Neugen. Leistungen */}
-              <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,marginBottom:16}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Neugenierungen Leistungen (30 Tage)</div>
-                {(()=>{const ago30=Date.now()-30*24*60*60*1000;const dates=[sel.last_regen_at,sel.prev_regen_at].filter(Boolean).map(d=>new Date(d));const recent=dates.filter(d=>d.getTime()>ago30);const used=recent.length;const nextFree=used>=2?new Date(recent.sort((a,b)=>a-b)[0].getTime()+30*24*60*60*1000):null;return(<><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>{[0,1].map(i=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:i<used?"#d97706":"#e2e8f0"}}/>)}<span style={{fontSize:".75rem",color:T.dark,fontWeight:600}}>{used}/2 verwendet</span>{nextFree&&<span style={{fontSize:".7rem",color:T.textMuted}}>frei ab {nextFree.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"})}</span>}</div>{dates.map((d,i)=><div key={i} style={{fontSize:".7rem",color:T.textMuted}}>{i===0?"Zuletzt":"Davor"}: {d.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}</div>)}</>);})()}
-              </div>
               {/* Website */}
               <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Website</div>

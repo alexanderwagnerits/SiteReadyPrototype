@@ -17,10 +17,10 @@ export async function onRequestPost({request, env}) {
       "payment_method_types[]": "card",
       "line_items[0][price_data][currency]": "eur",
       "line_items[0][price_data][recurring][interval]": isYearly ? "year" : "month",
-      "line_items[0][price_data][unit_amount]": isYearly ? "17280" : "1800",
+      "line_items[0][price_data][unit_amount]": isYearly ? "18360" : "1800",
       "line_items[0][price_data][product_data][name]": isYearly ? "SiteReady Jahresabo" : "SiteReady Monatsabo",
       "line_items[0][price_data][product_data][description]": isYearly
-        ? `Professionelle Website fuer ${firmenname} – jaehrlich (20% Rabatt)`
+        ? `Professionelle Website fuer ${firmenname} – jaehrlich (15% Rabatt)`
         : `Professionelle Website fuer ${firmenname} – monatlich kuendbar`,
       "line_items[0][quantity]": "1",
       "customer_email": email || "",

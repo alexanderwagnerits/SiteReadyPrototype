@@ -114,6 +114,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 function LandingPage({onStart,onPortal}){
   const[scrolled,setScrolled]=useState(false);
   const[menuOpen,setMenuOpen]=useState(false);
+  const[pricingYearly,setPricingYearly]=useState(false);
   useEffect(()=>{const h=()=>{setScrolled(window.scrollY>30);if(window.scrollY>30)setMenuOpen(false)};window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
   const closeMenu=()=>setMenuOpen(false);
   const W=({children,s})=><div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",...s}}>{children}</div>;
@@ -310,38 +311,46 @@ function LandingPage({onStart,onPortal}){
     <div style={{marginBottom:48}}>
       <Label>Preise</Label>
       <H2>Ein Paket. Alles drin.</H2>
-      <Sub s={{maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen. Plan jederzeit waehlbar.</Sub>
+      <Sub s={{maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen.</Sub>
     </div>
     <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,maxWidth:820,margin:"0 auto"}}>
-      {/* Monatlich */}
-      <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:`2px solid ${T.bg3}`}}>
-        <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>Monatlich</div>
+      {/* Standard mit Toggle */}
+      <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:"2px solid rgba(37,99,235,.2)",boxShadow:"0 8px 40px rgba(37,99,235,.07)"}}>
+        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
+        {/* Toggle */}
+        <div style={{display:"flex",background:T.bg,borderRadius:8,padding:3,marginBottom:24,width:"100%"}}>
+          {[["monthly","Monatlich"],["yearly","Jaehrlich"]].map(([val,lbl])=>(
+            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"8px 0",border:"none",borderRadius:6,background:pricingYearly===(val==="yearly")?"#fff":"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",boxShadow:pricingYearly===(val==="yearly")?T.sh1:"none",transition:"all .2s",position:"relative"}}>
+              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"1px 6px",borderRadius:4}}>-15%</span>}
+            </button>
+          ))}
+        </div>
+        {/* Preis */}
         <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-          <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{"\u20AC"}18</span>
+          <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC15.30":"\u20AC18"}</span>
           <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
         </div>
-        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar &middot; keine Bindung</div>
+        {pricingYearly
+          ?<><div style={{fontSize:".78rem",color:T.textMuted,marginBottom:6}}>{"\u20AC"}183.60 / Jahr &middot; statt {"\u20AC"}216</div>
+            <div style={{display:"inline-flex",alignItems:"center",background:"#dcfce7",borderRadius:6,padding:"3px 10px",marginBottom:20}}><span style={{fontSize:".72rem",fontWeight:700,color:"#15803d"}}>Sie sparen {"\u20AC"}32.40 / Jahr</span></div></>
+          :<div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar &middot; keine Bindung</div>}
+        {/* Features */}
         <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:24}}>
           {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700}}>{"\u2713"}</span>{f}</div>)}
         </div>
-        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:`2px solid ${T.dark}`,background:"#fff",color:T.dark}}>Kostenlos testen</button>
+        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Kostenlos testen \u2192</button>
       </div>
-      {/* Jaehrlich */}
-      <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:"2px solid rgba(37,99,235,.25)",boxShadow:"0 8px 40px rgba(37,99,235,.08)"}}>
-        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#2563eb,#4f46e5)",color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>20% Rabatt</span>
-        <div style={{fontSize:".68rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>Jaehrlich</div>
-        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:2}}>
-          <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{"\u20AC"}14.40</span>
-          <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
+      {/* Premium Coming Soon */}
+      <div style={{background:"#fafafa",borderRadius:14,padding:"36px 28px",position:"relative",border:"1px solid rgba(124,58,237,.15)"}}>
+        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#7c3aed,#a855f7)",color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
+        <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady Premium</div>
+        <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:20}}>Alles aus Standard + mehr</div>
+        <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(6px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".95rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
+        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Kommt 2026 &middot; Jetzt vormerken</div>
+        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:28}}>
+          {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><span style={{color:"#a855f7",fontWeight:700}}>{"\u23F3"}</span>{f}</div>)}
         </div>
-        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:4}}>{"\u20AC"}172.80 / Jahr &middot; statt {"\u20AC"}216</div>
-        <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#dcfce7",borderRadius:6,padding:"3px 10px",marginBottom:20}}>
-          <span style={{fontSize:".72rem",fontWeight:700,color:"#15803d"}}>Sie sparen {"\u20AC"}43.20 pro Jahr</span>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:24}}>
-          {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700}}>{"\u2713"}</span>{f}</div>)}
-        </div>
-        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Kostenlos testen</button>
+        <button disabled style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",opacity:.8}}>Informiert bleiben</button>
       </div>
     </div>
     <p style={{textAlign:"center",fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"24px auto 0",lineHeight:1.7}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Preise inkl. MwSt.</p>
@@ -934,10 +943,10 @@ function Portal({session,onLogout}){
               <div style={{fontSize:".76rem",color:T.textMuted}}>Monatlich kuendbar</div>
             </button>
             <button onClick={()=>subscribe("yearly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.accent}`,borderRadius:T.r,background:T.accentLight,cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,position:"relative"}}>
-              <div style={{position:"absolute",top:-10,right:16,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".06em"}}>20% RABATT</div>
+              <div style={{position:"absolute",top:-10,right:16,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".06em"}}>15% RABATT</div>
               <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>Jaehrlich</div>
-              <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}172.80<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Jahr</span></div>
-              <div style={{fontSize:".76rem",color:T.textMuted}}>{"\u20AC"}14.40/Monat &middot; Laufzeit 12 Monate</div>
+              <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}183.60<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Jahr</span></div>
+              <div style={{fontSize:".76rem",color:T.textMuted}}>{"\u20AC"}15.30/Monat &middot; Laufzeit 12 Monate</div>
             </button>
           </div>
           <button onClick={()=>setShowPlanModal(false)} style={{width:"100%",padding:"11px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
@@ -1975,7 +1984,7 @@ function Admin({adminKey}){
               {fphase("Phase 2 – Fragebogen (5 Schritte)","#2563eb",<>{fnode("🏗️","Branche & Stil","Professional/Modern/Traditional","#2563eb")}{farrow}{fnode("🏢","Unternehmen","Name · Adresse · Kontakt","#2563eb")}{farrow}{fnode("⚙️","Leistungen","Auswahl + Freitext","#2563eb")}{farrow}{fnode("🎯","Extras","Social · Buchungslink","#2563eb")}{farrow}{fnode("📸","Bilder","Logo · Hero · Fotos","#2563eb")}</>)}
               {fphase("Phase 3 – Preview & Start","#16a34a",<>{fnode("👀","Preview","Website-Vorschau","#16a34a")}{farrow}{fnode("📝","Account erstellen","Name · Passwort","#16a34a")}{farrow}{fnode("🚀","Kostenlos starten","Order → start-build → pending","#16a34a")}</>)}
               {fphase("Phase 4 – Generierung & Trial","#8b5cf6",<>{fnode("⚙️","Wird erstellt","status: pending · ~30-60 Sek.","#8b5cf6")}{farrow}{fnode("🤖","Claude Sonnet","claude-sonnet-4-6","#8b5cf6")}{farrow}{fnode("🔧","Post-Processing","Nav · Footer · Meta · Schema.org","#8b5cf6")}{farrow}{fnode("🔬","Testphase","status: trial · 7 Tage","#8b5cf6")}</>)}
-              {fphase("Phase 4 → Abo abgeschlossen","#16a34a",<>{fnode("💳","Plan waehlen","18 Euro/Mo oder 172.80 Euro/Jahr","#16a34a")}{farrow}{fnode("🔗","Stripe Subscription","Trial-Tage berechnet · Karte hinterlegt","#16a34a")}{farrow}{fnode("✅","Tag 8","erste Abbuchung · invoice.paid","#16a34a")}{farrow}{fnode("🌍","Live","status: live","#16a34a")}</>)}
+              {fphase("Phase 4 → Abo abgeschlossen","#16a34a",<>{fnode("💳","Plan waehlen","18 Euro/Mo oder 183.60 Euro/Jahr","#16a34a")}{farrow}{fnode("🔗","Stripe Subscription","Trial-Tage berechnet · Karte hinterlegt","#16a34a")}{farrow}{fnode("✅","Tag 8","erste Abbuchung · invoice.paid","#16a34a")}{farrow}{fnode("🌍","Live","status: live","#16a34a")}</>)}
               {fphase("Phase 4 → Kein Abo nach 7 Tagen","#ef4444",<>{fnode("⏰","Trial abgelaufen","trial_expires_at ueberschritten","#ef4444")}{farrow}{fnode("🗑️","Auto-Loeschung","trial-cleanup.js · taeglich","#ef4444")}{farrow}{fnode("💀","Alles geloescht","User · Storage · Order","#ef4444")}</>)}
               {fphase("Phase 5 – Website live","#059669",<>{fnode("🔗","Subdomain","/s/{subdomain}","#059669")}{farrow}{fnode("🖼️","Fotos","serve-time Injection","#059669")}{farrow}{fnode("📄","Impressum","ECG \u00a75 \u00b7 DSGVO auto","#059669")}{farrow}{fnode("🔍","noindex","bis Production Go-Live","#059669")}</>)}
               {fphase("Phase 5b – Production Go-Live (geplant)","#0f766e",<>{fnode("🏠","Domain eingeben","im Kunden-Portal","#0f766e",true)}{farrow}{fnode("☁️","Cloudflare","Custom Domain API","#0f766e",true)}{farrow}{fnode("🔧","DNS setzen","CNAME beim Registrar","#0f766e",true)}{farrow}{fnode("🔒","SSL auto","Cloudflare Zertifikat","#0f766e",true)}{farrow}{fnode("🔓","noindex → index","Subdomain freigeben","#0f766e",true)}{farrow}{fnode("📈","GSC","Google Search Console","#0f766e",true)}</>)}
@@ -2186,7 +2195,7 @@ function Admin({adminKey}){
               const steps=[
                 {key:"pending",label:"Schritt 1 \u2013 Formular & Generierung",icon:"📋",detail:`Fragebogen ausgefuellt, Account erstellt, Website-Generierung automatisch gestartet.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`]].filter(Boolean),error:sel.last_error||null},
                 {key:"trial",label:"Schritt 2 \u2013 Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen \u2013 Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
-                {key:"live",label:"Schritt 3 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"Jaehrlich (\u20AC172.80)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
+                {key:"live",label:"Schritt 3 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"Jaehrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
                 {num:6,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},

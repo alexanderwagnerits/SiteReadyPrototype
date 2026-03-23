@@ -1544,7 +1544,8 @@ function Admin({adminKey}){
     {id:"support",label:"Support"},
     {id:"system",label:"System",badge:regenBadge},
     {id:"kosten",label:"Kosten"},
-    {id:"kalkulation",label:"Kalkulation",section:"PLANUNG"},
+    {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
+    {id:"arch-flows",label:"Flows"},
     {id:"docs",label:"Dokumentation"},
   ];
 

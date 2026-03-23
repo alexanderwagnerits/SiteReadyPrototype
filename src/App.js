@@ -691,9 +691,6 @@ function Portal({session,onLogout}){
   const[supportSending,setSupportSending]=useState(false);
   const[supportSent,setSupportSent]=useState(false);
   const[supportErr,setSupportErr]=useState("");
-  const[regenSent,setRegenSent]=useState(null);
-  const[regenLoading,setRegenLoading]=useState(null);
-  const[regenErr,setRegenErr]=useState(null);
   const[newPw,setNewPw]=useState("");
   const[newPw2,setNewPw2]=useState("");
   const[pwSaving,setPwSaving]=useState(false);
@@ -848,65 +845,19 @@ function Portal({session,onLogout}){
     setEditSection(null);
   };
 
-  const requestRegen=async(section)=>{
-    if(!order||!supabase||!session)return;
-    setRegenLoading(section);setRegenErr(null);setEditSection(null);
-    const fields={
-      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,leistungen_beschreibungen:order.leistungen_beschreibungen||null},
-      design:{stil:order.stil,fotos:order.fotos},
-    };
-    try{
-      const r=await fetch("/api/request-regen",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
-        body:JSON.stringify({section,data:fields[section]}),
-      });
-      const j=await r.json();
-      if(r.status===429){
-        const nextDate=new Date(j.next_available).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"});
-        setRegenErr(`Limit erreicht. Nächste Neugenierung möglich ab ${nextDate}.`);
-      } else if(!r.ok||!j.ok){
-        setRegenErr("Fehler: "+(j.error||"Unbekannt"));
-      } else {
-        const{data:updated}=await supabase.from("orders").select("*").eq("id",order.id).limit(1);
-        if(updated?.[0])setOrder(updated[0]);
-        setRegenSent(section);setTimeout(()=>setRegenSent(null),5000);
-      }
-    }catch(e){
-      setRegenErr("Netzwerkfehler: "+e.message);
-    }
-    setRegenLoading(null);
-  };
-
-  const regenUsed=order?[order.last_regen_at,order.prev_regen_at].filter(Boolean).filter(d=>new Date(d).getTime()>Date.now()-30*24*60*60*1000).length:0;
-  const regenLeft=Math.max(0,2-regenUsed);
-  const nextRegenDate=regenLeft===0&&order?(()=>{const dates=[order.last_regen_at,order.prev_regen_at].filter(Boolean).map(d=>new Date(d).getTime()).filter(t=>t>Date.now()-30*24*60*60*1000).sort((a,b)=>a-b);return dates[0]?new Date(dates[0]+30*24*60*60*1000):null;})():null;
-
   const SectionHeader=({id,label,badge})=>(
     <div style={{marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-        {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
-        {regenSent===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Website wird neu erstellt</span>}
-        {regenLoading===id
-          ?<span style={{color:"#d97706",fontSize:".78rem",fontWeight:600}}>Website wird erstellt...</span>
-          :editSection===id
-            ?badge==="regen"
-              ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-                <button onClick={()=>requestRegen(id)} disabled={regenLeft===0} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:regenLeft===0?"#94a3b8":"#d97706",color:"#fff",cursor:regenLeft===0?"not-allowed":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{"\u21BB"} Jetzt neu generieren</button></>
-              :<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-                <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
+          {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
+          {editSection===id
+            ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+              <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
             :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
         </div>
       </div>
-      {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"✓"} Änderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
-      {badge==="regen"&&<div style={{fontSize:".75rem",color:regenLeft>0?"#d97706":"#dc2626",marginTop:6}}>
-        {regenLeft>0
-          ?`\u21BB ${regenLeft} von 2 Website-Neugestaltungen dieses Monats verfügbar. Änderungen werden automatisch übernommen, das kann einen Moment dauern.`
-          :`\u26A0 Limit erreicht. Nächste Neugestaltung möglich ab ${nextRegenDate?nextRegenDate.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"bald"}.`}
-      </div>}
-      {regenErr&&<div style={{fontSize:".78rem",color:"#dc2626",marginTop:6,fontWeight:600}}>{"\u26A0"} {regenErr}</div>}
+      {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"\u2713"} Aenderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
     </div>
   );
 
@@ -1111,14 +1062,6 @@ function Portal({session,onLogout}){
           </>)}
         </div>
 
-        {/* Neugenierung-Hinweis */}
-        {order.regen_requested&&<div style={{padding:"14px 18px",background:"#fef3c7",borderRadius:T.r,border:"1px solid #fcd34d",display:"flex",alignItems:"flex-start",gap:12}}>
-          <span style={{fontSize:"1.2rem",flexShrink:0}}>{"\u21BB"}</span>
-          <div>
-            <div style={{fontWeight:700,color:"#92400e",fontSize:".88rem",marginBottom:3}}>Aenderungsanfrage gesendet</div>
-            <div style={{fontSize:".82rem",color:"#78350f",lineHeight:1.5}}>Ihr Änderungswunsch wurde erfasst. Wir generieren Ihre Website innerhalb von 24h neu und schalten sie danach live.</div>
-          </div>
-        </div>}
       </div>)}
 
       {/* Tab: Rechnungen */}
@@ -1213,8 +1156,8 @@ function Portal({session,onLogout}){
           <InfoRow label="Mitglied seit" value={session?.user?.created_at?new Date(session.user.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):""}/>
           <InfoRow label="Abonnement" value={`SiteReady Standard \u2013 ${order?.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":"\u20AC18 / Monat"}`}/>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,flex:"1 1 280px"}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Passwort \u00e4ndern"}</div>
             <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
             <Field label="Passwort best\u00e4tigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
@@ -1234,7 +1177,7 @@ function Portal({session,onLogout}){
               {pwSaved&&<span style={{color:T.green,fontWeight:600,fontSize:".85rem"}}>{"\u2713"} Gespeichert</span>}
             </div>
           </div>
-          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,flex:"1 1 280px"}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"E-Mail-Adresse \u00e4ndern"}</div>
             {emailSent
               ?<div style={{display:"flex",flexDirection:"column",gap:12}}>

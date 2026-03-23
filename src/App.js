@@ -248,7 +248,7 @@ function LandingPage({onStart,onPortal}){
       <Sub s={{maxWidth:460}}>Wie soll Ihr Betrieb wirken? SiteReady waehlt das passende Design automatisch.</Sub>
     </div>
     <div className="lp-variants-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {[{t:"Professionell & seriös",d:"Klare Linien, gedämpfte Farben, serifenlos",g:"linear-gradient(160deg,#0f2b5b,#2563eb)",sub:"Elektriker, Installateure, Baumeister"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Farbpalette",g:"linear-gradient(135deg,#065f46,#10b981)",sub:"Maler, Fliesenleger, Gärtner"},{t:"Bodenständig & vertraut",d:"Warme Töne, kräftige Schrift, solider Auftritt",g:"linear-gradient(160deg,#78350f,#b45309)",sub:"Tischler, Zimmerer, Dachdecker"}].map((v,i)=><div key={i} style={{borderRadius:12,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)"}}>
+      {[{t:"Professionell & serioes",d:"Klare Linien, gedaempfte Farben, serifenlos",g:"linear-gradient(160deg,#0f2b5b,#2563eb)",sub:"Elektriker, Installateure, Baumeister"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Farbpalette",g:"linear-gradient(135deg,#065f46,#10b981)",sub:"Maler, Fliesenleger, Gärtner"},{t:"Bodenständig & vertraut",d:"Warme Töne, kräftige Schrift, solider Auftritt",g:"linear-gradient(160deg,#78350f,#b45309)",sub:"Tischler, Zimmerer, Dachdecker"}].map((v,i)=><div key={i} style={{borderRadius:12,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)"}}>
         <div style={{background:v.g,padding:"44px 28px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.1),transparent 50%)"}}/><h3 style={{fontSize:"1.1rem",fontWeight:700,marginBottom:6,position:"relative"}}>{v.t}</h3><p style={{fontSize:".8rem",opacity:.75,position:"relative"}}>{v.d}</p></div>
         <div style={{padding:"18px 28px",borderTop:"1px solid rgba(0,0,0,.05)"}}><p style={{fontSize:".84rem",color:T.textSub}}>{v.sub}</p></div>
       </div>)}
@@ -1370,8 +1370,8 @@ function renderMd(md){
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */
-const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",review:"Review",live:"Live",offline:"Offline"};
-const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",review:"#f97316",live:"#16a34a",offline:"#64748b"};
+const STATUS_LABELS={pending:"Neu",paid:"Bezahlt",in_arbeit:"In Arbeit",live:"Live",offline:"Offline"};
+const STATUS_COLORS={pending:"#f59e0b",paid:"#3b82f6",in_arbeit:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
 const STATUS_FLOW=["pending","paid","in_arbeit","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
@@ -1581,15 +1581,14 @@ function Admin({adminKey}){
         {/* Tab: Start */}
         {!loading&&tab==="start"&&(()=>{
           const liveN=orders.filter(o=>o.status==="live").length;
-          const reviewN=orders.filter(o=>o.status==="review").length;
           const mrr=liveN*18;
           const new30=orders.filter(o=>o.created_at&&Date.now()-new Date(o.created_at).getTime()<30*24*60*60*1000).length;
           const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
           const recent=[...orders].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
           return(<div>
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Übersicht</h2>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>{setTab("bestellungen");setFilter("live");setView("tabelle");}},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent,a:()=>{setTab("bestellungen");setFilter("alle");setView("kanban");}},{l:"Review ausstehend",v:reviewN,s:"Warten auf Prüfung",c:"#d97706",a:()=>{setTab("bestellungen");setFilter("review");setView("tabelle");}},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")}].map((k,i)=>(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:20}}>
+              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>{setTab("bestellungen");setFilter("live");setView("tabelle");}},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent,a:()=>{setTab("bestellungen");setFilter("alle");setView("kanban");}},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")}].map((k,i)=>(
                 <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}}>
                   <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
                   <div style={{fontSize:"1.9rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
@@ -2148,8 +2147,7 @@ function Admin({adminKey}){
                 {key:"pending",label:"Schritt 1 – Formular",icon:"📋",detail:`Fragebogen ausgefüllt und Bestellung erstellt.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
                 {key:"paid",label:"Schritt 2 – Zahlung",icon:"💳",detail:"Stripe-Zahlung eingegangen. Bestellung freigeschaltet für Generierung.",meta:[["Zahlungsweg","Stripe"],["Betrag","laut Stripe-Dashboard"]]},
                 {key:"in_arbeit",label:"Schritt 3 – Generierung",icon:"🤖",detail:`Claude ${hasHtml?"hat HTML generiert":sel.last_error?"ist fehlgeschlagen":"noch ausstehend"}.`,error:sel.last_error||null,meta:hasHtml?[["Modell","claude-sonnet-4-6"],["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],["Subdomain",sel.subdomain||"—"],["HTML-Größe",sel.website_html?`${Math.round(sel.website_html.length/1024)} KB`:"—"]]:[["Status",sel.last_error?"Fehlgeschlagen":"Noch nicht generiert"],["Subdomain",sel.subdomain||"—"]]},
-                {key:"review",label:"Schritt 4 – Review",icon:"👁️",detail:"Website liegt bereit zur Admin-Prüfung. Nach Freigabe wird sie live geschaltet.",meta:[["URL",sel.subdomain?`/s/${sel.subdomain}`:"—"],["Neugen. Leistungen (30d)",`${[sel.last_regen_at,sel.prev_regen_at].filter(d=>{if(!d)return false;return new Date(d).getTime()>Date.now()-30*24*60*60*1000;}).length}/2 verwendet`]]},
-                {key:"live",label:"Schritt 5 – Live",icon:"🚀",detail:"Website ist oeffentlich erreichbar. noindex-Tag aktiv (Prototyp-Phase).",meta:[["Status",st==="live"?"Online":"Noch nicht live"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
+                {key:"live",label:"Schritt 4 – Live",icon:"🚀",detail:"Website ist oeffentlich erreichbar. noindex-Tag aktiv (Prototyp-Phase).",meta:[["Status",st==="live"?"Online":"Noch nicht live"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
                 {num:6,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},

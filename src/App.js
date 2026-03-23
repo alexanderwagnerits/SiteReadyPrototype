@@ -1499,7 +1499,7 @@ function Admin({adminKey}){
   const[notizSaved,setNotizSaved]=useState({});
   const[genLoading,setGenLoading]=useState({});
   const[genMsg,setGenMsg]=useState({});
-  const[view,setView]=useState("kanban");
+  const[view,setView]=useState("tabelle");
   const[search,setSearch]=useState("");
   const[healthTime,setHealthTime]=useState({});
   const[healthFilter,setHealthFilter]=useState("alle");
@@ -1699,46 +1699,76 @@ function Admin({adminKey}){
         {/* Tab: Start */}
         {!loading&&tab==="start"&&(()=>{
           const liveN=orders.filter(o=>o.status==="live").length;
-          const mrr=liveN*18;
-          const new30=orders.filter(o=>o.created_at&&Date.now()-new Date(o.created_at).getTime()<30*24*60*60*1000).length;
+          const trialN=orders.filter(o=>o.status==="trial").length;
+          const mrrMonthly=orders.filter(o=>o.status==="live"&&o.subscription_plan!=="yearly").length*18;
+          const mrrYearly=orders.filter(o=>o.status==="live"&&o.subscription_plan==="yearly").length*(183.6/12);
+          const mrr=Math.round((mrrMonthly+mrrYearly)*100)/100;
+          const openTickets=tickets.filter(t=>t.status==="offen");
+          const expiringTrials=orders.filter(o=>o.status==="trial"&&o.trial_expires_at).map(o=>({...o,tl:Math.ceil((new Date(o.trial_expires_at)-Date.now())/(1000*60*60*24))})).filter(o=>o.tl<=7).sort((a,b)=>a.tl-b.tl);
           const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
-          const recent=[...orders].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
-          return(<div>
-            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Übersicht</h2>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:20}}>
-              {[{l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>{setTab("bestellungen");setFilter("live");setView("tabelle");}},{l:"Neu (30 Tage)",v:new30,s:"Bestellungen",c:T.accent,a:()=>{setTab("bestellungen");setFilter("alle");setView("kanban");}},{l:"Claude-Kosten",v:`\u20AC${totalCost.toFixed(3)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")}].map((k,i)=>(
-                <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer"}}>
-                  <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
-                  <div style={{fontSize:"1.9rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
-                  <div style={{fontSize:".73rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
-                </div>))}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Pipeline</div>
-                <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                  {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} style={{display:"flex",alignItems:"center",gap:10}}>
-                    <span style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0,display:"inline-block"}}/>
-                    <span style={{fontSize:".8rem",color:T.dark,width:80}}>{STATUS_LABELS[s]}</span>
-                    <div style={{flex:1,height:6,background:T.bg3,borderRadius:3,overflow:"hidden"}}>
-                      <div style={{width:`${pct}%`,height:"100%",background:STATUS_COLORS[s],borderRadius:3,transition:"width .4s"}}/>
-                    </div>
-                    <span style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,fontFamily:T.mono,width:24,textAlign:"right"}}>{n}</span>
-                  </div>);})}
+          return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+            {/* KPI Cards */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+              {[
+                {l:"Live-Kunden",v:liveN,s:`\u20AC${mrr} MRR`,c:T.green,a:()=>setTab("health")},
+                {l:"Trials aktiv",v:trialN,s:expiringTrials.filter(o=>o.tl<=3).length>0?`${expiringTrials.filter(o=>o.tl<=3).length} laufen in \u22643d ab`:"Alle noch frisch",c:"#7c3aed",a:()=>{setTab("bestellungen");setFilter("trial");}},
+                {l:"Offene Tickets",v:openTickets.length,s:openTickets.length===0?"Alles beantwortet":"Bitte pruefen",c:openTickets.length>0?T.red:T.textMuted,a:()=>setTab("support")},
+                {l:"KI-Kosten",v:`\u20AC${totalCost.toFixed(2)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")},
+              ].map((k,i)=>(
+                <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer",transition:"box-shadow .15s"}} onMouseOver={e=>e.currentTarget.style.boxShadow=T.sh2} onMouseOut={e=>e.currentTarget.style.boxShadow=T.sh1}>
+                  <div style={{fontSize:".65rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
+                  <div style={{fontSize:"1.8rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
+                  <div style={{fontSize:".72rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
                 </div>
+              ))}
+            </div>
+            {/* Trials ablaufend + Offene Tickets */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Trials ablaufend (7 Tage)</div>
+                {expiringTrials.length===0
+                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>Kein Trial l\u00e4uft in 7 Tagen ab.</div>
+                  :<div style={{display:"flex",flexDirection:"column",gap:0}}>
+                    {expiringTrials.map((o,i)=>{const tc=o.tl<=1?"#dc2626":o.tl<=3?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"\u2014"}</div>
+                        <div style={{fontSize:".72rem",color:T.textMuted}}>{o.email}</div>
+                      </div>
+                      <span style={{padding:"2px 8px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".75rem",flexShrink:0}}>{o.tl>0?`${o.tl}d`:"Abgelaufen"}</span>
+                    </div>);})}
+                  </div>
+                }
               </div>
               <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Letzte Bestellungen</div>
-                {recent.length===0?<div style={{color:T.textMuted,fontSize:".82rem"}}>Noch keine Bestellungen.</div>:
-                <div style={{display:"flex",flexDirection:"column",gap:0}}>
-                  {recent.map((o,i)=><div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<recent.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"\u2014"}</div>
-                      <div style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(o.created_at)}</div>
-                    </div>
-                    <StatusBadge status={o.status}/>
-                  </div>)}
-                </div>}
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Offene Support-Anfragen</div>
+                  {openTickets.length>0&&<button onClick={()=>setTab("support")} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Alle ansehen</button>}
+                </div>
+                {openTickets.length===0
+                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>Keine offenen Anfragen.</div>
+                  :<div style={{display:"flex",flexDirection:"column",gap:0}}>
+                    {openTickets.slice(0,5).map((t,i)=><div key={t.id} onClick={()=>setTab("support")} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 0",borderBottom:i<Math.min(openTickets.length,5)-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontWeight:600,fontSize:".84rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</div>
+                        <div style={{fontSize:".72rem",color:T.textMuted}}>{t.email} &middot; {fmtDate(t.created_at)}</div>
+                      </div>
+                    </div>)}
+                  </div>
+                }
+              </div>
+            </div>
+            {/* Pipeline */}
+            <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Status-Pipeline</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} onClick={()=>{setTab("bestellungen");setFilter(s);}} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
+                  <span style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0,display:"inline-block"}}/>
+                  <span style={{fontSize:".8rem",color:T.dark,width:80}}>{STATUS_LABELS[s]}</span>
+                  <div style={{flex:1,height:6,background:T.bg3,borderRadius:3,overflow:"hidden"}}>
+                    <div style={{width:`${pct}%`,height:"100%",background:STATUS_COLORS[s],borderRadius:3,transition:"width .4s"}}/>
+                  </div>
+                  <span style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,fontFamily:T.mono,width:24,textAlign:"right"}}>{n}</span>
+                </div>);})}
               </div>
             </div>
           </div>);
@@ -1786,12 +1816,12 @@ function Admin({adminKey}){
             {view==="tabelle"&&(sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status","Abo"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{sf.map((o,i)=>{const pc=o.subscription_plan==="yearly"?T.green:o.subscription_plan==="monthly"?T.accent:null;const pl=o.subscription_plan==="yearly"?"J\u00e4hrlich":o.subscription_plan==="monthly"?"Monatlich":null;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                <thead><tr style={{background:T.bg}}>{["Datum","Firma","Status","Trial"].map(h=><th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:".68rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{sf.map((o,i)=>{const tl=o.status==="trial"&&o.trial_expires_at?Math.ceil((new Date(o.trial_expires_at)-Date.now())/(1000*60*60*24)):null;const tc=tl===null?null:tl<=1?"#dc2626":tl<=3?"#d97706":T.green;return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:i%2===0?"#fff":"#fafbfc",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <td style={{padding:"12px 16px",fontSize:".82rem",color:T.textMuted,whiteSpace:"nowrap"}}>{fmtDate(o.created_at)}</td>
                   <td style={{padding:"12px 16px",fontWeight:700,fontSize:".88rem",color:T.dark}}>{o.firmenname||"—"}</td>
                   <td style={{padding:"12px 16px"}}><StatusBadge status={o.status}/></td>
-                  <td style={{padding:"12px 16px"}}>{pl?<span style={{padding:"2px 8px",borderRadius:4,background:pc+"22",color:pc,fontWeight:700,fontSize:".75rem"}}>{pl}</span>:<span style={{color:T.textMuted,fontSize:".82rem"}}>—</span>}</td>
+                  <td style={{padding:"12px 16px"}}>{tl!==null?<span style={{padding:"2px 8px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".75rem"}}>{tl>0?`${tl} Tag${tl===1?"":"e"}`:"Abgelaufen"}</span>:<span style={{color:T.textMuted,fontSize:".82rem"}}>—</span>}</td>
                 </tr>);})}</tbody>
               </table>
             </div>)}
@@ -1901,19 +1931,16 @@ function Admin({adminKey}){
             return rows.length===0?<div style={{padding:40,textAlign:"center",color:T.textMuted}}>{healthFilter==="fehler"?"Keine Fehler gefunden.":"Keine Websites mit Subdomain."}</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","Abo","HTTP","SSL","Geprüft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","URL","Status","HTTP","SSL","Gepr\u00fcft",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{rows.map((o,i)=>{
                   const h=health[o.id];const ht=healthTime[o.id];
                   const url=`sitereadyprototype.pages.dev/s/${o.subdomain}`;
-                  const pc=o.subscription_plan==="yearly"?T.green:o.subscription_plan==="monthly"?T.accent:null;
-                  const pl=o.subscription_plan==="yearly"?"J\u00e4hrlich":o.subscription_plan==="monthly"?"Monatlich":null;
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:h==="error"?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
                     <td style={{padding:"10px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
                     <td style={{padding:"10px 14px",fontSize:".78rem",fontFamily:T.mono}}>
                       <a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none"}}>{url}</a>
                     </td>
                     <td style={{padding:"10px 14px"}}><StatusBadge status={o.status}/></td>
-                    <td style={{padding:"10px 14px"}}>{pl?<span style={{padding:"2px 8px",borderRadius:4,background:pc+"22",color:pc,fontWeight:700,fontSize:".72rem"}}>{pl}</span>:<span style={{color:T.textMuted,fontSize:".78rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px"}}>{h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>:h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px"}}>{h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} HTTPS</span>:h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} —</span>:<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}</td>
                     <td style={{padding:"10px 14px",fontSize:".72rem",color:T.textMuted}}>{ht?ht.toLocaleTimeString("de-AT",{hour:"2-digit",minute:"2-digit"}):"—"}</td>

@@ -1,6 +1,10 @@
 # SiteReady Prototyp - Projekt-Anweisungen
 
-Lies IMMER zuerst docs/BRIEFING.md fuer den vollstaendigen Projektkontext.
+Fuer den vollstaendigen Projektkontext: Die Dokumentation ist im Admin-Portal unter
+https://sitereadyprototype.pages.dev/admin?key=... → Tab "Dokumentation".
+Sie kann auch direkt per API abgerufen werden:
+GET https://brulvtqeazkgcxkimdve.supabase.co/rest/v1/docs?select=content
+Header: apikey: sb_publishable_u1yaQuqOp0qNhJHdiOU7Tw_hzTr0-MG
 
 ## Regeln
 
@@ -16,15 +20,8 @@ Lies IMMER zuerst docs/BRIEFING.md fuer den vollstaendigen Projektkontext.
 - Die 3 Stil-Varianten (Professional/Modern/Traditional) und ihre Farbpaletten
 - Die Datenstruktur von BRANCHEN, STYLES_MAP, INIT
 
-## Aktuelle Aufgaben (aus BRIEFING.md Abschnitt 13)
-
-1. Website-Import als optionalen Vorschritt (Schritt 0) im Fragebogen einbauen
-2. Bild-Platzhalter in der Preview-Komponente einbauen (Header, Galerie, Team)
-3. Landingpage aktualisieren (neue Features erwaehnen)
-
 ## Wichtige Dateien
 
-- docs/BRIEFING.md - Vollstaendiges Projekt-Briefing mit Konzept, Flow, Design-Entscheidungen
 - src/App.js - Gesamte App (Landing, Fragebogen, Preview, Success)
 - public/logo.png - SiteReady Logo (Wortmarke)
 - public/icon.png - SiteReady Icon (SR Monogramm)

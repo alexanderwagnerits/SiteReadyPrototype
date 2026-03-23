@@ -1914,243 +1914,89 @@ function Admin({adminKey}){
         })()}
 
 
-        {/* Tab: Kalkulation */}
-        {tab==="kalkulation"&&(()=>{
-          const einmalItems=[
-            {l:"FlexCo Gruendung (Notar, Gericht, Gewerbe)",k:"gruendung",note:"Notar, Firmenbuch, Gewerbeanmeldung"},
-            {l:"FlexCo Stammkapital (bleibt in der Firma)",k:"stammkapital",note:"Eigenkapital, kein Aufwand – bleibt in der Firma"},
-            {l:"Anwaltskosten (AGB, Vorlagen, Beratung)",k:"anwaltskosten",note:"AGB + Impressum/DSGVO-Vorlagen + Haftungsberatung"},
-            {l:"Security Audit / Penetration Test",k:"security",note:"Externe Firma vor Launch"},
-            {l:"Freelancer-Entwicklung (punktuell)",k:"freelancer",note:"z.B. Stripe, Supabase – Hauptarbeit Eigenleistung"},
-            {l:"Steuerberater (Erstberatung + Setup)",k:"stb",note:"Rechtsform-Beratung, Buchhaltung einrichten"},
-            {l:"Marketing (Marktangang)",k:"marketing",note:"Landingpage, Werbematerial, erstes Ads-Budget"},
-            {l:"Puffer",k:"puffer",note:"Ca. 10% fuer Unvorhergesehenes"},
-          ];
-          const gesamt=einmalItems.reduce((s,r)=>s+(kE[r.k]||0),0);
-          const echteKosten=gesamt-(kE.stammkapital||0);
-          const foerderbetrag=Math.min(echteKosten*(kE.foerderquote/100),6000);
-          const laufItems=[
-            {l:"Supabase Pro (DB + Auth + Storage)",k:"supabase",note:"PostgreSQL EU-Frankfurt"},
-            {l:"Cloudflare Pro",k:"cloudflare",note:"USD 20/Mo, WAF + erweitertes Caching + DDoS"},
-            {l:"Claude Max (Entwicklung)",k:"claude",note:"Fuer Claude Code + Chat"},
-            {l:"Microsoft 365 Business Premium",k:"ms365",note:"Mail + Office pro Person"},
-            {l:"Google Ads / Meta Ads",k:"ads",note:"Skaliert mit Wachstum"},
-            {l:"Steuerberater (quartalsmaessig)",k:"stb",note:"Ca. EUR 500/Quartal"},
-            {l:"Versicherung (Berufshaftpflicht)",k:"versicherung",note:"Schaetzung"},
-            {l:"Puffer",k:"puffer",note:"Unvorhergesehenes"},
-          ];
-          const laufGesamt=laufItems.reduce((s,r)=>s+(kL[r.k]||0),0);
-          const stripeOnb=Math.round((216*(kK.stripe_pct/100)+kK.stripe_fix)*100)/100;
-          const onbGesamt=stripeOnb+(kK.claude_cost||0)+(kK.storage_onb||0);
-          const laufKunde=(kK.regen||0)+(kK.storage_mo||0)+(kK.cf_bw||0)+(kK.email||0);
-          const db_mo=(kK.preis||0)-laufKunde;
-          const db_yr=db_mo*12;
-          const marge=(kK.preis||0)>0?db_mo/(kK.preis)*100:0;
-          const umsatzLaufzeit=(kK.preis||0)*(kK.laufzeit||0);
-          const kostenLaufzeit=onbGesamt+laufKunde*(kK.laufzeit||0);
-          const stripePerKunde=Math.round((kK.preis*(kK.laufzeit/12)*(kK.stripe_pct/100)+kK.stripe_fix)*100)/100;
-          const aktiv=[0,0,0],durch=[0,0,0],umsatz=[0,0,0],claudeK=[0,0,0],stripeK=[0,0,0],mktK=[0,0,0],gesamtK=[0,0,0],gv=[0,0,0];
-          for(let i=0;i<3;i++){const prev=i===0?0:aktiv[i-1];aktiv[i]=Math.round(prev*(1-(kP.churn[i]||0)/100)+(kP.neukunden[i]||0));durch[i]=Math.round((prev+aktiv[i])/2);umsatz[i]=durch[i]*kK.preis*12;claudeK[i]=Math.round((kP.neukunden[i]||0)*kK.claude_cost*100)/100;stripeK[i]=Math.round((kP.neukunden[i]||0)*stripePerKunde*100)/100;mktK[i]=(kP.mkt_mo[i]||0)*12;gesamtK[i]=claudeK[i]+stripeK[i]+(kP.hosting[i]||0)+mktK[i]+(kP.stb[i]||0)+600+(kP.weiterentw[i]||0);gv[i]=umsatz[i]-gesamtK[i];}
-          const kumGewinn=[gv[0],gv[0]+gv[1],gv[0]+gv[1]+gv[2]];
-          const kumNachEinmal=kumGewinn.map(k=>k-echteKosten);
-          const kumMitFoerd=kumGewinn.map(k=>k-(echteKosten-foerderbetrag));
-          const db_kunde=kK.preis-laufKunde;
-          const breakeven=(kB.fixkosten||0)===0?0:Math.ceil((kB.fixkosten||0)/Math.max(0.01,db_kunde));
-          const fmt=v=>"EUR "+Number(v).toLocaleString("de-AT",{minimumFractionDigits:0,maximumFractionDigits:2});
-          const fmtN=v=>Number(v).toLocaleString("de-AT",{minimumFractionDigits:2,maximumFractionDigits:2});
-          const inp=(v,setter)=>(<input type="number" value={v} onChange={e=>setter(+e.target.value||0)} style={{background:"#fffde7",border:`1px solid ${T.bg3}`,borderRadius:3,padding:"3px 6px",fontFamily:T.mono,fontSize:".82rem",width:90,textAlign:"right",outline:"none",color:T.dark}}/>);
-          const th2={textAlign:"left",padding:"8px 14px",fontSize:".67rem",fontWeight:700,color:"#fff",textTransform:"uppercase",letterSpacing:".08em",background:"#1e3a5f"};
-          const td2=(bold,col)=>({padding:"7px 14px",fontWeight:bold?700:500,color:col||T.dark,fontSize:".83rem"});
-          const tdM=(bold,col)=>({...td2(bold,col),fontFamily:T.mono,textAlign:"right"});
-          const subTabs=[{id:"einmal",label:"Einmalkosten"},{id:"laufend",label:"Laufende Kosten"},{id:"kunde",label:"Kosten pro Kunde"},{id:"plan",label:"3-Jahres-Plan"},{id:"breakeven",label:"Break-Even"}];
+
+        {/* Tab: System-Architektur */}
+        {!loading&&tab==="arch-system"&&(()=>{
+          const chip=(label,sub,color)=>(<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 8px",borderRadius:20,background:color+"14",border:`1px solid ${color}28`,fontSize:".69rem",fontWeight:600,color:T.dark,margin:"2px 3px",whiteSpace:"nowrap"}}><span style={{width:5,height:5,borderRadius:"50%",background:color,flexShrink:0}}/>{label}{sub&&<span style={{fontSize:".6rem",color:T.textMuted,fontWeight:400}}>· {sub}</span>}</span>);
+          const layer=(title,color,children,note)=>(<div style={{padding:"7px 12px",marginBottom:3,background:color+"07",borderLeft:`3px solid ${color}`,borderRadius:`0 ${T.rSm} ${T.rSm} 0`}}><div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",gap:0}}><span style={{fontSize:".6rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginRight:8,flexShrink:0}}>{title}</span><span style={{display:"inline"}}>{children}</span></div>{note&&<div style={{marginTop:3,fontSize:".61rem",color,opacity:.65,fontStyle:"italic"}}>{note}</div>}</div>);
+          const arr=<div style={{textAlign:"center",color:T.bg3,fontSize:".7rem",margin:"1px 0",lineHeight:1}}>↓</div>;
           return(<div>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Kalkulation</h2>
-              <div style={{fontSize:".72rem",color:T.textMuted,background:T.bg3,padding:"4px 10px",borderRadius:T.rSm}}>Gelbe Felder = editierbar · Berechnung automatisch</div>
+            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 12px"}}>System-Architektur</h2>
+            {layer("Entwicklung & Deploy","#6366f1",<>{chip("Entwickler","VS Code · Git","#6366f1")}{chip("GitHub","main branch","#6366f1")}{chip("Cloudflare Pages CI/CD","push → build → deploy","#6366f1")}</>,"git push main → automatischer Build & Deploy ~1 Min.")}
+            {arr}{layer("Nutzer","#64748b",<>{chip("Neukunde","Landingpage · Formular · Stripe","#64748b")}{chip("Bestandskunde","Portal-Login","#64748b")}{chip("Admin","/admin?key=...","#64748b")}</>)}
+            {arr}{layer("Cloudflare Pages (Edge/CDN)","#f97316",<>{chip("React SPA","/ · Landing + Formular","#f97316")}{chip("Admin Dashboard","/admin?key=...","#f97316")}{chip("Edge Functions","/api/* · 9 Endpoints","#f97316")}{chip("Website Serving","/s/[subdomain]","#f97316")}{chip("Legal Serving","/s/[subdomain]/impressum","#f97316")}</>,  "SSL automatisch · CDN weltweit · robots.txt: /s/* noindex (Prototyp)")}
+            {arr}{layer("Supabase","#2563eb",<>{chip("PostgreSQL","orders · docs · support_requests","#2563eb")}{chip("Storage","Logo · Fotos pro Kunde","#2563eb")}{chip("Auth","Portal-Login · JWT","#2563eb")}</>)}
+            {arr}{layer("Externe APIs","#8b5cf6",<>{chip("Anthropic Claude","claude-sonnet-4-6","#8b5cf6")}{chip("Stripe","Checkout · Webhooks","#16a34a")}{chip("Jina AI","Website-Import Reader","#6366f1")}{chip("Google Fonts","DM Sans · Inter","#f59e0b")}</>)}
+            {arr}{layer("DNS & Domains","#94a3b8",<>{chip("Cloudflare DNS","siteready.at","#94a3b8")}{chip("Prototyp","sitereadyprototype.pages.dev/s/{firma}","#94a3b8")}{chip("Produktion (geplant)","{firma}.siteready.at","#94a3b8")}</>)}
+            <div style={{marginTop:10,padding:"7px 11px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".69rem",color:"#1e40af",lineHeight:1.7}}><strong>Serve-time:</strong> Logo, Fotos, Galerie, Kontaktdaten live aus Supabase – kein Re-Deploy. <strong>Impressum/Datenschutz:</strong> legal.js frisch aus DB bei jedem Request.</div>
+          </div>);
+        })()}
+
+        {/* Tab: Flows */}
+        {!loading&&tab==="arch-flows"&&(()=>{
+          const svc=(label,color)=>(<span style={{display:"inline-block",padding:"2px 7px",borderRadius:3,background:color+"18",color,fontSize:".62rem",fontWeight:800,letterSpacing:".06em",textTransform:"uppercase",marginRight:6,flexShrink:0}}>{label}</span>);
+          const fstep=(service,color,action,detail)=>(<div style={{display:"flex",gap:10,paddingBottom:6}}><div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:18}}><div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/><div style={{width:1,flex:1,background:T.bg3,marginTop:3}}/></div><div style={{paddingBottom:8,flex:1}}><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>{svc(service,color)}<span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span></div>{detail&&<div style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}</div></div>);
+          const flast=(service,color,action,detail)=>(<div style={{display:"flex",gap:10}}><div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0,marginTop:4}}/><div style={{flex:1}}><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:2,marginBottom:detail?3:0}}>{svc(service,color)}<span style={{fontSize:".78rem",color:T.dark,fontWeight:600}}>{action}</span></div>{detail&&<div style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono,lineHeight:1.5}}>{detail}</div>}</div></div>);
+          const ftitle=(icon,label)=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${T.bg3}`}}><span style={{fontSize:"1rem"}}>{icon}</span><span style={{fontSize:".85rem",fontWeight:800,color:T.dark}}>{label}</span></div>);
+          const fnode=(icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 90px",minWidth:80,maxWidth:140}}><div style={{width:38,height:38,borderRadius:"50%",background:color+"18",border:`2px solid ${color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>{icon}</div><div style={{fontSize:".7rem",fontWeight:700,color:T.dark,textAlign:"center",lineHeight:1.3}}>{label}</div>{sub&&<div style={{fontSize:".62rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}{optional&&<span style={{fontSize:".58rem",fontWeight:700,color:T.textMuted,background:T.bg3,padding:"1px 5px",borderRadius:3}}>Optional</span>}</div>);
+          const farrow=<div style={{color:T.textMuted,fontSize:"1rem",alignSelf:"center",flexShrink:0,paddingBottom:16}}>→</div>;
+          const fphase=(label,color,children)=>(<div style={{marginBottom:14}}><div style={{fontSize:".62rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,paddingLeft:2}}>{label}</div><div style={{display:"flex",alignItems:"flex-start",gap:4,flexWrap:"wrap"}}>{children}</div></div>);
+          return(<div>
+            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>Flows</h2>
+            <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,marginBottom:16}}>
+              {ftitle("🧑","Kunden-Flow")}
+              {fphase("Phase 1 – Bestellung","#2563eb",<>{fnode("📋","Formular","5 Schritte im Wizard","#2563eb")}{farrow}{fnode("💳","Stripe Checkout","Jahresvorauszahlung €216","#16a34a")}{farrow}{fnode("✅","Order in DB","Status: paid","#2563eb")}</>)}
+              {fphase("Phase 2 – Produktion","#8b5cf6",<>{fnode("🤖","Claude generiert","claude-sonnet-4-6","#8b5cf6")}{farrow}{fnode("💾","HTML in Supabase","Status: live","#8b5cf6")}</>)}
+              {fphase("Phase 3 – SEO (nach Prototyp)","#94a3b8",<>{fnode("🔍","noindex entfernen","Subdomain indexieren","#94a3b8")}{farrow}{fnode("🌐","Custom Domain","CNAME einrichten","#94a3b8",true)}{farrow}{fnode("📈","GSC einreichen","Domain indexieren","#94a3b8",true)}</>)}
+              <div style={{padding:"7px 10px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".7rem",color:"#92400e"}}>Phase 3 noch nicht aktiv – noindex auf allen Websites.</div>
             </div>
-            <div style={{display:"flex",gap:0,marginBottom:20,borderBottom:`2px solid ${T.bg3}`}}>
-              {subTabs.map(st=>(
-                <button key={st.id} onClick={()=>setKalkulTab(st.id)} style={{padding:"8px 16px",border:"none",background:kalkulTab===st.id?T.accent:"transparent",color:kalkulTab===st.id?"#fff":T.textMuted,borderRadius:`${T.rSm} ${T.rSm} 0 0`,cursor:"pointer",fontWeight:kalkulTab===st.id?700:500,fontSize:".82rem",fontFamily:T.font,marginBottom:-2,borderBottom:kalkulTab===st.id?`2px solid ${T.accent}`:"none"}}>
-                  {st.label}
-                </button>
-              ))}
-            </div>
-            {kalkulTab==="einmal"&&<div>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1,marginBottom:16}}>
-                <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>
-                  <div style={{fontWeight:800,color:T.dark}}>Einmalkosten vor Launch</div>
-                  <div style={{fontSize:".73rem",color:T.textMuted,marginTop:2}}>Gelbe Felder aendern – Summen berechnen sich automatisch.</div>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Technische Flows</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                {ftitle("💳","Bestellung & Zahlung")}
+                {fstep("React SPA","#3b82f6","Supabase INSERT orders","status:pending · alle Formulardaten")}
+                {fstep("React SPA","#3b82f6","POST /api/create-checkout","orderId · firmenname · email")}
+                {fstep("create-checkout.js","#f97316","Stripe API: Checkout Session","€216 · mode:payment · metadata:order_id")}
+                {fstep("Stripe","#16a34a","Browser → Checkout-Seite","Zahlungsformular auf stripe.com")}
+                {fstep("Stripe","#16a34a","POST /api/stripe-webhook","Event: checkout.session.completed")}
+                {fstep("stripe-webhook.js","#f97316","HMAC-SHA256 Signatur pruefen","Timestamp-Check: max. 5 Minuten")}
+                {fstep("stripe-webhook.js","#f97316","Supabase PATCH orders","status: → paid")}
+                {flast("stripe-webhook.js","#f97316","ctx.waitUntil: generate-website","POST /api/generate-website im Hintergrund")}
+              </div>
+              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
+                {ftitle("🤖","Website-Generierung")}
+                {fstep("Edge Function","#f97316","Supabase GET order by id","alle Kundendaten + Unternehmensform")}
+                {fstep("generate-website.js","#8b5cf6","Stil + Branchenpalette waehlen","STYLES_MAP · PALETTES · branchenspez. Farben")}
+                {fstep("generate-website.js","#8b5cf6","System-Prompt aufbauen","Responsive-Regeln · Seitenstruktur · Trust-Bar")}
+                {fstep("Claude API","#8b5cf6","POST claude-sonnet-4-6","max_tokens:8192 · system + user message")}
+                {fstep("generate-website.js","#f97316","Nav/Footer + Maps injizieren","<!-- NAV --> · <!-- FOOTER --> · <!-- MAPS -->")}
+                {fstep("generate-website.js","#f97316","Galerie-Platzhalter setzen","<!-- GALERIE --> zwischen Ueber-uns und Kontakt")}
+                {fstep("generate-website.js","#f97316","Meta-Tags + Schema.org","title · og:* · canonical · robots:noindex · JSON-LD")}
+                {flast("Supabase","#2563eb","PATCH orders","website_html · status:live · tokens_in/out · cost_eur")}
+              </div>
+              <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,gridColumn:"1 / -1"}}>
+                {ftitle("🌍","Auslieferung (/s/[subdomain])")}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+                  <div>
+                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Website – index.js</div>
+                    {fstep("Browser","#64748b","GET /s/{subdomain}","Kunde oder Google-Bot")}
+                    {fstep("index.js","#f97316","Supabase GET orders","?subdomain=eq.{subdomain}")}
+                    {fstep("index.js","#f97316","Status-Check","404 kein HTML · 503 offline · 200 ok")}
+                    {fstep("index.js","#f97316","Logo + Foto-Slots injizieren","site-nav-logo · slot-hero · slot-foto1/2 · slot-team")}
+                    {fstep("index.js","#f97316","Galerie injizieren","<!-- GALERIE --> → Foto-Grid (serve-time)")}
+                    {flast("Browser","#64748b","Response: fertiges HTML","Cache-Control: public, max-age=60")}
+                  </div>
+                  <div>
+                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Impressum/Datenschutz – legal.js</div>
+                    {fstep("Browser","#64748b","GET /s/{subdomain}/impressum","Link aus Footer der generierten Website")}
+                    {fstep("legal.js","#f97316","Supabase GET order by subdomain","alle Kundendaten inkl. Unternehmensform")}
+                    {fstep("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 · e.U./GmbH/OG/KG/AG/Verein/GesbR")}
+                    {fstep("legal.js","#2563eb","Datenschutz aufbauen","DSGVO Art.13 · Google Fonts · Cloudflare SCCs")}
+                    {flast("Browser","#64748b","Response: HTML","immer frisch aus DB – kein gecachtes Template")}
+                  </div>
                 </div>
-                <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Betrag</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
-                  <tbody>
-                    {einmalItems.map((r,i)=>(<tr key={r.k} style={{background:i%2===0?"#fff":"#fafbfc"}}>
-                      <td style={td2()}>{r.l}</td>
-                      <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kE[r.k],v=>setKE(p=>({...p,[r.k]:v})))}</td>
-                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>{r.note}</td>
-                    </tr>))}
-                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>GESAMT EINMALKOSTEN (inkl. Stammkapital)</td><td style={tdM(true)}>{fmt(gesamt)}</td><td/></tr>
-                    <tr style={{background:T.bg}}><td style={td2(true)}>Davon echte Kosten (ohne Stammkapital)</td><td style={tdM(true)}>{fmt(echteKosten)}</td><td/></tr>
-                  </tbody>
-                </table>
               </div>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>KMU Digital Foerderung</div></div>
-                <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <tbody>
-                    <tr style={{background:"#fff"}}>
-                      <td style={td2()}>Foerderquote</td>
-                      <td style={{padding:"5px 14px",textAlign:"right"}}><div style={{display:"flex",alignItems:"center",gap:6,justifyContent:"flex-end"}}>{inp(kE.foerderquote,v=>setKE(p=>({...p,foerderquote:Math.min(100,v)})))}<span style={{fontSize:".78rem",color:T.textMuted}}>%</span></div></td>
-                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>30% der Projektkosten, max EUR 6.000</td>
-                    </tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Foerderbetrag</td><td style={tdM()}>{fmt(foerderbetrag)}</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Basis: echte Kosten ohne Stammkapital</td></tr>
-                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>KAPITALBEDARF OHNE FOERDERUNG</td><td style={tdM(true)}>{fmt(gesamt)}</td><td/></tr>
-                    <tr style={{background:T.bg}}><td style={td2(true,T.green)}>KAPITALBEDARF MIT FOERDERUNG</td><td style={tdM(true,T.green)}>{fmt(gesamt-foerderbetrag)}</td><td/></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>}
-            {kalkulTab==="laufend"&&<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-              <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>
-                <div style={{fontWeight:800,color:T.dark}}>Monatliche laufende Kosten</div>
-                <div style={{fontSize:".73rem",color:T.textMuted,marginTop:2}}>Pro Monat eintragen – Jahressumme berechnet sich automatisch.</div>
-              </div>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Pro Monat</th><th style={{...th2,textAlign:"right"}}>Pro Jahr</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
-                <tbody>
-                  {laufItems.map((r,i)=>(<tr key={r.k} style={{background:i%2===0?"#fff":"#fafbfc"}}>
-                    <td style={td2()}>{r.l}</td>
-                    <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kL[r.k],v=>setKL(p=>({...p,[r.k]:v})))}</td>
-                    <td style={tdM()}>{fmt((kL[r.k]||0)*12)}</td>
-                    <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>{r.note}</td>
-                  </tr>))}
-                  <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>GESAMT LAUFENDE KOSTEN</td><td style={tdM(true)}>{fmt(laufGesamt)}</td><td style={tdM(true)}>{fmt(laufGesamt*12)}</td><td/></tr>
-                </tbody>
-              </table>
-            </div>}
-            {kalkulTab==="kunde"&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>Einmalige Onboarding-Kosten (pro Neukunde)</div></div>
-                <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Betrag</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
-                  <tbody>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Website-Import (Claude Haiku)</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Optional, Jina + Haiku Extraktion</td></tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Fragebogen + Live-Vorschau</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Rein clientseitig, keine Kosten</td></tr>
-                    <tr style={{background:"#fff"}}>
-                      <td style={td2()}>Stripe Gebuehr ({kK.stripe_pct}% von EUR 216 + EUR {kK.stripe_fix})</td>
-                      <td style={{padding:"5px 14px",textAlign:"right"}}><div style={{display:"flex",gap:4,justifyContent:"flex-end",alignItems:"center"}}><span style={{fontSize:".72rem",color:T.textMuted}}>{kK.stripe_pct}%+</span>{inp(kK.stripe_fix,v=>setKK(p=>({...p,stripe_fix:v})))}</div></td>
-                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Einmalzahlung EUR 216 fuer 12 Monate</td>
-                    </tr>
-                    <tr style={{background:"#fafbfc"}}>
-                      <td style={td2()}>Website-Generierung (Claude Sonnet)</td>
-                      <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK.claude_cost,v=>setKK(p=>({...p,claude_cost:v})))}</td>
-                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Claude Sonnet 4.6, ca. 8192 Tokens</td>
-                    </tr>
-                    <tr style={{background:"#fff"}}>
-                      <td style={td2()}>Supabase Storage Setup</td>
-                      <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK.storage_onb,v=>setKK(p=>({...p,storage_onb:v})))}</td>
-                      <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Ca. 25 MB pro Kunde (Logo + Fotos)</td>
-                    </tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Google Indexierung</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Search Console API kostenlos</td></tr>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Willkommens-E-Mail</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Supabase Auth kostenlos</td></tr>
-                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>ONBOARDING-KOSTEN PRO NEUKUNDE</td><td style={tdM(true)}>EUR {fmtN(onbGesamt)}</td><td/></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>Laufende Kosten pro Kunde / Monat</div></div>
-                <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <thead><tr><th style={th2}>Position</th><th style={{...th2,textAlign:"right"}}>Betrag</th><th style={{...th2,textAlign:"left"}}>Anmerkung</th></tr></thead>
-                  <tbody>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Stripe Transaktionsgebuehr</td><td style={tdM()}>EUR 0,00</td><td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>Entfaellt – Gebuehr bei Onboarding (Jahresvorauszahlung)</td></tr>
-                    {[{l:"Re-Generierung (anteilig)",k:"regen",note:"Max 2x/30 Tage, nicht jeder nutzt es"},{l:"Supabase Storage (anteilig)",k:"storage_mo",note:"Laufender Speicher fuer Fotos + HTML"},{l:"Cloudflare Bandbreite (anteilig)",k:"cf_bw",note:"Minimal bei statischen Seiten"},{l:"E-Mail-Versand (anteilig)",k:"email",note:"Rechnungs-E-Mails, Notifications"}].map((r,i)=>(
-                      <tr key={r.k} style={{background:i%2===0?"#fafbfc":"#fff"}}>
-                        <td style={td2()}>{r.l}</td>
-                        <td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK[r.k],v=>setKK(p=>({...p,[r.k]:v})))}</td>
-                        <td style={{...td2(),color:T.textMuted,fontStyle:"italic",fontSize:".78rem"}}>{r.note}</td>
-                      </tr>
-                    ))}
-                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>LAUFENDE KOSTEN PRO KUNDE / MONAT</td><td style={tdM(true)}>EUR {fmtN(laufKunde)}</td><td/></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-                <div style={{padding:"12px 20px",background:"#e8f4fd",borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:"#1565c0"}}>Deckungsbeitrag &amp; Customer Lifetime Value</div></div>
-                <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <tbody>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Umsatz pro Kunde / Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kK.preis,v=>setKK(p=>({...p,preis:v})))}</td></tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Variable Kosten / Monat</td><td style={tdM()}>EUR {fmtN(laufKunde)}</td></tr>
-                    <tr style={{background:T.bg}}><td style={td2(true)}>DECKUNGSBEITRAG / MONAT</td><td style={tdM(true,T.green)}>EUR {fmtN(db_mo)}</td></tr>
-                    <tr style={{background:T.bg}}><td style={td2(true)}>DECKUNGSBEITRAG / JAHR</td><td style={tdM(true,T.green)}>EUR {fmtN(db_yr)}</td></tr>
-                    <tr style={{background:T.bg}}><td style={td2(true)}>Marge pro Kunde</td><td style={tdM(true,T.green)}>{marge.toFixed(1)}%</td></tr>
-                    <tr><td colSpan={2} style={{padding:"12px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".82rem"}}>Customer Lifetime Value</td></tr>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Mindestlaufzeit</td><td style={{padding:"5px 14px",textAlign:"right"}}><div style={{display:"flex",gap:6,justifyContent:"flex-end",alignItems:"center"}}>{inp(kK.laufzeit,v=>setKK(p=>({...p,laufzeit:v})))}<span style={{fontSize:".78rem",color:T.textMuted}}>Monate</span></div></td></tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Umsatz (Mindestlaufzeit)</td><td style={tdM()}>EUR {fmtN(umsatzLaufzeit)}</td></tr>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Gesamtkosten (Mindestlaufzeit)</td><td style={tdM()}>EUR {fmtN(kostenLaufzeit)}</td></tr>
-                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true,T.green)}>GEWINN PRO KUNDE (Mindestlaufzeit)</td><td style={tdM(true,T.green)}>EUR {fmtN(umsatzLaufzeit-kostenLaufzeit)}</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>}
-            {kalkulTab==="plan"&&<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-              <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>
-                <div style={{fontWeight:800,color:T.dark}}>3-Jahres-Finanzplan</div>
-                <div style={{fontSize:".73rem",color:T.textMuted,marginTop:2}}>Gelbe Felder aendern – alles andere berechnet sich automatisch.</div>
-              </div>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr><th style={th2}>Parameter / Kennzahl</th><th style={{...th2,textAlign:"right"}}>Jahr 1</th><th style={{...th2,textAlign:"right"}}>Jahr 2</th><th style={{...th2,textAlign:"right"}}>Jahr 3</th></tr></thead>
-                <tbody>
-                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Annahmen</td></tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Monatspreis (EUR)</td><td style={{...tdM(),color:T.accent,fontStyle:"italic"}} colSpan={3}>EUR {fmtN(kK.preis)} &nbsp;<span style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.font}}>← aus "Kosten pro Kunde"</span></td></tr>
-                  {[{l:"Neukunden pro Jahr",k:"neukunden"},{l:"Churn-Rate (%)",k:"churn"},{l:"Marketing pro Monat (EUR)",k:"mkt_mo"},{l:"Weiterentwicklung pro Jahr (EUR)",k:"weiterentw"},{l:"Hosting & Infrastruktur (EUR/Jahr)",k:"hosting"},{l:"Steuerberater & Sonstiges (EUR/Jahr)",k:"stb"}].map((r,ri)=>(
-                    <tr key={r.k} style={{background:ri%2===0?"#fff":"#fafbfc"}}>
-                      <td style={td2()}>{r.l}</td>
-                      {[0,1,2].map(i=>(<td key={i} style={{padding:"5px 14px",textAlign:"right"}}>{inp(kP[r.k][i],v=>setKP(p=>{const arr=[...p[r.k]];arr[i]=v;return{...p,[r.k]:arr};}))}</td>))}
-                    </tr>
-                  ))}
-                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Kundenentwicklung</td></tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Bestandskunden Vorjahr</td>{[0,1,2].map(i=><td key={i} style={tdM()}>{(i===0?0:aktiv[i-1]).toLocaleString("de-AT")}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}><td style={td2(true)}>Aktive Kunden (Jahresende)</td>{aktiv.map((v,i)=><td key={i} style={tdM(true)}>{v.toLocaleString("de-AT")}</td>)}</tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Durchschn. aktive Kunden</td>{durch.map((v,i)=><td key={i} style={tdM()}>{v.toLocaleString("de-AT")}</td>)}</tr>
-                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Gewinn & Verlust</td></tr>
-                  <tr style={{background:"#fff"}}><td style={td2(true)}>Umsatz</td>{umsatz.map((v,i)=><td key={i} style={tdM(true)}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Claude API (EUR {fmtN(kK.claude_cost)} pro Neukunde)</td>{claudeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Stripe Gebuehren (EUR {fmtN(stripePerKunde)} pro Neukunde)</td>{stripeK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Hosting & Infrastruktur</td>{kP.hosting.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Marketing</td>{mktK.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Steuerberater & Sonstiges</td>{kP.stb.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Versicherung</td>{[600,600,600].map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}><td style={td2()}>Weiterentwicklung</td>{kP.weiterentw.map((v,i)=><td key={i} style={tdM()}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:T.bg,borderTop:`1px solid ${T.bg3}`}}><td style={td2(true)}>Gesamtkosten</td>{gesamtK.map((v,i)=><td key={i} style={tdM(true)}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:T.bg}}><td style={td2(true)}>GEWINN / VERLUST</td>{gv.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:T.bg}}><td style={td2()}>Marge</td>{umsatz.map((u,i)=><td key={i} style={tdM(false,u>0&&gv[i]>=0?T.green:T.dark)}>{u>0?(gv[i]/u*100).toFixed(1)+"%":"-"}</td>)}</tr>
-                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Kumuliert</td></tr>
-                  <tr style={{background:"#fff"}}><td style={td2()}>Kumulierter Gewinn</td>{kumGewinn.map((v,i)=><td key={i} style={tdM(false,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
-                  <tr style={{background:"#fafbfc"}}>
-                    <td style={td2()}>Einmalkosten (ohne Stammkapital) <span style={{fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>← aus "Einmalkosten"</span></td>
-                    {[0,1,2].map(i=><td key={i} style={{...tdM(),color:T.accent,fontStyle:"italic"}}>{fmt(echteKosten)}</td>)}
-                  </tr>
-                  <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true)}>KUMULIERT NACH EINMALKOSTEN</td>{kumNachEinmal.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
-                  <tr><td colSpan={4} style={{padding:"10px 14px 4px",fontWeight:800,color:"#1565c0",fontSize:".8rem",background:"#f0f7ff"}}>Mit KMU Digital Foerderung</td></tr>
-                  <tr style={{background:T.bg}}><td style={td2(true)}>KUMULIERT NACH FOERDERUNG</td>{kumMitFoerd.map((v,i)=><td key={i} style={tdM(true,v>=0?T.green:"#dc2626")}>{fmt(v)}</td>)}</tr>
-                  <tr><td colSpan={4} style={{padding:"6px 14px",fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>Kein Gruendergehalt beruecksichtigt. Stammkapital nicht in den Kosten.</td></tr>
-                </tbody>
-              </table>
-            </div>}
-            {kalkulTab==="breakeven"&&<div style={{maxWidth:560}}>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-                <div style={{padding:"14px 20px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}><div style={{fontWeight:800,color:T.dark}}>Break-Even Analyse</div></div>
-                <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <tbody>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Fixkosten pro Monat</td><td style={{padding:"5px 14px",textAlign:"right"}}>{inp(kB.fixkosten,v=>setKB(p=>({...p,fixkosten:v})))}</td></tr>
-                    <tr style={{background:"#fafbfc"}}><td style={td2()}>Umsatz pro Kunde / Monat <span style={{fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>← aus "Kosten pro Kunde"</span></td><td style={{...tdM(),color:T.accent,fontStyle:"italic"}}>EUR {fmtN(kK.preis)}</td></tr>
-                    <tr style={{background:"#fff"}}><td style={td2()}>Variable Kosten pro Kunde / Monat <span style={{fontSize:".72rem",color:T.textMuted,fontStyle:"italic"}}>← aus "Kosten pro Kunde"</span></td><td style={{...tdM(),color:T.accent,fontStyle:"italic"}}>EUR {fmtN(laufKunde)}</td></tr>
-                    <tr style={{background:T.bg,borderTop:`1px solid ${T.bg3}`}}><td style={td2(true)}>Deckungsbeitrag pro Kunde / Monat</td><td style={tdM(true)}>EUR {fmtN(db_kunde)}</td></tr>
-                    <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}><td style={td2(true,T.green)}>BREAK-EVEN: Anzahl Kunden</td><td style={{...tdM(true,T.green)}}>{breakeven} <span style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.font,fontWeight:400}}>Fixkosten / Deckungsbeitrag</span></td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>}
+            </div>
           </div>);
         })()}
 

@@ -1956,45 +1956,28 @@ function Admin({adminKey}){
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
                 {ftitle("💳","Bestellung & Zahlung")}
-                {fstep("React SPA","#3b82f6","Supabase INSERT orders","status:pending · alle Formulardaten")}
-                {fstep("React SPA","#3b82f6","POST /api/create-checkout","orderId · firmenname · email")}
-                {fstep("create-checkout.js","#f97316","Stripe API: Checkout Session","€216 · mode:payment · metadata:order_id")}
-                {fstep("Stripe","#16a34a","Browser → Checkout-Seite","Zahlungsformular auf stripe.com")}
-                {fstep("Stripe","#16a34a","POST /api/stripe-webhook","Event: checkout.session.completed")}
-                {fstep("stripe-webhook.js","#f97316","HMAC-SHA256 Signatur pruefen","Timestamp-Check: max. 5 Minuten")}
-                {fstep("stripe-webhook.js","#f97316","Supabase PATCH orders","status: → paid")}
-                {flast("stripe-webhook.js","#f97316","ctx.waitUntil: generate-website","POST /api/generate-website im Hintergrund")}
+                {fphase("Formular","#3b82f6",<>{fnode("⚛️","React SPA","Wizard · 5 Schritte","#3b82f6")}{farrow}{fnode("💾","Supabase","INSERT orders · pending","#2563eb")}{farrow}{fnode("🔗","create-checkout","/api · orderId","#f97316")}</>)}
+                {fphase("Zahlung","#16a34a",<>{fnode("💳","Stripe","Checkout Session","#16a34a")}{farrow}{fnode("✅","Kunde zahlt","216 Euro · mode:payment","#16a34a")}{farrow}{fnode("📨","Webhook","checkout.completed","#f97316")}</>)}
+                {fphase("Verarbeitung","#f97316",<>{fnode("🔐","Signatur","HMAC-SHA256 · 5 Min.","#f97316")}{farrow}{fnode("💾","status: paid","Supabase PATCH","#2563eb")}{farrow}{fnode("🚀","Generierung","ctx.waitUntil","#8b5cf6")}</>)}
               </div>
               <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
                 {ftitle("🤖","Website-Generierung")}
-                {fstep("Edge Function","#f97316","Supabase GET order by id","alle Kundendaten + Unternehmensform")}
-                {fstep("generate-website.js","#8b5cf6","Stil + Branchenpalette waehlen","STYLES_MAP · PALETTES · branchenspez. Farben")}
-                {fstep("generate-website.js","#8b5cf6","System-Prompt aufbauen","Responsive-Regeln · Seitenstruktur · Trust-Bar")}
-                {fstep("Claude API","#8b5cf6","POST claude-sonnet-4-6","max_tokens:8192 · system + user message")}
-                {fstep("generate-website.js","#f97316","Nav/Footer + Maps injizieren","<!-- NAV --> · <!-- FOOTER --> · <!-- MAPS -->")}
-                {fstep("generate-website.js","#f97316","Galerie-Platzhalter setzen","<!-- GALERIE --> zwischen Ueber-uns und Kontakt")}
-                {fstep("generate-website.js","#f97316","Meta-Tags + Schema.org","title · og:* · canonical · robots:noindex · JSON-LD")}
-                {flast("Supabase","#2563eb","PATCH orders","website_html · status:live · tokens_in/out · cost_eur")}
+                {fphase("Vorbereitung","#2563eb",<>{fnode("📖","Order laden","alle Kundendaten","#2563eb")}{farrow}{fnode("🎨","Stil + Palette","STYLES_MAP · Branche","#8b5cf6")}{farrow}{fnode("📝","System-Prompt","Regeln · Seitenstruktur","#8b5cf6")}</>)}
+                {fphase("KI-Generierung","#8b5cf6",<>{fnode("🤖","Claude API","claude-sonnet-4-6","#8b5cf6")}{farrow}{fnode("🔧","Post-Processing","Nav · Footer · Maps","#f97316")}{farrow}{fnode("📍","Meta + Schema","robots:noindex · JSON-LD","#f97316")}</>)}
+                {fphase("Abschluss","#059669",<>{fnode("🌍","status: live","website_html gespeichert","#059669")}{farrow}{fnode("💰","Kosten","tokens_in/out · cost_eur","#2563eb")}</>)}
               </div>
               <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,gridColumn:"1 / -1"}}>
                 {ftitle("🌍","Auslieferung (/s/[subdomain])")}
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
                   <div>
                     <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Website – index.js</div>
-                    {fstep("Browser","#64748b","GET /s/{subdomain}","Kunde oder Google-Bot")}
-                    {fstep("index.js","#f97316","Supabase GET orders","?subdomain=eq.{subdomain}")}
-                    {fstep("index.js","#f97316","Status-Check","404 kein HTML · 503 offline · 200 ok")}
-                    {fstep("index.js","#f97316","Logo + Foto-Slots injizieren","site-nav-logo · slot-hero · slot-foto1/2 · slot-team")}
-                    {fstep("index.js","#f97316","Galerie injizieren","<!-- GALERIE --> → Foto-Grid (serve-time)")}
-                    {flast("Browser","#64748b","Response: fertiges HTML","Cache-Control: public, max-age=60")}
+                    {fphase("Request","#64748b",<>{fnode("🌐","GET /s/{sub}","Browser oder Bot","#64748b")}{farrow}{fnode("💾","Supabase","order laden","#2563eb")}{farrow}{fnode("✅","Status-Check","200 · 404 · 503","#f97316")}</>)}
+                    {fphase("Injection","#f97316",<>{fnode("🖼️","Logo + Fotos","site-nav-logo · slots","#f97316")}{farrow}{fnode("🗄️","Galerie","GALERIE-Tag → Grid","#f97316")}{farrow}{fnode("📤","Response","Cache: max-age=60","#64748b")}</>)}
                   </div>
                   <div>
                     <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Impressum/Datenschutz – legal.js</div>
-                    {fstep("Browser","#64748b","GET /s/{subdomain}/impressum","Link aus Footer der generierten Website")}
-                    {fstep("legal.js","#f97316","Supabase GET order by subdomain","alle Kundendaten inkl. Unternehmensform")}
-                    {fstep("legal.js","#2563eb","buildImpressumRows(o)","ECG §5 · e.U./GmbH/OG/KG/AG/Verein/GesbR")}
-                    {fstep("legal.js","#2563eb","Datenschutz aufbauen","DSGVO Art.13 · Google Fonts · Cloudflare SCCs")}
-                    {flast("Browser","#64748b","Response: HTML","immer frisch aus DB – kein gecachtes Template")}
+                    {fphase("Request","#64748b",<>{fnode("📋","GET /impressum","Link aus Footer","#64748b")}{farrow}{fnode("💾","Supabase","order by subdomain","#2563eb")}</>)}
+                    {fphase("Aufbau","#2563eb",<>{fnode("⚖️","Impressum","ECG \u00a75 · Rechtsform","#2563eb")}{farrow}{fnode("🔒","Datenschutz","DSGVO Art.13","#2563eb")}{farrow}{fnode("📤","Response","immer frisch aus DB","#64748b")}</>)}
                   </div>
                 </div>
               </div>

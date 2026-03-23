@@ -738,7 +738,10 @@ function Portal({session,onLogout}){
       einsatzgebiet:order.einsatzgebiet,uid_nummer:order.uid_nummer,
       unternehmensform:order.unternehmensform,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,
       facebook:order.facebook||null,instagram:order.instagram||null,linkedin:order.linkedin||null,tiktok:order.tiktok||null,
-      stil:order.stil,fotos:order.fotos
+      stil:order.stil,fotos:order.fotos,
+      text_ueber_uns:order.text_ueber_uns||null,
+      text_vorteile:order.text_vorteile||null,
+      leistungen_beschreibungen:order.leistungen_beschreibungen||null,
     }).eq("id",order.id);
     setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),3000);
   };
@@ -1067,6 +1070,22 @@ function Portal({session,onLogout}){
             <InfoRow label="TikTok" value={order.tiktok}/>
           </>)}
         </div>
+        {/* KI-Texte */}
+        {order.text_ueber_uns!=null&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="ki-texte" label="KI-Texte bearbeiten" badge="instant"/>
+          {editSection==="ki-texte"?(<>
+            <Field label="Ueber uns – Text" value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint="Kurze Beschreibung Ihres Betriebs im Ueber-uns Abschnitt"/>
+            <div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Vorteile (je eine Zeile)</div>
+            {(order.text_vorteile||["","","",""]).map((v,i)=>(
+              <Field key={i} label={`Vorteil ${i+1}`} value={v||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>
+            ))}
+            {(()=>{const ls=[...(order.leistungen||[]),...(order.extra_leistung?.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean)||[])];return ls.length>0?(<><div style={{marginBottom:8,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Leistungs-Beschreibungen</div>{ls.map(l=><Field key={l} label={l} value={(order.leistungen_beschreibungen||{})[l]||""} onChange={val=>{const m={...(order.leistungen_beschreibungen||{})};m[l]=val;upOrder("leistungen_beschreibungen")(m);}} rows={2} hint="1 Satz Beschreibung"/>)}</>):null;})()}
+          </>):(<>
+            <InfoRow label="Ueber uns" value={order.text_ueber_uns}/>
+            {Array.isArray(order.text_vorteile)&&order.text_vorteile.slice(0,2).map((v,i)=><InfoRow key={i} label={i===0?"Vorteile":""} value={v}/>)}
+            <InfoRow label="Beschreibungen" value={Object.keys(order.leistungen_beschreibungen||{}).length?`${Object.keys(order.leistungen_beschreibungen).length} Leistungen`:null}/>
+          </>)}
+        </div>}
         {/* Neugenierung-Hinweis */}
         {order.regen_requested&&<div style={{padding:"14px 18px",background:"#fef3c7",borderRadius:T.r,border:"1px solid #fcd34d",display:"flex",alignItems:"flex-start",gap:12}}>
           <span style={{fontSize:"1.2rem",flexShrink:0}}>{"\u21BB"}</span>

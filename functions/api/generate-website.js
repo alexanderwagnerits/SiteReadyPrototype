@@ -307,7 +307,7 @@ Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer ei
 AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
 KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Striktes Token-Budget.
 KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden. Verstoss ist inakzeptabel.
-LEISTUNGEN – ABSOLUTE PFLICHT: Zeige AUSSCHLIESSLICH die exakt uebergebenen Leistungen. Keine zusaetzlichen Leistungen erfinden, hinzufuegen oder ergaenzen. Exakt ${leistungen.length} Leistungs-Cards – nicht mehr, nicht weniger.
+LEISTUNGEN – PFLICHT: Setze <!-- LEISTUNGEN --> als Platzhalter fuer das Cards-Grid (keine Cards selbst generieren – werden automatisch injiziert). Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK mit je 1 konkreten Satz.
 META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
 STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt. Setze <!-- GALERIE --> als eigene Zeile ZWISCHEN den Sektionen UEBER-UNS und KONTAKT (die Galerie wird automatisch eingefuegt wenn Fotos vorhanden sind).
 
@@ -362,14 +362,10 @@ TRUST-BAR: Direkt nach Subtitle – flex-row, gap:24px, flex-wrap:wrap – die 3
 2 CTA-Buttons: Primaer (background:var(--accent), Anrufen, href="{{TEL_HREF}}") + Ghost (border:2px solid rgba(255,255,255,.5), color:#fff, href="#leistungen"). Mobile: beide Buttons 100% Breite, gestapelt.
 Animierter Keyword-Strip unter den Buttons: CSS-only marquee-Animation, Branche-Keywords, sichtbar auf ALLEN Bildschirmgroessen (overflow:hidden, white-space:nowrap).
 
-LEISTUNGEN: background:#fff. Section-Label: kleine Oberschrift ("Unser Leistungsangebot", font-size:.72rem, font-weight:700, letter-spacing:.1em, text-transform:uppercase, color:var(--accent)).
-H2 in Primaerfarbe. Grid: display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px.
-Card-Stil: ${stil.cardStyle}
-Jede Card: Emoji (font-size:2rem, margin-bottom:12px), H3 (Primaerfarbe, font-weight:700, margin-bottom:8px), 1 Satz Beschreibung (SELBST VERFASSEN, konkret, branchenspezifisch, color:var(--textMuted)).
+LEISTUNGEN: background:#fff. Section-Label: kleine Oberschrift ("Unser Leistungsangebot", font-size:.72rem, font-weight:700, letter-spacing:.1em, text-transform:uppercase, color:var(--accent)). H2 in Primaerfarbe. Setze <!-- LEISTUNGEN --> als Platzhalter direkt nach der H2 (keine Cards generieren – werden automatisch eingefuegt).
 
 UEBER UNS: background:var(--bg). Zweispaltig desktop (3fr 2fr), einspaltig mobile.
-Links: Section-Label + H2 + Kurzbeschreibungs-Text (aus echten Daten) + 3-4 Vorteile im Stil "${stil.ueberStyle}".
-Vorteile NUR aus echten Daten ableiten: Leistungspalette, Einsatzgebiet, Oeffnungszeiten, Notdienst. KEINE erfundenen Jahre/Kunden/Zahlen.
+Links: Section-Label + H2 + <p>{{UEBER_UNS_TEXT}}</p> (Platzhalter – nicht ersetzen) + <div>{{VORTEILE}}</div> (Platzhalter – nicht ersetzen, wird automatisch befuellt).
 Rechts: Karte (background:var(--primary), color:#fff, border-radius:${stil.rLg}, padding:32px 28px) mit: Oeffnungszeiten-Block, Einsatzgebiet-Zeile, Telefon als grosser weisser Link.
 
 KONTAKT: background:#fff. Zweispaltig desktop (1fr 1fr), einspaltig mobile.
@@ -377,7 +373,11 @@ Links: H2, Adressblock ({{ADRESSE_VOLL}}), Telefon als grosser klickbarer Link (
 Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): kurzer Aufruf-Satz + grosser Anruf-Button (background:var(--accent)).
 <!-- MAPS --> Platzhalter nach den Kontaktinfos.
 
-${o.telefon ? `STICKY MOBILE CTA: Fixer Anruf-Button am unteren Bildschirmrand. Nur auf Mobile sichtbar (@media(max-width:640px){display:flex} sonst display:none). position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent); color:#fff; padding:16px 24px; font-weight:800; font-size:1rem; text-align:center; text-decoration:none; display:none. Inhalt: "📞 Jetzt anrufen – {{TEL_DISPLAY}}" als <a href="{{TEL_HREF}}">. body bekommt padding-bottom:64px auf Mobile damit Inhalt nicht verdeckt wird.` : ""}`;
+${o.telefon ? `STICKY MOBILE CTA: Fixer Anruf-Button am unteren Bildschirmrand. Nur auf Mobile sichtbar (@media(max-width:640px){display:flex} sonst display:none). position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent); color:#fff; padding:16px 24px; font-weight:800; font-size:1rem; text-align:center; text-decoration:none; display:none. Inhalt: "📞 Jetzt anrufen – {{TEL_DISPLAY}}" als <a href="{{TEL_HREF}}">. body bekommt padding-bottom:64px auf Mobile damit Inhalt nicht verdeckt wird.` : ""}
+
+SR-DATEN-BLOCK – ABSOLUT PFLICHT: Fuge diesen Block DIREKT nach <!-- NAV --> (vor der ersten Section) ein, ausgefuellt mit echten KI-generierten Texten. EXAKT dieses Format:
+<script type="application/json" id="sr-data">{"leistungen_beschreibungen":{${leistungen.map(l=>`"${l}":"[1 konkreter Satz]"`).join(",")}},"text_ueber_uns":"[2-3 Saetze zum Betrieb, nur echte Daten, keine Zahlen erfinden]","text_vorteile":["[Vorteil 1]","[Vorteil 2]","[Vorteil 3]","[Vorteil 4]"]}</script>
+Ersetze [1 konkreter Satz] usw. mit echtem branchenspezifischem Inhalt. Keine Zahlen/Jahre/Kunden erfinden.`;
 
   /* ─── User Message ─── */
   const user = `Erstelle die Website fuer diesen Betrieb:
@@ -410,8 +410,8 @@ STRUKTUR-PFLICHT (Kommentare exakt so setzen):
 - <!-- MAPS --> im Kontakt-Abschnitt nach den Kontaktinfos (nur wenn Adresse vorhanden)
 - <!-- FOOTER --> nach dem Kontakt-Abschnitt
 
-VARIABLEN-PFLICHT (in Hero und Kontakt nur diese Platzhalter, KEINE echten Daten):
-{{TEL_HREF}} · {{TEL_DISPLAY}} · {{EMAIL}} · {{ADRESSE_VOLL}}`;
+VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen):
+{{TEL_HREF}} · {{TEL_DISPLAY}} · {{EMAIL}} · {{ADRESSE_VOLL}} · {{UEBER_UNS_TEXT}} · {{VORTEILE}} · <!-- LEISTUNGEN -->`;
 
 
   /* ─── Claude API Call ─── */
@@ -451,6 +451,14 @@ VARIABLEN-PFLICHT (in Hero und Kontakt nur diese Platzhalter, KEINE echten Daten
 
   // Markdown-Backticks entfernen falls Claude sie dennoch ausgibt
   html = html.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+
+  // SR-DATEN-BLOCK extrahieren und aus HTML entfernen
+  let srData = null;
+  const srDataMatch = html.match(/<script[^>]*type="application\/json"[^>]*id="sr-data"[^>]*>([\s\S]*?)<\/script>/i);
+  if (srDataMatch) {
+    try { srData = JSON.parse(srDataMatch[1].trim()); } catch(_) {}
+    html = html.replace(srDataMatch[0], "");
+  }
 
   // Nav + Footer injizieren (Impressum/Datenschutz auf eigenen Unterseiten)
   html = html.includes("<!-- NAV -->")
@@ -552,7 +560,13 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
         "Prefer": "return=minimal",
       },
-      body: JSON.stringify({website_html: html, subdomain: sub, status: "trial", tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null}),
+      body: JSON.stringify({
+        website_html: html, subdomain: sub, status: "trial",
+        tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
+        ...(srData?.text_ueber_uns ? {text_ueber_uns: srData.text_ueber_uns} : {}),
+        ...(srData?.text_vorteile  ? {text_vorteile:  srData.text_vorteile}  : {}),
+        ...(srData?.leistungen_beschreibungen ? {leistungen_beschreibungen: srData.leistungen_beschreibungen} : {}),
+      }),
     }
   );
 

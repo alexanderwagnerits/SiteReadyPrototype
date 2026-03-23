@@ -130,6 +130,33 @@ export async function onRequestGet({params, env}) {
     html = html.replace(/<footer[\s\n>]/i, contactForm + '\n<footer ');
   }
 
+  // ── Leistungen Cards serve-time injizieren (<!-- LEISTUNGEN --> Platzhalter) ──
+  if (html.includes("<!-- LEISTUNGEN -->")) {
+    const leistungenArr = [...(o.leistungen || [])];
+    if (o.extra_leistung?.trim()) {
+      leistungenArr.push(...o.extra_leistung.split(/[,\n]+/).map(s => s.trim()).filter(Boolean));
+    }
+    const descMap = o.leistungen_beschreibungen || {};
+    const stilName = o.stil || "professional";
+    const cardStyleMap = {
+      professional: "border-left:3px solid var(--accent);box-shadow:0 1px 8px rgba(0,0,0,.06);padding:28px 24px;background:#fff;border-radius:6px;transition:all .2s ease",
+      modern:       "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:32px 28px;overflow:hidden;border-top:4px solid var(--accent);background:#fff;transition:all .2s ease",
+      traditional:  "border:1px solid var(--sep,#e2e8f0);border-top:3px solid var(--accent);padding:28px 24px;background:#fff;transition:all .2s ease;border-radius:4px",
+    };
+    const cardStyle = cardStyleMap[stilName] || cardStyleMap.professional;
+    const emojis = ["\uD83D\uDD27","\u26A1","\uD83C\uDFE0","\uD83D\uDD29","\uD83D\uDEE0","\uD83D\uDCA7","\uD83D\uDD11","\uD83E\uDE9F","\uD83C\uDFA8","\uD83C\uDF3F","\u2744","\u2728","\uD83C\uDF1F","\uD83D\uDC8E","\uD83C\uDFC6"];
+    const cards = leistungenArr.map((l, i) => {
+      const desc = descMap[l] || "";
+      return `<div style="${cardStyle}">` +
+        `<div style="font-size:2rem;margin-bottom:12px">${emojis[i % emojis.length]}</div>` +
+        `<h3 style="color:var(--primary);font-weight:700;margin:0 0 8px;font-size:1.05rem">${l}</h3>` +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.9rem;line-height:1.6">${desc}</p>` : "") +
+        `</div>`;
+    }).join("");
+    const grid = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px">${cards}</div>`;
+    html = html.replace("<!-- LEISTUNGEN -->", grid);
+  }
+
   // ── Serve-time Variablen-Ersetzung (Sofort-Updates ohne Re-Generierung) ──
   const tel = o.telefon || "";
   const telHref = tel ? "tel:" + tel.replace(/\s/g, "") : "";
@@ -137,17 +164,42 @@ export async function onRequestGet({params, env}) {
   const oezKey = o.oeffnungszeiten || "";
   const oezLabel = oezKey === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[oezKey] || oezKey || "Nach Vereinbarung");
 
+  // Vorteile HTML aus text_vorteile JSON-Array aufbauen
+  let vorteileHtml = "";
+  if (Array.isArray(o.text_vorteile) && o.text_vorteile.length) {
+    const stil = o.stil || "professional";
+    if (stil === "modern") {
+      vorteileHtml = o.text_vorteile.map(v =>
+        `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">` +
+        `<div style="width:36px;height:36px;border-radius:50%;background:var(--accent,#2563eb)22;color:var(--accent,#2563eb);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div>` +
+        `<span style="padding-top:8px">${v}</span></div>`
+      ).join("");
+    } else if (stil === "traditional") {
+      vorteileHtml = o.text_vorteile.map(v =>
+        `<div style="padding:10px 0;border-bottom:1px solid var(--sep,#e2e8f0)">` +
+        `<span style="color:var(--accent);font-weight:700;margin-right:8px">&#8211;</span>${v}</div>`
+      ).join("");
+    } else {
+      vorteileHtml = o.text_vorteile.map(v =>
+        `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">` +
+        `<span style="color:var(--accent);font-weight:700;flex-shrink:0">&#10003;</span><span>${v}</span></div>`
+      ).join("");
+    }
+  }
+
   const vars = {
-    "{{FIRMENNAME}}":      o.firmenname || "",
-    "{{TEL_HREF}}":        telHref,
-    "{{TEL_DISPLAY}}":     tel,
-    "{{EMAIL}}":           o.email || "",
-    "{{ADRESSE_VOLL}}":    adresseVoll,
-    "{{PLZ_ORT}}":         [o.plz, o.ort].filter(Boolean).join(" "),
+    "{{FIRMENNAME}}":       o.firmenname || "",
+    "{{TEL_HREF}}":         telHref,
+    "{{TEL_DISPLAY}}":      tel,
+    "{{EMAIL}}":            o.email || "",
+    "{{ADRESSE_VOLL}}":     adresseVoll,
+    "{{PLZ_ORT}}":          [o.plz, o.ort].filter(Boolean).join(" "),
     "{{KURZBESCHREIBUNG}}": o.kurzbeschreibung || "",
-    "{{OEFFNUNGSZEITEN}}": oezLabel,
-    "{{EINSATZGEBIET}}":   o.einsatzgebiet || "",
-    "{{SOCIAL_ICONS}}":    buildSocialIcons(o),
+    "{{OEFFNUNGSZEITEN}}":  oezLabel,
+    "{{EINSATZGEBIET}}":    o.einsatzgebiet || "",
+    "{{SOCIAL_ICONS}}":     buildSocialIcons(o),
+    "{{UEBER_UNS_TEXT}}":   o.text_ueber_uns || "",
+    "{{VORTEILE}}":         vorteileHtml,
   };
   for (const [key, val] of Object.entries(vars)) {
     html = html.split(key).join(val);

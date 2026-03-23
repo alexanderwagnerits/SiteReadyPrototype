@@ -307,42 +307,44 @@ function LandingPage({onStart,onPortal}){
 
   {/* PRICING */}
   <Sec id="preise">
-    <div style={{marginBottom:64}}>
+    <div style={{marginBottom:48}}>
       <Label>Preise</Label>
       <H2>Ein Paket. Alles drin.</H2>
-      <Sub s={{maxWidth:440}}>Kein Tarifwirrwarr. Voller Leistungsumfang. 12 Monate Mindestlaufzeit.</Sub>
+      <Sub s={{maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen. Plan jederzeit waehlbar.</Sub>
     </div>
     <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,maxWidth:820,margin:"0 auto"}}>
-      {/* Aktuelles Paket */}
-      <div style={{background:"#fff",borderRadius:14,padding:"40px 32px",position:"relative",border:"2px solid rgba(37,99,235,.2)",boxShadow:"0 8px 40px rgba(37,99,235,.08)"}}>
-        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
-        <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady</div>
-        <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:16}}>Monatliches Abo</div>
-        <div style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4}}>{"\u20AC"}18<span style={{fontSize:".95rem",fontWeight:500,color:T.textMuted,fontFamily:T.font}}>/Mo</span></div>
-        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:28}}>12 Monate Mindestlaufzeit &middot; {"\u20AC"}216 / Jahr</div>
-        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:16}}>
-          {["Subdomain sofort live","Kein Branding auf Ihrer Website","Impressum (ECG) - anwaltl. geprüft","DSGVO - anwaltl. geprüft","SEO & Google-Indexierung","Google Maps","Notdienst / 24h Badge","Analytics-Dashboard","Live-Vorschau vor Bezahlung","Website-Import (optional)","Branchenspezifische Fotos"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700,fontSize:".82rem"}}>{"\u2713"}</span>{f}</div>)}
+      {/* Monatlich */}
+      <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:`2px solid ${T.bg3}`}}>
+        <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>Monatlich</div>
+        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
+          <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{"\u20AC"}18</span>
+          <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
         </div>
-        <div style={{borderTop:`1px solid ${T.bg3}`,paddingTop:14,marginBottom:16}}>
-          <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Self-Service-Portal (nach Kauf)</div>
-          {["Logo hochladen (optional)","Eigene Fotos hochladen (optional)","Custom Domain verbinden (optional)"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textSub,marginBottom:7}}><span style={{color:T.accent,fontWeight:700,fontSize:".82rem"}}>{"\u2713"}</span>{f}</div>)}
+        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar &middot; keine Bindung</div>
+        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:24}}>
+          {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700}}>{"\u2713"}</span>{f}</div>)}
         </div>
-        <button onClick={onStart} style={{width:"100%",padding:14,borderRadius:8,fontSize:".92rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Jetzt starten</button>
+        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:`2px solid ${T.dark}`,background:"#fff",color:T.dark}}>Kostenlos testen</button>
       </div>
-      {/* Coming Soon */}
-      <div style={{background:"#fafafa",borderRadius:14,padding:"40px 32px",position:"relative",border:"1px solid rgba(124,58,237,.15)"}}>
-        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#7c3aed,#a855f7)",color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
-        <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady Premium</div>
-        <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:16}}>Alles aus Standard + mehr</div>
-        <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(6px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".95rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
-        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:28}}>Kommt 2026 &middot; Jetzt vormerken</div>
-        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:28}}>
-          {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><span style={{color:"#a855f7",fontWeight:700,fontSize:".84rem"}}>{"\u23F3"}</span>{f}</div>)}
+      {/* Jaehrlich */}
+      <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:"2px solid rgba(37,99,235,.25)",boxShadow:"0 8px 40px rgba(37,99,235,.08)"}}>
+        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#2563eb,#4f46e5)",color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>20% Rabatt</span>
+        <div style={{fontSize:".68rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>Jaehrlich</div>
+        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:2}}>
+          <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{"\u20AC"}14.40</span>
+          <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
         </div>
-        <button disabled style={{width:"100%",padding:14,borderRadius:8,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",opacity:.8}}>Newsletter abonnieren &amp; informiert bleiben</button>
+        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:4}}>{"\u20AC"}172.80 / Jahr &middot; statt {"\u20AC"}216</div>
+        <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#dcfce7",borderRadius:6,padding:"3px 10px",marginBottom:20}}>
+          <span style={{fontSize:".72rem",fontWeight:700,color:"#15803d"}}>Sie sparen {"\u20AC"}43.20 pro Jahr</span>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:24}}>
+          {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700}}>{"\u2713"}</span>{f}</div>)}
+        </div>
+        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Kostenlos testen</button>
       </div>
     </div>
-    <p style={{textAlign:"center",fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"28px auto 0",lineHeight:1.7}}>12 Monate Mindestlaufzeit. Kündbar nach Ablauf. Preise inkl. MwSt.</p>
+    <p style={{textAlign:"center",fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"24px auto 0",lineHeight:1.7}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Preise inkl. MwSt.</p>
   </Sec>
 
   {/* COMPARISON */}

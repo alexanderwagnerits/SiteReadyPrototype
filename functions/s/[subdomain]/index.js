@@ -59,7 +59,7 @@ export async function onRequestGet({params, env}) {
   // Hero-Bild: erste Section bekommt id="sr-hero", dann CSS-Override mit Bild
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
   if (o.url_hero) {
-    const heroStyle = `<style>#sr-hero{background:linear-gradient(rgba(0,0,0,.52),rgba(0,0,0,.42)),url('${o.url_hero}') center/cover no-repeat!important}</style>`;
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.52),rgba(0,0,0,.42)),url('${o.url_hero}') center/cover no-repeat!important}</style>`;
     html = html.replace('</head>', heroStyle + '</head>');
   }
 

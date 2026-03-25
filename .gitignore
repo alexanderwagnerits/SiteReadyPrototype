@@ -4,3 +4,7 @@ build
 package-lock.json
 .env.local
 .env
+.agents
+.screenshots
+.playwright-mcp
+skills-lock.json

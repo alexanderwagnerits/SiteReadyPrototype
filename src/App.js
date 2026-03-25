@@ -1470,6 +1470,7 @@ function Admin({adminKey}){
   const[filter,setFilter]=useState("alle");
   const[sel,setSel]=useState(null);
   const[health,setHealth]=useState({});
+  const[healthCountdown,setHealthCountdown]=useState(60);
   const[loading,setLoading]=useState(true);
   const[sysStatus,setSysStatus]=useState(null);
   const[sysLoading,setSysLoading]=useState(false);
@@ -1584,10 +1585,11 @@ function Admin({adminKey}){
   useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();const iv=setInterval(()=>{checkSystem();fetchExtStatus();},60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{
     if(tab==="sites"){
-      const run=()=>orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));
+      const run=()=>{orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));setHealthCountdown(60);};
       run();
       const iv=setInterval(run,60000);
-      return()=>clearInterval(iv);
+      const cd=setInterval(()=>setHealthCountdown(c=>c>0?c-1:0),1000);
+      return()=>{clearInterval(iv);clearInterval(cd);};
     }
   },[tab]);
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
@@ -1810,7 +1812,10 @@ function Admin({adminKey}){
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","URL",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","URL",""].map(h=>{
+                  if(h==="Health"){const r=8,circ=2*Math.PI*r,pct=healthCountdown/60,dash=circ*pct;return <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}><span style={{display:"inline-flex",alignItems:"center",gap:5}}>Health<svg width={18} height={18} style={{display:"block"}}><circle cx={9} cy={9} r={r} fill="none" stroke={T.bg3} strokeWidth={2}/><circle cx={9} cy={9} r={r} fill="none" stroke={T.accent} strokeWidth={2} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" transform="rotate(-90 9 9)"/><text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={5} fill={T.textMuted} fontFamily="JetBrains Mono,monospace">{healthCountdown}</text></svg></span></th>;}
+                  return <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>;
+                })}</tr></thead>
                 <tbody>{sf.map((o,i)=>{
                   const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                   const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;

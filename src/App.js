@@ -1497,6 +1497,8 @@ function Admin({adminKey}){
   const[deleteConfirm,setDeleteConfirm]=useState(null);
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[offlineConfirm,setOfflineConfirm]=useState(null);
+  const[orderLogs,setOrderLogs]=useState({});
+  const[logsLoading,setLogsLoading]=useState({});
   const[showProzess,setShowProzess]=useState(false);
   const[siteConfig,setSiteConfig]=useState({});
   const[showStatusOverride,setShowStatusOverride]=useState(false);
@@ -1540,12 +1542,35 @@ function Admin({adminKey}){
     if(!ticketForm.email||!ticketForm.message)return;
     setTicketSaving(true);
     await supabase.from("support_requests").insert({email:ticketForm.email,subject:ticketForm.subject||"Admin-Ticket",message:ticketForm.message,status:"offen"});
-    setTicketSaving(false);setTicketFormOpen(false);setTicketForm({email:"",subject:"",message:""});
+    setTicketSaving(false);setTicketFormOpen(false);
+    const sub=ticketForm.subject||"Admin-Ticket";const em=ticketForm.email;
+    setTicketForm({email:"",subject:"",message:""});
     load();
+    const relOrd=orders.find(o=>o.email&&em&&o.email.toLowerCase()===em.toLowerCase());
+    if(relOrd)logActivity(relOrd.id,"ticket_created",{subject:sub});
   };
   const updateTicket=async(id,fields)=>{
     await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,table:"support_requests",...fields})});
     setTickets(ts=>ts.map(t=>t.id===id?{...t,...fields}:t));
+    if(fields.status==="beantwortet"){
+      const t=tickets.find(tt=>tt.id===id);
+      if(t){const relOrd=orders.find(o=>o.email&&t.email&&o.email.toLowerCase()===t.email.toLowerCase());if(relOrd)logActivity(relOrd.id,"ticket_answered",{subject:t.subject});}
+    }
+  };
+
+  const loadLogs=async(orderId)=>{
+    if(!orderId||!adminKey)return;
+    setLogsLoading(l=>({...l,[orderId]:true}));
+    try{const r=await fetch(`/api/log-activity?key=${adminKey}&order_id=${orderId}`);const data=await r.json();setOrderLogs(l=>({...l,[orderId]:Array.isArray(data)?data:[]}));}catch(e){}
+    setLogsLoading(l=>({...l,[orderId]:false}));
+  };
+
+  const logActivity=async(orderId,action,details,actor)=>{
+    if(!orderId||!adminKey)return;
+    try{
+      await fetch(`/api/log-activity?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId,action,details:details||null,actor:actor||"admin"})});
+      loadLogs(orderId);
+    }catch(e){}
   };
 
   const saveNotiz=async(id)=>{
@@ -1563,9 +1588,11 @@ function Admin({adminKey}){
       const r=await fetch(`/api/generate-website?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:id})});
       const j=await r.json();
       if(j.ok){
+        const wasFirst=!orders.find(o=>o.id===id)?.website_html;
         setGenMsg(m=>({...m,[id]:"Website erstellt! Status: live"}));
         await load();
         setSel(s=>s?.id===id?{...s,status:"live",subdomain:j.subdomain}:s);
+        logActivity(id,wasFirst?"website_generated":"website_regenerated");
       } else {
         setGenMsg(m=>({...m,[id]:"Fehler: "+(j.error||"Unbekannt")}));
       }
@@ -1621,6 +1648,7 @@ function Admin({adminKey}){
   },[tab]);
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
   useEffect(()=>{setEditKunde(null);},[sel]);
+  useEffect(()=>{if(sel?.id)loadLogs(sel.id);},[sel?.id]);
 
   const loadDocs=async()=>{
     setDocsLoading(true);
@@ -2325,6 +2353,9 @@ function Admin({adminKey}){
         const selCheckedAt=healthTime[sel.id];
         const copyVal=(key,val)=>{navigator.clipboard?.writeText(val||"");setCopied(key);setTimeout(()=>setCopied(k=>k===key?null:k),1500);};
         const CopyBtn=({k,v})=>v?<button onClick={()=>copyVal(k,v)} title="Kopieren" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 4px",color:copied===k?T.green:T.textMuted,fontSize:".75rem",lineHeight:1,flexShrink:0}}>{copied===k?"\u2713":"\u29c9"}</button>:null;
+        const relTime=(iso)=>{if(!iso)return"";const m=Math.floor((Date.now()-new Date(iso).getTime())/60000);const h=Math.floor(m/60);const d=Math.floor(h/24);if(m<1)return"gerade";if(m<60)return`vor ${m} Min`;if(h<24)return`vor ${h} Std`;if(d<7)return`vor ${d}d`;return new Date(iso).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"});};
+        const logLabel=(action,details)=>{const d=details||{};switch(action){case"website_generated":return"Website erstmals generiert";case"website_regenerated":return"Website neu generiert";case"status_changed":return`Status: ${STATUS_LABELS[d.from]||d.from} \u2192 ${STATUS_LABELS[d.to]||d.to}`;case"offline":return"Offline genommen";case"online":return"Wieder online gesetzt";case"subdomain_changed":return`Subdomain: ${d.from} \u2192 ${d.to}`;case"stil_changed":return`Stil: ${d.from} \u2192 ${d.to}`;case"trial_extended":return`Trial +${d.days} Tage verlaengert`;case"ticket_created":return`Ticket erstellt: ${d.subject||""}`;case"ticket_answered":return`Ticket beantwortet: ${d.subject||""}`;case"checkout_completed":return`Checkout: ${d.plan||"monatlich"}`;case"payment_succeeded":return d.promoted_to_live?"Zahlung \u2192 Live geschaltet":"Zahlung erfolgreich";case"payment_failed":return"Zahlung fehlgeschlagen";case"subscription_canceled":return"Abo beendet";case"subscription_updated":return`Abo-Status: ${d.status||""}`;default:return action;}};
+        const logIcon=(action)=>({"website_generated":"\u2728","website_regenerated":"\u21bb","status_changed":"\u21aa","offline":"\u23f8","online":"\u25b6","subdomain_changed":"\u270f","stil_changed":"\u25a3","trial_extended":"\u23e9","ticket_created":"\u2709","ticket_answered":"\u2713","checkout_completed":"\u2714","payment_succeeded":"\u2714","payment_failed":"\u26a0","subscription_canceled":"\u2716","subscription_updated":"\u21ba"}[action]||"\u25cf");
         return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
         <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:1280,maxHeight:"96vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
           {/* Modal Header */}
@@ -2379,7 +2410,7 @@ function Admin({adminKey}){
                     const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Zahlung offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
                     const zv=sel.stripe_customer_id?(zMap[sel.subscription_status]||{label:"Unbekannt",c:T.textMuted}):null;
                     let zahlungContent;
-                    const extendTrial=(days)=>{const base=sel.trial_expires_at?new Date(sel.trial_expires_at):new Date();base.setDate(base.getDate()+days);const iso=base.toISOString();updateOrder(sel.id,{trial_expires_at:iso});setSel(s=>({...s,trial_expires_at:iso}));};
+                    const extendTrial=(days)=>{const base=sel.trial_expires_at?new Date(sel.trial_expires_at):new Date();base.setDate(base.getDate()+days);const iso=base.toISOString();updateOrder(sel.id,{trial_expires_at:iso});setSel(s=>({...s,trial_expires_at:iso}));logActivity(sel.id,"trial_extended",{days});};
                     if(sel.status==="trial"){
                       zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                         <span style={{padding:"2px 8px",borderRadius:4,background:"#8b5cf622",color:"#8b5cf6",fontWeight:700,fontSize:".75rem"}}>Testphase</span>
@@ -2459,7 +2490,13 @@ function Admin({adminKey}){
                   const editing=!!sc.editing;
                   const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
                   const dirty=sc.subdomain!==(sel.subdomain||"")||sc.stil!==(sel.stil||"professional");
-                  const save=async()=>{await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));setsc({editing:false});};
+                  const save=async()=>{
+                    const oldSub=sel.subdomain||"";const oldStil=sel.stil||"professional";
+                    await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});
+                    setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));setsc({editing:false});
+                    if(sc.subdomain!==oldSub)logActivity(sel.id,"subdomain_changed",{from:oldSub,to:sc.subdomain});
+                    if(sc.stil!==oldStil)logActivity(sel.id,"stil_changed",{from:oldStil,to:sc.stil});
+                  };
                   const cancel=()=>setsc({subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false});
                   return(<>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
@@ -2524,7 +2561,7 @@ function Admin({adminKey}){
                     {sel.website_html&&<button onClick={()=>{const b=new Blob([sel.website_html],{type:"text/html"});const u=URL.createObjectURL(b);window.open(u,"_blank");}} style={{padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>HTML anzeigen</button>}
                     <div style={{display:"flex",gap:8}}>
                       {sel.status==="offline"
-                        ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Wieder online</button>
+                        ?<button onClick={()=>{updateOrder(sel.id,{status:"live"});logActivity(sel.id,"online");}} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Wieder online</button>
                         :<>
                           {offlineConfirm===sel.id
                             ?<button onClick={()=>setOfflineConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
@@ -2539,7 +2576,7 @@ function Admin({adminKey}){
                     </div>
                     {offlineConfirm===sel.id&&<div style={{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:T.rSm,padding:"12px 14px"}}>
                       <div style={{fontSize:".78rem",color:"#475569",marginBottom:8}}>Website wird fuer Besucher nicht mehr erreichbar sein.</div>
-                      <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
+                      <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);logActivity(sel.id,"offline");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
                     </div>}
                     {deleteConfirm===sel.id&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
                       <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung \u2013 unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
@@ -2559,7 +2596,7 @@ function Admin({adminKey}){
                   </button>
                   {showStatusOverride&&<div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:6}}>
                     {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
-                      <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?` \u2713`:""}</button>
+                      <button key={s} onClick={sel.status!==s?()=>{const prev=sel.status;updateOrder(sel.id,{status:s});logActivity(sel.id,"status_changed",{from:prev,to:s});}:undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?` \u2713`:""}</button>
                     ))}
                   </div>}
                 </>)}
@@ -2601,6 +2638,27 @@ function Admin({adminKey}){
                   }
                 </div>);
               })()}
+              {/* Aktivitaetslog */}
+              <div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Aktivitaetslog</div>
+                {logsLoading[sel.id]
+                  ?<div style={{fontSize:".78rem",color:T.textMuted}}>Laedt...</div>
+                  :(orderLogs[sel.id]||[]).length===0
+                    ?<div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
+                    :<div style={{display:"flex",flexDirection:"column",gap:5}}>
+                        {(orderLogs[sel.id]||[]).map(log=>(
+                          <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"7px 9px",background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                            <span style={{fontSize:".8rem",flexShrink:0,minWidth:16,textAlign:"center"}}>{logIcon(log.action)}</span>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{fontSize:".77rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
+                              {log.actor==="system"&&<div style={{fontSize:".68rem",color:T.textMuted}}>via Stripe</div>}
+                            </div>
+                            <div style={{fontSize:".68rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
+                          </div>
+                        ))}
+                      </div>
+                }
+              </div>
             </div>
           </div>
           {/* Prozess-Details aufklappbar */}

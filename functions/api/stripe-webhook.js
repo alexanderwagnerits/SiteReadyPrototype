@@ -43,6 +43,16 @@ export async function onRequestPost({request, env}) {
     return rows[0] || null;
   };
 
+  // Hilfsfunktion: Aktivitaet loggen
+  const logEvent = async (orderId, action, details) => {
+    if (!orderId || !sb || !sbKey) return;
+    await fetch(`${sb}/rest/v1/activity_log`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({order_id: orderId, action, details: details||null, actor: "system"}),
+    }).catch(()=>{});
+  };
+
   // checkout.session.completed → stripe_customer_id + subscription_id speichern
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
@@ -53,6 +63,7 @@ export async function onRequestPost({request, env}) {
         subscription_id: session.subscription || null,
         subscription_plan: session.metadata?.plan || "monthly",
       });
+      await logEvent(orderId, "checkout_completed", {plan: session.metadata?.plan || "monthly"});
     }
   }
 
@@ -66,6 +77,7 @@ export async function onRequestPost({request, env}) {
         const patch = {subscription_status: "active"};
         if (order.status === "trial") patch.status = "live";
         await patchOrder(order.id, patch);
+        await logEvent(order.id, "payment_succeeded", order.status === "trial" ? {promoted_to_live: true} : null);
       }
     }
   }
@@ -78,6 +90,7 @@ export async function onRequestPost({request, env}) {
       const order = await findOrderByCustomer(customerId);
       if (order) {
         await patchOrder(order.id, {subscription_status: "past_due"});
+        await logEvent(order.id, "payment_failed");
       }
     }
   }
@@ -91,7 +104,10 @@ export async function onRequestPost({request, env}) {
       const order = await findOrderByCustomer(customerId);
       if (order) {
         const mapped = stripeStatus === "active" ? "active" : stripeStatus === "past_due" || stripeStatus === "unpaid" ? "past_due" : stripeStatus === "canceled" ? "canceled" : null;
-        if (mapped) await patchOrder(order.id, {subscription_status: mapped});
+        if (mapped) {
+          await patchOrder(order.id, {subscription_status: mapped});
+          await logEvent(order.id, "subscription_updated", {status: mapped});
+        }
       }
     }
   }
@@ -104,6 +120,7 @@ export async function onRequestPost({request, env}) {
       const order = await findOrderByCustomer(customerId);
       if (order && order.status === "live") {
         await patchOrder(order.id, {status: "offline", subscription_status: "canceled"});
+        await logEvent(order.id, "subscription_canceled");
       }
     }
   }

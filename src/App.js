@@ -1867,53 +1867,58 @@ function Admin({adminKey}){
               </div>)}
             </div>
           </div>}
-          {/* Services & Status (kombiniert) */}
+          {/* Services & Status */}
           {(()=>{
             const extInd=k=>extStatus[k]?.status?.indicator;
-            const extOk=k=>{const i=extInd(k);return i==="none";};
             const extLoading=k=>extStatus[k]===null;
-            const extColor=k=>{const i=extInd(k);return i===undefined?T.textMuted:i==="none"?T.green:i==="minor"?"#d97706":"#dc2626";};
-            const extLabel=k=>{const st=extStatus[k];if(st===null)return"Wird geladen...";if(st===false)return"Nicht erreichbar";const i=extInd(k);return i==="none"?"Betriebsbereit":i==="minor"?"Stoerung (minor)":"Stoerung / Ausfall";};
+            const extLabel=k=>{const st=extStatus[k];if(st===null)return null;if(st===false)return{label:"Nicht erreichbar",color:T.textMuted,bg:"rgba(0,0,0,.04)"};const i=extInd(k);return i==="none"?{label:"Betriebsbereit",color:T.green,bg:T.greenLight}:i==="minor"?{label:"Kleinere Stoerung",color:"#d97706",bg:"#fef3c7"}:{label:"Stoerung / Ausfall",color:T.red,bg:"#fef2f2"};};
             const services=[
               {key:"supabase",label:"Supabase",desc:"Datenbank & Auth",href:"https://status.supabase.com",
-                intOk:sysStatus?.supabase?.ok,intDetail:sysStatus?.supabase?.latency?`${sysStatus.supabase.latency}ms Latenz`:"",intErr:sysStatus?.supabase?.error},
+                intOk:sysStatus?.supabase?.ok,intLabel:sysStatus?.supabase?.latency?`${sysStatus.supabase.latency}ms`:sysStatus?.supabase?.ok?"OK":null,intErr:sysStatus?.supabase?.error},
               {key:"stripe",label:"Stripe",desc:"Zahlungsabwicklung",href:"https://www.stripestatus.com",
-                intOk:sysStatus?.stripe?.ok,intDetail:sysStatus?.stripe?.livemode===false?"Testmodus":sysStatus?.stripe?.livemode===true?"Live-Modus":"",intErr:sysStatus?.stripe?.error},
+                intOk:sysStatus?.stripe?.ok,intLabel:sysStatus?.stripe?.livemode===false?"Testmodus":sysStatus?.stripe?.livemode===true?"Live":sysStatus?.stripe?.ok?"OK":null,intErr:sysStatus?.stripe?.error},
               {key:"anthropic",label:"Anthropic (Claude)",desc:"KI-Generierung",href:"https://status.anthropic.com",
-                intOk:sysStatus?.anthropic?.ok&&!sysStatus?.anthropic?.billing,intDetail:sysStatus?.anthropic?.billing?"Guthaben aufgebraucht!":sysStatus?.anthropic?.ok?"API Key OK":"",intErr:sysStatus?.anthropic?.billing?"Billing-Problem":sysStatus?.anthropic?.error},
+                intOk:sysStatus?.anthropic?.ok&&!sysStatus?.anthropic?.billing,intLabel:sysStatus?.anthropic?.billing?"Billing-Problem":sysStatus?.anthropic?.ok?"API Key OK":null,intErr:sysStatus?.anthropic?.billing?"Guthaben aufgebraucht":sysStatus?.anthropic?.error},
               {key:"cloudflare",label:"Cloudflare",desc:"Hosting & CDN",href:"https://www.cloudflarestatus.com",
-                intOk:null,intDetail:"",intErr:null},
+                intOk:null,intLabel:null,intErr:null},
             ];
-            const worstDot=(intOk,extK)=>{
-              const eOk=extStatus[extK]===null?null:extOk(extK);
-              if(intOk===false||eOk===false)return T.red;
-              if(intOk===null&&eOk===null)return T.textMuted;
-              if(intOk===true||eOk===true)return T.green;
-              return T.textMuted;
-            };
+            const StatusRow=({dotColor,text,detail,err,loading,href})=>(
+              <div style={{display:"flex",alignItems:"center",gap:6,marginTop:6}}>
+                {loading?<div style={{width:7,height:7,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/>
+                  :<div style={{width:7,height:7,borderRadius:"50%",background:dotColor,flexShrink:0}}/>}
+                <span style={{fontSize:".72rem",color:T.textMuted}}>{text}</span>
+                {detail&&<span style={{fontSize:".72rem",fontWeight:600,color:err?T.red:dotColor,marginLeft:2}}>{detail}</span>}
+                {href&&<a href={href} target="_blank" rel="noreferrer" style={{fontSize:".7rem",color:T.accent,fontWeight:600,textDecoration:"none",marginLeft:"auto"}}>{"Status \u2192"}</a>}
+              </div>
+            );
             return(<div style={{marginBottom:24}}>
               <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Services & Status"}</div>
               {(!sysStatus&&sysLoading)&&<div style={{color:T.textMuted,padding:"24px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,marginBottom:8}}>{"Verbindungen werden geprueft..."}</div>}
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {services.map(({key,label,desc,href,intOk,intDetail,intErr})=>{
-                  const dot=worstDot(intOk,key);
-                  const extL=extLabel(key);
-                  const eInd=extInd(key);
-                  const extPillColor=extStatus[key]===null?T.textMuted:extStatus[key]===false?T.textMuted:eInd==="none"?T.green:eInd==="minor"?"#d97706":T.red;
-                  const extPillBg=extStatus[key]===null?"rgba(0,0,0,.04)":extStatus[key]===false?"rgba(0,0,0,.04)":eInd==="none"?T.greenLight:eInd==="minor"?"#fef3c7":"#fef2f2";
-                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${dot===T.red?"#fecaca":dot===T.green?"rgba(22,163,74,.15)":T.bg3}`,padding:"12px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-                    <div style={{width:8,height:8,borderRadius:"50%",background:dot,boxShadow:`0 0 0 3px ${dot}26`,flexShrink:0}}/>
-                    <div style={{flex:1,minWidth:140}}>
-                      <span style={{fontWeight:700,fontSize:".85rem",color:T.dark}}>{label}</span>
-                      <span style={{fontSize:".75rem",color:T.textMuted,marginLeft:8}}>{desc}</span>
-                      {intDetail&&<span style={{fontSize:".72rem",marginLeft:8,color:intErr?T.red:T.accent,fontWeight:600}}>{intDetail}</span>}
-                      {intErr&&!intDetail&&<span style={{fontSize:".72rem",marginLeft:8,color:T.red}}>{intErr}</span>}
-                    </div>
-                    <div style={{display:"flex",alignItems:"center",gap:8}}>
-                      {extLoading(key)?<div style={{width:8,height:8,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>
-                        :<span style={{fontSize:".72rem",fontWeight:600,padding:"3px 8px",borderRadius:4,background:extPillBg,color:extPillColor}}>{extL}</span>}
-                      <a href={href} target="_blank" rel="noreferrer" style={{fontSize:".72rem",color:T.accent,fontWeight:600,textDecoration:"none",whiteSpace:"nowrap"}}>{"Status \u2192"}</a>
-                    </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+                {services.map(({key,label,desc,href,intOk,intLabel,intErr})=>{
+                  const ext=extLabel(key);
+                  const extDot=ext===null?T.textMuted:ext.color;
+                  const intDot=intOk===null?null:intOk?T.green:T.red;
+                  const hasInternal=intOk!==null;
+                  const cardBorder=intOk===false||(!extLoading(key)&&extStatus[key]!==false&&extInd(key)&&extInd(key)!=="none")?"#fecaca":intOk===true&&(ext===null||ext.color===T.green)?"rgba(22,163,74,.15)":T.bg3;
+                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${cardBorder}`,padding:"14px 16px",boxShadow:T.sh1}}>
+                    <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{label}</div>
+                    <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:4}}>{desc}</div>
+                    {hasInternal&&<StatusRow
+                      dotColor={intDot||T.textMuted}
+                      text={"API-Verbindung"}
+                      detail={intLabel}
+                      err={!!intErr}
+                      loading={!sysStatus&&sysLoading}
+                    />}
+                    <StatusRow
+                      dotColor={extDot}
+                      text={"Service-Status"}
+                      detail={ext?.label}
+                      err={ext?.color===T.red}
+                      loading={extLoading(key)}
+                      href={href}
+                    />
                   </div>);
                 })}
               </div>

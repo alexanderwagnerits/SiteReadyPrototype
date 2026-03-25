@@ -1785,7 +1785,7 @@ function Admin({adminKey}){
           const ALL_STATUS=["pending","in_arbeit","trial","live","offline"];
           const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Sites</h2>
               <div style={{position:"relative"}}>
                 <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{padding:"7px 30px 7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",width:180,background:"#fff"}}/>
@@ -1802,7 +1802,7 @@ function Admin({adminKey}){
               </button>
             </div>
             {/* Legende */}
-            <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:12,alignItems:"flex-start"}}>
+            <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:20,alignItems:"flex-start"}}>
               <div>
                 <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Prozess</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
@@ -1853,7 +1853,7 @@ function Admin({adminKey}){
                   const hv=healthMap[healthState];
                   const rowBg=healthState==="err"||healthState==="fehler"?"#fef2f2":isStuckPending||isStuckGen?"#fffbeb":i%2===0?"#fff":"#fafbfc";
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:rowBg}}>
-                    <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.accent,cursor:"pointer",whiteSpace:"nowrap",textDecoration:"underline",textDecorationColor:T.accent+"55"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
+                    <td style={{padding:"11px 14px",fontWeight:700,fontSize:"1rem",color:T.accent,cursor:"pointer",whiteSpace:"nowrap",textDecoration:"underline",textDecorationColor:T.accent+"55"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <span style={{padding:"3px 8px",borderRadius:4,background:procColor+"18",color:procColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${procColor}33`}}>{procLabel}</span>
@@ -2036,7 +2036,7 @@ function Admin({adminKey}){
           const maxC=Math.max(1,...mData.map(m=>m.count));
           const stripeFee=Math.round((mrr*0.014+activeOrders.length*0.25)*100)/100;
           const claudeCostMo=totalCostEur/Math.max(1,now.getMonth());
-          const ausgaben=Math.round((stripeFee+claudeCostMo+0.83)*100)/100;
+          const ausgaben=Math.round((stripeFee+claudeCostMo)*100)/100;
           const netto=Math.round((mrr-ausgaben)*100)/100;
           return(<div>
             <div style={{marginBottom:24}}>
@@ -2058,7 +2058,7 @@ function Admin({adminKey}){
                 <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Ausgaben / Mo</div>
                 <div style={{fontSize:"2rem",fontWeight:800,color:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{ausgaben.toFixed(2)}</div>
                 <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
-                  {[["Stripe",`\u20AC${stripeFee.toFixed(2)}`],["Claude API",`\u20AC${claudeCostMo.toFixed(3)}`],["Domain","\u20AC0,83"],["Cloudflare / Supabase","\u20AC0"]].map(([l,v])=>(
+                  {[["Stripe",`\u20AC${stripeFee.toFixed(2)}`],["Claude API",`\u20AC${claudeCostMo.toFixed(3)}`],["Cloudflare / Supabase","\u20AC0"]].map(([l,v])=>(
                     <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".73rem",color:T.textMuted}}>
                       <span>{l}</span><span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>{v}</span>
                     </div>
@@ -2068,7 +2068,7 @@ function Admin({adminKey}){
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`2px solid ${netto>=0?T.green+"44":"#fca5a5"}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Netto / Mo</div>
                 <div style={{fontSize:"2rem",fontWeight:800,color:netto>=0?T.green:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{netto.toFixed(2)}</div>
-                <div style={{marginTop:10,fontSize:".73rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten + Domain</div>
+                <div style={{marginTop:10,fontSize:".73rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten</div>
               </div>
             </div>
             {/* Unterer Bereich: Bestellungen Chart + Abo-Status */}
@@ -2367,15 +2367,6 @@ function Admin({adminKey}){
             </div>
             {/* Rechte Spalte: Notiz + Status */}
             <div style={{padding:"20px 24px"}}>
-              {/* Status manuell setzen */}
-              <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,marginBottom:16}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Status setzen</div>
-                <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                  {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
-                    <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"7px 12px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,textAlign:"left",transition:"all .15s"}}>{label}{sel.status===s?" ✓":""}</button>
-                  ))}
-                </div>
-              </div>
               {/* Interne Notiz */}
               <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
@@ -2396,7 +2387,7 @@ function Admin({adminKey}){
             </button>
             {showProzess&&(()=>{
               const st=sel.status;
-              const idx=STATUS_FLOW.indexOf(st);
+              const idx=st==="offline"?STATUS_FLOW.length-1:STATUS_FLOW.indexOf(st);
               const hasHtml=!!sel.website_html;
               const trialExpiry=sel.trial_expires_at?new Date(sel.trial_expires_at):null;
               const trialDaysLeft=trialExpiry?Math.max(0,Math.ceil((trialExpiry-Date.now())/(1000*60*60*24))):null;
@@ -2408,11 +2399,12 @@ function Admin({adminKey}){
                 {key:"live",label:"Schritt 4 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"J\u00e4hrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
-                {num:6,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},
-                {num:7,label:"Custom Domain Onboarding",icon:"🌐",optional:true,detail:"Kundeneigene Domain (z.B. firma.at) via CNAME/A-Record auf siteready.at zeigen lassen. SSL wird automatisch von Cloudflare ausgestellt."},
-                {num:8,label:"Custom Domain indexieren",icon:"📈",optional:true,detail:"noindex auf der Custom Domain entfernen. Google Search Console einreichen. Dauert typisch 1–4 Wochen bis zur vollständigen Indexierung."},
-                {num:9,label:"Subdomain aus Google entfernen",icon:"🧹",optional:true,detail:"Sobald die Custom Domain indexiert ist: noindex auf der Subdomain wieder aktivieren (oder 301-Redirect setzen). Verhindert Duplicate-Content-Penaltys."},
+                {num:5,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},
+                {num:6,label:"Custom Domain Onboarding",icon:"🌐",optional:true,detail:"Kundeneigene Domain (z.B. firma.at) via CNAME/A-Record auf siteready.at zeigen lassen. SSL wird automatisch von Cloudflare ausgestellt."},
+                {num:7,label:"Custom Domain indexieren",icon:"📈",optional:true,detail:"noindex auf der Custom Domain entfernen. Google Search Console einreichen. Dauert typisch 1–4 Wochen bis zur vollstaendigen Indexierung."},
+                {num:8,label:"Subdomain aus Google entfernen",icon:"🧹",optional:true,detail:"Sobald die Custom Domain indexiert ist: noindex auf der Subdomain wieder aktivieren (oder 301-Redirect setzen). Verhindert Duplicate-Content-Penaltys."},
               ];
+              const [showStatusOverride,setShowStatusOverride]=React.useState(false);
               return(<div style={{padding:"0 28px 28px"}}>
                 {steps.map((step,i)=>{
                   const done=STATUS_FLOW.indexOf(step.key)<=idx;
@@ -2459,6 +2451,15 @@ function Admin({adminKey}){
                     </div>
                   </div>
                 ))}
+                {/* Notfall-Override */}
+                <div style={{marginTop:24,borderTop:`1px solid ${T.bg3}`,paddingTop:16}}>
+                  <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",fontSize:".72rem",color:T.textMuted,fontFamily:T.font,padding:0,fontWeight:600}}>&#9881; Notfall: Status manuell setzen</button>
+                  {showStatusOverride&&<div style={{marginTop:8,display:"flex",flexWrap:"wrap",gap:6}}>
+                    {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
+                      <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?" ✓":""}</button>
+                    ))}
+                  </div>}
+                </div>
               </div>);
             })()}
           </div>

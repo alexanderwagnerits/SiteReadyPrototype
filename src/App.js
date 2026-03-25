@@ -1787,7 +1787,7 @@ function Admin({adminKey}){
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","Status","URL","HTTP","Notiz",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","Status","URL","Notiz",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{sf.map((o,i)=>{
                   const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                   const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;
@@ -1795,24 +1795,20 @@ function Admin({adminKey}){
                   const h=health[o.id];
                   const url=o.subdomain?`sitereadyprototype.pages.dev/s/${o.subdomain}`:null;
                   const isStuck=o.status==="pending"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000;
-                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:isStuck?"#fffbeb":h==="error"?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
+                  const httpErr=o.status==="live"&&h==="error";
+                  const statusColor=httpErr?"#dc2626":STATUS_COLORS[o.status];
+                  const statusLabel=httpErr?"Live \u2717":o.status==="live"&&h==="ok"?"Live \u2713":o.status==="live"&&h==="checking"?"Live ...":STATUS_LABELS[o.status];
+                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:isStuck?"#fffbeb":httpErr?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
                     <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer",whiteSpace:"nowrap"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <StatusBadge status={o.status}/>
+                        <span style={{padding:"3px 9px",borderRadius:4,background:statusColor+"18",color:statusColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${statusColor}33`}}>{statusLabel}</span>
                         {tl!==null&&<span style={{padding:"2px 7px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".7rem"}}>{tl>0?`${tl}d`:"Abgelaufen"}</span>}
+                        {o.status==="offline"&&<span style={{fontSize:".78rem",color:T.textMuted}}>⏳</span>}
                       </div>
                     </td>
                     <td style={{padding:"11px 14px",fontSize:".75rem",fontFamily:T.mono,maxWidth:200}}>
                       {url?<a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none",display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{url}</a>:<span style={{color:T.textMuted}}>—</span>}
-                    </td>
-                    <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
-                      {o.status==="offline"?<span style={{fontSize:".75rem",color:T.textMuted}}>⏳</span>
-                        :!url?<span style={{fontSize:".75rem",color:T.textMuted}}>—</span>
-                        :h==="checking"?<span style={{color:T.textMuted,fontSize:".75rem"}}>...</span>
-                        :h==="ok"?<span style={{color:T.green,fontWeight:700,fontSize:".75rem"}}>{"\u2713"} OK</span>
-                        :h==="error"?<span style={{color:T.red,fontWeight:700,fontSize:".75rem"}}>{"\u2717"} Fehler</span>
-                        :<span style={{color:T.textMuted,fontSize:".75rem"}}>—</span>}
                     </td>
                     <td style={{padding:"11px 14px",fontSize:".75rem",color:T.textMuted,maxWidth:160}}>
                       <span style={{display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.notiz||""}</span>

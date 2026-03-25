@@ -2299,22 +2299,31 @@ function Admin({adminKey}){
                 :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                   {(()=>{const gb=GRUPPE_BADGE[getBrancheGruppe(sel.branche)];return(<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}><span style={{color:T.textMuted,fontWeight:500}}>Berufsgruppe</span><span style={{display:"inline-flex",alignItems:"center",gap:5}}><span style={{padding:"1px 8px",borderRadius:20,background:gb.bg,color:gb.c,fontSize:".72rem",fontWeight:700}}>{gb.icon} {gb.label}</span></span></div>);})()}
                   {(()=>{
+                    const _selExp=sel.trial_expires_at||(sel.created_at?new Date(new Date(sel.created_at).getTime()+7*24*60*60*1000).toISOString():null);
+                    const trialLeft=sel.status==="trial"&&_selExp?Math.ceil((new Date(_selExp)-Date.now())/(1000*60*60*24)):null;
                     const planLabel=sel.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":sel.subscription_plan==="monthly"?"\u20AC18 / Monat":null;
-                    const planColor=sel.subscription_plan==="yearly"?T.green:sel.subscription_plan==="monthly"?T.accent:null;
-                    const _selExp=sel.trial_expires_at||(sel.created_at?new Date(new Date(sel.created_at).getTime()+7*24*60*60*1000).toISOString():null);const trialLeft=sel.status==="trial"&&_selExp?Math.ceil((new Date(_selExp)-Date.now())/(1000*60*60*24)):null;
-                    return(<>
-                      {planLabel&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
-                        <span style={{color:T.textMuted,fontWeight:600}}>Abo-Plan</span>
-                        <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
-                          <span style={{padding:"2px 8px",borderRadius:4,background:planColor+"22",color:planColor,fontWeight:700,fontSize:".75rem"}}>{planLabel}</span>
-                          {sel.stripe_customer_id&&<span style={{fontSize:".7rem",color:T.textMuted,fontFamily:T.mono}}>{sel.stripe_customer_id}</span>}
-                        </span>
-                      </div>}
-                      {trialLeft!==null&&sel.status==="trial"&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
-                        <span style={{color:T.textMuted,fontWeight:600}}>Trial</span>
-                        <span style={{color:trialLeft>0?T.dark:T.red,fontWeight:600}}>{trialLeft>0?`${trialLeft} Tag(e) verbleibend`:"Abgelaufen"}</span>
-                      </div>}
-                    </>);
+                    const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Zahlung offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
+                    const zv=sel.stripe_customer_id?(zMap[sel.subscription_status]||{label:"Unbekannt",c:T.textMuted}):null;
+                    let zahlungContent;
+                    if(sel.status==="trial"){
+                      zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+                        <span style={{padding:"2px 8px",borderRadius:4,background:"#8b5cf622",color:"#8b5cf6",fontWeight:700,fontSize:".75rem"}}>Testphase</span>
+                        <span style={{fontSize:".78rem",color:trialLeft!==null&&trialLeft<=2?"#dc2626":"#6b7280",fontWeight:600}}>{trialLeft!==null?(trialLeft>0?`${trialLeft} Tag(e) verbleibend`:"Abgelaufen"):"—"}</span>
+                        {planLabel&&<span style={{fontSize:".72rem",color:T.textMuted}}>{planLabel}</span>}
+                      </span>;
+                    } else if(zv){
+                      zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+                        <span style={{padding:"2px 8px",borderRadius:4,background:zv.c+"22",color:zv.c,fontWeight:700,fontSize:".75rem"}}>{zv.label}</span>
+                        {planLabel&&<span style={{fontSize:".72rem",color:T.textMuted}}>{planLabel}</span>}
+                        {sel.stripe_customer_id&&<span style={{fontSize:".68rem",color:T.textMuted,fontFamily:T.mono}}>{sel.stripe_customer_id}</span>}
+                      </span>;
+                    } else {
+                      zahlungContent=<span style={{fontSize:".78rem",color:T.textMuted}}>{["pending","in_arbeit"].includes(sel.status)?"—":"Kein Abo"}</span>;
+                    }
+                    return(<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                      <span style={{color:T.textMuted,fontWeight:600}}>Zahlung</span>
+                      {zahlungContent}
+                    </div>);
                   })()}
                   {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                     <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>

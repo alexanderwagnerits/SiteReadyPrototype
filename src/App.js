@@ -1496,6 +1496,7 @@ function Admin({adminKey}){
   const[copied,setCopied]=useState(null);
   const[deleteConfirm,setDeleteConfirm]=useState(null);
   const[regenConfirm,setRegenConfirm]=useState(null);
+  const[offlineConfirm,setOfflineConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
   const[siteConfig,setSiteConfig]=useState({});
   const[showStatusOverride,setShowStatusOverride]=useState(false);
@@ -2323,7 +2324,7 @@ function Admin({adminKey}){
         const selMs=healthMs[sel.id];
         const selCheckedAt=healthTime[sel.id];
         const copyVal=(key,val)=>{navigator.clipboard?.writeText(val||"");setCopied(key);setTimeout(()=>setCopied(k=>k===key?null:k),1500);};
-        const CopyBtn=({k,v})=>v?<button onClick={()=>copyVal(k,v)} title="Kopieren" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 4px",color:copied===k?T.green:T.textMuted,fontSize:".75rem",lineHeight:1,flexShrink:0}}>{copied===k?"\u2713":"&#x2398;"}</button>:null;
+        const CopyBtn=({k,v})=>v?<button onClick={()=>copyVal(k,v)} title="Kopieren" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 4px",color:copied===k?T.green:T.textMuted,fontSize:".75rem",lineHeight:1,flexShrink:0}}>{copied===k?"\u2713":"\u29c9"}</button>:null;
         return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
         <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:1280,maxHeight:"96vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
           {/* Modal Header */}
@@ -2416,72 +2417,24 @@ function Admin({adminKey}){
               const cardTitle=(label)=><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
               const card=(children)=><div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               return(<div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`,display:"flex",flexDirection:"column",gap:12}}>
-                {/* Website */}
+                {/* 1. Links */}
                 {card(<>
-                  {cardTitle("Aktionen")}
-                  <div>
-                    {sel.website_html
-                      ?regenConfirm===sel.id
-                        ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                        :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}</button>
-                      :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"\u2728 Website generieren"}</button>
+                  {cardTitle("Links")}
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {sel.subdomain
+                      ?<div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none"}}>Website \u2197</a>
+                          <CopyBtn k="website_url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/>
+                        </div>
+                      :<span style={{fontSize:".82rem",color:T.textMuted}}>Noch keine Subdomain vergeben.</span>
                     }
+                    {sel.stripe_customer_id&&<div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none"}}>Stripe-Kunde \u2197</a>
+                      <CopyBtn k="stripe_id" v={sel.stripe_customer_id}/>
+                    </div>}
                   </div>
-                  {regenConfirm===sel.id&&<div style={{marginTop:8,background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
-                    <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben. "NEU" eintippen:</div>
-                    <div style={{display:"flex",gap:6}}>
-                      <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                      <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
-                    </div>
-                  </div>}
-                  {genMsg[sel.id]&&<div style={{marginTop:8,fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
-                  {sel.website_html&&<button onClick={()=>{const b=new Blob([sel.website_html],{type:"text/html"});const u=URL.createObjectURL(b);window.open(u,"_blank");}} style={{marginTop:8,padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>HTML anzeigen</button>}
-                  <div style={{display:"flex",gap:8,marginTop:8}}>
-                    {sel.status==="offline"
-                      ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128994; Wieder online</button>
-                      :<button onClick={()=>updateOrder(sel.id,{status:"offline"})} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128683; Offline nehmen</button>
-                    }
-                    {deleteConfirm===sel.id
-                      ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                      :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden loeschen</button>
-                    }
-                  </div>
-                  {deleteConfirm===sel.id&&<div style={{marginTop:8,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
-                    <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung \u2013 unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
-                    <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
-                    <div style={{display:"flex",gap:6}}>
-                      <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                      <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
-                    </div>
-                  </div>}
                 </>)}
-                {/* Subdomain & Stil */}
-                {card((()=>{
-                  const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional"};
-                  const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
-                  const dirty=sc.subdomain!==(sel.subdomain||"")||sc.stil!==(sel.stil||"professional");
-                  const save=async()=>{await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));};
-                  return(<>
-                    {cardTitle("Subdomain & Stil")}
-                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                      <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
-                        <span style={{color:T.textMuted,fontWeight:600}}>Subdomain</span>
-                        <input value={sc.subdomain} onChange={e=>setsc({subdomain:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.mono,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
-                      </div>
-                      <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
-                        <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
-                        <select value={sc.stil} onChange={e=>setsc({stil:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}>
-                          {Object.entries(STYLES_MAP).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
-                        </select>
-                      </div>
-                      {dirty&&<div style={{padding:"8px 10px",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,fontSize:".72rem",color:"#92400e",lineHeight:1.5}}>
-                        Nach dem Speichern Website neu generieren.
-                      </div>}
-                      <button onClick={save} disabled={!dirty} style={{padding:"7px 12px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":"#94a3b8",cursor:dirty?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font,transition:"background .15s"}}>Speichern</button>
-                    </div>
-                  </>);
-                })())}
-                {/* Health */}
+                {/* 2. Health-Check */}
                 {card(<>
                   {cardTitle("Health-Check")}
                   <div style={{display:"flex",flexDirection:"column",gap:6}}>
@@ -2493,24 +2446,109 @@ function Admin({adminKey}){
                     <button onClick={()=>checkHealth(sel)} style={{marginTop:2,padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Jetzt pruefen</button>
                   </div>
                 </>)}
-                {/* Links */}
+                {/* 3. Subdomain & Stil (mit Bearbeitungs-Icon) */}
+                {card((()=>{
+                  const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false};
+                  const editing=!!sc.editing;
+                  const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
+                  const dirty=sc.subdomain!==(sel.subdomain||"")||sc.stil!==(sel.stil||"professional");
+                  const save=async()=>{await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));setsc({editing:false});};
+                  const cancel=()=>setsc({subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false});
+                  return(<>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                      <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Subdomain & Stil</div>
+                      {!editing&&<button onClick={()=>setsc({editing:true})} title="Bearbeiten" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 5px",color:T.textMuted,fontSize:".9rem",lineHeight:1}}>{"\u270f"}</button>}
+                    </div>
+                    {!editing
+                      ?<div style={{display:"flex",flexDirection:"column",gap:6}}>
+                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
+                            <span style={{color:T.textMuted,fontWeight:600}}>Subdomain</span>
+                            <span style={{fontFamily:T.mono,color:T.dark}}>{sel.subdomain||<span style={{color:T.textMuted,fontStyle:"italic"}}>nicht gesetzt</span>}</span>
+                          </div>
+                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
+                            <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
+                            <span style={{color:T.dark}}>{STYLES_MAP[sel.stil||"professional"]?.label||sel.stil||"Professional"}</span>
+                          </div>
+                        </div>
+                      :<div style={{display:"flex",flexDirection:"column",gap:8}}>
+                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
+                            <span style={{color:T.textMuted,fontWeight:600}}>Subdomain</span>
+                            <input value={sc.subdomain} onChange={e=>setsc({subdomain:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.mono,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
+                          </div>
+                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
+                            <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
+                            <select value={sc.stil} onChange={e=>setsc({stil:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}>
+                              {Object.entries(STYLES_MAP).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
+                            </select>
+                          </div>
+                          {dirty&&<div style={{padding:"8px 10px",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,fontSize:".72rem",color:"#92400e",lineHeight:1.5}}>Nach dem Speichern Website neu generieren.</div>}
+                          <div style={{display:"flex",gap:6}}>
+                            <button onClick={cancel} style={{flex:1,padding:"7px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                            <button onClick={save} disabled={!dirty} style={{flex:1,padding:"7px 12px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":"#94a3b8",cursor:dirty?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font,transition:"background .15s"}}>Speichern</button>
+                          </div>
+                        </div>
+                    }
+                  </>);
+                })())}
+                {/* 4. Aktionen */}
                 {card(<>
-                  {cardTitle("Links")}
+                  {cardTitle("Aktionen")}
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128279; Website<CopyBtn k="website_url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/></a>}
-                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128179; Stripe-Kunde<CopyBtn k="stripe_id" v={sel.stripe_customer_id}/></a>}
-                    {!sel.subdomain&&!sel.stripe_customer_id&&<span style={{fontSize:".82rem",color:T.textMuted}}>Noch keine Links verfuegbar.</span>}
+                    <div>
+                      {sel.website_html
+                        ?regenConfirm===sel.id
+                          ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                          :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}</button>
+                        :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":`\u2728 Website generieren`}</button>
+                      }
+                    </div>
+                    {regenConfirm===sel.id&&<div style={{background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
+                      <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben. "NEU" eintippen:</div>
+                      <div style={{display:"flex",gap:6}}>
+                        <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+                        <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
+                      </div>
+                    </div>}
+                    {genMsg[sel.id]&&<div style={{fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
+                    {sel.website_html&&<button onClick={()=>{const b=new Blob([sel.website_html],{type:"text/html"});const u=URL.createObjectURL(b);window.open(u,"_blank");}} style={{padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>HTML anzeigen</button>}
+                    <div style={{display:"flex",gap:8}}>
+                      {sel.status==="offline"
+                        ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Wieder online</button>
+                        :<>
+                          {offlineConfirm===sel.id
+                            ?<button onClick={()=>setOfflineConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                            :<button onClick={()=>sel.website_html&&setOfflineConfirm(sel.id)} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Offline nehmen</button>
+                          }
+                        </>
+                      }
+                      {deleteConfirm===sel.id
+                        ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                        :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Kunden loeschen</button>
+                      }
+                    </div>
+                    {offlineConfirm===sel.id&&<div style={{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:T.rSm,padding:"12px 14px"}}>
+                      <div style={{fontSize:".78rem",color:"#475569",marginBottom:8}}>Website wird fuer Besucher nicht mehr erreichbar sein.</div>
+                      <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
+                    </div>}
+                    {deleteConfirm===sel.id&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
+                      <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung \u2013 unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
+                      <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
+                      <div style={{display:"flex",gap:6}}>
+                        <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+                        <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
+                      </div>
+                    </div>}
                   </div>
                 </>)}
-                {/* Notfall Status */}
+                {/* 5. Notfall: Status setzen (immer ganz unten) */}
                 {card(<>
                   <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
                     <span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Notfall: Status setzen</span>
-                    <span style={{fontSize:".65rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>&#9660;</span>
+                    <span style={{fontSize:".65rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>{"\u25bc"}</span>
                   </button>
                   {showStatusOverride&&<div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:6}}>
                     {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
-                      <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?" \u2713":""}</button>
+                      <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?` \u2713`:""}</button>
                     ))}
                   </div>}
                 </>)}

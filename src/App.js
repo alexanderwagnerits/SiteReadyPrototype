@@ -1497,6 +1497,7 @@ function Admin({adminKey}){
   const[deleteConfirm,setDeleteConfirm]=useState(null);
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
+  const[siteConfig,setSiteConfig]=useState({});
   const[showStatusOverride,setShowStatusOverride]=useState(false);
   const[ticketFormOpen,setTicketFormOpen]=useState(false);
   const[ticketForm,setTicketForm]=useState({email:"",subject:"",message:""});
@@ -2350,7 +2351,7 @@ function Admin({adminKey}){
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
                 {!editKunde
-                  ?<button onClick={()=>setEditKunde({firmenname:sel.firmenname||"",email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||"",subdomain:sel.subdomain||"",stil:sel.stil||"professional"})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">✏️</button>
+                  ?<button onClick={()=>setEditKunde({firmenname:sel.firmenname||"",email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||""})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">✏️</button>
                   :<div style={{display:"flex",gap:6}}>
                     <button onClick={async()=>{await updateOrder(sel.id,editKunde);setEditKunde(null);}} style={{padding:"3px 10px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
                     <button onClick={()=>setEditKunde(null)} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
@@ -2359,16 +2360,10 @@ function Admin({adminKey}){
               </div>
               {editKunde
                 ?<div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    {[["Firmenname","firmenname"],["E-Mail","email"],["Telefon","telefon"],["Adresse","adresse"],["PLZ","plz"],["Ort","ort"],["Subdomain","subdomain"]].map(([l,k])=><div key={k} style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
+                    {[["Firmenname","firmenname"],["E-Mail","email"],["Telefon","telefon"],["Adresse","adresse"],["PLZ","plz"],["Ort","ort"]].map(([l,k])=><div key={k} style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
                       <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
                       <input value={editKunde[k]} onChange={e=>setEditKunde(ev=>({...ev,[k]:e.target.value}))} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
                     </div>)}
-                    <div style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
-                      <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
-                      <select value={editKunde.stil||"professional"} onChange={e=>setEditKunde(ev=>({...ev,stil:e.target.value}))} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}>
-                        {Object.entries(STYLES_MAP).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
-                      </select>
-                    </div>
                   <div style={{marginTop:10,padding:"8px 10px",borderRadius:T.rSm,background:"#eff6ff",border:"1px solid #bfdbfe",fontSize:".72rem",color:"#1e40af",lineHeight:1.6}}>
                     <strong>E-Mail, Telefon, Adresse:</strong> sofort live (serve-time).<br/>
                     <strong>Subdomain:</strong> URL ändert sich sofort &ndash; danach Website neu generieren.
@@ -2423,8 +2418,7 @@ function Admin({adminKey}){
               return(<div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`,display:"flex",flexDirection:"column",gap:12}}>
                 {/* Website */}
                 {card(<>
-                  {cardTitle("Website")}
-                  {sel.website_html&&sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:".82rem",color:T.green,fontWeight:600,marginBottom:12,textDecoration:"none"}}>&#128279; /s/{sel.subdomain}</a>}
+                  {cardTitle("Aktionen")}
                   <div>
                     {sel.website_html
                       ?regenConfirm===sel.id
@@ -2461,6 +2455,32 @@ function Admin({adminKey}){
                     </div>
                   </div>}
                 </>)}
+                {/* Subdomain & Stil */}
+                {card((()=>{
+                  const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional"};
+                  const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
+                  const dirty=sc.subdomain!==(sel.subdomain||"")||sc.stil!==(sel.stil||"professional");
+                  const save=async()=>{await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));};
+                  return(<>
+                    {cardTitle("Subdomain & Stil")}
+                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                      <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
+                        <span style={{color:T.textMuted,fontWeight:600}}>Subdomain</span>
+                        <input value={sc.subdomain} onChange={e=>setsc({subdomain:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.mono,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
+                      </div>
+                      <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
+                        <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
+                        <select value={sc.stil} onChange={e=>setsc({stil:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}>
+                          {Object.entries(STYLES_MAP).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
+                        </select>
+                      </div>
+                      {dirty&&<div style={{padding:"8px 10px",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,fontSize:".72rem",color:"#92400e",lineHeight:1.5}}>
+                        Nach dem Speichern Website neu generieren.
+                      </div>}
+                      <button onClick={save} disabled={!dirty} style={{padding:"7px 12px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":"#94a3b8",cursor:dirty?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font,transition:"background .15s"}}>Speichern</button>
+                    </div>
+                  </>);
+                })())}
                 {/* Health */}
                 {card(<>
                   {cardTitle("Health-Check")}
@@ -2477,9 +2497,9 @@ function Admin({adminKey}){
                 {card(<>
                   {cardTitle("Links")}
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:T.green,fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128279; Website<CopyBtn k="url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/></a>}
-                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128179; Stripe<CopyBtn k="stripe_id" v={sel.stripe_customer_id}/></a>}
-                    <a href="https://supabase.com/dashboard/project/brulvtqeazkgcxkimdve/editor" target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#0ea5e9",fontWeight:600,textDecoration:"none"}}>&#128196; Supabase</a>
+                    {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128279; Website<CopyBtn k="website_url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/></a>}
+                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128179; Stripe-Kunde<CopyBtn k="stripe_id" v={sel.stripe_customer_id}/></a>}
+                    {!sel.subdomain&&!sel.stripe_customer_id&&<span style={{fontSize:".82rem",color:T.textMuted}}>Noch keine Links verfuegbar.</span>}
                   </div>
                 </>)}
                 {/* Notfall Status */}

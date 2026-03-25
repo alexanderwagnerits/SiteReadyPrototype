@@ -1767,23 +1767,7 @@ function Admin({adminKey}){
           const ALL_STATUS=["pending","trial","live","offline"];
           const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
-              {[
-                {s:"pending",desc:"Formular abgeschickt, Website wird erstellt"},
-                {s:"trial",desc:"Website live, Testphase laeuft"},
-                {s:"live",desc:"Abo aktiv, Website erreichbar"},
-                {s:"offline",desc:"Manuell deaktiviert"},
-              ].map(({s,desc})=><div key={s} style={{display:"flex",alignItems:"center",gap:7,padding:"7px 12px",borderRadius:T.rSm,background:"#fff",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{width:7,height:7,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0}}/>
-                <span style={{fontSize:".75rem",fontWeight:700,color:T.dark}}>{STATUS_LABELS[s]}</span>
-                <span style={{fontSize:".72rem",color:T.textMuted}}>{desc}</span>
-              </div>)}
-              <div style={{display:"flex",alignItems:"center",gap:7,padding:"7px 12px",borderRadius:T.rSm,background:"#fef2f2",border:"1px solid #fecaca"}}>
-                <span style={{fontSize:".75rem",fontWeight:700,color:"#dc2626"}}>{"Live \u2717"}</span>
-                <span style={{fontSize:".72rem",color:T.textMuted}}>Abo aktiv, aber Website nicht erreichbar</span>
-              </div>
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,flexWrap:"wrap"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Sites</h2>
               <div style={{position:"relative"}}>
                 <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{padding:"7px 30px 7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",width:180,background:"#fff"}}/>
@@ -1795,15 +1779,31 @@ function Admin({adminKey}){
                   <span style={{fontSize:".65rem",opacity:.7}}>{cnt}</span>
                 </button>);})}
               </div>
-              <button onClick={()=>orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o))} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>HTTP prüfen</button>
+              <button onClick={()=>orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o))} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{"HTTP pr\u00fcfen"}</button>
               <button onClick={exportCSV} disabled={orders.length===0} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:4,opacity:orders.length===0?.5:1}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
               </button>
             </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+              {[
+                {s:"pending",desc:"Formular abgeschickt"},
+                {s:"trial",desc:"Testphase"},
+                {s:"live",desc:"Abo aktiv"},
+                {s:"offline",desc:"Deaktiviert"},
+              ].map(({s,desc})=><div key={s} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:"#fff",border:`1px solid ${T.bg3}`}}>
+                <div style={{width:6,height:6,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0}}/>
+                <span style={{fontSize:".7rem",fontWeight:700,color:T.dark}}>{STATUS_LABELS[s]}</span>
+                <span style={{fontSize:".68rem",color:T.textMuted}}>{desc}</span>
+              </div>)}
+              <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:"#fef2f2",border:"1px solid #fecaca"}}>
+                <span style={{fontSize:".7rem",fontWeight:700,color:"#dc2626"}}>{"Live \u2717"}</span>
+                <span style={{fontSize:".68rem",color:T.textMuted}}>nicht erreichbar</span>
+              </div>
+            </div>
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","Status","URL","Notiz",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","Status","URL",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{sf.map((o,i)=>{
                   const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                   const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;
@@ -1826,13 +1826,8 @@ function Admin({adminKey}){
                     <td style={{padding:"11px 14px",fontSize:".75rem",fontFamily:T.mono,maxWidth:200}}>
                       {url?<a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none",display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{url}</a>:<span style={{color:T.textMuted}}>—</span>}
                     </td>
-                    <td style={{padding:"11px 14px",fontSize:".75rem",color:T.textMuted,maxWidth:160}}>
-                      <span style={{display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.notiz||""}</span>
-                    </td>
                     <td style={{padding:"11px 14px",textAlign:"right",whiteSpace:"nowrap"}}>
                       {isStuck&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":"Generieren"}</button>}
-                      {o.status==="live"&&<button onClick={()=>updateOrder(o.id,{status:"offline"})} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font,marginRight:6}}>Offline</button>}
-                      {o.status==="offline"&&<button onClick={()=>updateOrder(o.id,{status:"live"})} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:T.green,color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>Live</button>}
                       <button onClick={()=>setSel(o)} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Detail</button>
                     </td>
                   </tr>);

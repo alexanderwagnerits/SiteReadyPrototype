@@ -1660,10 +1660,9 @@ function Admin({adminKey}){
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"sites",label:"Sites",badge:regenBadge},
-    {id:"zahlungen",label:"Zahlungen"},
+    {id:"finanzen",label:"Finanzen"},
     {id:"support",label:"Support"},
     {id:"system",label:"System"},
-    {id:"kosten",label:"Kosten"},
     {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
     {id:"arch-flows",label:"Flows"},
     {id:"docs",label:"Dokumentation"},
@@ -1824,7 +1823,7 @@ function Admin({adminKey}){
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","URL",""].map(h=>{
+                <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","Zahlung","URL",""].map(h=>{
                   if(h==="Health"){const r=8,circ=2*Math.PI*r,pct=healthCountdown/60,dash=circ*pct;return <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}><span style={{display:"inline-flex",alignItems:"center",gap:5}}>Health<svg width={18} height={18} style={{display:"block"}}><circle cx={9} cy={9} r={r} fill="none" stroke={T.bg3} strokeWidth={2}/><circle cx={9} cy={9} r={r} fill="none" stroke={T.accent} strokeWidth={2} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" transform="rotate(-90 9 9)"/><text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={5} fill={T.textMuted} fontFamily="JetBrains Mono,monospace">{healthCountdown}</text></svg></span></th>;}
                   return <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>;
                 })}</tr></thead>
@@ -1858,6 +1857,15 @@ function Admin({adminKey}){
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <span style={{padding:"3px 8px",borderRadius:4,background:hv.c+"18",color:hv.c,fontWeight:700,fontSize:".75rem",border:`1px solid ${hv.c}33`}}>{hv.label}</span>
                       {hasFailed&&<span title={o.last_error} style={{marginLeft:4,fontSize:".72rem",cursor:"help",color:"#d97706"}}>ℹ</span>}
+                    </td>
+                    <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
+                      {(()=>{
+                        const s=o.subscription_status;
+                        if(!o.stripe_customer_id)return <span style={{fontSize:".75rem",color:T.textMuted}}>—</span>;
+                        const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
+                        const zv=zMap[s]||{label:"Unbekannt",c:T.textMuted};
+                        return <span style={{padding:"3px 8px",borderRadius:4,background:zv.c+"18",color:zv.c,fontWeight:700,fontSize:".75rem",border:`1px solid ${zv.c}33`}}>{zv.label}</span>;
+                      })()}
                     </td>
                     <td style={{padding:"11px 14px",fontSize:".75rem",fontFamily:T.mono,maxWidth:180}}>
                       {url?<a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none",display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{url}</a>:<span style={{color:T.textMuted}}>—</span>}
@@ -2005,8 +2013,8 @@ function Admin({adminKey}){
           </div>}
         </div>)}
 
-        {/* Tab: Zahlungen */}
-        {!loading&&tab==="zahlungen"&&(()=>{
+        {/* Tab: Finanzen */}
+        {!loading&&tab==="finanzen"&&(()=>{
           const subOrders=orders.filter(o=>o.stripe_customer_id);
           const activeN=subOrders.filter(o=>o.subscription_status==="active").length;
           const pastDueN=subOrders.filter(o=>o.subscription_status==="past_due").length;
@@ -2073,11 +2081,8 @@ function Admin({adminKey}){
                 })}</tbody>
               </table>
             </div>
-          </div>);
-        })()}
-
-        {/* Tab: Kosten */}
-        {!loading&&tab==="kosten"&&(()=>{
+          {/* Kosten-Sektion */}
+          {(()=>{
           const now=new Date();
           const months6=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleDateString("de-AT",{month:"short",year:"2-digit"}),key:`${d.getFullYear()}-${d.getMonth()}`};});
           const mData=months6.map(m=>({...m,count:orders.filter(o=>{if(!o.created_at)return false;const d=new Date(o.created_at);return`${d.getFullYear()}-${d.getMonth()}`===m.key;}).length}));
@@ -2092,8 +2097,8 @@ function Admin({adminKey}){
           const p2c=(cx,cy,r,deg)=>{const a=(deg-90)*Math.PI/180;return{x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)};};
           const arc=(cx,cy,iR,oR,s,e)=>{if(e-s>=359.99)e=359.98;const l=e-s>180?1:0;const p1=p2c(cx,cy,oR,s),p2=p2c(cx,cy,oR,e),p3=p2c(cx,cy,iR,e),p4=p2c(cx,cy,iR,s);return`M${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${oR},${oR} 0 ${l} 1 ${p2.x.toFixed(1)},${p2.y.toFixed(1)} L${p3.x.toFixed(1)},${p3.y.toFixed(1)} A${iR},${iR} 0 ${l} 0 ${p4.x.toFixed(1)},${p4.y.toFixed(1)} Z`;};
           let sa=0;const slices=sCounts.map(d=>{const a=(d.value/tot)*360;const sl={...d,sa,ea:sa+a};sa+=a;return sl;});
-          return(<div>
-            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:20}}>Kosten & Auslastung</h2>
+          return(<div style={{marginTop:24}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:16,paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>Kosten &amp; Auslastung</div>
             {/* KPI Cards */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
               {[{label:"MRR (brutto)",val:`\u20AC${mrr}`,sub:`${liveN} aktive Kunden`,c:T.green},{label:"Stripe-Gebühren",val:`\u20AC${stripeFee.toFixed(2)}`,sub:"1,4% + \u20AC0,25/Tx",c:T.orange},{label:"Netto-MRR",val:`\u20AC${netto}`,sub:"nach Transaktionsgeb.",c:T.accent},{label:"Bestellungen",val:orders.length,sub:`${paidN} bezahlt`,c:T.dark}].map((k,i)=>(
@@ -2179,9 +2184,9 @@ function Admin({adminKey}){
               </table>
             </div>
           </div>);
+          })()}
+          </div>);
         })()}
-
-
 
         {/* Tab: System-Architektur */}
         {!loading&&tab==="arch-system"&&(()=>{

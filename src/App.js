@@ -2422,16 +2422,23 @@ function Admin({adminKey}){
                   {cardTitle("Links")}
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
                     {sel.subdomain
-                      ?<div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none"}}>Website \u2197</a>
+                      ?<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:"#f0f4ff",borderRadius:T.rSm,border:"1px solid #c7d2fe",textDecoration:"none",color:T.dark}}>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>Website</div>
+                            <div style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.mono,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>/s/{sel.subdomain}</div>
+                          </div>
                           <CopyBtn k="website_url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/>
-                        </div>
-                      :<span style={{fontSize:".82rem",color:T.textMuted}}>Noch keine Subdomain vergeben.</span>
+                          <span style={{color:"#6366f1",fontSize:".82rem",flexShrink:0}}>{"\u2197"}</span>
+                        </a>
+                      :<div style={{padding:"10px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".82rem",color:T.textMuted}}>Noch keine Subdomain vergeben.</div>
                     }
-                    {sel.stripe_customer_id&&<div style={{display:"flex",alignItems:"center",gap:6}}>
-                      <a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none"}}>Stripe-Kunde \u2197</a>
+                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,textDecoration:"none",color:T.dark}}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:T.textSub}}>Stripe-Kunde</span>
                       <CopyBtn k="stripe_id" v={sel.stripe_customer_id}/>
-                    </div>}
+                      <span style={{color:T.textMuted,fontSize:".75rem"}}>{"\u2197"}</span>
+                    </a>}
                   </div>
                 </>)}
                 {/* 2. Health-Check */}
@@ -2468,6 +2475,10 @@ function Admin({adminKey}){
                           <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
                             <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
                             <span style={{color:T.dark}}>{STYLES_MAP[sel.stil||"professional"]?.label||sel.stil||"Professional"}</span>
+                          </div>
+                          <div style={{marginTop:4,display:"flex",alignItems:"center",gap:5,padding:"6px 8px",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:T.rSm}}>
+                            <span style={{fontSize:".78rem",flexShrink:0}}>{"\u26a0\ufe0f"}</span>
+                            <span style={{fontSize:".72rem",color:"#92400e",lineHeight:1.4}}>Aenderungen erfordern Website-Neugenerierung</span>
                           </div>
                         </div>
                       :<div style={{display:"flex",flexDirection:"column",gap:8}}>

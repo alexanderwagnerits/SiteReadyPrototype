@@ -8,11 +8,14 @@ Header: apikey: sb_publishable_u1yaQuqOp0qNhJHdiOU7Tw_hzTr0-MG
 
 ## Regeln
 
-- Keine Umlaute und keine Sonderzeichen im JavaScript-Code (ae/oe/ue/ss statt Umlaute, ASCII only in Strings)
+- Keine Umlaute im Code (Variablen, Funktionen, Keys).
+In deutschen UI-Texten und Kommentaren sind Umlaute 
+(ä, ö, ü, ß) erlaubt und erwuenscht.
 - Immer npm run build testen bevor du committest
 - Design-Tokens sind in der T-Variable in App.js definiert
 - Das SiteReady-UI (Landing, Fragebogen, Success) hat ein helles Premium-Theme
 - DM Sans als Primaer-Font, JetBrains Mono fuer Zahlen
+- jedes design muss responsive sein
 
 ## Was NICHT geaendert werden darf ohne Absprache
 

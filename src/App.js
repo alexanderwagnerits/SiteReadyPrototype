@@ -35,7 +35,7 @@ const BRANCHEN = [
 ];
 const BERUFSGRUPPEN=[
   {value:"handwerk",label:"Handwerk",icon:"🔨",desc:"Elektriker, Installateur, Tischler, Maler u.v.m."},
-  {value:"kosmetik",label:"Kosmetik & K\u00f6rperpflege",icon:"\u2728",desc:"Kosmetik, Friseur, Massage, Nagelstudio u.v.m."},
+  {value:"kosmetik",label:"Kosmetik & Körperpflege",icon:"\u2728",desc:"Kosmetik, Friseur, Massage, Nagelstudio u.v.m."},
 ];
 const KOSMETIK_SET=new Set(["kosmetik","friseur","nagel","massage","tattoo","fusspflege","permanent_makeup","sonstige_kosmetik"]);
 const getBrancheGruppe=b=>KOSMETIK_SET.has(b)?"kosmetik":"handwerk";
@@ -52,30 +52,62 @@ const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Lei
 const INIT={berufsgruppe:"",firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,fotos:true,stil:"professional"};
 
 /* ═══ TOKENS ═══ */
-const T={bg:"#fafbfc",bg2:"#f0f2f5",bg3:"#e8ebf0",white:"#ffffff",dark:"#0c0e12",dark2:"#1a1d24",text:"#1a1d24",textSub:"#4b5162",textMuted:"#8b919e",accent:"#2563eb",accentLight:"#eff4ff",accentGlow:"rgba(37,99,235,0.12)",green:"#16a34a",greenLight:"#f0fdf4",greenGlow:"rgba(22,163,74,0.1)",red:"#dc2626",orange:"#ea580c",r:"14px",rSm:"10px",rLg:"22px",rXl:"28px",font:"'DM Sans',-apple-system,sans-serif",mono:"'JetBrains Mono',monospace",sh1:"0 1px 2px rgba(0,0,0,0.04)",sh2:"0 4px 24px rgba(0,0,0,0.06)",sh3:"0 16px 48px rgba(0,0,0,0.08)",sh4:"0 24px 80px rgba(0,0,0,0.1)"};
+const T={bg:"#F5F5F2",bg2:"#EEEEE9",bg3:"#E0E0DB",white:"#ffffff",dark:"#111111",dark2:"#2B2F36",text:"#2B2F36",textSub:"#4A4F5A",textMuted:"#6B7280",accent:"#8FA3B8",accentLight:"rgba(143,163,184,0.1)",accentGlow:"rgba(143,163,184,0.15)",cta:"#3B82F6",ctaLight:"rgba(59,130,246,0.1)",green:"#16a34a",greenLight:"#f0fdf4",greenGlow:"rgba(22,163,74,0.1)",red:"#dc2626",orange:"#ea580c",r:"12px",rSm:"8px",rLg:"16px",rXl:"20px",font:"'DM Sans',-apple-system,sans-serif",mono:"'JetBrains Mono',monospace",sh1:"0 1px 2px rgba(0,0,0,0.04)",sh2:"0 4px 24px rgba(0,0,0,0.06)",sh3:"0 16px 48px rgba(0,0,0,0.08)",sh4:"0 24px 80px rgba(0,0,0,0.12)"};
 
-const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:${T.font};color:${T.text};-webkit-font-smoothing:antialiased;background:${T.bg}}::selection{background:${T.accent};color:#fff}@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}.anim{animation:fadeUp .8s cubic-bezier(.16,1,.3,1) both}.d1{animation-delay:.12s}.d2{animation-delay:.24s}.d3{animation-delay:.36s}.d4{animation-delay:.48s}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:${T.font};color:${T.text};-webkit-font-smoothing:antialiased;background:${T.bg}}::selection{background:${T.dark};color:#fff}
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mockFade{0%{opacity:0;transform:scale(.97)}10%{opacity:1;transform:scale(1)}90%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.97)}}
+.sr-reveal{opacity:0;transform:translateY(32px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}.sr-reveal.sr-visible{opacity:1;transform:translateY(0)}
+.lp-hamburger{display:none}
 @media(max-width:960px){
   .lp-w{padding:0 28px!important}
   .lp-sec{padding:72px 0!important}
   .lp-hero-grid{grid-template-columns:1fr!important}
   .lp-hero-mock{display:none!important}
-  .lp-hero-stats{gap:24px!important;flex-wrap:wrap}
+  .lp-hero-stats{flex-wrap:wrap}
   .lp-problem-grid{grid-template-columns:1fr!important;gap:48px!important}
-  .lp-steps-grid{grid-template-columns:repeat(2,1fr)!important}
+  .lp-steps-line{display:none!important}
+  .lp-steps-grid{grid-template-columns:repeat(2,1fr)!important;gap:32px!important}
   .lp-variants-grid{grid-template-columns:1fr!important}
+  .lp-variants-grid>div{transform:none!important}
   .lp-pricing-grid{grid-template-columns:1fr!important;max-width:480px!important}
   .lp-why-grid{grid-template-columns:repeat(2,1fr)!important}
   .lp-compare{overflow-x:auto}
   .lp-nav-links{display:none!important}
+  .lp-testi-grid{grid-template-columns:1fr!important}
+  .lp-faq-grid{grid-template-columns:1fr!important}
+  .lp-faq-sticky{position:static!important}
+  .lp-cta-inner{grid-template-columns:1fr!important;text-align:center}
+  .lp-cta-stats{flex-direction:row!important;justify-content:center!important;gap:32px!important}
+  .lp-branchen-card{grid-template-columns:1fr!important}
+  .lp-footer-cols{gap:32px!important}
+  .lp-hamburger{display:flex!important;align-items:center;justify-content:center;width:44px;height:44px;border:none;background:transparent;cursor:pointer;border-radius:8px;padding:0;flex-shrink:0}
+  .lp-mob-menu{display:block!important}
 }
 @media(max-width:560px){
   .lp-w{padding:0 16px!important}
   .lp-sec{padding:56px 0!important}
   .lp-steps-grid{grid-template-columns:1fr!important}
   .lp-why-grid{grid-template-columns:1fr!important}
-  .lp-hero-stats{display:none!important}
+  .lp-hero-btns{flex-direction:column!important}
+  .lp-hero-btns a,.lp-hero-btns button{width:100%!important;text-align:center!important;justify-content:center!important}
+  .lp-hero-stats{display:inline-flex!important;gap:8px!important}
+  .lp-hero-stats>span{padding:6px 12px!important;font-size:.72rem!important}
+  .lp-trust-bar{gap:16px!important}
+  .lp-trust-bar>div{font-size:.78rem!important}
   .lp-pricing-grid{max-width:100%!important}
+  .lp-pricing-grid>div{padding:28px 20px!important}
+  .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important}
+  .lp-footer-cols{flex-direction:column!important;gap:24px!important;text-align:center!important}
+  .lp-footer-cols>div{gap:8px!important}
+  .lp-cta-section{padding:72px 0!important}
+  .lp-cta-stats>div{justify-content:center!important}
 }
 @media(max-width:960px){
   .sp-topbar{padding:0 20px!important}
@@ -96,19 +128,11 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .sp-incl-grid{grid-template-columns:1fr!important}
 }
 @media(max-width:560px){
-  .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important}
-  .lp-cta-section{padding:72px 0!important}
   .pt-info-row{grid-template-columns:1fr!important}
   .pt-field-grid{grid-template-columns:1fr!important}
   .pt-tab-nav{width:100%!important;overflow-x:auto!important}
   .pt-addr-grid{grid-template-columns:1fr!important}
   .pt-photo-grid{grid-template-columns:repeat(3,1fr)!important}
-}
-.lp-hamburger{display:none}
-@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:960px){
-  .lp-hamburger{display:flex!important;align-items:center;justify-content:center;width:40px;height:40px;border:none;background:transparent;cursor:pointer;border-radius:8px;padding:0;flex-shrink:0}
-  .lp-mob-menu{display:block!important}
 }`;
 
 /* ═══ LANDING PAGE ═══ */
@@ -116,26 +140,54 @@ function LandingPage({onStart,onPortal}){
   const[scrolled,setScrolled]=useState(false);
   const[menuOpen,setMenuOpen]=useState(false);
   const[pricingYearly,setPricingYearly]=useState(true);
+  const[mockIdx,setMockIdx]=useState(0);
+  const[faqOpen,setFaqOpen]=useState({});
+  const[hovCard,setHovCard]=useState(null);
   useEffect(()=>{const h=()=>{setScrolled(window.scrollY>30);if(window.scrollY>30)setMenuOpen(false)};window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
+  useEffect(()=>{const iv=setInterval(()=>setMockIdx(p=>(p+1)%3),4000);return()=>clearInterval(iv)},[]);
+  useEffect(()=>{const els=document.querySelectorAll(".sr-reveal");const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("sr-visible");obs.unobserve(e.target)}})},{threshold:.15});els.forEach(el=>obs.observe(el));return()=>obs.disconnect()},[]);
   const closeMenu=()=>setMenuOpen(false);
   const W=({children,s})=><div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",...s}}>{children}</div>;
-  const Sec=({children,id,alt,s})=><section id={id} className="lp-sec" style={{padding:"112px 0",background:alt?"#f7f8fa":"#fff",...s}}><W>{children}</W></section>;
-  const Label=({children})=><div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>{children}</div>;
-  const H2=({children,s})=><h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16,...s}}>{children}</h2>;
-  const Sub=({children,s})=><p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,...s}}>{children}</p>;
+  const toggleFaq=(i)=>setFaqOpen(p=>({...p,[i]:!p[i]}));
 
-  function Counter({end,suffix,label}){const[v,setV]=useState(0);const ref=useRef(null);useEffect(()=>{const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){let s=0;const dur=1200;const step=()=>{s+=16;const p=Math.min(s/dur,1);const ease=1-Math.pow(1-p,3);setV(Math.round(end*ease));if(p<1)requestAnimationFrame(step)};step();obs.disconnect()}},{threshold:.3});if(ref.current)obs.observe(ref.current);return()=>obs.disconnect()},[end]);return<div ref={ref}><div style={{fontSize:"2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{v}{suffix}</div><div style={{fontSize:".78rem",color:T.textMuted,marginTop:5,fontWeight:500}}>{label}</div></div>}
+  /* SVG Icons */
+  const IconCheck=()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+  const IconClock=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+  const IconMoney=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>;
+  const IconWarning=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+  const IconPuzzle=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 01-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 10-3.214 3.214c.446.166.855.497.925.968a.979.979 0 01-.276.837l-1.61 1.61a2.404 2.404 0 01-1.705.707 2.402 2.402 0 01-1.704-.706l-1.568-1.568a1.026 1.026 0 00-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 11-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 00-.289-.877l-1.568-1.568A2.402 2.402 0 011.998 12c0-.617.236-1.234.706-1.704L4.315 8.685a.98.98 0 01.837-.276c.47.07.802.48.968.925a2.501 2.501 0 103.214-3.214c-.446-.166-.855-.497-.925-.968a.979.979 0 01.276-.837l1.61-1.61a2.404 2.404 0 011.705-.707c.618 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 113.237 3.237c-.464.18-.894.527-.967 1.02z"/></svg>;
+  const IconClipboard=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>;
+  const IconEye=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
+  const IconCreditCard=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>;
+  const IconRocket=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>;
+  const IconGear=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>;
+  const IconLock=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>;
+  const IconScale=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 3l5 5-5 5"/><path d="M21 8H9"/><path d="M8 21l-5-5 5-5"/><path d="M3 16h12"/></svg>;
+  const IconSearch=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
+  const IconShield=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+  const IconGlobe=()=><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>;
+  const IconChevron=({open})=><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{transition:"transform .25s",transform:open?"rotate(180deg)":"rotate(0deg)"}}><polyline points="6 9 12 15 18 9"/></svg>;
+  const IconStar=()=><svg width="22" height="22" viewBox="0 0 24 24" fill="#C8952E" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>;
+  const IconHammer=()=><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 12l-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 010-3L12 9"/><path d="M17.64 15L22 10.64"/><path d="M20.91 11.7l-1.25-1.25c-.6-.6-.93-1.4-.93-2.25V6.5a.5.5 0 00-.5-.5H16.5c-.85 0-1.65-.33-2.25-.93l-1.25-1.25"/><path d="M13.09 2.01a3 3 0 012.12.88l3.9 3.9a3 3 0 01.88 2.12"/></svg>;
+  const IconSparkles=()=><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/></svg>;
 
-  return(<div style={{background:"#fff",color:T.text,overflowX:"hidden"}}><style>{css}</style>
+  const MOCKUPS=[
+    {url:"meier-elektrotechnik.siteready.at",name:"Meier Elektrotechnik",sub:"Elektroinstallationen",region:"Wien & Umgebung",badge:"24h Notdienst",grad:"linear-gradient(160deg,#111111 0%,#1a1e24 50%,#2B2F36 100%)",items:["Elektroinstallationen","Smart Home","Photovoltaik"]},
+    {url:"beauty-by-lisa.siteready.at",name:"Beauty by Lisa",sub:"Kosmetikstudio",region:"Graz",badge:"Online buchen",grad:"linear-gradient(160deg,#3a3f48 0%,#4a5060 50%,#5a6070 100%)",items:["Gesichtsbehandlungen","Waxing","Anti-Aging"]},
+    {url:"holzbau-gruber.siteready.at",name:"Holzbau Gruber",sub:"Zimmerei & Holzbau",region:"Salzburg",badge:"Meisterbetrieb",grad:"linear-gradient(160deg,#2B2F36 0%,#3a3f48 50%,#4a5060 100%)",items:["Dachstühle","Carports","Holzfassaden"]}
+  ];
+  const mock=MOCKUPS[mockIdx];
+
+  return(<div style={{background:T.bg,color:T.text,overflowX:"hidden"}}><style>{css}</style>
 
   {/* NAV */}
-  <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:scrolled?"rgba(255,255,255,.94)":"transparent",backdropFilter:scrolled?"blur(20px)":"none",WebkitBackdropFilter:scrolled?"blur(20px)":"none",borderBottom:scrolled?"1px solid rgba(0,0,0,.07)":"1px solid transparent",transition:"all .3s"}}>
-    <div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",display:"flex",alignItems:"center",justifyContent:"space-between",height:68}}>
-      <div style={{display:"flex",alignItems:"center",gap:10}}><img src="/icon.png" alt="SR" style={{height:22}}/><span style={{fontSize:"1rem",fontWeight:800,color:T.dark,letterSpacing:"-.02em"}}>SiteReady</span></div>
+  <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:scrolled?"rgba(245,245,242,.96)":"transparent",backdropFilter:scrolled?"blur(20px)":"none",WebkitBackdropFilter:scrolled?"blur(20px)":"none",borderBottom:scrolled?"1px solid rgba(0,0,0,.07)":"1px solid transparent",transition:"all .3s"}}>
+    <div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",display:"flex",alignItems:"center",justifyContent:"space-between",height:80}}>
+      <img src="/logo.png" alt="SiteReady" style={{height:56,filter:scrolled?"none":"brightness(0) invert(1)",transition:"filter .3s"}}/>
       <div className="lp-nav-links" style={{display:"flex",gap:32,alignItems:"center"}}>
-        {[["#problem","Problem"],["#how","So gehts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:".88rem",fontWeight:500,color:T.textSub,textDecoration:"none"}}>{l}</a>)}
-        <button onClick={onPortal} style={{background:"transparent",color:T.textSub,padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:".85rem",border:"none",cursor:"pointer",fontFamily:T.font}}>Kunden-Portal</button>
-        <button onClick={onStart} style={{background:T.dark,color:"#fff",padding:"10px 22px",borderRadius:8,fontWeight:700,fontSize:".88rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em"}}>Jetzt starten</button>
+        {[["#problem","Problem"],["#how","So gehts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:"1rem",fontWeight:500,color:scrolled?T.textSub:"rgba(255,255,255,.7)",textDecoration:"none",transition:"color .3s"}}>{l}</a>)}
+        <button onClick={onPortal} style={{background:"transparent",color:scrolled?T.textSub:"rgba(255,255,255,.7)",padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:"1rem",border:"none",cursor:"pointer",fontFamily:T.font,minHeight:44,transition:"color .3s"}}>Kunden-Portal</button>
+        <button onClick={onStart} style={{background:scrolled?T.dark:"#fff",color:scrolled?"#fff":T.dark,padding:"12px 26px",borderRadius:8,fontWeight:700,fontSize:"1rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em",minHeight:44,transition:"all .3s"}}>Jetzt starten</button>
       </div>
       <button className="lp-hamburger" onClick={()=>setMenuOpen(o=>!o)} aria-label="Menü" style={{color:T.dark}}>
         {menuOpen
@@ -145,244 +197,375 @@ function LandingPage({onStart,onPortal}){
     </div>
   </nav>
   {/* MOBILE MENU */}
-  {menuOpen&&<div className="lp-mob-menu" style={{display:"none",position:"fixed",top:68,left:0,right:0,zIndex:99,background:"#fff",borderBottom:"1px solid rgba(0,0,0,.08)",boxShadow:"0 12px 40px rgba(0,0,0,.1)",animation:"slideDown .22s cubic-bezier(.16,1,.3,1)"}}>
+  {menuOpen&&<div className="lp-mob-menu" style={{display:"none",position:"fixed",top:80,left:0,right:0,zIndex:99,background:"#fff",borderBottom:"1px solid rgba(0,0,0,.08)",boxShadow:"0 12px 40px rgba(0,0,0,.1)",animation:"slideDown .22s cubic-bezier(.16,1,.3,1)"}}>
     <div style={{padding:"16px 24px",display:"flex",flexDirection:"column",gap:2}}>
-      {[["#problem","Problem"],["#how","So funktionierts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} onClick={closeMenu} style={{fontSize:".95rem",fontWeight:500,color:T.dark,textDecoration:"none",padding:"12px 8px",borderBottom:"1px solid rgba(0,0,0,.05)"}}>{l}</a>)}
+      {[["#problem","Problem"],["#how","So funktionierts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} onClick={closeMenu} style={{fontSize:".95rem",fontWeight:500,color:T.dark,textDecoration:"none",padding:"12px 8px",borderBottom:"1px solid rgba(0,0,0,.05)",minHeight:44,display:"flex",alignItems:"center"}}>{l}</a>)}
       <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:12}}>
-        <button onClick={()=>{closeMenu();onPortal();}} style={{padding:"12px",borderRadius:8,fontWeight:600,fontSize:".92rem",border:`1.5px solid ${T.bg3}`,background:"#fff",color:T.dark,cursor:"pointer",fontFamily:T.font}}>Kunden-Portal</button>
-        <button onClick={()=>{closeMenu();onStart();}} style={{padding:"12px",borderRadius:8,fontWeight:700,fontSize:".92rem",border:"none",background:T.dark,color:"#fff",cursor:"pointer",fontFamily:T.font}}>Jetzt starten &rarr;</button>
+        <button onClick={()=>{closeMenu();onPortal();}} style={{padding:"12px",borderRadius:8,fontWeight:600,fontSize:".92rem",border:`1.5px solid ${T.bg3}`,background:"#fff",color:T.dark,cursor:"pointer",fontFamily:T.font,minHeight:44}}>Kunden-Portal</button>
+        <button onClick={()=>{closeMenu();onStart();}} style={{padding:"12px",borderRadius:8,fontWeight:700,fontSize:".92rem",border:"none",background:"#fff",color:T.dark,cursor:"pointer",fontFamily:T.font,minHeight:44}}>Jetzt starten</button>
       </div>
     </div>
   </div>}
 
-  {/* HERO — Split Layout */}
-  <section style={{minHeight:"100vh",display:"flex",alignItems:"center",paddingTop:68,background:"#fff",position:"relative",overflow:"hidden"}}>
-    <div style={{position:"absolute",top:"-10%",right:"-8%",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(37,99,235,.06) 0%,transparent 65%)",pointerEvents:"none"}}/>
+  {/* HERO - Full-width dark */}
+  <section style={{background:T.dark,paddingTop:80,position:"relative",overflow:"hidden"}}>
+    <div style={{position:"absolute",top:"-20%",right:"-10%",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(143,163,184,.12) 0%,transparent 65%)",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1,width:"100%"}}>
-      <div className="lp-hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"center",padding:"60px 0 80px"}}>
+      <div className="lp-hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"center",padding:"80px 0 0"}}>
         <div>
-          <div style={{display:"inline-flex",alignItems:"center",gap:7,border:"1px solid rgba(37,99,235,.18)",color:T.accent,padding:"5px 13px",borderRadius:6,fontSize:".72rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:28}}>
-            <span style={{width:6,height:6,borderRadius:"50%",background:T.accent,animation:"pulse 2s infinite"}}/>
-            Professionelle Websites für österreichische Kleinbetriebe
+          <h1 style={{fontSize:"clamp(3.5rem,5.5vw,5.5rem)",fontWeight:800,lineHeight:.95,letterSpacing:"-.05em",color:"#fff",marginBottom:24}}>Deine Website.<br/>In Minuten.</h1>
+          <p style={{fontSize:"1.1rem",color:"rgba(255,255,255,.55)",lineHeight:1.7,maxWidth:440,marginBottom:40}}>Impressum nach ECG, DSGVO und Google-Indexierung inklusive. Bestehende Website importieren oder in 10 Minuten ausfüllen. Fertig.</p>
+          <div className="lp-hero-btns" style={{display:"flex",gap:12,marginBottom:28}}>
+            <button onClick={onStart} style={{padding:"18px 40px",borderRadius:10,fontSize:"1.08rem",fontWeight:700,border:"none",cursor:"pointer",background:"#fff",color:T.dark,fontFamily:T.font,letterSpacing:"-.01em",minHeight:52,boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>Jetzt Website erstellen</button>
+            <a href="#how" style={{padding:"16px 24px",borderRadius:8,fontSize:"1rem",fontWeight:600,textDecoration:"none",color:"rgba(255,255,255,.7)",border:"1.5px solid rgba(255,255,255,.15)",display:"inline-flex",alignItems:"center",minHeight:44}}>So funktionierts</a>
           </div>
-          <h1 style={{fontSize:"clamp(2.6rem,4.5vw,4rem)",fontWeight:800,lineHeight:1.0,letterSpacing:"-.05em",color:T.dark,marginBottom:20}}>Deine Website<br/>in <span style={{background:"linear-gradient(135deg,#1d4ed8,#3b82f6)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Minuten.</span></h1>
-          <p style={{fontSize:"1.1rem",color:T.textSub,lineHeight:1.75,maxWidth:440,marginBottom:36}}>Mit Impressum nach ECG, DSGVO und Google-Indexierung. Bestehende Website importieren oder in 10 Minuten ausfüllen. Fertig.</p>
-          <div style={{display:"flex",gap:12,marginBottom:52}}>
-            <button onClick={onStart} style={{padding:"14px 30px",borderRadius:8,fontSize:".98rem",fontWeight:700,border:"none",cursor:"pointer",background:T.dark,color:"#fff",fontFamily:T.font,letterSpacing:"-.01em",boxShadow:"0 2px 16px rgba(0,0,0,.14)"}}>Jetzt Website erstellen &rarr;</button>
-            <a href="#how" style={{padding:"14px 22px",borderRadius:8,fontSize:".98rem",fontWeight:600,textDecoration:"none",color:T.dark,border:`1.5px solid ${T.bg3}`,background:"#fff",display:"inline-flex",alignItems:"center"}}>So funktionierts</a>
-          </div>
-          <div className="lp-hero-stats" style={{display:"flex",gap:40,paddingTop:28,borderTop:`1px solid ${T.bg3}`}}>
-            {[{end:10,suffix:" Min",label:"Bis zur fertigen Website"},{end:18,suffix:"\u20AC",label:"Pro Monat, alles inklusive"},{end:120,suffix:"k+",label:"Zielgruppe in Österreich"}].map((s,i)=><Counter key={i} {...s}/>)}
+          <div className="lp-hero-stats" style={{display:"inline-flex",gap:10,marginBottom:0}}>
+            {[{v:"10 Min",l:"bis fertig"},{v:"ab 18\u20AC",l:"pro Monat"},{v:"120k+",l:"Zielgruppe"}].map((s,i)=><span key={i} style={{display:"inline-flex",alignItems:"center",gap:7,background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.12)",padding:"8px 18px",borderRadius:100,fontSize:".8rem",color:"rgba(255,255,255,.7)"}}><span style={{fontFamily:T.mono,fontWeight:700,color:"#fff"}}>{s.v}</span>{s.l}</span>)}
           </div>
         </div>
-        <div className="lp-hero-mock" style={{position:"relative"}}>
-          <div style={{background:"#fff",borderRadius:14,overflow:"hidden",boxShadow:"0 32px 72px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.06)"}}>
+        <div className="lp-hero-mock" style={{position:"relative",marginBottom:-80}}>
+          <div style={{background:"#fff",borderRadius:16,overflow:"hidden",boxShadow:"0 32px 72px rgba(0,0,0,.25)",border:"1px solid rgba(255,255,255,.1)"}}>
             <div style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",background:"#f5f5f7",borderBottom:"1px solid rgba(0,0,0,.07)"}}>
               {["#ff5f57","#febc2e","#28c840"].map(c=><span key={c} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}
-              <div style={{marginLeft:12,background:"#fff",borderRadius:6,padding:"5px 14px",fontSize:".73rem",fontFamily:T.mono,color:T.textMuted,flex:1,border:"1px solid rgba(0,0,0,.07)"}}>meier-elektrotechnik.siteready.at</div>
+              <div style={{marginLeft:12,background:"#fff",borderRadius:6,padding:"5px 14px",fontSize:".73rem",fontFamily:T.mono,color:T.textMuted,flex:1,border:"1px solid rgba(0,0,0,.07)",transition:"all .3s"}}>{mock.url}</div>
               <div style={{background:T.greenLight,color:T.green,fontSize:".62rem",fontWeight:700,padding:"3px 10px",borderRadius:5,textTransform:"uppercase",letterSpacing:".06em"}}>Live</div>
             </div>
-            <div style={{background:"linear-gradient(160deg,#0f2b5b 0%,#1e40af 50%,#2563eb 100%)",padding:"36px 28px",color:"#fff",position:"relative",overflow:"hidden"}}>
+            <div style={{height:3,background:T.accent,transition:"all .6s"}}/>
+            <div style={{background:mock.grad,padding:"36px 28px",color:"#fff",position:"relative",overflow:"hidden",transition:"background .6s"}}>
               <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.08),transparent 60%)"}}/>
               <div style={{position:"relative",zIndex:1}}>
-                <div style={{display:"inline-block",padding:"3px 10px",background:"rgba(255,255,255,.15)",borderRadius:20,fontSize:".65rem",fontWeight:600,letterSpacing:".04em",textTransform:"uppercase",marginBottom:10}}>{"\u26A1"} 24h Notdienst</div>
-                <h2 style={{fontSize:"1.4rem",fontWeight:700,marginBottom:4}}>Meier Elektrotechnik</h2>
-                <p style={{opacity:.8,fontSize:".88rem"}}>Elektroinstallationen &middot; Wien & Umgebung</p>
-                <div style={{marginTop:14,display:"inline-flex",alignItems:"center",gap:7,background:"rgba(255,255,255,.12)",borderRadius:8,padding:"7px 14px",fontSize:".82rem",fontWeight:600,border:"1px solid rgba(255,255,255,.15)"}}>{"\uD83D\uDCDE"} +43 1 234 56 78</div>
+                <div style={{display:"inline-block",padding:"3px 10px",background:"rgba(255,255,255,.15)",borderRadius:20,fontSize:".65rem",fontWeight:600,letterSpacing:".04em",textTransform:"uppercase",marginBottom:10}}>{mock.badge}</div>
+                <h2 style={{fontSize:"1.4rem",fontWeight:700,marginBottom:4}}>{mock.name}</h2>
+                <p style={{opacity:.8,fontSize:".88rem"}}>{mock.sub} &middot; {mock.region}</p>
               </div>
             </div>
             <div style={{padding:"18px 24px",display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
-              {["Elektroinstallationen","Smart Home","Photovoltaik"].map((l,i)=><div key={i} style={{background:"#f7f8fa",borderRadius:8,padding:"12px",display:"flex",alignItems:"center",gap:8,border:"1px solid rgba(0,0,0,.05)"}}><div style={{width:22,height:22,borderRadius:6,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".6rem",color:T.accent,fontWeight:700,fontFamily:T.mono,flexShrink:0}}>{String(i+1).padStart(2,"0")}</div><span style={{fontSize:".76rem",fontWeight:500,color:T.text}}>{l}</span></div>)}
+              {mock.items.map((l,i)=><div key={i} style={{background:"#f7f8fa",borderRadius:8,padding:"12px",display:"flex",alignItems:"center",gap:8,border:"1px solid rgba(0,0,0,.05)"}}><div style={{width:22,height:22,borderRadius:6,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".6rem",color:T.accent,fontWeight:700,fontFamily:T.mono,flexShrink:0}}>{String(i+1).padStart(2,"0")}</div><span style={{fontSize:".76rem",fontWeight:500,color:T.text}}>{l}</span></div>)}
             </div>
           </div>
-          {[{l:"SSL aktiv",i:"\uD83D\uDD12",top:"-5%",right:"-7%",d:"0s"},{l:"DSGVO + ECG",i:"\u2696\uFE0F",bottom:"6%",right:"-7%",d:"2s"}].map(b=><div key={b.l} style={{position:"absolute",padding:"10px 16px",background:"#fff",borderRadius:10,boxShadow:"0 8px 28px rgba(0,0,0,.1)",fontSize:".8rem",fontWeight:600,color:T.text,display:"flex",alignItems:"center",gap:8,animation:`float 5s ease-in-out ${b.d} infinite`,top:b.top,bottom:b.bottom,right:b.right,border:"1px solid rgba(0,0,0,.06)"}}><span style={{width:28,height:28,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".85rem"}}>{b.i}</span>{b.l}</div>)}
+          <div style={{position:"absolute",padding:"10px 16px",background:"#fff",borderRadius:10,boxShadow:"0 8px 28px rgba(0,0,0,.12)",fontSize:".8rem",fontWeight:600,color:T.text,display:"flex",alignItems:"center",gap:8,animation:"float 5s ease-in-out 0s infinite",top:"-5%",right:"-7%",border:"1px solid rgba(0,0,0,.06)"}}><span style={{color:T.accent,display:"flex"}}><IconLock/></span>SSL aktiv</div>
+          <div style={{position:"absolute",padding:"10px 16px",background:"#fff",borderRadius:10,boxShadow:"0 8px 28px rgba(0,0,0,.12)",fontSize:".8rem",fontWeight:600,color:T.text,display:"flex",alignItems:"center",gap:8,animation:"float 5s ease-in-out 2s infinite",bottom:"12%",right:"-7%",border:"1px solid rgba(0,0,0,.06)"}}><span style={{color:T.accent,display:"flex"}}><IconScale/></span>DSGVO + ECG</div>
+          <div style={{display:"flex",justifyContent:"center",gap:6,marginTop:16}}>
+            {[0,1,2].map(i=><div key={i} style={{width:mockIdx===i?24:8,height:8,borderRadius:4,background:mockIdx===i?T.accent:T.bg3,transition:"all .4s cubic-bezier(.22,1,.36,1)",cursor:"pointer"}} onClick={()=>setMockIdx(i)}/>)}
+          </div>
         </div>
       </div>
     </W>
   </section>
 
-  {/* PROBLEM */}
-  <Sec id="problem" alt>
-    <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"start"}}>
-      <div>
-        <Label>Das Problem</Label>
-        <H2 s={{maxWidth:420}}>Handwerker wollen Kunden – nicht stundenlang Webdesign.</H2>
-        <Sub s={{marginBottom:36,maxWidth:400}}>Wer hat schon Zeit fuer Builder, Agentur-Briefings und DSGVO-Texte?</Sub>
-        <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          {[{e:"🕐",t:"Keine Zeit",d:"Der Alltag auf der Baustelle laesst keinen Raum fuer Webdesign."},{e:"💸",t:"Zu teuer",d:"Eine Agentur kostet \u20AC1.500\u20135.000 einmalig \u2013 zu viel fuer einen Kleinbetrieb."},{e:"😤",t:"Zu kompliziert",d:"Baukasten-Tools verlangen eigene Texte, eigenes Design und stundenlange Einarbeitung."},{e:"⚠️",t:"Rechtlich riskant",d:"Fehlendes Impressum oder DSGVO-Text kann teuer werden \u2013 wer soll das pruefen?"}].map((c,i)=><div key={i} style={{padding:"18px 22px",background:"#fff",borderRadius:10,border:"1px solid rgba(0,0,0,.07)",display:"flex",alignItems:"flex-start",gap:16}}><span style={{fontSize:"1.4rem",flexShrink:0,marginTop:1}}>{c.e}</span><div><div style={{fontWeight:700,fontSize:".92rem",color:T.dark,marginBottom:3}}>{c.t}</div><div style={{fontSize:".84rem",color:T.textMuted}}>{c.d}</div></div></div>)}
-        </div>
+  {/* TRUST BAR */}
+  <section style={{padding:"48px 0 40px",background:T.bg}}>
+    <W>
+      <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:40,flexWrap:"wrap",alignItems:"center"}}>
+        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:T.textMuted,fontSize:".85rem",fontWeight:500}}><span style={{display:"flex",opacity:.5}}>{t.icon}</span>{t.text}</div>)}
       </div>
-      <div>
-        <div style={{background:"linear-gradient(135deg,#eff4ff 0%,#f0fdf4 100%)",borderRadius:14,padding:"40px 36px",border:"1.5px solid rgba(37,99,235,.12)"}}>
-          <div style={{display:"inline-block",background:T.accent,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 12px",borderRadius:6,marginBottom:18,letterSpacing:".04em"}}>Die Lösung</div>
-          <h3 style={{fontSize:"2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.04em"}}>SiteReady.at</h3>
-          <p style={{fontSize:"1rem",color:T.textSub,lineHeight:1.75,marginBottom:24}}>Kein Builder. Ein Service. Du beantwortest Fragen, wir liefern die fertige Website.</p>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:28}}>
-            {["Website fertig in Minuten","Live-Vorschau vor Kauf","Impressum ECG-konform","DSGVO automatisch","SSL inklusive","Kein Branding","Website-Import","Self-Service-Portal","Eigene Domain moeglich","Oesterreich-spezifisch"].map(l=><span key={l} style={{fontSize:".75rem",padding:"6px 13px",borderRadius:6,fontWeight:600,background:"#fff",color:T.green,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"} {l}</span>)}
-          </div>
-          <button onClick={onStart} style={{padding:"12px 24px",borderRadius:8,fontSize:".92rem",fontWeight:700,border:"none",cursor:"pointer",background:T.dark,color:"#fff",fontFamily:T.font}}>Jetzt testen &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </Sec>
+    </W>
+  </section>
 
-  {/* HOW IT WORKS */}
-  <Sec id="how">
-    <div style={{marginBottom:64}}>
-      <Label>So funktioniert's</Label>
-      <H2>Fünf Schritte. Null Aufwand.</H2>
-    </div>
-    <div className="lp-steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:16}}>
-      {[{n:"01",i:"\uD83D\uDCCB",t:"Fragebogen",d:"Bestehende Website importieren oder 10 Fragen zu Branche, Kontakt und Stil beantworten."},{n:"02",i:"\uD83D\uDC41\uFE0F",t:"Live-Vorschau",d:"Ihre Website entsteht live im Browser – sichtbar noch vor der Bezahlung."},{n:"03",i:"\uD83D\uDCB3",t:"Bezahlen",d:"Sicher per Karte, EPS oder PayPal. Danach läuft alles vollautomatisch."},{n:"04",i:"\uD83D\uDE80",t:"Sofort live",d:"SSL aktiv. Ihre Website ist innerhalb von Minuten erreichbar und für Google sichtbar."},{n:"05",i:"\u2699\uFE0F",t:"Anpassen (optional)",d:"Im Self-Service-Portal: Logo, Fotos und Custom Domain jederzeit selbst hinzufügen."}].map((s,i)=><div key={i} style={{padding:"28px 22px",background:i===4?"#fafafa":"#f7f8fa",borderRadius:12,position:"relative",overflow:"hidden",border:i===4?"1px dashed rgba(0,0,0,.08)":"none"}}>
-        <div style={{fontFamily:T.mono,fontSize:"3rem",fontWeight:800,color:"rgba(0,0,0,.05)",position:"absolute",top:12,right:16,lineHeight:1,letterSpacing:"-.05em"}}>{s.n}</div>
-        <div style={{width:42,height:42,borderRadius:10,background:i===4?T.bg3:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.15rem",marginBottom:18}}>{s.i}</div>
-        <h3 style={{fontSize:".95rem",fontWeight:700,color:i===4?T.textSub:T.dark,marginBottom:8}}>{s.t}</h3>
-        <p style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.65}}>{s.d}</p>
-      </div>)}
-    </div>
-  </Sec>
+  {/* PROBLEM + SOLUTION */}
+  <section id="problem" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+    <W>
+      <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"5fr 7fr",gap:64,alignItems:"start"}}>
+        <div>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Das Problem</div>
+          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
+        <div style={{position:"relative",paddingLeft:32}}>
+          <div style={{position:"absolute",left:11,top:8,bottom:8,width:2,background:T.bg3}}/>
+          {[{n:"01",icon:<IconClock/>,t:"Keine Zeit",d:"Der Alltag auf der Baustelle lässt keinen Raum für Webdesign."},{n:"02",icon:<IconMoney/>,t:"Zu teuer",d:"Eine Agentur kostet 1.500-5.000 Euro einmalig."},{n:"03",icon:<IconPuzzle/>,t:"Zu kompliziert",d:"Baukasten-Tools verlangen eigene Texte und Design."},{n:"04",icon:<IconWarning/>,t:"Rechtlich riskant",d:"Fehlendes Impressum oder DSGVO kann teuer werden."}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,marginBottom:i<3?32:0,position:"relative"}}>
+            <div style={{position:"absolute",left:-32,top:4,width:24,height:24,borderRadius:"50%",background:T.dark,display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}><span style={{fontFamily:T.mono,fontSize:".55rem",fontWeight:700,color:"#fff"}}>{c.n}</span></div>
+            <div><div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:4}}>{c.t}</div><div style={{fontSize:".84rem",color:T.textMuted,lineHeight:1.6}}>{c.d}</div></div>
+          </div>)}
+        </div>
+        </div>
+        <div style={{background:T.dark,borderRadius:16,padding:"48px 40px",color:"#fff",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:"-20%",right:"-10%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(143,163,184,.15) 0%,transparent 70%)",pointerEvents:"none"}}/>
+          <div style={{position:"relative",zIndex:1}}>
+            <div style={{display:"inline-block",background:T.accent,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 12px",borderRadius:6,marginBottom:20,letterSpacing:".04em"}}>Die Lösung</div>
+            <h3 style={{fontSize:"2rem",fontWeight:800,marginBottom:12,letterSpacing:"-.04em"}}>SiteReady.at</h3>
+            <p style={{fontSize:"1rem",color:"rgba(255,255,255,.6)",lineHeight:1.75,marginBottom:28}}>Kein Builder. Ein Service. Du beantwortest Fragen, wir liefern die fertige Website.</p>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:32}}>
+              {["Website fertig in Minuten","Live-Vorschau vor Kauf","Impressum ECG-konform","DSGVO automatisch","SSL inklusive","Kein Branding","Website-Import","Self-Service-Portal","Eigene Domain möglich","Österreich-spezifisch"].map(l=><span key={l} style={{fontSize:".75rem",padding:"6px 13px",borderRadius:6,fontWeight:600,background:"rgba(255,255,255,.08)",color:T.accent,border:"1px solid rgba(255,255,255,.1)",display:"inline-flex",alignItems:"center",gap:4}}><IconCheck/>{l}</span>)}
+            </div>
+            <button onClick={onStart} style={{padding:"14px 28px",borderRadius:8,fontSize:".92rem",fontWeight:700,border:"none",cursor:"pointer",background:"#fff",color:T.dark,fontFamily:T.font,minHeight:44,boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>Jetzt testen</button>
+          </div>
+        </div>
+      </div>
+    </W>
+  </section>
+
+  {/* HOW IT WORKS - Timeline */}
+  <section id="how" className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff"}}>
+    <W>
+      <div style={{marginBottom:64}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>So funktionierts</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark}}>Fünf Schritte. Null Aufwand.</h2>
+      </div>
+      <div style={{position:"relative",paddingTop:24}}>
+        <div className="lp-steps-line" style={{position:"absolute",top:44,left:"5%",right:"5%",height:2,background:T.accent,opacity:.3}}/>
+        <div className="lp-steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:16,position:"relative"}}>
+          {[{n:"01",icon:<IconClipboard/>,t:"Fragebogen",d:"Bestehende Website importieren oder 10 Fragen beantworten."},{n:"02",icon:<IconEye/>,t:"Live-Vorschau",d:"Website entsteht live im Browser – sichtbar vor der Bezahlung."},{n:"03",icon:<IconCreditCard/>,t:"Bezahlen",d:"Sicher per Karte, EPS oder PayPal. Danach läuft alles automatisch."},{n:"04",icon:<IconRocket/>,t:"Sofort live",d:"SSL aktiv. Website in Minuten erreichbar und für Google sichtbar."},{n:"05",icon:<IconGear/>,t:"Anpassen",d:"Im Self-Service-Portal: Logo, Fotos und Domain jederzeit ändern."}].map((s,i)=><div key={i} style={{textAlign:"center"}}>
+            <div style={{width:48,height:48,borderRadius:"50%",background:i===4?"transparent":T.dark,border:i===4?`2px dashed ${T.textMuted}`:"none",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",color:i===4?T.textMuted:"#fff",position:"relative",zIndex:1}}>
+              <span style={{fontFamily:T.mono,fontSize:".78rem",fontWeight:700}}>{s.n}</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"center",marginBottom:12,color:i===4?T.textMuted:T.dark}}>{s.icon}</div>
+            <h3 style={{fontSize:".95rem",fontWeight:700,color:i===4?T.textMuted:T.dark,marginBottom:8}}>{s.t}</h3>
+            <p style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.65}}>{s.d}</p>
+          </div>)}
+        </div>
+      </div>
+    </W>
+  </section>
 
   {/* DESIGN VARIANTS */}
-  <Sec alt>
-    <div style={{marginBottom:52}}>
-      <Label>Automatisches Design</Label>
-      <H2 s={{maxWidth:500}}>Keine Designentscheidung. Nur ein Gefühl.</H2>
-      <Sub s={{maxWidth:460}}>Wie soll Ihr Betrieb wirken? SiteReady waehlt das passende Design automatisch.</Sub>
-    </div>
-    <div className="lp-variants-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {[{t:"Professionell & serioes",d:"Klare Linien, gedaempfte Farben, serifenlos",g:"linear-gradient(160deg,#0f2b5b,#2563eb)",sub:"Elektriker, Installateure, Baumeister"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Farbpalette",g:"linear-gradient(135deg,#065f46,#10b981)",sub:"Maler, Fliesenleger, Gärtner"},{t:"Bodenständig & vertraut",d:"Warme Töne, kräftige Schrift, solider Auftritt",g:"linear-gradient(160deg,#78350f,#b45309)",sub:"Tischler, Zimmerer, Dachdecker"}].map((v,i)=><div key={i} style={{borderRadius:12,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)"}}>
-        <div style={{background:v.g,padding:"44px 28px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.1),transparent 50%)"}}/><h3 style={{fontSize:"1.1rem",fontWeight:700,marginBottom:6,position:"relative"}}>{v.t}</h3><p style={{fontSize:".8rem",opacity:.75,position:"relative"}}>{v.d}</p></div>
-        <div style={{padding:"18px 28px",borderTop:"1px solid rgba(0,0,0,.05)"}}><p style={{fontSize:".84rem",color:T.textSub}}>{v.sub}</p></div>
-      </div>)}
-    </div>
-  </Sec>
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+    <W>
+      <div style={{marginBottom:52}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Automatisches Design</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:500}}>Keine Designentscheidung. Nur ein Gefühl.</h2>
+        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:460}}>Wie soll Ihr Betrieb wirken? SiteReady wählt das passende Design automatisch.</p>
+      </div>
+      <div className="lp-variants-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20,alignItems:"end"}}>
+        {[{t:"Professionell & seriös",d:"Klare Linien, gedämpfte Farben, serifenlos",sub:"Elektriker, Installateure, Baumeister",lift:0,bg:T.dark,accent:"rgba(143,163,184,.3)"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Palette",sub:"Maler, Fliesenleger, Gärtner",lift:-16,bg:"#1a1e24",accent:"rgba(143,163,184,.15)"},{t:"Bodenständig & vertraut",d:"Warme Töne, kräftige Schrift, solider Auftritt",sub:"Tischler, Zimmerer, Dachdecker",lift:0,bg:"#3a3d44",accent:"rgba(143,163,184,.25)"}].map((v,i)=>{const[vHov,setVHov]=React.useState(false);return <div key={i} onMouseEnter={()=>setVHov(true)} onMouseLeave={()=>setVHov(false)} style={{borderRadius:16,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)",transform:`translateY(${v.lift+(vHov?-3:0)}px)`,boxShadow:vHov?T.sh4:i===1?T.sh3:T.sh2,transition:"transform .3s,box-shadow .3s"}}>
+          <div style={{background:v.bg,padding:i===1?"68px 32px":"60px 32px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 80% 20%,${v.accent},transparent 60%)`}}/><div style={{position:"relative"}}><div style={{fontSize:".65rem",fontWeight:600,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>{v.sub}</div><h3 style={{fontSize:"1.25rem",fontWeight:800,marginBottom:8}}>{v.t}</h3><p style={{fontSize:".85rem",opacity:.6,lineHeight:1.6}}>{v.d}</p></div></div>
+          <div style={{padding:"20px 32px"}}><div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:8,height:8,borderRadius:"50%",background:T.accent}}/><p style={{fontSize:".84rem",color:T.textSub,fontWeight:500}}>Automatisch zugewiesen</p></div></div>
+        </div>})}
+      </div>
+    </W>
+  </section>
 
-  {/* BRANCHEN TEMPLATES */}
-  <Sec>
-    <div style={{marginBottom:52}}>
-      <Label>Branchen-Templates</Label>
-      <H2 s={{maxWidth:520}}>Maßgeschneidert für Ihre Branche.</H2>
-      <Sub s={{maxWidth:480}}>Jede Branche bekommt ein eigenes Design, vorbelegte Leistungen und passende Website-Texte – vollautomatisch.</Sub>
-    </div>
-    <div className="lp-branchen-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:20}}>
-      <div style={{borderRadius:14,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.08)",boxShadow:"0 4px 24px rgba(0,0,0,.05)"}}>
-        <div style={{background:"linear-gradient(160deg,#0f2b5b,#1e40af)",padding:"32px 28px",color:"#fff",position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.08),transparent 50%)"}}/>
-          <div style={{position:"relative",zIndex:1}}>
-            <div style={{fontSize:"2rem",marginBottom:10}}>{"\uD83D\uDD28"}</div>
-            <h3 style={{fontSize:"1.2rem",fontWeight:800,marginBottom:6,letterSpacing:"-.03em"}}>Handwerk</h3>
-            <p style={{opacity:.75,fontSize:".84rem",lineHeight:1.6}}>Seriöses, professionelles Design. Vertrauensaufbau steht im Vordergrund.</p>
+  {/* BRANCHEN - Single card with two halves */}
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:"#fff"}}>
+    <W>
+      <div style={{marginBottom:52}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Branchen-Templates</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihre Branche.</h2>
+        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jede Branche bekommt ein eigenes Design, vorbelegte Leistungen und passende Texte – vollautomatisch.</p>
+      </div>
+      <div className="lp-branchen-card" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+        <div onMouseEnter={()=>setHovCard("hw")} onMouseLeave={()=>setHovCard(null)} style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",boxShadow:hovCard==="hw"?T.sh4:T.sh2,background:"#fff",transition:"transform .3s,box-shadow .3s",transform:hovCard==="hw"?"translateY(-3px)":"none"}}>
+          <div style={{background:T.dark,padding:"36px 32px",color:"#fff",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(143,163,184,.12),transparent 60%)"}}/>
+            <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:44,height:44,borderRadius:12,background:"rgba(143,163,184,.15)",display:"flex",alignItems:"center",justifyContent:"center"}}><IconHammer/></div>
+              <div><h3 style={{fontSize:"1.2rem",fontWeight:800,letterSpacing:"-.03em"}}>Handwerk</h3><p style={{color:T.accent,fontSize:".82rem",marginTop:3}}>Seriöses, professionelles Design</p></div>
+            </div>
+          </div>
+          <div style={{padding:"24px 32px"}}>
+            <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+              {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gärtner","Klima & Lüftung","Reinigung"].map(b=><span key={b} style={{fontSize:".76rem",padding:"5px 12px",borderRadius:8,fontWeight:500,background:T.bg,color:T.secondary,border:"1px solid rgba(0,0,0,.06)"}}>{b}</span>)}
+            </div>
           </div>
         </div>
-        <div style={{padding:"22px 28px"}}>
-          <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Verfügbare Branchen</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gaertner","Klima & Lüftung","Reinigung"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#eff6ff",color:"#1e40af",border:"1px solid rgba(30,64,175,.1)"}}>{b}</span>)}
+        <div onMouseEnter={()=>setHovCard("ko")} onMouseLeave={()=>setHovCard(null)} style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",boxShadow:hovCard==="ko"?T.sh4:T.sh2,background:"#fff",transition:"transform .3s,box-shadow .3s",transform:hovCard==="ko"?"translateY(-3px)":"none"}}>
+          <div style={{background:"#4A5060",padding:"36px 32px",color:"#fff",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(143,163,184,.12),transparent 60%)"}}/>
+            <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:44,height:44,borderRadius:12,background:"rgba(255,255,255,.12)",display:"flex",alignItems:"center",justifyContent:"center"}}><IconSparkles/></div>
+              <div><h3 style={{fontSize:"1.2rem",fontWeight:800,letterSpacing:"-.03em"}}>Kosmetik & Körperpflege</h3><p style={{color:"rgba(255,255,255,.65)",fontSize:".82rem",marginTop:3}}>Modernes, elegantes Design</p></div>
+            </div>
+          </div>
+          <div style={{padding:"24px 32px"}}>
+            <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+              {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fußpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".76rem",padding:"5px 12px",borderRadius:8,fontWeight:500,background:T.bg,color:T.secondary,border:"1px solid rgba(0,0,0,.06)"}}>{b}</span>)}
+            </div>
           </div>
         </div>
       </div>
-      <div style={{borderRadius:14,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.08)",boxShadow:"0 4px 24px rgba(0,0,0,.05)"}}>
-        <div style={{background:"linear-gradient(160deg,#831843,#be185d)",padding:"32px 28px",color:"#fff",position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(255,255,255,.08),transparent 50%)"}}/>
-          <div style={{position:"relative",zIndex:1}}>
-            <div style={{fontSize:"2rem",marginBottom:10}}>{"\u2728"}</div>
-            <h3 style={{fontSize:"1.2rem",fontWeight:800,marginBottom:6,letterSpacing:"-.03em"}}>Kosmetik & Körperpflege</h3>
-            <p style={{opacity:.75,fontSize:".84rem",lineHeight:1.6}}>Modernes, elegantes Design. Hochwertige Ausstrahlung und Vertrauenswirkung.</p>
-          </div>
+      <div style={{marginTop:20,padding:"20px 28px",borderRadius:12,background:T.bg,border:"1px solid rgba(0,0,0,.06)",borderLeft:`3px solid ${T.accent}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+        <div>
+          <div style={{fontWeight:700,fontSize:".92rem",color:T.dark,marginBottom:2}}>Weitere Berufsgruppen in Planung</div>
+          <div style={{fontSize:".82rem",color:T.textMuted}}>Gastronomie, Handel, Dienstleistungen und mehr kommen 2026.</div>
         </div>
-        <div style={{padding:"22px 28px"}}>
-          <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Verfügbare Branchen</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fuß- & Körperpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".74rem",padding:"4px 10px",borderRadius:6,fontWeight:500,background:"#fdf2f8",color:"#9d174d",border:"1px solid rgba(157,23,77,.1)"}}>{b}</span>)}
-          </div>
-        </div>
+        <button disabled style={{padding:"10px 20px",borderRadius:8,fontSize:".84rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,background:T.dark,color:"#fff",border:"none",opacity:.85,whiteSpace:"nowrap",minHeight:44}}>Bald verfügbar</button>
       </div>
-    </div>
-    <div style={{padding:"22px 28px",borderRadius:12,background:"linear-gradient(135deg,#f8faff,#f0fdf4)",border:"1px solid rgba(0,0,0,.07)",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
-      <div>
-        <div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:4}}>Weitere Berufsgruppen in Planung</div>
-        <div style={{fontSize:".83rem",color:T.textMuted,lineHeight:1.6}}>Gastronomie, Handel, Dienstleistungen und mehr kommen 2026.</div>
-      </div>
-      <button disabled style={{padding:"10px 20px",borderRadius:8,fontSize:".84rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,background:T.dark,color:"#fff",border:"none",opacity:.85,whiteSpace:"nowrap"}}>Newsletter abonnieren &amp; informiert bleiben</button>
-    </div>
-  </Sec>
+    </W>
+  </section>
 
-  {/* PRICING */}
-  <Sec id="preise">
-    <div style={{marginBottom:48}}>
-      <Label>Preise</Label>
-      <H2>Ein Paket. Alles drin.</H2>
-      <Sub s={{maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen.</Sub>
-    </div>
-    <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,maxWidth:820,margin:"0 auto"}}>
-      {/* Standard mit Toggle */}
-      <div style={{background:"#fff",borderRadius:14,padding:"36px 28px",position:"relative",border:"2px solid rgba(37,99,235,.2)",boxShadow:"0 8px 40px rgba(37,99,235,.07)"}}>
-        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
-        {/* Toggle */}
-        <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,marginBottom:24,width:"100%",position:"relative"}}>
-          <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:7,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
-          {[["monthly","Monatlich"],["yearly","J\u00e4hrlich"]].map(([val,lbl])=>(
-            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:7,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textSub,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1}}>
-              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:pricingYearly?"rgba(37,99,235,0.12)":T.accentLight,padding:"2px 7px",borderRadius:4,transition:"background .25s"}}>-15%</span>}
+  {/* PRICING - 60/40 split */}
+  <section id="preise" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+    <W>
+      <div style={{marginBottom:48}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Preise</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Ein Paket. Alles drin.</h2>
+        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen.</p>
+      </div>
+      <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:24,maxWidth:900}}>
+        {/* Standard */}
+        <div onMouseEnter={()=>setHovCard("pr")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 32px",position:"relative",border:`2px solid ${T.dark}`,boxShadow:hovCard==="pr"?T.sh4:T.sh3,transform:hovCard==="pr"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+          <span style={{position:"absolute",top:-13,left:32,background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
+          <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,marginBottom:28,maxWidth:280,position:"relative"}}>
+            <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:7,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
+            {[["monthly","Monatlich"],["yearly","Jährlich"]].map(([val,lbl])=>(
+              <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:7,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
+                {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
+              </button>
+            ))}
+          </div>
+          <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
+            <span style={{fontSize:"3.2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC15.30":"\u20AC18"}</span>
+            <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
+          </div>
+          {pricingYearly
+            ?<><div style={{fontSize:".78rem",color:T.textMuted,marginBottom:6}}>{"\u20AC"}183.60 / Jahr &middot; statt {"\u20AC"}216</div>
+              <div style={{display:"inline-flex",alignItems:"center",background:T.accentLight,borderRadius:6,padding:"3px 10px",marginBottom:24}}><span style={{fontSize:".72rem",fontWeight:700,color:T.accent}}>Sie sparen {"\u20AC"}32.40 / Jahr</span></div></>
+            :<div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Monatlich kündbar &middot; keine Bindung</div>}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:28}}>
+            {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".84rem",color:T.text}}><IconCheck/>{f}</div>)}
+          </div>
+          <button onClick={onStart} style={{width:"100%",padding:16,borderRadius:10,fontSize:"1rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff",minHeight:48}}>Kostenlos testen</button>
+        </div>
+        {/* Premium Coming Soon */}
+        <div style={{background:"#fff",borderRadius:16,padding:"40px 28px",position:"relative",border:`1px solid ${T.bg3}`}}>
+          <span style={{position:"absolute",top:-13,left:28,background:T.accent,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
+          <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady Premium</div>
+          <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:20}}>Alles aus Standard + mehr</div>
+          <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(6px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".95rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
+          <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Kommt 2026 &middot; Jetzt vormerken</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+            {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>{f}</div>)}
+          </div>
+          <button disabled style={{width:"100%",padding:14,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:`1.5px solid ${T.bg3}`,background:T.bg,color:T.textMuted,opacity:.8,minHeight:44}}>Vormerken</button>
+        </div>
+      </div>
+      <p style={{fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"24px 0 0",lineHeight:1.7}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Preise inkl. MwSt.</p>
+    </W>
+  </section>
+
+  {/* COMPARISON - Dark bg */}
+  <section id="vergleich" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.dark}}>
+    <W>
+      <div style={{marginBottom:48}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Vergleich</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:"#fff"}}>SiteReady vs. der Rest.</h2>
+      </div>
+      <div className="lp-compare" style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,.1)"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Webdesign Agentur","Wix","onepage.ai"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".72rem",color:j===1?T.accent:"rgba(255,255,255,.4)",textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.1)":"rgba(255,255,255,.03)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>{h}</th>)}</tr></thead><tbody>{[["Zeit bis live","Minuten","4-8 Wochen","Stunden","Stunden"],["Texte & Content","KI erstellt","Briefing nötig","Selbst schreiben","Selbst schreiben"],["Impressum (ECG)","Automatisch","Extra buchbar","Nein","Nein"],["DSGVO-Text","Automatisch","Extra buchbar","Nein","Nein"],["Vorschau vor Kauf","Ja","Nein","Teilweise","Nein"],["Für Handwerker","Spezialisiert","Je nach Agentur","Nein","Nein"],["Preis","ab 18 Euro/Mo","1.500-5.000 Euro","ab 17 Euro/Mo","ab 19,90 Euro/Mo"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(255,255,255,.02)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(255,255,255,.06)",color:j===0?"#fff":j===1?T.accent:"rgba(255,255,255,.4)",fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.05)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
+        <div style={{padding:"10px 22px",borderTop:"1px solid rgba(255,255,255,.06)",fontSize:".7rem",color:"rgba(255,255,255,.3)"}}>Agentur: Einmalkosten, zzgl. optionalem Wartungsvertrag</div>
+      </div>
+    </W>
+  </section>
+
+  {/* TESTIMONIALS */}
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+    <W>
+      <div style={{marginBottom:52}}>
+        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Kundenstimmen</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark}}>Das sagen unsere Kunden.</h2>
+      </div>
+      <div className="lp-testi-grid" style={{display:"grid",gridTemplateColumns:"1.3fr 1fr",gap:24,alignItems:"start"}}>
+        <div onMouseEnter={()=>setHovCard("t1")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 36px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t1"?T.sh3:T.sh2,transform:hovCard==="t1"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+          <div style={{display:"flex",gap:4,marginBottom:20}}>{[1,2,3,4,5].map(s=><IconStar key={s}/>)}</div>
+          <p style={{fontSize:"1.15rem",fontWeight:500,color:T.dark,lineHeight:1.7,marginBottom:28}}>Ich hab die Website in der Mittagspause ausgefüllt. Am nächsten Tag hat ein Kunde gesagt, er hat mich über Google gefunden. Das war der beste Business-Invest seit Jahren.</p>
+          <div style={{display:"flex",alignItems:"center",gap:14}}>
+            <div style={{width:48,height:48,borderRadius:"50%",background:"linear-gradient(135deg,#0f2b5b,#2563eb)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:".95rem"}}>TM</div>
+            <div><div style={{fontWeight:700,fontSize:".92rem",color:T.dark}}>Thomas Meier</div><div style={{fontSize:".82rem",color:T.textMuted}}>Elektrotechnik, Wien</div></div>
+          </div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:24}}>
+          <div onMouseEnter={()=>setHovCard("t2")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"32px 32px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t2"?T.sh2:T.sh1,transform:hovCard==="t2"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+            <div style={{display:"flex",gap:4,marginBottom:14}}>{[1,2,3,4,5].map(s=><IconStar key={s}/>)}</div>
+            <p style={{fontSize:".92rem",color:T.text,lineHeight:1.7,marginBottom:18}}>Endlich eine Lösung, die mitdenkt. Impressum, DSGVO – alles automatisch. Ich musste nichts selber schreiben.</p>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#831843,#be185d)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:".78rem"}}>LK</div>
+              <div><div style={{fontWeight:700,fontSize:".84rem",color:T.dark}}>Lisa Kogler</div><div style={{fontSize:".78rem",color:T.textMuted}}>Kosmetikstudio, Graz</div></div>
+            </div>
+          </div>
+          <div onMouseEnter={()=>setHovCard("t3")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"32px 32px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t3"?T.sh2:T.sh1,transform:hovCard==="t3"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+            <div style={{display:"flex",gap:4,marginBottom:14}}>{[1,2,3,4,5].map(s=><IconStar key={s}/>)}</div>
+            <p style={{fontSize:".92rem",color:T.text,lineHeight:1.7,marginBottom:18}}>18 Euro im Monat statt 3.000 Euro an die Agentur. Und die Website sieht besser aus. Wahnsinn.</p>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#78350f,#b45309)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:".78rem"}}>MG</div>
+              <div><div style={{fontWeight:700,fontSize:".84rem",color:T.dark}}>Martin Gruber</div><div style={{fontSize:".78rem",color:T.textMuted}}>Zimmerei, Salzburg</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </W>
+  </section>
+
+  {/* FAQ - Two column */}
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff"}}>
+    <W>
+      <div className="lp-faq-grid" style={{display:"grid",gridTemplateColumns:"1fr 1.5fr",gap:64,alignItems:"start"}}>
+        <div className="lp-faq-sticky" style={{position:"sticky",top:100}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>FAQ</div>
+          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Häufige Fragen</h2>
+          <p style={{fontSize:"1rem",color:T.textSub,lineHeight:1.7}}>Noch unsicher? Hier finden Sie Antworten auf die wichtigsten Fragen.</p>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:0}}>
+          {[
+            {q:"Wie lange dauert es, bis meine Website online ist?",a:"Nach dem Ausfüllen des Fragebogens (ca. 10 Minuten) ist Ihre Website sofort als Vorschau sichtbar. Nach der Bezahlung geht sie innerhalb von Minuten live."},
+            {q:"Brauche ich technische Vorkenntnisse?",a:"Nein, überhaupt nicht. Sie beantworten einfache Fragen zu Ihrem Betrieb. SiteReady kümmert sich um Design, Texte, Impressum und alles Technische."},
+            {q:"Was ist mit Impressum und DSGVO?",a:"Beides wird automatisch generiert – rechtlich konform nach österreichischem ECG und DSGVO. Sie müssen sich um nichts kümmern."},
+            {q:"Kann ich meine Website später ändern?",a:"Ja. Im Self-Service-Portal können Sie Logo, Fotos, Texte und Kontaktdaten jederzeit selbst ändern."},
+            {q:"Was kostet SiteReady?",a:"Ab 18 Euro pro Monat (oder 15,30 Euro bei Jahreszahlung). Die ersten 7 Tage sind kostenlos. Keine versteckten Kosten."},
+            {q:"Kann ich eine eigene Domain verwenden?",a:"Ja. Sie erhalten eine kostenlose siteready.at-Subdomain und können jederzeit eine eigene Domain verbinden."},
+            {q:"Was passiert, wenn ich kündige?",a:"Sie können monatlich kündigen. Nach der Kündigung wird Ihre Website am Ende des Abrechnungszeitraums offline genommen."}
+          ].map((item,i)=><div key={i} style={{borderBottom:"1px solid rgba(0,0,0,.07)"}}>
+            <button onClick={()=>toggleFaq(i)} style={{width:"100%",padding:"20px 0",display:"flex",justifyContent:"space-between",alignItems:"center",background:"none",border:"none",cursor:"pointer",fontFamily:T.font,textAlign:"left",minHeight:44,gap:16}}>
+              <span style={{fontSize:".95rem",fontWeight:600,color:T.dark}}>{item.q}</span>
+              <span style={{flexShrink:0,color:T.textMuted}}><IconChevron open={!!faqOpen[i]}/></span>
             </button>
-          ))}
+            <div style={{maxHeight:faqOpen[i]?300:0,overflow:"hidden",transition:"max-height .3s cubic-bezier(.22,1,.36,1)"}}>
+              <p style={{fontSize:".88rem",color:T.textMuted,lineHeight:1.7,paddingBottom:20}}>{item.a}</p>
+            </div>
+          </div>)}
         </div>
-        {/* Preis */}
-        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-          <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC15.30":"\u20AC18"}</span>
-          <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
-        </div>
-        {pricingYearly
-          ?<><div style={{fontSize:".78rem",color:T.textMuted,marginBottom:6}}>{"\u20AC"}183.60 / Jahr &middot; statt {"\u20AC"}216</div>
-            <div style={{display:"inline-flex",alignItems:"center",background:"#dcfce7",borderRadius:6,padding:"3px 10px",marginBottom:20}}><span style={{fontSize:".72rem",fontWeight:700,color:"#15803d"}}>Sie sparen {"\u20AC"}32.40 / Jahr</span></div></>
-          :<div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar &middot; keine Bindung</div>}
-        {/* Features */}
-        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:24}}>
-          {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.text}}><span style={{color:T.green,fontWeight:700}}>{"\u2713"}</span>{f}</div>)}
-        </div>
-        <button onClick={onStart} style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff"}}>Kostenlos testen {"\u2192"}</button>
       </div>
-      {/* Premium Coming Soon */}
-      <div style={{background:"#fafafa",borderRadius:14,padding:"36px 28px",position:"relative",border:"1px solid rgba(124,58,237,.15)"}}>
-        <span style={{position:"absolute",top:-13,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#7c3aed,#a855f7)",color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
-        <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady Premium</div>
-        <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:20}}>Alles aus Standard + mehr</div>
-        <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(6px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".95rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
-        <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Kommt 2026 &middot; Jetzt vormerken</div>
-        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:28}}>
-          {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><span style={{color:"#a855f7",fontWeight:700}}>{"\u23F3"}</span>{f}</div>)}
-        </div>
-        <button disabled style={{width:"100%",padding:13,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"1.5px solid rgba(124,58,237,.3)",background:"rgba(124,58,237,.06)",color:"#7c3aed",opacity:.8}}>Newsletter abonnieren &amp; informiert bleiben</button>
-      </div>
-    </div>
-    <p style={{textAlign:"center",fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"24px auto 0",lineHeight:1.7}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Preise inkl. MwSt.</p>
-  </Sec>
+    </W>
+  </section>
 
-  {/* COMPARISON */}
-  <Sec id="vergleich" alt>
-    <div style={{marginBottom:48}}>
-      <Label>Vergleich</Label>
-      <H2>SiteReady vs. der Rest.</H2>
-    </div>
-    <div className="lp-compare" style={{borderRadius:14,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",background:"#fff"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Webdesign Agentur","Wix","onepage.ai"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".72rem",color:j===1?T.accent:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",background:j===1?T.accentLight:"#f7f8fa",borderBottom:"1px solid rgba(0,0,0,.07)"}}>{h}</th>)}</tr></thead><tbody>{[["Zeit bis live","Minuten","4\u20138 Wochen","Stunden","Stunden"],["Texte & Content","\u2713 KI erstellt","Briefing noetig","Selbst schreiben","Selbst schreiben"],["Impressum (ECG)","\u2713 Automatisch","Extra buchbar","\u2717","\u2717"],["DSGVO-Text","\u2713 Automatisch","Extra buchbar","\u2717","\u2717"],["Vorschau vor Kauf","\u2713 Ja","\u2717","Teilweise","\u2717"],["Fuer Handwerker","\u2713 Spezialisiert","Je nach Agentur","\u2717","\u2717"],["Preis","ab \u20AC18\u2009/Mo","\u20AC1.500\u2013\u20AC5.000\u00b9","ab \u20AC17\u2009/Mo","ab \u20AC19,90\u2009/Mo"]].map((row,i)=><tr key={i} style={{background:i%2===0?"#fff":"#fafafa"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(0,0,0,.04)",color:j===0?T.dark:j===1?T.accent:T.textMuted,fontWeight:j<=1?600:400,background:j===1?"rgba(37,99,235,.02)":"transparent"}}>{c}</td>)}</tr>)}</tbody></table>
-      <div style={{padding:"10px 22px",borderTop:"1px solid rgba(0,0,0,.05)",fontSize:".7rem",color:T.textMuted}}>¹ Einmalkosten, zzgl. optionalem Wartungsvertrag</div>
-    </div>
-  </Sec>
-
-  {/* CTA */}
-  <section className="lp-cta-section" style={{padding:"120px 0",textAlign:"center",position:"relative",overflow:"hidden",background:T.dark}}>
-    <div style={{position:"absolute",top:"-40%",left:"15%",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%)",pointerEvents:"none"}}/>
+  {/* CTA - Asymmetric dark */}
+  <section className="lp-cta-section" style={{padding:"96px 0",position:"relative",overflow:"hidden",background:T.dark}}>
+    <div style={{position:"absolute",top:"-40%",left:"15%",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(143,163,184,.12) 0%,transparent 70%)",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1}}>
-      <h2 style={{fontSize:"clamp(2.2rem,4.5vw,3.4rem)",fontWeight:800,lineHeight:1.05,letterSpacing:"-.04em",color:"#fff",marginBottom:18}}>Bereit für deine Website?</h2>
-      <p style={{fontSize:"1.05rem",color:"rgba(255,255,255,.5)",marginBottom:40,maxWidth:420,margin:"0 auto 40px",lineHeight:1.7}}>10 Minuten. Kein Aufwand. Fertig.</p>
-      <button onClick={onStart} style={{background:"#fff",color:T.dark,padding:"16px 44px",borderRadius:8,fontSize:"1rem",fontWeight:800,border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em"}}>Jetzt starten &rarr;</button>
+      <div className="lp-cta-inner" style={{display:"grid",gridTemplateColumns:"1.4fr 1fr",gap:64,alignItems:"center"}}>
+        <div>
+          <h2 style={{fontSize:"clamp(2.2rem,4.5vw,3.4rem)",fontWeight:800,lineHeight:1.05,letterSpacing:"-.04em",color:"#fff",marginBottom:18}}>Bereit für deine Website?</h2>
+          <p style={{fontSize:"1.05rem",color:"rgba(255,255,255,.5)",marginBottom:40,lineHeight:1.7}}>10 Minuten. Kein Aufwand. Fertig.</p>
+          <button onClick={onStart} style={{background:"#fff",color:T.dark,padding:"20px 52px",borderRadius:10,fontSize:"1.1rem",fontWeight:800,border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em",minHeight:56,boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>Jetzt starten</button>
+        </div>
+        <div className="lp-cta-stats" style={{display:"flex",flexDirection:"column",gap:24}}>
+          {[{v:"10",s:" Min",l:"bis zur fertigen Website"},{v:"18",s:" \u20AC",l:"pro Monat, alles inklusive"},{v:"120",s:"k+",l:"Zielgruppe in Österreich"}].map((s,i)=><div key={i} style={{display:"flex",alignItems:"baseline",gap:8}}>
+            <span style={{fontFamily:T.mono,fontSize:"2.4rem",fontWeight:800,color:"#fff",letterSpacing:"-.03em",lineHeight:1}}>{s.v}<span style={{color:T.accent}}>{s.s}</span></span>
+            <span style={{fontSize:".85rem",color:"rgba(255,255,255,.4)"}}>{s.l}</span>
+          </div>)}
+        </div>
+      </div>
     </W>
   </section>
 
   {/* FOOTER */}
-  <footer style={{padding:"32px 0",borderTop:"1px solid rgba(0,0,0,.06)",background:"#fff"}}>
-    <W><div className="lp-footer-flex" style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:8}}><img src="/icon.png" alt="SR" style={{height:16,opacity:.35}}/><span style={{fontSize:".82rem",color:T.textMuted}}>&copy; 2026 SiteReady.at</span></div><div style={{display:"flex",gap:24}}>{["Impressum","Datenschutz","Kontakt"].map(l=><a key={l} href="#" style={{fontSize:".82rem",color:T.textMuted,textDecoration:"none"}}>{l}</a>)}</div></div></W>
+  <footer style={{padding:"64px 0 40px",borderTop:`1px solid rgba(0,0,0,.06)`,background:T.bg}}>
+    <W>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:48,flexWrap:"wrap",gap:32}}>
+        <div style={{maxWidth:320}}>
+          <img src="/logo.png" alt="SiteReady" style={{height:36,marginBottom:16}}/>
+          <p style={{fontSize:".85rem",color:T.textMuted,lineHeight:1.7}}>Professionelle Websites für österreichische Kleinbetriebe. Impressum, DSGVO und SEO inklusive.</p>
+        </div>
+        <div className="lp-footer-cols" style={{display:"flex",gap:56}}>
+          <div>
+            <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Produkt</div>
+            {["Fragebogen starten","Preise","Branchen","Kunden-Portal"].map(l=><a key={l} href="#" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:10}}>{l}</a>)}
+          </div>
+          <div>
+            <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Rechtliches</div>
+            {["Impressum","Datenschutz","AGB"].map(l=><a key={l} href="#" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:10}}>{l}</a>)}
+          </div>
+          <div>
+            <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Kontakt</div>
+            <a href="mailto:info@siteready.at" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:10}}>info@siteready.at</a>
+            <span style={{fontSize:".85rem",color:T.textMuted}}>Wien, Österreich</span>
+          </div>
+        </div>
+      </div>
+      <div className="lp-footer-flex" style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:24,borderTop:`1px solid rgba(0,0,0,.06)`}}>
+        <span style={{fontSize:".8rem",color:T.textMuted}}>&copy; 2026 SiteReady.at &middot; Wagner IT-Solutions e.U.</span>
+        <span style={{fontSize:".8rem",color:T.textMuted}}>Made with care in Austria</span>
+      </div>
+    </W>
   </footer>
   </div>);
 }
@@ -403,7 +586,7 @@ function SuccessPage({data,onBack}){
   const regOk=vorname.trim().length>0&&nachname.trim().length>0&&pw.length>=8&&pw===pw2;
   const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
   const handleOrder=async()=>{
-    if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausf\u00fcllen.");return;}
+    if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausfüllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // 0. Account erstellen
@@ -780,7 +963,7 @@ function Portal({session,onLogout}){
     if(col)await supabase.from("orders").update({[col]:null}).eq("id",order.id);
     setAssetUrls(u=>{const n={...u};delete n[key];return n;});
     setDeleting(d=>({...d,[key]:false}));
-    showToast("Bild gel\u00f6scht");
+    showToast("Bild gelöscht");
   };
 
   const startBuild=async(withFotos)=>{
@@ -918,11 +1101,11 @@ function Portal({session,onLogout}){
             <button onClick={()=>subscribe("monthly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.r,background:"#fff",cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .2s"}}>
               <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>Monatlich</div>
               <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}18<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Monat</span></div>
-              <div style={{fontSize:".76rem",color:T.textMuted}}>Monatlich kuendbar</div>
+              <div style={{fontSize:".76rem",color:T.textMuted}}>Monatlich kündbar</div>
             </button>
             <button onClick={()=>subscribe("yearly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.accent}`,borderRadius:T.r,background:T.accentLight,cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,position:"relative"}}>
               <div style={{position:"absolute",top:-10,right:16,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".06em"}}>15% RABATT</div>
-              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>{"J\u00e4hrlich"}</div>
+              <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>{"Jährlich"}</div>
               <div style={{fontSize:"1.5rem",fontWeight:800,color:T.accent,fontFamily:T.mono,margin:"4px 0"}}>{"\u20AC"}183.60<span style={{fontSize:".85rem",fontWeight:500,color:T.textMuted}}>/Jahr</span></div>
               <div style={{fontSize:".76rem",color:T.textMuted}}>{"\u20AC"}15.30/Monat &middot; Laufzeit 12 Monate</div>
             </button>
@@ -937,7 +1120,7 @@ function Portal({session,onLogout}){
       {order?.status==="pending"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28,textAlign:"center"}}>
         <div style={{width:56,height:56,borderRadius:"50%",border:`3px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",margin:"0 auto 24px"}}/>
         <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 10px"}}>Ihre Website wird erstellt</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 28px"}}>Die KI generiert gerade Ihre individuelle Website. Das dauert ca. 30\u201360 Sekunden.</p>
+        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 28px"}}>Die KI generiert gerade Ihre individuelle Website. Das dauert ca. 30–60 Sekunden.</p>
         <button onClick={async()=>{
           const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
           if(data&&data[0])setOrder(data[0]);
@@ -957,7 +1140,7 @@ function Portal({session,onLogout}){
           {order?(<>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
               <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
-              <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live \u2013 Ihre Website ist erreichbar":"In Bearbeitung"}</span>
+              <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live – Ihre Website ist erreichbar":"In Bearbeitung"}</span>
             </div>
             {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"Status",v:STATUS_LABELS[order.status]||order.status}].map(({l,v,link})=>(
               <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
@@ -967,7 +1150,7 @@ function Portal({session,onLogout}){
           </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
         </div>
         {/* Onboarding-Checkliste */}
-        {(()=>{const checks=[{label:"Website erstellt",done:!!order.website_html},{label:"Logo hochgeladen",done:!!assetUrls.logo,tab:"medien"},{label:"Kontakt vollst\u00e4ndig",done:!!(order.telefon&&order.adresse),tab:"website"},{label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien"}];const done=checks.filter(c=>c.done).length;if(done===checks.length)return null;return(<div style={{background:"#fff",borderRadius:T.r,padding:"18px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Erste Schritte</div><div style={{fontSize:".72rem",color:T.textSub,fontWeight:600}}>{done}/{checks.length}</div></div><div style={{display:"flex",flexDirection:"column",gap:6}}>{checks.map((c,i)=><div key={i} onClick={c.tab&&!c.done?()=>setTab(c.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 0",cursor:c.tab&&!c.done?"pointer":"default"}}><div style={{width:18,height:18,borderRadius:"50%",background:c.done?"#16a34a":"#e2e8f0",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".65rem",fontWeight:800,flexShrink:0}}>{c.done?"\u2713":""}</div><span style={{fontSize:".84rem",color:c.done?T.textMuted:T.dark,flex:1}}>{c.label}</span>{c.tab&&!c.done&&<span style={{fontSize:".72rem",color:T.accent,fontWeight:700}}>\u2192</span>}</div>)}</div></div>);})()}
+        {(()=>{const checks=[{label:"Website erstellt",done:!!order.website_html},{label:"Logo hochgeladen",done:!!assetUrls.logo,tab:"medien"},{label:"Kontakt vollständig",done:!!(order.telefon&&order.adresse),tab:"website"},{label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien"}];const done=checks.filter(c=>c.done).length;if(done===checks.length)return null;return(<div style={{background:"#fff",borderRadius:T.r,padding:"18px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Erste Schritte</div><div style={{fontSize:".72rem",color:T.textSub,fontWeight:600}}>{done}/{checks.length}</div></div><div style={{display:"flex",flexDirection:"column",gap:6}}>{checks.map((c,i)=><div key={i} onClick={c.tab&&!c.done?()=>setTab(c.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 0",cursor:c.tab&&!c.done?"pointer":"default"}}><div style={{width:18,height:18,borderRadius:"50%",background:c.done?"#16a34a":"#e2e8f0",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".65rem",fontWeight:800,flexShrink:0}}>{c.done?"\u2713":""}</div><span style={{fontSize:".84rem",color:c.done?T.textMuted:T.dark,flex:1}}>{c.label}</span>{c.tab&&!c.done&&<span style={{fontSize:".72rem",color:T.accent,fontWeight:700}}>\u2192</span>}</div>)}</div></div>);})()}
         {/* Grunddaten */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="grunddaten" label="Grunddaten" badge="instant"/>
@@ -1034,7 +1217,7 @@ function Portal({session,onLogout}){
               ))}
             </div>}
             <div style={{marginBottom:16}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Zus\u00e4tzliche Leistungen"}</div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Zusätzliche Leistungen"}</div>
               {(order.extra_leistung?.split("\n")||[]).map((item,i,arr)=>(
                 <div key={i} style={{marginBottom:8,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:`1px solid ${T.bg3}`}}>
@@ -1044,7 +1227,7 @@ function Portal({session,onLogout}){
                   <textarea value={(order.leistungen_beschreibungen||{})[item]||""} onChange={e=>{const m={...(order.leistungen_beschreibungen||{})};m[item]=e.target.value;upOrder("leistungen_beschreibungen")(m);}} placeholder="Kurze Beschreibung (optional)" rows={2} style={{width:"100%",padding:"9px 12px",border:"none",resize:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box",lineHeight:1.5}}/>
                 </div>
               ))}
-              <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzuf\u00fcgen"}</button>
+              <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzufügen"}</button>
             </div>
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="handwerk"&&<><Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent angezeigt"/><Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Meisterbetrieb-Badge"/><Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Vertrauens-Badge"/></>}
             {BRANCHEN.find(b=>b.value===order?.branche)?.gruppe==="kosmetik"&&<><Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="https://booksy.com/..." hint="Optional"/><Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen"/><Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in"/></>}
@@ -1059,11 +1242,11 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="texte" label="Website-Texte" badge="instant"/>
           {editSection==="texte"?(<>
-            <Field label={"\u00dcber uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im \u00dcber-uns Bereich"}/>
+            <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
             <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
             {[0,1,2,3].map(i=><Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>)}
           </>):order.text_ueber_uns!=null?(<>
-            <InfoRow label={"\u00dcber uns"} value={order.text_ueber_uns||"\u2014"}/>
+            <InfoRow label={"Über uns"} value={order.text_ueber_uns||"\u2014"}/>
             <InfoRow label="Vorteile" value={Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).join(" \u00b7 "):"\u2014"}/>
           </>):(
             <div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>
@@ -1177,7 +1360,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"H\u00e4ufige Fragen"}</div>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Häufige Fragen"}</div>
           {[
             {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
             {q:"Kann ich den Text auf meiner Website selbst aendern?",a:"Ja – im Self-Service-Portal koennen Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
@@ -1202,7 +1385,7 @@ function Portal({session,onLogout}){
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Abonnement</div>
-          {[{l:"Paket",v:"SiteReady Standard"},{l:"Preis",v:order?.subscription_plan==="yearly"?"\u20AC183.60 / Jahr (\u20AC15.30/Monat)":"\u20AC18 / Monat"},{l:"Laufzeit",v:order?.subscription_plan==="yearly"?"12 Monate, dann monatlich":"Monatlich kuendbar"},...(order?.created_at?[{l:"Gestartet am",v:new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[]),...(order?.created_at&&order?.subscription_plan==="yearly"?[{l:"Mindestende",v:new Date(new Date(order.created_at).setFullYear(new Date(order.created_at).getFullYear()+1)).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[])].map(({l,v})=>(
+          {[{l:"Paket",v:"SiteReady Standard"},{l:"Preis",v:order?.subscription_plan==="yearly"?"\u20AC183.60 / Jahr (\u20AC15.30/Monat)":"\u20AC18 / Monat"},{l:"Laufzeit",v:order?.subscription_plan==="yearly"?"12 Monate, dann monatlich":"Monatlich kündbar"},...(order?.created_at?[{l:"Gestartet am",v:new Date(order.created_at).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[]),...(order?.created_at&&order?.subscription_plan==="yearly"?[{l:"Mindestende",v:new Date(new Date(order.created_at).setFullYear(new Date(order.created_at).getFullYear()+1)).toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"})}]:[])].map(({l,v})=>(
             <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
               <span style={{fontSize:".88rem",color:T.dark}}>{v}</span>
@@ -1210,9 +1393,9 @@ function Portal({session,onLogout}){
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,flex:"1 1 280px"}}>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Passwort \u00e4ndern"}</div>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Passwort ändern"}</div>
             <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
-            <Field label="Passwort best\u00e4tigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
+            <Field label="Passwort bestätigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
             {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{pwErr}</div>}
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <button onClick={async()=>{
@@ -1230,11 +1413,11 @@ function Portal({session,onLogout}){
             </div>
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,flex:"1 1 280px"}}>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"E-Mail-Adresse \u00e4ndern"}</div>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"E-Mail-Adresse ändern"}</div>
             {emailSent
               ?<div style={{display:"flex",flexDirection:"column",gap:12}}>
-                <div style={{padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)",color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713 Best\u00e4tigungslink gesendet"}</div>
-                <p style={{color:T.textSub,fontSize:".84rem",margin:0,lineHeight:1.6}}>{"Bitte pr\u00fcfen Sie Ihren Posteingang und klicken Sie auf den Best\u00e4tigungslink um die neue E-Mail-Adresse zu aktivieren."}</p>
+                <div style={{padding:"14px 18px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)",color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713 Bestätigungslink gesendet"}</div>
+                <p style={{color:T.textSub,fontSize:".84rem",margin:0,lineHeight:1.6}}>{"Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Bestätigungslink um die neue E-Mail-Adresse zu aktivieren."}</p>
                 <button onClick={()=>setEmailSent(false)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Neue Anfrage</button>
               </div>
               :<>
@@ -1242,14 +1425,14 @@ function Portal({session,onLogout}){
                 {emailErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{emailErr}</div>}
                 <div style={{display:"flex",alignItems:"center",gap:12}}>
                   <button onClick={async()=>{
-                    if(!newEmail||!newEmail.includes("@")){setEmailErr("Bitte g\u00fcltige E-Mail eingeben.");return;}
+                    if(!newEmail||!newEmail.includes("@")){setEmailErr("Bitte gültige E-Mail eingeben.");return;}
                     setEmailSaving(true);setEmailErr("");
                     const{error}=await supabase.auth.updateUser({email:newEmail});
                     setEmailSaving(false);
                     if(error)setEmailErr(error.message);
                     else{setEmailSent(true);setNewEmail("");}
                   }} disabled={emailSaving} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:emailSaving?"#94a3b8":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:emailSaving?"wait":"pointer"}}>
-                    {emailSaving?"...":"Best\u00e4tigungslink senden"}
+                    {emailSaving?"...":"Bestätigungslink senden"}
                   </button>
                 </div>
               </>
@@ -1274,7 +1457,7 @@ function Portal({session,onLogout}){
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                  {busy?"L\u00e4dt...":url?"Ersetzen":"Hochladen"}
+                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
                 </label>
                 {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"\u00d7"}</button>}
@@ -1316,7 +1499,7 @@ function Portal({session,onLogout}){
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                  {busy?"L\u00e4dt...":url?"Ersetzen":"Hochladen"}
+                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
                 </label>
                 {url&&<button onClick={()=>deleteAsset("hero")} disabled={deleting["hero"]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"\u00d7"}</button>}
@@ -1347,7 +1530,7 @@ function Portal({session,onLogout}){
                 </div>
                 <div style={{display:"flex",gap:4}}>
                   <label style={{flex:1,display:"block",textAlign:"center",padding:"7px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
-                    {busy?"L\u00e4dt...":url?"Ersetzen":"Hochladen"}
+                    {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                     <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
                   </label>
                   {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"7px 8px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"\u00d7"}</button>}
@@ -1698,9 +1881,9 @@ function Admin({adminKey}){
   const stuckOrders=orders.filter(o=>o.status==="pending"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenBadge=stuckOrders.length||null;
   const alerts=[];
-  if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht \u2013 keine Generierung möglich!",tab:"system"});
-  else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" \u2013 "+sysStatus.anthropic.error:""),tab:"system"});
-  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h in Generierung \u2013 bitte pruefen`,tab:"system"});
+  if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht – keine Generierung möglich!",tab:"system"});
+  else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" – "+sysStatus.anthropic.error:""),tab:"system"});
+  if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h in Generierung – bitte pruefen`,tab:"system"});
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"sites",label:"Sites",badge:regenBadge},
@@ -1779,7 +1962,7 @@ function Admin({adminKey}){
               <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Trials ablaufend (7 Tage)</div>
                 {expiringTrials.length===0
-                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>{"Kein Trial l\u00e4uft in 7 Tagen ab."}</div>
+                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>{"Kein Trial läuft in 7 Tagen ab."}</div>
                   :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                     {expiringTrials.map((o,i)=>{const tc=o.tl<=2?"#dc2626":o.tl<=4?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
                       <div style={{flex:1,minWidth:0}}>
@@ -1857,7 +2040,7 @@ function Admin({adminKey}){
                 {[{v:"alle",l:"Health: Alle"},{v:"ok",l:"\u2713 Erreichbar"},{v:"err",l:"\u2717 Nicht erreichbar"},{v:"fehler",l:"\u26a0 Fehler"},{v:"aufbau",l:"\u23f3 Aufbau"},{v:"deakt",l:"\u25cb Deaktiviert"}].map(({v,l})=><option key={v} value={v}>{l}</option>)}
               </select>
               <select value={zahlungFilter} onChange={e=>setZahlungFilter(e.target.value)} style={ddStyle}>
-                {[{v:"alle",l:"Zahlung: Alle"},{v:"active",l:"\u2713 Aktiv"},{v:"past_due",l:"\u26a0 Offen"},{v:"canceled",l:"Gek\u00fcndigt"},{v:"trial",l:"Trial"},{v:"kein_abo",l:"Kein Abo"}].map(({v,l})=><option key={v} value={v}>{l}</option>)}
+                {[{v:"alle",l:"Zahlung: Alle"},{v:"active",l:"\u2713 Aktiv"},{v:"past_due",l:"\u26a0 Offen"},{v:"canceled",l:"Gekündigt"},{v:"trial",l:"Trial"},{v:"kein_abo",l:"Kein Abo"}].map(({v,l})=><option key={v} value={v}>{l}</option>)}
               </select>
               <button onClick={exportCSV} disabled={orders.length===0} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:4,opacity:orders.length===0?.5:1}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
@@ -1882,7 +2065,7 @@ function Admin({adminKey}){
               <div>
                 <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Zahlung</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {[{label:"\u2713 Aktiv",c:T.green},{label:"\u26a0 Offen",c:"#d97706"},{label:"\u25cb Gek\u00fcndigt",c:"#64748b"},{label:"Trial",c:"#8b5cf6"},{label:"Kein Abo",c:T.textMuted}].map(({label,c})=>(
+                  {[{label:"\u2713 Aktiv",c:T.green},{label:"\u26a0 Offen",c:"#d97706"},{label:"\u25cb Gekündigt",c:"#64748b"},{label:"Trial",c:"#8b5cf6"},{label:"Kein Abo",c:T.textMuted}].map(({label,c})=>(
                     <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
                   ))}
                 </div>
@@ -1934,7 +2117,7 @@ function Admin({adminKey}){
                           if(["pending","in_arbeit"].includes(o.status))return <span style={{fontSize:".75rem",color:T.textMuted}}>—</span>;
                           return <span style={{padding:"3px 8px",borderRadius:4,background:T.textMuted+"18",color:T.textMuted,fontWeight:700,fontSize:".75rem",border:`1px solid ${T.textMuted}33`}}>Kein Abo</span>;
                         }
-                        const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
+                        const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Offen",c:"#d97706"},canceled:{label:"\u25cb Gekündigt",c:"#64748b"}};
                         const zv=zMap[s]||{label:"Unbekannt",c:T.textMuted};
                         return <span style={{padding:"3px 8px",borderRadius:4,background:zv.c+"18",color:zv.c,fontWeight:700,fontSize:".75rem",border:`1px solid ${zv.c}33`}}>{zv.label}</span>;
                       })()}
@@ -2025,7 +2208,7 @@ function Admin({adminKey}){
               {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
                 <div style={{flex:1}}>
                   <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</div>
-                  <div style={{fontSize:".75rem",color:"#92400e",marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} \u2013 Website noch nicht generiert</div>
+                  <div style={{fontSize:".75rem",color:"#92400e",marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} – Website noch nicht generiert</div>
                 </div>
                 <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
                   {genLoading[o.id]?"Generiert...":"Website generieren"}
@@ -2136,7 +2319,7 @@ function Admin({adminKey}){
           return(<div>
             <div style={{marginBottom:24}}>
               <h2 style={{margin:"0 0 4px",fontSize:"1.2rem",fontWeight:800,color:T.dark}}>Finanzen</h2>
-              <p style={{margin:0,fontSize:".82rem",color:T.textMuted}}>{"Einnahmen, Ausgaben und Abo-Status im \u00dcberblick"}</p>
+              <p style={{margin:0,fontSize:".82rem",color:T.textMuted}}>{"Einnahmen, Ausgaben und Abo-Status im Überblick"}</p>
             </div>
             {/* Top KPIs: Einnahmen | Ausgaben | Netto */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:24}}>
@@ -2407,7 +2590,7 @@ function Admin({adminKey}){
                     const _selExp=sel.trial_expires_at||(sel.created_at?new Date(new Date(sel.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                     const trialLeft=sel.status==="trial"&&_selExp?Math.ceil((new Date(_selExp)-Date.now())/(1000*60*60*24)):null;
                     const planLabel=sel.subscription_plan==="yearly"?"\u20AC183.60 / Jahr":sel.subscription_plan==="monthly"?"\u20AC18 / Monat":null;
-                    const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Zahlung offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
+                    const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Zahlung offen",c:"#d97706"},canceled:{label:"\u25cb Gekündigt",c:"#64748b"}};
                     const zv=sel.stripe_customer_id?(zMap[sel.subscription_status]||{label:"Unbekannt",c:T.textMuted}):null;
                     let zahlungContent;
                     const extendTrial=(days)=>{const base=sel.trial_expires_at?new Date(sel.trial_expires_at):new Date();base.setDate(base.getDate()+days);const iso=base.toISOString();updateOrder(sel.id,{trial_expires_at:iso});setSel(s=>({...s,trial_expires_at:iso}));logActivity(sel.id,"trial_extended",{days});};
@@ -2579,7 +2762,7 @@ function Admin({adminKey}){
                       <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);logActivity(sel.id,"offline");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
                     </div>}
                     {deleteConfirm===sel.id&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
-                      <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung \u2013 unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
+                      <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung – unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
                       <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
                       <div style={{display:"flex",gap:6}}>
                         <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
@@ -2683,10 +2866,10 @@ function Admin({adminKey}){
               const trialDaysLeft=trialExpiry?Math.max(0,Math.ceil((trialExpiry-Date.now())/(1000*60*60*24))):null;
               const genDurationSec=sel.generated_at&&sel.created_at?Math.round((new Date(sel.generated_at)-new Date(sel.created_at))/1000):null;
               const steps=[
-                {key:"pending",label:"Schritt 1 \u2013 Eingang",icon:"📋",detail:"Fragebogen ausgefuellt, Account erstellt, Auftrag eingegangen.",meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
-                {key:"in_arbeit",label:"Schritt 2 \u2013 KI-Generierung",icon:"⚙️",detail:hasHtml?"Website wurde erfolgreich generiert.":st==="in_arbeit"?"Generierung laeuft gerade...":"Noch nicht gestartet.",meta:[hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`],genDurationSec&&["Dauer",`${genDurationSec}s`]].filter(Boolean),error:sel.last_error||null},
-                {key:"trial",label:"Schritt 3 \u2013 Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen \u2013 Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
-                {key:"live",label:"Schritt 4 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"J\u00e4hrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
+                {key:"pending",label:"Schritt 1 – Eingang",icon:"📋",detail:"Fragebogen ausgefuellt, Account erstellt, Auftrag eingegangen.",meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
+                {key:"in_arbeit",label:"Schritt 2 – KI-Generierung",icon:"⚙️",detail:hasHtml?"Website wurde erfolgreich generiert.":st==="in_arbeit"?"Generierung laeuft gerade...":"Noch nicht gestartet.",meta:[hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`],genDurationSec&&["Dauer",`${genDurationSec}s`]].filter(Boolean),error:sel.last_error||null},
+                {key:"trial",label:"Schritt 3 – Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen – Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
+                {key:"live",label:"Schritt 4 – Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"Jährlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
                 {num:5,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},

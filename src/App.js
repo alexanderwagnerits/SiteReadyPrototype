@@ -1463,7 +1463,7 @@ function renderMd(md){
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */
-const STATUS_LABELS={pending:"Eingang",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Live"};
+const STATUS_LABELS={pending:"Eingang",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Offline"};
 const STATUS_COLORS={pending:"#f59e0b",in_arbeit:"#3b82f6",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
 const STATUS_FLOW=["pending","in_arbeit","trial","live"];
 
@@ -1485,8 +1485,6 @@ function Admin({adminKey}){
   const[sysLoading,setSysLoading]=useState(false);
   const[extStatus,setExtStatus]=useState({anthropic:null,cloudflare:null,supabase:null});
   const[notiz,setNotiz]=useState({});
-  const[zahlungInvoices,setZahlungInvoices]=useState({});
-  const[zahlungOpen,setZahlungOpen]=useState(null);
   const[notizSaved,setNotizSaved]=useState({});
   const[genLoading,setGenLoading]=useState({});
   const[genMsg,setGenMsg]=useState({});
@@ -1808,13 +1806,21 @@ function Admin({adminKey}){
               <div>
                 <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Prozess</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {["pending","in_arbeit","trial","live"].map(s=>{const c=STATUS_COLORS[s];return(<span key={s} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{STATUS_LABELS[s]}</span>);})}
+                  {["pending","in_arbeit","trial","live","offline"].map(s=>{const c=STATUS_COLORS[s];return(<span key={s} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{STATUS_LABELS[s]}</span>);})}
                 </div>
               </div>
               <div>
                 <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Health</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
                   {[{label:"\u23f3 Wird aufgebaut",c:"#94a3b8"},{label:"\u2713 Erreichbar",c:T.green},{label:"\u2717 Nicht erreichbar",c:"#dc2626"},{label:"\u26a0 Fehler",c:"#d97706"},{label:"\u25cb Deaktiviert",c:"#64748b"}].map(({label,c})=>(
+                    <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Zahlung</div>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                  {[{label:"\u2713 Aktiv",c:T.green},{label:"\u26a0 Offen",c:"#d97706"},{label:"\u25cb Gek\u00fcndigt",c:"#64748b"},{label:"Trial",c:"#8b5cf6"},{label:"Kein Abo",c:T.textMuted}].map(({label,c})=>(
                     <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
                   ))}
                 </div>
@@ -1838,7 +1844,7 @@ function Admin({adminKey}){
                   const isStuckGen=o.status==="in_arbeit"&&ageMin>15;
                   const hasFailed=!!o.last_error;
                   // Prozess
-                  const procStatus=o.status==="offline"?"live":o.status;
+                  const procStatus=o.status;
                   const procColor=STATUS_COLORS[procStatus]||T.textMuted;
                   const procLabel=STATUS_LABELS[procStatus]||procStatus;
                   // Health
@@ -1847,7 +1853,7 @@ function Admin({adminKey}){
                   const hv=healthMap[healthState];
                   const rowBg=healthState==="err"||healthState==="fehler"?"#fef2f2":isStuckPending||isStuckGen?"#fffbeb":i%2===0?"#fff":"#fafbfc";
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:rowBg}}>
-                    <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer",whiteSpace:"nowrap"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
+                    <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.accent,cursor:"pointer",whiteSpace:"nowrap",textDecoration:"underline",textDecorationColor:T.accent+"55"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <span style={{padding:"3px 8px",borderRadius:4,background:procColor+"18",color:procColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${procColor}33`}}>{procLabel}</span>
@@ -1861,7 +1867,11 @@ function Admin({adminKey}){
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       {(()=>{
                         const s=o.subscription_status;
-                        if(!o.stripe_customer_id)return <span style={{fontSize:".75rem",color:T.textMuted}}>—</span>;
+                        if(!o.stripe_customer_id){
+                          if(o.status==="trial")return <span style={{padding:"3px 8px",borderRadius:4,background:"#8b5cf618",color:"#8b5cf6",fontWeight:700,fontSize:".75rem",border:"1px solid #8b5cf633"}}>Trial</span>;
+                          if(["pending","in_arbeit"].includes(o.status))return <span style={{fontSize:".75rem",color:T.textMuted}}>—</span>;
+                          return <span style={{padding:"3px 8px",borderRadius:4,background:T.textMuted+"18",color:T.textMuted,fontWeight:700,fontSize:".75rem",border:`1px solid ${T.textMuted}33`}}>Kein Abo</span>;
+                        }
                         const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
                         const zv=zMap[s]||{label:"Unbekannt",c:T.textMuted};
                         return <span style={{padding:"3px 8px",borderRadius:4,background:zv.c+"18",color:zv.c,fontWeight:700,fontSize:".75rem",border:`1px solid ${zv.c}33`}}>{zv.label}</span>;

@@ -1102,7 +1102,16 @@ function Portal({session,onLogout}){
 
       {/* Tab: Rechnungen */}
       {tab==="rechnungen"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:20}}>Ihre Rechnungen</div>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Ihre Rechnungen</div>
+          {order?.stripe_customer_id&&<button onClick={async()=>{
+            try{
+              const r=await fetch(`/api/billing-portal?customer_id=${order.stripe_customer_id}&return_url=${encodeURIComponent(window.location.href)}`);
+              const j=await r.json();
+              if(j.url)window.location.href=j.url;
+            }catch(e){}
+          }} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".8rem",fontWeight:700,fontFamily:T.font}}>&#128179; Zahlungsdaten verwalten</button>}
+        </div>
         {invoices==="loading"&&<div style={{color:T.textMuted,fontSize:".9rem"}}>Wird geladen...</div>}
         {Array.isArray(invoices)&&invoices.length===0&&<div style={{color:T.textMuted,fontSize:".9rem"}}>Noch keine Zahlungen vorhanden.</div>}
         {Array.isArray(invoices)&&invoices.length>0&&(<div style={{display:"flex",flexDirection:"column",gap:8}}>
@@ -1476,6 +1485,8 @@ function Admin({adminKey}){
   const[sysLoading,setSysLoading]=useState(false);
   const[extStatus,setExtStatus]=useState({anthropic:null,cloudflare:null,supabase:null});
   const[notiz,setNotiz]=useState({});
+  const[zahlungInvoices,setZahlungInvoices]=useState({});
+  const[zahlungOpen,setZahlungOpen]=useState(null);
   const[notizSaved,setNotizSaved]=useState({});
   const[genLoading,setGenLoading]=useState({});
   const[genMsg,setGenMsg]=useState({});
@@ -1649,6 +1660,7 @@ function Admin({adminKey}){
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"sites",label:"Sites",badge:regenBadge},
+    {id:"zahlungen",label:"Zahlungen"},
     {id:"support",label:"Support"},
     {id:"system",label:"System"},
     {id:"kosten",label:"Kosten"},
@@ -1992,6 +2004,77 @@ function Admin({adminKey}){
             </div>
           </div>}
         </div>)}
+
+        {/* Tab: Zahlungen */}
+        {!loading&&tab==="zahlungen"&&(()=>{
+          const subOrders=orders.filter(o=>o.stripe_customer_id);
+          const activeN=subOrders.filter(o=>o.subscription_status==="active").length;
+          const pastDueN=subOrders.filter(o=>o.subscription_status==="past_due").length;
+          const canceledN=subOrders.filter(o=>o.subscription_status==="canceled").length;
+          const unknownN=subOrders.filter(o=>!o.subscription_status).length;
+          const mrr=subOrders.filter(o=>o.subscription_status==="active").reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
+          const SUB_LABEL={"active":"Aktiv","past_due":"Zahlung offen","canceled":"Gekuendigt"};
+          const SUB_COLOR={"active":T.green,"past_due":"#d97706","canceled":"#64748b"};
+          const loadZahlungInvoices=async(order)=>{
+            if(zahlungInvoices[order.id]||!order.email)return;
+            setZahlungInvoices(z=>({...z,[order.id]:"loading"}));
+            try{
+              const r=await fetch(`/api/get-invoices?email=${encodeURIComponent(order.email)}`);
+              const j=await r.json();
+              setZahlungInvoices(z=>({...z,[order.id]:j.charges||[]}));
+            }catch(e){setZahlungInvoices(z=>({...z,[order.id]:[]}));}
+          };
+          return(<div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+              <div><h2 style={{margin:0,fontSize:"1.2rem",fontWeight:800,color:T.dark}}>Zahlungen</h2><p style={{margin:"4px 0 0",fontSize:".82rem",color:T.textMuted}}>Abo-Status und Zahlungshistorie aller Kunden</p></div>
+            </div>
+            {/* KPIs */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+              {[{label:"MRR (aktiv)",val:`\u20AC${mrr.toFixed(2)}`,c:T.green},{label:"Aktive Abos",val:activeN,c:T.green},{label:"Zahlung offen",val:pastDueN,c:"#d97706"},{label:"Ohne Abo",val:unknownN,c:T.textMuted}].map((k,i)=>(
+                <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${i===2&&pastDueN>0?"#fed7aa":T.bg3}`,boxShadow:T.sh1}}>
+                  <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>{k.label}</div>
+                  <div style={{fontSize:"1.5rem",fontWeight:800,color:k.c,fontFamily:T.mono}}>{k.val}</div>
+                </div>
+              ))}
+            </div>
+            {/* Tabelle */}
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:T.bg}}>{["Firma","E-Mail","Plan","Zahlungsstatus",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <tbody>{orders.map((o,i)=>{
+                  const subColor=SUB_COLOR[o.subscription_status]||T.textMuted;
+                  const subLabel=SUB_LABEL[o.subscription_status]||(o.stripe_customer_id?"Unbekannt":"Kein Abo");
+                  const isOpen=zahlungOpen===o.id;
+                  const invData=zahlungInvoices[o.id];
+                  return(<React.Fragment key={o.id}>
+                    <tr style={{background:i%2===0?"#fff":"#fafbfc",borderBottom:`1px solid ${T.bg3}`}}>
+                      <td style={{padding:"10px 14px",fontSize:".83rem",fontWeight:600,color:T.dark}}>{o.firmenname||"—"}</td>
+                      <td style={{padding:"10px 14px",fontSize:".78rem",color:T.textSub,fontFamily:T.mono}}>{o.email||"—"}</td>
+                      <td style={{padding:"10px 14px",fontSize:".78rem",color:T.textSub}}>{o.subscription_plan==="yearly"?"\u20AC183,60/Jahr":o.subscription_plan==="monthly"?"\u20AC18/Monat":"—"}</td>
+                      <td style={{padding:"10px 14px"}}>{o.stripe_customer_id?<span style={{padding:"2px 10px",borderRadius:20,background:subColor+"18",color:subColor,fontSize:".72rem",fontWeight:700}}>{subLabel}</span>:<span style={{fontSize:".75rem",color:T.textMuted}}>—</span>}</td>
+                      <td style={{padding:"10px 14px",textAlign:"right"}}>
+                        {o.stripe_customer_id&&<button onClick={()=>{const next=isOpen?null:o.id;setZahlungOpen(next);if(next)loadZahlungInvoices(o);}} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>{isOpen?"Schliessen":"Rechnungen"}</button>}
+                      </td>
+                    </tr>
+                    {isOpen&&<tr style={{background:"#f8fafc"}}><td colSpan={5} style={{padding:"12px 20px",borderBottom:`1px solid ${T.bg3}`}}>
+                      {invData==="loading"&&<div style={{fontSize:".8rem",color:T.textMuted}}>Wird geladen...</div>}
+                      {Array.isArray(invData)&&invData.length===0&&<div style={{fontSize:".8rem",color:T.textMuted}}>Keine Rechnungen gefunden.</div>}
+                      {Array.isArray(invData)&&invData.length>0&&<table style={{width:"100%",borderCollapse:"collapse"}}>
+                        <thead><tr>{["Datum","Betrag","Status","Rechnung"].map(h=><th key={h} style={{padding:"6px 10px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".06em"}}>{h}</th>)}</tr></thead>
+                        <tbody>{invData.map(c=><tr key={c.id} style={{borderTop:`1px solid ${T.bg3}`}}>
+                          <td style={{padding:"7px 10px",fontSize:".78rem",color:T.textSub}}>{new Date(c.created*1000).toLocaleDateString("de-AT")}</td>
+                          <td style={{padding:"7px 10px",fontSize:".78rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>\u20AC{(c.amount/100).toFixed(2)}</td>
+                          <td style={{padding:"7px 10px"}}><span style={{padding:"2px 8px",borderRadius:20,background:c.status==="succeeded"?T.green+"18":"#fef2f2",color:c.status==="succeeded"?T.green:"#dc2626",fontSize:".7rem",fontWeight:700}}>{c.status==="succeeded"?"Bezahlt":"Fehlgeschlagen"}</span></td>
+                          <td style={{padding:"7px 10px"}}>{c.receipt_url&&<a href={c.receipt_url} target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:T.accent,textDecoration:"none",fontWeight:600}}>&#128279; Beleg</a>}</td>
+                        </tr>)}</tbody>
+                      </table>}
+                    </td></tr>}
+                  </React.Fragment>);
+                })}</tbody>
+              </table>
+            </div>
+          </div>);
+        })()}
 
         {/* Tab: Kosten */}
         {!loading&&tab==="kosten"&&(()=>{

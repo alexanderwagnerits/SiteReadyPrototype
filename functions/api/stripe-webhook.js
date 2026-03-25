@@ -56,28 +56,54 @@ export async function onRequestPost({request, env}) {
     }
   }
 
-  // invoice.payment_succeeded → erster Zahlungseingang nach Trial → status: live
+  // invoice.payment_succeeded → erster Zahlungseingang nach Trial → status: live + subscription_status: active
   if (event.type === "invoice.payment_succeeded") {
     const invoice = event.data.object;
     const customerId = invoice.customer;
-    // Nur verarbeiten wenn billing_reason = subscription_cycle oder subscription_create (nicht trial)
     if (customerId && sb && sbKey) {
       const order = await findOrderByCustomer(customerId);
-      if (order && order.status === "trial") {
-        await patchOrder(order.id, {status: "live"});
+      if (order) {
+        const patch = {subscription_status: "active"};
+        if (order.status === "trial") patch.status = "live";
+        await patchOrder(order.id, patch);
       }
     }
   }
 
-  // customer.subscription.deleted → Abo gekuendigt/expired → wenn noch trial: nichts tun (cleanup-job macht das)
-  // Wenn live: auf offline setzen
+  // invoice.payment_failed → Zahlung fehlgeschlagen → subscription_status: past_due
+  if (event.type === "invoice.payment_failed") {
+    const invoice = event.data.object;
+    const customerId = invoice.customer;
+    if (customerId && sb && sbKey) {
+      const order = await findOrderByCustomer(customerId);
+      if (order) {
+        await patchOrder(order.id, {subscription_status: "past_due"});
+      }
+    }
+  }
+
+  // customer.subscription.updated → Status synchronisieren (z.B. past_due, unpaid, active)
+  if (event.type === "customer.subscription.updated") {
+    const sub = event.data.object;
+    const customerId = sub.customer;
+    const stripeStatus = sub.status; // active | past_due | unpaid | canceled | trialing
+    if (customerId && sb && sbKey && stripeStatus) {
+      const order = await findOrderByCustomer(customerId);
+      if (order) {
+        const mapped = stripeStatus === "active" ? "active" : stripeStatus === "past_due" || stripeStatus === "unpaid" ? "past_due" : stripeStatus === "canceled" ? "canceled" : null;
+        if (mapped) await patchOrder(order.id, {subscription_status: mapped});
+      }
+    }
+  }
+
+  // customer.subscription.deleted → Abo gekuendigt/expired → wenn live: offline + canceled
   if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object;
     const customerId = sub.customer;
     if (customerId && sb && sbKey) {
       const order = await findOrderByCustomer(customerId);
       if (order && order.status === "live") {
-        await patchOrder(order.id, {status: "offline"});
+        await patchOrder(order.id, {status: "offline", subscription_status: "canceled"});
       }
     }
   }

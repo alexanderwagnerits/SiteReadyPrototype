@@ -1473,7 +1473,7 @@ function Admin({adminKey}){
   const[loading,setLoading]=useState(true);
   const[sysStatus,setSysStatus]=useState(null);
   const[sysLoading,setSysLoading]=useState(false);
-  const[claudeStatus,setClaudeStatus]=useState(null);
+  const[extStatus,setExtStatus]=useState({anthropic:null,cloudflare:null,supabase:null});
   const[notiz,setNotiz]=useState({});
   const[notizSaved,setNotizSaved]=useState({});
   const[genLoading,setGenLoading]=useState({});
@@ -1571,8 +1571,18 @@ function Admin({adminKey}){
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
-  const fetchClaudeStatus=async()=>{try{const r=await fetch("https://status.anthropic.com/api/v2/status.json");const j=await r.json();setClaudeStatus(j||false);}catch(e){setClaudeStatus(false);}};
-  useEffect(()=>{if(tab==="system"){checkSystem();fetchClaudeStatus();const iv=setInterval(()=>{checkSystem();fetchClaudeStatus();},60000);return()=>clearInterval(iv);}},[tab]);
+  const fetchExtStatus=async()=>{
+    const sources=[
+      {key:"anthropic",url:"https://status.anthropic.com/api/v2/status.json"},
+      {key:"cloudflare",url:"https://www.cloudflarestatus.com/api/v2/status.json"},
+      {key:"supabase",url:"https://status.supabase.com/api/v2/status.json"},
+    ];
+    const results=await Promise.allSettled(sources.map(s=>fetch(s.url).then(r=>r.json())));
+    const next={};
+    sources.forEach((s,i)=>{next[s.key]=results[i].status==="fulfilled"?(results[i].value||false):false;});
+    setExtStatus(next);
+  };
+  useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();const iv=setInterval(()=>{checkSystem();fetchExtStatus();},60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
   useEffect(()=>{setEditKunde(null);},[sel]);
@@ -1881,25 +1891,35 @@ function Admin({adminKey}){
               })}
             </div>
           </div>}
-          {/* Claude Status (extern) */}
+          {/* Externer Status */}
           {(()=>{
-            const loaded=claudeStatus!==null;
-            const err=claudeStatus===false;
-            const ind=claudeStatus?.status?.indicator;
-            const indColor=ind==="none"?T.green:ind==="minor"?"#d97706":"#dc2626";
-            const indLabel=ind==="none"?"Alle Systeme betriebsbereit":ind==="minor"?"Kleinere Stoerung":ind==="major"||ind==="critical"?"Stoerung / Ausfall":claudeStatus?.status?.description||"Unbekannt";
-            const borderColor=err||!loaded?"rgba(0,0,0,.08)":ind==="none"?"rgba(22,163,74,.2)":ind==="minor"?"#fde68a":"#fecaca";
-            const dotColor=!loaded?T.textMuted:err?T.textMuted:indColor;
+            const services=[
+              {key:"anthropic",label:"Anthropic / Claude",href:"https://status.anthropic.com"},
+              {key:"cloudflare",label:"Cloudflare",href:"https://www.cloudflarestatus.com"},
+              {key:"supabase",label:"Supabase",href:"https://status.supabase.com"},
+            ];
+            const getColor=ind=>ind==="none"?T.green:ind==="minor"?"#d97706":"#dc2626";
+            const getLabel=ind=>ind==="none"?"Betriebsbereit":ind==="minor"?"Kleinere Stoerung":ind==="major"||ind==="critical"?"Stoerung / Ausfall":"Unbekannt";
             return(<div style={{marginBottom:24}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Claude API Status (extern)"}</div>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${borderColor}`,padding:"14px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12}}>
-                {!loaded&&<div style={{width:10,height:10,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/>}
-                {loaded&&<div style={{width:8,height:8,borderRadius:"50%",background:dotColor,boxShadow:`0 0 0 3px ${dotColor}26`,flexShrink:0}}/>}
-                <div style={{flex:1}}>
-                  <span style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{"Anthropic / Claude"}</span>
-                  <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{!loaded?"Wird geladen...":err?"Nicht erreichbar – direkt pruefen:":indLabel}</span>
-                </div>
-                <a href="https://status.anthropic.com" target="_blank" rel="noreferrer" style={{fontSize:".75rem",color:T.accent,fontWeight:600,textDecoration:"none"}}>{"status.anthropic.com \u2192"}</a>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Externer Service-Status"}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {services.map(({key,label,href})=>{
+                  const st=extStatus[key];
+                  const loading=st===null;
+                  const err=st===false;
+                  const ind=st?.status?.indicator;
+                  const color=loading||err?T.textMuted:getColor(ind);
+                  const borderCol=loading||err?"rgba(0,0,0,.08)":ind==="none"?"rgba(22,163,74,.2)":ind==="minor"?"#fde68a":"#fecaca";
+                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${borderCol}`,padding:"12px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12}}>
+                    {loading?<div style={{width:10,height:10,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/>
+                      :<div style={{width:8,height:8,borderRadius:"50%",background:color,boxShadow:`0 0 0 3px ${color}26`,flexShrink:0}}/>}
+                    <div style={{flex:1}}>
+                      <span style={{fontWeight:700,fontSize:".85rem",color:T.dark}}>{label}</span>
+                      <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{loading?"Wird geladen...":err?"Nicht erreichbar":getLabel(ind)}</span>
+                    </div>
+                    <a href={href} target="_blank" rel="noreferrer" style={{fontSize:".72rem",color:T.accent,fontWeight:600,textDecoration:"none"}}>{"Status \u2192"}</a>
+                  </div>);
+                })}
               </div>
             </div>);
           })()}

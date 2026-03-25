@@ -1498,6 +1498,9 @@ function Admin({adminKey}){
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
   const[showStatusOverride,setShowStatusOverride]=useState(false);
+  const[ticketFormOpen,setTicketFormOpen]=useState(false);
+  const[ticketForm,setTicketForm]=useState({email:"",subject:"",message:""});
+  const[ticketSaving,setTicketSaving]=useState(false);
   const[editKunde,setEditKunde]=useState(null);
   const[docs,setDocs]=useState([]);
   const[docsLoading,setDocsLoading]=useState(false);
@@ -1531,6 +1534,13 @@ function Admin({adminKey}){
     setSel(null);
   };
 
+  const createTicket=async()=>{
+    if(!ticketForm.email||!ticketForm.message)return;
+    setTicketSaving(true);
+    await supabase.from("support_requests").insert({email:ticketForm.email,subject:ticketForm.subject||"Admin-Ticket",message:ticketForm.message,status:"offen"});
+    setTicketSaving(false);setTicketFormOpen(false);setTicketForm({email:"",subject:"",message:""});
+    load();
+  };
   const updateTicket=async(id,fields)=>{
     await fetch(`/api/admin-update?key=${adminKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,table:"support_requests",...fields})});
     setTickets(ts=>ts.map(t=>t.id===id?{...t,...fields}:t));
@@ -1922,7 +1932,34 @@ function Admin({adminKey}){
 
         {/* Tab: Support */}
         {!loading&&tab==="support"&&(<div>
-          <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 20px"}}>Support-Anfragen</h2>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Support-Anfragen</h2>
+            <button onClick={()=>setTicketFormOpen(o=>!o)} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:ticketFormOpen?T.dark:"#fff",color:ticketFormOpen?"#fff":T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Ticket erstellen</button>
+          </div>
+          {ticketFormOpen&&<div style={{marginBottom:16,padding:"16px 20px",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>Manuelles Ticket</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              <div style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8}}>
+                <label style={{fontSize:".82rem",fontWeight:600,color:T.textMuted}}>E-Mail</label>
+                <div style={{display:"flex",gap:6}}>
+                  <input value={ticketForm.email} onChange={e=>setTicketForm(f=>({...f,email:e.target.value}))} placeholder="kunde@firma.at" list="ticket-email-list" style={{flex:1,padding:"7px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}/>
+                  <datalist id="ticket-email-list">{orders.filter(o=>o.email).map(o=><option key={o.id} value={o.email}>{o.firmenname}</option>)}</datalist>
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8}}>
+                <label style={{fontSize:".82rem",fontWeight:600,color:T.textMuted}}>Betreff</label>
+                <input value={ticketForm.subject} onChange={e=>setTicketForm(f=>({...f,subject:e.target.value}))} placeholder="z.B. Telefonat 25.03." style={{padding:"7px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"flex-start",gap:8}}>
+                <label style={{fontSize:".82rem",fontWeight:600,color:T.textMuted,paddingTop:8}}>Nachricht</label>
+                <textarea value={ticketForm.message} onChange={e=>setTicketForm(f=>({...f,message:e.target.value}))} placeholder="Was wurde besprochen / gemeldet?" rows={3} style={{padding:"7px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff",resize:"vertical",boxSizing:"border-box"}}/>
+              </div>
+              <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                <button onClick={()=>{setTicketFormOpen(false);setTicketForm({email:"",subject:"",message:""}); }} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                <button onClick={createTicket} disabled={ticketSaving||!ticketForm.email||!ticketForm.message} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:ticketSaving||!ticketForm.email||!ticketForm.message?"#94a3b8":T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{ticketSaving?"Speichert...":"Ticket erstellen"}</button>
+              </div>
+            </div>
+          </div>}
           {tickets.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Support-Anfragen.</div>:
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {tickets.map(t=><div key={t.id} style={{background:"#fff",borderRadius:T.r,padding:"18px 22px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2341,11 +2378,14 @@ function Admin({adminKey}){
                     const zMap={active:{label:"\u2713 Aktiv",c:T.green},past_due:{label:"\u26a0 Zahlung offen",c:"#d97706"},canceled:{label:"\u25cb Gek\u00fcndigt",c:"#64748b"}};
                     const zv=sel.stripe_customer_id?(zMap[sel.subscription_status]||{label:"Unbekannt",c:T.textMuted}):null;
                     let zahlungContent;
+                    const extendTrial=(days)=>{const base=sel.trial_expires_at?new Date(sel.trial_expires_at):new Date();base.setDate(base.getDate()+days);const iso=base.toISOString();updateOrder(sel.id,{trial_expires_at:iso});setSel(s=>({...s,trial_expires_at:iso}));};
                     if(sel.status==="trial"){
                       zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                         <span style={{padding:"2px 8px",borderRadius:4,background:"#8b5cf622",color:"#8b5cf6",fontWeight:700,fontSize:".75rem"}}>Testphase</span>
                         <span style={{fontSize:".78rem",color:trialLeft!==null&&trialLeft<=2?"#dc2626":"#6b7280",fontWeight:600}}>{trialLeft!==null?(trialLeft>0?`${trialLeft} Tag(e) verbleibend`:"Abgelaufen"):"—"}</span>
                         {planLabel&&<span style={{fontSize:".72rem",color:T.textMuted}}>{planLabel}</span>}
+                        <button onClick={()=>extendTrial(7)} style={{padding:"1px 7px",border:`1px solid #8b5cf6`,borderRadius:4,background:"#fff",color:"#8b5cf6",cursor:"pointer",fontSize:".68rem",fontWeight:700,fontFamily:T.font}}>+7d</button>
+                        <button onClick={()=>extendTrial(14)} style={{padding:"1px 7px",border:`1px solid #8b5cf6`,borderRadius:4,background:"#fff",color:"#8b5cf6",cursor:"pointer",fontSize:".68rem",fontWeight:700,fontFamily:T.font}}>+14d</button>
                       </span>;
                     } else if(zv){
                       zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
@@ -2368,70 +2408,89 @@ function Admin({adminKey}){
                       {(l==="E-Mail"||l==="Subdomain")&&<CopyBtn k={l} v={v}/>}
                     </span>
                   </div>:null)}
-                  {/* Health Details */}
-                  {(selHInfo||selCheckedAt)&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
-                    <span style={{color:T.textMuted,fontWeight:600}}>Health-Check</span>
-                    <span style={{display:"flex",flexDirection:"column",gap:2}}>
-                      {selHInfo&&<span style={{color:selHInfo.c,fontWeight:600,fontSize:".78rem"}}>{selHInfo.label}{selMs?<span style={{fontWeight:400,color:T.textMuted,fontFamily:T.mono}}> &middot; {selMs}ms</span>:null}</span>}
-                      {selCheckedAt&&<span style={{fontSize:".72rem",color:T.textMuted}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</span>}
-                      <button onClick={()=>checkHealth(sel)} style={{marginTop:2,padding:"2px 8px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".7rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Jetzt pruefen</button>
-                    </span>
-                  </div>}
-                  {/* Externe Links */}
-                  <div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",fontSize:".83rem"}}>
-                    <span style={{color:T.textMuted,fontWeight:600}}>Links</span>
-                    <span style={{display:"flex",flexDirection:"column",gap:4}}>
-                      {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}><CopyBtn k="stripe_id" v={sel.stripe_customer_id}/>Stripe Kunde</a>}
-                      <a href="https://supabase.com/dashboard/project/brulvtqeazkgcxkimdve/editor" target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:"#0ea5e9",fontWeight:600,textDecoration:"none"}}>Supabase Tabelle</a>
-                      {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:T.green,fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}><CopyBtn k="url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/>Website oeffnen</a>}
-                    </span>
-                  </div>
                 </div>
               }
             </div>
-            {/* Mittlere Spalte: Website-Aktionen */}
-            <div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`}}>
-              {/* Website */}
-              <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Website</div>
-                {sel.website_html&&sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:".82rem",color:T.green,fontWeight:600,marginBottom:12,textDecoration:"none"}}>&#128279; /s/{sel.subdomain}</a>}
-                <div>
-                  {sel.website_html
-                    ?regenConfirm===sel.id
-                      ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                      :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}</button>
-                    :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"\u2728 Website generieren"}</button>
-                  }
-                </div>
-                {regenConfirm===sel.id&&<div style={{marginTop:8,background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
-                  <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird überschrieben. "NEU" eintippen:</div>
-                  <div style={{display:"flex",gap:6}}>
-                    <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                    <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
+            {/* Mittlere Spalte: Aktionen */}
+            {(()=>{
+              const cardTitle=(label)=><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
+              const card=(children)=><div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
+              return(<div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`,display:"flex",flexDirection:"column",gap:12}}>
+                {/* Website */}
+                {card(<>
+                  {cardTitle("Website")}
+                  {sel.website_html&&sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:".82rem",color:T.green,fontWeight:600,marginBottom:12,textDecoration:"none"}}>&#128279; /s/{sel.subdomain}</a>}
+                  <div>
+                    {sel.website_html
+                      ?regenConfirm===sel.id
+                        ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                        :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}</button>
+                      :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"\u2728 Website generieren"}</button>
+                    }
                   </div>
-                </div>}
-                {genMsg[sel.id]&&<div style={{marginTop:8,fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
-                {(()=>{const ready=sel.status==="review"&&!!sel.website_html;return(<button onClick={ready?()=>updateOrder(sel.id,{status:"live"}):undefined} disabled={!ready} style={{marginTop:8,padding:"10px 16px",border:"none",borderRadius:T.rSm,background:ready?T.green:"#e2e8f0",color:ready?"#fff":"#94a3b8",cursor:ready?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:T.font,width:"100%",transition:"background .2s"}}>&#128640; {sel.status==="live"?"Bereits live":ready?"Live setzen":"Live setzen (noch nicht bereit)"}</button>);})()}
-                <div style={{display:"flex",gap:8,marginTop:8}}>
-                  {sel.status==="offline"
-                    ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128994; Wieder online</button>
-                    :<button onClick={()=>updateOrder(sel.id,{status:"offline"})} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128683; Offline nehmen</button>
-                  }
-                  {deleteConfirm===sel.id
-                    ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                    :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden löschen</button>
-                  }
-                </div>
-                {deleteConfirm===sel.id&&<div style={{marginTop:8,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
-                  <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung – unwiderruflich:</strong> Es werden gelöscht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
-                  <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestätigung "LÖSCHEN" eintippen:</div>
-                  <div style={{display:"flex",gap:6}}>
-                    <input id="del-confirm-input" autoFocus placeholder="LÖSCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                    <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LÖSCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Löschen</button>
+                  {regenConfirm===sel.id&&<div style={{marginTop:8,background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
+                    <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben. "NEU" eintippen:</div>
+                    <div style={{display:"flex",gap:6}}>
+                      <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+                      <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
+                    </div>
+                  </div>}
+                  {genMsg[sel.id]&&<div style={{marginTop:8,fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
+                  {sel.website_html&&<button onClick={()=>{const b=new Blob([sel.website_html],{type:"text/html"});const u=URL.createObjectURL(b);window.open(u,"_blank");}} style={{marginTop:8,padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>HTML anzeigen</button>}
+                  <div style={{display:"flex",gap:8,marginTop:8}}>
+                    {sel.status==="offline"
+                      ?<button onClick={()=>updateOrder(sel.id,{status:"live"})} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128994; Wieder online</button>
+                      :<button onClick={()=>updateOrder(sel.id,{status:"offline"})} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128683; Offline nehmen</button>
+                    }
+                    {deleteConfirm===sel.id
+                      ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                      :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>&#128465; Kunden loeschen</button>
+                    }
                   </div>
-                </div>}
-              </div>
-            </div>
+                  {deleteConfirm===sel.id&&<div style={{marginTop:8,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
+                    <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung \u2013 unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
+                    <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
+                    <div style={{display:"flex",gap:6}}>
+                      <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+                      <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
+                    </div>
+                  </div>}
+                </>)}
+                {/* Health */}
+                {card(<>
+                  {cardTitle("Health-Check")}
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    {selHInfo
+                      ?<span style={{color:selHInfo.c,fontWeight:700,fontSize:".85rem"}}>{selHInfo.label}{selMs?<span style={{fontWeight:400,color:T.textMuted,fontFamily:T.mono,fontSize:".78rem"}}> &middot; {selMs}ms</span>:null}</span>
+                      :<span style={{fontSize:".82rem",color:T.textMuted}}>Noch nicht geprueft</span>
+                    }
+                    {selCheckedAt&&<span style={{fontSize:".72rem",color:T.textMuted}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</span>}
+                    <button onClick={()=>checkHealth(sel)} style={{marginTop:2,padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Jetzt pruefen</button>
+                  </div>
+                </>)}
+                {/* Links */}
+                {card(<>
+                  {cardTitle("Links")}
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:T.green,fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128279; Website<CopyBtn k="url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/></a>}
+                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>&#128179; Stripe<CopyBtn k="stripe_id" v={sel.stripe_customer_id}/></a>}
+                    <a href="https://supabase.com/dashboard/project/brulvtqeazkgcxkimdve/editor" target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#0ea5e9",fontWeight:600,textDecoration:"none"}}>&#128196; Supabase</a>
+                  </div>
+                </>)}
+                {/* Notfall Status */}
+                {card(<>
+                  <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                    <span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Notfall: Status setzen</span>
+                    <span style={{fontSize:".65rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>&#9660;</span>
+                  </button>
+                  {showStatusOverride&&<div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:6}}>
+                    {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
+                      <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?" \u2713":""}</button>
+                    ))}
+                  </div>}
+                </>)}
+              </div>);
+            })()}
             {/* Rechte Spalte: Notiz + Status */}
             <div style={{padding:"20px 24px"}}>
               {/* Interne Notiz */}
@@ -2444,6 +2503,25 @@ function Admin({adminKey}){
                 </div>
                 <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={6} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
               </div>
+              {/* Tickets dieses Kunden */}
+              {(()=>{
+                const selTickets=tickets.filter(t=>t.email&&sel.email&&t.email.toLowerCase()===sel.email.toLowerCase());
+                if(selTickets.length===0)return null;
+                return(<div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Support-Tickets ({selTickets.length})</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {selTickets.map(t=><div key={t.id} style={{padding:"10px 12px",background:"#fff",borderRadius:T.rSm,border:`1px solid ${t.status==="offen"?"#fde68a":T.bg3}`}}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,gap:8}}>
+                        <span style={{fontWeight:700,fontSize:".78rem",color:T.dark,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</span>
+                        <span style={{padding:"1px 7px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".65rem",fontWeight:700,flexShrink:0}}>{t.status==="offen"?"Offen":"Erledigt"}</span>
+                      </div>
+                      <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:6}}>{fmtDate(t.created_at)}</div>
+                      <p style={{margin:0,fontSize:".75rem",color:T.textSub,lineHeight:1.5}}>{t.message}</p>
+                      {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"}).then(()=>setTickets(ts=>ts.map(x=>x.id===t.id?{...x,status:"beantwortet"}:x)))} style={{marginTop:6,padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".68rem",fontWeight:600,fontFamily:T.font}}>Als beantwortet markieren</button>}
+                    </div>)}
+                  </div>
+                </div>);
+              })()}
             </div>
           </div>
           {/* Prozess-Details aufklappbar */}
@@ -2517,15 +2595,6 @@ function Admin({adminKey}){
                     </div>
                   </div>
                 ))}
-                {/* Notfall-Override */}
-                <div style={{marginTop:24,borderTop:`1px solid ${T.bg3}`,paddingTop:16}}>
-                  <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",fontSize:".72rem",color:T.textMuted,fontFamily:T.font,padding:0,fontWeight:600}}>&#9881; Notfall: Status manuell setzen</button>
-                  {showStatusOverride&&<div style={{marginTop:8,display:"flex",flexWrap:"wrap",gap:6}}>
-                    {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
-                      <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?" ✓":""}</button>
-                    ))}
-                  </div>}
-                </div>
               </div>);
             })()}
           </div>

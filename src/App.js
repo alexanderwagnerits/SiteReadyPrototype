@@ -2443,11 +2443,12 @@ function Admin({adminKey}){
                 </div>
               }
             </div>
-            {/* Mittlere Spalte: Aktionen */}
+            {/* Mittlere Spalte: Infos oben, Kritisches unten */}
             {(()=>{
               const cardTitle=(label)=><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
               const card=(children)=><div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               return(<div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`,display:"flex",flexDirection:"column",gap:12}}>
+                {/* --- INFOS --- */}
                 {/* 1. Links */}
                 {card(<>
                   {cardTitle("Links")}
@@ -2503,6 +2504,10 @@ function Admin({adminKey}){
                       <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Subdomain & Stil</div>
                       {!editing&&<button onClick={()=>setsc({editing:true})} title="Bearbeiten" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 5px",color:T.textMuted,fontSize:".9rem",lineHeight:1}}>{"\u270f"}</button>}
                     </div>
+                    <div style={{marginBottom:8,display:"flex",alignItems:"center",gap:5,padding:"6px 8px",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:T.rSm}}>
+                      <span style={{fontSize:".78rem",flexShrink:0}}>{"\u26a0\ufe0f"}</span>
+                      <span style={{fontSize:".72rem",color:"#92400e",lineHeight:1.4}}>Aenderungen erfordern Website-Neugenerierung</span>
+                    </div>
                     {!editing
                       ?<div style={{display:"flex",flexDirection:"column",gap:6}}>
                           <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
@@ -2512,10 +2517,6 @@ function Admin({adminKey}){
                           <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
                             <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
                             <span style={{color:T.dark}}>{STYLES_MAP[sel.stil||"professional"]?.label||sel.stil||"Professional"}</span>
-                          </div>
-                          <div style={{marginTop:4,display:"flex",alignItems:"center",gap:5,padding:"6px 8px",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:T.rSm}}>
-                            <span style={{fontSize:".78rem",flexShrink:0}}>{"\u26a0\ufe0f"}</span>
-                            <span style={{fontSize:".72rem",color:"#92400e",lineHeight:1.4}}>Aenderungen erfordern Website-Neugenerierung</span>
                           </div>
                         </div>
                       :<div style={{display:"flex",flexDirection:"column",gap:8}}>
@@ -2538,6 +2539,8 @@ function Admin({adminKey}){
                     }
                   </>);
                 })())}
+                {/* --- KRITISCHE PROZESSE --- */}
+                <div style={{borderTop:`1px solid ${T.bg3}`,paddingTop:4}}/>
                 {/* 4. Aktionen */}
                 {card(<>
                   {cardTitle("Aktionen")}
@@ -2551,14 +2554,11 @@ function Admin({adminKey}){
                       }
                     </div>
                     {regenConfirm===sel.id&&<div style={{background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
-                      <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben. "NEU" eintippen:</div>
-                      <div style={{display:"flex",gap:6}}>
-                        <input id="regen-confirm-input" autoFocus placeholder="NEU" style={{flex:1,padding:"7px 10px",border:"2px solid #fdba74",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                        <button onClick={()=>{const v=document.getElementById("regen-confirm-input")?.value||"";if(v==="NEU"){setRegenConfirm(null);generateWebsite(sel.id);}}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Generieren</button>
-                      </div>
+                      <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben.</div>
+                      <button onClick={()=>{setRegenConfirm(null);generateWebsite(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Neu generieren</button>
                     </div>}
                     {genMsg[sel.id]&&<div style={{fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
-                    {sel.website_html&&<button onClick={()=>{const b=new Blob([sel.website_html],{type:"text/html"});const u=URL.createObjectURL(b);window.open(u,"_blank");}} style={{padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>HTML anzeigen</button>}
+                    {sel.website_html&&<button onClick={()=>{const w=window.open("","_blank");if(w){w.document.open();w.document.write(sel.website_html);w.document.close();}}} style={{padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>HTML anzeigen</button>}
                     <div style={{display:"flex",gap:8}}>
                       {sel.status==="offline"
                         ?<button onClick={()=>{updateOrder(sel.id,{status:"live"});logActivity(sel.id,"online");}} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Wieder online</button>
@@ -2658,6 +2658,14 @@ function Admin({adminKey}){
                         ))}
                       </div>
                 }
+              </div>
+              {/* Backup (Platzhalter) */}
+              <div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Backup</div>
+                  <span style={{padding:"2px 8px",borderRadius:20,background:"#f1f5f9",color:T.textMuted,fontSize:".65rem",fontWeight:700}}>Kommt bald</span>
+                </div>
+                <div style={{marginTop:8,fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>Website-Backups und Wiederherstellung werden hier verfuegbar sein.</div>
               </div>
             </div>
           </div>

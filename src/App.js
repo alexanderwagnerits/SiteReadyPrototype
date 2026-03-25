@@ -1784,23 +1784,18 @@ function Admin({adminKey}){
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
               </button>
             </div>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12,alignItems:"center"}}>
               {[
-                {s:"pending",desc:"Formular abgeschickt"},
-                {s:"in_arbeit",desc:"Website wird generiert"},
-                {s:"trial",desc:"Testphase"},
-                {s:"live",desc:"Abo aktiv"},
-                {s:"offline",desc:"Deaktiviert"},
-              ].map(({s,desc})=><div key={s} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:"#fff",border:`1px solid ${T.bg3}`}}>
-                <div style={{width:6,height:6,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0}}/>
-                <span style={{fontSize:".7rem",fontWeight:700,color:T.dark}}>{STATUS_LABELS[s]}</span>
-                <span style={{fontSize:".68rem",color:T.textMuted}}>{desc}</span>
-              </div>)}
-              <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:"#fff",border:`1px solid ${STATUS_COLORS.live}33`}}>
-                <div style={{width:6,height:6,borderRadius:"50%",background:STATUS_COLORS.live,flexShrink:0}}/>
-                <span style={{fontSize:".7rem",fontWeight:700,color:STATUS_COLORS.live}}>{"Live \u2717"}</span>
-                <span style={{fontSize:".68rem",color:T.textMuted}}>nicht erreichbar</span>
-              </div>
+                {s:"pending",label:STATUS_LABELS.pending,desc:"Formular abgeschickt"},
+                {s:"in_arbeit",label:STATUS_LABELS.in_arbeit,desc:"Website wird generiert"},
+                {s:"trial",label:STATUS_LABELS.trial,desc:"Testphase"},
+                {s:"live",label:"Live \u2713",desc:"Abo aktiv, erreichbar"},
+                {s:"live",label:"Live \u2717",desc:"nicht erreichbar",override:"#dc2626"},
+                {s:"offline",label:STATUS_LABELS.offline,desc:"Deaktiviert"},
+              ].map(({s,label,desc,override},i)=>{const c=override||STATUS_COLORS[s];return(<div key={i} style={{display:"flex",alignItems:"center",gap:5}}>
+                <span style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
+                <span style={{fontSize:".67rem",color:T.textMuted}}>{desc}</span>
+              </div>);})}
             </div>
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>

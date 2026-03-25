@@ -2041,22 +2041,22 @@ function Admin({adminKey}){
           return(<div>
             <div style={{marginBottom:24}}>
               <h2 style={{margin:"0 0 4px",fontSize:"1.2rem",fontWeight:800,color:T.dark}}>Finanzen</h2>
-              <p style={{margin:0,fontSize:".82rem",color:T.textMuted}}>Einnahmen, Ausgaben und Abo-Status im \u00dcberblick</p>
+              <p style={{margin:0,fontSize:".82rem",color:T.textMuted}}>{"Einnahmen, Ausgaben und Abo-Status im \u00dcberblick"}</p>
             </div>
             {/* Top KPIs: Einnahmen | Ausgaben | Netto */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:24}}>
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Einnahmen (MRR)</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:T.green,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>\u20AC{mrr.toFixed(2)}</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:T.green,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{mrr.toFixed(2)}</div>
                 <div style={{marginTop:10,display:"flex",gap:12,flexWrap:"wrap"}}>
                   <span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:T.green}}>{activeOrders.length}</span> aktive Abos</span>
                   {trialN>0&&<span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:"#8b5cf6"}}>{trialN}</span> in Trial</span>}
-                  {pastDueN>0&&<span style={{fontSize:".75rem",color:"#d97706",fontWeight:700}}>\u26a0 {pastDueN} Zahlung offen</span>}
+                  {pastDueN>0&&<span style={{fontSize:".75rem",color:"#d97706",fontWeight:700}}>{"\u26a0"} {pastDueN} Zahlung offen</span>}
                 </div>
               </div>
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Ausgaben / Mo</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>\u20AC{ausgaben.toFixed(2)}</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{ausgaben.toFixed(2)}</div>
                 <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
                   {[["Stripe",`\u20AC${stripeFee.toFixed(2)}`],["Claude API",`\u20AC${claudeCostMo.toFixed(3)}`],["Domain","\u20AC0,83"],["Cloudflare / Supabase","\u20AC0"]].map(([l,v])=>(
                     <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".73rem",color:T.textMuted}}>
@@ -2067,7 +2067,7 @@ function Admin({adminKey}){
               </div>
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`2px solid ${netto>=0?T.green+"44":"#fca5a5"}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Netto / Mo</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:netto>=0?T.green:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>\u20AC{netto.toFixed(2)}</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:netto>=0?T.green:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{netto.toFixed(2)}</div>
                 <div style={{marginTop:10,fontSize:".73rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten + Domain</div>
               </div>
             </div>

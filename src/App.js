@@ -1456,7 +1456,7 @@ function renderMd(md){
 /* ═══ ADMIN DASHBOARD ═══ */
 const STATUS_LABELS={pending:"Eingang",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Live"};
 const STATUS_COLORS={pending:"#f59e0b",in_arbeit:"#3b82f6",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
-const STATUS_FLOW=["pending","trial","live"];
+const STATUS_FLOW=["pending","in_arbeit","trial","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
 
@@ -2226,20 +2226,35 @@ function Admin({adminKey}){
       </div>
 
       {/* Detail Drawer */}
-      {sel&&(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-        <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:980,maxHeight:"90vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
+      {sel&&(()=>{
+        const selAgeMin=(Date.now()-new Date(sel.created_at).getTime())/(1000*60);
+        const selStuckPending=sel.status==="pending"&&selAgeMin>120;
+        const selStuckGen=sel.status==="in_arbeit"&&selAgeMin>15;
+        const selHasFailed=!!sel.last_error;
+        const selHealth=health[sel.id];
+        const selHealthMap={checking:{label:"...",c:T.textMuted},ok:{label:"\u2713 Erreichbar",c:T.green},error:{label:"\u2717 Nicht erreichbar",c:"#dc2626"}};
+        const selHInfo=selHealth&&selHealthMap[selHealth];
+        return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+        <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:1280,maxHeight:"96vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
           {/* Modal Header */}
-          <div style={{padding:"20px 28px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#fff",zIndex:1,borderRadius:"12px 12px 0 0"}}>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div style={{padding:"16px 24px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#fff",zIndex:1,borderRadius:"12px 12px 0 0"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
               <h3 style={{margin:0,fontSize:"1.1rem",fontWeight:800,color:T.dark}}>{sel.firmenname||"—"}</h3>
               <StatusBadge status={sel.status}/>
+              {selHInfo&&<span style={{padding:"2px 8px",borderRadius:20,background:selHInfo.c+"18",color:selHInfo.c,fontSize:".7rem",fontWeight:700}}>{selHInfo.label}</span>}
+              {(selStuckPending||selStuckGen)&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fff7ed",color:"#92400e",fontSize:".7rem",fontWeight:700}}>&#9888; {selStuckPending?"Eingang >2h":"Generierung >15min"}</span>}
+              {selHasFailed&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fef2f2",color:"#991b1b",fontSize:".7rem",fontWeight:700}}>&#9888; Fehler</span>}
             </div>
-            <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {(selStuckPending||selStuckGen||selHasFailed)&&<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":selHasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"...":selHasFailed?"Retry":"Neu starten"}</button>}
+              <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
+            </div>
           </div>
-          {/* Zwei Spalten */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
+          {selHasFailed&&<div style={{margin:"0 24px",marginTop:12,padding:"10px 14px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".78rem",color:"#991b1b",fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}><strong style={{fontFamily:T.font}}>Letzter Fehler: </strong>{sel.last_error}</div>}
+          {/* Drei Spalten */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:0}}>
             {/* Linke Spalte: Infos */}
-            <div style={{padding:28,borderRight:`1px solid ${T.bg3}`}}>
+            <div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
                 {!editKunde
@@ -2287,8 +2302,8 @@ function Admin({adminKey}){
                 </div>
               }
             </div>
-            {/* Rechte Spalte: Website-Aktionen */}
-            <div style={{padding:28}}>
+            {/* Mittlere Spalte: Website-Aktionen */}
+            <div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`}}>
               {/* Website */}
               <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Website</div>
@@ -2329,15 +2344,27 @@ function Admin({adminKey}){
                   </div>
                 </div>}
               </div>
+            </div>
+            {/* Rechte Spalte: Notiz + Status */}
+            <div style={{padding:"20px 24px"}}>
+              {/* Status manuell setzen */}
+              <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,marginBottom:16}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Status setzen</div>
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
+                    <button key={s} onClick={sel.status!==s?()=>updateOrder(sel.id,{status:s}):undefined} disabled={sel.status===s} style={{padding:"7px 12px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,textAlign:"left",transition:"all .15s"}}>{label}{sel.status===s?" ✓":""}</button>
+                  ))}
+                </div>
+              </div>
               {/* Interne Notiz */}
-              <div style={{marginTop:16,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+              <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                   <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
                   <button onClick={()=>saveNotiz(sel.id)} title="Speichern" style={{background:"none",border:"none",cursor:"pointer",padding:4,color:notizSaved[sel.id]?T.green:T.textMuted,fontSize:"1rem",lineHeight:1}}>
                     {notizSaved[sel.id]?"✓":"✏️"}
                   </button>
                 </div>
-                <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufügen..." rows={3} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
+                <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={6} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
               </div>
             </div>
           </div>
@@ -2353,10 +2380,12 @@ function Admin({adminKey}){
               const hasHtml=!!sel.website_html;
               const trialExpiry=sel.trial_expires_at?new Date(sel.trial_expires_at):null;
               const trialDaysLeft=trialExpiry?Math.max(0,Math.ceil((trialExpiry-Date.now())/(1000*60*60*24))):null;
+              const genDurationSec=sel.generated_at&&sel.created_at?Math.round((new Date(sel.generated_at)-new Date(sel.created_at))/1000):null;
               const steps=[
-                {key:"pending",label:"Schritt 1 \u2013 Formular & Generierung",icon:"📋",detail:`Fragebogen ausgefuellt, Account erstellt, Website-Generierung automatisch gestartet.`,meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`]].filter(Boolean),error:sel.last_error||null},
-                {key:"trial",label:"Schritt 2 \u2013 Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen \u2013 Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
-                {key:"live",label:"Schritt 3 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"J\u00e4hrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
+                {key:"pending",label:"Schritt 1 \u2013 Eingang",icon:"📋",detail:"Fragebogen ausgefuellt, Account erstellt, Auftrag eingegangen.",meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
+                {key:"in_arbeit",label:"Schritt 2 \u2013 KI-Generierung",icon:"⚙️",detail:hasHtml?"Website wurde erfolgreich generiert.":st==="in_arbeit"?"Generierung laeuft gerade...":"Noch nicht gestartet.",meta:[hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`],genDurationSec&&["Dauer",`${genDurationSec}s`]].filter(Boolean),error:sel.last_error||null},
+                {key:"trial",label:"Schritt 3 \u2013 Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen \u2013 Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
+                {key:"live",label:"Schritt 4 \u2013 Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"J\u00e4hrlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];
               const futureSteps=[
                 {num:6,label:"Subdomain indexieren",icon:"🔍",optional:false,detail:"noindex-Tag entfernen – Google kann die Website auf der siteready.at-Subdomain indexieren. Wird nach Abschluss der Prototyp-Phase aktiviert."},
@@ -2414,7 +2443,8 @@ function Admin({adminKey}){
             })()}
           </div>
         </div>
-      </div>)}
+      </div>);
+      })()}
     </div>
   </div>);
 }

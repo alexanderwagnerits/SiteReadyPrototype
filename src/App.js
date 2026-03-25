@@ -1767,6 +1767,22 @@ function Admin({adminKey}){
           const ALL_STATUS=["pending","trial","live","offline"];
           const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
+              {[
+                {s:"pending",desc:"Formular abgeschickt, Website wird erstellt"},
+                {s:"trial",desc:"Website live, Testphase laeuft"},
+                {s:"live",desc:"Abo aktiv, Website erreichbar"},
+                {s:"offline",desc:"Manuell deaktiviert"},
+              ].map(({s,desc})=><div key={s} style={{display:"flex",alignItems:"center",gap:7,padding:"7px 12px",borderRadius:T.rSm,background:"#fff",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{width:7,height:7,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0}}/>
+                <span style={{fontSize:".75rem",fontWeight:700,color:T.dark}}>{STATUS_LABELS[s]}</span>
+                <span style={{fontSize:".72rem",color:T.textMuted}}>{desc}</span>
+              </div>)}
+              <div style={{display:"flex",alignItems:"center",gap:7,padding:"7px 12px",borderRadius:T.rSm,background:"#fef2f2",border:"1px solid #fecaca"}}>
+                <span style={{fontSize:".75rem",fontWeight:700,color:"#dc2626"}}>{"Live \u2717"}</span>
+                <span style={{fontSize:".72rem",color:T.textMuted}}>Abo aktiv, aber Website nicht erreichbar</span>
+              </div>
+            </div>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Sites</h2>
               <div style={{position:"relative"}}>

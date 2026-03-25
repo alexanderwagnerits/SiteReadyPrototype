@@ -1576,9 +1576,10 @@ function Admin({adminKey}){
       {key:"anthropic",url:"https://status.anthropic.com/api/v2/status.json"},
       {key:"cloudflare",url:"https://www.cloudflarestatus.com/api/v2/status.json"},
       {key:"supabase",url:"https://status.supabase.com/api/v2/status.json"},
+      {key:"stripe",url:"https://www.stripestatus.com/api/v2/status.json"},
     ];
     const results=await Promise.allSettled(sources.map(s=>fetch(s.url).then(r=>r.json())));
-    const next={};
+    const next={anthropic:null,cloudflare:null,supabase:null,stripe:null};
     sources.forEach((s,i)=>{next[s.key]=results[i].status==="fulfilled"?(results[i].value||false):false;});
     setExtStatus(next);
   };
@@ -1866,60 +1867,70 @@ function Admin({adminKey}){
               </div>)}
             </div>
           </div>}
-          {/* API Status */}
-          {(!sysStatus&&sysLoading)&&<div style={{color:T.textMuted,padding:"40px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,marginBottom:16}}>Verbindungen werden geprüft...</div>}
-          {sysStatus&&<div style={{marginBottom:24}}>
-            <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>API-Status</div>
-            <div style={{display:"flex",flexDirection:"column",gap:10}}>
-              {[
-                {key:"supabase",label:"Supabase",desc:"Datenbank & Auth",detail:sysStatus.supabase?.latency?`${sysStatus.supabase.latency}ms`:""},
-                {key:"stripe",label:"Stripe",desc:"Zahlungsabwicklung",detail:sysStatus.stripe?.livemode===false?"Testmodus":sysStatus.stripe?.livemode===true?"Live":""},
-                {key:"anthropic",label:"Anthropic (Claude)",desc:"KI-Generierung",detail:sysStatus.anthropic?.billing?"Guthaben aufgebraucht!":""},
-              ].map(({key,label,desc,detail})=>{
-                const s=sysStatus[key];const ok=s?.ok;
-                const isBilling=key==="anthropic"&&s?.billing;
-                return(<div key={key} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:`1px solid ${isBilling?"#fecaca":ok?"rgba(22,163,74,.2)":T.bg3}`,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
-                  <div style={{width:8,height:8,borderRadius:"50%",background:isBilling?"#dc2626":ok?T.green:T.red,boxShadow:`0 0 0 3px ${isBilling?"rgba(220,38,38,.15)":ok?"rgba(22,163,74,.15)":"rgba(220,38,38,.15)"}`,flexShrink:0}}/>
-                  <div style={{flex:1}}>
-                    <span style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{label}</span>
-                    <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{desc}</span>
-                    {detail&&<span style={{fontSize:".75rem",marginLeft:8,color:isBilling?"#dc2626":T.accent,fontWeight:600}}>{detail}</span>}
-                    {s?.error&&!isBilling&&<div style={{fontSize:".72rem",color:T.red,marginTop:2}}>{s.error}</div>}
-                  </div>
-                  <span style={{fontSize:".78rem",fontWeight:700,color:ok?T.green:T.red}}>{ok?"OK":"Fehler"}</span>
-                </div>);
-              })}
-            </div>
-          </div>}
-          {/* Externer Status */}
+          {/* Services & Status (kombiniert) */}
           {(()=>{
+            const extInd=k=>extStatus[k]?.status?.indicator;
+            const extOk=k=>{const i=extInd(k);return i==="none";};
+            const extLoading=k=>extStatus[k]===null;
+            const extColor=k=>{const i=extInd(k);return i===undefined?T.textMuted:i==="none"?T.green:i==="minor"?"#d97706":"#dc2626";};
+            const extLabel=k=>{const st=extStatus[k];if(st===null)return"Wird geladen...";if(st===false)return"Nicht erreichbar";const i=extInd(k);return i==="none"?"Betriebsbereit":i==="minor"?"Stoerung (minor)":"Stoerung / Ausfall";};
             const services=[
-              {key:"anthropic",label:"Anthropic / Claude",href:"https://status.anthropic.com"},
-              {key:"cloudflare",label:"Cloudflare",href:"https://www.cloudflarestatus.com"},
-              {key:"supabase",label:"Supabase",href:"https://status.supabase.com"},
+              {key:"supabase",label:"Supabase",desc:"Datenbank & Auth",href:"https://status.supabase.com",
+                intOk:sysStatus?.supabase?.ok,intDetail:sysStatus?.supabase?.latency?`${sysStatus.supabase.latency}ms Latenz`:"",intErr:sysStatus?.supabase?.error},
+              {key:"stripe",label:"Stripe",desc:"Zahlungsabwicklung",href:"https://www.stripestatus.com",
+                intOk:sysStatus?.stripe?.ok,intDetail:sysStatus?.stripe?.livemode===false?"Testmodus":sysStatus?.stripe?.livemode===true?"Live-Modus":"",intErr:sysStatus?.stripe?.error},
+              {key:"anthropic",label:"Anthropic (Claude)",desc:"KI-Generierung",href:"https://status.anthropic.com",
+                intOk:sysStatus?.anthropic?.ok&&!sysStatus?.anthropic?.billing,intDetail:sysStatus?.anthropic?.billing?"Guthaben aufgebraucht!":sysStatus?.anthropic?.ok?"API Key OK":"",intErr:sysStatus?.anthropic?.billing?"Billing-Problem":sysStatus?.anthropic?.error},
+              {key:"cloudflare",label:"Cloudflare",desc:"Hosting & CDN",href:"https://www.cloudflarestatus.com",
+                intOk:null,intDetail:"",intErr:null},
             ];
-            const getColor=ind=>ind==="none"?T.green:ind==="minor"?"#d97706":"#dc2626";
-            const getLabel=ind=>ind==="none"?"Betriebsbereit":ind==="minor"?"Kleinere Stoerung":ind==="major"||ind==="critical"?"Stoerung / Ausfall":"Unbekannt";
+            const worstDot=(intOk,extK)=>{
+              const eOk=extStatus[extK]===null?null:extOk(extK);
+              if(intOk===false||eOk===false)return T.red;
+              if(intOk===null&&eOk===null)return T.textMuted;
+              if(intOk===true||eOk===true)return T.green;
+              return T.textMuted;
+            };
             return(<div style={{marginBottom:24}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Externer Service-Status"}</div>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Services & Status"}</div>
+              {(!sysStatus&&sysLoading)&&<div style={{color:T.textMuted,padding:"24px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,marginBottom:8}}>{"Verbindungen werden geprueft..."}</div>}
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {services.map(({key,label,href})=>{
-                  const st=extStatus[key];
-                  const loading=st===null;
-                  const err=st===false;
-                  const ind=st?.status?.indicator;
-                  const color=loading||err?T.textMuted:getColor(ind);
-                  const borderCol=loading||err?"rgba(0,0,0,.08)":ind==="none"?"rgba(22,163,74,.2)":ind==="minor"?"#fde68a":"#fecaca";
-                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${borderCol}`,padding:"12px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12}}>
-                    {loading?<div style={{width:10,height:10,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/>
-                      :<div style={{width:8,height:8,borderRadius:"50%",background:color,boxShadow:`0 0 0 3px ${color}26`,flexShrink:0}}/>}
-                    <div style={{flex:1}}>
+                {services.map(({key,label,desc,href,intOk,intDetail,intErr})=>{
+                  const dot=worstDot(intOk,key);
+                  const extL=extLabel(key);
+                  const eInd=extInd(key);
+                  const extPillColor=extStatus[key]===null?T.textMuted:extStatus[key]===false?T.textMuted:eInd==="none"?T.green:eInd==="minor"?"#d97706":T.red;
+                  const extPillBg=extStatus[key]===null?"rgba(0,0,0,.04)":extStatus[key]===false?"rgba(0,0,0,.04)":eInd==="none"?T.greenLight:eInd==="minor"?"#fef3c7":"#fef2f2";
+                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${dot===T.red?"#fecaca":dot===T.green?"rgba(22,163,74,.15)":T.bg3}`,padding:"12px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                    <div style={{width:8,height:8,borderRadius:"50%",background:dot,boxShadow:`0 0 0 3px ${dot}26`,flexShrink:0}}/>
+                    <div style={{flex:1,minWidth:140}}>
                       <span style={{fontWeight:700,fontSize:".85rem",color:T.dark}}>{label}</span>
-                      <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{loading?"Wird geladen...":err?"Nicht erreichbar":getLabel(ind)}</span>
+                      <span style={{fontSize:".75rem",color:T.textMuted,marginLeft:8}}>{desc}</span>
+                      {intDetail&&<span style={{fontSize:".72rem",marginLeft:8,color:intErr?T.red:T.accent,fontWeight:600}}>{intDetail}</span>}
+                      {intErr&&!intDetail&&<span style={{fontSize:".72rem",marginLeft:8,color:T.red}}>{intErr}</span>}
                     </div>
-                    <a href={href} target="_blank" rel="noreferrer" style={{fontSize:".72rem",color:T.accent,fontWeight:600,textDecoration:"none"}}>{"Status \u2192"}</a>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      {extLoading(key)?<div style={{width:8,height:8,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>
+                        :<span style={{fontSize:".72rem",fontWeight:600,padding:"3px 8px",borderRadius:4,background:extPillBg,color:extPillColor}}>{extL}</span>}
+                      <a href={href} target="_blank" rel="noreferrer" style={{fontSize:".72rem",color:T.accent,fontWeight:600,textDecoration:"none",whiteSpace:"nowrap"}}>{"Status \u2192"}</a>
+                    </div>
                   </div>);
                 })}
+              </div>
+            </div>);
+          })()}
+          {/* Letzte Generierungsfehler */}
+          {(()=>{
+            const errOrders=orders.filter(o=>o.last_error).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+            if(!errOrders.length)return null;
+            return(<div style={{marginBottom:24}}>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Letzte Generierungsfehler"}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {errOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"10px 14px",display:"flex",gap:12,alignItems:"flex-start",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                  <span style={{fontSize:".8rem",fontWeight:700,color:T.dark,flexShrink:0}}>{o.firmenname||"\u2014"}</span>
+                  <span style={{fontSize:".75rem",color:T.red,flex:1,fontFamily:T.mono,lineHeight:1.4}}>{o.last_error}</span>
+                  <span style={{fontSize:".7rem",color:T.textMuted,flexShrink:0}}>{fmtDate(o.created_at)}</span>
+                </div>)}
               </div>
             </div>);
           })()}

@@ -1454,7 +1454,7 @@ function renderMd(md){
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */
-const STATUS_LABELS={pending:"Wird erstellt",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Offline"};
+const STATUS_LABELS={pending:"Eingang",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Live"};
 const STATUS_COLORS={pending:"#f59e0b",in_arbeit:"#3b82f6",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
 const STATUS_FLOW=["pending","trial","live"];
 
@@ -1582,7 +1582,14 @@ function Admin({adminKey}){
     }catch(e){setExtStatus({anthropic:false,cloudflare:false,supabase:false,stripe:false});}
   };
   useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();const iv=setInterval(()=>{checkSystem();fetchExtStatus();},60000);return()=>clearInterval(iv);}},[tab]);
-  useEffect(()=>{if(tab==="sites")orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
+  useEffect(()=>{
+    if(tab==="sites"){
+      const run=()=>orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));
+      run();
+      const iv=setInterval(run,60000);
+      return()=>clearInterval(iv);
+    }
+  },[tab]);
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
   useEffect(()=>{setEditKunde(null);},[sel]);
 
@@ -1779,55 +1786,67 @@ function Admin({adminKey}){
                   <span style={{fontSize:".65rem",opacity:.7}}>{cnt}</span>
                 </button>);})}
               </div>
-              <button onClick={()=>orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o))} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>{"HTTP pr\u00fcfen"}</button>
               <button onClick={exportCSV} disabled={orders.length===0} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:4,opacity:orders.length===0?.5:1}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
               </button>
             </div>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12,alignItems:"center"}}>
-              {[
-                {s:"pending",label:STATUS_LABELS.pending,desc:"Formular abgeschickt"},
-                {s:"in_arbeit",label:STATUS_LABELS.in_arbeit,desc:"Website wird generiert"},
-                {s:"trial",label:STATUS_LABELS.trial,desc:"Testphase"},
-                {s:"live",label:"Live \u2713",desc:"Abo aktiv, erreichbar"},
-                {s:"live",label:"Live \u2717",desc:"nicht erreichbar",override:"#dc2626"},
-                {s:"offline",label:STATUS_LABELS.offline,desc:"Deaktiviert"},
-              ].map(({s,label,desc,override},i)=>{const c=override||STATUS_COLORS[s];return(<div key={i} style={{display:"flex",alignItems:"center",gap:5}}>
-                <span style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
-                <span style={{fontSize:".67rem",color:T.textMuted}}>{desc}</span>
-              </div>);})}
+            {/* Legende */}
+            <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:12,alignItems:"flex-start"}}>
+              <div>
+                <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Prozess</div>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                  {["pending","in_arbeit","trial","live"].map(s=>{const c=STATUS_COLORS[s];return(<span key={s} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{STATUS_LABELS[s]}</span>);})}
+                </div>
+              </div>
+              <div>
+                <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Health</div>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
+                  {[{label:"\u23f3 Wird aufgebaut",c:"#94a3b8"},{label:"\u2713 Erreichbar",c:T.green},{label:"\u2717 Nicht erreichbar",c:"#dc2626"},{label:"\u26a0 Fehler",c:"#d97706"},{label:"\u25cb Deaktiviert",c:"#64748b"}].map(({label,c})=>(
+                    <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
+                  ))}
+                </div>
+              </div>
             </div>
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","Status","URL",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","URL",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
                 <tbody>{sf.map((o,i)=>{
                   const _exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                   const tl=o.status==="trial"&&_exp?Math.ceil((new Date(_exp)-Date.now())/(1000*60*60*24)):null;
                   const tc=tl===null?null:tl<=2?"#dc2626":tl<=4?"#d97706":T.green;
                   const h=health[o.id];
                   const url=o.subdomain?`sitereadyprototype.pages.dev/s/${o.subdomain}`:null;
-                  const isStuck=o.status==="pending"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000;
+                  const ageMin=(Date.now()-new Date(o.created_at).getTime())/(1000*60);
+                  const isStuckPending=o.status==="pending"&&ageMin>120;
+                  const isStuckGen=o.status==="in_arbeit"&&ageMin>15;
                   const hasFailed=!!o.last_error;
-                  const httpErr=o.status==="live"&&h==="error";
-                  const statusColor=STATUS_COLORS[o.status]||T.textMuted;
-                  const statusLabel=httpErr?"Live \u2717":o.status==="live"&&h==="ok"?"Live \u2713":o.status==="live"&&h==="checking"?"Live ...":STATUS_LABELS[o.status]||o.status;
-                  const rowBg=httpErr?"#fef2f2":hasFailed?"#fef2f2":isStuck?"#fffbeb":i%2===0?"#fff":"#fafbfc";
+                  // Prozess
+                  const procStatus=o.status==="offline"?"live":o.status;
+                  const procColor=STATUS_COLORS[procStatus]||T.textMuted;
+                  const procLabel=STATUS_LABELS[procStatus]||procStatus;
+                  // Health
+                  const healthState=o.status==="offline"?"deakt":hasFailed?"fehler":["pending","in_arbeit"].includes(o.status)?"aufbau":h==="checking"?"checking":h==="ok"?"ok":h==="error"?"err":"unbekannt";
+                  const healthMap={aufbau:{label:"\u23f3 Wird aufgebaut",c:"#94a3b8"},checking:{label:"...",c:T.textMuted},ok:{label:"\u2713 Erreichbar",c:T.green},err:{label:"\u2717 Nicht erreichbar",c:"#dc2626"},fehler:{label:"\u26a0 Fehler",c:"#d97706"},deakt:{label:"\u25cb Deaktiviert",c:"#64748b"},unbekannt:{label:"\u2014",c:T.textMuted}};
+                  const hv=healthMap[healthState];
+                  const rowBg=healthState==="err"||healthState==="fehler"?"#fef2f2":isStuckPending||isStuckGen?"#fffbeb":i%2===0?"#fff":"#fafbfc";
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:rowBg}}>
                     <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer",whiteSpace:"nowrap"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <span style={{padding:"3px 9px",borderRadius:4,background:statusColor+"18",color:statusColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${statusColor}33`}}>{statusLabel}</span>
-                        {tl!==null&&<span style={{padding:"2px 7px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".7rem"}}>{tl>0?`${tl}d`:"Abgelaufen"}</span>}
-                        {o.status==="offline"&&<span style={{fontSize:".78rem",color:T.textMuted}}>⏳</span>}
-                        {hasFailed&&<span title={o.last_error} style={{fontSize:".78rem",cursor:"help"}}>⚠️</span>}
+                        <span style={{padding:"3px 8px",borderRadius:4,background:procColor+"18",color:procColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${procColor}33`}}>{procLabel}</span>
+                        {tl!==null&&<span style={{padding:"2px 6px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".7rem"}}>{tl>0?`${tl}d`:"Abgelaufen"}</span>}
                       </div>
                     </td>
-                    <td style={{padding:"11px 14px",fontSize:".75rem",fontFamily:T.mono,maxWidth:200}}>
+                    <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
+                      <span style={{padding:"3px 8px",borderRadius:4,background:hv.c+"18",color:hv.c,fontWeight:700,fontSize:".75rem",border:`1px solid ${hv.c}33`}}>{hv.label}</span>
+                      {hasFailed&&<span title={o.last_error} style={{marginLeft:4,fontSize:".72rem",cursor:"help",color:"#d97706"}}>ℹ</span>}
+                    </td>
+                    <td style={{padding:"11px 14px",fontSize:".75rem",fontFamily:T.mono,maxWidth:180}}>
                       {url?<a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none",display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{url}</a>:<span style={{color:T.textMuted}}>—</span>}
                     </td>
                     <td style={{padding:"11px 14px",textAlign:"right",whiteSpace:"nowrap"}}>
-                      {(isStuck||hasFailed)&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":hasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":hasFailed?"Retry":"Generieren"}</button>}
+                      {(isStuckPending||isStuckGen||hasFailed)&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":hasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":hasFailed?"Retry":"Generieren"}</button>}
                       <button onClick={()=>setSel(o)} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Detail</button>
                     </td>
                   </tr>);

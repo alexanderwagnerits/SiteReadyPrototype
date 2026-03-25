@@ -1490,6 +1490,10 @@ function Admin({adminKey}){
   const[genMsg,setGenMsg]=useState({});
   const[search,setSearch]=useState("");
   const[healthTime,setHealthTime]=useState({});
+  const[healthMs,setHealthMs]=useState({});
+  const[healthFilter,setHealthFilter]=useState("alle");
+  const[zahlungFilter,setZahlungFilter]=useState("alle");
+  const[copied,setCopied]=useState(null);
   const[deleteConfirm,setDeleteConfirm]=useState(null);
   const[regenConfirm,setRegenConfirm]=useState(null);
   const[showProzess,setShowProzess]=useState(false);
@@ -1571,8 +1575,9 @@ function Admin({adminKey}){
   const checkHealth=async(order)=>{
     const url=`https://sitereadyprototype.pages.dev/s/${order.subdomain||"test"}`;
     setHealth(h=>({...h,[order.id]:"checking"}));
-    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});setHealth(h=>({...h,[order.id]:"ok"}));}
-    catch(e){setHealth(h=>({...h,[order.id]:"error"}));}
+    const t0=Date.now();
+    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"ok"}));setHealthMs(m=>({...m,[order.id]:ms}));}
+    catch(e){const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"error"}));setHealthMs(m=>({...m,[order.id]:ms}));}
     setHealthTime(t=>({...t,[order.id]:new Date()}));
   };
 
@@ -1784,7 +1789,19 @@ function Admin({adminKey}){
         {/* Tab: Sites */}
         {!loading&&tab==="sites"&&(()=>{
           const ALL_STATUS=["pending","in_arbeit","trial","live","offline"];
-          const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
+          const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter).filter(o=>{
+            if(healthFilter==="alle")return true;
+            const hasFailed=!!o.last_error;
+            const h=health[o.id];
+            const hs=o.status==="offline"?"deakt":hasFailed?"fehler":["pending","in_arbeit"].includes(o.status)?"aufbau":h==="ok"?"ok":h==="error"?"err":"unbekannt";
+            return healthFilter===hs;
+          }).filter(o=>{
+            if(zahlungFilter==="alle")return true;
+            if(zahlungFilter==="trial")return o.status==="trial"&&!o.stripe_customer_id;
+            if(zahlungFilter==="kein_abo")return !o.stripe_customer_id&&!["pending","in_arbeit","trial"].includes(o.status);
+            if(zahlungFilter==="pending_z")return ["pending","in_arbeit"].includes(o.status);
+            return o.subscription_status===zahlungFilter;
+          });
           return(<div>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Sites</h2>
@@ -1801,6 +1818,17 @@ function Admin({adminKey}){
               <button onClick={exportCSV} disabled={orders.length===0} style={{padding:"7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:4,opacity:orders.length===0?.5:1}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
               </button>
+            </div>
+            {/* Filter Zeile 2: Health + Zahlung */}
+            <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}>
+              <span style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".06em"}}>Health:</span>
+              {[{v:"alle",l:"Alle"},{v:"ok",l:"\u2713 OK"},{v:"err",l:"\u2717 Fehler"},{v:"fehler",l:"\u26a0 Fehler (last_error)"},{v:"aufbau",l:"\u23f3 Aufbau"},{v:"deakt",l:"\u25cb Deaktiviert"}].map(({v,l})=>(
+                <button key={v} onClick={()=>setHealthFilter(v)} style={{padding:"3px 9px",border:`1px solid ${healthFilter===v?T.accent:T.bg3}`,borderRadius:T.rSm,background:healthFilter===v?T.accentLight:"#fff",color:healthFilter===v?T.accent:T.textSub,cursor:"pointer",fontSize:".7rem",fontWeight:healthFilter===v?700:500,fontFamily:T.font}}>{l}</button>
+              ))}
+              <span style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".06em",marginLeft:8}}>Zahlung:</span>
+              {[{v:"alle",l:"Alle"},{v:"active",l:"\u2713 Aktiv"},{v:"past_due",l:"\u26a0 Offen"},{v:"canceled",l:"Gek\u00fcndigt"},{v:"trial",l:"Trial"},{v:"kein_abo",l:"Kein Abo"}].map(({v,l})=>(
+                <button key={v} onClick={()=>setZahlungFilter(v)} style={{padding:"3px 9px",border:`1px solid ${zahlungFilter===v?T.accent:T.bg3}`,borderRadius:T.rSm,background:zahlungFilter===v?T.accentLight:"#fff",color:zahlungFilter===v?T.accent:T.textSub,cursor:"pointer",fontSize:".7rem",fontWeight:zahlungFilter===v?700:500,fontFamily:T.font}}>{l}</button>
+              ))}
             </div>
             {/* Legende */}
             <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:20,alignItems:"flex-start"}}>
@@ -2255,6 +2283,10 @@ function Admin({adminKey}){
         const selHealth=health[sel.id];
         const selHealthMap={checking:{label:"...",c:T.textMuted},ok:{label:"\u2713 Erreichbar",c:T.green},error:{label:"\u2717 Nicht erreichbar",c:"#dc2626"}};
         const selHInfo=selHealth&&selHealthMap[selHealth];
+        const selMs=healthMs[sel.id];
+        const selCheckedAt=healthTime[sel.id];
+        const copyVal=(key,val)=>{navigator.clipboard?.writeText(val||"");setCopied(key);setTimeout(()=>setCopied(k=>k===key?null:k),1500);};
+        const CopyBtn=({k,v})=>v?<button onClick={()=>copyVal(k,v)} title="Kopieren" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 4px",color:copied===k?T.green:T.textMuted,fontSize:".75rem",lineHeight:1,flexShrink:0}}>{copied===k?"\u2713":"&#x2398;"}</button>:null;
         return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
         <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:1280,maxHeight:"96vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
           {/* Modal Header */}
@@ -2271,7 +2303,10 @@ function Admin({adminKey}){
               <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
             </div>
           </div>
-          {selHasFailed&&<div style={{margin:"0 24px",marginTop:12,padding:"10px 14px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".78rem",color:"#991b1b",fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}><strong style={{fontFamily:T.font}}>Letzter Fehler: </strong>{sel.last_error}</div>}
+          {selHasFailed&&<div style={{margin:"0 24px",marginTop:12,padding:"10px 14px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".78rem",color:"#991b1b",lineHeight:1.5,wordBreak:"break-word",display:"flex",alignItems:"flex-start",gap:12,justifyContent:"space-between"}}>
+            <span style={{fontFamily:T.mono}}><strong style={{fontFamily:T.font}}>Letzter Fehler: </strong>{sel.last_error}</span>
+            <button onClick={()=>updateOrder(sel.id,{last_error:null}).then(()=>setSel(s=>({...s,last_error:null})))} style={{flexShrink:0,padding:"3px 10px",border:"1px solid #fecaca",borderRadius:T.rSm,background:"#fff",color:"#991b1b",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>&#10003; Abgehakt</button>
+          </div>}
           {/* Drei Spalten */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:0}}>
             {/* Linke Spalte: Infos */}
@@ -2327,8 +2362,30 @@ function Admin({adminKey}){
                     </div>);
                   })()}
                   {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
-                    <span style={{color:T.textMuted,fontWeight:600}}>{l}</span><span style={{color:T.dark}}>{v}</span>
+                    <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
+                    <span style={{display:"flex",alignItems:"center",gap:4,color:T.dark}}>
+                      <span>{v}</span>
+                      {(l==="E-Mail"||l==="Subdomain")&&<CopyBtn k={l} v={v}/>}
+                    </span>
                   </div>:null)}
+                  {/* Health Details */}
+                  {(selHInfo||selCheckedAt)&&<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                    <span style={{color:T.textMuted,fontWeight:600}}>Health-Check</span>
+                    <span style={{display:"flex",flexDirection:"column",gap:2}}>
+                      {selHInfo&&<span style={{color:selHInfo.c,fontWeight:600,fontSize:".78rem"}}>{selHInfo.label}{selMs?<span style={{fontWeight:400,color:T.textMuted,fontFamily:T.mono}}> &middot; {selMs}ms</span>:null}</span>}
+                      {selCheckedAt&&<span style={{fontSize:".72rem",color:T.textMuted}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</span>}
+                      <button onClick={()=>checkHealth(sel)} style={{marginTop:2,padding:"2px 8px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".7rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Jetzt pruefen</button>
+                    </span>
+                  </div>}
+                  {/* Externe Links */}
+                  <div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",fontSize:".83rem"}}>
+                    <span style={{color:T.textMuted,fontWeight:600}}>Links</span>
+                    <span style={{display:"flex",flexDirection:"column",gap:4}}>
+                      {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:"#6366f1",fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}><CopyBtn k="stripe_id" v={sel.stripe_customer_id}/>Stripe Kunde</a>}
+                      <a href="https://supabase.com/dashboard/project/brulvtqeazkgcxkimdve/editor" target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:"#0ea5e9",fontWeight:600,textDecoration:"none"}}>Supabase Tabelle</a>
+                      {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:T.green,fontWeight:600,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}><CopyBtn k="url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/>Website oeffnen</a>}
+                    </span>
+                  </div>
                 </div>
               }
             </div>

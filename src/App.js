@@ -2015,102 +2015,55 @@ function Admin({adminKey}){
 
         {/* Tab: Finanzen */}
         {!loading&&tab==="finanzen"&&(()=>{
-          const subOrders=orders.filter(o=>o.stripe_customer_id);
-          const activeN=subOrders.filter(o=>o.subscription_status==="active").length;
-          const pastDueN=subOrders.filter(o=>o.subscription_status==="past_due").length;
-          const canceledN=subOrders.filter(o=>o.subscription_status==="canceled").length;
-          const unknownN=subOrders.filter(o=>!o.subscription_status).length;
-          const mrr=subOrders.filter(o=>o.subscription_status==="active").reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
-          const SUB_LABEL={"active":"Aktiv","past_due":"Zahlung offen","canceled":"Gekuendigt"};
-          const SUB_COLOR={"active":T.green,"past_due":"#d97706","canceled":"#64748b"};
-          const loadZahlungInvoices=async(order)=>{
-            if(zahlungInvoices[order.id]||!order.email)return;
-            setZahlungInvoices(z=>({...z,[order.id]:"loading"}));
-            try{
-              const r=await fetch(`/api/get-invoices?email=${encodeURIComponent(order.email)}`);
-              const j=await r.json();
-              setZahlungInvoices(z=>({...z,[order.id]:j.charges||[]}));
-            }catch(e){setZahlungInvoices(z=>({...z,[order.id]:[]}));}
-          };
-          return(<div>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-              <div><h2 style={{margin:0,fontSize:"1.2rem",fontWeight:800,color:T.dark}}>Zahlungen</h2><p style={{margin:"4px 0 0",fontSize:".82rem",color:T.textMuted}}>Abo-Status und Zahlungshistorie aller Kunden</p></div>
-            </div>
-            {/* KPIs */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
-              {[{label:"MRR (aktiv)",val:`\u20AC${mrr.toFixed(2)}`,c:T.green},{label:"Aktive Abos",val:activeN,c:T.green},{label:"Zahlung offen",val:pastDueN,c:"#d97706"},{label:"Ohne Abo",val:unknownN,c:T.textMuted}].map((k,i)=>(
-                <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${i===2&&pastDueN>0?"#fed7aa":T.bg3}`,boxShadow:T.sh1}}>
-                  <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>{k.label}</div>
-                  <div style={{fontSize:"1.5rem",fontWeight:800,color:k.c,fontFamily:T.mono}}>{k.val}</div>
-                </div>
-              ))}
-            </div>
-            {/* Tabelle */}
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:T.bg}}>{["Firma","E-Mail","Plan","Zahlungsstatus",""].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,letterSpacing:".08em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>{orders.map((o,i)=>{
-                  const subColor=SUB_COLOR[o.subscription_status]||T.textMuted;
-                  const subLabel=SUB_LABEL[o.subscription_status]||(o.stripe_customer_id?"Unbekannt":"Kein Abo");
-                  const isOpen=zahlungOpen===o.id;
-                  const invData=zahlungInvoices[o.id];
-                  return(<React.Fragment key={o.id}>
-                    <tr style={{background:i%2===0?"#fff":"#fafbfc",borderBottom:`1px solid ${T.bg3}`}}>
-                      <td style={{padding:"10px 14px",fontSize:".83rem",fontWeight:600,color:T.dark}}>{o.firmenname||"—"}</td>
-                      <td style={{padding:"10px 14px",fontSize:".78rem",color:T.textSub,fontFamily:T.mono}}>{o.email||"—"}</td>
-                      <td style={{padding:"10px 14px",fontSize:".78rem",color:T.textSub}}>{o.subscription_plan==="yearly"?"\u20AC183,60/Jahr":o.subscription_plan==="monthly"?"\u20AC18/Monat":"—"}</td>
-                      <td style={{padding:"10px 14px"}}>{o.stripe_customer_id?<span style={{padding:"2px 10px",borderRadius:20,background:subColor+"18",color:subColor,fontSize:".72rem",fontWeight:700}}>{subLabel}</span>:<span style={{fontSize:".75rem",color:T.textMuted}}>—</span>}</td>
-                      <td style={{padding:"10px 14px",textAlign:"right"}}>
-                        {o.stripe_customer_id&&<button onClick={()=>{const next=isOpen?null:o.id;setZahlungOpen(next);if(next)loadZahlungInvoices(o);}} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>{isOpen?"Schliessen":"Rechnungen"}</button>}
-                      </td>
-                    </tr>
-                    {isOpen&&<tr style={{background:"#f8fafc"}}><td colSpan={5} style={{padding:"12px 20px",borderBottom:`1px solid ${T.bg3}`}}>
-                      {invData==="loading"&&<div style={{fontSize:".8rem",color:T.textMuted}}>Wird geladen...</div>}
-                      {Array.isArray(invData)&&invData.length===0&&<div style={{fontSize:".8rem",color:T.textMuted}}>Keine Rechnungen gefunden.</div>}
-                      {Array.isArray(invData)&&invData.length>0&&<table style={{width:"100%",borderCollapse:"collapse"}}>
-                        <thead><tr>{["Datum","Betrag","Status","Rechnung"].map(h=><th key={h} style={{padding:"6px 10px",textAlign:"left",fontSize:".65rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".06em"}}>{h}</th>)}</tr></thead>
-                        <tbody>{invData.map(c=><tr key={c.id} style={{borderTop:`1px solid ${T.bg3}`}}>
-                          <td style={{padding:"7px 10px",fontSize:".78rem",color:T.textSub}}>{new Date(c.created*1000).toLocaleDateString("de-AT")}</td>
-                          <td style={{padding:"7px 10px",fontSize:".78rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>\u20AC{(c.amount/100).toFixed(2)}</td>
-                          <td style={{padding:"7px 10px"}}><span style={{padding:"2px 8px",borderRadius:20,background:c.status==="succeeded"?T.green+"18":"#fef2f2",color:c.status==="succeeded"?T.green:"#dc2626",fontSize:".7rem",fontWeight:700}}>{c.status==="succeeded"?"Bezahlt":"Fehlgeschlagen"}</span></td>
-                          <td style={{padding:"7px 10px"}}>{c.receipt_url&&<a href={c.receipt_url} target="_blank" rel="noopener noreferrer" style={{fontSize:".75rem",color:T.accent,textDecoration:"none",fontWeight:600}}>&#128279; Beleg</a>}</td>
-                        </tr>)}</tbody>
-                      </table>}
-                    </td></tr>}
-                  </React.Fragment>);
-                })}</tbody>
-              </table>
-            </div>
-          {/* Kosten-Sektion */}
-          {(()=>{
           const now=new Date();
+          const activeOrders=orders.filter(o=>o.subscription_status==="active");
+          const pastDueN=orders.filter(o=>o.subscription_status==="past_due").length;
+          const trialN=orders.filter(o=>o.status==="trial").length;
+          const mrr=activeOrders.reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
+          const totalCostEur=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
           const months6=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleDateString("de-AT",{month:"short",year:"2-digit"}),key:`${d.getFullYear()}-${d.getMonth()}`};});
           const mData=months6.map(m=>({...m,count:orders.filter(o=>{if(!o.created_at)return false;const d=new Date(o.created_at);return`${d.getFullYear()}-${d.getMonth()}`===m.key;}).length}));
           const maxC=Math.max(1,...mData.map(m=>m.count));
-          const liveN=orders.filter(o=>o.status==="live").length;
-          const paidN=orders.filter(o=>o.status!=="pending").length;
-          const mrr=liveN*18;
-          const stripeFee=Math.round((mrr*0.014+paidN*0.25)*100)/100;
-          const netto=Math.round((mrr-stripeFee)*100)/100;
-          const sCounts=STATUS_FLOW.map(s=>({s,label:STATUS_LABELS[s],value:orders.filter(o=>o.status===s).length,color:STATUS_COLORS[s]})).filter(d=>d.value>0);
-          const tot=Math.max(1,orders.length);
-          const p2c=(cx,cy,r,deg)=>{const a=(deg-90)*Math.PI/180;return{x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)};};
-          const arc=(cx,cy,iR,oR,s,e)=>{if(e-s>=359.99)e=359.98;const l=e-s>180?1:0;const p1=p2c(cx,cy,oR,s),p2=p2c(cx,cy,oR,e),p3=p2c(cx,cy,iR,e),p4=p2c(cx,cy,iR,s);return`M${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${oR},${oR} 0 ${l} 1 ${p2.x.toFixed(1)},${p2.y.toFixed(1)} L${p3.x.toFixed(1)},${p3.y.toFixed(1)} A${iR},${iR} 0 ${l} 0 ${p4.x.toFixed(1)},${p4.y.toFixed(1)} Z`;};
-          let sa=0;const slices=sCounts.map(d=>{const a=(d.value/tot)*360;const sl={...d,sa,ea:sa+a};sa+=a;return sl;});
-          return(<div style={{marginTop:24}}>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:16,paddingTop:20,borderTop:`1px solid ${T.bg3}`}}>Kosten &amp; Auslastung</div>
-            {/* KPI Cards */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-              {[{label:"MRR (brutto)",val:`\u20AC${mrr}`,sub:`${liveN} aktive Kunden`,c:T.green},{label:"Stripe-Gebühren",val:`\u20AC${stripeFee.toFixed(2)}`,sub:"1,4% + \u20AC0,25/Tx",c:T.orange},{label:"Netto-MRR",val:`\u20AC${netto}`,sub:"nach Transaktionsgeb.",c:T.accent},{label:"Bestellungen",val:orders.length,sub:`${paidN} bezahlt`,c:T.dark}].map((k,i)=>(
-                <div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                  <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.label}</div>
-                  <div style={{fontSize:"1.7rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.val}</div>
-                  <div style={{fontSize:".73rem",color:T.textMuted,marginTop:5}}>{k.sub}</div>
-                </div>))}
+          const stripeFee=Math.round((mrr*0.014+activeOrders.length*0.25)*100)/100;
+          const claudeCostMo=totalCostEur/Math.max(1,now.getMonth());
+          const ausgaben=Math.round((stripeFee+claudeCostMo+0.83)*100)/100;
+          const netto=Math.round((mrr-ausgaben)*100)/100;
+          return(<div>
+            <div style={{marginBottom:24}}>
+              <h2 style={{margin:"0 0 4px",fontSize:"1.2rem",fontWeight:800,color:T.dark}}>Finanzen</h2>
+              <p style={{margin:0,fontSize:".82rem",color:T.textMuted}}>Einnahmen, Ausgaben und Abo-Status im \u00dcberblick</p>
             </div>
-            {/* Charts */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-              {/* Bar Chart */}
+            {/* Top KPIs: Einnahmen | Ausgaben | Netto */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:24}}>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Einnahmen (MRR)</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:T.green,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>\u20AC{mrr.toFixed(2)}</div>
+                <div style={{marginTop:10,display:"flex",gap:12,flexWrap:"wrap"}}>
+                  <span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:T.green}}>{activeOrders.length}</span> aktive Abos</span>
+                  {trialN>0&&<span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:"#8b5cf6"}}>{trialN}</span> in Trial</span>}
+                  {pastDueN>0&&<span style={{fontSize:".75rem",color:"#d97706",fontWeight:700}}>\u26a0 {pastDueN} Zahlung offen</span>}
+                </div>
+              </div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Ausgaben / Mo</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>\u20AC{ausgaben.toFixed(2)}</div>
+                <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
+                  {[["Stripe",`\u20AC${stripeFee.toFixed(2)}`],["Claude API",`\u20AC${claudeCostMo.toFixed(3)}`],["Domain","\u20AC0,83"],["Cloudflare / Supabase","\u20AC0"]].map(([l,v])=>(
+                    <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".73rem",color:T.textMuted}}>
+                      <span>{l}</span><span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`2px solid ${netto>=0?T.green+"44":"#fca5a5"}`,boxShadow:T.sh1}}>
+                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Netto / Mo</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:netto>=0?T.green:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>\u20AC{netto.toFixed(2)}</div>
+                <div style={{marginTop:10,fontSize:".73rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten + Domain</div>
+              </div>
+            </div>
+            {/* Unterer Bereich: Bestellungen Chart + Abo-Status */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              {/* Bestellungen Chart */}
               <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
                 <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:18}}>Neue Bestellungen &mdash; letzte 6 Monate</div>
                 <svg viewBox="0 0 340 170" style={{width:"100%",overflow:"visible"}}>
@@ -2122,69 +2075,38 @@ function Admin({adminKey}){
                   </g>);})}
                 </svg>
               </div>
-              {/* Donut Chart */}
-              <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:18}}>Pipeline Auslastung</div>
-                <div style={{display:"flex",alignItems:"center",gap:24}}>
-                  <svg viewBox="0 0 200 200" style={{width:150,flexShrink:0}}>
-                    {slices.length>0?slices.map((sl,i)=><path key={i} d={arc(100,100,52,80,sl.sa,sl.ea)} fill={sl.color} opacity=".9"/>):<circle cx={100} cy={100} r={80} fill="#e8ebf0"/>}
-                    <circle cx={100} cy={100} r={52} fill="#fff"/>
-                    <text x={100} y={94} textAnchor="middle" fontSize="24" fontWeight="800" fill={T.dark} fontFamily={T.mono}>{orders.length}</text>
-                    <text x={100} y={112} textAnchor="middle" fontSize="10" fill={T.textMuted}>gesamt</text>
-                  </svg>
-                  <div style={{display:"flex",flexDirection:"column",gap:8,flex:1}}>
-                    {sCounts.length>0?sCounts.map(d=>(
-                      <div key={d.s} style={{display:"flex",alignItems:"center",gap:8}}>
-                        <span style={{width:10,height:10,borderRadius:"50%",background:d.color,flexShrink:0,display:"inline-block"}}/>
-                        <span style={{fontSize:".8rem",color:T.dark,flex:1}}>{d.label}</span>
-                        <span style={{fontSize:".8rem",fontWeight:700,color:d.color,fontFamily:T.mono}}>{d.value}</span>
-                      </div>)):<span style={{fontSize:".82rem",color:T.textMuted}}>Keine Daten</span>}
+              {/* Abo-Status + Claude Details */}
+              <div style={{display:"flex",flexDirection:"column",gap:16}}>
+                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>Abo-Status</div>
+                  {[{label:"Aktiv",val:activeOrders.length,c:T.green},{label:"Trial",val:trialN,c:"#8b5cf6"},{label:"Zahlung offen",val:pastDueN,c:"#d97706"},{label:"Kein Abo",val:orders.filter(o=>!o.stripe_customer_id).length,c:T.textMuted}].map(({label,val,c})=>(
+                    <div key={label} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                      <div style={{flex:1,height:6,borderRadius:3,background:T.bg3,overflow:"hidden"}}>
+                        <div style={{width:`${Math.round((val/Math.max(1,orders.length))*100)}%`,height:"100%",background:c,borderRadius:3}}/>
+                      </div>
+                      <span style={{fontSize:".75rem",color:T.textMuted,minWidth:90}}>{label}</span>
+                      <span style={{fontSize:".75rem",fontWeight:700,color:c,fontFamily:T.mono,minWidth:20,textAlign:"right"}}>{val}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                  <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:10}}>
+                    <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Claude API</div>
+                    <span style={{fontSize:".7rem",color:T.textMuted}}>{orders.filter(o=>o.tokens_in>0).length}/{orders.length} getrackt</span>
                   </div>
+                  {totalCostEur>0?[
+                    ["Kumuliert gesamt",`\u20AC${totalCostEur.toFixed(4)}`],
+                    ["Input-Tokens",orders.reduce((a,o)=>a+(o.tokens_in||0),0).toLocaleString("de-AT")],
+                    ["Output-Tokens",orders.reduce((a,o)=>a+(o.tokens_out||0),0).toLocaleString("de-AT")],
+                  ].map(([l,v])=>(
+                    <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".78rem",padding:"5px 0",borderBottom:`1px solid ${T.bg3}`}}>
+                      <span style={{color:T.textMuted}}>{l}</span>
+                      <span style={{fontFamily:T.mono,fontWeight:700,color:T.dark}}>{v}</span>
+                    </div>
+                  )):<div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Daten</div>}
                 </div>
               </div>
             </div>
-            {/* Claude Echtkosten */}
-            {(()=>{
-              const totalCostEur=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
-              const totalTokIn=orders.reduce((a,o)=>a+(o.tokens_in||0),0);
-              const totalTokOut=orders.reduce((a,o)=>a+(o.tokens_out||0),0);
-              const withData=orders.filter(o=>o.tokens_in>0).length;
-              return(<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-                <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:12}}>
-                  <div style={{fontSize:".78rem",fontWeight:700,color:T.dark}}>Claude API \u2013 gemessene Kosten (Sonnet)</div>
-                  <span style={{fontSize:".72rem",color:T.textMuted}}>{withData}/{orders.length} Generierungen getrackt</span>
-                </div>
-                {totalCostEur>0?(
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
-                    {[{l:"Gesamt kumuliert",v:`\u20AC${totalCostEur.toFixed(4)}`,c:T.orange},{l:"Input-Tokens",v:totalTokIn.toLocaleString("de-AT"),c:T.accent},{l:"Output-Tokens",v:totalTokOut.toLocaleString("de-AT"),c:T.accent}].map((k,i)=>(
-                      <div key={i} style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                        <div style={{fontSize:".65rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>{k.l}</div>
-                        <div style={{fontSize:"1.2rem",fontWeight:800,color:k.c,fontFamily:T.mono}}>{k.v}</div>
-                      </div>))}
-                  </div>
-                ):<div style={{fontSize:".82rem",color:T.textMuted}}>Noch keine Token-Daten \u2013 werden ab der nächsten Generierung erfasst.</div>}
-              </div>);
-            })()}
-            {/* Kostentabelle */}
-            <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Monatliche Kostenbasis</div>
-              <table style={{width:"100%",borderCollapse:"collapse",fontSize:".84rem"}}>
-                <thead><tr>{["Posten","Kosten/Mo"].map(h=><th key={h} style={{textAlign:"left",padding:"8px 14px",fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",borderBottom:`1px solid ${T.bg3}`}}>{h}</th>)}</tr></thead>
-                <tbody>
-                  {[{p:"Cloudflare Pages",k:"\u20AC0"},{p:"Supabase",k:"\u20AC0"},{p:"Stripe",k:`\u20AC${stripeFee.toFixed(2)}`},{p:"Anthropic Claude",k:`\u20AC${(orders.reduce((a,o)=>a+(o.cost_eur||0),0)/Math.max(1,new Date().getMonth())).toFixed(3)}`},{p:"Domain siteready.at",k:"~\u20AC0,83"}].map((r,i)=>(
-                    <tr key={i} style={{background:i%2===0?"#fff":"#fafbfc"}}>
-                      <td style={{padding:"10px 14px",fontWeight:600,color:T.dark}}>{r.p}</td>
-                      <td style={{padding:"10px 14px",fontWeight:700,color:T.dark,fontFamily:T.mono}}>{r.k}</td>
-                    </tr>))}
-                  <tr style={{background:T.bg,borderTop:`2px solid ${T.bg3}`}}>
-                    <td style={{padding:"12px 14px",fontWeight:800,color:T.dark}}>Gesamt</td>
-                    <td style={{padding:"12px 14px",fontWeight:800,color:T.dark,fontFamily:T.mono}}>{"\u20AC"}{(0.83+stripeFee).toFixed(2)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>);
-          })()}
           </div>);
         })()}
 

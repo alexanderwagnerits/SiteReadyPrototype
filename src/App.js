@@ -1571,7 +1571,7 @@ function Admin({adminKey}){
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
-  const fetchClaudeStatus=async()=>{try{const r=await fetch("https://status.anthropic.com/api/v2/status.json");const j=await r.json();setClaudeStatus(j);}catch(e){setClaudeStatus(null);}};
+  const fetchClaudeStatus=async()=>{try{const r=await fetch("https://status.anthropic.com/api/v2/status.json");const j=await r.json();setClaudeStatus(j||false);}catch(e){setClaudeStatus(false);}};
   useEffect(()=>{if(tab==="system"){checkSystem();fetchClaudeStatus();const iv=setInterval(()=>{checkSystem();fetchClaudeStatus();},60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
@@ -1883,17 +1883,21 @@ function Admin({adminKey}){
           </div>}
           {/* Claude Status (extern) */}
           {(()=>{
+            const loaded=claudeStatus!==null;
+            const err=claudeStatus===false;
             const ind=claudeStatus?.status?.indicator;
-            const desc=claudeStatus?.status?.description;
             const indColor=ind==="none"?T.green:ind==="minor"?"#d97706":"#dc2626";
-            const indLabel=ind==="none"?"Alle Systeme betriebsbereit":ind==="minor"?"Kleinere Stoerung":ind==="major"||ind==="critical"?"Stoerung / Ausfall":desc||"Status unbekannt";
+            const indLabel=ind==="none"?"Alle Systeme betriebsbereit":ind==="minor"?"Kleinere Stoerung":ind==="major"||ind==="critical"?"Stoerung / Ausfall":claudeStatus?.status?.description||"Unbekannt";
+            const borderColor=err||!loaded?"rgba(0,0,0,.08)":ind==="none"?"rgba(22,163,74,.2)":ind==="minor"?"#fde68a":"#fecaca";
+            const dotColor=!loaded?T.textMuted:err?T.textMuted:indColor;
             return(<div style={{marginBottom:24}}>
               <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Claude API Status (extern)"}</div>
-              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${!ind||ind==="none"?"rgba(22,163,74,.2)":ind==="minor"?"#fde68a":"#fecaca"}`,padding:"14px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12}}>
-                <div style={{width:8,height:8,borderRadius:"50%",background:claudeStatus?indColor:T.textMuted,boxShadow:`0 0 0 3px ${claudeStatus?indColor+"26":"rgba(0,0,0,.08)"}`,flexShrink:0}}/>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${borderColor}`,padding:"14px 18px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12}}>
+                {!loaded&&<div style={{width:10,height:10,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/>}
+                {loaded&&<div style={{width:8,height:8,borderRadius:"50%",background:dotColor,boxShadow:`0 0 0 3px ${dotColor}26`,flexShrink:0}}/>}
                 <div style={{flex:1}}>
                   <span style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{"Anthropic / Claude"}</span>
-                  <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{claudeStatus?indLabel:"Wird geladen..."}</span>
+                  <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{!loaded?"Wird geladen...":err?"Nicht erreichbar – direkt pruefen:":indLabel}</span>
                 </div>
                 <a href="https://status.anthropic.com" target="_blank" rel="noreferrer" style={{fontSize:".75rem",color:T.accent,fontWeight:600,textDecoration:"none"}}>{"status.anthropic.com \u2192"}</a>
               </div>

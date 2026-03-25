@@ -1572,16 +1572,16 @@ function Admin({adminKey}){
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
   const fetchExtStatus=async()=>{
-    const sources=[
-      {key:"anthropic",url:"https://status.anthropic.com/api/v2/status.json"},
-      {key:"cloudflare",url:"https://www.cloudflarestatus.com/api/v2/status.json"},
-      {key:"supabase",url:"https://status.supabase.com/api/v2/status.json"},
-      {key:"stripe",url:"https://www.stripestatus.com/api/v2/status.json"},
-    ];
-    const results=await Promise.allSettled(sources.map(s=>fetch(s.url).then(r=>r.json())));
-    const next={anthropic:null,cloudflare:null,supabase:null,stripe:null};
-    sources.forEach((s,i)=>{next[s.key]=results[i].status==="fulfilled"?(results[i].value||false):false;});
-    setExtStatus(next);
+    try{
+      const r=await fetch(`/api/ext-status?key=${adminKey}`);
+      const j=await r.json();
+      setExtStatus({
+        anthropic:j.anthropic||false,
+        cloudflare:j.cloudflare||false,
+        supabase:j.supabase||false,
+        stripe:j.stripe||false,
+      });
+    }catch(e){setExtStatus({anthropic:false,cloudflare:false,supabase:false,stripe:false});}
   };
   useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();const iv=setInterval(()=>{checkSystem();fetchExtStatus();},60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);

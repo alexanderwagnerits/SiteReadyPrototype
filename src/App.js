@@ -1473,6 +1473,7 @@ function Admin({adminKey}){
   const[loading,setLoading]=useState(true);
   const[sysStatus,setSysStatus]=useState(null);
   const[sysLoading,setSysLoading]=useState(false);
+  const[claudeStatus,setClaudeStatus]=useState(null);
   const[notiz,setNotiz]=useState({});
   const[notizSaved,setNotizSaved]=useState({});
   const[genLoading,setGenLoading]=useState({});
@@ -1570,8 +1571,9 @@ function Admin({adminKey}){
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
   const[sysLastCheck,setSysLastCheck]=useState(null);
   const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
+  const fetchClaudeStatus=async()=>{try{const r=await fetch("https://status.anthropic.com/api/v2/status.json");const j=await r.json();setClaudeStatus(j);}catch(e){setClaudeStatus(null);}};
   useEffect(()=>{if(tab==="system"){checkSystem();const iv=setInterval(checkSystem,60000);return()=>clearInterval(iv);}},[tab]);
-  useEffect(()=>{if(tab==="health")orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));},[tab]);
+  useEffect(()=>{if(tab==="health"){orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o));fetchClaudeStatus();}},[tab]);
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
   useEffect(()=>{setEditKunde(null);},[sel]);
 
@@ -1904,6 +1906,20 @@ function Admin({adminKey}){
               <button onClick={()=>orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).forEach(o=>checkHealth(o))} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Alle prüfen</button>
             </div>
           </div>
+          {(()=>{
+            const ind=claudeStatus?.status?.indicator;
+            const desc=claudeStatus?.status?.description;
+            const indColor=ind==="none"?T.green:ind==="minor"?"#d97706":"#dc2626";
+            const indLabel=ind==="none"?"Alle Systeme betriebsbereit":ind==="minor"?"Kleinere Stoerung":ind==="major"||ind==="critical"?"Stoerung / Ausfall":desc||"Status unbekannt";
+            return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${!ind||ind==="none"?"rgba(22,163,74,.2)":ind==="minor"?"#fde68a":"#fecaca"}`,padding:"14px 18px",marginBottom:16,boxShadow:T.sh1,display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:claudeStatus?indColor:T.textMuted,boxShadow:`0 0 0 3px ${claudeStatus?indColor+"26":"rgba(0,0,0,.08)"}`,flexShrink:0}}/>
+              <div style={{flex:1}}>
+                <span style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{"Claude / Anthropic API"}</span>
+                <span style={{fontSize:".78rem",color:T.textMuted,marginLeft:8}}>{claudeStatus?indLabel:"Wird geladen..."}</span>
+              </div>
+              <a href="https://status.anthropic.com" target="_blank" rel="noreferrer" style={{fontSize:".75rem",color:T.accent,fontWeight:600,textDecoration:"none"}}>{"status.anthropic.com \u2192"}</a>
+            </div>);
+          })()}
           {(()=>{
             const rows=orders.filter(o=>o.subdomain&&["live","offline"].includes(o.status)).filter(o=>healthFilter==="fehler"?health[o.id]==="error":true);
             return rows.length===0?<div style={{padding:40,textAlign:"center",color:T.textMuted}}>{healthFilter==="fehler"?"Keine Fehler gefunden.":"Keine Websites mit Subdomain."}</div>:

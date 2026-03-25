@@ -1454,8 +1454,8 @@ function renderMd(md){
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */
-const STATUS_LABELS={pending:"Wird erstellt",trial:"Testphase",live:"Live",offline:"Offline"};
-const STATUS_COLORS={pending:"#f59e0b",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
+const STATUS_LABELS={pending:"Wird erstellt",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Offline"};
+const STATUS_COLORS={pending:"#f59e0b",in_arbeit:"#3b82f6",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
 const STATUS_FLOW=["pending","trial","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
@@ -1764,7 +1764,7 @@ function Admin({adminKey}){
 
         {/* Tab: Sites */}
         {!loading&&tab==="sites"&&(()=>{
-          const ALL_STATUS=["pending","trial","live","offline"];
+          const ALL_STATUS=["pending","in_arbeit","trial","live","offline"];
           const sf=(search?orders.filter(o=>[o.firmenname,o.email,o.branche_label,o.subdomain].some(v=>v&&v.toLowerCase().includes(search.toLowerCase()))):orders).filter(o=>filter==="alle"||o.status===filter);
           return(<div>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
@@ -1787,6 +1787,7 @@ function Admin({adminKey}){
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
               {[
                 {s:"pending",desc:"Formular abgeschickt"},
+                {s:"in_arbeit",desc:"Website wird generiert"},
                 {s:"trial",desc:"Testphase"},
                 {s:"live",desc:"Abo aktiv"},
                 {s:"offline",desc:"Deaktiviert"},
@@ -1795,8 +1796,9 @@ function Admin({adminKey}){
                 <span style={{fontSize:".7rem",fontWeight:700,color:T.dark}}>{STATUS_LABELS[s]}</span>
                 <span style={{fontSize:".68rem",color:T.textMuted}}>{desc}</span>
               </div>)}
-              <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:"#fef2f2",border:"1px solid #fecaca"}}>
-                <span style={{fontSize:".7rem",fontWeight:700,color:"#dc2626"}}>{"Live \u2717"}</span>
+              <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:"#fff",border:`1px solid ${STATUS_COLORS.live}33`}}>
+                <div style={{width:6,height:6,borderRadius:"50%",background:STATUS_COLORS.live,flexShrink:0}}/>
+                <span style={{fontSize:".7rem",fontWeight:700,color:STATUS_COLORS.live}}>{"Live \u2717"}</span>
                 <span style={{fontSize:".68rem",color:T.textMuted}}>nicht erreichbar</span>
               </div>
             </div>
@@ -1811,23 +1813,26 @@ function Admin({adminKey}){
                   const h=health[o.id];
                   const url=o.subdomain?`sitereadyprototype.pages.dev/s/${o.subdomain}`:null;
                   const isStuck=o.status==="pending"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000;
+                  const hasFailed=!!o.last_error;
                   const httpErr=o.status==="live"&&h==="error";
-                  const statusColor=httpErr?"#dc2626":STATUS_COLORS[o.status];
-                  const statusLabel=httpErr?"Live \u2717":o.status==="live"&&h==="ok"?"Live \u2713":o.status==="live"&&h==="checking"?"Live ...":STATUS_LABELS[o.status];
-                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:isStuck?"#fffbeb":httpErr?"#fef2f2":i%2===0?"#fff":"#fafbfc"}}>
+                  const statusColor=STATUS_COLORS[o.status]||T.textMuted;
+                  const statusLabel=httpErr?"Live \u2717":o.status==="live"&&h==="ok"?"Live \u2713":o.status==="live"&&h==="checking"?"Live ...":STATUS_LABELS[o.status]||o.status;
+                  const rowBg=httpErr?"#fef2f2":hasFailed?"#fef2f2":isStuck?"#fffbeb":i%2===0?"#fff":"#fafbfc";
+                  return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:rowBg}}>
                     <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer",whiteSpace:"nowrap"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <span style={{padding:"3px 9px",borderRadius:4,background:statusColor+"18",color:statusColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${statusColor}33`}}>{statusLabel}</span>
                         {tl!==null&&<span style={{padding:"2px 7px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".7rem"}}>{tl>0?`${tl}d`:"Abgelaufen"}</span>}
                         {o.status==="offline"&&<span style={{fontSize:".78rem",color:T.textMuted}}>⏳</span>}
+                        {hasFailed&&<span title={o.last_error} style={{fontSize:".78rem",cursor:"help"}}>⚠️</span>}
                       </div>
                     </td>
                     <td style={{padding:"11px 14px",fontSize:".75rem",fontFamily:T.mono,maxWidth:200}}>
                       {url?<a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none",display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{url}</a>:<span style={{color:T.textMuted}}>—</span>}
                     </td>
                     <td style={{padding:"11px 14px",textAlign:"right",whiteSpace:"nowrap"}}>
-                      {isStuck&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":"Generieren"}</button>}
+                      {(isStuck||hasFailed)&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?"#94a3b8":hasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":hasFailed?"Retry":"Generieren"}</button>}
                       <button onClick={()=>setSel(o)} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Detail</button>
                     </td>
                   </tr>);

@@ -2111,8 +2111,6 @@ function Admin({adminKey}){
   if(expiredTrials.length)alerts.push({type:"warn",msg:`${expiredTrials.length} Trial${expiredTrials.length>1?"s":""} abgelaufen`,tab:"sites"});
   const liveNoSub=orders.filter(o=>o.status==="live"&&!o.subdomain);
   if(liveNoSub.length)alerts.push({type:"error",msg:`${liveNoSub.length} Live-Website${liveNoSub.length>1?"s":""} ohne Subdomain`,tab:"sites"});
-  const liveNoStripe=orders.filter(o=>o.status==="live"&&!o.stripe_customer_id);
-  if(liveNoStripe.length)alerts.push({type:"warn",msg:`${liveNoStripe.length} Live-Kunde${liveNoStripe.length>1?"n":""} ohne Stripe-Verknuepfung`,tab:"sites"});
   const failedOrders=orders.filter(o=>o.last_error);
   if(failedOrders.length)alerts.push({type:"error",msg:`${failedOrders.length} Bestellung${failedOrders.length>1?"en":""} mit Fehler`,tab:"sites"});
   const lowQuality=orders.filter(o=>o.quality_score!==null&&o.quality_score!==undefined&&o.quality_score<80);
@@ -2867,7 +2865,7 @@ function Admin({adminKey}){
                       {zahlungContent}
                     </div>);
                   })()}
-                  {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                  {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Rechtsform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Fotos",sel.fotos?"Ja":"Nein"],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                     <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
                     <span style={{display:"flex",alignItems:"center",gap:4,color:T.dark}}>
                       <span>{v}</span>
@@ -2903,60 +2901,6 @@ function Admin({adminKey}){
                   {selCheckedAt&&<div style={{fontSize:".7rem",color:T.textMuted,marginTop:4}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</div>}
                   {sel.quality_score!==null&&sel.quality_score!==undefined&&<div style={{fontSize:".78rem",marginTop:6}}><span style={{color:T.textMuted}}>Quality Score: </span><span style={{fontWeight:700,color:sel.quality_score>=80?T.green:"#d97706"}}>{sel.quality_score}/100</span></div>}
                 </div>
-                {/* Subdomain & Stil */}
-                <div style={secStyle}>{(()=>{
-                  const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false};
-                  const editing=!!sc.editing;
-                  const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
-                  const dirty=sc.subdomain!==(sel.subdomain||"")||sc.stil!==(sel.stil||"professional");
-                  const save=async()=>{
-                    const oldSub=sel.subdomain||"";const oldStil=sel.stil||"professional";
-                    await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});
-                    setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));setsc({editing:false});
-                    if(sc.subdomain!==oldSub)logActivity(sel.id,"subdomain_changed",{from:oldSub,to:sc.subdomain});
-                    if(sc.stil!==oldStil)logActivity(sel.id,"stil_changed",{from:oldStil,to:sc.stil});
-                  };
-                  const cancel=()=>setsc({subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false});
-                  return(<>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                      <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Subdomain & Stil</div>
-                      {!editing&&<button onClick={()=>setsc({editing:true})} title="Bearbeiten" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 5px",color:T.textMuted,fontSize:".9rem",lineHeight:1}}>{"\u270f"}</button>}
-                    </div>
-                    <div style={{marginBottom:8,display:"flex",alignItems:"center",gap:5,padding:"6px 8px",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:T.rSm}}>
-                      <span style={{fontSize:".78rem",flexShrink:0}}>{"\u26a0\ufe0f"}</span>
-                      <span style={{fontSize:".72rem",color:"#92400e",lineHeight:1.4}}>Aenderungen erfordern Website-Neugenerierung</span>
-                    </div>
-                    {!editing
-                      ?<div style={{display:"flex",flexDirection:"column",gap:6}}>
-                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
-                            <span style={{color:T.textMuted,fontWeight:600}}>Subdomain</span>
-                            <span style={{fontFamily:T.mono,color:T.dark}}>{sel.subdomain||<span style={{color:T.textMuted,fontStyle:"italic"}}>nicht gesetzt</span>}</span>
-                          </div>
-                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",gap:6,fontSize:".83rem"}}>
-                            <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
-                            <span style={{color:T.dark}}>{STYLES_MAP[sel.stil||"professional"]?.label||sel.stil||"Professional"}</span>
-                          </div>
-                        </div>
-                      :<div style={{display:"flex",flexDirection:"column",gap:8}}>
-                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
-                            <span style={{color:T.textMuted,fontWeight:600}}>Subdomain</span>
-                            <input value={sc.subdomain} onChange={e=>setsc({subdomain:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.mono,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
-                          </div>
-                          <div style={{display:"grid",gridTemplateColumns:"80px 1fr",alignItems:"center",gap:8,fontSize:".83rem"}}>
-                            <span style={{color:T.textMuted,fontWeight:600}}>Stil</span>
-                            <select value={sc.stil} onChange={e=>setsc({stil:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}>
-                              {Object.entries(STYLES_MAP).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
-                            </select>
-                          </div>
-                          {dirty&&<div style={{padding:"8px 10px",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,fontSize:".72rem",color:"#92400e",lineHeight:1.5}}>Nach dem Speichern Website neu generieren.</div>}
-                          <div style={{display:"flex",gap:6}}>
-                            <button onClick={cancel} style={{flex:1,padding:"7px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                            <button onClick={save} disabled={!dirty} style={{flex:1,padding:"7px 12px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":"#94a3b8",cursor:dirty?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font,transition:"background .15s"}}>Speichern</button>
-                          </div>
-                        </div>
-                    }
-                  </>);
-                })()}</div>
                 {/* --- AKTIONEN --- */}
                 <div style={secStyle}>
                 {cardTitle("Aktionen")}
@@ -3003,6 +2947,44 @@ function Admin({adminKey}){
                   </div>
                 </div>}
                 </div>{/* Ende Aktionen secStyle */}
+                {/* Subdomain & Stil */}
+                {(()=>{
+                  const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false};
+                  const editing=!!sc.editing;
+                  const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
+                  const dirty=sc.subdomain!==(sel.subdomain||"")||sc.stil!==(sel.stil||"professional");
+                  const save=async()=>{
+                    const oldSub=sel.subdomain||"";const oldStil=sel.stil||"professional";
+                    await updateOrder(sel.id,{subdomain:sc.subdomain,stil:sc.stil});
+                    setSel(s=>({...s,subdomain:sc.subdomain,stil:sc.stil}));setsc({editing:false});
+                    if(sc.subdomain!==oldSub)logActivity(sel.id,"subdomain_changed",{from:oldSub,to:sc.subdomain});
+                    if(sc.stil!==oldStil)logActivity(sel.id,"stil_changed",{from:oldStil,to:sc.stil});
+                  };
+                  const cancel=()=>setsc({subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false});
+                  return(<div style={{...secStyle,borderStyle:"dashed"}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                      <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Subdomain & Stil</div>
+                      {!editing&&<button onClick={()=>setsc({editing:true})} title="Bearbeiten" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 5px",color:T.textMuted,fontSize:".85rem",lineHeight:1}}>{"\u270f"}</button>}
+                    </div>
+                    {!editing
+                      ?<div style={{display:"flex",flexDirection:"column",gap:4}}>
+                          <div style={{fontSize:".8rem"}}><span style={{color:T.textMuted}}>Subdomain: </span><span style={{fontFamily:T.mono,color:T.dark}}>{sel.subdomain||"\u2014"}</span></div>
+                          <div style={{fontSize:".8rem"}}><span style={{color:T.textMuted}}>Stil: </span><span style={{color:T.dark}}>{STYLES_MAP[sel.stil||"professional"]?.label||sel.stil||"Professional"}</span></div>
+                        </div>
+                      :<div style={{display:"flex",flexDirection:"column",gap:6}}>
+                          <input value={sc.subdomain} onChange={e=>setsc({subdomain:e.target.value})} placeholder="Subdomain" style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.mono,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
+                          <select value={sc.stil} onChange={e=>setsc({stil:e.target.value})} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff"}}>
+                            {Object.entries(STYLES_MAP).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
+                          </select>
+                          <div style={{display:"flex",gap:6}}>
+                            <button onClick={cancel} style={{flex:1,padding:"6px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                            <button onClick={save} disabled={!dirty} style={{flex:1,padding:"6px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":"#94a3b8",cursor:dirty?"pointer":"default",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
+                          </div>
+                          <div style={{fontSize:".68rem",color:"#92400e"}}>Danach Website neu generieren</div>
+                        </div>
+                    }
+                  </div>);
+                })()}
                 {/* Notfall: Status setzen */}
                 <div style={{padding:"12px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                   <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
@@ -3039,7 +3021,7 @@ function Admin({adminKey}){
                   </div>
                   {selTickets.length===0
                     ?<div style={{fontSize:".8rem",color:T.textMuted,padding:"8px 0"}}>Noch keine Tickets.</div>
-                    :<div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    :<div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:200,overflowY:"auto"}}>
                       {selTickets.map(t=><div key={t.id} style={{padding:"10px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${t.status==="offen"?"#fde68a":T.bg3}`}}>
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3,gap:6}}>
                           <span style={{fontWeight:700,fontSize:".78rem",color:T.dark,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</span>
@@ -3059,7 +3041,7 @@ function Admin({adminKey}){
                   ?<div style={{fontSize:".8rem",color:T.textMuted}}>Laedt...</div>
                   :(orderLogs[sel.id]||[]).length===0
                     ?<div style={{fontSize:".8rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
-                    :<div style={{display:"flex",flexDirection:"column",gap:4}}>
+                    :<div style={{display:"flex",flexDirection:"column",gap:4,maxHeight:220,overflowY:"auto"}}>
                         {(orderLogs[sel.id]||[]).map(log=>(
                           <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"7px 10px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                             <span style={{fontSize:".8rem",flexShrink:0,minWidth:16,textAlign:"center"}}>{logIcon(log.action)}</span>

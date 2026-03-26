@@ -2886,7 +2886,7 @@ function Admin({adminKey}){
                 {/* Quick-Info Chips */}
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                   {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",background:"#f0f4ff",borderRadius:T.rSm,border:"1px solid #c7d2fe",textDecoration:"none",fontSize:".78rem",fontWeight:600,color:"#6366f1"}}>
-                    Website &nearr;
+                    Website {"\u2197"}
                   </a>}
                   {selHInfo&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:selHInfo.c+"12",borderRadius:T.rSm,border:`1px solid ${selHInfo.c}33`,fontSize:".78rem",fontWeight:600,color:selHInfo.c}}>
                     {selHInfo.label}{selMs?<span style={{fontFamily:T.mono,fontSize:".72rem",opacity:.7}}> {selMs}ms</span>:null}
@@ -2895,7 +2895,7 @@ function Admin({adminKey}){
                     Score: {sel.quality_score}
                   </span>}
                   {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,textDecoration:"none",fontSize:".78rem",fontWeight:600,color:T.textSub}}>
-                    Stripe &nearr;
+                    Stripe {"\u2197"}
                   </a>}
                 </div>
                 {/* 3. Subdomain & Stil (mit Bearbeitungs-Icon) */}

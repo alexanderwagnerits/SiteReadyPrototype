@@ -669,10 +669,10 @@ function SuccessPage({data,onBack}){
       <h1 style={{fontSize:"1.8rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.03em"}}>Account erstellt!</h1>
       <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,margin:"0 0 24px"}}>Wir haben eine Bestätigungs-E-Mail an <strong>{data.email}</strong> gesendet. Bitte bestätigen Sie Ihre E-Mail-Adresse, um sich einloggen zu können.</p>
       {/* Hinweis-Box */}
-      <div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#fefce8",border:"1px solid #fde68a",borderRadius:T.rSm,padding:"14px 16px",marginBottom:20,textAlign:"left"}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#fefce8",border:"1px solid #fde68a",borderRadius:T.rSm,padding:"14px 16px",marginBottom:12,textAlign:"left"}}>
         <span style={{fontSize:"1.1rem",flexShrink:0}}>✉️</span>
         <div style={{fontSize:".82rem",color:"#92400e",lineHeight:1.6}}>
-          <strong>Prüfen Sie auch Ihren Spam-Ordner.</strong> Die E-Mail kommt von <strong>noreply@siteready.at</strong> und kann einige Minuten dauern.
+          <strong>Prüfen Sie auch Ihren Spam-Ordner.</strong> Die E-Mail kann einige Minuten dauern. Falls nach 10 Minuten nichts ankommt, senden wir automatisch eine neue.
         </div>
       </div>
       {/* Website-Generierung Info */}
@@ -886,13 +886,28 @@ function PortalLogin({onBack}){
   const[err,setErr]=useState("");
   const[forgotPw,setForgotPw]=useState(false);
   const[forgotDone,setForgotDone]=useState(false);
+  const[emailNotConfirmed,setEmailNotConfirmed]=useState(false);
+  const[resendingConfirm,setResendingConfirm]=useState(false);
+  const[resentConfirm,setResentConfirm]=useState(false);
+
+  const resendConfirmation=async()=>{
+    if(!email||!supabase||resendingConfirm)return;
+    setResendingConfirm(true);
+    await supabase.auth.resend({type:"signup",email});
+    setResendingConfirm(false);setResentConfirm(true);
+    setTimeout(()=>setResentConfirm(false),5000);
+  };
 
   const submitForgot=async()=>{if(!email){setErr("Bitte E-Mail eingeben.");return;}setLoading(true);setErr("");const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+"/portal"});if(error)setErr(error.message);else setForgotDone(true);setLoading(false);};
   const submit=async()=>{
     if(!email.trim()||!pw.trim()||!supabase)return;
     setLoading(true);setErr("");
     const{error}=await supabase.auth.signInWithPassword({email,password:pw});
-    if(error)setErr(error.message==="Invalid login credentials"?"E-Mail oder Passwort falsch.":error.message);
+    if(error){
+      if(error.message==="Invalid login credentials"){setErr("E-Mail oder Passwort falsch.");setEmailNotConfirmed(false);}
+      else if(error.message.toLowerCase().includes("email not confirmed")||error.message.toLowerCase().includes("not confirmed")){setErr("Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse.");setEmailNotConfirmed(true);}
+      else{setErr(error.message);setEmailNotConfirmed(false);}
+    }
     setLoading(false);
   };
 
@@ -907,7 +922,15 @@ function PortalLogin({onBack}){
         <Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>
         <Field label="Passwort" value={pw} onChange={setPw} placeholder="Ihr Passwort" type="password"/>
         <div style={{textAlign:"right",marginTop:-14,marginBottom:16}}><button onClick={()=>{setForgotPw(true);setErr("");}} style={{background:"none",border:"none",color:T.accent,fontSize:".78rem",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Passwort vergessen?</button></div>
-        {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{err}</div>}
+        {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>
+          {err}
+          {emailNotConfirmed&&<div style={{marginTop:8}}>
+            <span style={{color:"#92400e",fontSize:".75rem"}}>Prüfen Sie Ihren Posteingang und Spam-Ordner. </span>
+            <button onClick={resendConfirmation} disabled={resendingConfirm} style={{background:"none",border:"none",color:T.accent,fontSize:".75rem",cursor:"pointer",fontFamily:T.font,fontWeight:700,padding:0,textDecoration:"underline"}}>
+              {resentConfirm?"Gesendet!":resendingConfirm?"...":"Bestätigungsmail erneut senden"}
+            </button>
+          </div>}
+        </div>}
         <button onClick={submit} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:10,background:loading?"#94a3b8":T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
           {loading?"...":"Anmelden \u2192"}
         </button>

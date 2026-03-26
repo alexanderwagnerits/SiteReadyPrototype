@@ -106,8 +106,17 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important}
   .lp-footer-cols{flex-direction:column!important;gap:24px!important;text-align:center!important}
   .lp-footer-cols>div{gap:8px!important}
-  .lp-cta-section{padding:72px 0!important}
+  .lp-cta-section{padding:56px 0!important}
+  .lp-cta-stats{flex-direction:column!important;gap:16px!important}
   .lp-cta-stats>div{justify-content:center!important}
+  .lp-cta-inner h2{font-size:clamp(1.6rem,6vw,2.2rem)!important}
+  .lp-compare table th:nth-child(n+4),.lp-compare table td:nth-child(n+4){display:none!important}
+  .lp-compare{position:relative}
+  .lp-branchen-card{grid-template-columns:1fr!important}
+  footer{padding:48px 0 32px!important}
+  .pt-topbar{padding:0 16px!important}
+  .pt-email{display:none!important}
+  .pt-sub-bar{padding-bottom:8px!important}
 }
 @media(max-width:960px){
   .sp-topbar{padding:0 20px!important}
@@ -118,6 +127,10 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 }
 @media(max-width:560px){
   .sp-content{padding:16px!important}
+  .sp-card{padding:20px 16px!important}
+  .sp-name-grid{grid-template-columns:1fr!important}
+  .sp-price-row{flex-direction:column!important;align-items:stretch!important}
+  .sp-price-row button{width:100%!important}
 }
 @media(max-width:960px){
   .ad-wrap{flex-direction:column!important;height:auto!important;min-height:calc(100vh - 56px)!important}
@@ -126,6 +139,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .ad-status-sec{display:none!important}
   .ad-main{padding:16px!important}
   .sp-incl-grid{grid-template-columns:1fr!important}
+  .sp-name-grid{grid-template-columns:1fr!important}
 }
 @media(max-width:560px){
   .pt-info-row{grid-template-columns:1fr!important}
@@ -189,7 +203,7 @@ function LandingPage({onStart,onPortal}){
         <button onClick={onPortal} style={{background:"transparent",color:scrolled?T.textSub:"rgba(255,255,255,.7)",padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:"1rem",border:"none",cursor:"pointer",fontFamily:T.font,minHeight:44,transition:"color .3s"}}>Kunden-Portal</button>
         <button onClick={onStart} style={{background:scrolled?T.dark:"#fff",color:scrolled?"#fff":T.dark,padding:"12px 26px",borderRadius:8,fontWeight:700,fontSize:"1rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em",minHeight:44,transition:"all .3s"}}>Jetzt starten</button>
       </div>
-      <button className="lp-hamburger" onClick={()=>setMenuOpen(o=>!o)} aria-label="Menü" style={{color:T.dark}}>
+      <button className="lp-hamburger" onClick={()=>setMenuOpen(o=>!o)} aria-label="Menü" style={{color:scrolled?T.dark:"#fff"}}>
         {menuOpen
           ?<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           :<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
@@ -661,8 +675,8 @@ function SuccessPage({data,onBack}){
       {/* 2 Karten */}
       <div className="sp-grid" style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:24}}>
         {/* Paket + Preis */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`2px solid ${T.bg3}`,boxShadow:T.sh2}}>
-          <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:20,paddingBottom:20,borderBottom:`1px solid ${T.bg3}`}}>
+        <div className="sp-card" style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`2px solid ${T.bg3}`,boxShadow:T.sh2}}>
+          <div className="sp-price-row" style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:20,paddingBottom:20,borderBottom:`1px solid ${T.bg3}`,flexWrap:"wrap",gap:12}}>
             <div>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:10}}>7 Tage kostenlos testen</div>
               <div style={{display:"flex",alignItems:"baseline",gap:6}}>
@@ -682,7 +696,7 @@ function SuccessPage({data,onBack}){
           {/* Registrierung */}
           <div style={{marginBottom:20}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Account erstellen</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+            <div className="sp-name-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
               <div>
                 <label style={{display:"block",marginBottom:5,fontSize:".78rem",fontWeight:700,color:T.textSub}}>Vorname <span style={{color:"#ef4444"}}>*</span></label>
                 <input value={vorname} onChange={e=>setVorname(e.target.value)} placeholder="Alexander" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:14,fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
@@ -717,7 +731,7 @@ function SuccessPage({data,onBack}){
           <div style={{marginTop:12,textAlign:"center",fontSize:".72rem",color:T.textMuted}}>Sichere Zahlung via Stripe &middot; Karte, EPS, PayPal</div>
         </div>
         {/* Portal */}
-        <div style={{background:T.bg,borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`}}>
+        <div className="sp-card" style={{background:T.bg,borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".1em"}}>Self-Service-Portal</div>
             <span style={{fontSize:".65rem",fontWeight:700,background:T.accentLight,color:T.accent,padding:"2px 8px",borderRadius:4,letterSpacing:".06em"}}>Nach Kauf</span>
@@ -1062,14 +1076,16 @@ function Portal({session,onLogout}){
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",flexDirection:"column"}}><style>{css}</style>
     {/* Topbar */}
-    <div style={{background:"#fff",borderBottom:`1px solid ${T.bg3}`,padding:"0 32px",height:72,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-      <div style={{display:"flex",alignItems:"center",gap:12}}>
+    <div className="pt-topbar" style={{background:"#fff",borderBottom:`1px solid ${T.bg3}`,padding:"0 32px",flexShrink:0}}>
+      <div style={{height:72,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <img src="/logo.png" alt="SiteReady" style={{height:36}}/>
-        <span style={{fontSize:".75rem",color:T.textMuted,background:T.bg,border:`1px solid ${T.bg3}`,padding:"3px 10px",borderRadius:4,fontFamily:T.mono}}>{sub}.siteready.at</span>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <span className="pt-email" style={{fontSize:".82rem",color:T.textSub}}>{session?.user?.email}</span>
+          <button onClick={onLogout} style={{padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,minHeight:44}}>Logout</button>
+        </div>
       </div>
-      <div style={{display:"flex",alignItems:"center",gap:16}}>
-        <span style={{fontSize:".82rem",color:T.textSub}}>{session?.user?.email}</span>
-        <button onClick={onLogout} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Logout</button>
+      <div className="pt-sub-bar" style={{paddingBottom:12}}>
+        <span style={{fontSize:".75rem",color:T.textMuted,background:T.bg,border:`1px solid ${T.bg3}`,padding:"4px 12px",borderRadius:6,fontFamily:T.mono,display:"inline-block"}}>{sub}.siteready.at</span>
       </div>
     </div>
     {/* Content */}

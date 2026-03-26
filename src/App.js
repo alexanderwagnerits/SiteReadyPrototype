@@ -2750,7 +2750,7 @@ function Admin({adminKey}){
         const logLabel=(action,details)=>{const d=details||{};switch(action){case"website_generated":return"Website erstmals generiert";case"website_regenerated":return"Website neu generiert";case"status_changed":return`Status: ${STATUS_LABELS[d.from]||d.from} \u2192 ${STATUS_LABELS[d.to]||d.to}`;case"offline":return"Offline genommen";case"online":return"Wieder online gesetzt";case"subdomain_changed":return`Subdomain: ${d.from} \u2192 ${d.to}`;case"stil_changed":return`Stil: ${d.from} \u2192 ${d.to}`;case"trial_extended":return`Trial +${d.days} Tage verlaengert`;case"ticket_created":return`Ticket erstellt: ${d.subject||""}`;case"ticket_answered":return`Ticket beantwortet: ${d.subject||""}`;case"checkout_completed":return`Checkout: ${d.plan||"monatlich"}`;case"payment_succeeded":return d.promoted_to_live?"Zahlung \u2192 Live geschaltet":"Zahlung erfolgreich";case"payment_failed":return"Zahlung fehlgeschlagen";case"subscription_canceled":return"Abo beendet";case"subscription_updated":return`Abo-Status: ${d.status||""}`;default:return action;}};
         const logIcon=(action)=>({"website_generated":"\u2728","website_regenerated":"\u21bb","status_changed":"\u21aa","offline":"\u23f8","online":"\u25b6","subdomain_changed":"\u270f","stil_changed":"\u25a3","trial_extended":"\u23e9","ticket_created":"\u2709","ticket_answered":"\u2713","checkout_completed":"\u2714","payment_succeeded":"\u2714","payment_failed":"\u26a0","subscription_canceled":"\u2716","subscription_updated":"\u21ba"}[action]||"\u25cf");
         return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-        <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:1280,maxHeight:"96vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
+        <div style={{background:"#fff",borderRadius:12,width:"100%",maxWidth:1400,maxHeight:"96vh",overflowY:"auto",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
           {/* Modal Header */}
           <div style={{padding:"16px 24px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#fff",zIndex:1,borderRadius:"12px 12px 0 0"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
@@ -2771,7 +2771,7 @@ function Admin({adminKey}){
             <button onClick={()=>updateOrder(sel.id,{last_error:null}).then(()=>setSel(s=>({...s,last_error:null})))} style={{flexShrink:0,padding:"3px 10px",border:"1px solid #fecaca",borderRadius:T.rSm,background:"#fff",color:"#991b1b",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>&#10003; Abgehakt</button>
           </div>}
           {/* Diagnose-Panel */}
-          {diagReport&&<div style={{margin:"12px 24px 0",padding:"14px 18px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+          {diagReport&&<div style={{margin:"12px 24px 0",padding:"18px 24px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Diagnose</div>
               <button onClick={()=>setDiagReport(null)} style={{background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:".85rem",lineHeight:1}}>&times;</button>
@@ -2789,11 +2789,11 @@ function Admin({adminKey}){
             );})}
           </div>}
           {/* Drei Spalten */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:0}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
             {/* Linke Spalte: Infos */}
-            <div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`}}>
+            <div style={{padding:"24px 28px",borderRight:`1px solid ${T.bg3}`}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
+                <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
                 {!editKunde
                   ?<button onClick={()=>setEditKunde({firmenname:sel.firmenname||"",email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||""})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">✏️</button>
                   :<div style={{display:"flex",gap:6}}>
@@ -2857,9 +2857,9 @@ function Admin({adminKey}){
             </div>
             {/* Mittlere Spalte: Infos oben, Kritisches unten */}
             {(()=>{
-              const cardTitle=(label)=><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
-              const card=(children)=><div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
-              return(<div style={{padding:"20px 24px",borderRight:`1px solid ${T.bg3}`,display:"flex",flexDirection:"column",gap:12}}>
+              const cardTitle=(label)=><div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
+              const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
+              return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:14}}>
                 {/* --- INFOS --- */}
                 {/* 1. Links */}
                 {card(<>
@@ -3015,11 +3015,11 @@ function Admin({adminKey}){
               </div>);
             })()}
             {/* Rechte Spalte: Notiz + Status */}
-            <div style={{padding:"20px 24px"}}>
+            <div style={{padding:"24px 28px"}}>
               {/* Interne Notiz */}
               <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
+                  <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
                   <button onClick={()=>saveNotiz(sel.id)} title="Speichern" style={{background:"none",border:"none",cursor:"pointer",padding:4,color:notizSaved[sel.id]?T.green:T.textMuted,fontSize:"1rem",lineHeight:1}}>
                     {notizSaved[sel.id]?"✓":"✏️"}
                   </button>
@@ -3031,7 +3031,7 @@ function Admin({adminKey}){
                 const selTickets=tickets.filter(t=>t.email&&sel.email&&t.email.toLowerCase()===sel.email.toLowerCase());
                 return(<div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                    <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Support-Tickets{selTickets.length>0?` (${selTickets.length})`:""}</div>
+                    <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Support-Tickets{selTickets.length>0?` (${selTickets.length})`:""}</div>
                     <button onClick={()=>{setTicketForm(f=>({...f,email:sel.email||""}));setTicketFormOpen(true);setTab("support");setSel(null);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:".72rem",color:T.accent,fontWeight:700,fontFamily:T.font,padding:0}}>+ Neu</button>
                   </div>
                   {selTickets.length===0
@@ -3050,36 +3050,30 @@ function Admin({adminKey}){
                   }
                 </div>);
               })()}
-              {/* Aktivitaetslog */}
-              <div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Aktivitaetslog</div>
-                {logsLoading[sel.id]
-                  ?<div style={{fontSize:".78rem",color:T.textMuted}}>Laedt...</div>
-                  :(orderLogs[sel.id]||[]).length===0
-                    ?<div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
-                    :<div style={{display:"flex",flexDirection:"column",gap:5}}>
-                        {(orderLogs[sel.id]||[]).map(log=>(
-                          <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"7px 9px",background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                            <span style={{fontSize:".8rem",flexShrink:0,minWidth:16,textAlign:"center"}}>{logIcon(log.action)}</span>
-                            <div style={{flex:1,minWidth:0}}>
-                              <div style={{fontSize:".77rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
-                              {log.actor==="system"&&<div style={{fontSize:".68rem",color:T.textMuted}}>via Stripe</div>}
-                            </div>
-                            <div style={{fontSize:".68rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
-                          </div>
-                        ))}
-                      </div>
-                }
-              </div>
-              {/* Backup (Platzhalter) */}
-              <div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Backup</div>
-                  <span style={{padding:"2px 8px",borderRadius:20,background:"#f1f5f9",color:T.textMuted,fontSize:".65rem",fontWeight:700}}>Kommt bald</span>
-                </div>
-                <div style={{marginTop:8,fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>Website-Backups und Wiederherstellung werden hier verfuegbar sein.</div>
-              </div>
             </div>
+          </div>
+          {/* Aktivitaetslog — Full-Width unter dem Grid */}
+          <div style={{padding:"20px 28px",borderTop:`1px solid ${T.bg3}`}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+              <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Aktivitaetslog</div>
+            </div>
+            {logsLoading[sel.id]
+              ?<div style={{fontSize:".8rem",color:T.textMuted}}>Laedt...</div>
+              :(orderLogs[sel.id]||[]).length===0
+                ?<div style={{fontSize:".8rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
+                :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8}}>
+                    {(orderLogs[sel.id]||[]).map(log=>(
+                      <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                        <span style={{fontSize:".85rem",flexShrink:0,minWidth:18,textAlign:"center"}}>{logIcon(log.action)}</span>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:".8rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
+                          {log.actor==="system"&&<div style={{fontSize:".7rem",color:T.textMuted}}>via Stripe</div>}
+                        </div>
+                        <div style={{fontSize:".7rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
+                      </div>
+                    ))}
+                  </div>
+            }
           </div>
           {/* Prozess-Details aufklappbar */}
           <div style={{borderTop:`1px solid ${T.bg3}`}}>

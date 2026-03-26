@@ -2784,7 +2784,6 @@ function Admin({adminKey}){
               {selHasFailed&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fef2f2",color:"#991b1b",fontSize:".7rem",fontWeight:700}}>&#9888; Fehler</span>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <button onClick={()=>diagnoseOrder(sel)} disabled={diagRunning} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:diagReport?"#fff":T.bg,color:T.textSub,cursor:diagRunning?"wait":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>{diagRunning?"Prüfe...":diagReport?"Erneut prüfen":"Diagnose"}</button>
               {(selStuckPending||selStuckGen||selHasFailed)&&<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":selHasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"...":selHasFailed?"Retry":"Neu starten"}</button>}
               <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
             </div>
@@ -2883,20 +2882,24 @@ function Admin({adminKey}){
               const cardTitle=(label)=><div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
               const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:14,borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
-                {/* Quick-Info Chips */}
-                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",background:"#f0f4ff",borderRadius:T.rSm,border:"1px solid #c7d2fe",textDecoration:"none",fontSize:".78rem",fontWeight:600,color:"#6366f1"}}>
-                    Website {"\u2197"}
-                  </a>}
-                  {selHInfo&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:selHInfo.c+"12",borderRadius:T.rSm,border:`1px solid ${selHInfo.c}33`,fontSize:".78rem",fontWeight:600,color:selHInfo.c}}>
-                    {selHInfo.label}{selMs?<span style={{fontFamily:T.mono,fontSize:".72rem",opacity:.7}}> {selMs}ms</span>:null}
-                  </span>}
-                  {sel.quality_score!==null&&sel.quality_score!==undefined&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:sel.quality_score>=80?T.green+"12":"#d97706"+"12",borderRadius:T.rSm,border:`1px solid ${sel.quality_score>=80?T.green:"#d97706"}33`,fontSize:".78rem",fontWeight:600,color:sel.quality_score>=80?T.green:"#d97706"}}>
-                    Score: {sel.quality_score}
-                  </span>}
-                  {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,textDecoration:"none",fontSize:".78rem",fontWeight:600,color:T.textSub}}>
-                    Stripe {"\u2197"}
-                  </a>}
+                {/* Website-Link */}
+                {sel.subdomain&&<div>
+                  {cardTitle("Website")}
+                  <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"block",fontSize:".82rem",fontFamily:T.mono,color:T.accent,textDecoration:"none",wordBreak:"break-all",lineHeight:1.5}}>
+                    sitereadyprototype.pages.dev/s/{sel.subdomain} {"\u2197"}
+                  </a>
+                </div>}
+                {/* Health-Check */}
+                <div>
+                  {cardTitle("Health-Check")}
+                  <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+                    {selHInfo
+                      ?<span style={{color:selHInfo.c,fontWeight:700,fontSize:".85rem"}}>{selHInfo.label}{selMs?<span style={{fontWeight:400,color:T.textMuted,fontFamily:T.mono,fontSize:".78rem"}}> &middot; {selMs}ms</span>:null}</span>
+                      :<span style={{fontSize:".82rem",color:T.textMuted}}>Noch nicht geprueft</span>}
+                    <button onClick={()=>checkHealth(sel)} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Jetzt pruefen</button>
+                  </div>
+                  {selCheckedAt&&<div style={{fontSize:".7rem",color:T.textMuted,marginTop:4}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</div>}
+                  {sel.quality_score!==null&&sel.quality_score!==undefined&&<div style={{fontSize:".78rem",marginTop:6}}><span style={{color:T.textMuted}}>Quality Score: </span><span style={{fontWeight:700,color:sel.quality_score>=80?T.green:"#d97706"}}>{sel.quality_score}/100</span></div>}
                 </div>
                 {/* 3. Subdomain & Stil (mit Bearbeitungs-Icon) */}
                 {card((()=>{
@@ -2952,57 +2955,53 @@ function Admin({adminKey}){
                     }
                   </>);
                 })())}
-                {/* --- KRITISCHE PROZESSE --- */}
+                {/* --- AKTIONEN --- */}
                 <div style={{borderTop:`1px solid ${T.bg3}`,paddingTop:4}}/>
-                {/* 4. Aktionen */}
-                {card(<>
-                  {cardTitle("Aktionen")}
-                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    <div>
-                      {sel.website_html
-                        ?regenConfirm===sel.id
-                          ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                          :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}</button>
-                        :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,transition:"background .2s"}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":`\u2728 Website generieren`}</button>
-                      }
-                    </div>
-                    {regenConfirm===sel.id&&<div style={{background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
-                      <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben.</div>
-                      <button onClick={()=>{setRegenConfirm(null);generateWebsite(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Neu generieren</button>
-                    </div>}
-                    {genMsg[sel.id]&&<div style={{fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
-                    {sel.website_html&&<button onClick={()=>{const w=window.open("","_blank");if(w){w.document.open();w.document.write(sel.website_html);w.document.close();}}} style={{padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>HTML anzeigen</button>}
-                    <div style={{display:"flex",gap:8}}>
-                      {sel.status==="offline"
-                        ?<button onClick={()=>{updateOrder(sel.id,{status:"live"});logActivity(sel.id,"online");}} style={{flex:1,padding:"7px 12px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Wieder online</button>
-                        :<>
-                          {offlineConfirm===sel.id
-                            ?<button onClick={()=>setOfflineConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                            :<button onClick={()=>sel.website_html&&setOfflineConfirm(sel.id)} disabled={!sel.website_html} style={{flex:1,padding:"7px 12px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Offline nehmen</button>
-                          }
-                        </>
-                      }
-                      {deleteConfirm===sel.id
-                        ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"7px 12px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
-                        :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"7px 12px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Kunden loeschen</button>
-                      }
-                    </div>
-                    {offlineConfirm===sel.id&&<div style={{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:T.rSm,padding:"12px 14px"}}>
-                      <div style={{fontSize:".78rem",color:"#475569",marginBottom:8}}>Website wird fuer Besucher nicht mehr erreichbar sein.</div>
-                      <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);logActivity(sel.id,"offline");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
-                    </div>}
-                    {deleteConfirm===sel.id&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
-                      <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung – unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
-                      <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
-                      <div style={{display:"flex",gap:6}}>
-                        <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
-                        <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
-                      </div>
-                    </div>}
+                {cardTitle("Aktionen")}
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {/* Generieren */}
+                  <div>
+                    {sel.website_html
+                      ?regenConfirm===sel.id
+                        ?<button onClick={()=>setRegenConfirm(null)} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                        :<button onClick={()=>setRegenConfirm(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":"Website neu generieren"}</button>
+                      :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?"#94a3b8":T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":`\u2728 Website generieren`}</button>}
                   </div>
-                </>)}
-                {/* 5. Notfall: Status setzen (immer ganz unten) */}
-                {card(<>
+                  {regenConfirm===sel.id&&<div style={{background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
+                    <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben.</div>
+                    <button onClick={()=>{setRegenConfirm(null);generateWebsite(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Neu generieren</button>
+                  </div>}
+                  {genMsg[sel.id]&&<div style={{fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
+                  {/* Diagnose */}
+                  <button onClick={()=>diagnoseOrder(sel)} disabled={diagRunning} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:diagReport?"#fff":T.bg,color:T.textSub,cursor:diagRunning?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>{diagRunning?"Diagnose laeuft...":diagReport?"Erneut pruefen":"Diagnose starten"}</button>
+                  {sel.website_html&&<button onClick={()=>{const w=window.open("","_blank");if(w){w.document.open();w.document.write(sel.website_html);w.document.close();}}} style={{padding:"8px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>HTML anzeigen</button>}
+                  <div style={{display:"flex",gap:8}}>
+                    {sel.status==="offline"
+                      ?<button onClick={()=>{updateOrder(sel.id,{status:"live"});logActivity(sel.id,"online");}} style={{flex:1,padding:"8px 16px",border:"2px solid #16a34a",borderRadius:T.rSm,background:"#fff",color:"#16a34a",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Wieder online</button>
+                      :<>
+                        {offlineConfirm===sel.id
+                          ?<button onClick={()=>setOfflineConfirm(null)} style={{flex:1,padding:"8px 16px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                          :<button onClick={()=>sel.website_html&&setOfflineConfirm(sel.id)} disabled={!sel.website_html} style={{flex:1,padding:"8px 16px",border:"2px solid #64748b",borderRadius:T.rSm,background:"#fff",color:sel.website_html?"#64748b":"#cbd5e1",cursor:sel.website_html?"pointer":"default",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Offline nehmen</button>}
+                      </>}
+                    {deleteConfirm===sel.id
+                      ?<button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:"8px 16px",border:"2px solid #94a3b8",borderRadius:T.rSm,background:"#fff",color:"#64748b",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
+                      :<button onClick={()=>setDeleteConfirm(sel.id)} style={{flex:1,padding:"8px 16px",border:"2px solid #ef4444",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Kunden loeschen</button>}
+                  </div>
+                </div>
+                {offlineConfirm===sel.id&&<div style={{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:T.rSm,padding:"12px 14px"}}>
+                  <div style={{fontSize:".78rem",color:"#475569",marginBottom:8}}>Website wird fuer Besucher nicht mehr erreichbar sein.</div>
+                  <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);logActivity(sel.id,"offline");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
+                </div>}
+                {deleteConfirm===sel.id&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
+                  <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung – unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
+                  <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <input id="del-confirm-input" autoFocus placeholder="LOESCHEN" style={{flex:1,padding:"7px 10px",border:"2px solid #fca5a5",borderRadius:T.rSm,fontSize:".82rem",fontFamily:"monospace",outline:"none",background:"#fff"}}/>
+                    <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
+                  </div>
+                </div>}
+                {/* Notfall: Status setzen */}
+                <div style={{marginTop:4,padding:"12px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                   <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
                     <span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Notfall: Status setzen</span>
                     <span style={{fontSize:".65rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>{"\u25bc"}</span>
@@ -3012,7 +3011,7 @@ function Admin({adminKey}){
                       <button key={s} onClick={sel.status!==s?()=>{const prev=sel.status;updateOrder(sel.id,{status:s});logActivity(sel.id,"status_changed",{from:prev,to:s});}:undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?` \u2713`:""}</button>
                     ))}
                   </div>}
-                </>)}
+                </div>
               </div>);
             })()}
             {/* Rechte Spalte: Notiz, Tickets */}
@@ -3050,30 +3049,36 @@ function Admin({adminKey}){
                   }
                 </div>);
               })()}
-            </div>
-          </div>
-          {/* Aktivitaetslog — Full-Width unter dem Grid */}
-          <div style={{padding:"20px 28px",borderTop:`1px solid ${T.bg3}`}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-              <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Aktivitaetslog</div>
-            </div>
-            {logsLoading[sel.id]
-              ?<div style={{fontSize:".8rem",color:T.textMuted}}>Laedt...</div>
-              :(orderLogs[sel.id]||[]).length===0
-                ?<div style={{fontSize:".8rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
-                :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8}}>
-                    {(orderLogs[sel.id]||[]).map(log=>(
-                      <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                        <span style={{fontSize:".85rem",flexShrink:0,minWidth:18,textAlign:"center"}}>{logIcon(log.action)}</span>
-                        <div style={{flex:1,minWidth:0}}>
-                          <div style={{fontSize:".8rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
-                          {log.actor==="system"&&<div style={{fontSize:".7rem",color:T.textMuted}}>via Stripe</div>}
-                        </div>
-                        <div style={{fontSize:".7rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
+              {/* Aktivitaetslog */}
+              <div>
+                <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Aktivitaetslog</div>
+                {logsLoading[sel.id]
+                  ?<div style={{fontSize:".8rem",color:T.textMuted}}>Laedt...</div>
+                  :(orderLogs[sel.id]||[]).length===0
+                    ?<div style={{fontSize:".8rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
+                    :<div style={{display:"flex",flexDirection:"column",gap:4}}>
+                        {(orderLogs[sel.id]||[]).map(log=>(
+                          <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"7px 10px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                            <span style={{fontSize:".8rem",flexShrink:0,minWidth:16,textAlign:"center"}}>{logIcon(log.action)}</span>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{fontSize:".77rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
+                              {log.actor==="system"&&<div style={{fontSize:".68rem",color:T.textMuted}}>via Stripe</div>}
+                            </div>
+                            <div style={{fontSize:".68rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-            }
+                }
+              </div>
+              {/* Backup (Platzhalter) */}
+              <div style={{padding:"12px 14px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Backup</div>
+                  <span style={{padding:"2px 8px",borderRadius:20,background:"#f1f5f9",color:T.textMuted,fontSize:".65rem",fontWeight:700}}>Kommt bald</span>
+                </div>
+                <div style={{marginTop:6,fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>Website-Backups und Wiederherstellung.</div>
+              </div>
+            </div>
           </div>
           {/* Prozess-Details aufklappbar */}
           <div style={{borderTop:`1px solid ${T.bg3}`}}>

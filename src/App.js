@@ -1987,6 +1987,13 @@ function Admin({adminKey}){
     const logs=orderLogs[order.id]||[];
     info.push({label:"Aktivitaeten",value:logs.length>0?`${logs.length} Eintraege`:"Keine Logs"});
     if(logs.length===0&&ageMin>5)issues.push({severity:"warn",msg:"Keine Activity-Logs vorhanden – kein Prozess-Schritt wurde protokolliert"});
+    /* Quality Score */
+    if(order.quality_score!==null&&order.quality_score!==undefined){
+      info.push({label:"Quality-Score",value:`${order.quality_score}/100`});
+      if(order.quality_score<80)issues.push({severity:"warn",msg:`Quality-Score ${order.quality_score}/100 – Website pruefen`});
+      if(order.quality_issues&&Array.isArray(order.quality_issues)&&order.quality_issues.length>0)
+        issues.push({severity:"warn",msg:`Qualitaetsprobleme: ${order.quality_issues.join(", ")}`});
+    }
     /* Fehler */
     if(order.last_error)issues.push({severity:"error",msg:`Letzter Fehler: ${order.last_error}`});
     /* Ergebnis */
@@ -2085,6 +2092,8 @@ function Admin({adminKey}){
   if(liveNoStripe.length)alerts.push({type:"warn",msg:`${liveNoStripe.length} Live-Kunde${liveNoStripe.length>1?"n":""} ohne Stripe-Verknuepfung`,tab:"sites"});
   const failedOrders=orders.filter(o=>o.last_error);
   if(failedOrders.length)alerts.push({type:"error",msg:`${failedOrders.length} Bestellung${failedOrders.length>1?"en":""} mit Fehler`,tab:"sites"});
+  const lowQuality=orders.filter(o=>o.quality_score!==null&&o.quality_score!==undefined&&o.quality_score<80);
+  if(lowQuality.length)alerts.push({type:"warn",msg:`${lowQuality.length} Website${lowQuality.length>1?"s":""} mit Quality-Score unter 80`,tab:"sites"});
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"sites",label:"Sites",badge:regenBadge},

@@ -37,7 +37,7 @@ export async function onRequestPost({request, env, ctx}) {
       order = orders[0];
     }
 
-    // 4. trial_expires_at setzen (7 Tage ab jetzt), Status bleibt pending bis Generierung fertig
+    // trial_expires_at setzen (7 Tage ab jetzt), Status bleibt pending bis Generierung fertig
     const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const patch = {regen_requested: false, trial_expires_at: trialExpiresAt};
     if (fotos !== null) patch.fotos = fotos;
@@ -53,15 +53,55 @@ export async function onRequestPost({request, env, ctx}) {
       body: JSON.stringify(patch),
     });
 
-    // 5. Website-Generierung im Hintergrund starten (setzt status: trial nach Abschluss)
+    // Website-Generierung im Hintergrund + Auto-Retry nach 5 Min bei Fehler
     if (env.SITE_URL && env.ADMIN_SECRET) {
-      ctx.waitUntil(
-        fetch(`${env.SITE_URL}/api/generate-website?key=${env.ADMIN_SECRET}`, {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({order_id: order.id}),
-        }).catch(() => {})
-      );
+      ctx.waitUntil((async () => {
+        const genUrl = `${env.SITE_URL}/api/generate-website?key=${env.ADMIN_SECRET}`;
+        const genBody = JSON.stringify({order_id: order.id});
+        const genHeaders = {"Content-Type": "application/json"};
+
+        // 1. Versuch
+        try {
+          const r = await fetch(genUrl, {method: "POST", headers: genHeaders, body: genBody});
+          if (r.ok) return; // Erfolg
+        } catch(_) {}
+
+        // 2. Versuch nach 5 Minuten
+        await new Promise(res => setTimeout(res, 5 * 60 * 1000));
+        try {
+          await fetch(genUrl, {method: "POST", headers: genHeaders, body: genBody});
+        } catch(_) {}
+      })());
+    }
+
+    // Auto-Resend Bestaetigungsmail nach 10 Min falls nicht bestaetigt
+    if (body.order_id && env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
+      ctx.waitUntil((async () => {
+        await new Promise(res => setTimeout(res, 10 * 60 * 1000));
+        // Pruefen ob User bestaetigt ist
+        const email = (await (await fetch(
+          `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order.id}&select=email`,
+          {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
+        )).json())?.[0]?.email;
+        if (!email) return;
+        // User-Status pruefen via Admin API
+        const usersRes = await fetch(
+          `${env.SUPABASE_URL}/auth/v1/admin/users?page=1&per_page=1`,
+          {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
+        );
+        if (!usersRes.ok) return;
+        const usersData = await usersRes.json();
+        const allUsers = usersData?.users || [];
+        const user = allUsers.find(u => u.email === email);
+        if (user && !user.email_confirmed_at) {
+          // Bestaetigungsmail erneut senden
+          await fetch(`${env.SUPABASE_URL}/auth/v1/resend`, {
+            method: "POST",
+            headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Content-Type": "application/json"},
+            body: JSON.stringify({type: "signup", email}),
+          });
+        }
+      })());
     }
 
     return Response.json({ok: true});

@@ -549,6 +549,46 @@ window.addEventListener('scroll',upd,{passive:true});upd();
     html = html.replace("</body>", floatBtn + "\n</body>");
   }
 
+  /* ─── Auto Quality-Check ─── */
+  let qualityScore = 0;
+  const qualityIssues = [];
+  try {
+    const title = (html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || "";
+    const desc = (html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i) || [])[1] || "";
+    const ogTitle = /<meta\s+property=["']og:title["']/i.test(html);
+    const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
+    const hasViewport = /<meta\s+name=["']viewport["']/i.test(html);
+    const hasLang = /<html[^>]*\slang=/i.test(html);
+    const hasForm = /<form[\s>]/i.test(html);
+    const hasLegal = /\/legal/i.test(html);
+    const hasPhone = /tel:/i.test(html);
+    const hasEmail = /mailto:/i.test(html);
+    const checks = [
+      {ok: !!title, w: 10},
+      {ok: title.length >= 40 && title.length <= 65, w: 5},
+      {ok: !!desc, w: 10},
+      {ok: desc.length >= 100 && desc.length <= 160, w: 5},
+      {ok: ogTitle, w: 5},
+      {ok: h1Count === 1, w: 10},
+      {ok: hasViewport, w: 10},
+      {ok: hasLang, w: 5},
+      {ok: hasForm, w: 10},
+      {ok: hasLegal, w: 10},
+      {ok: hasPhone, w: 10},
+      {ok: hasEmail, w: 10},
+    ];
+    const maxScore = checks.reduce((a, c) => a + c.w, 0);
+    const gotScore = checks.reduce((a, c) => a + (c.ok ? c.w : 0), 0);
+    qualityScore = Math.round((gotScore / maxScore) * 100);
+    if (!title) qualityIssues.push("Kein Titel");
+    if (!desc) qualityIssues.push("Keine Meta-Description");
+    if (h1Count !== 1) qualityIssues.push(`${h1Count} H1-Tags (erwartet: 1)`);
+    if (!hasForm) qualityIssues.push("Kein Kontaktformular");
+    if (!hasLegal) qualityIssues.push("Kein Impressum-Link");
+    if (!hasPhone) qualityIssues.push("Kein Telefon-Link");
+    if (!hasEmail) qualityIssues.push("Kein E-Mail-Link");
+  } catch(_) { qualityScore = 0; }
+
   /* ─── In Supabase speichern + Status setzen ─── */
   const save = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`,
@@ -563,6 +603,8 @@ window.addEventListener('scroll',upd,{passive:true});upd();
       body: JSON.stringify({
         website_html: html, subdomain: sub, status: "trial",
         tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
+        quality_score: qualityScore,
+        quality_issues: qualityIssues.length ? qualityIssues : null,
         ...(srData?.text_ueber_uns ? {text_ueber_uns: srData.text_ueber_uns} : {}),
         ...(srData?.text_vorteile  ? {text_vorteile:  srData.text_vorteile}  : {}),
         ...(srData?.leistungen_beschreibungen ? {leistungen_beschreibungen: srData.leistungen_beschreibungen} : {}),
@@ -570,7 +612,7 @@ window.addEventListener('scroll',upd,{passive:true});upd();
     }
   );
 
-  return Response.json({ok: save.ok, subdomain: sub, status: "live"});
+  return Response.json({ok: save.ok, subdomain: sub, status: "live", quality_score: qualityScore});
   } catch(e) {
     try {
       await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {

@@ -595,6 +595,9 @@ function SuccessPage({data,onBack}){
   const[pw2,setPw2]=useState("");
   const[pwTouched,setPwTouched]=useState(false);
   const[pw2Touched,setPw2Touched]=useState(false);
+  const[confirmed,setConfirmed]=useState(false);
+  const[resending,setResending]=useState(false);
+  const[resent,setResent]=useState(false);
   const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
   const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwoerter stimmen nicht ueberein":"";
   const regOk=vorname.trim().length>0&&nachname.trim().length>0&&pw.length>=8&&pw===pw2;
@@ -625,18 +628,25 @@ function SuccessPage({data,onBack}){
       facebook:data.facebook||null,instagram:data.instagram||null,linkedin:data.linkedin||null,tiktok:data.tiktok||null
     });
     if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
-    // 2. Website-Generierung starten (laeuft im Hintergrund, setzt status:trial nach Abschluss)
-    const token=authData?.session?.access_token;
-    if(token){
+    // 2. Website-Generierung starten (mit Service-Key statt User-Token)
+    try{
       await fetch("/api/start-build",{
         method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-        body:JSON.stringify({})
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({order_id:orderId})
       });
-    }
+    }catch(_){}
     setSaving(false);
-    // 3. Direkt zum Portal weiterleiten
-    window.location.href="/portal";
+    // 3. Bestaetigungsseite zeigen statt sofortigem Redirect
+    localStorage.setItem("sr_pending_email",data.email);
+    setConfirmed(true);
+  };
+  const resendEmail=async()=>{
+    if(!supabase||resending)return;
+    setResending(true);
+    await supabase.auth.resend({type:"signup",email:data.email});
+    setResending(false);setResent(true);
+    setTimeout(()=>setResent(false),5000);
   };
   const included=[
     {t:"Subdomain sofort live",d:`${sub}.siteready.at – sofort erreichbar.`},
@@ -652,6 +662,41 @@ function SuccessPage({data,onBack}){
     {t:"Daten jederzeit anpassen",d:"Adresse, Telefon, Leistungen – änderbar wenn sich etwas ändert."},
     {t:"Custom Domain verbinden",d:"z.B. www.ihre-firma.at statt der Subdomain."},
   ];
+  /* Bestaetigungsseite nach Account-Erstellung */
+  if(confirmed)return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",padding:"0 24px"}}><style>{css}</style>
+    <div style={{maxWidth:480,width:"100%",textAlign:"center"}}>
+      <div style={{width:72,height:72,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2rem",margin:"0 auto 24px",border:"2px solid rgba(22,163,74,.2)"}}>{"\u2713"}</div>
+      <h1 style={{fontSize:"1.8rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.03em"}}>Account erstellt!</h1>
+      <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,margin:"0 0 24px"}}>Wir haben eine Bestätigungs-E-Mail an <strong>{data.email}</strong> gesendet. Bitte bestätigen Sie Ihre E-Mail-Adresse, um sich einloggen zu können.</p>
+      {/* Hinweis-Box */}
+      <div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#fefce8",border:"1px solid #fde68a",borderRadius:T.rSm,padding:"14px 16px",marginBottom:20,textAlign:"left"}}>
+        <span style={{fontSize:"1.1rem",flexShrink:0}}>✉️</span>
+        <div style={{fontSize:".82rem",color:"#92400e",lineHeight:1.6}}>
+          <strong>Prüfen Sie auch Ihren Spam-Ordner.</strong> Die E-Mail kommt von <strong>noreply@siteready.at</strong> und kann einige Minuten dauern.
+        </div>
+      </div>
+      {/* Website-Generierung Info */}
+      <div style={{display:"flex",alignItems:"flex-start",gap:10,background:T.accentLight,border:`1px solid rgba(143,163,184,.15)`,borderRadius:T.rSm,padding:"14px 16px",marginBottom:24,textAlign:"left"}}>
+        <span style={{fontSize:"1.1rem",flexShrink:0}}>🚀</span>
+        <div style={{fontSize:".82rem",color:T.accent,lineHeight:1.6}}>
+          <strong>Ihre Website wird gerade erstellt</strong> und ist in wenigen Minuten unter <strong>{sub}.siteready.at</strong> erreichbar. Sie können den Fortschritt nach dem Login im Portal verfolgen.
+        </div>
+      </div>
+      {/* Buttons */}
+      <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
+        <button onClick={()=>{window.location.href="/portal";}} style={{padding:"14px 32px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".95rem",fontWeight:700,fontFamily:T.font,cursor:"pointer",boxShadow:"0 2px 16px rgba(0,0,0,.12)"}}>
+          Zum Login &rarr;
+        </button>
+        <button onClick={resendEmail} disabled={resending} style={{padding:"10px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".82rem",fontWeight:600,fontFamily:T.font,cursor:resending?"wait":"pointer"}}>
+          {resent?"Erneut gesendet!":resending?"Wird gesendet...":"Keine E-Mail erhalten? Erneut senden"}
+        </button>
+      </div>
+      <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
+        7 Tage kostenlos testen &middot; Keine Kreditkarte erforderlich
+      </div>
+    </div>
+  </div>);
+
   return(<div className="sp-page" style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",flexDirection:"column",overflow:"hidden"}}><style>{css}</style>
     {/* Top bar */}
     <div className="sp-topbar" style={{padding:"0 40px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between",height:72,flexShrink:0}}>

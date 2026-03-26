@@ -2773,7 +2773,7 @@ function Admin({adminKey}){
         const logLabel=(action,details)=>{const d=details||{};switch(action){case"website_generated":return"Website erstmals generiert";case"website_regenerated":return"Website neu generiert";case"status_changed":return`Status: ${STATUS_LABELS[d.from]||d.from} \u2192 ${STATUS_LABELS[d.to]||d.to}`;case"offline":return"Offline genommen";case"online":return"Wieder online gesetzt";case"subdomain_changed":return`Subdomain: ${d.from} \u2192 ${d.to}`;case"stil_changed":return`Stil: ${d.from} \u2192 ${d.to}`;case"trial_extended":return`Trial +${d.days} Tage verlaengert`;case"ticket_created":return`Ticket erstellt: ${d.subject||""}`;case"ticket_answered":return`Ticket beantwortet: ${d.subject||""}`;case"checkout_completed":return`Checkout: ${d.plan||"monatlich"}`;case"payment_succeeded":return d.promoted_to_live?"Zahlung \u2192 Live geschaltet":"Zahlung erfolgreich";case"payment_failed":return"Zahlung fehlgeschlagen";case"subscription_canceled":return"Abo beendet";case"subscription_updated":return`Abo-Status: ${d.status||""}`;default:return action;}};
         const logIcon=(action)=>({"website_generated":"\u2728","website_regenerated":"\u21bb","status_changed":"\u21aa","offline":"\u23f8","online":"\u25b6","subdomain_changed":"\u270f","stil_changed":"\u25a3","trial_extended":"\u23e9","ticket_created":"\u2709","ticket_answered":"\u2713","checkout_completed":"\u2714","payment_succeeded":"\u2714","payment_failed":"\u26a0","subscription_canceled":"\u2716","subscription_updated":"\u21ba"}[action]||"\u25cf");
         return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.35)",display:"flex",alignItems:"center",justifyContent:"center",padding:"2.5vh 2.5vw"}}>
-        <div style={{background:"#fff",borderRadius:14,width:"95vw",maxWidth:1600,height:"95vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,.2)"}}>
+        <div style={{background:"#fff",borderRadius:14,width:"95vw",maxWidth:1600,maxHeight:"95vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,.2)",overflowY:"auto"}}>
           {/* Modal Header */}
           <div style={{padding:"16px 24px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"#fff",zIndex:1,borderRadius:"12px 12px 0 0"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
@@ -2811,7 +2811,7 @@ function Admin({adminKey}){
             );})}
           </div>}
           {/* Drei Spalten */}
-          <div style={{display:"grid",gridTemplateColumns:"2fr 2fr 1.5fr",gap:0,flex:1,overflow:"hidden"}}>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 2fr 1.5fr",gap:0,minHeight:400}}>
             {/* Linke Spalte: Kundendaten */}
             <div style={{padding:"24px 28px",borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
@@ -2881,16 +2881,18 @@ function Admin({adminKey}){
             {(()=>{
               const cardTitle=(label)=><div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
               const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
-              return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:14,borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
+              const secStyle={padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`};
+              return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:12,borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
                 {/* Website-Link */}
-                {sel.subdomain&&<div>
+                {sel.subdomain&&<div style={secStyle}>
                   {cardTitle("Website")}
                   <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"block",fontSize:".82rem",fontFamily:T.mono,color:T.accent,textDecoration:"none",wordBreak:"break-all",lineHeight:1.5}}>
                     sitereadyprototype.pages.dev/s/{sel.subdomain} {"\u2197"}
                   </a>
+                  {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"block",fontSize:".78rem",color:T.textSub,textDecoration:"none",marginTop:6}}>Stripe-Kunde {"\u2197"}</a>}
                 </div>}
                 {/* Health-Check */}
-                <div>
+                <div style={secStyle}>
                   {cardTitle("Health-Check")}
                   <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
                     {selHInfo
@@ -2901,8 +2903,8 @@ function Admin({adminKey}){
                   {selCheckedAt&&<div style={{fontSize:".7rem",color:T.textMuted,marginTop:4}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</div>}
                   {sel.quality_score!==null&&sel.quality_score!==undefined&&<div style={{fontSize:".78rem",marginTop:6}}><span style={{color:T.textMuted}}>Quality Score: </span><span style={{fontWeight:700,color:sel.quality_score>=80?T.green:"#d97706"}}>{sel.quality_score}/100</span></div>}
                 </div>
-                {/* 3. Subdomain & Stil (mit Bearbeitungs-Icon) */}
-                {card((()=>{
+                {/* Subdomain & Stil */}
+                <div style={secStyle}>{(()=>{
                   const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false};
                   const editing=!!sc.editing;
                   const setsc=v=>setSiteConfig(c=>({...c,[sel.id]:{...sc,...v}}));
@@ -2954,9 +2956,9 @@ function Admin({adminKey}){
                         </div>
                     }
                   </>);
-                })())}
+                })()}</div>
                 {/* --- AKTIONEN --- */}
-                <div style={{borderTop:`1px solid ${T.bg3}`,paddingTop:4}}/>
+                <div style={secStyle}>
                 {cardTitle("Aktionen")}
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
                   {/* Generieren */}
@@ -3000,8 +3002,9 @@ function Admin({adminKey}){
                     <button onClick={()=>{const v=document.getElementById("del-confirm-input")?.value||"";if(v==="LOESCHEN")deleteOrder(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Loeschen</button>
                   </div>
                 </div>}
+                </div>{/* Ende Aktionen secStyle */}
                 {/* Notfall: Status setzen */}
-                <div style={{marginTop:4,padding:"12px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                <div style={{padding:"12px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                   <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
                     <span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Notfall: Status setzen</span>
                     <span style={{fontSize:".65rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>{"\u25bc"}</span>
@@ -3081,9 +3084,9 @@ function Admin({adminKey}){
             </div>
           </div>
           {/* Prozess-Details aufklappbar */}
-          <div style={{borderTop:`1px solid ${T.bg3}`}}>
-            <button onClick={()=>setShowProzess(p=>!p)} style={{width:"100%",padding:"12px 28px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontSize:".82rem",fontWeight:700,color:T.textMuted,fontFamily:T.font}}>
-              <span>&#128269; Technische Details &amp; Prozess-Timeline</span>
+          <div style={{borderTop:`1px solid ${T.bg3}`,flexShrink:0}}>
+            <button onClick={()=>setShowProzess(p=>!p)} style={{width:"100%",padding:"14px 28px",background:showProzess?T.bg:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontSize:".88rem",fontWeight:700,color:T.dark,fontFamily:T.font}}>
+              <span>Technische Details &amp; Prozess-Timeline</span>
               <span style={{transition:"transform .2s",display:"inline-block",transform:showProzess?"rotate(180deg)":"rotate(0deg)"}}>&#9660;</span>
             </button>
             {showProzess&&(()=>{

@@ -2811,11 +2811,11 @@ function Admin({adminKey}){
               </div>
             );})}
           </div>}
-          {/* Drei Spalten */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0}}>
-            {/* Linke Spalte: Infos */}
+          {/* Zwei Spalten */}
+          <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:0}}>
+            {/* Linke Spalte: Kundendaten + Aktionen */}
             <div style={{padding:"24px 28px",borderRight:`1px solid ${T.bg3}`}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
                 <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
                 {!editKunde
                   ?<button onClick={()=>setEditKunde({firmenname:sel.firmenname||"",email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||""})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">✏️</button>
@@ -2836,8 +2836,8 @@ function Admin({adminKey}){
                     <strong>Subdomain:</strong> URL ändert sich sofort &ndash; danach Website neu generieren.
                   </div>
                   </div>
-                :<div style={{display:"flex",flexDirection:"column",gap:0}}>
-                  {(()=>{const gb=GRUPPE_BADGE[getBrancheGruppe(sel.branche)];return(<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}><span style={{color:T.textMuted,fontWeight:500}}>Berufsgruppe</span><span style={{display:"inline-flex",alignItems:"center",gap:5}}><span style={{padding:"1px 8px",borderRadius:20,background:gb.bg,color:gb.c,fontSize:".72rem",fontWeight:700}}>{gb.icon} {gb.label}</span></span></div>);})()}
+                :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 24px"}}>
+                  {(()=>{const gb=GRUPPE_BADGE[getBrancheGruppe(sel.branche)];return(<div style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}><span style={{color:T.textMuted,fontWeight:500}}>Berufsgruppe</span><span style={{display:"inline-flex",alignItems:"center",gap:5}}><span style={{padding:"1px 8px",borderRadius:20,background:gb.bg,color:gb.c,fontSize:".72rem",fontWeight:700}}>{gb.icon} {gb.label}</span></span></div>);})()}
                   {(()=>{
                     const _selExp=sel.trial_expires_at||(sel.created_at?new Date(new Date(sel.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                     const trialLeft=sel.status==="trial"&&_selExp?Math.ceil((new Date(_selExp)-Date.now())/(1000*60*60*24)):null;
@@ -2863,12 +2863,12 @@ function Admin({adminKey}){
                     } else {
                       zahlungContent=<span style={{fontSize:".78rem",color:T.textMuted}}>{["pending","in_arbeit"].includes(sel.status)?"—":"Kein Abo"}</span>;
                     }
-                    return(<div style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                    return(<div style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                       <span style={{color:T.textMuted,fontWeight:600}}>Zahlung</span>
                       {zahlungContent}
                     </div>);
                   })()}
-                  {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"130px 1fr",padding:"8px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                  {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Unternehmensform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"],["Subdomain",sel.subdomain],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                     <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
                     <span style={{display:"flex",alignItems:"center",gap:4,color:T.dark}}>
                       <span>{v}</span>
@@ -2878,48 +2878,58 @@ function Admin({adminKey}){
                 </div>
               }
             </div>
-            {/* Mittlere Spalte: Infos oben, Kritisches unten */}
+            {/* Rechte Spalte: Notiz, Tickets, Quick Actions */}
             {(()=>{
               const cardTitle=(label)=><div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
-              const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:14}}>
-                {/* --- INFOS --- */}
-                {/* 1. Links */}
-                {card(<>
-                  {cardTitle("Links")}
-                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    {sel.subdomain
-                      ?<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:"#f0f4ff",borderRadius:T.rSm,border:"1px solid #c7d2fe",textDecoration:"none",color:T.dark}}>
-                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>Website</div>
-                            <div style={{fontSize:".72rem",color:T.textMuted,fontFamily:T.mono,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>/s/{sel.subdomain}</div>
+                {/* Quick-Info Bar: Website + Health in einer Zeile */}
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {sel.subdomain&&<a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",background:"#f0f4ff",borderRadius:T.rSm,border:"1px solid #c7d2fe",textDecoration:"none",fontSize:".78rem",fontWeight:600,color:"#6366f1"}}>
+                    Website &nearr;
+                  </a>}
+                  {selHInfo&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:selHInfo.c+"12",borderRadius:T.rSm,border:`1px solid ${selHInfo.c}33`,fontSize:".78rem",fontWeight:600,color:selHInfo.c}}>
+                    {selHInfo.label}{selMs?<span style={{fontFamily:T.mono,fontSize:".72rem",opacity:.7}}> {selMs}ms</span>:null}
+                  </span>}
+                  {sel.quality_score!==null&&sel.quality_score!==undefined&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:sel.quality_score>=80?T.green+"12":"#d97706"+"12",borderRadius:T.rSm,border:`1px solid ${sel.quality_score>=80?T.green:"#d97706"}33`,fontSize:".78rem",fontWeight:600,color:sel.quality_score>=80?T.green:"#d97706"}}>
+                    Score: {sel.quality_score}
+                  </span>}
+                  {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,padding:"6px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,textDecoration:"none",fontSize:".78rem",fontWeight:600,color:T.textSub}}>
+                    Stripe &nearr;
+                  </a>}
+                </div>
+                {/* Interne Notiz */}
+                <div>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+                    <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
+                    <button onClick={()=>saveNotiz(sel.id)} title="Speichern" style={{background:"none",border:"none",cursor:"pointer",padding:4,color:notizSaved[sel.id]?T.green:T.textMuted,fontSize:".85rem",lineHeight:1}}>
+                      {notizSaved[sel.id]?"\u2713":"\u270f\ufe0f"}
+                    </button>
+                  </div>
+                  <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={3} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
+                </div>
+                {/* Support-Tickets */}
+                {(()=>{
+                  const selTickets=tickets.filter(t=>t.email&&sel.email&&t.email.toLowerCase()===sel.email.toLowerCase());
+                  return(<div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                      <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Support-Tickets{selTickets.length>0?` (${selTickets.length})`:""}</div>
+                      <button onClick={()=>{setTicketForm(f=>({...f,email:sel.email||""}));setTicketFormOpen(true);setTab("support");setSel(null);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:".72rem",color:T.accent,fontWeight:700,fontFamily:T.font,padding:0}}>+ Neu</button>
+                    </div>
+                    {selTickets.length===0
+                      ?<div style={{fontSize:".8rem",color:T.textMuted,padding:"8px 0"}}>Noch keine Tickets.</div>
+                      :<div style={{display:"flex",flexDirection:"column",gap:6}}>
+                        {selTickets.map(t=><div key={t.id} style={{padding:"10px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${t.status==="offen"?"#fde68a":T.bg3}`}}>
+                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3,gap:6}}>
+                            <span style={{fontWeight:700,fontSize:".78rem",color:T.dark,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</span>
+                            <span style={{padding:"1px 7px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".65rem",fontWeight:700,flexShrink:0}}>{t.status==="offen"?"Offen":"Erledigt"}</span>
                           </div>
-                          <CopyBtn k="website_url" v={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`}/>
-                          <span style={{color:"#6366f1",fontSize:".82rem",flexShrink:0}}>{"\u2197"}</span>
-                        </a>
-                      :<div style={{padding:"10px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".82rem",color:T.textMuted}}>Noch keine Subdomain vergeben.</div>
+                          <div style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(t.created_at)}</div>
+                          {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"}).then(()=>setTickets(ts=>ts.map(x=>x.id===t.id?{...x,status:"beantwortet"}:x)))} style={{marginTop:4,padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".68rem",fontWeight:600,fontFamily:T.font}}>Beantwortet</button>}
+                        </div>)}
+                      </div>
                     }
-                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,textDecoration:"none",color:T.dark}}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                      <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:T.textSub}}>Stripe-Kunde</span>
-                      <CopyBtn k="stripe_id" v={sel.stripe_customer_id}/>
-                      <span style={{color:T.textMuted,fontSize:".75rem"}}>{"\u2197"}</span>
-                    </a>}
-                  </div>
-                </>)}
-                {/* 2. Health-Check */}
-                {card(<>
-                  {cardTitle("Health-Check")}
-                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                    {selHInfo
-                      ?<span style={{color:selHInfo.c,fontWeight:700,fontSize:".85rem"}}>{selHInfo.label}{selMs?<span style={{fontWeight:400,color:T.textMuted,fontFamily:T.mono,fontSize:".78rem"}}> &middot; {selMs}ms</span>:null}</span>
-                      :<span style={{fontSize:".82rem",color:T.textMuted}}>Noch nicht geprueft</span>
-                    }
-                    {selCheckedAt&&<span style={{fontSize:".72rem",color:T.textMuted}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</span>}
-                    <button onClick={()=>checkHealth(sel)} style={{marginTop:2,padding:"6px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,alignSelf:"flex-start"}}>Jetzt pruefen</button>
-                  </div>
-                </>)}
+                  </div>);
+                })()}
                 {/* 3. Subdomain & Stil (mit Bearbeitungs-Icon) */}
                 {card((()=>{
                   const sc=siteConfig[sel.id]||{subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false};
@@ -3037,43 +3047,6 @@ function Admin({adminKey}){
                 </>)}
               </div>);
             })()}
-            {/* Rechte Spalte: Notiz + Status */}
-            <div style={{padding:"24px 28px"}}>
-              {/* Interne Notiz */}
-              <div style={{padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                  <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
-                  <button onClick={()=>saveNotiz(sel.id)} title="Speichern" style={{background:"none",border:"none",cursor:"pointer",padding:4,color:notizSaved[sel.id]?T.green:T.textMuted,fontSize:"1rem",lineHeight:1}}>
-                    {notizSaved[sel.id]?"✓":"✏️"}
-                  </button>
-                </div>
-                <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={6} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
-              </div>
-              {/* Tickets dieses Kunden */}
-              {(()=>{
-                const selTickets=tickets.filter(t=>t.email&&sel.email&&t.email.toLowerCase()===sel.email.toLowerCase());
-                return(<div style={{marginTop:12,padding:"14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                    <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Support-Tickets{selTickets.length>0?` (${selTickets.length})`:""}</div>
-                    <button onClick={()=>{setTicketForm(f=>({...f,email:sel.email||""}));setTicketFormOpen(true);setTab("support");setSel(null);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:".72rem",color:T.accent,fontWeight:700,fontFamily:T.font,padding:0}}>+ Neu</button>
-                  </div>
-                  {selTickets.length===0
-                    ?<div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Tickets.</div>
-                    :<div style={{display:"flex",flexDirection:"column",gap:8}}>
-                      {selTickets.map(t=><div key={t.id} style={{padding:"10px 12px",background:"#fff",borderRadius:T.rSm,border:`1px solid ${t.status==="offen"?"#fde68a":T.bg3}`}}>
-                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,gap:8}}>
-                          <span style={{fontWeight:700,fontSize:".78rem",color:T.dark,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</span>
-                          <span style={{padding:"1px 7px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".65rem",fontWeight:700,flexShrink:0}}>{t.status==="offen"?"Offen":"Erledigt"}</span>
-                        </div>
-                        <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:6}}>{fmtDate(t.created_at)}</div>
-                        <p style={{margin:0,fontSize:".75rem",color:T.textSub,lineHeight:1.5}}>{t.message}</p>
-                        {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"}).then(()=>setTickets(ts=>ts.map(x=>x.id===t.id?{...x,status:"beantwortet"}:x)))} style={{marginTop:6,padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".68rem",fontWeight:600,fontFamily:T.font}}>Beantwortet</button>}
-                      </div>)}
-                    </div>
-                  }
-                </div>);
-              })()}
-            </div>
           </div>
           {/* Aktivitaetslog — Full-Width unter dem Grid */}
           <div style={{padding:"20px 28px",borderTop:`1px solid ${T.bg3}`}}>

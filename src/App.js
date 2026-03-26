@@ -1711,6 +1711,11 @@ function Admin({adminKey}){
   const[docEditTitle,setDocEditTitle]=useState("");
   const[docEditContent,setDocEditContent]=useState("");
   const[docSaving,setDocSaving]=useState(false);
+  /* Support Agent State */
+  const[agentSite,setAgentSite]=useState("");
+  const[agentRunning,setAgentRunning]=useState(false);
+  const[agentReport,setAgentReport]=useState(null);
+  const[agentMode,setAgentMode]=useState("website");/* website | system | daten */
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1893,6 +1898,136 @@ function Admin({adminKey}){
     w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiteReady – ${title}</title><style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;max-width:960px;margin:32px auto;padding:0 24px;color:#1e293b;font-size:.82rem}h1,h2{font-weight:800;color:#1e293b}button{display:none!important}@media print{body{margin:16px auto}}</style></head><body>${el.innerHTML}</body></html>`);
     w.document.close();setTimeout(()=>w.print(),400);
   };
+  /* ═══ SUPPORT AGENT LOGIC ═══ */
+  const analyzeWebsite=async(order)=>{
+    const url=`https://sitereadyprototype.pages.dev/s/${order.subdomain}`;
+    const checks={seo:[],inhalt:[],technik:[],accessibility:[]};
+    let html="";let loadMs=0;let httpOk=false;
+    try{
+      const t0=Date.now();
+      const r=await fetch(url);
+      loadMs=Date.now()-t0;
+      httpOk=r.ok;
+      html=await r.text();
+    }catch(e){
+      checks.technik.push({label:"Website erreichbar",ok:false,detail:"Nicht erreichbar: "+e.message,severity:"error"});
+      return{order,checks,score:0,loadMs:0,httpOk:false};
+    }
+    const doc=new DOMParser().parseFromString(html,"text/html");
+    /* SEO */
+    const title=doc.querySelector("title")?.textContent||"";
+    checks.seo.push({label:"Titel vorhanden",ok:!!title,detail:title?`"${title.slice(0,60)}" (${title.length} Zeichen)`:"Kein <title> gefunden",severity:title?"ok":"error"});
+    if(title)checks.seo.push({label:"Titel-Laenge optimal (50-60 Z.)",ok:title.length>=50&&title.length<=60,detail:`${title.length} Zeichen`,severity:title.length>=40&&title.length<=65?"ok":"warn"});
+    const desc=doc.querySelector('meta[name="description"]')?.getAttribute("content")||"";
+    checks.seo.push({label:"Meta-Description vorhanden",ok:!!desc,detail:desc?`${desc.length} Zeichen`:"Keine Description",severity:desc?"ok":"error"});
+    if(desc)checks.seo.push({label:"Description-Laenge (120-155 Z.)",ok:desc.length>=120&&desc.length<=155,detail:`${desc.length} Zeichen`,severity:desc.length>=100&&desc.length<=160?"ok":"warn"});
+    const ogTitle=doc.querySelector('meta[property="og:title"]');
+    checks.seo.push({label:"OG-Tags vorhanden",ok:!!ogTitle,detail:ogTitle?"og:title gesetzt":"Keine Open Graph Tags",severity:ogTitle?"ok":"warn"});
+    const h1s=doc.querySelectorAll("h1");
+    checks.seo.push({label:"Genau eine H1-Ueberschrift",ok:h1s.length===1,detail:`${h1s.length} H1-Tag(s) gefunden`,severity:h1s.length===1?"ok":h1s.length===0?"error":"warn"});
+    const imgs=doc.querySelectorAll("img");
+    const imgsNoAlt=[...imgs].filter(i=>!i.getAttribute("alt"));
+    checks.seo.push({label:"Bilder mit Alt-Text",ok:imgsNoAlt.length===0,detail:imgs.length===0?"Keine Bilder":`${imgs.length-imgsNoAlt.length}/${imgs.length} haben Alt-Text`,severity:imgsNoAlt.length===0?"ok":"warn"});
+    /* Inhalt */
+    const hasPhone=html.includes("tel:")||/\+?\d[\d\s\-\/]{6,}/.test(html);
+    checks.inhalt.push({label:"Telefonnummer vorhanden",ok:hasPhone,detail:hasPhone?"Gefunden":"Keine Telefonnummer erkannt",severity:hasPhone?"ok":"warn"});
+    const hasEmail=html.includes("mailto:")||/[\w.-]+@[\w.-]+\.\w{2,}/.test(html);
+    checks.inhalt.push({label:"E-Mail-Adresse vorhanden",ok:hasEmail,detail:hasEmail?"Gefunden":"Keine E-Mail erkannt",severity:hasEmail?"ok":"warn"});
+    const hasAddr=/\d{4}\s+\w/.test(html)||html.toLowerCase().includes("adresse");
+    checks.inhalt.push({label:"Adresse vorhanden",ok:hasAddr,detail:hasAddr?"Gefunden":"Keine Adresse erkannt",severity:hasAddr?"ok":"warn"});
+    const hasForm=doc.querySelector("form")!==null;
+    checks.inhalt.push({label:"Kontaktformular vorhanden",ok:hasForm,detail:hasForm?"Formular gefunden":"Kein Formular",severity:hasForm?"ok":"error"});
+    const hasImpressum=html.includes("/legal")||html.toLowerCase().includes("impressum");
+    checks.inhalt.push({label:"Impressum-Link vorhanden",ok:hasImpressum,detail:hasImpressum?"Verlinkt":"Kein Impressum-Link gefunden",severity:hasImpressum?"ok":"error"});
+    const hasDatenschutz=html.includes("/legal")||html.toLowerCase().includes("datenschutz");
+    checks.inhalt.push({label:"Datenschutz-Link vorhanden",ok:hasDatenschutz,detail:hasDatenschutz?"Verlinkt":"Kein Datenschutz-Link gefunden",severity:hasDatenschutz?"ok":"error"});
+    const sections=doc.querySelectorAll("section, [id]");
+    checks.inhalt.push({label:"Sektionen strukturiert",ok:sections.length>=3,detail:`${sections.length} Sektionen/IDs gefunden`,severity:sections.length>=3?"ok":"warn"});
+    /* Technik */
+    checks.technik.push({label:"Website erreichbar",ok:httpOk,detail:httpOk?`HTTP OK`:"HTTP-Fehler",severity:httpOk?"ok":"error"});
+    checks.technik.push({label:"Ladezeit unter 2 Sekunden",ok:loadMs<2000,detail:`${loadMs}ms`,severity:loadMs<1000?"ok":loadMs<2000?"warn":"error"});
+    const viewport=doc.querySelector('meta[name="viewport"]');
+    checks.technik.push({label:"Viewport-Meta gesetzt",ok:!!viewport,detail:viewport?"Vorhanden":"Fehlt — nicht mobile-optimiert",severity:viewport?"ok":"error"});
+    const charset=doc.querySelector('meta[charset]')||html.includes("charset=");
+    checks.technik.push({label:"Charset definiert",ok:!!charset,detail:charset?"UTF-8":"Kein Charset",severity:charset?"ok":"warn"});
+    const brokenImgs=[...imgs].filter(i=>{const s=i.getAttribute("src");return !s||s==="undefined"||s==="null";});
+    checks.technik.push({label:"Keine kaputten Bild-URLs",ok:brokenImgs.length===0,detail:brokenImgs.length===0?"Alle Quellen OK":`${brokenImgs.length} kaputte Bild-URL(s)`,severity:brokenImgs.length===0?"ok":"error"});
+    const https=url.startsWith("https");
+    checks.technik.push({label:"HTTPS aktiv",ok:https,detail:https?"Ja":"Kein HTTPS",severity:https?"ok":"error"});
+    /* Accessibility */
+    const lang=doc.documentElement.getAttribute("lang");
+    checks.accessibility.push({label:"Lang-Attribut gesetzt",ok:!!lang,detail:lang?`lang="${lang}"`:"Fehlt — Screenreader-Problem",severity:lang?"ok":"warn"});
+    const headings=[...doc.querySelectorAll("h1,h2,h3,h4,h5,h6")];
+    const headingOrder=headings.every((h,i)=>{if(i===0)return true;const prev=parseInt(headings[i-1].tagName[1]);const cur=parseInt(h.tagName[1]);return cur<=prev+1;});
+    checks.accessibility.push({label:"Heading-Hierarchie logisch",ok:headingOrder,detail:headingOrder?"Korrekte Reihenfolge":"Spruenge in der Ueberschrift-Hierarchie",severity:headingOrder?"ok":"warn"});
+    const links=doc.querySelectorAll("a");
+    const emptyLinks=[...links].filter(a=>!a.textContent.trim()&&!a.getAttribute("aria-label")&&!a.querySelector("img"));
+    checks.accessibility.push({label:"Links mit Text/Label",ok:emptyLinks.length===0,detail:emptyLinks.length===0?"Alle Links haben Text":`${emptyLinks.length} Link(s) ohne Text`,severity:emptyLinks.length===0?"ok":"warn"});
+    const btns=doc.querySelectorAll("button,input[type='submit']");
+    const emptyBtns=[...btns].filter(b=>!b.textContent.trim()&&!b.getAttribute("aria-label"));
+    checks.accessibility.push({label:"Buttons mit Text/Label",ok:emptyBtns.length===0,detail:emptyBtns.length===0?"Alle Buttons haben Text":`${emptyBtns.length} Button(s) ohne Text`,severity:emptyBtns.length===0?"ok":"warn"});
+    /* Score berechnen */
+    const allChecks=[...checks.seo,...checks.inhalt,...checks.technik,...checks.accessibility];
+    const total=allChecks.length;
+    const passed=allChecks.filter(c=>c.ok).length;
+    const score=Math.round((passed/total)*100);
+    return{order,checks,score,loadMs,httpOk};
+  };
+
+  const runAgentAnalysis=async()=>{
+    if(agentMode==="website"){
+      const order=orders.find(o=>o.id===agentSite);
+      if(!order||!order.subdomain)return;
+      setAgentRunning(true);setAgentReport(null);
+      const report=await analyzeWebsite(order);
+      setAgentReport(report);setAgentRunning(false);
+    }else if(agentMode==="system"){
+      setAgentRunning(true);setAgentReport(null);
+      const results=[];
+      /* Supabase */
+      try{const t0=Date.now();const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();const ms=Date.now()-t0;
+        results.push({label:"Supabase",ok:j.supabase?.ok,detail:j.supabase?.ok?`OK (${j.supabase.latency||ms}ms)`:(j.supabase?.error||"Fehler"),severity:j.supabase?.ok?"ok":"error"});
+        results.push({label:"Anthropic (Claude)",ok:j.anthropic?.ok&&!j.anthropic?.billing,detail:j.anthropic?.billing?"Guthaben aufgebraucht!":j.anthropic?.ok?"API OK":(j.anthropic?.error||"Fehler"),severity:j.anthropic?.ok&&!j.anthropic?.billing?"ok":"error"});
+        results.push({label:"Stripe",ok:j.stripe?.ok,detail:j.stripe?.ok?(j.stripe.livemode?"Live-Modus":"Test-Modus"):(j.stripe?.error||"Fehler"),severity:j.stripe?.ok?"ok":"error"});
+      }catch(e){results.push({label:"System-API",ok:false,detail:"Nicht erreichbar: "+e.message,severity:"error"});}
+      /* Ext status */
+      try{const r=await fetch(`/api/ext-status?key=${adminKey}`);const j=await r.json();
+        ["anthropic","cloudflare","supabase","stripe"].forEach(k=>{
+          const s=j[k];
+          if(s&&s.status){const ind=s.status.indicator;results.push({label:`${k.charAt(0).toUpperCase()+k.slice(1)} Status-Page`,ok:ind==="none",detail:ind==="none"?"Betriebsbereit":ind==="minor"?"Kleinere Stoerung":"Stoerung/Ausfall",severity:ind==="none"?"ok":ind==="minor"?"warn":"error"});}
+        });
+      }catch(e){}
+      /* Website health batch */
+      const liveSites=orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status));
+      let reachable=0;let unreachable=0;
+      for(const o of liveSites.slice(0,10)){
+        try{await fetch(`https://sitereadyprototype.pages.dev/s/${o.subdomain}`,{mode:"no-cors",signal:AbortSignal.timeout(5000)});reachable++;}catch(e){unreachable++;}
+      }
+      results.push({label:`Websites erreichbar (${liveSites.length} gesamt)`,ok:unreachable===0,detail:`${reachable} OK, ${unreachable} fehlgeschlagen${liveSites.length>10?" (10 geprueft)":""}`,severity:unreachable===0?"ok":"error"});
+      setAgentReport({mode:"system",checks:results,score:Math.round((results.filter(r=>r.ok).length/results.length)*100)});
+      setAgentRunning(false);
+    }else if(agentMode==="daten"){
+      setAgentRunning(true);setAgentReport(null);
+      const issues=[];
+      orders.forEach(o=>{
+        if(o.status==="live"&&!o.subdomain)issues.push({label:`${o.firmenname||o.email}: Status "live" aber keine Subdomain`,severity:"error",ok:false,detail:"Website kann nicht aufgerufen werden"});
+        if(o.status==="live"&&!o.stripe_customer_id)issues.push({label:`${o.firmenname||o.email}: Status "live" aber kein Stripe-Kunde`,severity:"error",ok:false,detail:"Zahlung nicht verknuepft"});
+        if(o.stripe_customer_id&&["pending","in_arbeit"].includes(o.status)&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000)issues.push({label:`${o.firmenname||o.email}: Bezahlt aber noch nicht generiert`,severity:"warn",ok:false,detail:`Seit ${new Date(o.created_at).toLocaleDateString("de-AT")} wartend`});
+        if(o.status==="trial"){
+          const exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);
+          const tl=exp?Math.ceil((new Date(exp)-Date.now())/(1000*60*60*24)):999;
+          if(tl<=0)issues.push({label:`${o.firmenname||o.email}: Trial abgelaufen`,severity:"error",ok:false,detail:`Abgelaufen seit ${Math.abs(tl)} Tag(en)`});
+          else if(tl<=2)issues.push({label:`${o.firmenname||o.email}: Trial laeuft in ${tl}d ab`,severity:"warn",ok:false,detail:"Bald ablaufend — Kunde kontaktieren?"});
+        }
+        if(!o.email)issues.push({label:`Bestellung ${o.id.slice(0,8)}: Keine E-Mail-Adresse`,severity:"warn",ok:false,detail:"Kunde nicht kontaktierbar"});
+        if(o.status==="live"&&!o.firmenname)issues.push({label:`Bestellung ${o.id.slice(0,8)}: Kein Firmenname`,severity:"warn",ok:false,detail:"Firmenname fehlt bei Live-Website"});
+      });
+      if(issues.length===0)issues.push({label:"Keine Inkonsistenzen gefunden",severity:"ok",ok:true,detail:"Alle Datensaetze sind konsistent"});
+      setAgentReport({mode:"daten",checks:issues,score:issues.every(i=>i.ok)?100:Math.round(((orders.length-issues.filter(i=>!i.ok).length)/Math.max(orders.length,1))*100)});
+      setAgentRunning(false);
+    }
+  };
+
   const stuckOrders=orders.filter(o=>o.status==="pending"&&Date.now()-new Date(o.created_at).getTime()>2*60*60*1000);
   const regenBadge=stuckOrders.length||null;
   const alerts=[];
@@ -2152,10 +2287,12 @@ function Admin({adminKey}){
         })()}
 
         {/* Tab: Support */}
-        {!loading&&tab==="support"&&(<div>
+        {!loading&&tab==="support"&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"start"}}>
+          {/* Linke Spalte: Tickets */}
+          <div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Support-Anfragen</h2>
-            <button onClick={()=>setTicketFormOpen(o=>!o)} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:ticketFormOpen?T.dark:"#fff",color:ticketFormOpen?"#fff":T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Ticket erstellen</button>
+            <button onClick={()=>setTicketFormOpen(o=>!o)} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:ticketFormOpen?T.dark:"#fff",color:ticketFormOpen?"#fff":T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Ticket</button>
           </div>
           {ticketFormOpen&&<div style={{marginBottom:16,padding:"16px 20px",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>Manuelles Ticket</div>
@@ -2203,6 +2340,84 @@ function Admin({adminKey}){
               </div>);
             })}
           </div>}
+          </div>{/* Ende linke Spalte */}
+
+          {/* Rechte Spalte: Support Agent */}
+          <div style={{position:"sticky",top:0}}>
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh1,overflow:"hidden"}}>
+              {/* Agent Header */}
+              <div style={{padding:"16px 20px",borderBottom:`1px solid ${T.bg3}`,background:T.bg}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                  <div style={{width:28,height:28,borderRadius:6,background:T.dark,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10H5a2 2 0 0 0-2 2v1a7 7 0 0 0 14 0v-1a2 2 0 0 0-2-2z"/><line x1="12" y1="20" x2="12" y2="22"/></svg>
+                  </div>
+                  <div>
+                    <div style={{fontWeight:800,fontSize:".95rem",color:T.dark}}>Support Agent</div>
+                    <div style={{fontSize:".68rem",color:T.textMuted}}>Diagnose & Analyse</div>
+                  </div>
+                </div>
+                {/* Mode Tabs */}
+                <div style={{display:"flex",gap:4}}>
+                  {[{id:"website",label:"Website-Analyse"},{id:"system",label:"System-Check"},{id:"daten",label:"Daten-Check"}].map(m=>(
+                    <button key={m.id} onClick={()=>{setAgentMode(m.id);setAgentReport(null);}} style={{flex:1,padding:"6px 8px",border:`1.5px solid ${agentMode===m.id?T.accent:T.bg3}`,borderRadius:T.rSm,background:agentMode===m.id?T.accentLight:"#fff",color:agentMode===m.id?T.accent:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{m.label}</button>
+                  ))}
+                </div>
+              </div>
+              {/* Agent Body */}
+              <div style={{padding:"16px 20px"}}>
+                {agentMode==="website"&&<>
+                  <label style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6,display:"block"}}>Website auswaehlen</label>
+                  <select value={agentSite} onChange={e=>setAgentSite(e.target.value)} style={{width:"100%",padding:"8px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff",marginBottom:12}}>
+                    <option value="">Kunde auswaehlen...</option>
+                    {orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).sort((a,b)=>(a.firmenname||"").localeCompare(b.firmenname||"")).map(o=><option key={o.id} value={o.id}>{o.firmenname||o.email} ({o.subdomain})</option>)}
+                  </select>
+                </>}
+                {agentMode==="system"&&<p style={{fontSize:".82rem",color:T.textSub,margin:"0 0 12px",lineHeight:1.5}}>Prueft alle Services (Supabase, Stripe, Anthropic, Cloudflare) und die Erreichbarkeit aller Live-Websites.</p>}
+                {agentMode==="daten"&&<p style={{fontSize:".82rem",color:T.textSub,margin:"0 0 12px",lineHeight:1.5}}>Prueft alle Bestellungen auf Inkonsistenzen: fehlende Daten, abgelaufene Trials, Zahlungs-Probleme.</p>}
+                <button onClick={runAgentAnalysis} disabled={agentRunning||(agentMode==="website"&&!agentSite)} style={{width:"100%",padding:"10px",border:"none",borderRadius:T.rSm,background:(agentRunning||(agentMode==="website"&&!agentSite))?"#94a3b8":T.dark,color:"#fff",cursor:(agentRunning||(agentMode==="website"&&!agentSite))?"not-allowed":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,marginBottom:16}}>
+                  {agentRunning?"Analyse laeuft...":"Analyse starten"}
+                </button>
+                {/* Spinner */}
+                {agentRunning&&<div style={{display:"flex",justifyContent:"center",padding:20}}><div style={{width:24,height:24,borderRadius:"50%",border:`3px solid ${T.bg3}`,borderTopColor:T.accent,animation:"spin 1s linear infinite"}}/></div>}
+                {/* Report */}
+                {agentReport&&!agentRunning&&<div>
+                  {/* Score */}
+                  <div style={{textAlign:"center",marginBottom:16,padding:"16px 0",background:T.bg,borderRadius:T.rSm}}>
+                    <div style={{fontSize:"2.2rem",fontWeight:800,fontFamily:T.mono,color:agentReport.score>=80?T.green:agentReport.score>=50?"#d97706":"#dc2626",lineHeight:1}}>{agentReport.score}</div>
+                    <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginTop:4}}>Gesamt-Score</div>
+                    {agentReport.loadMs>0&&<div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>Ladezeit: {agentReport.loadMs}ms</div>}
+                  </div>
+                  {/* Checks nach Kategorie */}
+                  {agentReport.checks&&!Array.isArray(agentReport.checks)&&Object.entries(agentReport.checks).map(([cat,items])=>(
+                    <div key={cat} style={{marginBottom:14}}>
+                      <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>{cat} ({items.filter(c=>c.ok).length}/{items.length})</div>
+                      {items.map((c,i)=>{const sc=c.severity==="ok"?T.green:c.severity==="warn"?"#d97706":"#dc2626";return(
+                        <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"6px 0",borderBottom:i<items.length-1?`1px solid ${T.bg3}`:"none"}}>
+                          <span style={{width:7,height:7,borderRadius:"50%",background:sc,flexShrink:0,marginTop:5}}/>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontSize:".8rem",fontWeight:600,color:T.dark}}>{c.label}</div>
+                            <div style={{fontSize:".72rem",color:T.textMuted}}>{c.detail}</div>
+                          </div>
+                        </div>
+                      );})}
+                    </div>
+                  ))}
+                  {/* Flat checks (system/daten mode) */}
+                  {agentReport.checks&&Array.isArray(agentReport.checks)&&<div>
+                    {agentReport.checks.map((c,i)=>{const sc=c.severity==="ok"?T.green:c.severity==="warn"?"#d97706":"#dc2626";return(
+                      <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"8px 0",borderBottom:i<agentReport.checks.length-1?`1px solid ${T.bg3}`:"none"}}>
+                        <span style={{width:7,height:7,borderRadius:"50%",background:sc,flexShrink:0,marginTop:5}}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:".8rem",fontWeight:600,color:T.dark}}>{c.label}</div>
+                          <div style={{fontSize:".72rem",color:T.textMuted}}>{c.detail}</div>
+                        </div>
+                      </div>
+                    );})}
+                  </div>}
+                </div>}
+              </div>
+            </div>
+          </div>{/* Ende rechte Spalte */}
         </div>)}
         {/* Tab: System */}
         {!loading&&tab==="system"&&(<div>

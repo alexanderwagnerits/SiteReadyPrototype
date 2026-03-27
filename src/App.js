@@ -3018,13 +3018,14 @@ function Admin({adminKey}){
               const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               const secStyle={padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`};
               return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:12,borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
-                {/* Website-Link */}
+                {/* Links */}
                 {sel.subdomain&&<div style={secStyle}>
-                  {cardTitle("Website")}
-                  <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{display:"block",fontSize:".82rem",fontFamily:T.mono,color:T.accent,textDecoration:"none",wordBreak:"break-all",lineHeight:1.5}}>
-                    sitereadyprototype.pages.dev/s/{sel.subdomain} {"\u2197"}
-                  </a>
-                  {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{display:"block",fontSize:".78rem",color:T.textSub,textDecoration:"none",marginTop:6}}>Stripe-Kunde {"\u2197"}</a>}
+                  {cardTitle("Links")}
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                    <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",background:T.accent,color:"#fff",borderRadius:T.rSm,fontSize:".8rem",fontWeight:700,textDecoration:"none",fontFamily:T.font}}>Website {"\u2197"}</a>
+                    <a href={`https://sitereadyprototype.pages.dev/s/${sel.subdomain}/vcard`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".78rem",fontWeight:600,textDecoration:"none",fontFamily:T.font}}>Vcard {"\u2197"}</a>
+                    {sel.stripe_customer_id&&<a href={`https://dashboard.stripe.com/customers/${sel.stripe_customer_id}`} target="_blank" rel="noopener noreferrer" style={{padding:"8px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".78rem",fontWeight:600,textDecoration:"none",fontFamily:T.font}}>Stripe {"\u2197"}</a>}
+                  </div>
                 </div>}
                 {/* Health-Check */}
                 <div style={secStyle}>

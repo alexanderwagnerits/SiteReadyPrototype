@@ -32,7 +32,7 @@ export async function onRequestGet({params, env}) {
   if (!subdomain) return new Response("Not Found", {status: 404});
 
   const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,kurzbeschreibung,email,telefon,adresse,plz,ort,bundesland,oeffnungszeiten,oeffnungszeiten_custom,einsatzgebiet,leistungen,facebook,instagram,linkedin,tiktok,url_logo,stil,status`,
+    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,kurzbeschreibung,email,telefon,adresse,plz,ort,bundesland,oeffnungszeiten,einsatzgebiet,leistungen,facebook,instagram,linkedin,tiktok,url_logo,stil,status`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
   if (!r.ok) return new Response("DB-Fehler: " + r.status + " " + (await r.text()).slice(0,200), {status: 502});
@@ -49,7 +49,7 @@ export async function onRequestGet({params, env}) {
   const emailHref = o.email ? "mailto:" + o.email : "";
   const adr = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   const mapsUrl = adr ? `https://maps.google.com/maps?q=${encodeURIComponent(adr + ", \u00D6sterreich")}` : "";
-  const oez = o.oeffnungszeiten === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[o.oeffnungszeiten] || o.oeffnungszeiten || "");
+  const oez = OEZ_LABELS[o.oeffnungszeiten] || o.oeffnungszeiten || "";
   const websiteUrl = `https://sitereadyprototype.pages.dev/s/${subdomain}`;
   const vcardUrl = `/s/${subdomain}/vcard-contact`;
   const leistungen = o.leistungen || [];

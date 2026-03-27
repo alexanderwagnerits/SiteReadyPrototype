@@ -1104,7 +1104,15 @@ function Portal({session,onLogout}){
     :0;
 
   const sub=order?.subdomain||"ihre-firma";
-  const TABS=[{id:"website",label:"Meine Website"},{id:"medien",label:"Logo & Fotos"},{id:"seo",label:"SEO & Google"},{id:"domain",label:"Custom Domain"},{id:"rechnungen",label:"Rechnungen"},{id:"account",label:"Mein Account"},{id:"support",label:"Support"}];
+  const TABS=[
+    {id:"website",label:"Website",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`},
+    {id:"medien",label:"Medien",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`},
+    {id:"seo",label:"SEO",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`},
+    {id:"domain",label:"Domain",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`},
+    {id:"rechnungen",label:"Rechnungen",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`},
+    {id:"account",label:"Account",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`},
+    {id:"support",label:"Support",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`},
+  ];
 
   const loadInvoices=async()=>{
     if(invoices!==null||!session?.user?.email)return;
@@ -1132,25 +1140,29 @@ function Portal({session,onLogout}){
   };
 
   const SectionHeader=({id,label,badge})=>(
-    <div style={{marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
+    <div style={{marginBottom:16,paddingBottom:14,borderBottom:`1px solid ${T.bg3}`}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          {saved===id&&<span style={{color:T.green,fontSize:".78rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>{label}</div>
+          {badge==="instant"&&<span style={{fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100}}>Live</span>}
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          {saved===id&&<span style={{color:T.green,fontSize:".8rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
           {editSection===id
-            ?<><button onClick={()=>setEditSection(null)} style={{padding:"6px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-              <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"6px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{saving?"...":"Speichern"}</button></>
-            :<button onClick={()=>setEditSection(id)} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Bearbeiten</button>}
+            ?<><button onClick={()=>setEditSection(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>Abbrechen</button>
+              <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"7px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".8rem",fontWeight:700,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>{saving?"Speichert...":"Speichern"}</button></>
+            :<button onClick={()=>setEditSection(id)} style={{padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}
+              onMouseOver={e=>{e.currentTarget.style.borderColor=T.dark;e.currentTarget.style.color=T.dark;}}
+              onMouseOut={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textMuted;}}>Bearbeiten</button>}
         </div>
       </div>
-      {badge==="instant"&&<div style={{fontSize:".75rem",color:"#16a34a",marginTop:6}}>{"\u2713"} Aenderungen werden sofort auf Ihrer Website sichtbar – kein Warten.</div>}
     </div>
   );
 
   const InfoRow=({label,value})=>(
-    <div className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
-      <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600,paddingTop:1}}>{label}</span>
-      <span style={{fontSize:".88rem",color:value?T.dark:T.textMuted}}>{value||"—"}</span>
+    <div className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"10px 0",borderBottom:`1px solid ${T.bg3}`}}>
+      <span style={{fontSize:".8rem",color:T.textMuted,fontWeight:500}}>{label}</span>
+      <span style={{fontSize:".875rem",color:value?T.dark:T.textMuted,fontWeight:value?500:400}}>{value||"\u2014"}</span>
     </div>
   );
   const ASSETS=[
@@ -1165,22 +1177,24 @@ function Portal({session,onLogout}){
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",flexDirection:"column"}}><style>{css}</style>
     {/* Topbar */}
     <div className="pt-topbar" style={{background:"#fff",borderBottom:`1px solid ${T.bg3}`,padding:"0 32px",flexShrink:0}}>
-      <div style={{height:72,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <img src="/logo.png" alt="SiteReady" style={{height:36}}/>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <span className="pt-email" style={{fontSize:".82rem",color:T.textSub}}>{session?.user?.email}</span>
-          <button onClick={onLogout} style={{padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,minHeight:44}}>Logout</button>
+      <div style={{height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{display:"flex",alignItems:"center",gap:16}}>
+          <img src="/logo.png" alt="SiteReady" style={{height:32}}/>
+          <div style={{width:1,height:24,background:T.bg3}}/>
+          <span className="pt-sub-bar" style={{fontSize:".8rem",color:T.textMuted,fontFamily:T.mono}}>{sub}.siteready.at</span>
         </div>
-      </div>
-      <div className="pt-sub-bar" style={{paddingBottom:12}}>
-        <span style={{fontSize:".75rem",color:T.textMuted,background:T.bg,border:`1px solid ${T.bg3}`,padding:"4px 12px",borderRadius:6,fontFamily:T.mono,display:"inline-block"}}>{sub}.siteready.at</span>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <span className="pt-email" style={{fontSize:".8rem",color:T.textMuted}}>{session?.user?.email}</span>
+          <button onClick={onLogout} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:8,background:"transparent",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}
+            onMouseOver={e=>{e.currentTarget.style.borderColor=T.dark;e.currentTarget.style.color=T.dark;}}
+            onMouseOut={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textMuted;}}>Logout</button>
+        </div>
       </div>
     </div>
     {/* Content */}
-    <div style={{maxWidth:860,width:"100%",margin:"0 auto",padding:"32px 24px",flex:1}}>
-      <div style={{marginBottom:4}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:6}}>Self-Service-Portal</div>
-        <h1 style={{fontSize:"1.6rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Willkommen{order?.firmenname?", "+order.firmenname:""}</h1>
+    <div style={{maxWidth:880,width:"100%",margin:"0 auto",padding:"32px 24px",flex:1}}>
+      <div style={{marginBottom:8}}>
+        <h1 style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.02em"}}>{order?.firmenname||"Willkommen"}</h1>
       </div>
       {/* Trial-Banner */}
       {order?.status==="trial"&&(<div style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
@@ -1274,15 +1288,15 @@ function Portal({session,onLogout}){
       })()}
 
       {/* Tab Nav */}
-      {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content",flexWrap:"nowrap"}}>
-        {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 20px",border:"none",background:tab===t.id?T.white:"transparent",cursor:"pointer",borderRadius:8,fontFamily:T.font,fontWeight:tab===t.id?700:500,fontSize:".85rem",color:tab===t.id?T.dark:T.textMuted,boxShadow:tab===t.id?T.sh1:"none",transition:"all .2s",whiteSpace:"nowrap",flexShrink:0}}>{t.label}</button>)}
+      {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:4,background:T.bg2,borderRadius:T.r,padding:4,marginBottom:28,width:"fit-content",flexWrap:"nowrap"}}>
+        {TABS.map(t=>{const active=tab===t.id;return(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",background:active?"#fff":"transparent",cursor:"pointer",borderRadius:T.rSm,fontFamily:T.font,fontWeight:active?700:500,fontSize:".8rem",color:active?T.dark:T.textMuted,boxShadow:active?T.sh2:"none",transition:"all .2s",whiteSpace:"nowrap",flexShrink:0,display:"flex",alignItems:"center",gap:6,minHeight:40}} dangerouslySetInnerHTML={{__html:(t.icon||"")+`<span>${t.label}</span>`}}/>);})}
       </div>}
 
       {/* Tab: Website */}
       {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Website Status */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Website Status</div>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Website Status</div>
           {order?(<>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
               <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
@@ -1297,8 +1311,8 @@ function Portal({session,onLogout}){
         </div>
         {/* Digitale Visitenkarte */}
         {(()=>{const vcardUrl=`https://sitereadyprototype.pages.dev/s/${sub}/vcard`;const qrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&data=${encodeURIComponent(vcardUrl)}`;return(
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Digitale Visitenkarte</div>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Digitale Visitenkarte</div>
           <div style={{display:"flex",gap:24,alignItems:"flex-start",flexWrap:"wrap"}}>
             {/* QR Code */}
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,flexShrink:0}}>

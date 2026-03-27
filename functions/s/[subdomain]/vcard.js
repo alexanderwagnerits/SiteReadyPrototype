@@ -27,6 +27,7 @@ const ICONS = {
 };
 
 export async function onRequestGet({params, env}) {
+  try {
   const subdomain = params.subdomain;
   if (!subdomain) return new Response("Not Found", {status: 404});
 
@@ -34,7 +35,7 @@ export async function onRequestGet({params, env}) {
     `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,kurzbeschreibung,email,telefon,adresse,plz,ort,bundesland,oeffnungszeiten,oeffnungszeiten_custom,einsatzgebiet,leistungen,facebook,instagram,linkedin,tiktok,url_logo,stil,status`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
-  if (!r.ok) return new Response("Fehler", {status: 502});
+  if (!r.ok) return new Response("DB-Fehler: " + r.status + " " + (await r.text()).slice(0,200), {status: 502});
   const rows = await r.json();
   if (!rows.length) return new Response(notFoundHtml(), {status: 404, headers: {"Content-Type": "text/html; charset=utf-8"}});
 
@@ -193,6 +194,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:6px;letter-spacing:-.02em;posi
     status: 200,
     headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=120"},
   });
+  } catch(e) { return new Response("Error: " + e.message + "\n" + e.stack, {status: 500}); }
 }
 
 function notFoundHtml() {

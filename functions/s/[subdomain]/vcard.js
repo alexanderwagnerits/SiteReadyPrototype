@@ -27,7 +27,6 @@ const ICONS = {
 };
 
 export async function onRequestGet({params, env}) {
-  try {
   const subdomain = params.subdomain;
   if (!subdomain) return new Response("Not Found", {status: 404});
 
@@ -35,7 +34,7 @@ export async function onRequestGet({params, env}) {
     `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,kurzbeschreibung,email,telefon,adresse,plz,ort,bundesland,oeffnungszeiten,einsatzgebiet,leistungen,facebook,instagram,linkedin,tiktok,url_logo,stil,status`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
-  if (!r.ok) return new Response("DB-Fehler: " + r.status + " " + (await r.text()).slice(0,200), {status: 502});
+  if (!r.ok) return new Response("Fehler", {status: 502});
   const rows = await r.json();
   if (!rows.length) return new Response(notFoundHtml(), {status: 404, headers: {"Content-Type": "text/html; charset=utf-8"}});
 
@@ -93,7 +92,7 @@ export async function onRequestGet({params, env}) {
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',system-ui,sans-serif;background:${p.bg};color:${p.primary};min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:0 0 env(safe-area-inset-bottom)}
-.card{width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;padding-bottom:100px}
+.card{width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;padding-bottom:120px}
 .hero{background:${p.heroBg};color:#fff;padding:48px 28px 36px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.08) 0%,transparent 60%)}
 .logo{width:76px;height:76px;border-radius:22px;object-fit:contain;background:#fff;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.2);margin:0 auto 20px;display:block;position:relative}
@@ -201,7 +200,6 @@ document.getElementById('share-btn').addEventListener('click',function(){
     status: 200,
     headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=120"},
   });
-  } catch(e) { return new Response("Error: " + e.message + "\n" + e.stack, {status: 500}); }
 }
 
 function notFoundHtml() {

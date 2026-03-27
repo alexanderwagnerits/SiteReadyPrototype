@@ -50,7 +50,7 @@ export async function onRequestGet({params, env}) {
   const mapsUrl = adr ? `https://maps.google.com/maps?q=${encodeURIComponent(adr + ", \u00D6sterreich")}` : "";
   const oez = o.oeffnungszeiten === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[o.oeffnungszeiten] || o.oeffnungszeiten || "");
   const websiteUrl = `https://sitereadyprototype.pages.dev/s/${subdomain}`;
-  const vcardUrl = `/s/${subdomain}/vcard/contact`;
+  const vcardUrl = `/s/${subdomain}/vcard-contact`;
   const leistungen = o.leistungen || [];
 
   const socials = [

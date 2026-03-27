@@ -1296,15 +1296,32 @@ function Portal({session,onLogout}){
           </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
         </div>
         {/* Digitale Visitenkarte */}
+        {(()=>{const vcardUrl=`https://sitereadyprototype.pages.dev/s/${sub}/vcard`;const qrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&data=${encodeURIComponent(vcardUrl)}`;return(
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>Digitale Visitenkarte</div>
-          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,margin:"0 0 18px"}}>Ihre Visitenkarte zum Teilen per WhatsApp, SMS oder zum Drucken als QR-Code auf Flyer und Firmenauto.</p>
-          <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
-            <a href={`https://sitereadyprototype.pages.dev/s/${sub}/vcard`} target="_blank" rel="noreferrer" style={{padding:"10px 18px",background:T.accent,color:"#fff",borderRadius:T.rSm,fontSize:".82rem",fontWeight:700,textDecoration:"none",fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:6}}>{"\uD83D\uDCF1"} Vorschau</a>
-            <button onClick={()=>{const u=`https://sitereadyprototype.pages.dev/s/${sub}/vcard`;if(navigator.share){navigator.share({title:order.firmenname||"Visitenkarte",url:u});}else{navigator.clipboard.writeText(u);setToastMsg("Link kopiert!");}}} style={{padding:"10px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:6}}>{"\uD83D\uDD17"} Teilen</button>
-            <button onClick={()=>{const u=`https://sitereadyprototype.pages.dev/s/${sub}/vcard`;window.open(`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(u)}`,"_blank");}} style={{padding:"10px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:6}}>QR-Code</button>
+          <div style={{display:"flex",gap:24,alignItems:"flex-start",flexWrap:"wrap"}}>
+            {/* QR Code */}
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,flexShrink:0}}>
+              <div style={{width:140,height:140,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,overflow:"hidden",background:T.bg}}>
+                <img src={qrUrl} alt="QR-Code" style={{width:"100%",height:"100%",display:"block"}}/>
+              </div>
+              <button onClick={()=>{const a=document.createElement("a");a.href=qrUrl;a.download=`${sub}-qr.png`;a.click();}} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,width:"100%",textAlign:"center"}}>QR herunterladen</button>
+            </div>
+            {/* Info + Actions */}
+            <div style={{flex:1,minWidth:200}}>
+              <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,margin:"0 0 14px"}}>Teilen Sie Ihre Visitenkarte per WhatsApp, SMS oder drucken Sie den QR-Code auf Flyer und Firmenauto.</p>
+              {/* Link mit Copy */}
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:14,background:T.bg,borderRadius:T.rSm,padding:"8px 12px",border:`1px solid ${T.bg3}`}}>
+                <span style={{fontSize:".78rem",color:T.accent,fontFamily:T.mono,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{vcardUrl.replace("https://","")}</span>
+                <button onClick={()=>{navigator.clipboard.writeText(vcardUrl);setToastMsg("Link kopiert!");}} style={{padding:"4px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:6,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font,flexShrink:0}}>Kopieren</button>
+              </div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <a href={vcardUrl} target="_blank" rel="noreferrer" style={{padding:"9px 16px",background:T.accent,color:"#fff",borderRadius:T.rSm,fontSize:".8rem",fontWeight:700,textDecoration:"none",fontFamily:T.font}}>Vorschau</a>
+                <button onClick={()=>{if(navigator.share){navigator.share({title:order.firmenname||"Visitenkarte",url:vcardUrl});}else{navigator.clipboard.writeText(vcardUrl);setToastMsg("Link kopiert!");}}} style={{padding:"9px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:700,fontFamily:T.font}}>Teilen</button>
+              </div>
+            </div>
           </div>
-        </div>
+        </div>);})()}
         {/* Onboarding-Checkliste */}
         {(()=>{const checks=[{label:"Website erstellt",done:!!order.website_html},{label:"Logo hochgeladen",done:!!assetUrls.logo,tab:"medien"},{label:"Kontakt vollständig",done:!!(order.telefon&&order.adresse),tab:"website"},{label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien"}];const done=checks.filter(c=>c.done).length;if(done===checks.length)return null;return(<div style={{background:"#fff",borderRadius:T.r,padding:"18px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Erste Schritte</div><div style={{fontSize:".72rem",color:T.textSub,fontWeight:600}}>{done}/{checks.length}</div></div><div style={{display:"flex",flexDirection:"column",gap:6}}>{checks.map((c,i)=><div key={i} onClick={c.tab&&!c.done?()=>setTab(c.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 0",cursor:c.tab&&!c.done?"pointer":"default"}}><div style={{width:18,height:18,borderRadius:"50%",background:c.done?"#16a34a":"#e2e8f0",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".65rem",fontWeight:800,flexShrink:0}}>{c.done?"\u2713":""}</div><span style={{fontSize:".84rem",color:c.done?T.textMuted:T.dark,flex:1}}>{c.label}</span>{c.tab&&!c.done&&<span style={{fontSize:".72rem",color:T.accent,fontWeight:700}}>\u2192</span>}</div>)}</div></div>);})()}
         {/* Grunddaten */}

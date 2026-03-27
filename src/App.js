@@ -1305,7 +1305,7 @@ function Portal({session,onLogout}){
               <div style={{width:140,height:140,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,overflow:"hidden",background:T.bg}}>
                 <img src={qrUrl} alt="QR-Code" style={{width:"100%",height:"100%",display:"block"}}/>
               </div>
-              <button onClick={()=>{const a=document.createElement("a");a.href=qrUrl;a.download=`${sub}-qr.png`;a.click();}} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,width:"100%",textAlign:"center"}}>QR herunterladen</button>
+              <button onClick={async()=>{try{const r=await fetch(qrUrl);const b=await r.blob();const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=`${sub}-qr.png`;a.click();URL.revokeObjectURL(u);}catch(e){window.open(qrUrl,"_blank");}}} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,width:"100%",textAlign:"center"}}>QR herunterladen</button>
             </div>
             {/* Info + Actions */}
             <div style={{flex:1,minWidth:200}}>

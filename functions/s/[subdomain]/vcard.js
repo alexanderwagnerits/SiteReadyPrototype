@@ -185,8 +185,15 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:6px;letter-spacing:-.02em;posi
 <!-- Sticky Bottom Bar -->
 <div class="sticky-bar">
   <a class="save-btn" href="${vcardUrl}" download>${ICONS.save} Kontakt speichern</a>
-  <button class="share-btn" onclick="if(navigator.share){navigator.share({title:'${(o.firmenname || "").replace(/'/g, "\\'")}',url:location.href})}else{navigator.clipboard.writeText(location.href);this.innerHTML='&#10003;';setTimeout(()=>this.innerHTML='${ICONS.share.replace(/'/g, "\\'")}',2000)}" aria-label="Teilen">${ICONS.share}</button>
+  <button class="share-btn" id="share-btn" aria-label="Teilen">${ICONS.share}</button>
 </div>
+<script>
+document.getElementById('share-btn').addEventListener('click',function(){
+  var t='${(o.firmenname || "").replace(/'/g, "\\'")}';
+  if(navigator.share){navigator.share({title:t,url:location.href})}
+  else{navigator.clipboard.writeText(location.href);this.textContent='\u2713';var b=this;setTimeout(function(){b.textContent='Teilen'},2000)}
+});
+</script>
 </body>
 </html>`;
 

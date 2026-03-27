@@ -5,6 +5,26 @@ const supabase = (process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SU
   ? createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY)
   : null;
 
+/* ═══ ERROR LOGGING ═══ */
+const logErrorToSupabase=async(error,source="js")=>{
+  if(!supabase)return;
+  try{
+    const ua=navigator.userAgent||"";
+    const url=window.location.href;
+    await supabase.from("error_logs").insert({
+      message:String(error?.message||error||"Unknown error").slice(0,2000),
+      stack:String(error?.stack||"").slice(0,4000),
+      source,
+      url,
+      user_agent:ua.slice(0,500),
+      user_email:supabase.auth?.getUser?((await supabase.auth.getUser())?.data?.user?.email||null):null,
+      created_at:new Date().toISOString()
+    });
+  }catch(e){/* silent */}
+};
+window.addEventListener("error",(ev)=>{logErrorToSupabase(ev.error||ev.message,"window.onerror");});
+window.addEventListener("unhandledrejection",(ev)=>{logErrorToSupabase(ev.reason,"unhandledrejection");});
+
 /* ═══ DATA ═══ */
 const BRANCHEN = [
   // Handwerk
@@ -1200,15 +1220,58 @@ function Portal({session,onLogout}){
       {/* Toast */}
       {toastMsg&&<div style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:"#4ade80"}}>&#10003;</span>{toastMsg}</div>}
       {/* Build-Screen: status===pending (Generierung laeuft) */}
-      {order?.status==="pending"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28,textAlign:"center"}}>
-        <div style={{width:56,height:56,borderRadius:"50%",border:`3px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",margin:"0 auto 24px"}}/>
-        <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 10px"}}>Ihre Website wird erstellt</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,margin:"0 0 28px"}}>Die KI generiert gerade Ihre individuelle Website. Das dauert ca. 30–60 Sekunden.</p>
-        <button onClick={async()=>{
-          const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
-          if(data&&data[0])setOrder(data[0]);
-        }} style={{padding:"11px 24px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Status aktualisieren</button>
-      </div>)}
+      {order?.status==="pending"&&(()=>{
+        const BUILD_PHASES=[
+          {icon:"\uD83D\uDCCB",label:"Daten werden analysiert",sub:"Branche, Leistungen & Kontaktdaten",dur:6},
+          {icon:"\u270D\uFE0F",label:"Texte werden geschrieben",sub:"Über uns, Leistungsbeschreibungen & SEO",dur:18},
+          {icon:"\uD83C\uDFA8",label:"Design wird angewendet",sub:"Farben, Schriften & Layout",dur:12},
+          {icon:"\uD83D\uDDBC\uFE0F",label:"Medien werden eingebaut",sub:"Logo, Fotos & Icons",dur:8},
+          {icon:"\uD83D\uDD0D",label:"Qualitätsprüfung",sub:"Performance, SEO & Rechtliches",dur:10},
+          {icon:"\u2705",label:"Website wird veröffentlicht",sub:"DNS & SSL-Zertifikat",dur:6}
+        ];
+        const totalDur=BUILD_PHASES.reduce((s,p)=>s+p.dur,0);
+        const [buildElapsed,setBuildElapsed]=React.useState(0);
+        const buildRef=React.useRef(null);
+        React.useEffect(()=>{
+          buildRef.current=setInterval(()=>setBuildElapsed(e=>e+1),1000);
+          return()=>clearInterval(buildRef.current);
+        },[]);
+        React.useEffect(()=>{
+          if(buildElapsed>0&&buildElapsed%5===0){
+            (async()=>{
+              const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
+              if(data&&data[0]&&data[0].status!=="pending")setOrder(data[0]);
+            })();
+          }
+        },[buildElapsed]);
+        let acc=0;let activeIdx=0;
+        for(let i=0;i<BUILD_PHASES.length;i++){acc+=BUILD_PHASES[i].dur;if(buildElapsed<acc){activeIdx=i;break;}if(i===BUILD_PHASES.length-1)activeIdx=i;}
+        const progressPct=Math.min((buildElapsed/totalDur)*100,95);
+        return(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28}}>
+          <div style={{textAlign:"center",marginBottom:32}}>
+            <div style={{fontSize:"2.2rem",marginBottom:12}}>{BUILD_PHASES[activeIdx].icon}</div>
+            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 6px"}}>{BUILD_PHASES[activeIdx].label}</h2>
+            <p style={{fontSize:".85rem",color:T.textSub,margin:0}}>{BUILD_PHASES[activeIdx].sub}</p>
+          </div>
+          {/* Progress Bar */}
+          <div style={{background:T.bg3,borderRadius:100,height:8,overflow:"hidden",marginBottom:28,maxWidth:480,margin:"0 auto 28px"}}>
+            <div style={{height:"100%",borderRadius:100,background:`linear-gradient(90deg, ${T.accent}, #6366f1)`,width:`${progressPct}%`,transition:"width 1s ease"}}/>
+          </div>
+          {/* Phase-Steps */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(130px, 1fr))",gap:8,maxWidth:600,margin:"0 auto"}}>
+            {BUILD_PHASES.map((p,i)=>{
+              const done=i<activeIdx;const active=i===activeIdx;
+              return(<div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"10px 6px",borderRadius:T.rSm,background:active?`${T.accent}08`:"transparent",border:active?`1px solid ${T.accent}22`:"1px solid transparent",transition:"all .3s"}}>
+                <div style={{fontSize:"1.1rem",opacity:done||active?1:.35,filter:done?"grayscale(0)":active?"grayscale(0)":"grayscale(1)"}}>{p.icon}</div>
+                <div style={{fontSize:".7rem",fontWeight:active?700:500,color:done?T.green:active?T.accent:T.textMuted,textAlign:"center",lineHeight:1.3}}>{p.label.replace("werden ","")}</div>
+                {done&&<div style={{fontSize:".6rem",color:T.green,fontWeight:700}}>{"\u2713"}</div>}
+                {active&&<div style={{width:12,height:12,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
+              </div>);
+            })}
+          </div>
+          <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
+        </div>);
+      })()}
 
       {/* Tab Nav */}
       {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3,marginBottom:28,width:"fit-content",flexWrap:"nowrap"}}>
@@ -1782,6 +1845,23 @@ function Admin({adminKey}){
   /* Diagnose State */
   const[diagReport,setDiagReport]=useState(null);
   const[diagRunning,setDiagRunning]=useState(false);
+  /* Error Logs */
+  const[errorLogs,setErrorLogs]=useState([]);
+  const[errorLogsLoading,setErrorLogsLoading]=useState(false);
+  const fetchErrorLogs=async()=>{
+    if(!supabase)return;
+    setErrorLogsLoading(true);
+    try{
+      const{data}=await supabase.from("error_logs").select("*").order("created_at",{ascending:false}).limit(50);
+      if(data)setErrorLogs(data);
+    }catch(e){/* silent */}
+    setErrorLogsLoading(false);
+  };
+  const clearErrorLogs=async()=>{
+    if(!supabase)return;
+    await supabase.from("error_logs").delete().neq("id","00000000-0000-0000-0000-000000000000");
+    setErrorLogs([]);
+  };
 
   useEffect(()=>{load();checkSystem();},[]);
 
@@ -1905,7 +1985,7 @@ function Admin({adminKey}){
       });
     }catch(e){setExtStatus({anthropic:false,cloudflare:false,supabase:false,stripe:false});}
   };
-  useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();const iv=setInterval(()=>{checkSystem();fetchExtStatus();},60000);return()=>clearInterval(iv);}},[tab]);
+  useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();fetchErrorLogs();const iv=setInterval(()=>{checkSystem();fetchExtStatus();fetchErrorLogs();},60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{
     if(tab==="sites"){
       const run=()=>{orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));setHealthCountdown(60);};
@@ -2530,6 +2610,36 @@ function Admin({adminKey}){
               </div>)}
             </div>
           </div>}
+          {/* Error Logs */}
+          <div style={{marginTop:24}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Frontend-Fehler</div>
+                {errorLogs.length>0&&<span style={{background:T.red,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"2px 8px",borderRadius:100}}>{errorLogs.length}</span>}
+              </div>
+              <div style={{display:"flex",gap:6}}>
+                {errorLogs.length>0&&<button onClick={clearErrorLogs} style={{padding:"5px 12px",border:`2px solid #fecaca`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Alle löschen</button>}
+                <button onClick={fetchErrorLogs} disabled={errorLogsLoading} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:errorLogsLoading?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Aktualisieren</button>
+              </div>
+            </div>
+            {errorLogs.length===0?(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"24px",textAlign:"center"}}>
+              <div style={{fontSize:".85rem",color:T.green,fontWeight:600}}>{"\u2713"} Keine Fehler</div>
+              <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Frontend läuft fehlerfrei</div>
+            </div>):(<div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:400,overflowY:"auto"}}>
+              {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"12px 14px"}}>
+                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10,marginBottom:6}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    <span style={{background:e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".6rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>{e.source==="unhandledrejection"?"Promise":e.source==="window.onerror"?"JS":"Error"}</span>
+                    {e.user_email&&<span style={{fontSize:".68rem",color:T.accent,fontWeight:600}}>{e.user_email}</span>}
+                  </div>
+                  <span style={{fontSize:".68rem",color:T.textMuted,flexShrink:0}}>{new Date(e.created_at).toLocaleString("de-AT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
+                </div>
+                <div style={{fontSize:".8rem",color:T.red,fontWeight:600,fontFamily:T.mono,lineHeight:1.4,marginBottom:e.stack?6:0,wordBreak:"break-word"}}>{e.message}</div>
+                {e.stack&&<details style={{margin:0}}><summary style={{fontSize:".68rem",color:T.textMuted,cursor:"pointer",fontFamily:T.font}}>Stack-Trace</summary><pre style={{fontSize:".65rem",color:T.textSub,fontFamily:T.mono,margin:"6px 0 0",lineHeight:1.5,whiteSpace:"pre-wrap",wordBreak:"break-all",maxHeight:150,overflow:"auto"}}>{e.stack}</pre></details>}
+                <div style={{fontSize:".65rem",color:T.textMuted,marginTop:4}}>{e.url}</div>
+              </div>)}
+            </div>)}
+          </div>
         </div>)}
 
         {/* Tab: Finanzen */}

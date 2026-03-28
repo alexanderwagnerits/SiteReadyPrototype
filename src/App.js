@@ -1701,6 +1701,41 @@ function Portal({session,onLogout}){
             </div>
           }
         </div>
+        {/* Website-Qualitaet */}
+        {order?.quality_score!==null&&order?.quality_score!==undefined&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Website-Qualität</div>
+          <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16}}>
+            <div style={{width:56,height:56,borderRadius:"50%",background:order.quality_score>=80?T.greenLight:"#fef3c7",border:`2px solid ${order.quality_score>=80?"rgba(22,163,74,.2)":"#fcd34d"}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{fontSize:"1.1rem",fontWeight:800,fontFamily:T.mono,color:order.quality_score>=80?T.green:"#d97706"}}>{order.quality_score}</span>
+            </div>
+            <div>
+              <div style={{fontSize:".9rem",fontWeight:700,color:T.dark}}>{order.quality_score>=90?"Ausgezeichnet":order.quality_score>=80?"Gut":"Verbesserungspotenzial"}</div>
+              <div style={{fontSize:".82rem",color:T.textMuted,marginTop:2}}>{order.quality_score>=90?"Ihre Website ist optimal aufgestellt.":"Mit wenigen Schritten koennen Sie den Score verbessern."}</div>
+            </div>
+          </div>
+          {order.quality_score<95&&<div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {!assetUrls.logo&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+10</span>
+              <span style={{fontSize:".82rem",color:T.dark}}>Logo hochladen</span>
+              <button onClick={()=>setTab("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+            </div>}
+            {!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3)&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+10</span>
+              <span style={{fontSize:".82rem",color:T.dark}}>Fotos hochladen</span>
+              <button onClick={()=>setTab("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+            </div>}
+            {!order.telefon&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+5</span>
+              <span style={{fontSize:".82rem",color:T.dark}}>Telefonnummer ergänzen</span>
+              <button onClick={()=>{setTab("website");setEditSection("kontakt");}} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+            </div>}
+            {!order.kurzbeschreibung&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+              <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+5</span>
+              <span style={{fontSize:".82rem",color:T.dark}}>Kurzbeschreibung hinzufügen</span>
+              <button onClick={()=>{setTab("website");setEditSection("grunddaten");}} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+            </div>}
+          </div>}
+        </div>}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Custom Domain & Google</div>
           <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7,margin:0}}>Wenn Sie eine eigene Domain verbinden, kümmern wir uns auch um die Google-Indexierung für Ihre Domain. Schreiben Sie uns nach der DNS-Umstellung an <strong>support@siteready.at</strong>.</p>

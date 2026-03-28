@@ -302,26 +302,26 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* TRUST BAR */}
-  <section style={{padding:"28px 0",background:T.dark,borderBottom:`1px solid rgba(255,255,255,.06)`}}>
+  <section style={{padding:"32px 0",background:T.bg}}>
     <W>
       <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:36,flexWrap:"wrap",alignItems:"center"}}>
-        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:"rgba(255,255,255,.5)",fontSize:".82rem",fontWeight:500}}><span style={{display:"flex",color:T.accent,opacity:.7}}>{React.cloneElement(t.icon,{width:"18",height:"18"})}</span>{t.text}</div>)}
+        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:T.textMuted,fontSize:".82rem",fontWeight:500}}><span style={{display:"flex",color:T.accent,opacity:.5}}>{React.cloneElement(t.icon,{width:"18",height:"18"})}</span>{t.text}</div>)}
       </div>
     </W>
   </section>
 
   {/* PROBLEM + SOLUTION */}
-  <section id="problem" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.dark}}>
+  <section id="problem" className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff",borderTop:`1px solid rgba(0,0,0,.04)`}}>
     <W>
       <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"5fr 7fr",gap:64,alignItems:"start"}}>
         <div>
           <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Das Problem</div>
-          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:"#fff",marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
+          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
         <div style={{position:"relative",paddingLeft:32}}>
-          <div style={{position:"absolute",left:11,top:8,bottom:8,width:2,background:"rgba(255,255,255,.15)"}}/>
+          <div style={{position:"absolute",left:11,top:8,bottom:8,width:2,background:T.bg3}}/>
           {[{n:"01",icon:<IconClock/>,t:"Keine Zeit",d:"Der Alltag auf der Baustelle lässt keinen Raum für Webdesign."},{n:"02",icon:<IconMoney/>,t:"Zu teuer",d:"Eine Agentur kostet 1.500-5.000 Euro einmalig."},{n:"03",icon:<IconPuzzle/>,t:"Zu kompliziert",d:"Baukasten-Tools verlangen eigene Texte und Design."},{n:"04",icon:<IconWarning/>,t:"Rechtlich riskant",d:"Fehlendes Impressum oder DSGVO kann teuer werden."}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,marginBottom:i<3?32:0,position:"relative"}}>
-            <div style={{position:"absolute",left:-32,top:4,width:24,height:24,borderRadius:"50%",background:"transparent",border:"1.5px solid rgba(255,255,255,.4)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}><span style={{fontFamily:T.mono,fontSize:".75rem",fontWeight:700,color:"#fff"}}>{c.n}</span></div>
-            <div><div style={{fontWeight:700,fontSize:".95rem",color:"#fff",marginBottom:4}}>{c.t}</div><div style={{fontSize:".84rem",color:"rgba(255,255,255,.6)",lineHeight:1.6}}>{c.d}</div></div>
+            <div style={{position:"absolute",left:-32,top:4,width:24,height:24,borderRadius:"50%",background:"#fff",border:`1.5px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}><span style={{fontFamily:T.mono,fontSize:".75rem",fontWeight:700,color:T.dark}}>{c.n}</span></div>
+            <div><div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:4}}>{c.t}</div><div style={{fontSize:".84rem",color:T.textMuted,lineHeight:1.6}}>{c.d}</div></div>
           </div>)}
         </div>
         </div>

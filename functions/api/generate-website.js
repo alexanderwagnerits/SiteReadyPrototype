@@ -596,7 +596,10 @@ window.addEventListener('scroll',upd,{passive:true});upd();
     if (hasPhone) qualityScore = Math.min(100, qualityScore + 0);
   } catch(_) { qualityScore = 0; }
 
-  /* ─── Auto-Retry wenn nicht perfekt (max 1x) ─── */
+  /* ─── Auto-Retry wenn nicht perfekt (max 1x) — besseren Versuch behalten ─── */
+  const firstScore = qualityScore;
+  const firstHtml = html;
+  const firstIssues = [...qualityIssues];
   if (qualityScore < 100 && !body._retry) {
     try {
       const retryRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -617,21 +620,30 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         const retryData = await retryRes.json();
         let retryHtml = retryData.content?.[0]?.text || "";
         retryHtml = retryHtml.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
-        // Nur uebernehmen wenn laenger als der erste Versuch
-        if (retryHtml.length > html.length * 0.8 && retryHtml.includes("<nav") || retryHtml.includes("sitenav")) {
-          html = retryHtml;
-          // Nav + Footer nochmal injizieren
-          html = html.includes("<!-- NAV -->") ? html.replace("<!-- NAV -->", navHtml) : html.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
-          html = html.includes("<!-- FOOTER -->") ? html.replace("<!-- FOOTER -->", footerHtml) : html.replace(/<\/body>/i, footerHtml + "\n</body>");
-          html = html.replace("<!-- IMPRESSUM -->", "");
-          if (o.telefon) { const tn=o.telefon.replace(/\s/g,""); html=html.replace(/href="tel:[^"]*"/gi,`href="tel:${tn}"`); }
-          // Score neu berechnen
-          const rLen=html.length;const rNav=/<nav[\s>]/i.test(html)||/sitenav/i.test(html);const rHero=/min-height:\s*100vh/i.test(html)||/hero/i.test(html);const rLeis=/leistung/i.test(html);const rFoot=/<footer[\s>]/i.test(html);const rImp=/impressum/i.test(html);const rDat=/datenschutz/i.test(html);const rCss=/--primary/i.test(html)&&/--accent/i.test(html);const rFn=o.firmenname&&html.includes(o.firmenname);const rKon=/kontakt/i.test(html);
-          const rc=[{ok:rLen>5000,w:15},{ok:rNav,w:10},{ok:rHero,w:10},{ok:rLeis,w:15},{ok:rFoot,w:5},{ok:rImp,w:10},{ok:rDat,w:10},{ok:rCss,w:5},{ok:rFn,w:10},{ok:rKon,w:10}];
+        if (retryHtml.length > 3000) {
+          // Nav + Footer injizieren
+          retryHtml = retryHtml.includes("<!-- NAV -->") ? retryHtml.replace("<!-- NAV -->", navHtml) : retryHtml.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
+          retryHtml = retryHtml.includes("<!-- FOOTER -->") ? retryHtml.replace("<!-- FOOTER -->", footerHtml) : retryHtml.replace(/<\/body>/i, footerHtml + "\n</body>");
+          retryHtml = retryHtml.replace("<!-- IMPRESSUM -->", "");
+          if (o.telefon) { const tn=o.telefon.replace(/\s/g,""); retryHtml=retryHtml.replace(/href="tel:[^"]*"/gi,`href="tel:${tn}"`); }
+          // Score berechnen
+          const rLen=retryHtml.length;const rNav=/<nav[\s>]/i.test(retryHtml)||/sitenav/i.test(retryHtml);const rHero=/min-height:\s*100vh/i.test(retryHtml)||/hero/i.test(retryHtml);const rLeis=/leistung/i.test(retryHtml);const rFoot=/<footer[\s>]/i.test(retryHtml);const rImp=/impressum/i.test(retryHtml);const rDat=/datenschutz/i.test(retryHtml);const rCss=/--primary/i.test(retryHtml)&&/--accent/i.test(retryHtml);const rFn=o.firmenname&&retryHtml.includes(o.firmenname);const rKon=/kontakt/i.test(retryHtml);const rNavCss=/\.nav-inner|#sitenav|\.nav-link/i.test(retryHtml);const rResp=/@media/i.test(retryHtml);
+          const rc=[{ok:rLen>5000,w:15},{ok:rHero,w:15},{ok:rLeis,w:15},{ok:rFn,w:10},{ok:rKon,w:15},{ok:rCss,w:5},{ok:rNav,w:5},{ok:rNavCss,w:5},{ok:rFoot,w:3},{ok:rImp,w:4},{ok:rDat,w:3},{ok:rResp,w:5}];
           const rMax=rc.reduce((a,c)=>a+c.w,0);const rGot=rc.reduce((a,c)=>a+(c.ok?c.w:0),0);
-          qualityScore=Math.round((rGot/rMax)*100);
-          qualityIssues.length=0;
-          rc.filter(c=>!c.ok).forEach(c=>qualityIssues.push("Retry: check failed"));
+          const retryScore=Math.round((rGot/rMax)*100);
+          // Besseren Versuch behalten
+          if (retryScore >= firstScore) {
+            html = retryHtml;
+            qualityScore = retryScore;
+            qualityIssues.length = 0;
+            rc.filter(c => !c.ok).forEach(c => qualityIssues.push(c.fail || "Check fehlgeschlagen"));
+          } else {
+            // Erster Versuch war besser — zuruecksetzen
+            html = firstHtml;
+            qualityScore = firstScore;
+            qualityIssues.length = 0;
+            firstIssues.forEach(i => qualityIssues.push(i));
+          }
         }
       }
     } catch(_) { /* Retry fehlgeschlagen, Original behalten */ }

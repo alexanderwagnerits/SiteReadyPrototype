@@ -58,12 +58,25 @@ export async function onRequestPost({request, env}) {
     const session = event.data.object;
     const orderId = session.metadata?.order_id;
     if (orderId && sb && sbKey) {
-      await patchOrder(orderId, {
+      // Order laden um aktuellen Status zu pruefen
+      const orderRes = await fetch(
+        `${sb}/rest/v1/orders?id=eq.${orderId}&select=id,status,website_html&limit=1`,
+        {headers: {"apikey": sbKey, "Authorization": `Bearer ${sbKey}`}}
+      );
+      const orders = await orderRes.json();
+      const currentOrder = orders[0] || null;
+      const patch = {
         stripe_customer_id: session.customer || null,
         subscription_id: session.subscription || null,
         subscription_plan: session.metadata?.plan || "monthly",
-      });
-      await logEvent(orderId, "checkout_completed", {plan: session.metadata?.plan || "monthly"});
+        subscription_status: "active",
+      };
+      // Wenn Website schon generiert ist und Status trial -> direkt auf live setzen
+      if (currentOrder && currentOrder.status === "trial" && currentOrder.website_html) {
+        patch.status = "live";
+      }
+      await patchOrder(orderId, patch);
+      await logEvent(orderId, "checkout_completed", {plan: session.metadata?.plan || "monthly", promoted_to_live: !!patch.status});
     }
   }
 

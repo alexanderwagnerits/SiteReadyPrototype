@@ -1707,8 +1707,9 @@ function Portal({session,onLogout}){
               <div style={{fontSize:"1.8rem",marginBottom:6}}>"—"</div>
               <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Logo hochgeladen</div>
             </div>)}
-            <div style={{fontSize:".8rem",color:T.textMuted,marginTop:4}}>
-              {"Empfohlen: PNG mit transparentem Hintergrund, mind. 400 \u00d7 150 px – damit das Logo auf dem dunklen Nav-Hintergrund sauber aussieht."}
+            <div style={{fontSize:".8rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>
+              <strong style={{color:T.dark}}>Wichtig:</strong> Ihr Logo wird auf einem dunklen Hintergrund angezeigt. Am besten funktioniert ein PNG mit transparentem Hintergrund (mind. 400 {"\u00d7"} 150 px).
+              <br/>Hat Ihr Logo einen farbigen Hintergrund? Entfernen Sie ihn kostenlos: <a href="https://www.remove.bg/de" target="_blank" rel="noopener noreferrer" style={{color:T.accent,fontWeight:600}}>remove.bg</a>
             </div>
           </div>
         );})()}

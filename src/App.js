@@ -302,11 +302,11 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* TRUST BAR */}
-  <section style={{padding:"48px 0 40px",background:T.bg}}>
+  <section style={{padding:"28px 0",background:T.dark,borderBottom:`1px solid rgba(255,255,255,.06)`}}>
     <W>
-      <div style={{display:"flex",justifyContent:"center"}}><div className="lp-trust-bar" style={{display:"inline-flex",justifyContent:"center",gap:32,flexWrap:"wrap",alignItems:"center",background:T.bg2,borderRadius:T.rLg,padding:"16px 36px"}}>
-        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,color:T.textSub,fontSize:".9rem",fontWeight:500}}><span style={{display:"flex",opacity:.6}}>{React.cloneElement(t.icon,{width:"22",height:"22"})}</span>{t.text}</div>)}
-      </div></div>
+      <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:36,flexWrap:"wrap",alignItems:"center"}}>
+        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:"rgba(255,255,255,.5)",fontSize:".82rem",fontWeight:500}}><span style={{display:"flex",color:T.accent,opacity:.7}}>{React.cloneElement(t.icon,{width:"18",height:"18"})}</span>{t.text}</div>)}
+      </div>
     </W>
   </section>
 

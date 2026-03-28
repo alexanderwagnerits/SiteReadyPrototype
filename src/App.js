@@ -137,9 +137,9 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .lp-trust-bar>div{font-size:.78rem!important}
   .lp-pricing-grid{max-width:100%!important}
   .lp-pricing-grid>div{padding:28px 20px!important}
-  .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important}
-  .lp-footer-cols{flex-direction:column!important;gap:24px!important;text-align:center!important}
-  .lp-footer-cols>div{gap:8px!important}
+  .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important;align-items:center!important}
+  .lp-footer-cols{flex-direction:column!important;gap:32px!important;text-align:center!important;align-items:center!important}
+  .lp-footer-cols>div{gap:8px!important;align-items:center!important;display:flex!important;flex-direction:column!important}
   .lp-cta-section{padding:56px 0!important}
   .lp-cta-stats{flex-direction:column!important;gap:16px!important}
   .lp-cta-stats>div{justify-content:center!important}

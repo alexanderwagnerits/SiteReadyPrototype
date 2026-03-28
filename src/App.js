@@ -137,10 +137,12 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .lp-trust-bar>div{font-size:.78rem!important}
   .lp-pricing-grid{max-width:100%!important}
   .lp-pricing-grid>div{padding:28px 20px!important}
+  .lp-footer-top{flex-direction:column!important;align-items:center!important;text-align:center!important}
+  .lp-footer-brand{max-width:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important}
   .lp-footer-flex{flex-direction:column!important;gap:16px!important;text-align:center!important;align-items:center!important}
   .lp-footer-cols{flex-direction:column!important;gap:32px!important;text-align:center!important;align-items:center!important}
   .lp-footer-cols>div{gap:8px!important;align-items:center!important;display:flex!important;flex-direction:column!important}
-  .lp-footer-cols a{text-align:center!important;width:auto!important;display:inline-block!important}
+  .lp-footer-cols a,.lp-footer-cols span{text-align:center!important}
   .lp-cta-section{padding:56px 0!important}
   .lp-cta-stats{flex-direction:column!important;gap:16px!important}
   .lp-cta-stats>div{justify-content:center!important}
@@ -590,8 +592,8 @@ function LandingPage({onStart,onPortal}){
   {/* FOOTER */}
   <footer style={{padding:"80px 0 48px",borderTop:`1px solid rgba(0,0,0,.06)`,background:T.bg}}>
     <W>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:48,flexWrap:"wrap",gap:32}}>
-        <div style={{maxWidth:320}}>
+      <div className="lp-footer-top" style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:48,flexWrap:"wrap",gap:32}}>
+        <div className="lp-footer-brand" style={{maxWidth:320}}>
           <img src="/logo.png" alt="SiteReady" style={{height:36,marginBottom:16}}/>
           <p style={{fontSize:".85rem",color:T.textMuted,lineHeight:1.7}}>Professionelle Websites für österreichische Kleinbetriebe. Impressum, DSGVO und SEO inklusive.</p>
         </div>

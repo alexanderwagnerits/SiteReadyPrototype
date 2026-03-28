@@ -568,17 +568,15 @@ window.addEventListener('scroll',upd,{passive:true});upd();
     const hasPhone = /tel:/i.test(html);
     const hasEmail = /mailto:/i.test(html);
     const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
+    // Gewichtung: Kritische Struktur-Checks hoch, Nice-to-haves niedrig
+    // Nav + Footer werden automatisch injiziert, also weniger kritisch
     const checks = [
-      {ok: htmlLen > 5000,    w: 15, fail: "HTML zu kurz (" + htmlLen + " Bytes)"},
-      {ok: hasNav,            w: 10, fail: "Navigation fehlt"},
-      {ok: hasHero,           w: 10, fail: "Hero-Section fehlt"},
-      {ok: hasLeistungen,     w: 15, fail: "Leistungen-Section fehlt"},
-      {ok: hasFooter,         w: 5,  fail: "Footer fehlt"},
-      {ok: hasImpressum,      w: 10, fail: "Impressum-Link fehlt"},
-      {ok: hasDatenschutz,    w: 10, fail: "Datenschutz-Link fehlt"},
-      {ok: hasCssVars,        w: 5,  fail: "CSS-Variablen fehlen"},
-      {ok: hasFirmenname,     w: 10, fail: "Firmenname nicht im HTML"},
-      {ok: hasKontakt,        w: 10, fail: "Kontakt-Section fehlt"},
+      {ok: htmlLen > 5000,    w: 20, fail: "HTML zu kurz (" + htmlLen + " Bytes)"},
+      {ok: hasHero,           w: 20, fail: "Hero-Section fehlt"},
+      {ok: hasLeistungen,     w: 20, fail: "Leistungen-Section fehlt"},
+      {ok: hasFirmenname,     w: 15, fail: "Firmenname nicht im HTML"},
+      {ok: hasKontakt,        w: 15, fail: "Kontakt-Section fehlt"},
+      {ok: hasCssVars,        w: 10, fail: "CSS-Variablen fehlen"},
     ];
     const maxScore = checks.reduce((a, c) => a + c.w, 0);
     const gotScore = checks.reduce((a, c) => a + (c.ok ? c.w : 0), 0);

@@ -1076,18 +1076,20 @@ function Portal({session,onLogout}){
   };
 
   const deleteAsset=async(key)=>{
-    if(!session?.user?.id||!supabase||!order?.id)return;
+    if(!session?.user?.id||!supabase||!order?.id){showToast("Fehler — bitte neu anmelden");return;}
     setDeleting(d=>({...d,[key]:true}));
-    const exts=["jpg","jpeg","png","webp","gif"];
-    for(const ext of exts){
-      await supabase.storage.from("customer-assets").remove([`${session.user.id}/${key}.${ext}`]).catch(()=>{});
-    }
-    const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
-    const col=colMap[key];
-    if(col)await supabase.from("orders").update({[col]:null}).eq("id",order.id);
-    setAssetUrls(u=>{const n={...u};delete n[key];return n;});
+    try{
+      const exts=["jpg","jpeg","png","webp","gif"];
+      for(const ext of exts){
+        await supabase.storage.from("customer-assets").remove([`${session.user.id}/${key}.${ext}`]).catch(()=>{});
+      }
+      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
+      const col=colMap[key];
+      if(col){const{error}=await supabase.from("orders").update({[col]:null}).eq("id",order.id);if(error)console.error("Delete URL-Update:",error.message);}
+      setAssetUrls(u=>{const n={...u};delete n[key];return n;});
+      showToast("Bild gelöscht");
+    }catch(e){showToast("Fehler beim Löschen: "+e.message);}
     setDeleting(d=>({...d,[key]:false}));
-    showToast("Bild gelöscht");
   };
 
   const startBuild=async(withFotos)=>{

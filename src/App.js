@@ -1070,7 +1070,7 @@ function Portal({session,onLogout}){
       // URL in orders-Tabelle speichern (für Serve-time Injection)
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
       const col=colMap[key];
-      if(col&&order?.id)supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id).then(()=>{});
+      if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("Logo-URL Update fehlgeschlagen:",upErr.message);}
     }
     setUploading(u=>({...u,[key]:false}));
   };

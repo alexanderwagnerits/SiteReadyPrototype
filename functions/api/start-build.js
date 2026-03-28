@@ -54,9 +54,10 @@ export async function onRequestPost({request, env, ctx}) {
     });
 
     // Website-Generierung im Hintergrund + Auto-Retry nach 5 Min bei Fehler
-    if (env.SITE_URL && env.ADMIN_SECRET) {
+    const siteUrl = env.SITE_URL || new URL(request.url).origin;
+    if (env.ADMIN_SECRET) {
       ctx.waitUntil((async () => {
-        const genUrl = `${env.SITE_URL}/api/generate-website?key=${env.ADMIN_SECRET}`;
+        const genUrl = `${siteUrl}/api/generate-website?key=${env.ADMIN_SECRET}`;
         const genBody = JSON.stringify({order_id: order.id});
         const genHeaders = {"Content-Type": "application/json"};
 

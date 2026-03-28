@@ -568,15 +568,24 @@ window.addEventListener('scroll',upd,{passive:true});upd();
     const hasPhone = /tel:/i.test(html);
     const hasEmail = /mailto:/i.test(html);
     const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
-    // Gewichtung: Kritische Struktur-Checks hoch, Nice-to-haves niedrig
-    // Nav + Footer werden automatisch injiziert, also weniger kritisch
+    // Kritische Checks (bestimmen ob Retry noetig)
+    const hasNavCss = /\.nav-inner|#sitenav|\.nav-link/i.test(html);
+    const hasResponsive = /@media/i.test(html);
     const checks = [
-      {ok: htmlLen > 5000,    w: 20, fail: "HTML zu kurz (" + htmlLen + " Bytes)"},
-      {ok: hasHero,           w: 20, fail: "Hero-Section fehlt"},
-      {ok: hasLeistungen,     w: 20, fail: "Leistungen-Section fehlt"},
-      {ok: hasFirmenname,     w: 15, fail: "Firmenname nicht im HTML"},
+      // Kern-Struktur (70 Punkte) — fehlt eins davon, Score < 60 → Retry
+      {ok: htmlLen > 5000,    w: 15, fail: "HTML zu kurz (" + htmlLen + " Bytes)"},
+      {ok: hasHero,           w: 15, fail: "Hero-Section fehlt"},
+      {ok: hasLeistungen,     w: 15, fail: "Leistungen-Section fehlt"},
+      {ok: hasFirmenname,     w: 10, fail: "Firmenname nicht im HTML"},
       {ok: hasKontakt,        w: 15, fail: "Kontakt-Section fehlt"},
-      {ok: hasCssVars,        w: 10, fail: "CSS-Variablen fehlen"},
+      // Design-Qualitaet (30 Punkte) — wichtig fuer gutes Aussehen
+      {ok: hasCssVars,        w: 5,  fail: "CSS-Variablen fehlen (Design kaputt)"},
+      {ok: hasNav,            w: 5,  fail: "Navigation nicht im HTML (wird injiziert, aber CSS fehlt evtl.)"},
+      {ok: hasNavCss,         w: 5,  fail: "Navigation-CSS fehlt (Menue sieht kaputt aus)"},
+      {ok: hasFooter,         w: 3,  fail: "Footer fehlt"},
+      {ok: hasImpressum,      w: 4,  fail: "Impressum-Link fehlt"},
+      {ok: hasDatenschutz,    w: 3,  fail: "Datenschutz-Link fehlt"},
+      {ok: hasResponsive,     w: 5,  fail: "Keine @media Queries (nicht responsive)"},
     ];
     const maxScore = checks.reduce((a, c) => a + c.w, 0);
     const gotScore = checks.reduce((a, c) => a + (c.ok ? c.w : 0), 0);

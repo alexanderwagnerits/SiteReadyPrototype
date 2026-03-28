@@ -54,8 +54,8 @@ const BRANCHEN = [
   { value:"sonstige_kosmetik",gruppe:"kosmetik",label:"Sonstige Kosmetik & Körperpflege", leistungen:[],stil:"modern" },
 ];
 const BERUFSGRUPPEN=[
-  {value:"handwerk",label:"Handwerk",icon:"🔨",desc:"Elektriker, Installateur, Tischler, Maler u.v.m."},
-  {value:"kosmetik",label:"Kosmetik & Körperpflege",icon:"\u2728",desc:"Kosmetik, Friseur, Massage, Nagelstudio u.v.m."},
+  {value:"handwerk",label:"Handwerk",icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,desc:"Elektriker, Installateur, Tischler, Maler u.v.m."},
+  {value:"kosmetik",label:"Kosmetik & Körperpflege",icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>`,desc:"Kosmetik, Friseur, Massage, Nagelstudio u.v.m."},
 ];
 const KOSMETIK_SET=new Set(["kosmetik","friseur","nagel","massage","tattoo","fusspflege","permanent_makeup","sonstige_kosmetik"]);
 const getBrancheGruppe=b=>KOSMETIK_SET.has(b)?"kosmetik":"handwerk";
@@ -219,7 +219,7 @@ function LandingPage({onStart,onPortal}){
     <div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",display:"flex",alignItems:"center",justifyContent:"space-between",height:80}}>
       <img src="/logo.png" alt="SiteReady" style={{height:56,filter:scrolled?"none":"brightness(0) invert(1)",transition:"filter .3s"}}/>
       <div className="lp-nav-links" style={{display:"flex",gap:32,alignItems:"center"}}>
-        {[["#problem","Problem"],["#how","So gehts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:"1rem",fontWeight:500,color:scrolled?T.textSub:"rgba(255,255,255,.7)",textDecoration:"none",transition:"color .3s"}}>{l}</a>)}
+        {[["#problem","Problem"],["#how","So gehts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:"1rem",fontWeight:500,color:scrolled?T.textSub:"rgba(255,255,255,.7)",textDecoration:"none",transition:"color .3s",textUnderlineOffset:"4px"}} onMouseEnter={e=>{e.target.style.color=scrolled?T.dark:"#fff";e.target.style.textDecoration="underline"}} onMouseLeave={e=>{e.target.style.color=scrolled?T.textSub:"rgba(255,255,255,.7)";e.target.style.textDecoration="none"}}>{l}</a>)}
         <button onClick={onPortal} style={{background:"transparent",color:scrolled?T.textSub:"rgba(255,255,255,.7)",padding:"10px 18px",borderRadius:8,fontWeight:600,fontSize:"1rem",border:"none",cursor:"pointer",fontFamily:T.font,minHeight:44,transition:"color .3s"}}>Kunden-Portal</button>
         <button onClick={onStart} style={{background:scrolled?T.dark:"#fff",color:scrolled?"#fff":T.dark,padding:"12px 26px",borderRadius:8,fontWeight:700,fontSize:"1rem",border:"none",cursor:"pointer",fontFamily:T.font,letterSpacing:"-.01em",minHeight:44,transition:"all .3s"}}>Jetzt starten</button>
       </div>
@@ -290,9 +290,9 @@ function LandingPage({onStart,onPortal}){
   {/* TRUST BAR */}
   <section style={{padding:"48px 0 40px",background:T.bg}}>
     <W>
-      <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:40,flexWrap:"wrap",alignItems:"center"}}>
-        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:T.textMuted,fontSize:".85rem",fontWeight:500}}><span style={{display:"flex",opacity:.5}}>{t.icon}</span>{t.text}</div>)}
-      </div>
+      <div style={{display:"flex",justifyContent:"center"}}><div className="lp-trust-bar" style={{display:"inline-flex",justifyContent:"center",gap:32,flexWrap:"wrap",alignItems:"center",background:T.bg2,borderRadius:T.rLg,padding:"16px 36px"}}>
+        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,color:T.textSub,fontSize:".9rem",fontWeight:500}}><span style={{display:"flex",opacity:.6}}>{React.cloneElement(t.icon,{width:"22",height:"22"})}</span>{t.text}</div>)}
+      </div></div>
     </W>
   </section>
 
@@ -301,8 +301,8 @@ function LandingPage({onStart,onPortal}){
     <W>
       <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"5fr 7fr",gap:64,alignItems:"start"}}>
         <div>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Das Problem</div>
-          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
+          <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Das Problem</div>
+          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
         <div style={{position:"relative",paddingLeft:32}}>
           <div style={{position:"absolute",left:11,top:8,bottom:8,width:2,background:T.bg3}}/>
           {[{n:"01",icon:<IconClock/>,t:"Keine Zeit",d:"Der Alltag auf der Baustelle lässt keinen Raum für Webdesign."},{n:"02",icon:<IconMoney/>,t:"Zu teuer",d:"Eine Agentur kostet 1.500-5.000 Euro einmalig."},{n:"03",icon:<IconPuzzle/>,t:"Zu kompliziert",d:"Baukasten-Tools verlangen eigene Texte und Design."},{n:"04",icon:<IconWarning/>,t:"Rechtlich riskant",d:"Fehlendes Impressum oder DSGVO kann teuer werden."}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,marginBottom:i<3?32:0,position:"relative"}}>
@@ -314,7 +314,7 @@ function LandingPage({onStart,onPortal}){
         <div style={{background:T.dark,borderRadius:16,padding:"48px 40px",color:"#fff",position:"relative",overflow:"hidden"}}>
           <div style={{position:"absolute",top:"-20%",right:"-10%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(143,163,184,.15) 0%,transparent 70%)",pointerEvents:"none"}}/>
           <div style={{position:"relative",zIndex:1}}>
-            <div style={{display:"inline-block",background:T.accent,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 12px",borderRadius:6,marginBottom:20,letterSpacing:".04em"}}>Die Lösung</div>
+            <div style={{display:"inline-block",background:T.accent,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"5px 12px",borderRadius:6,marginBottom:20,letterSpacing:".04em"}}>Die Lösung</div>
             <h3 style={{fontSize:"2rem",fontWeight:800,marginBottom:12,letterSpacing:"-.04em"}}>SiteReady.at</h3>
             <p style={{fontSize:"1rem",color:"rgba(255,255,255,.6)",lineHeight:1.75,marginBottom:28}}>Kein Builder. Ein Service. Du beantwortest Fragen, wir liefern die fertige Website.</p>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:32}}>
@@ -331,15 +331,15 @@ function LandingPage({onStart,onPortal}){
   <section id="how" className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff"}}>
     <W>
       <div style={{marginBottom:64}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>So funktionierts</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark}}>Fünf Schritte. Null Aufwand.</h2>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>So funktionierts</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark}}>Fünf Schritte. Null Aufwand.</h2>
       </div>
       <div style={{position:"relative",paddingTop:24}}>
         <div className="lp-steps-line" style={{position:"absolute",top:44,left:"5%",right:"5%",height:2,background:T.accent,opacity:.3}}/>
         <div className="lp-steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:16,position:"relative"}}>
-          {[{n:"01",icon:<IconClipboard/>,t:"Fragebogen",d:"Bestehende Website importieren oder 10 Fragen beantworten."},{n:"02",icon:<IconEye/>,t:"Live-Vorschau",d:"Website entsteht live im Browser – sichtbar vor der Bezahlung."},{n:"03",icon:<IconCreditCard/>,t:"Bezahlen",d:"Sicher per Karte, EPS oder PayPal. Danach läuft alles automatisch."},{n:"04",icon:<IconRocket/>,t:"Sofort live",d:"SSL aktiv. Website in Minuten erreichbar und für Google sichtbar."},{n:"05",icon:<IconGear/>,t:"Anpassen",d:"Im Self-Service-Portal: Logo, Fotos und Domain jederzeit ändern."}].map((s,i)=><div key={i} style={{textAlign:"center"}}>
-            <div style={{width:48,height:48,borderRadius:"50%",background:i===4?"transparent":T.dark,border:i===4?`2px dashed ${T.textMuted}`:"none",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",color:i===4?T.textMuted:"#fff",position:"relative",zIndex:1}}>
-              <span style={{fontFamily:T.mono,fontSize:".78rem",fontWeight:700}}>{s.n}</span>
+          {[{n:"01",icon:<IconClipboard/>,t:"Fragebogen",d:"Bestehende Website importieren oder 10 Fragen beantworten."},{n:"02",icon:<IconEye/>,t:"Live-Vorschau",d:"Website entsteht live im Browser – sichtbar vor der Bezahlung."},{n:"03",icon:<IconCreditCard/>,t:"Bezahlen",d:"Sicher per Karte, EPS oder PayPal. Danach läuft alles automatisch."},{n:"04",icon:<IconRocket/>,t:"Sofort live",d:"SSL aktiv. Website in Minuten erreichbar und für Google sichtbar."},{n:"05",icon:<IconGear/>,t:"Anpassen",d:"Im Self-Service-Portal: Logo, Fotos und Domain jederzeit ändern."}].map((s,i)=><div key={i} style={{textAlign:"center",background:"#fff",borderRadius:T.r,padding:"28px 16px 24px",border:"1px solid rgba(0,0,0,.06)",boxShadow:T.sh1,transition:"transform .25s,box-shadow .25s",cursor:"default"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=T.sh2}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow=T.sh1}}>
+            <div style={{width:56,height:56,borderRadius:"50%",background:i===4?"transparent":T.dark,border:i===4?`2px dashed ${T.textMuted}`:"none",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",color:i===4?T.textMuted:"#fff",position:"relative",zIndex:1}}>
+              <span style={{fontFamily:T.mono,fontSize:".9rem",fontWeight:700}}>{s.n}</span>
             </div>
             <div style={{display:"flex",justifyContent:"center",marginBottom:12,color:i===4?T.textMuted:T.dark}}>{s.icon}</div>
             <h3 style={{fontSize:".95rem",fontWeight:700,color:i===4?T.textMuted:T.dark,marginBottom:8}}>{s.t}</h3>
@@ -354,13 +354,13 @@ function LandingPage({onStart,onPortal}){
   <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
     <W>
       <div style={{marginBottom:52}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Automatisches Design</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:500}}>Keine Designentscheidung. Nur ein Gefühl.</h2>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Automatisches Design</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:500}}>Keine Designentscheidung. Nur ein Gefühl.</h2>
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:460}}>Wie soll Ihr Betrieb wirken? SiteReady wählt das passende Design automatisch.</p>
       </div>
       <div className="lp-variants-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20,alignItems:"end"}}>
         {[{t:"Professionell & seriös",d:"Klare Linien, gedämpfte Farben, serifenlos",sub:"Elektriker, Installateure, Baumeister",lift:0,bg:T.dark,accent:"rgba(143,163,184,.3)"},{t:"Modern & frisch",d:"Helle Akzente, leichtes Layout, frische Palette",sub:"Maler, Fliesenleger, Gärtner",lift:-16,bg:"#1a1e24",accent:"rgba(143,163,184,.15)"},{t:"Bodenständig & vertraut",d:"Warme Töne, kräftige Schrift, solider Auftritt",sub:"Tischler, Zimmerer, Dachdecker",lift:0,bg:"#3a3d44",accent:"rgba(143,163,184,.25)"}].map((v,i)=>{const[vHov,setVHov]=React.useState(false);return <div key={i} onMouseEnter={()=>setVHov(true)} onMouseLeave={()=>setVHov(false)} style={{borderRadius:16,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)",transform:`translateY(${v.lift+(vHov?-3:0)}px)`,boxShadow:vHov?T.sh4:i===1?T.sh3:T.sh2,transition:"transform .3s,box-shadow .3s"}}>
-          <div style={{background:v.bg,padding:i===1?"68px 32px":"60px 32px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 80% 20%,${v.accent},transparent 60%)`}}/><div style={{position:"relative"}}><div style={{fontSize:".65rem",fontWeight:600,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>{v.sub}</div><h3 style={{fontSize:"1.25rem",fontWeight:800,marginBottom:8}}>{v.t}</h3><p style={{fontSize:".85rem",opacity:.6,lineHeight:1.6}}>{v.d}</p></div></div>
+          <div style={{background:v.bg,padding:i===1?"68px 32px":"60px 32px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 80% 20%,${v.accent},transparent 60%)`}}/><div style={{position:"relative"}}><div style={{fontSize:".75rem",fontWeight:600,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>{v.sub}</div><h3 style={{fontSize:"1.25rem",fontWeight:800,marginBottom:8}}>{v.t}</h3><p style={{fontSize:".85rem",opacity:.6,lineHeight:1.6}}>{v.d}</p></div></div>
           <div style={{padding:"20px 32px"}}><div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:8,height:8,borderRadius:"50%",background:T.accent}}/><p style={{fontSize:".84rem",color:T.textSub,fontWeight:500}}>Automatisch zugewiesen</p></div></div>
         </div>})}
       </div>
@@ -371,8 +371,8 @@ function LandingPage({onStart,onPortal}){
   <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:"#fff"}}>
     <W>
       <div style={{marginBottom:52}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Branchen-Templates</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihre Branche.</h2>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Branchen-Templates</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihre Branche.</h2>
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jede Branche bekommt ein eigenes Design, vorbelegte Leistungen und passende Texte – vollautomatisch.</p>
       </div>
       <div className="lp-branchen-card" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
@@ -385,7 +385,7 @@ function LandingPage({onStart,onPortal}){
             </div>
           </div>
           <div style={{padding:"24px 32px"}}>
-            <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
+            <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
               {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gärtner","Klima & Lüftung","Reinigung"].map(b=><span key={b} style={{fontSize:".76rem",padding:"5px 12px",borderRadius:8,fontWeight:500,background:T.bg,color:T.secondary,border:"1px solid rgba(0,0,0,.06)"}}>{b}</span>)}
             </div>
@@ -400,7 +400,7 @@ function LandingPage({onStart,onPortal}){
             </div>
           </div>
           <div style={{padding:"24px 32px"}}>
-            <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
+            <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
               {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fußpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".76rem",padding:"5px 12px",borderRadius:8,fontWeight:500,background:T.bg,color:T.secondary,border:"1px solid rgba(0,0,0,.06)"}}>{b}</span>)}
             </div>
@@ -421,19 +421,19 @@ function LandingPage({onStart,onPortal}){
   <section id="preise" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
     <W>
       <div style={{marginBottom:48}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Preise</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Ein Paket. Alles drin.</h2>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Preise</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Ein Paket. Alles drin.</h2>
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen.</p>
       </div>
       <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:24,maxWidth:900}}>
         {/* Standard */}
-        <div onMouseEnter={()=>setHovCard("pr")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 32px",position:"relative",border:`2px solid ${T.dark}`,boxShadow:hovCard==="pr"?T.sh4:T.sh3,transform:hovCard==="pr"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
-          <span style={{position:"absolute",top:-13,left:32,background:T.dark,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
+        <div onMouseEnter={()=>setHovCard("pr")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 32px",position:"relative",border:`2.5px solid ${T.dark}`,boxShadow:hovCard==="pr"?T.sh4:"0 8px 32px rgba(0,0,0,0.10)",transform:hovCard==="pr"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+          <span style={{position:"absolute",top:-13,left:32,background:T.dark,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
           <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,marginBottom:28,maxWidth:280,position:"relative"}}>
             <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:7,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
             {[["monthly","Monatlich"],["yearly","Jährlich"]].map(([val,lbl])=>(
               <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:7,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
-                {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".65rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
+                {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
               </button>
             ))}
           </div>
@@ -451,8 +451,8 @@ function LandingPage({onStart,onPortal}){
           <button onClick={onStart} style={{width:"100%",padding:16,borderRadius:10,fontSize:"1rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff",minHeight:48}}>Kostenlos testen</button>
         </div>
         {/* Premium Coming Soon */}
-        <div style={{background:"#fff",borderRadius:16,padding:"40px 28px",position:"relative",border:`1px solid ${T.bg3}`}}>
-          <span style={{position:"absolute",top:-13,left:28,background:T.accent,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
+        <div style={{background:T.bg,borderRadius:16,padding:"40px 28px",position:"relative",border:`1.5px dashed ${T.bg3}`}}>
+          <span style={{position:"absolute",top:-13,left:28,background:T.accent,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
           <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady Premium</div>
           <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:20}}>Alles aus Standard + mehr</div>
           <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(6px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".95rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
@@ -471,11 +471,11 @@ function LandingPage({onStart,onPortal}){
   <section id="vergleich" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.dark}}>
     <W>
       <div style={{marginBottom:48}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Vergleich</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:"#fff"}}>SiteReady vs. der Rest.</h2>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Vergleich</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:"#fff"}}>SiteReady vs. der Rest.</h2>
       </div>
       <div className="lp-compare" style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,.1)"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Webdesign Agentur","Wix","onepage.ai"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".72rem",color:j===1?T.accent:"rgba(255,255,255,.4)",textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.1)":"rgba(255,255,255,.03)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>{h}</th>)}</tr></thead><tbody>{[["Zeit bis live","Minuten","4-8 Wochen","Stunden","Stunden"],["Texte & Content","KI erstellt","Briefing nötig","Selbst schreiben","Selbst schreiben"],["Impressum (ECG)","Automatisch","Extra buchbar","Nein","Nein"],["DSGVO-Text","Automatisch","Extra buchbar","Nein","Nein"],["Vorschau vor Kauf","Ja","Nein","Teilweise","Nein"],["Für Handwerker","Spezialisiert","Je nach Agentur","Nein","Nein"],["Preis","ab 18 Euro/Mo","1.500-5.000 Euro","ab 17 Euro/Mo","ab 19,90 Euro/Mo"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(255,255,255,.02)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(255,255,255,.06)",color:j===0?"#fff":j===1?T.accent:"rgba(255,255,255,.4)",fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.05)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Webdesign Agentur","Wix","onepage.ai"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:"rgba(255,255,255,.4)",textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.1)":"rgba(255,255,255,.03)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>{h}</th>)}</tr></thead><tbody>{[["Zeit bis live","Minuten","4-8 Wochen","Stunden","Stunden"],["Texte & Content","KI erstellt","Briefing nötig","Selbst schreiben","Selbst schreiben"],["Impressum (ECG)","Automatisch","Extra buchbar","Nein","Nein"],["DSGVO-Text","Automatisch","Extra buchbar","Nein","Nein"],["Vorschau vor Kauf","Ja","Nein","Teilweise","Nein"],["Für Handwerker","Spezialisiert","Je nach Agentur","Nein","Nein"],["Preis","ab 18 Euro/Mo","1.500-5.000 Euro","ab 17 Euro/Mo","ab 19,90 Euro/Mo"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(255,255,255,.02)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(255,255,255,.06)",color:j===0?"#fff":j===1?T.accent:"rgba(255,255,255,.4)",fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.05)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
         <div style={{padding:"10px 22px",borderTop:"1px solid rgba(255,255,255,.06)",fontSize:".7rem",color:"rgba(255,255,255,.3)"}}>Agentur: Einmalkosten, zzgl. optionalem Wartungsvertrag</div>
       </div>
     </W>
@@ -485,8 +485,8 @@ function LandingPage({onStart,onPortal}){
   <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
     <W>
       <div style={{marginBottom:52}}>
-        <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Kundenstimmen</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark}}>Das sagen unsere Kunden.</h2>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Kundenstimmen</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark}}>Das sagen unsere Kunden.</h2>
       </div>
       <div className="lp-testi-grid" style={{display:"grid",gridTemplateColumns:"1.3fr 1fr",gap:24,alignItems:"start"}}>
         <div onMouseEnter={()=>setHovCard("t1")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 36px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t1"?T.sh3:T.sh2,transform:hovCard==="t1"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
@@ -524,8 +524,8 @@ function LandingPage({onStart,onPortal}){
     <W>
       <div className="lp-faq-grid" style={{display:"grid",gridTemplateColumns:"1fr 1.5fr",gap:64,alignItems:"start"}}>
         <div className="lp-faq-sticky" style={{position:"sticky",top:100}}>
-          <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>FAQ</div>
-          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Häufige Fragen</h2>
+          <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>FAQ</div>
+          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Häufige Fragen</h2>
           <p style={{fontSize:"1rem",color:T.textSub,lineHeight:1.7}}>Noch unsicher? Hier finden Sie Antworten auf die wichtigsten Fragen.</p>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:0}}>
@@ -572,7 +572,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* FOOTER */}
-  <footer style={{padding:"64px 0 40px",borderTop:`1px solid rgba(0,0,0,.06)`,background:T.bg}}>
+  <footer style={{padding:"80px 0 48px",borderTop:`1px solid rgba(0,0,0,.06)`,background:T.bg}}>
     <W>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:48,flexWrap:"wrap",gap:32}}>
         <div style={{maxWidth:320}}>
@@ -582,11 +582,11 @@ function LandingPage({onStart,onPortal}){
         <div className="lp-footer-cols" style={{display:"flex",gap:56}}>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Produkt</div>
-            {["Fragebogen starten","Preise","Branchen","Kunden-Portal"].map(l=><a key={l} href="#" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:10}}>{l}</a>)}
+            {["Fragebogen starten","Preise","Branchen","Kunden-Portal"].map(l=><a key={l} href="#" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:12,transition:"color .2s"}} onMouseEnter={e=>e.target.style.color=T.dark} onMouseLeave={e=>e.target.style.color=T.textMuted}>{l}</a>)}
           </div>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Rechtliches</div>
-            {["Impressum","Datenschutz","AGB"].map(l=><a key={l} href="#" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:10}}>{l}</a>)}
+            {["Impressum","Datenschutz","AGB"].map(l=><a key={l} href="#" style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:12,transition:"color .2s"}} onMouseEnter={e=>e.target.style.color=T.dark} onMouseLeave={e=>e.target.style.color=T.textMuted}>{l}</a>)}
           </div>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Kontakt</div>
@@ -866,21 +866,21 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
         {STEPS.map((s,i)=>{const done=i<step&&stepValid[i];const cur=i===step;return(<button key={s.id} onClick={()=>go(i)} style={{flex:1,padding:"9px 4px",border:"none",background:cur?T.white:"transparent",cursor:"pointer",borderRadius:cur?8:0,fontFamily:T.font,transition:"all .2s",boxShadow:cur?T.sh1:"none"}}><div style={{fontSize:".62rem",fontWeight:700,color:done?T.accent:cur?T.dark:T.textMuted,letterSpacing:".08em",marginBottom:2}}>{done?"\u2713":s.num}</div><div style={{fontSize:".78rem",fontWeight:cur?700:500,color:cur?T.dark:done?T.accent:T.textMuted}}>{s.title}</div></button>);})}
       </div></>}
     </div>
-    <div ref={ref} style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{showImport?(<div><div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.accentLight,color:T.accent,padding:"5px 14px",borderRadius:100,fontSize:".65rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:18}}>Optionaler Vorschritt</div><h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.02em"}}>Haben Sie schon eine Website?</h2><p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:24}}>Wir importieren Ihre Daten automatisch – Sie prüfen und korrigieren nur noch.</p><Field label="Ihre aktuelle Website-URL" value={importUrl} onChange={setImportUrl} placeholder="https://ihre-website.at" hint="Bitte nur Ihre eigene Website angeben"/><div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:16}}><div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",background:"#fefce8",borderRadius:T.rSm,border:"1px solid #fde68a"}}><span style={{fontSize:"13px",flexShrink:0}}>⚠️</span><span style={{fontSize:".78rem",color:"#92400e",lineHeight:1.6}}><strong>Nur Ihre eigene Website:</strong> Bitte geben Sie ausschließlich eine Website an, für die Sie berechtigt sind. Das Importieren fremder Daten ist aus Datenschutzgründen nicht erlaubt.</span></div><div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><span style={{fontSize:"13px",flexShrink:0}}>ℹ️</span><span style={{fontSize:".78rem",color:T.accent,lineHeight:1.6}}><strong>Bitte Daten prüfen:</strong> Die importierten Informationen werden automatisch erkannt und können unvollständig sein. Im nächsten Schritt können Sie alles korrigieren und ergänzen.</span></div></div>{importErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:"#dc2626"}}>{importErr}</div>}{importLoading?(<div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,marginBottom:12}}><div style={{width:18,height:18,borderRadius:"50%",border:`2.5px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/><span style={{fontSize:".88rem",color:T.accent,fontWeight:600}}>Website wird analysiert...</span></div>):(<button onClick={doImport} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".92rem",fontWeight:700,fontFamily:T.font,boxShadow:"0 2px 12px rgba(0,0,0,.12)",marginBottom:12,borderRadius:10}}>Daten importieren &rarr;</button>)}</div>):showBerufsgruppe?(<div>
-  <div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.accentLight,color:T.accent,padding:"5px 14px",borderRadius:100,fontSize:".65rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:18}}>Schritt 1 von 2</div>
+    <div ref={ref} style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{showImport?(<div><div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.accentLight,color:T.accent,padding:"5px 14px",borderRadius:100,fontSize:".75rem",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",marginBottom:18}}>Optionaler Vorschritt</div><h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.02em"}}>Haben Sie schon eine Website?</h2><p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:24}}>Wir importieren Ihre Daten automatisch – Sie prüfen und korrigieren nur noch.</p><Field label="Ihre aktuelle Website-URL" value={importUrl} onChange={setImportUrl} placeholder="https://ihre-website.at" hint="Bitte nur Ihre eigene Website angeben"/><div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:16}}><div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",background:"#fefce8",borderRadius:T.rSm,border:"1px solid #fde68a"}}><span style={{fontSize:"13px",flexShrink:0}}>⚠️</span><span style={{fontSize:".78rem",color:"#92400e",lineHeight:1.6}}><strong>Nur Ihre eigene Website:</strong> Bitte geben Sie ausschließlich eine Website an, für die Sie berechtigt sind. Das Importieren fremder Daten ist aus Datenschutzgründen nicht erlaubt.</span></div><div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><span style={{fontSize:"13px",flexShrink:0}}>ℹ️</span><span style={{fontSize:".78rem",color:T.accent,lineHeight:1.6}}><strong>Bitte Daten prüfen:</strong> Die importierten Informationen werden automatisch erkannt und können unvollständig sein. Im nächsten Schritt können Sie alles korrigieren und ergänzen.</span></div></div>{importErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:"#dc2626"}}>{importErr}</div>}{importLoading?(<div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,marginBottom:12}}><div style={{width:18,height:18,borderRadius:"50%",border:`2.5px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/><span style={{fontSize:".88rem",color:T.accent,fontWeight:600}}>Website wird analysiert...</span></div>):(<button onClick={doImport} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".92rem",fontWeight:700,fontFamily:T.font,boxShadow:"0 2px 12px rgba(0,0,0,.12)",marginBottom:12,borderRadius:10}}>Daten importieren &rarr;</button>)}</div>):showBerufsgruppe?(<div>
+  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>{[1,2].map(s=><React.Fragment key={s}>{s>1&&<div style={{flex:1,height:2,background:T.bg3,borderRadius:1}}/>}<div style={{width:28,height:28,borderRadius:"50%",background:s===1?T.dark:T.bg3,color:s===1?"#fff":T.textMuted,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".75rem",fontWeight:700,flexShrink:0}}>{s}</div></React.Fragment>)}</div>
   <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.02em"}}>Was beschreibt Ihren Betrieb?</h2>
   <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:16}}>Wir passen Design, Leistungen und Website-Texte automatisch an Ihre Branche an.</p>
   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
     {BERUFSGRUPPEN.map(g=>{const on=data.berufsgruppe===g.value;return(<button key={g.value} onClick={()=>onBerufsgruppChange(g.value)} style={{padding:"20px 16px",border:on?`2px solid ${T.accent}`:`1.5px solid ${T.bg3}`,borderRadius:T.r,background:on?T.accentLight:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .2s",boxShadow:on?`0 0 0 4px ${T.accentGlow}`:"none"}}>
-      <div style={{fontSize:"1.8rem",marginBottom:8}}>{g.icon}</div>
+      <div style={{marginBottom:8,color:on?T.accent:T.textMuted}} dangerouslySetInnerHTML={{__html:g.icon}}/>
       <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:4}}>{g.label}</div>
       <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{g.desc}</div>
-      {on&&<div style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:4,background:T.accent,color:"#fff",borderRadius:20,padding:"2px 10px",fontSize:".65rem",fontWeight:700}}>{"\u2713 Ausgewaehlt"}</div>}
+      {on&&<div style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:4,background:T.dark,color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:".75rem",fontWeight:700}}>{"\u2713 Ausgewählt"}</div>}
     </button>);})}
   </div>
-  <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".74rem",color:T.textMuted,lineHeight:1.6}}>Aktuell verfügbar: <strong style={{color:T.text}}>Handwerk</strong> & <strong style={{color:T.text}}>Kosmetik & Körperpflege</strong> &ndash; Weitere Berufsgruppen folgen bald.</div>
+  <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,fontSize:".8rem",color:T.textMuted,lineHeight:1.6}}>Aktuell verfügbar: <strong style={{color:T.text}}>Handwerk</strong> & <strong style={{color:T.text}}>Kosmetik & Körperpflege</strong> &ndash; Weitere Berufsgruppen folgen bald.</div>
 </div>):pages[step]}</div>
-    <div style={{padding:"16px 24px",borderTop:`1px solid ${T.bg3}`,display:"flex",justifyContent:showImport?"flex-end":"space-between",background:T.white}}>
+    <div style={{padding:"16px 24px",borderTop:`1px solid ${T.bg3}`,display:"flex",justifyContent:showImport?"flex-end":"space-between",background:"rgba(255,255,255,.92)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",boxShadow:"0 -2px 12px rgba(0,0,0,.04)"}}>
       {showImport?(<button onClick={()=>{setShowImport(false);setShowBerufsgruppe(true);}} style={{padding:"12px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Ohne Import starten</button>):showBerufsgruppe?(<><button onClick={()=>{setShowBerufsgruppe(false);setShowImport(true);}} style={{padding:"12px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button><button onClick={()=>{if(data.berufsgruppe)setShowBerufsgruppe(false);}} disabled={!data.berufsgruppe} style={{padding:"12px 24px",border:"none",borderRadius:10,background:data.berufsgruppe?T.dark:"#cbd5e1",color:"#fff",cursor:data.berufsgruppe?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:data.berufsgruppe?"0 2px 12px rgba(0,0,0,.12)":"none"}}>Weiter &rarr;</button></>):(<>{step>0?<button onClick={()=>go(step-1)} style={{padding:"12px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button>:<div/>}{step<STEPS.length-1?<button onClick={()=>go(step+1)} disabled={!stepValid[step]} style={{padding:"12px 24px",border:"none",borderRadius:10,background:stepValid[step]?T.dark:"#cbd5e1",color:"#fff",cursor:stepValid[step]?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid[step]?"0 2px 12px rgba(0,0,0,.12)":"none",transition:"background .2s"}}>Weiter &rarr;</button>:<button onClick={onComplete} disabled={!stepValid.every(v=>v)} style={{padding:"12px 24px",border:"none",borderRadius:10,background:stepValid.every(v=>v)?T.dark:"#cbd5e1",color:"#fff",cursor:stepValid.every(v=>v)?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid.every(v=>v)?"0 2px 12px rgba(0,0,0,.12)":"none",transition:"background .2s"}}>Website erstellen &rarr;</button>}</>)}
     </div>
   </div>);

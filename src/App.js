@@ -2315,7 +2315,7 @@ function Admin({adminKey}){
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"sites",label:"Sites",badge:regenBadge},
     {id:"finanzen",label:"Finanzen"},
-    {id:"support",label:"Support"},
+    {id:"support",label:"Support",badge:tickets.filter(t=>t.status==="offen").length||null},
     {id:"system",label:"System"},
     {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
     {id:"arch-flows",label:"Flows"},

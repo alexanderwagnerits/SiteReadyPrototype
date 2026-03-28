@@ -2271,7 +2271,7 @@ function Admin({adminKey}){
   const failedOrders=orders.filter(o=>o.last_error);
   if(failedOrders.length)alerts.push({type:"error",msg:`${failedOrders.length} Bestellung${failedOrders.length>1?"en":""} mit Fehler`,tab:"sites"});
   const lowQuality=orders.filter(o=>o.quality_score!==null&&o.quality_score!==undefined&&o.quality_score<80);
-  if(lowQuality.length)alerts.push({type:"warn",msg:`${lowQuality.length} Website${lowQuality.length>1?"s":""} mit Quality-Score unter 80`,tab:"sites"});
+  if(lowQuality.length)alerts.push({type:"warn",msg:`${lowQuality.length} Website${lowQuality.length>1?"s":""} mit Quality-Score unter 80`,action:()=>{setTab("sites");if(lowQuality.length===1)setSel(lowQuality[0]);}});
   const TABS=[
     {id:"start",label:"Start",section:"ADMIN"},
     {id:"sites",label:"Sites",badge:regenBadge},
@@ -2312,7 +2312,7 @@ function Admin({adminKey}){
         {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"1.4rem",fontWeight:800,color:T.textMuted}}>Desktop</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
         {(!isMobile||!DESKTOP_ONLY_TABS.includes(tab))&&<>
         {!loading&&alerts.length>0&&<div style={{marginBottom:20,display:"flex",flexDirection:"column",gap:6}}>
-          {alerts.map((a,i)=><div key={i} onClick={a.tab?()=>setTab(a.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:T.rSm,background:a.type==="error"?"#fef2f2":a.type==="warn"?"#fefce8":"#eff6ff",border:`1px solid ${a.type==="error"?"#fecaca":a.type==="warn"?"#fde68a":"#bfdbfe"}`,cursor:a.tab?"pointer":"default"}}>
+          {alerts.map((a,i)=><div key={i} onClick={a.action?a.action:a.tab?()=>setTab(a.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:T.rSm,background:a.type==="error"?"#fef2f2":a.type==="warn"?"#fefce8":"#eff6ff",border:`1px solid ${a.type==="error"?"#fecaca":a.type==="warn"?"#fde68a":"#bfdbfe"}`,cursor:(a.action||a.tab)?"pointer":"default"}}>
             <span style={{display:"inline-block",width:8,height:8,borderRadius:"50%",flexShrink:0,background:a.type==="error"?"#dc2626":a.type==="warn"?"#f59e0b":"#3b82f6"}}/>
             <span style={{fontSize:".82rem",fontWeight:600,color:a.type==="error"?"#dc2626":a.type==="warn"?"#92400e":"#1e40af",flex:1}}>{a.msg}</span>
             {a.tab&&<span style={{fontSize:".75rem",color:T.textMuted,whiteSpace:"nowrap"}}>Details &rarr;</span>}

@@ -311,17 +311,17 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* PROBLEM + SOLUTION */}
-  <section id="problem" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+  <section id="problem" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.dark}}>
     <W>
       <div className="lp-problem-grid" style={{display:"grid",gridTemplateColumns:"5fr 7fr",gap:64,alignItems:"start"}}>
         <div>
           <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Das Problem</div>
-          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
+          <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:"#fff",marginBottom:40,maxWidth:420}}>Handwerker wollen Kunden {"–"} nicht stundenlang Webdesign.</h2>
         <div style={{position:"relative",paddingLeft:32}}>
-          <div style={{position:"absolute",left:11,top:8,bottom:8,width:2,background:T.bg3}}/>
+          <div style={{position:"absolute",left:11,top:8,bottom:8,width:2,background:"rgba(255,255,255,.15)"}}/>
           {[{n:"01",icon:<IconClock/>,t:"Keine Zeit",d:"Der Alltag auf der Baustelle lässt keinen Raum für Webdesign."},{n:"02",icon:<IconMoney/>,t:"Zu teuer",d:"Eine Agentur kostet 1.500-5.000 Euro einmalig."},{n:"03",icon:<IconPuzzle/>,t:"Zu kompliziert",d:"Baukasten-Tools verlangen eigene Texte und Design."},{n:"04",icon:<IconWarning/>,t:"Rechtlich riskant",d:"Fehlendes Impressum oder DSGVO kann teuer werden."}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,marginBottom:i<3?32:0,position:"relative"}}>
-            <div style={{position:"absolute",left:-32,top:4,width:24,height:24,borderRadius:"50%",background:T.dark,display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}><span style={{fontFamily:T.mono,fontSize:".75rem",fontWeight:700,color:"#fff"}}>{c.n}</span></div>
-            <div><div style={{fontWeight:700,fontSize:".95rem",color:T.dark,marginBottom:4}}>{c.t}</div><div style={{fontSize:".84rem",color:T.textMuted,lineHeight:1.6}}>{c.d}</div></div>
+            <div style={{position:"absolute",left:-32,top:4,width:24,height:24,borderRadius:"50%",background:"transparent",border:"1.5px solid rgba(255,255,255,.4)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}><span style={{fontFamily:T.mono,fontSize:".75rem",fontWeight:700,color:"#fff"}}>{c.n}</span></div>
+            <div><div style={{fontWeight:700,fontSize:".95rem",color:"#fff",marginBottom:4}}>{c.t}</div><div style={{fontSize:".84rem",color:"rgba(255,255,255,.6)",lineHeight:1.6}}>{c.d}</div></div>
           </div>)}
         </div>
         </div>
@@ -342,7 +342,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* HOW IT WORKS - Timeline */}
-  <section id="how" className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff"}}>
+  <section id="how" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
     <W>
       <div style={{marginBottom:64}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>So funktionierts</div>
@@ -365,7 +365,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* DESIGN VARIANTS */}
-  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff",borderTop:"1px solid rgba(0,0,0,.04)"}}>
     <W>
       <div style={{marginBottom:52}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Automatisches Design</div>
@@ -382,7 +382,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* BRANCHEN - Single card with two halves */}
-  <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:"#fff"}}>
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:T.bg}}>
     <W>
       <div style={{marginBottom:52}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Branchen-Templates</div>
@@ -432,7 +432,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* PRICING - 60/40 split */}
-  <section id="preise" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+  <section id="preise" className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff",borderTop:"1px solid rgba(0,0,0,.04)"}}>
     <W>
       <div style={{marginBottom:48}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Preise</div>
@@ -481,29 +481,29 @@ function LandingPage({onStart,onPortal}){
     </W>
   </section>
 
-  {/* COMPARISON - Dark bg */}
-  <section id="vergleich" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.dark}}>
+  {/* COMPARISON */}
+  <section id="vergleich" className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
     <W>
       <div style={{marginBottom:48}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Vergleich</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:"#fff"}}>SiteReady vs. der Rest.</h2>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark}}>SiteReady vs. der Rest.</h2>
       </div>
-      <div className="lp-compare" style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,.1)"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Webdesign Agentur","Wix","onepage.ai"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:"rgba(255,255,255,.4)",textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.1)":"rgba(255,255,255,.03)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>{h}</th>)}</tr></thead><tbody>{[["Zeit bis live","Minuten","4-8 Wochen","Stunden","Stunden"],["Texte & Content","KI erstellt","Briefing nötig","Selbst schreiben","Selbst schreiben"],["Impressum (ECG)","Automatisch","Extra buchbar","Nein","Nein"],["DSGVO-Text","Automatisch","Extra buchbar","Nein","Nein"],["Vorschau vor Kauf","Ja","Nein","Teilweise","Nein"],["Für Handwerker","Spezialisiert","Je nach Agentur","Nein","Nein"],["Preis","ab 18 Euro/Mo","1.500-5.000 Euro","ab 17 Euro/Mo","ab 19,90 Euro/Mo"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(255,255,255,.02)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(255,255,255,.06)",color:j===0?"#fff":j===1?T.accent:"rgba(255,255,255,.4)",fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.05)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
-        <div style={{padding:"10px 22px",borderTop:"1px solid rgba(255,255,255,.06)",fontSize:".7rem",color:"rgba(255,255,255,.3)"}}>Agentur: Einmalkosten, zzgl. optionalem Wartungsvertrag</div>
+      <div className="lp-compare" style={{borderRadius:T.r,overflow:"hidden",background:"#fff",boxShadow:T.sh2}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Webdesign Agentur","Wix","onepage.ai"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.08)":"#fff",borderBottom:"1px solid rgba(0,0,0,.06)"}}>{h}</th>)}</tr></thead><tbody>{[["Zeit bis live","Minuten","4-8 Wochen","Stunden","Stunden"],["Texte & Content","KI erstellt","Briefing nötig","Selbst schreiben","Selbst schreiben"],["Impressum (ECG)","Automatisch","Extra buchbar","Nein","Nein"],["DSGVO-Text","Automatisch","Extra buchbar","Nein","Nein"],["Vorschau vor Kauf","Ja","Nein","Teilweise","Nein"],["Für Handwerker","Spezialisiert","Je nach Agentur","Nein","Nein"],["Preis","ab 18 Euro/Mo","1.500-5.000 Euro","ab 17 Euro/Mo","ab 19,90 Euro/Mo"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(0,0,0,.015)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(0,0,0,.05)",color:j===0?T.dark:j===1?T.accent:T.textMuted,fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.04)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
+        <div style={{padding:"10px 22px",borderTop:"1px solid rgba(0,0,0,.05)",fontSize:".7rem",color:T.textMuted}}>Agentur: Einmalkosten, zzgl. optionalem Wartungsvertrag</div>
       </div>
     </W>
   </section>
 
   {/* TESTIMONIALS */}
-  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff",borderTop:"1px solid rgba(0,0,0,.04)"}}>
     <W>
       <div style={{marginBottom:52}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Kundenstimmen</div>
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark}}>Das sagen unsere Kunden.</h2>
       </div>
       <div className="lp-testi-grid" style={{display:"grid",gridTemplateColumns:"1.3fr 1fr",gap:24,alignItems:"start"}}>
-        <div onMouseEnter={()=>setHovCard("t1")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 36px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t1"?T.sh3:T.sh2,transform:hovCard==="t1"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+        <div onMouseEnter={()=>setHovCard("t1")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 36px",border:`1px solid ${T.bg3}`,boxShadow:hovCard==="t1"?T.sh3:T.sh2,transform:hovCard==="t1"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
           <div style={{display:"flex",gap:4,marginBottom:20}}>{[1,2,3,4,5].map(s=><IconStar key={s}/>)}</div>
           <p style={{fontSize:"1.15rem",fontWeight:500,color:T.dark,lineHeight:1.7,marginBottom:28}}>Ich hab die Website in der Mittagspause ausgefüllt. Am nächsten Tag hat ein Kunde gesagt, er hat mich über Google gefunden. Das war der beste Business-Invest seit Jahren.</p>
           <div style={{display:"flex",alignItems:"center",gap:14}}>
@@ -512,7 +512,7 @@ function LandingPage({onStart,onPortal}){
           </div>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:24}}>
-          <div onMouseEnter={()=>setHovCard("t2")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"32px 32px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t2"?T.sh2:T.sh1,transform:hovCard==="t2"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+          <div onMouseEnter={()=>setHovCard("t2")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"32px 32px",border:`1px solid ${T.bg3}`,boxShadow:hovCard==="t2"?T.sh2:T.sh1,transform:hovCard==="t2"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
             <div style={{display:"flex",gap:4,marginBottom:14}}>{[1,2,3,4,5].map(s=><IconStar key={s}/>)}</div>
             <p style={{fontSize:".92rem",color:T.text,lineHeight:1.7,marginBottom:18}}>Endlich eine Lösung, die mitdenkt. Impressum, DSGVO – alles automatisch. Ich musste nichts selber schreiben.</p>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -520,7 +520,7 @@ function LandingPage({onStart,onPortal}){
               <div><div style={{fontWeight:700,fontSize:".84rem",color:T.dark}}>Lisa Kogler</div><div style={{fontSize:".78rem",color:T.textMuted}}>Kosmetikstudio, Graz</div></div>
             </div>
           </div>
-          <div onMouseEnter={()=>setHovCard("t3")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"32px 32px",border:"1px solid rgba(0,0,0,.06)",boxShadow:hovCard==="t3"?T.sh2:T.sh1,transform:hovCard==="t3"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+          <div onMouseEnter={()=>setHovCard("t3")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"32px 32px",border:`1px solid ${T.bg3}`,boxShadow:hovCard==="t3"?T.sh2:T.sh1,transform:hovCard==="t3"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
             <div style={{display:"flex",gap:4,marginBottom:14}}>{[1,2,3,4,5].map(s=><IconStar key={s}/>)}</div>
             <p style={{fontSize:".92rem",color:T.text,lineHeight:1.7,marginBottom:18}}>18 Euro im Monat statt 3.000 Euro an die Agentur. Und die Website sieht besser aus. Wahnsinn.</p>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -534,7 +534,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* FAQ - Two column */}
-  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff"}}>
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:T.bg}}>
     <W>
       <div className="lp-faq-grid" style={{display:"grid",gridTemplateColumns:"1fr 1.5fr",gap:64,alignItems:"start"}}>
         <div className="lp-faq-sticky" style={{position:"sticky",top:100}}>
@@ -566,7 +566,7 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* CTA - Asymmetric dark */}
-  <section className="lp-cta-section" style={{padding:"96px 0",position:"relative",overflow:"hidden",background:T.dark}}>
+  <section className="lp-cta-section" style={{padding:"120px 0",position:"relative",overflow:"hidden",background:T.dark}}>
     <div style={{position:"absolute",top:"-40%",left:"15%",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(143,163,184,.12) 0%,transparent 70%)",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1}}>
       <div className="lp-cta-inner" style={{display:"grid",gridTemplateColumns:"1.4fr 1fr",gap:64,alignItems:"center"}}>

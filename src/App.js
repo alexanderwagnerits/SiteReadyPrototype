@@ -256,7 +256,7 @@ function LandingPage({onStart,onPortal}){
   </div>}
 
   {/* HERO - Full-width dark */}
-  <section style={{background:T.dark,paddingTop:80,position:"relative",overflow:"hidden"}}>
+  <section style={{background:T.dark,paddingTop:80,minHeight:"100dvh",position:"relative",overflow:"hidden",display:"flex",flexDirection:"column"}}>
     <div style={{position:"absolute",top:"-20%",right:"-10%",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(143,163,184,.12) 0%,transparent 65%)",pointerEvents:"none"}}/>
     <W s={{position:"relative",zIndex:1,width:"100%"}}>
       <div className="lp-hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"center",padding:"80px 0 0"}}>

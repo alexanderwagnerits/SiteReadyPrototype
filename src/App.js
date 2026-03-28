@@ -145,6 +145,8 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .lp-cta-stats>div{justify-content:center!important}
   .lp-cta-inner h2{font-size:clamp(1.6rem,6vw,2.2rem)!important}
   .lp-compare table th:nth-child(n+4),.lp-compare table td:nth-child(n+4){display:none!important}
+  .lp-compare table{font-size:.8rem!important}
+  .lp-compare table th,.lp-compare table td{padding:10px 12px!important}
   .lp-compare{position:relative}
   .lp-branchen-card{grid-template-columns:1fr!important}
   footer{padding:48px 0 32px!important}

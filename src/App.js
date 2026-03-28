@@ -1300,6 +1300,41 @@ function Portal({session,onLogout}){
             </div>
           </div>
         </div>);})()}
+        {/* Aktuelles / News */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Aktuelles</div>
+            {(order.announcements||[]).length<3&&<button onClick={async()=>{
+              const a=[...(order.announcements||[]),{text:"",active:true,date:"",id:Date.now()}];
+              await supabase.from("orders").update({announcements:a}).eq("id",order.id);
+              setOrder(o=>({...o,announcements:a}));
+            }} style={{padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>+ Hinzufügen</button>}
+          </div>
+          {(order.announcements||[]).length===0?(<div style={{padding:"24px 16px",textAlign:"center",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+            <div style={{fontSize:".85rem",color:T.textMuted,marginBottom:4}}>Keine Meldungen</div>
+            <div style={{fontSize:".8rem",color:T.textMuted}}>Aktionen, Urlaub oder News — erscheint als Banner auf Ihrer Website.</div>
+          </div>):(
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {(order.announcements||[]).map((ann,i)=><div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
+              <div style={{display:"flex",gap:8,marginBottom:10}}>
+                <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40}}/>
+                <input type="date" value={ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date:e.target.value};setOrder(o=>({...o,announcements:a}));}} style={{padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".8rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,width:140}}/>
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:".8rem",color:ann.active?T.green:T.textMuted,fontWeight:600}}>
+                  <div style={{width:36,height:20,borderRadius:10,background:ann.active?T.green:T.bg3,position:"relative",transition:"background .2s",cursor:"pointer"}} onClick={()=>{const a=[...(order.announcements||[])];a[i]={...a[i],active:!a[i].active};setOrder(o=>({...o,announcements:a}));}}>
+                    <div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:ann.active?18:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.15)"}}/>
+                  </div>
+                  {ann.active?"Sichtbar":"Ausgeblendet"}
+                </label>
+                <div style={{display:"flex",gap:6}}>
+                  <button onClick={async()=>{const a=[...(order.announcements||[])];await supabase.from("orders").update({announcements:a}).eq("id",order.id);setToastMsg("Gespeichert");}} style={{padding:"6px 12px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>Speichern</button>
+                  <button onClick={async()=>{const a=(order.announcements||[]).filter((_,idx)=>idx!==i);await supabase.from("orders").update({announcements:a}).eq("id",order.id);setOrder(o=>({...o,announcements:a}));}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>{"\u00d7"}</button>
+                </div>
+              </div>
+            </div>)}
+          </div>)}
+        </div>
         {/* Onboarding-Checkliste */}
         {(()=>{const checks=[{label:"Website erstellt",done:!!order.website_html},{label:"Logo hochgeladen",done:!!assetUrls.logo,tab:"medien"},{label:"Kontakt vollständig",done:!!(order.telefon&&order.adresse),tab:"website"},{label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien"}];const done=checks.filter(c=>c.done).length;if(done===checks.length)return null;return(<div style={{background:"#fff",borderRadius:T.r,padding:"0",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}><div style={{height:3,background:T.bg3}}><div style={{height:"100%",background:T.accent,borderRadius:"0 2px 2px 0",width:`${(done/checks.length)*100}%`,transition:"width .4s ease"}}/></div><div style={{padding:"18px 24px"}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Erste Schritte</div><div style={{fontSize:".75rem",color:T.textSub,fontWeight:600}}>{done}/{checks.length}</div></div><div style={{display:"flex",flexDirection:"column",gap:6}}>{checks.map((c,i)=><div key={i} onClick={c.tab&&!c.done?()=>setTab(c.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 0",cursor:c.tab&&!c.done?"pointer":"default"}}><div style={{width:18,height:18,borderRadius:"50%",background:c.done?"#16a34a":"#e2e8f0",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".65rem",fontWeight:800,flexShrink:0}}>{c.done?"\u2713":""}</div><span style={{fontSize:".875rem",color:c.done?T.textMuted:T.dark,flex:1}}>{c.label}</span>{c.tab&&!c.done&&<span style={{fontSize:".75rem",color:T.accent,fontWeight:700}}>\u2192</span>}</div>)}</div></div></div>);})()}
         {/* Grunddaten */}

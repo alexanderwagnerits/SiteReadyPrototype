@@ -56,6 +56,26 @@ export async function onRequestGet({params, env}) {
     );
   }
 
+  // Aktuelles-Banner injizieren (aktive Announcements)
+  const announcements = (o.announcements || []).filter(a => a.active && a.text);
+  if (announcements.length > 0) {
+    const today = new Date().toISOString().split("T")[0];
+    const validAnn = announcements.filter(a => !a.date || a.date >= today);
+    if (validAnn.length > 0) {
+      const annHtml = `<div id="sr-announcements" style="background:var(--accent,#2563eb);color:#fff;text-align:center;padding:10px 24px;font-size:.88rem;font-weight:600;font-family:system-ui,sans-serif;line-height:1.5">` +
+        validAnn.map(a => {
+          const dateStr = a.date ? ` <span style="opacity:.75;font-weight:400">(bis ${new Date(a.date).toLocaleDateString("de-AT",{day:"numeric",month:"long"})})</span>` : "";
+          return a.text + dateStr;
+        }).join(" &nbsp;·&nbsp; ") +
+        `</div>`;
+      // Nach der Nav einfuegen
+      html = html.replace(/(<\/nav>)/i, `$1\n${annHtml}`);
+      if (!html.includes("sr-announcements")) {
+        html = html.replace(/<body[^>]*>/i, m => m + "\n" + annHtml);
+      }
+    }
+  }
+
   // Hero-Bild: erste Section bekommt id="sr-hero", dann CSS-Override mit Bild
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
   if (o.url_hero) {

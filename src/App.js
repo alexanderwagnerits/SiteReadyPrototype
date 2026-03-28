@@ -24,7 +24,7 @@ const logErrorToSupabase=async(error,source="js")=>{
       created_at:new Date().toISOString()
     });
     // Auto Support-Ticket bei kritischen Fehlern (alle Besucher, max 1x pro 5 Min)
-    if(source!=="test"&&Date.now()-lastAutoTicket>300000){
+    if(source!=="test"&&Date.now()-lastAutoTicket>1800000){
       lastAutoTicket=Date.now();
       const ticketEmail=userEmail||"anonymous@siteready.at";
       await supabase.from("support_requests").insert({

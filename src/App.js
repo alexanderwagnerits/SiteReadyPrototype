@@ -1010,13 +1010,15 @@ function Portal({session,onLogout}){
   const[showPlanModal,setShowPlanModal]=useState(false);
   const[subscribing,setSubscribing]=useState(false);
   const[toastMsg,setToastMsg]=useState(null);
+  const[gUrl,setGUrl]=useState("");
+  const[gSaved,setGSaved]=useState(false);
   const[deleting,setDeleting]=useState({});
   const showToast=(msg)=>{setToastMsg(msg);setTimeout(()=>setToastMsg(null),2500);};
 
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
     supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1)
-      .then(({data})=>{if(data&&data.length>0)setOrder(data[0]);});
+      .then(({data})=>{if(data&&data.length>0){setOrder(data[0]);if(data[0].google_maps_url){setGUrl(data[0].google_maps_url);setGSaved(true);}}});
     // Existierende Assets laden
     const uid=session.user.id;
     const keys=["logo","hero","foto1","foto2","foto3","foto4","foto5"];
@@ -1657,7 +1659,6 @@ function Portal({session,onLogout}){
           </div>
         </div>
         {/* Google Bewertungen */}
-        {(()=>{const [gUrl,setGUrl]=React.useState(order.google_maps_url||"");const [gSaved,setGSaved]=React.useState(!!(order.google_maps_url));return(
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Google Bewertungen</div>
           <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6,margin:"0 0 16px"}}>Bitten Sie zufriedene Kunden um eine Bewertung — das verbessert Ihr Google-Ranking.</p>
@@ -1675,7 +1676,7 @@ function Portal({session,onLogout}){
               Bewertungslink kopieren
             </button>
           </div>)}
-        </div>);})()}
+        </div>
         {/* Firmen-Flyer PDF */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Firmen-Flyer (PDF)</div>

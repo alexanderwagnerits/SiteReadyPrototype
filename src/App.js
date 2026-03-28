@@ -6,6 +6,7 @@ const supabase = (process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SU
   : null;
 
 /* ═══ ERROR LOGGING ═══ */
+let lastAutoTicket=0;
 const logErrorToSupabase=async(error,source="js")=>{
   if(!supabase)return;
   try{
@@ -22,10 +23,12 @@ const logErrorToSupabase=async(error,source="js")=>{
       user_email:userEmail,
       created_at:new Date().toISOString()
     });
-    // Auto Support-Ticket bei kritischen Fehlern (nur fuer eingeloggte Kunden)
-    if(userEmail&&source!=="test"){
+    // Auto Support-Ticket bei kritischen Fehlern (alle Besucher, max 1x pro 5 Min)
+    if(source!=="test"&&Date.now()-lastAutoTicket>300000){
+      lastAutoTicket=Date.now();
+      const ticketEmail=userEmail||"anonymous@siteready.at";
       await supabase.from("support_requests").insert({
-        email:userEmail,
+        email:ticketEmail,
         subject:"[Auto] Frontend-Fehler",
         message:`Automatisch erkannter Fehler:\n\n${msg}\n\nSeite: ${url}\nBrowser: ${ua.slice(0,200)}`,
         status:"offen"

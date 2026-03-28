@@ -104,6 +104,7 @@ export async function onRequestPost({request, env}) {
       if (order) {
         await patchOrder(order.id, {subscription_status: "past_due"});
         await logEvent(order.id, "payment_failed");
+        try{await fetch(`${sb}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":sbKey,"Authorization":`Bearer ${sbKey}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Zahlung fehlgeschlagen",message:`Kunde: ${customerId}\nOrder: ${order.id}\nFirma: ${order.firmenname||"unbekannt"}`,status:"offen"})});}catch(_){}
       }
     }
   }

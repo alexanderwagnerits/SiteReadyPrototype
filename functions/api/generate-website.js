@@ -438,6 +438,7 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
       headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
       body: JSON.stringify({last_error: errMsg}),
     });
+    try{await fetch(`${env.SUPABASE_URL}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Website-Generierung fehlgeschlagen",message:`Order: ${order_id}\nFirma: ${o.firmenname}\nFehler: ${errMsg}`,status:"offen"})});}catch(_){}
     return Response.json({error: errMsg}, {status: 500});
   }
 
@@ -647,6 +648,11 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         }
       }
     } catch(_) { /* Retry fehlgeschlagen, Original behalten */ }
+  }
+
+  // Auto Support-Ticket wenn Quality-Score nicht perfekt
+  if (qualityScore < 100) {
+    try{await fetch(`${env.SUPABASE_URL}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Website Quality-Score nicht perfekt",message:`Order: ${order_id}\nFirma: ${o.firmenname}\nScore: ${qualityScore}/100\nProbleme: ${qualityIssues.join(", ")}`,status:"offen"})});}catch(_){}
   }
 
   /* ─── In Supabase speichern + Status setzen ─── */

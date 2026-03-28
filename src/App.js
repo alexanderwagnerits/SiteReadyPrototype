@@ -299,15 +299,14 @@ function LandingPage({onStart,onPortal}){
         </div>
       </div>
     </W>
-  </section>
-
-  {/* TRUST BAR */}
-  <section style={{padding:"28px 0 32px",background:T.dark,borderTop:"1px solid rgba(255,255,255,.06)"}}>
-    <W>
-      <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:36,flexWrap:"wrap",alignItems:"center"}}>
-        {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:"rgba(255,255,255,.45)",fontSize:".82rem",fontWeight:500}}><span style={{display:"flex",color:T.accent,opacity:.6}}>{React.cloneElement(t.icon,{width:"18",height:"18"})}</span>{t.text}</div>)}
-      </div>
-    </W>
+    {/* Trust Badges — inside Hero */}
+    <div style={{marginTop:"auto",borderTop:"1px solid rgba(255,255,255,.06)",padding:"24px 0"}}>
+      <W>
+        <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:36,flexWrap:"wrap",alignItems:"center"}}>
+          {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:"rgba(255,255,255,.45)",fontSize:".82rem",fontWeight:500}}><span style={{display:"flex",color:T.accent,opacity:.6}}>{React.cloneElement(t.icon,{width:"18",height:"18"})}</span>{t.text}</div>)}
+        </div>
+      </W>
+    </div>
   </section>
 
   {/* PROBLEM + SOLUTION */}

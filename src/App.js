@@ -1234,58 +1234,7 @@ function Portal({session,onLogout}){
       {/* Toast */}
       {toastMsg&&<div style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:"#4ade80"}}>&#10003;</span>{toastMsg}</div>}
       {/* Build-Screen: status===pending (Generierung laeuft) */}
-      {order?.status==="pending"&&(()=>{
-        const BUILD_PHASES=[
-          {icon:"\uD83D\uDCCB",label:"Daten werden analysiert",sub:"Branche, Leistungen & Kontaktdaten",dur:6},
-          {icon:"\u270D\uFE0F",label:"Texte werden geschrieben",sub:"Über uns, Leistungsbeschreibungen & SEO",dur:18},
-          {icon:"\uD83C\uDFA8",label:"Design wird angewendet",sub:"Farben, Schriften & Layout",dur:12},
-          {icon:"\uD83D\uDDBC\uFE0F",label:"Medien werden eingebaut",sub:"Logo, Fotos & Icons",dur:8},
-          {icon:"\uD83D\uDD0D",label:"Qualitätsprüfung",sub:"Performance, SEO & Rechtliches",dur:10},
-          {icon:"\u2705",label:"Website wird veröffentlicht",sub:"DNS & SSL-Zertifikat",dur:6}
-        ];
-        const totalDur=BUILD_PHASES.reduce((s,p)=>s+p.dur,0);
-        const [buildElapsed,setBuildElapsed]=React.useState(0);
-        const buildRef=React.useRef(null);
-        React.useEffect(()=>{
-          buildRef.current=setInterval(()=>setBuildElapsed(e=>e+1),1000);
-          return()=>clearInterval(buildRef.current);
-        },[]);
-        React.useEffect(()=>{
-          if(buildElapsed>0&&buildElapsed%5===0){
-            (async()=>{
-              const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
-              if(data&&data[0]&&data[0].status!=="pending")setOrder(data[0]);
-            })();
-          }
-        },[buildElapsed]);
-        let acc=0;let activeIdx=0;
-        for(let i=0;i<BUILD_PHASES.length;i++){acc+=BUILD_PHASES[i].dur;if(buildElapsed<acc){activeIdx=i;break;}if(i===BUILD_PHASES.length-1)activeIdx=i;}
-        const progressPct=Math.min((buildElapsed/totalDur)*100,95);
-        return(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28}}>
-          <div style={{textAlign:"center",marginBottom:32}}>
-            <div style={{fontSize:"2.2rem",marginBottom:12}}>{BUILD_PHASES[activeIdx].icon}</div>
-            <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 6px"}}>{BUILD_PHASES[activeIdx].label}</h2>
-            <p style={{fontSize:".85rem",color:T.textSub,margin:0}}>{BUILD_PHASES[activeIdx].sub}</p>
-          </div>
-          {/* Progress Bar */}
-          <div style={{background:T.bg3,borderRadius:100,height:8,overflow:"hidden",marginBottom:28,maxWidth:480,margin:"0 auto 28px"}}>
-            <div style={{height:"100%",borderRadius:100,background:`linear-gradient(90deg, ${T.accent}, #6366f1)`,width:`${progressPct}%`,transition:"width 1s ease"}}/>
-          </div>
-          {/* Phase-Steps */}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(130px, 1fr))",gap:8,maxWidth:600,margin:"0 auto"}}>
-            {BUILD_PHASES.map((p,i)=>{
-              const done=i<activeIdx;const active=i===activeIdx;
-              return(<div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"10px 6px",borderRadius:T.rSm,background:active?`${T.accent}08`:"transparent",border:active?`1px solid ${T.accent}22`:"1px solid transparent",transition:"all .3s"}}>
-                <div style={{fontSize:"1.1rem",opacity:done||active?1:.35,filter:done?"grayscale(0)":active?"grayscale(0)":"grayscale(1)"}}>{p.icon}</div>
-                <div style={{fontSize:".7rem",fontWeight:active?700:500,color:done?T.green:active?T.accent:T.textMuted,textAlign:"center",lineHeight:1.3}}>{p.label.replace("werden ","")}</div>
-                {done&&<div style={{fontSize:".6rem",color:T.green,fontWeight:700}}>{"\u2713"}</div>}
-                {active&&<div style={{width:12,height:12,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
-              </div>);
-            })}
-          </div>
-          <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
-        </div>);
-      })()}
+      {order?.status==="pending"&&<BuildScreen session={session} setOrder={setOrder}/>}
 
       {/* Tab Nav */}
       {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:4,background:T.bg2,borderRadius:T.r,padding:4,marginBottom:28,width:"fit-content",flexWrap:"nowrap"}}>
@@ -1830,6 +1779,58 @@ function renderMd(md){
   }
   if(inUl)html+="</ul>";
   return html;
+}
+
+/* ═══ BUILD SCREEN (eigene Komponente wg. React Hooks Regeln) ═══ */
+function BuildScreen({session,setOrder}){
+  const BUILD_PHASES=[
+    {icon:"\uD83D\uDCCB",label:"Daten werden analysiert",sub:"Branche, Leistungen & Kontaktdaten",dur:6},
+    {icon:"\u270D\uFE0F",label:"Texte werden geschrieben",sub:"\u00DCber uns, Leistungsbeschreibungen & SEO",dur:18},
+    {icon:"\uD83C\uDFA8",label:"Design wird angewendet",sub:"Farben, Schriften & Layout",dur:12},
+    {icon:"\uD83D\uDDBC\uFE0F",label:"Medien werden eingebaut",sub:"Logo, Fotos & Icons",dur:8},
+    {icon:"\uD83D\uDD0D",label:"Qualit\u00E4tspr\u00FCfung",sub:"Performance, SEO & Rechtliches",dur:10},
+    {icon:"\u2705",label:"Website wird ver\u00F6ffentlicht",sub:"DNS & SSL-Zertifikat",dur:6}
+  ];
+  const totalDur=BUILD_PHASES.reduce((s,p)=>s+p.dur,0);
+  const [buildElapsed,setBuildElapsed]=useState(0);
+  const buildRef=useRef(null);
+  useEffect(()=>{
+    buildRef.current=setInterval(()=>setBuildElapsed(e=>e+1),1000);
+    return()=>clearInterval(buildRef.current);
+  },[]);
+  useEffect(()=>{
+    if(buildElapsed>0&&buildElapsed%5===0){
+      (async()=>{
+        const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
+        if(data&&data[0]&&data[0].status!=="pending")setOrder(data[0]);
+      })();
+    }
+  },[buildElapsed]);
+  let acc=0;let activeIdx=0;
+  for(let i=0;i<BUILD_PHASES.length;i++){acc+=BUILD_PHASES[i].dur;if(buildElapsed<acc){activeIdx=i;break;}if(i===BUILD_PHASES.length-1)activeIdx=i;}
+  const progressPct=Math.min((buildElapsed/totalDur)*100,95);
+  return(<div style={{background:"#fff",borderRadius:T.r,padding:"48px 36px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,marginBottom:28}}>
+    <div style={{textAlign:"center",marginBottom:32}}>
+      <div style={{fontSize:"2.2rem",marginBottom:12}}>{BUILD_PHASES[activeIdx].icon}</div>
+      <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 6px"}}>{BUILD_PHASES[activeIdx].label}</h2>
+      <p style={{fontSize:".85rem",color:T.textSub,margin:0}}>{BUILD_PHASES[activeIdx].sub}</p>
+    </div>
+    <div style={{background:T.bg3,borderRadius:100,height:8,overflow:"hidden",marginBottom:28,maxWidth:480,margin:"0 auto 28px"}}>
+      <div style={{height:"100%",borderRadius:100,background:`linear-gradient(90deg, ${T.accent}, #6366f1)`,width:`${progressPct}%`,transition:"width 1s ease"}}/>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(130px, 1fr))",gap:8,maxWidth:600,margin:"0 auto"}}>
+      {BUILD_PHASES.map((p,i)=>{
+        const done=i<activeIdx;const active=i===activeIdx;
+        return(<div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"10px 6px",borderRadius:T.rSm,background:active?`${T.accent}08`:"transparent",border:active?`1px solid ${T.accent}22`:"1px solid transparent",transition:"all .3s"}}>
+          <div style={{fontSize:"1.1rem",opacity:done||active?1:.35,filter:done?"grayscale(0)":active?"grayscale(0)":"grayscale(1)"}}>{p.icon}</div>
+          <div style={{fontSize:".75rem",fontWeight:active?700:500,color:done?T.green:active?T.accent:T.textMuted,textAlign:"center",lineHeight:1.3}}>{p.label.replace("werden ","")}</div>
+          {done&&<div style={{fontSize:".75rem",color:T.green,fontWeight:700}}>{"\u2713"}</div>}
+          {active&&<div style={{width:12,height:12,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
+        </div>);
+      })}
+    </div>
+    <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
+  </div>);
 }
 
 /* ═══ ADMIN DASHBOARD ═══ */

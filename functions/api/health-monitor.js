@@ -71,15 +71,8 @@ export async function onRequestGet({request, env}) {
       const r = await fetch("https://api.stripe.com/v1/balance", {headers: {"Authorization": `Bearer ${env.STRIPE_SECRET_KEY}`}});
       return r.ok;
     }},
-    {name: "Anthropic", check: async () => {
-      if (!env.ANTHROPIC_API_KEY) return true;
-      const r = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {"x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-        body: JSON.stringify({model: "claude-haiku-4-5-20251001", max_tokens: 1, messages: [{role: "user", content: "hi"}]})
-      });
-      return r.ok || r.status === 429; // Rate-limit ist ok, heisst API lebt
-    }},
+    // Anthropic wird nicht geprueft — Rate-Limits erzeugen False-Positives.
+    // Bei echten Problemen kommt ein Ticket via generate-website.js.
   ];
 
   for (const api of apis) {

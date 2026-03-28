@@ -2154,7 +2154,7 @@ function Admin({adminKey}){
     // Auto-Ticket bei API-Ausfall (max 1x pro API pro Session)
     if(supabase&&j){
       for(const[k,v] of Object.entries(j)){
-        if(k==="envvars")continue;
+        if(k==="envvars"||k==="anthropic")continue;
         if(v&&v.ok===false&&!sysTicketSent.current[k]){
           sysTicketSent.current[k]=true;
           try{await supabase.from("support_requests").insert({email:"system@siteready.at",subject:`[Auto] API nicht erreichbar: ${k}`,message:`Die ${k} API antwortet mit einem Fehler.\n\n${v.error||"Unbekannter Fehler"}\n\nZeitpunkt: ${new Date().toISOString()}`,status:"offen"});}catch(_){}

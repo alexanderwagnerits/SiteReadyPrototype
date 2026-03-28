@@ -1059,19 +1059,22 @@ function Portal({session,onLogout}){
   };
 
   const upload=async(key,file)=>{
-    if(!file||!session?.user?.id||!supabase)return;
+    if(!file){setToastMsg("Keine Datei ausgewählt");return;}
+    if(!session?.user?.id){setToastMsg("Nicht eingeloggt — bitte neu anmelden");return;}
+    if(!supabase){setToastMsg("Verbindungsfehler");return;}
     setUploading(u=>({...u,[key]:true}));
-    const ext=file.name.split(".").pop();
-    const path=`${session.user.id}/${key}.${ext}`;
-    const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});
-    if(!error){
+    try{
+      const ext=file.name.split(".").pop().toLowerCase();
+      const path=`${session.user.id}/${key}.${ext}`;
+      const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});
+      if(error){setToastMsg("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
-      // URL in orders-Tabelle speichern (für Serve-time Injection)
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
       const col=colMap[key];
-      if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("Logo-URL Update fehlgeschlagen:",upErr.message);}
-    }
+      if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("URL-Update:",upErr.message);}
+      setToastMsg(key==="logo"?"Logo hochgeladen!":"Foto hochgeladen!");
+    }catch(e){setToastMsg("Fehler: "+e.message);}
     setUploading(u=>({...u,[key]:false}));
   };
 

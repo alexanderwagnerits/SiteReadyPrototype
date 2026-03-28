@@ -2051,19 +2051,44 @@ function Admin({adminKey}){
     const a=document.createElement("a");a.href=url;a.download=`siteready-bestellungen-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
   };
 
+  const healthTicketSent=useRef({});
   const checkHealth=async(order)=>{
     const url=`https://sitereadyprototype.pages.dev/s/${order.subdomain||"test"}`;
     setHealth(h=>({...h,[order.id]:"checking"}));
     const t0=Date.now();
-    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"ok"}));setHealthMs(m=>({...m,[order.id]:ms}));}
-    catch(e){const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"error"}));setHealthMs(m=>({...m,[order.id]:ms}));}
+    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"ok"}));setHealthMs(m=>({...m,[order.id]:ms}));delete healthTicketSent.current[order.id];}
+    catch(e){
+      const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"error"}));setHealthMs(m=>({...m,[order.id]:ms}));
+      // Auto-Ticket erstellen (max 1x pro Website pro Session)
+      if(supabase&&!healthTicketSent.current[order.id]){
+        healthTicketSent.current[order.id]=true;
+        try{await supabase.from("support_requests").insert({email:"system@siteready.at",subject:`[Auto] Website nicht erreichbar: ${order.firmenname||order.subdomain}`,message:`${order.subdomain}.siteready.at ist nicht erreichbar.\n\nOrder: ${order.id}\nFirma: ${order.firmenname||"unbekannt"}\nStatus: ${order.status}`,status:"offen"});}catch(_){}
+      }
+    }
     setHealthTime(t=>({...t,[order.id]:new Date()}));
   };
 
   const filtered=orders.filter(o=>filter==="alle"||o.status===filter);
   const fmtDate=s=>s?new Date(s).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"}):"";
   const[sysLastCheck,setSysLastCheck]=useState(null);
-  const checkSystem=async()=>{setSysLoading(true);const r=await fetch(`/api/admin-system?key=${adminKey}`);const j=await r.json();setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);};
+  const sysTicketSent=useRef({});
+  const checkSystem=async()=>{
+    setSysLoading(true);
+    const r=await fetch(`/api/admin-system?key=${adminKey}`);
+    const j=await r.json();
+    setSysStatus(j);setSysLastCheck(new Date());setSysLoading(false);
+    // Auto-Ticket bei API-Ausfall (max 1x pro API pro Session)
+    if(supabase&&j){
+      for(const[k,v] of Object.entries(j)){
+        if(k==="envvars")continue;
+        if(v&&v.ok===false&&!sysTicketSent.current[k]){
+          sysTicketSent.current[k]=true;
+          try{await supabase.from("support_requests").insert({email:"system@siteready.at",subject:`[Auto] API nicht erreichbar: ${k}`,message:`Die ${k} API antwortet mit einem Fehler.\n\n${v.error||"Unbekannter Fehler"}\n\nZeitpunkt: ${new Date().toISOString()}`,status:"offen"});}catch(_){}
+        }
+        if(v&&v.ok===true)delete sysTicketSent.current[k];
+      }
+    }
+  };
   const fetchExtStatus=async()=>{
     try{
       const r=await fetch(`/api/ext-status?key=${adminKey}`);

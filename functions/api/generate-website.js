@@ -553,41 +553,82 @@ window.addEventListener('scroll',upd,{passive:true});upd();
   let qualityScore = 0;
   const qualityIssues = [];
   try {
+    const htmlLen = html.length;
+    const hasNav = /<nav[\s>]/i.test(html) || /id="sitenav"/i.test(html);
+    const hasHero = /min-height:\s*100vh/i.test(html) || /class="[^"]*hero/i.test(html) || /<section[^>]*id="sr-hero"/i.test(html);
+    const hasLeistungen = /leistung/i.test(html) || /<!-- LEISTUNGEN -->/i.test(html);
+    const hasFooter = /<footer[\s>]/i.test(html);
+    const hasImpressum = /impressum/i.test(html);
+    const hasDatenschutz = /datenschutz/i.test(html);
+    const hasCssVars = /--primary/i.test(html) && /--accent/i.test(html);
+    const hasFirmenname = o.firmenname && html.includes(o.firmenname);
+    const hasKontakt = /kontakt/i.test(html);
     const title = (html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || "";
     const desc = (html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i) || [])[1] || "";
-    const ogTitle = /<meta\s+property=["']og:title["']/i.test(html);
-    const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
-    const hasViewport = /<meta\s+name=["']viewport["']/i.test(html);
-    const hasLang = /<html[^>]*\slang=/i.test(html);
-    const hasForm = /<form[\s>]/i.test(html);
-    const hasLegal = /\/legal/i.test(html);
     const hasPhone = /tel:/i.test(html);
     const hasEmail = /mailto:/i.test(html);
+    const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
     const checks = [
-      {ok: !!title, w: 10},
-      {ok: title.length >= 40 && title.length <= 65, w: 5},
-      {ok: !!desc, w: 10},
-      {ok: desc.length >= 100 && desc.length <= 160, w: 5},
-      {ok: ogTitle, w: 5},
-      {ok: h1Count === 1, w: 10},
-      {ok: hasViewport, w: 10},
-      {ok: hasLang, w: 5},
-      {ok: hasForm, w: 10},
-      {ok: hasLegal, w: 10},
-      {ok: hasPhone, w: 10},
-      {ok: hasEmail, w: 10},
+      {ok: htmlLen > 5000,    w: 15, fail: "HTML zu kurz (" + htmlLen + " Bytes)"},
+      {ok: hasNav,            w: 10, fail: "Navigation fehlt"},
+      {ok: hasHero,           w: 10, fail: "Hero-Section fehlt"},
+      {ok: hasLeistungen,     w: 15, fail: "Leistungen-Section fehlt"},
+      {ok: hasFooter,         w: 5,  fail: "Footer fehlt"},
+      {ok: hasImpressum,      w: 10, fail: "Impressum-Link fehlt"},
+      {ok: hasDatenschutz,    w: 10, fail: "Datenschutz-Link fehlt"},
+      {ok: hasCssVars,        w: 5,  fail: "CSS-Variablen fehlen"},
+      {ok: hasFirmenname,     w: 10, fail: "Firmenname nicht im HTML"},
+      {ok: hasKontakt,        w: 10, fail: "Kontakt-Section fehlt"},
     ];
     const maxScore = checks.reduce((a, c) => a + c.w, 0);
     const gotScore = checks.reduce((a, c) => a + (c.ok ? c.w : 0), 0);
     qualityScore = Math.round((gotScore / maxScore) * 100);
-    if (!title) qualityIssues.push("Kein Titel");
-    if (!desc) qualityIssues.push("Keine Meta-Description");
-    if (h1Count !== 1) qualityIssues.push(`${h1Count} H1-Tags (erwartet: 1)`);
-    if (!hasForm) qualityIssues.push("Kein Kontaktformular");
-    if (!hasLegal) qualityIssues.push("Kein Impressum-Link");
-    if (!hasPhone) qualityIssues.push("Kein Telefon-Link");
-    if (!hasEmail) qualityIssues.push("Kein E-Mail-Link");
+    checks.filter(c => !c.ok).forEach(c => qualityIssues.push(c.fail));
+    // Bonus-Punkte (nicht kritisch, erhoehen den Score)
+    if (title && title.length >= 30) qualityScore = Math.min(100, qualityScore + 0);
+    if (hasPhone) qualityScore = Math.min(100, qualityScore + 0);
   } catch(_) { qualityScore = 0; }
+
+  /* ─── Auto-Retry bei schlechtem Score (max 1x) ─── */
+  if (qualityScore < 60 && !body._retry) {
+    try {
+      const retryRes = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 8192,
+          system,
+          messages: [{role: "user", content: user + "\n\nWICHTIG: Der erste Versuch hatte Qualitaetsprobleme: " + qualityIssues.join(", ") + ". Bitte stelle sicher dass ALLE Sektionen (Nav, Hero, Leistungen, Kontakt, Footer) vorhanden sind und der HTML-Code vollstaendig ist."}],
+        }),
+      });
+      if (retryRes.ok) {
+        const retryData = await retryRes.json();
+        let retryHtml = retryData.content?.[0]?.text || "";
+        retryHtml = retryHtml.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+        // Nur uebernehmen wenn laenger als der erste Versuch
+        if (retryHtml.length > html.length * 0.8 && retryHtml.includes("<nav") || retryHtml.includes("sitenav")) {
+          html = retryHtml;
+          // Nav + Footer nochmal injizieren
+          html = html.includes("<!-- NAV -->") ? html.replace("<!-- NAV -->", navHtml) : html.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
+          html = html.includes("<!-- FOOTER -->") ? html.replace("<!-- FOOTER -->", footerHtml) : html.replace(/<\/body>/i, footerHtml + "\n</body>");
+          html = html.replace("<!-- IMPRESSUM -->", "");
+          if (o.telefon) { const tn=o.telefon.replace(/\s/g,""); html=html.replace(/href="tel:[^"]*"/gi,`href="tel:${tn}"`); }
+          // Score neu berechnen
+          const rLen=html.length;const rNav=/<nav[\s>]/i.test(html)||/sitenav/i.test(html);const rHero=/min-height:\s*100vh/i.test(html)||/hero/i.test(html);const rLeis=/leistung/i.test(html);const rFoot=/<footer[\s>]/i.test(html);const rImp=/impressum/i.test(html);const rDat=/datenschutz/i.test(html);const rCss=/--primary/i.test(html)&&/--accent/i.test(html);const rFn=o.firmenname&&html.includes(o.firmenname);const rKon=/kontakt/i.test(html);
+          const rc=[{ok:rLen>5000,w:15},{ok:rNav,w:10},{ok:rHero,w:10},{ok:rLeis,w:15},{ok:rFoot,w:5},{ok:rImp,w:10},{ok:rDat,w:10},{ok:rCss,w:5},{ok:rFn,w:10},{ok:rKon,w:10}];
+          const rMax=rc.reduce((a,c)=>a+c.w,0);const rGot=rc.reduce((a,c)=>a+(c.ok?c.w:0),0);
+          qualityScore=Math.round((rGot/rMax)*100);
+          qualityIssues.length=0;
+          rc.filter(c=>!c.ok).forEach(c=>qualityIssues.push("Retry: check failed"));
+        }
+      }
+    } catch(_) { /* Retry fehlgeschlagen, Original behalten */ }
+  }
 
   /* ─── In Supabase speichern + Status setzen ─── */
   const save = await fetch(

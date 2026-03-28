@@ -596,8 +596,8 @@ window.addEventListener('scroll',upd,{passive:true});upd();
     if (hasPhone) qualityScore = Math.min(100, qualityScore + 0);
   } catch(_) { qualityScore = 0; }
 
-  /* ─── Auto-Retry bei schlechtem Score (max 1x) ─── */
-  if (qualityScore < 60 && !body._retry) {
+  /* ─── Auto-Retry wenn nicht perfekt (max 1x) ─── */
+  if (qualityScore < 100 && !body._retry) {
     try {
       const retryRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",

@@ -1018,23 +1018,20 @@ function Portal({session,onLogout}){
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
     supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1)
-      .then(({data})=>{if(data&&data.length>0){setOrder(data[0]);if(data[0].google_maps_url){setGUrl(data[0].google_maps_url);setGSaved(true);}}});
-    // Existierende Assets laden
-    const uid=session.user.id;
-    const keys=["logo","hero","foto1","foto2","foto3","foto4","foto5"];
-    const exts=["jpg","jpeg","png","webp","gif"];
-    keys.forEach(async key=>{
-      for(const ext of exts){
-        const path=`${uid}/${key}.${ext}`;
-        const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
-        if(data?.publicUrl){
-          try{
-            const r=await fetch(data.publicUrl,{method:"HEAD"});
-            if(r.ok){setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));break;}
-          }catch(_){}
-        }
-      }
-    });
+      .then(({data})=>{if(data&&data.length>0){
+        setOrder(data[0]);
+        if(data[0].google_maps_url){setGUrl(data[0].google_maps_url);setGSaved(true);}
+        // Assets aus url_* Spalten laden (keine HEAD-Requests noetig)
+        const o=data[0];const urls={};
+        if(o.url_logo)urls.logo=o.url_logo+"?t="+Date.now();
+        if(o.url_hero)urls.hero=o.url_hero+"?t="+Date.now();
+        if(o.url_foto1)urls.foto1=o.url_foto1+"?t="+Date.now();
+        if(o.url_foto2)urls.foto2=o.url_foto2+"?t="+Date.now();
+        if(o.url_foto3)urls.foto3=o.url_foto3+"?t="+Date.now();
+        if(o.url_foto4)urls.foto4=o.url_foto4+"?t="+Date.now();
+        if(o.url_foto5)urls.foto5=o.url_foto5+"?t="+Date.now();
+        setAssetUrls(urls);
+      }});
   },[session]);
 
   const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));
@@ -1059,22 +1056,22 @@ function Portal({session,onLogout}){
   };
 
   const upload=async(key,file)=>{
-    if(!file){setToastMsg("Keine Datei ausgewählt");return;}
-    if(!session?.user?.id){setToastMsg("Nicht eingeloggt — bitte neu anmelden");return;}
-    if(!supabase){setToastMsg("Verbindungsfehler");return;}
+    if(!file){showToast("Keine Datei ausgewählt");return;}
+    if(!session?.user?.id){showToast("Nicht eingeloggt — bitte neu anmelden");return;}
+    if(!supabase){showToast("Verbindungsfehler");return;}
     setUploading(u=>({...u,[key]:true}));
     try{
       const ext=file.name.split(".").pop().toLowerCase();
       const path=`${session.user.id}/${key}.${ext}`;
       const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});
-      if(error){setToastMsg("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
+      if(error){showToast("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
       const col=colMap[key];
       if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("URL-Update:",upErr.message);}
-      setToastMsg(key==="logo"?"Logo hochgeladen!":"Foto hochgeladen!");
-    }catch(e){setToastMsg("Fehler: "+e.message);}
+      showToast(key==="logo"?"Logo hochgeladen!":"Foto hochgeladen!");
+    }catch(e){showToast("Fehler: "+e.message);}
     setUploading(u=>({...u,[key]:false}));
   };
 

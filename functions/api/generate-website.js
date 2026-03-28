@@ -403,6 +403,8 @@ ${trustBar}
 
 FOTOS: Nein – keine Bildplaetze oder Platzhalter generieren. Eine Foto-Galerie wird automatisch nach dem Kontakt-Abschnitt eingefuegt falls Fotos vorhanden sind.
 
+WEBSITE-ZIEL: ${o.website_ziel === "leads" ? "LEADGENERIERUNG – Kontaktformular und Telefonnummer SEHR prominent. CTAs aggressiv: 'Jetzt Angebot anfragen', 'Kostenlose Beratung'. Kontakt-Section frueh und gross." : o.website_ziel === "buchung" ? "ONLINE-BUCHUNG – Buchungslink/Terminanfrage als Haupt-CTA. 'Jetzt Termin vereinbaren' prominent in Hero und Kontakt. Oeffnungszeiten gross darstellen." : o.website_ziel === "praesenz" ? "PROFESSIONELLE PRAESENZ – Vertrauen aufbauen. Qualitaet und Erfahrung betonen. Ruhigeres Design, weniger aggressive CTAs, mehr Substanz." : o.website_ziel === "info" ? "INFORMATION – Leistungen und Oeffnungszeiten klar und uebersichtlich. Kontaktdaten leicht findbar. Sachlich und strukturiert." : "STANDARD – Ausgewogene Website mit Kontaktmoeglichkeiten und Leistungsuebersicht."}
+
 STIL-FEELING: ${stil.feel}
 
 STRUKTUR-PFLICHT (Kommentare exakt so setzen):

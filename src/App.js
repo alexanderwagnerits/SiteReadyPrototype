@@ -2289,19 +2289,19 @@ function Admin({adminKey}){
       <div style={{display:"flex",alignItems:"center",gap:12}}>
         <img src="/icon.png" alt="SR" style={{height:20,filter:"brightness(0) invert(1)",opacity:.7}}/>
         <span style={{fontSize:".88rem",fontWeight:800,color:"#fff",letterSpacing:"-.02em"}}>SiteReady</span>
-        <span style={{fontSize:".72rem",fontWeight:700,color:"#f59e0b",background:"rgba(245,158,11,.15)",padding:"3px 10px",borderRadius:4,letterSpacing:".08em"}}>ADMIN</span>
+        <span style={{fontSize:".75rem",fontWeight:700,color:"#f59e0b",background:"rgba(245,158,11,.15)",padding:"3px 10px",borderRadius:4,letterSpacing:".08em"}}>ADMIN</span>
       </div>
-      <button onClick={load} style={{padding:"6px 16px",border:"1px solid rgba(255,255,255,.15)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.6)",cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aktualisieren</button>
+      <button onClick={load} style={{padding:"6px 16px",border:"1px solid rgba(255,255,255,.15)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.6)",cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,minHeight:36}}>Aktualisieren</button>
     </div>
 
     <div className="ad-wrap" style={{display:"flex",height:"calc(100vh - 56px)"}}>
       {/* Sidebar */}
       <div className="ad-sidebar" style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
         {TABS.map(t=><div key={t.id}>
-          {t.section&&<div style={{padding:"16px 20px 4px",fontSize:".6rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em"}}>{t.section}</div>}
+          {t.section&&<div style={{padding:"16px 20px 4px",fontSize:".75rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em"}}>{t.section}</div>}
           <button onClick={()=>setTab(t.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"10px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>
             <span>{t.label}</span>
-            {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".65rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
+            {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".75rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
           </button>
         </div>)}
       </div>
@@ -2309,13 +2309,13 @@ function Admin({adminKey}){
       {/* Main */}
       <div className="ad-main" style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
         {loading&&<div style={{textAlign:"center",padding:60,color:T.textMuted}}>Wird geladen...</div>}
-        {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"2.5rem"}}>🖥️</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
+        {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"1.4rem",fontWeight:800,color:T.textMuted}}>Desktop</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
         {(!isMobile||!DESKTOP_ONLY_TABS.includes(tab))&&<>
         {!loading&&alerts.length>0&&<div style={{marginBottom:20,display:"flex",flexDirection:"column",gap:6}}>
           {alerts.map((a,i)=><div key={i} onClick={a.tab?()=>setTab(a.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:T.rSm,background:a.type==="error"?"#fef2f2":a.type==="warn"?"#fefce8":"#eff6ff",border:`1px solid ${a.type==="error"?"#fecaca":a.type==="warn"?"#fde68a":"#bfdbfe"}`,cursor:a.tab?"pointer":"default"}}>
             <span style={{display:"inline-block",width:8,height:8,borderRadius:"50%",flexShrink:0,background:a.type==="error"?"#dc2626":a.type==="warn"?"#f59e0b":"#3b82f6"}}/>
             <span style={{fontSize:".82rem",fontWeight:600,color:a.type==="error"?"#dc2626":a.type==="warn"?"#92400e":"#1e40af",flex:1}}>{a.msg}</span>
-            {a.tab&&<span style={{fontSize:".72rem",color:T.textMuted,whiteSpace:"nowrap"}}>Details &rarr;</span>}
+            {a.tab&&<span style={{fontSize:".75rem",color:T.textMuted,whiteSpace:"nowrap"}}>Details &rarr;</span>}
           </div>)}
         </div>}
 
@@ -2338,34 +2338,34 @@ function Admin({adminKey}){
                 {l:"Offene Tickets",v:openTickets.length,s:openTickets.length===0?"Alles beantwortet":"Bitte pruefen",c:openTickets.length>0?T.red:T.textMuted,a:()=>setTab("support")},
                 {l:"KI-Kosten",v:`\u20AC${totalCost.toFixed(2)}`,s:"kumuliert",c:T.orange,a:()=>setTab("kosten")},
               ].map((k,i)=>(
-                <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,cursor:"pointer",transition:"box-shadow .15s"}} onMouseOver={e=>e.currentTarget.style.boxShadow=T.sh2} onMouseOut={e=>e.currentTarget.style.boxShadow=T.sh1}>
-                  <div style={{fontSize:".65rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>{k.l}</div>
+                <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2,cursor:"pointer",transition:"box-shadow .15s"}} onMouseOver={e=>e.currentTarget.style.boxShadow=T.sh3} onMouseOut={e=>e.currentTarget.style.boxShadow=T.sh2}>
+                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>{k.l}</div>
                   <div style={{fontSize:"1.8rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
-                  <div style={{fontSize:".72rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
                 </div>
               ))}
             </div>
             {/* Trials ablaufend + Offene Tickets */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Trials ablaufend (7 Tage)</div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Trials ablaufend (7 Tage)</div>
                 {expiringTrials.length===0
                   ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>{"Kein Trial läuft in 7 Tagen ab."}</div>
                   :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                     {expiringTrials.map((o,i)=>{const tc=o.tl<=2?"#dc2626":o.tl<=4?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"\u2014"}</div>
-                        <div style={{fontSize:".72rem",color:T.textMuted}}>{o.email}</div>
+                        <div style={{fontSize:".75rem",color:T.textMuted}}>{o.email}</div>
                       </div>
                       <span style={{padding:"2px 8px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".75rem",flexShrink:0}}>{o.tl>0?`${o.tl}d`:"Abgelaufen"}</span>
                     </div>);})}
                   </div>
                 }
               </div>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Offene Support-Anfragen</div>
-                  {openTickets.length>0&&<button onClick={()=>setTab("support")} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Alle ansehen</button>}
+                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Offene Support-Anfragen</div>
+                  {openTickets.length>0&&<button onClick={()=>setTab("support")} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Alle ansehen</button>}
                 </div>
                 {openTickets.length===0
                   ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>Keine offenen Anfragen.</div>
@@ -2373,7 +2373,7 @@ function Admin({adminKey}){
                     {openTickets.slice(0,5).map((t,i)=><div key={t.id} onClick={()=>setTab("support")} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 0",borderBottom:i<Math.min(openTickets.length,5)-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:600,fontSize:".84rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</div>
-                        <div style={{fontSize:".72rem",color:T.textMuted}}>{t.email} &middot; {fmtDate(t.created_at)}</div>
+                        <div style={{fontSize:".75rem",color:T.textMuted}}>{t.email} &middot; {fmtDate(t.created_at)}</div>
                       </div>
                     </div>)}
                   </div>
@@ -2381,8 +2381,8 @@ function Admin({adminKey}){
               </div>
             </div>
             {/* Pipeline */}
-            <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Status-Pipeline</div>
+            <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Status-Pipeline</div>
               <div style={{display:"flex",flexDirection:"column",gap:6}}>
                 {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} onClick={()=>{setTab("bestellungen");setFilter(s);}} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
                   <span style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0,display:"inline-block"}}/>
@@ -2437,30 +2437,30 @@ function Admin({adminKey}){
             {/* Legende */}
             <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:20,alignItems:"flex-start"}}>
               <div>
-                <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Prozess</div>
+                <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,marginBottom:5}}>Prozess</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {["pending","in_arbeit","trial","live","offline"].map(s=>{const c=STATUS_COLORS[s];return(<span key={s} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{STATUS_LABELS[s]}</span>);})}
+                  {["pending","in_arbeit","trial","live","offline"].map(s=>{const c=STATUS_COLORS[s];return(<span key={s} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".75rem",border:`1px solid ${c}33`}}>{STATUS_LABELS[s]}</span>);})}
                 </div>
               </div>
               <div>
-                <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Health</div>
+                <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,marginBottom:5}}>Health</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
                   {[{label:"\u23f3 Wird aufgebaut",c:T.bg3},{label:"\u2713 Erreichbar",c:T.green},{label:"\u2717 Nicht erreichbar",c:"#dc2626"},{label:"\u26a0 Fehler",c:"#d97706"},{label:"\u25cb Deaktiviert",c:"#64748b"}].map(({label,c})=>(
-                    <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
+                    <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".75rem",border:`1px solid ${c}33`}}>{label}</span>
                   ))}
                 </div>
               </div>
               <div>
-                <div style={{fontSize:".6rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>Zahlung</div>
+                <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,marginBottom:5}}>Zahlung</div>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                   {[{label:"\u2713 Aktiv",c:T.green},{label:"\u26a0 Offen",c:"#d97706"},{label:"\u25cb Gekündigt",c:"#64748b"},{label:"Trial",c:"#8b5cf6"},{label:"Kein Abo",c:T.textMuted}].map(({label,c})=>(
-                    <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".7rem",border:`1px solid ${c}33`}}>{label}</span>
+                    <span key={label} style={{padding:"2px 7px",borderRadius:4,background:c+"18",color:c,fontWeight:700,fontSize:".75rem",border:`1px solid ${c}33`}}>{label}</span>
                   ))}
                 </div>
               </div>
             </div>
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh1}}>
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh2}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","Zahlung","URL",""].map(h=>{
                   if(h==="Health"){const r=8,circ=2*Math.PI*r,pct=healthCountdown/60,dash=circ*pct;return <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".78rem",fontWeight:700,color:T.textMuted,letterSpacing:".04em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}><span style={{display:"inline-flex",alignItems:"center",gap:5}}>Health<svg width={18} height={18} style={{display:"block"}}><circle cx={9} cy={9} r={r} fill="none" stroke={T.bg3} strokeWidth={2}/><circle cx={9} cy={9} r={r} fill="none" stroke={T.accent} strokeWidth={2} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" transform="rotate(-90 9 9)"/><text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={5} fill={T.textMuted} fontFamily="JetBrains Mono,monospace">{healthCountdown}</text></svg></span></th>;}
@@ -2490,12 +2490,12 @@ function Admin({adminKey}){
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <span style={{padding:"3px 8px",borderRadius:4,background:procColor+"18",color:procColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${procColor}33`}}>{procLabel}</span>
-                        {tl!==null&&<span style={{padding:"2px 6px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".7rem"}}>{tl>0?`${tl}d`:"Abgelaufen"}</span>}
+                        {tl!==null&&<span style={{padding:"2px 6px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".75rem"}}>{tl>0?`${tl}d`:"Abgelaufen"}</span>}
                       </div>
                     </td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <span style={{padding:"3px 8px",borderRadius:4,background:hv.c+"18",color:hv.c,fontWeight:700,fontSize:".75rem",border:`1px solid ${hv.c}33`}}>{hv.label}</span>
-                      {hasFailed&&<span title={o.last_error} style={{marginLeft:4,fontSize:".72rem",cursor:"help",color:"#d97706"}}>ℹ</span>}
+                      {hasFailed&&<span title={o.last_error} style={{marginLeft:4,fontSize:".75rem",cursor:"help",color:"#d97706"}}>ℹ</span>}
                     </td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       {(()=>{
@@ -2514,8 +2514,8 @@ function Admin({adminKey}){
                       {url?<a href={`https://${url}`} target="_blank" rel="noopener noreferrer" style={{color:T.accent,textDecoration:"none",display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{url}</a>:<span style={{color:T.textMuted}}>—</span>}
                     </td>
                     <td style={{padding:"11px 14px",textAlign:"right",whiteSpace:"nowrap"}}>
-                      {(isStuckPending||isStuckGen||hasFailed)&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?T.bg3:hasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":hasFailed?"Retry":"Generieren"}</button>}
-                      <button onClick={()=>setSel(o)} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Detail</button>
+                      {(isStuckPending||isStuckGen||hasFailed)&&<button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"4px 10px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?T.bg3:hasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,marginRight:6}}>{genLoading[o.id]?"...":hasFailed?"Retry":"Generieren"}</button>}
+                      <button onClick={()=>setSel(o)} style={{padding:"4px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Detail</button>
                     </td>
                   </tr>);
                 })}</tbody>
@@ -2530,8 +2530,8 @@ function Admin({adminKey}){
             <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0}}>Support-Anfragen</h2>
             <button onClick={()=>setTicketFormOpen(o=>!o)} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:ticketFormOpen?T.dark:"#fff",color:ticketFormOpen?"#fff":T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Ticket erstellen</button>
           </div>
-          {ticketFormOpen&&<div style={{marginBottom:16,padding:"16px 20px",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>Manuelles Ticket</div>
+          {ticketFormOpen&&<div style={{marginBottom:16,padding:"16px 20px",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Manuelles Ticket</div>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               <div style={{display:"grid",gridTemplateColumns:"100px 1fr",alignItems:"center",gap:8}}>
                 <label style={{fontSize:".82rem",fontWeight:600,color:T.textMuted}}>Kunde</label>
@@ -2558,17 +2558,17 @@ function Admin({adminKey}){
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {tickets.map(t=>{
               const tOrder=orders.find(o=>o.email&&t.email&&o.email.toLowerCase()===t.email.toLowerCase());
-              return(<div key={t.id} style={{background:"#fff",borderRadius:T.r,padding:"18px 22px",border:`1px solid ${t.status==="offen"?T.bg3:T.bg3}`,boxShadow:T.sh1}}>
+              return(<div key={t.id} style={{background:"#fff",borderRadius:T.r,padding:"18px 22px",border:`1px solid ${t.status==="offen"?T.bg3:T.bg3}`,boxShadow:T.sh2}}>
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:8,gap:8}}>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
                       <span style={{fontWeight:700,fontSize:".9rem",color:T.dark}}>{t.subject||"Allgemein"}</span>
-                      {tOrder&&<button onClick={()=>{setSel(tOrder);setTab("sites");}} style={{padding:"2px 9px",border:`1px solid ${T.accent}33`,borderRadius:20,background:T.accentLight,color:T.accent,fontSize:".68rem",fontWeight:700,fontFamily:T.font,cursor:"pointer"}}>{tOrder.firmenname||t.email}</button>}
+                      {tOrder&&<button onClick={()=>{setSel(tOrder);setTab("sites");}} style={{padding:"2px 9px",border:`1px solid ${T.accent}33`,borderRadius:20,background:T.accentLight,color:T.accent,fontSize:".75rem",fontWeight:700,fontFamily:T.font,cursor:"pointer"}}>{tOrder.firmenname||t.email}</button>}
                     </div>
                     <span style={{fontSize:".75rem",color:T.textMuted}}>{t.email} &middot; {fmtDate(t.created_at)}</span>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-                    <span style={{padding:"3px 10px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".72rem",fontWeight:700}}>{t.status==="offen"?"Offen":"Beantwortet"}</span>
+                    <span style={{padding:"3px 10px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".75rem",fontWeight:700}}>{t.status==="offen"?"Offen":"Beantwortet"}</span>
                     {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"})} style={{padding:"4px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Beantwortet</button>}
                   </div>
                 </div>
@@ -2582,7 +2582,7 @@ function Admin({adminKey}){
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
             <div>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>System</h2>
-              {sysLastCheck&&<div style={{fontSize:".72rem",color:T.textMuted}}>APIs zuletzt geprüft: {sysLastCheck.toLocaleTimeString("de-AT")} &middot; Auto-Refresh 60s</div>}
+              {sysLastCheck&&<div style={{fontSize:".75rem",color:T.textMuted}}>APIs zuletzt geprüft: {sysLastCheck.toLocaleTimeString("de-AT")} &middot; Auto-Refresh 60s</div>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               {sysLoading&&<div style={{width:14,height:14,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
@@ -2591,9 +2591,9 @@ function Admin({adminKey}){
           </div>
           {/* Aktionen */}
           {stuckOrders.length>0&&<div style={{marginBottom:24}}>
-            <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Aktionen erforderlich</div>
+            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Aktionen erforderlich</div>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
-              {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:14}}>
+              {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh2,display:"flex",alignItems:"center",gap:14}}>
                 <div style={{flex:1}}>
                   <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</div>
                   <div style={{fontSize:".75rem",color:"#92400e",marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} – Website noch nicht generiert</div>
@@ -2601,7 +2601,7 @@ function Admin({adminKey}){
                 <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?T.bg3:T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
                   {genLoading[o.id]?"Generiert...":"Website generieren"}
                 </button>
-                {genMsg[o.id]&&<div style={{fontSize:".72rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green}}>{genMsg[o.id]}</div>}
+                {genMsg[o.id]&&<div style={{fontSize:".75rem",color:genMsg[o.id].startsWith("Fehler")||genMsg[o.id].startsWith("Netzwerk")?T.red:T.green}}>{genMsg[o.id]}</div>}
               </div>)}
             </div>
           </div>}
@@ -2624,13 +2624,13 @@ function Admin({adminKey}){
               <div style={{display:"flex",alignItems:"center",gap:6,marginTop:6}}>
                 {loading?<div style={{width:7,height:7,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/>
                   :<div style={{width:7,height:7,borderRadius:"50%",background:dotColor,flexShrink:0}}/>}
-                <span style={{fontSize:".72rem",color:T.textMuted}}>{text}</span>
-                {detail&&<span style={{fontSize:".72rem",fontWeight:600,color:err?T.red:dotColor,marginLeft:2}}>{detail}</span>}
-                {href&&<a href={href} target="_blank" rel="noreferrer" style={{fontSize:".7rem",color:T.accent,fontWeight:600,textDecoration:"none",marginLeft:"auto"}}>{"Status \u2192"}</a>}
+                <span style={{fontSize:".75rem",color:T.textMuted}}>{text}</span>
+                {detail&&<span style={{fontSize:".75rem",fontWeight:600,color:err?T.red:dotColor,marginLeft:2}}>{detail}</span>}
+                {href&&<a href={href} target="_blank" rel="noreferrer" style={{fontSize:".75rem",color:T.accent,fontWeight:600,textDecoration:"none",marginLeft:"auto"}}>{"Status \u2192"}</a>}
               </div>
             );
             return(<div style={{marginBottom:24}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Services & Status"}</div>
+              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>{"Services & Status"}</div>
               {(!sysStatus&&sysLoading)&&<div style={{color:T.textMuted,padding:"24px",textAlign:"center",background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,marginBottom:8}}>{"Verbindungen werden geprueft..."}</div>}
               <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
                 {services.map(({key,label,desc,href,intOk,intLabel,intErr})=>{
@@ -2639,9 +2639,9 @@ function Admin({adminKey}){
                   const intDot=intOk===null?null:intOk?T.green:T.red;
                   const hasInternal=intOk!==null;
                   const cardBorder=intOk===false||(!extLoading(key)&&extStatus[key]!==false&&extInd(key)&&extInd(key)!=="none")?"#fecaca":intOk===true&&(ext===null||ext.color===T.green)?"rgba(22,163,74,.15)":T.bg3;
-                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${cardBorder}`,padding:"14px 16px",boxShadow:T.sh1}}>
+                  return(<div key={key} style={{background:"#fff",borderRadius:T.r,border:`1px solid ${cardBorder}`,padding:"14px 16px",boxShadow:T.sh2}}>
                     <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{label}</div>
-                    <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:4}}>{desc}</div>
+                    <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:4}}>{desc}</div>
                     {hasInternal&&<StatusRow
                       dotColor={intDot||T.textMuted}
                       text={"API-Verbindung"}
@@ -2667,22 +2667,22 @@ function Admin({adminKey}){
             const errOrders=orders.filter(o=>o.last_error).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
             if(!errOrders.length)return null;
             return(<div style={{marginBottom:24}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Letzte Generierungsfehler"}</div>
+              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>{"Letzte Generierungsfehler"}</div>
               <div style={{display:"flex",flexDirection:"column",gap:6}}>
                 {errOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"10px 14px",display:"flex",gap:12,alignItems:"flex-start",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <span style={{fontSize:".8rem",fontWeight:700,color:T.dark,flexShrink:0}}>{o.firmenname||"\u2014"}</span>
                   <span style={{fontSize:".75rem",color:T.red,flex:1,fontFamily:T.mono,lineHeight:1.4}}>{o.last_error}</span>
-                  <span style={{fontSize:".7rem",color:T.textMuted,flexShrink:0}}>{fmtDate(o.created_at)}</span>
+                  <span style={{fontSize:".75rem",color:T.textMuted,flexShrink:0}}>{fmtDate(o.created_at)}</span>
                 </div>)}
               </div>
             </div>);
           })()}
           {/* Env Vars */}
           {sysStatus&&<div>
-            <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Environment Variables</div>
+            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Environment Variables</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {Object.entries(sysStatus.envvars||{}).map(([k,v])=><div key={k} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:T.rSm,background:v?T.greenLight:"#fef2f2",border:`1px solid ${v?"rgba(22,163,74,.15)":"rgba(220,38,38,.1)"}`}}>
-                <span style={{fontSize:".72rem",color:v?T.green:T.red,fontWeight:700}}>{v?"\u2713":"\u2717"}</span>
+                <span style={{fontSize:".75rem",color:v?T.green:T.red,fontWeight:700}}>{v?"\u2713":"\u2717"}</span>
                 <span style={{fontSize:".78rem",fontFamily:T.mono,color:T.dark}}>{k}</span>
               </div>)}
             </div>
@@ -2691,12 +2691,12 @@ function Admin({adminKey}){
           <div style={{marginTop:24}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Frontend-Fehler</div>
-                {errorLogs.length>0&&<span style={{background:T.red,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"2px 8px",borderRadius:100}}>{errorLogs.length}</span>}
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Frontend-Fehler</div>
+                {errorLogs.length>0&&<span style={{background:T.red,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"2px 8px",borderRadius:100}}>{errorLogs.length}</span>}
               </div>
               <div style={{display:"flex",gap:6}}>
-                {errorLogs.length>0&&<button onClick={clearErrorLogs} style={{padding:"5px 12px",border:`2px solid #fecaca`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Alle löschen</button>}
-                <button onClick={fetchErrorLogs} disabled={errorLogsLoading} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:errorLogsLoading?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Aktualisieren</button>
+                {errorLogs.length>0&&<button onClick={clearErrorLogs} style={{padding:"5px 12px",border:`2px solid #fecaca`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Alle löschen</button>}
+                <button onClick={fetchErrorLogs} disabled={errorLogsLoading} style={{padding:"5px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:errorLogsLoading?"wait":"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Aktualisieren</button>
               </div>
             </div>
             {errorLogs.length===0?(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"24px",textAlign:"center"}}>
@@ -2706,14 +2706,14 @@ function Admin({adminKey}){
               {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"12px 14px"}}>
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10,marginBottom:6}}>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    <span style={{background:e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".6rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>{e.source==="unhandledrejection"?"Promise":e.source==="window.onerror"?"JS":"Error"}</span>
-                    {e.user_email&&<span style={{fontSize:".68rem",color:T.accent,fontWeight:600}}>{e.user_email}</span>}
+                    <span style={{background:e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>{e.source==="unhandledrejection"?"Promise":e.source==="window.onerror"?"JS":"Error"}</span>
+                    {e.user_email&&<span style={{fontSize:".75rem",color:T.accent,fontWeight:600}}>{e.user_email}</span>}
                   </div>
-                  <span style={{fontSize:".68rem",color:T.textMuted,flexShrink:0}}>{new Date(e.created_at).toLocaleString("de-AT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
+                  <span style={{fontSize:".75rem",color:T.textMuted,flexShrink:0}}>{new Date(e.created_at).toLocaleString("de-AT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
                 </div>
                 <div style={{fontSize:".8rem",color:T.red,fontWeight:600,fontFamily:T.mono,lineHeight:1.4,marginBottom:e.stack?6:0,wordBreak:"break-word"}}>{e.message}</div>
-                {e.stack&&<details style={{margin:0}}><summary style={{fontSize:".68rem",color:T.textMuted,cursor:"pointer",fontFamily:T.font}}>Stack-Trace</summary><pre style={{fontSize:".65rem",color:T.textSub,fontFamily:T.mono,margin:"6px 0 0",lineHeight:1.5,whiteSpace:"pre-wrap",wordBreak:"break-all",maxHeight:150,overflow:"auto"}}>{e.stack}</pre></details>}
-                <div style={{fontSize:".65rem",color:T.textMuted,marginTop:4}}>{e.url}</div>
+                {e.stack&&<details style={{margin:0}}><summary style={{fontSize:".75rem",color:T.textMuted,cursor:"pointer",fontFamily:T.font}}>Stack-Trace</summary><pre style={{fontSize:".75rem",color:T.textSub,fontFamily:T.mono,margin:"6px 0 0",lineHeight:1.5,whiteSpace:"pre-wrap",wordBreak:"break-all",maxHeight:150,overflow:"auto"}}>{e.stack}</pre></details>}
+                <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>{e.url}</div>
               </div>)}
             </div>)}
           </div>
@@ -2741,8 +2741,8 @@ function Admin({adminKey}){
             </div>
             {/* Top KPIs: Einnahmen | Ausgaben | Netto */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:24}}>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Einnahmen (MRR)</div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Einnahmen (MRR)</div>
                 <div style={{fontSize:"2rem",fontWeight:800,color:T.green,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{mrr.toFixed(2)}</div>
                 <div style={{marginTop:10,display:"flex",gap:12,flexWrap:"wrap"}}>
                   <span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:T.green}}>{activeOrders.length}</span> aktive Abos</span>
@@ -2750,27 +2750,27 @@ function Admin({adminKey}){
                   {pastDueN>0&&<span style={{fontSize:".75rem",color:"#d97706",fontWeight:700}}>{"\u26a0"} {pastDueN} Zahlung offen</span>}
                 </div>
               </div>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Ausgaben / Mo</div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Ausgaben / Mo</div>
                 <div style={{fontSize:"2rem",fontWeight:800,color:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{ausgaben.toFixed(2)}</div>
                 <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
                   {[["Stripe",`\u20AC${stripeFee.toFixed(2)}`],["Claude API",`\u20AC${claudeCostMo.toFixed(3)}`],["Cloudflare / Supabase","\u20AC0"]].map(([l,v])=>(
-                    <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".73rem",color:T.textMuted}}>
+                    <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".75rem",color:T.textMuted}}>
                       <span>{l}</span><span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>{v}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`2px solid ${netto>=0?T.green+"44":"#fca5a5"}`,boxShadow:T.sh1}}>
-                <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Netto / Mo</div>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`2px solid ${netto>=0?T.green+"44":"#fca5a5"}`,boxShadow:T.sh2}}>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Netto / Mo</div>
                 <div style={{fontSize:"2rem",fontWeight:800,color:netto>=0?T.green:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{netto.toFixed(2)}</div>
-                <div style={{marginTop:10,fontSize:".73rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten</div>
+                <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten</div>
               </div>
             </div>
             {/* Unterer Bereich: Bestellungen Chart + Abo-Status */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
               {/* Bestellungen Chart */}
-              <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+              <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
                 <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:18}}>Neue Bestellungen &mdash; letzte 6 Monate</div>
                 <svg viewBox="0 0 340 170" style={{width:"100%",overflow:"visible"}}>
                   <line x1="0" y1="148" x2="340" y2="148" stroke={T.bg3} strokeWidth="1"/>
@@ -2783,8 +2783,8 @@ function Admin({adminKey}){
               </div>
               {/* Abo-Status + Claude Details */}
               <div style={{display:"flex",flexDirection:"column",gap:16}}>
-                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>Abo-Status</div>
+                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Abo-Status</div>
                   {[{label:"Aktiv",val:activeOrders.length,c:T.green},{label:"Trial",val:trialN,c:"#8b5cf6"},{label:"Zahlung offen",val:pastDueN,c:"#d97706"},{label:"Kein Abo",val:orders.filter(o=>!o.stripe_customer_id).length,c:T.textMuted}].map(({label,val,c})=>(
                     <div key={label} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
                       <div style={{flex:1,height:6,borderRadius:3,background:T.bg3,overflow:"hidden"}}>
@@ -2795,10 +2795,10 @@ function Admin({adminKey}){
                     </div>
                   ))}
                 </div>
-                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
                   <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:10}}>
-                    <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Claude API</div>
-                    <span style={{fontSize:".7rem",color:T.textMuted}}>{orders.filter(o=>o.tokens_in>0).length}/{orders.length} getrackt</span>
+                    <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Claude API</div>
+                    <span style={{fontSize:".75rem",color:T.textMuted}}>{orders.filter(o=>o.tokens_in>0).length}/{orders.length} getrackt</span>
                   </div>
                   {totalCostEur>0?[
                     ["Kumuliert gesamt",`\u20AC${totalCostEur.toFixed(4)}`],
@@ -2818,29 +2818,29 @@ function Admin({adminKey}){
 
         {/* Tab: System-Architektur */}
         {!loading&&tab==="arch-system"&&(()=>{
-          const chip=(label,sub,color)=>(<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 8px",borderRadius:20,background:color+"14",border:`1px solid ${color}28`,fontSize:".69rem",fontWeight:600,color:T.dark,margin:"2px 3px",whiteSpace:"nowrap"}}><span style={{width:5,height:5,borderRadius:"50%",background:color,flexShrink:0}}/>{label}{sub&&<span style={{fontSize:".6rem",color:T.textMuted,fontWeight:400}}>· {sub}</span>}</span>);
-          const layer=(title,color,children,note)=>(<div style={{padding:"7px 12px",marginBottom:3,background:color+"07",borderLeft:`3px solid ${color}`,borderRadius:`0 ${T.rSm} ${T.rSm} 0`}}><div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",gap:0}}><span style={{fontSize:".6rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginRight:8,flexShrink:0}}>{title}</span><span style={{display:"inline"}}>{children}</span></div>{note&&<div style={{marginTop:3,fontSize:".61rem",color,opacity:.65,fontStyle:"italic"}}>{note}</div>}</div>);
-          const arr=<div style={{textAlign:"center",color:T.bg3,fontSize:".7rem",margin:"1px 0",lineHeight:1}}>↓</div>;
+          const chip=(label,sub,color)=>(<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 8px",borderRadius:20,background:color+"14",border:`1px solid ${color}28`,fontSize:".75rem",fontWeight:600,color:T.dark,margin:"2px 3px",whiteSpace:"nowrap"}}><span style={{width:5,height:5,borderRadius:"50%",background:color,flexShrink:0}}/>{label}{sub&&<span style={{fontSize:".75rem",color:T.textMuted,fontWeight:400}}>· {sub}</span>}</span>);
+          const layer=(title,color,children,note)=>(<div style={{padding:"7px 12px",marginBottom:3,background:color+"07",borderLeft:`3px solid ${color}`,borderRadius:`0 ${T.rSm} ${T.rSm} 0`}}><div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",gap:0}}><span style={{fontSize:".75rem",fontWeight:800,color,marginRight:8,flexShrink:0}}>{title}</span><span style={{display:"inline"}}>{children}</span></div>{note&&<div style={{marginTop:3,fontSize:".75rem",color,opacity:.65,fontStyle:"italic"}}>{note}</div>}</div>);
+          const arr=<div style={{textAlign:"center",color:T.bg3,fontSize:".75rem",margin:"1px 0",lineHeight:1}}>↓</div>;
           return(<div id="arch-system-print">
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>System-Architektur</h2><button onClick={()=>printTabHTML("arch-system-print","System-Architektur")} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>PDF</button></div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}><h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>System-Architektur</h2><button onClick={()=>printTabHTML("arch-system-print","System-Architektur")} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>PDF</button></div>
             {layer("Entwicklung & Deploy","#6366f1",<>{chip("Entwickler","VS Code · Git","#6366f1")}{chip("GitHub","main branch","#6366f1")}{chip("Cloudflare Pages CI/CD","push → build → deploy","#6366f1")}</>,"git push main → automatischer Build & Deploy ~1 Min.")}
             {arr}{layer("Nutzer","#64748b",<>{chip("Neukunde","Landingpage · Formular · Stripe","#64748b")}{chip("Bestandskunde","Portal-Login","#64748b")}{chip("Admin","/admin?key=...","#64748b")}</>)}
             {arr}{layer("Cloudflare Pages (Edge/CDN)","#f97316",<>{chip("React SPA","/ · Landing + Formular","#f97316")}{chip("Admin Dashboard","/admin?key=...","#f97316")}{chip("Edge Functions","/api/* · 12 Endpoints","#f97316")}{chip("Website Serving","/s/[subdomain]","#f97316")}{chip("Legal Serving","/s/[subdomain]/impressum","#f97316")}</>,  "SSL automatisch · CDN weltweit · robots.txt: /s/* noindex (Prototyp)")}
             {arr}{layer("Supabase","#2563eb",<>{chip("PostgreSQL","orders · docs · support_requests","#2563eb")}{chip("Storage","Logo · Fotos pro Kunde","#2563eb")}{chip("Auth","Portal-Login · JWT","#2563eb")}</>)}
             {arr}{layer("Externe APIs","#8b5cf6",<>{chip("Claude Sonnet","Website-Generierung","#8b5cf6")}{chip("Claude Haiku","Website-Import","#0891b2")}{chip("Stripe","Checkout · Webhooks","#16a34a")}{chip("Jina AI","Website-Import Reader","#6366f1")}{chip("Google Fonts","DM Sans · Inter","#f59e0b")}</>)}
             {arr}{layer("DNS & Domains",T.bg3,<>{chip("Cloudflare DNS","siteready.at",T.bg3)}{chip("Prototyp","sitereadyprototype.pages.dev/s/{firma}",T.bg3)}{chip("Produktion (geplant)","{firma}.siteready.at",T.bg3)}</>)}
-            <div style={{marginTop:10,padding:"7px 11px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".69rem",color:"#1e40af",lineHeight:1.7}}><strong>Serve-time:</strong> Logo, Fotos, Galerie, Kontaktdaten live aus Supabase – kein Re-Deploy. <strong>Impressum/Datenschutz:</strong> legal.js frisch aus DB bei jedem Request.</div>
+            <div style={{marginTop:10,padding:"7px 11px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".75rem",color:"#1e40af",lineHeight:1.7}}><strong>Serve-time:</strong> Logo, Fotos, Galerie, Kontaktdaten live aus Supabase – kein Re-Deploy. <strong>Impressum/Datenschutz:</strong> legal.js frisch aus DB bei jedem Request.</div>
           </div>);
         })()}
 
         {/* Tab: Flows */}
         {!loading&&tab==="arch-flows"&&(()=>{
           const ftitle=(icon,label)=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,paddingBottom:10,borderBottom:`1px solid ${T.bg3}`}}><span style={{fontSize:"1rem"}}>{icon}</span><span style={{fontSize:".85rem",fontWeight:800,color:T.dark}}>{label}</span></div>);
-          const fnode=(icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 90px",minWidth:80,maxWidth:140}}><div style={{width:38,height:38,borderRadius:"50%",background:color+"18",border:`2px solid ${color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>{icon}</div><div style={{fontSize:".7rem",fontWeight:700,color:T.dark,textAlign:"center",lineHeight:1.3}}>{label}</div>{sub&&<div style={{fontSize:".62rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}{optional&&<span style={{fontSize:".58rem",fontWeight:700,color:T.textMuted,background:T.bg3,padding:"1px 5px",borderRadius:3}}>Optional</span>}</div>);
+          const fnode=(icon,label,sub,color,optional)=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:"1 1 90px",minWidth:80,maxWidth:140}}><div style={{width:38,height:38,borderRadius:"50%",background:color+"18",border:`2px solid ${color}33`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>{icon}</div><div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textAlign:"center",lineHeight:1.3}}>{label}</div>{sub&&<div style={{fontSize:".75rem",color:T.textMuted,textAlign:"center",lineHeight:1.3}}>{sub}</div>}{optional&&<span style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,background:T.bg3,padding:"1px 5px",borderRadius:3}}>Optional</span>}</div>);
           const farrow=<div style={{color:T.textMuted,fontSize:"1rem",alignSelf:"center",flexShrink:0,paddingBottom:16}}>→</div>;
-          const fphase=(label,color,children)=>(<div style={{marginBottom:14}}><div style={{fontSize:".62rem",fontWeight:800,color,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,paddingLeft:2}}>{label}</div><div style={{display:"flex",alignItems:"flex-start",gap:4,flexWrap:"wrap"}}>{children}</div></div>);
+          const fphase=(label,color,children)=>(<div style={{marginBottom:14}}><div style={{fontSize:".75rem",fontWeight:800,color,marginBottom:8,paddingLeft:2}}>{label}</div><div style={{display:"flex",alignItems:"flex-start",gap:4,flexWrap:"wrap"}}>{children}</div></div>);
           return(<div id="arch-flows-print">
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",margin:"0 0 4px"}}><h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>Flows</h2><button onClick={()=>printTabHTML("arch-flows-print","Flows")} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>PDF</button></div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",margin:"0 0 4px"}}><h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>Flows</h2><button onClick={()=>printTabHTML("arch-flows-print","Flows")} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>PDF</button></div>
             <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,marginBottom:16}}>
               {ftitle("🧑","Kunden-Flow")}
               {fphase("Phase 0 – Entdeckung","#64748b",<>{fnode("🌐","Landingpage","siteready.at besuchen","#64748b")}{farrow}{fnode("💡","Features & Preis","7 Tage kostenlos · ab 18 Euro/Mo","#64748b")}{farrow}{fnode("🚀","Jetzt starten","CTA-Button klicken","#64748b")}</>)}
@@ -2854,9 +2854,9 @@ function Admin({adminKey}){
               {fphase("Phase 5b – Production Go-Live (geplant)","#0f766e",<>{fnode("🏠","Domain eingeben","im Kunden-Portal","#0f766e",true)}{farrow}{fnode("☁️","Cloudflare","Custom Domain API","#0f766e",true)}{farrow}{fnode("🔧","DNS setzen","CNAME beim Registrar","#0f766e",true)}{farrow}{fnode("🔒","SSL auto","Cloudflare Zertifikat","#0f766e",true)}{farrow}{fnode("🔓","noindex → index","Subdomain freigeben","#0f766e",true)}{farrow}{fnode("📈","GSC","Google Search Console","#0f766e",true)}</>)}
               {fphase("Phase 6 – Betrieb & Support","#f59e0b",<>{fnode("🔄","Leistungen aendern","Self-Service im Portal","#f59e0b")}{farrow}{fnode("⚡","Rate-Limit","2x pro 30 Tage","#f59e0b")}{farrow}{fnode("🤖","Sektion neu","Sonnet · direkt live","#f59e0b")}{farrow}{fnode("🎫","Support","Ticket-Formular","#f59e0b")}{farrow}{fnode("📸","Fotos updaten","serve-time · kein Rebuild","#f59e0b")}</>)}
               {fphase("Phase 7 – Ende des Abos",T.bg3,<>{fnode("❌","Kuendigung","Monatsabo: jederzeit · Jahresabo: nach 12 Mo",T.bg3)}{farrow}{fnode("🚫","Offline","subscription.deleted → status: offline",T.bg3)}{farrow}{fnode("🗑️","Daten loeschen","auf Wunsch",T.bg3,true)}</>)}
-              <div style={{padding:"7px 10px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".7rem",color:"#92400e"}}>Phase 1 optional (nur wenn Bestandswebsite vorhanden) · Phase 5 noindex bis Production · Phase 7 erst nach Go-Live relevant.</div>
+              <div style={{padding:"7px 10px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".75rem",color:"#92400e"}}>Phase 1 optional (nur wenn Bestandswebsite vorhanden) · Phase 5 noindex bis Production · Phase 7 erst nach Go-Live relevant.</div>
             </div>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Technische Flows</div>
+            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Technische Flows</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
                 {ftitle("🚀","Registrierung & Trial-Start")}
@@ -2878,12 +2878,12 @@ function Admin({adminKey}){
                 {ftitle("🌍","Auslieferung (/s/[subdomain])")}
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
                   <div>
-                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Website – index.js</div>
+                    <div style={{fontSize:".8rem",fontWeight:800,color:T.dark,marginBottom:10}}>Website – index.js</div>
                     {fphase("Request","#64748b",<>{fnode("🌐","GET /s/{sub}","Browser oder Bot","#64748b")}{farrow}{fnode("💾","Supabase","order laden","#2563eb")}{farrow}{fnode("✅","Status-Check","200 · 404 · 503","#f97316")}</>)}
                     {fphase("Injection","#f97316",<>{fnode("🖼️","Logo + Fotos","site-nav-logo · slots","#f97316")}{farrow}{fnode("🗄️","Galerie","GALERIE-Tag → Grid","#f97316")}{farrow}{fnode("📤","Response","Cache: max-age=60","#64748b")}</>)}
                   </div>
                   <div>
-                    <div style={{fontSize:".63rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Impressum/Datenschutz – legal.js</div>
+                    <div style={{fontSize:".8rem",fontWeight:800,color:T.dark,marginBottom:10}}>Impressum/Datenschutz – legal.js</div>
                     {fphase("Request","#64748b",<>{fnode("📋","GET /impressum","Link aus Footer","#64748b")}{farrow}{fnode("💾","Supabase","order by subdomain","#2563eb")}</>)}
                     {fphase("Aufbau","#2563eb",<>{fnode("⚖️","Impressum","ECG \u00a75 · Rechtsform","#2563eb")}{farrow}{fnode("🔒","Datenschutz","DSGVO Art.13","#2563eb")}{farrow}{fnode("📤","Response","immer frisch aus DB","#64748b")}</>)}
                   </div>
@@ -2898,7 +2898,7 @@ function Admin({adminKey}){
           {/* Linke Spalte: Inhaltsverzeichnis */}
           <div style={{width:220,flexShrink:0,borderRight:`1px solid ${T.bg3}`,overflowY:"auto",background:"#fafbfc"}}>
             <div style={{padding:"14px 12px 8px",borderBottom:`1px solid ${T.bg3}`}}>
-              <span style={{fontSize:".7rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Inhalt</span>
+              <span style={{fontSize:".8rem",fontWeight:800,color:T.dark}}>Inhalt</span>
             </div>
             {docsLoading
               ?<div style={{padding:20,textAlign:"center",color:T.textMuted,fontSize:".78rem"}}>Laden...</div>
@@ -2917,8 +2917,8 @@ function Admin({adminKey}){
               <h2 style={{margin:0,fontSize:"1rem",fontWeight:800,color:T.dark,flex:1}}>SiteReady Dokumentation</h2>
               <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
                 {!docEditing&&<>
-                  <button onClick={exportMD} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>MD</button>
-                  <button onClick={exportPDF} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>PDF</button>
+                  <button onClick={exportMD} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>MD</button>
+                  <button onClick={exportPDF} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>PDF</button>
                   <button onClick={()=>{const d=docs[0];if(d){setDocEditTitle(d.title);setDocEditContent(d.content||"");setDocEditing(true);}}} style={{padding:"5px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bearbeiten</button>
                 </>}
                 {docEditing&&<>
@@ -2964,9 +2964,9 @@ function Admin({adminKey}){
             <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
               <h3 style={{margin:0,fontSize:"1.1rem",fontWeight:800,color:T.dark}}>{sel.firmenname||"—"}</h3>
               <StatusBadge status={sel.status}/>
-              {selHInfo&&<span style={{padding:"2px 8px",borderRadius:20,background:selHInfo.c+"18",color:selHInfo.c,fontSize:".7rem",fontWeight:700}}>{selHInfo.label}</span>}
-              {(selStuckPending||selStuckGen)&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fff7ed",color:"#92400e",fontSize:".7rem",fontWeight:700}}>&#9888; {selStuckPending?"Eingang >2h":"Generierung >15min"}</span>}
-              {selHasFailed&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fef2f2",color:"#991b1b",fontSize:".7rem",fontWeight:700}}>&#9888; Fehler</span>}
+              {selHInfo&&<span style={{padding:"2px 8px",borderRadius:20,background:selHInfo.c+"18",color:selHInfo.c,fontSize:".75rem",fontWeight:700}}>{selHInfo.label}</span>}
+              {(selStuckPending||selStuckGen)&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fff7ed",color:"#92400e",fontSize:".75rem",fontWeight:700}}>&#9888; {selStuckPending?"Eingang >2h":"Generierung >15min"}</span>}
+              {selHasFailed&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fef2f2",color:"#991b1b",fontSize:".75rem",fontWeight:700}}>&#9888; Fehler</span>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               {(selStuckPending||selStuckGen||selHasFailed)&&<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?T.bg3:selHasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"...":selHasFailed?"Retry":"Neu starten"}</button>}
@@ -2975,12 +2975,12 @@ function Admin({adminKey}){
           </div>
           {selHasFailed&&<div style={{margin:"0 24px",marginTop:12,padding:"10px 14px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".78rem",color:"#991b1b",lineHeight:1.5,wordBreak:"break-word",display:"flex",alignItems:"flex-start",gap:12,justifyContent:"space-between"}}>
             <span style={{fontFamily:T.mono}}><strong style={{fontFamily:T.font}}>Letzter Fehler: </strong>{sel.last_error}</span>
-            <button onClick={()=>updateOrder(sel.id,{last_error:null}).then(()=>setSel(s=>({...s,last_error:null})))} style={{flexShrink:0,padding:"3px 10px",border:"1px solid #fecaca",borderRadius:T.rSm,background:"#fff",color:"#991b1b",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>&#10003; Abgehakt</button>
+            <button onClick={()=>updateOrder(sel.id,{last_error:null}).then(()=>setSel(s=>({...s,last_error:null})))} style={{flexShrink:0,padding:"3px 10px",border:"1px solid #fecaca",borderRadius:T.rSm,background:"#fff",color:"#991b1b",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>&#10003; Abgehakt</button>
           </div>}
           {/* Diagnose-Panel */}
           {diagReport&&<div style={{margin:"12px 24px 0",padding:"18px 24px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Diagnose</div>
+              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Diagnose</div>
               <button onClick={()=>setDiagReport(null)} style={{background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:".85rem",lineHeight:1}}>&times;</button>
             </div>
             <div style={{display:"flex",gap:24,marginBottom:diagReport.issues.some(i=>i.severity!=="ok")?10:0}}>
@@ -3000,12 +3000,12 @@ function Admin({adminKey}){
             {/* Linke Spalte: Kundendaten */}
             <div style={{padding:"24px 28px",borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-                <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Kundendaten</div>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Kundendaten</div>
                 {!editKunde
-                  ?<button onClick={()=>setEditKunde({firmenname:sel.firmenname||"",email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||""})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">✏️</button>
+                  ?<button onClick={()=>setEditKunde({firmenname:sel.firmenname||"",email:sel.email||"",telefon:sel.telefon||"",adresse:sel.adresse||"",plz:sel.plz||"",ort:sel.ort||""})} style={{background:"none",border:"none",cursor:"pointer",padding:4,color:T.textMuted,fontSize:".85rem",lineHeight:1}} title="Bearbeiten">{"\u270f"}</button>
                   :<div style={{display:"flex",gap:6}}>
-                    <button onClick={async()=>{await updateOrder(sel.id,editKunde);setEditKunde(null);}} style={{padding:"3px 10px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
-                    <button onClick={()=>setEditKunde(null)} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                    <button onClick={async()=>{await updateOrder(sel.id,editKunde);setEditKunde(null);}} style={{padding:"3px 10px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
+                    <button onClick={()=>setEditKunde(null)} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
                   </div>
                 }
               </div>
@@ -3015,13 +3015,13 @@ function Admin({adminKey}){
                       <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
                       <input value={editKunde[k]} onChange={e=>setEditKunde(ev=>({...ev,[k]:e.target.value}))} style={{padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",background:"#fff",width:"100%",boxSizing:"border-box"}}/>
                     </div>)}
-                  <div style={{marginTop:10,padding:"8px 10px",borderRadius:T.rSm,background:"#eff6ff",border:"1px solid #bfdbfe",fontSize:".72rem",color:"#1e40af",lineHeight:1.6}}>
+                  <div style={{marginTop:10,padding:"8px 10px",borderRadius:T.rSm,background:"#eff6ff",border:"1px solid #bfdbfe",fontSize:".75rem",color:"#1e40af",lineHeight:1.6}}>
                     <strong>E-Mail, Telefon, Adresse:</strong> sofort live (serve-time).<br/>
                     <strong>Subdomain:</strong> URL ändert sich sofort &ndash; danach Website neu generieren.
                   </div>
                   </div>
                 :<div style={{display:"flex",flexDirection:"column",gap:0}}>
-                  {(()=>{const gb=GRUPPE_BADGE[getBrancheGruppe(sel.branche)];return(<div style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}><span style={{color:T.textMuted,fontWeight:500}}>Berufsgruppe</span><span style={{display:"inline-flex",alignItems:"center",gap:5}}><span style={{padding:"1px 8px",borderRadius:20,background:gb.bg,color:gb.c,fontSize:".72rem",fontWeight:700}}>{gb.icon} {gb.label}</span></span></div>);})()}
+                  {(()=>{const gb=GRUPPE_BADGE[getBrancheGruppe(sel.branche)];return(<div style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}><span style={{color:T.textMuted,fontWeight:500}}>Berufsgruppe</span><span style={{display:"inline-flex",alignItems:"center",gap:5}}><span style={{padding:"1px 8px",borderRadius:20,background:gb.bg,color:gb.c,fontSize:".75rem",fontWeight:700}}>{gb.icon} {gb.label}</span></span></div>);})()}
                   {(()=>{
                     const _selExp=sel.trial_expires_at||(sel.created_at?new Date(new Date(sel.created_at).getTime()+7*24*60*60*1000).toISOString():null);
                     const trialLeft=sel.status==="trial"&&_selExp?Math.ceil((new Date(_selExp)-Date.now())/(1000*60*60*24)):null;
@@ -3034,15 +3034,15 @@ function Admin({adminKey}){
                       zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                         <span style={{padding:"2px 8px",borderRadius:4,background:"#8b5cf622",color:"#8b5cf6",fontWeight:700,fontSize:".75rem"}}>Testphase</span>
                         <span style={{fontSize:".78rem",color:trialLeft!==null&&trialLeft<=2?"#dc2626":"#6b7280",fontWeight:600}}>{trialLeft!==null?(trialLeft>0?`${trialLeft} Tag(e) verbleibend`:"Abgelaufen"):"—"}</span>
-                        {planLabel&&<span style={{fontSize:".72rem",color:T.textMuted}}>{planLabel}</span>}
-                        <button onClick={()=>extendTrial(7)} style={{padding:"1px 7px",border:`1px solid #8b5cf6`,borderRadius:4,background:"#fff",color:"#8b5cf6",cursor:"pointer",fontSize:".68rem",fontWeight:700,fontFamily:T.font}}>+7d</button>
-                        <button onClick={()=>extendTrial(14)} style={{padding:"1px 7px",border:`1px solid #8b5cf6`,borderRadius:4,background:"#fff",color:"#8b5cf6",cursor:"pointer",fontSize:".68rem",fontWeight:700,fontFamily:T.font}}>+14d</button>
+                        {planLabel&&<span style={{fontSize:".75rem",color:T.textMuted}}>{planLabel}</span>}
+                        <button onClick={()=>extendTrial(7)} style={{padding:"1px 7px",border:`1px solid #8b5cf6`,borderRadius:4,background:"#fff",color:"#8b5cf6",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>+7d</button>
+                        <button onClick={()=>extendTrial(14)} style={{padding:"1px 7px",border:`1px solid #8b5cf6`,borderRadius:4,background:"#fff",color:"#8b5cf6",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>+14d</button>
                       </span>;
                     } else if(zv){
                       zahlungContent=<span style={{display:"inline-flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                         <span style={{padding:"2px 8px",borderRadius:4,background:zv.c+"22",color:zv.c,fontWeight:700,fontSize:".75rem"}}>{zv.label}</span>
-                        {planLabel&&<span style={{fontSize:".72rem",color:T.textMuted}}>{planLabel}</span>}
-                        {sel.stripe_customer_id&&<span style={{fontSize:".68rem",color:T.textMuted,fontFamily:T.mono}}>{sel.stripe_customer_id}</span>}
+                        {planLabel&&<span style={{fontSize:".75rem",color:T.textMuted}}>{planLabel}</span>}
+                        {sel.stripe_customer_id&&<span style={{fontSize:".75rem",color:T.textMuted,fontFamily:T.mono}}>{sel.stripe_customer_id}</span>}
                       </span>;
                     } else {
                       zahlungContent=<span style={{fontSize:".78rem",color:T.textMuted}}>{["pending","in_arbeit"].includes(sel.status)?"—":"Kein Abo"}</span>;
@@ -3064,7 +3064,7 @@ function Admin({adminKey}){
             </div>
             {/* Mittlere Spalte: Aktionen */}
             {(()=>{
-              const cardTitle=(label)=><div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{label}</div>;
+              const cardTitle=(label)=><div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>{label}</div>;
               const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               const secStyle={padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`};
               return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:12,borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
@@ -3084,9 +3084,9 @@ function Admin({adminKey}){
                     {selHInfo
                       ?<span style={{color:selHInfo.c,fontWeight:700,fontSize:".85rem"}}>{selHInfo.label}{selMs?<span style={{fontWeight:400,color:T.textMuted,fontFamily:T.mono,fontSize:".78rem"}}> &middot; {selMs}ms</span>:null}</span>
                       :<span style={{fontSize:".82rem",color:T.textMuted}}>Noch nicht geprueft</span>}
-                    <button onClick={()=>checkHealth(sel)} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Jetzt pruefen</button>
+                    <button onClick={()=>checkHealth(sel)} style={{padding:"5px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Jetzt pruefen</button>
                   </div>
-                  {selCheckedAt&&<div style={{fontSize:".7rem",color:T.textMuted,marginTop:4}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</div>}
+                  {selCheckedAt&&<div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Letzter Check: {selCheckedAt.toLocaleTimeString("de-AT")}</div>}
                   {sel.quality_score!==null&&sel.quality_score!==undefined&&<div style={{marginTop:8}}>
                     <div style={{fontSize:".78rem"}}><span style={{color:T.textMuted}}>Quality Score: </span><span style={{fontWeight:700,color:sel.quality_score>=80?T.green:"#d97706"}}>{sel.quality_score}/100</span></div>
                     {sel.quality_score<100&&<div style={{marginTop:6,display:"flex",flexDirection:"column",gap:3}}>
@@ -3160,7 +3160,7 @@ function Admin({adminKey}){
                   const cancel=()=>setsc({subdomain:sel.subdomain||"",stil:sel.stil||"professional",editing:false});
                   return(<div style={{...secStyle,borderStyle:"dashed"}}>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                      <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Subdomain & Stil</div>
+                      <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Subdomain & Stil</div>
                       {!editing&&<button onClick={()=>setsc({editing:true})} title="Bearbeiten" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 5px",color:T.textMuted,fontSize:".85rem",lineHeight:1}}>{"\u270f"}</button>}
                     </div>
                     {!editing
@@ -3177,7 +3177,7 @@ function Admin({adminKey}){
                             <button onClick={cancel} style={{flex:1,padding:"6px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
                             <button onClick={save} disabled={!dirty} style={{flex:1,padding:"6px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":T.bg3,cursor:dirty?"pointer":"default",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
                           </div>
-                          <div style={{fontSize:".68rem",color:"#92400e"}}>Danach Website neu generieren</div>
+                          <div style={{fontSize:".75rem",color:"#92400e"}}>Danach Website neu generieren</div>
                         </div>
                     }
                   </div>);
@@ -3185,12 +3185,12 @@ function Admin({adminKey}){
                 {/* Notfall: Status setzen */}
                 <div style={{padding:"12px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                   <button onClick={()=>setShowStatusOverride(s=>!s)} style={{background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
-                    <span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Notfall: Status setzen</span>
-                    <span style={{fontSize:".65rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>{"\u25bc"}</span>
+                    <span style={{fontSize:".8rem",fontWeight:700,color:T.textMuted}}>Notfall: Status setzen</span>
+                    <span style={{fontSize:".75rem",color:T.textMuted,transition:"transform .2s",display:"inline-block",transform:showStatusOverride?"rotate(180deg)":"rotate(0deg)"}}>{"\u25bc"}</span>
                   </button>
                   {showStatusOverride&&<div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:6}}>
                     {[{s:"pending",label:"Eingang"},{s:"in_arbeit",label:"In Generierung"},{s:"trial",label:"Testphase"},{s:"live",label:"Live"},{s:"offline",label:"Offline"}].map(({s,label})=>(
-                      <button key={s} onClick={sel.status!==s?()=>{const prev=sel.status;updateOrder(sel.id,{status:s});logActivity(sel.id,"status_changed",{from:prev,to:s});}:undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?` \u2713`:""}</button>
+                      <button key={s} onClick={sel.status!==s?()=>{const prev=sel.status;updateOrder(sel.id,{status:s});logActivity(sel.id,"status_changed",{from:prev,to:s});}:undefined} disabled={sel.status===s} style={{padding:"5px 10px",border:`2px solid ${sel.status===s?STATUS_COLORS[s]||T.accent:T.bg3}`,borderRadius:T.rSm,background:sel.status===s?(STATUS_COLORS[s]||T.accent)+"18":"#fff",color:sel.status===s?STATUS_COLORS[s]||T.accent:T.textSub,cursor:sel.status===s?"default":"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>{label}{sel.status===s?` \u2713`:""}</button>
                     ))}
                   </div>}
                 </div>
@@ -3201,9 +3201,9 @@ function Admin({adminKey}){
               {/* Interne Notiz */}
               <div>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-                  <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Interne Notiz</div>
+                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Interne Notiz</div>
                   <button onClick={()=>saveNotiz(sel.id)} title="Speichern" style={{background:"none",border:"none",cursor:"pointer",padding:4,color:notizSaved[sel.id]?T.green:T.textMuted,fontSize:".85rem",lineHeight:1}}>
-                    {notizSaved[sel.id]?"\u2713":"\u270f\ufe0f"}
+                    {notizSaved[sel.id]?"\u2713":"\u270f"}
                   </button>
                 </div>
                 <textarea value={notiz[sel.id]||""} onChange={e=>setNotiz(n=>({...n,[sel.id]:e.target.value}))} placeholder="Notiz hinzufuegen..." rows={5} style={{width:"100%",padding:"10px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical",boxSizing:"border-box",outline:"none",background:"#fff"}}/>
@@ -3213,8 +3213,8 @@ function Admin({adminKey}){
                 const selTickets=tickets.filter(t=>t.email&&sel.email&&t.email.toLowerCase()===sel.email.toLowerCase());
                 return(<div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                    <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Support-Tickets{selTickets.length>0?` (${selTickets.length})`:""}</div>
-                    <button onClick={()=>{setTicketForm(f=>({...f,email:sel.email||""}));setTicketFormOpen(true);setTab("support");setSel(null);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:".72rem",color:T.accent,fontWeight:700,fontFamily:T.font,padding:0}}>+ Neu</button>
+                    <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Support-Tickets{selTickets.length>0?` (${selTickets.length})`:""}</div>
+                    <button onClick={()=>{setTicketForm(f=>({...f,email:sel.email||""}));setTicketFormOpen(true);setTab("support");setSel(null);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:".75rem",color:T.accent,fontWeight:700,fontFamily:T.font,padding:0}}>+ Neu</button>
                   </div>
                   {selTickets.length===0
                     ?<div style={{fontSize:".8rem",color:T.textMuted,padding:"8px 0"}}>Noch keine Tickets.</div>
@@ -3222,10 +3222,10 @@ function Admin({adminKey}){
                       {selTickets.map(t=><div key={t.id} style={{padding:"10px 12px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${t.status==="offen"?"#fde68a":T.bg3}`}}>
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3,gap:6}}>
                           <span style={{fontWeight:700,fontSize:".78rem",color:T.dark,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</span>
-                          <span style={{padding:"1px 7px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".65rem",fontWeight:700,flexShrink:0}}>{t.status==="offen"?"Offen":"Erledigt"}</span>
+                          <span style={{padding:"1px 7px",borderRadius:4,background:t.status==="offen"?"#fef3c7":"#f0fdf4",color:t.status==="offen"?"#92400e":T.green,fontSize:".75rem",fontWeight:700,flexShrink:0}}>{t.status==="offen"?"Offen":"Erledigt"}</span>
                         </div>
-                        <div style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(t.created_at)}</div>
-                        {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"}).then(()=>setTickets(ts=>ts.map(x=>x.id===t.id?{...x,status:"beantwortet"}:x)))} style={{marginTop:4,padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".68rem",fontWeight:600,fontFamily:T.font}}>Beantwortet</button>}
+                        <div style={{fontSize:".75rem",color:T.textMuted}}>{fmtDate(t.created_at)}</div>
+                        {t.status==="offen"&&<button onClick={()=>updateTicket(t.id,{status:"beantwortet"}).then(()=>setTickets(ts=>ts.map(x=>x.id===t.id?{...x,status:"beantwortet"}:x)))} style={{marginTop:4,padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Beantwortet</button>}
                       </div>)}
                     </div>
                   }
@@ -3233,7 +3233,7 @@ function Admin({adminKey}){
               })()}
               {/* Aktivitaetslog */}
               <div>
-                <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Aktivitaetslog</div>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Aktivitaetslog</div>
                 {logsLoading[sel.id]
                   ?<div style={{fontSize:".8rem",color:T.textMuted}}>Laedt...</div>
                   :(orderLogs[sel.id]||[]).length===0
@@ -3244,9 +3244,9 @@ function Admin({adminKey}){
                             <span style={{fontSize:".8rem",flexShrink:0,minWidth:16,textAlign:"center"}}>{logIcon(log.action)}</span>
                             <div style={{flex:1,minWidth:0}}>
                               <div style={{fontSize:".77rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
-                              {log.actor==="system"&&<div style={{fontSize:".68rem",color:T.textMuted}}>via Stripe</div>}
+                              {log.actor==="system"&&<div style={{fontSize:".75rem",color:T.textMuted}}>via Stripe</div>}
                             </div>
-                            <div style={{fontSize:".68rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
+                            <div style={{fontSize:".75rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
                           </div>
                         ))}
                       </div>
@@ -3255,8 +3255,8 @@ function Admin({adminKey}){
               {/* Backup (Platzhalter) */}
               <div style={{padding:"12px 14px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em"}}>Backup</div>
-                  <span style={{padding:"2px 8px",borderRadius:20,background:"#f1f5f9",color:T.textMuted,fontSize:".65rem",fontWeight:700}}>Kommt bald</span>
+                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Backup</div>
+                  <span style={{padding:"2px 8px",borderRadius:20,background:"#f1f5f9",color:T.textMuted,fontSize:".75rem",fontWeight:700}}>Kommt bald</span>
                 </div>
                 <div style={{marginTop:6,fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>Website-Backups und Wiederherstellung.</div>
               </div>
@@ -3304,7 +3304,7 @@ function Admin({adminKey}){
                     <div style={{flex:1,paddingTop:4}}>
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                         <span style={{fontSize:".88rem",fontWeight:700,color:pending?T.textMuted:T.dark}}>{step.icon} {step.label}</span>
-                        {current&&<span style={{background:"#fef3c7",color:"#92400e",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>Aktuell</span>}
+                        {current&&<span style={{background:"#fef3c7",color:"#92400e",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Aktuell</span>}
                       </div>
                       <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:step.error?6:8,lineHeight:1.5}}>{step.detail}</div>
                       {step.error&&<div style={{marginBottom:8,padding:"8px 12px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".75rem",color:"#991b1b",fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}>{step.error}</div>}
@@ -3326,8 +3326,8 @@ function Admin({adminKey}){
                     <div style={{flex:1,paddingTop:4}}>
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                         <span style={{fontSize:".88rem",fontWeight:700,color:T.textMuted}}>{step.icon} {step.label}</span>
-                        {step.optional&&<span style={{background:T.bg3,color:T.textMuted,fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Optional</span>}
-                        <span style={{background:"#fef3c7",color:"#92400e",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Prototyp</span>
+                        {step.optional&&<span style={{background:T.bg3,color:T.textMuted,fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Optional</span>}
+                        <span style={{background:"#fef3c7",color:"#92400e",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Prototyp</span>
                       </div>
                       <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>{step.detail}</div>
                     </div>

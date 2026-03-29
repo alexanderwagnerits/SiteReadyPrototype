@@ -82,11 +82,12 @@ function legalShell(o, pal, subdomain, title, content) {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:${pal.bg};color:#1f2937;line-height:1.6;-webkit-font-smoothing:antialiased}
-.topbar{background:${pal.p};padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.topbar a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;font-weight:500}
+.topbar{background:${pal.p};padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;height:68px;position:sticky;top:0;z-index:100}
+.topbar a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s}
 .topbar a:hover{color:#fff}
 .topbar-logo{color:#fff;font-weight:800;font-size:.95rem;text-decoration:none;letter-spacing:-.02em}
-.topbar-links{display:flex;gap:20px;align-items:center}
+.topbar-links{display:flex;gap:24px;align-items:center}
+.topbar-cta{background:rgba(255,255,255,.12);padding:8px 18px;border-radius:4px;font-weight:700;font-size:.82rem;color:#fff!important}
 .wrap{max-width:760px;margin:0 auto;padding:48px 28px 80px}
 h1{font-size:1.5rem;font-weight:800;color:${pal.p};margin-bottom:8px;letter-spacing:-.03em}
 .h1-sub{font-size:.85rem;color:#64748b;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid ${pal.a}22}
@@ -113,18 +114,21 @@ td:first-child{font-weight:600;color:${pal.p};width:200px;white-space:nowrap}
 .right-item strong{display:block;font-weight:700;color:${pal.p};font-size:.8rem}
 .disclaimer{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;font-size:.8rem;color:#92400e;margin-top:40px;line-height:1.6}
 .disclaimer strong{font-weight:700}
-.footer-bar{background:${pal.p};color:rgba(255,255,255,.5);text-align:center;padding:16px;font-size:.78rem;margin-top:48px}
+.footer-bar{background:${pal.p};color:rgba(255,255,255,.5);text-align:center;padding:24px;font-size:.78rem;margin-top:48px}
 .footer-bar a{color:rgba(255,255,255,.5);text-decoration:none;margin:0 12px}
+.footer-bar a:hover{color:rgba(255,255,255,.8)}
 </style>
 </head>
 <body>
-<div class="topbar">
+<nav class="topbar">
 <a href="/s/${subdomain}" class="topbar-logo">${o.firmenname}</a>
 <div class="topbar-links">
-<a href="/s/${subdomain}">&larr; Zur\u00fcck zur Website</a>
-${tel ? `<a href="${telHref}" style="color:#fff;font-weight:700">${tel}</a>` : ""}
+<a href="/s/${subdomain}#leistungen">Leistungen</a>
+<a href="/s/${subdomain}#ueber-uns">\u00dcber uns</a>
+<a href="/s/${subdomain}#kontakt">Kontakt</a>
+${tel ? `<a href="${telHref}" class="topbar-cta">${tel}</a>` : ""}
 </div>
-</div>
+</nav>
 <div class="wrap">
 ${content}
 </div>

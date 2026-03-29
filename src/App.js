@@ -56,7 +56,6 @@ const BRANCHEN = [
   { value:"gaertner",        label:"Gärtner / Landschaftsbau",         leistungen:["Gartengestaltung","Pflasterarbeiten","Bepflanzung & Pflege","Bewässerungssysteme","Zaunbau","Baumschnitt & Pflege"],stil:"modern",features:["kostenvoranschlag"] },
   { value:"klima",           label:"Klimatechnik / Lüftung",           leistungen:["Klimaanlagen Installation","Lüftungsanlagen","Wartung & Service","Wärmepumpen","Kühltechnik","Notdienst"],stil:"professional",features:["notdienst","meisterbetrieb","kostenvoranschlag"] },
   { value:"reinigung",       label:"Reinigung / Gebäudeservice",       leistungen:["Gebäudereinigung","Fensterreinigung","Grundreinigung","Teppichreinigung","Fassadenreinigung","Winterdienst"],stil:"modern",features:["kostenvoranschlag"] },
-  { value:"sonstige",        label:"Sonstiger Beruf",                   leistungen:[],stil:"professional",features:[] },
   // Kosmetik & Körperpflege
   { value:"kosmetik",        label:"Kosmetikstudio",                    leistungen:["Gesichtsbehandlungen","Körperpflege & Peeling","Waxing & Haarentfernung","Anti-Aging-Behandlungen","Augenbrauen & Wimpern","Beratung & Pflegeroutine"],stil:"modern",features:["buchungslink","hausbesuche","terminvereinbarung"] },
   { value:"friseur",         label:"Friseursalon",                      leistungen:["Haarschnitt Damen & Herren","Färben & Strähnchen","Hochzeitsstyling","Haarbehandlungen","Kinder-Haarschnitt","Bartpflege"],stil:"modern",features:["buchungslink","terminvereinbarung"] },
@@ -65,7 +64,41 @@ const BRANCHEN = [
   { value:"tattoo",          label:"Tattoo & Piercing",                 leistungen:["Custom Tattoos","Cover-ups & Korrekturen","Piercing","Beratung & Design","Pflege & Nachsorge","Laser-Entfernung"],stil:"professional",features:["buchungslink","terminvereinbarung"] },
   { value:"fusspflege",      label:"Fuß- & Körperpflege",             leistungen:["Medizinische Fußpflege","Nagelpflege & Korrektur","Hornhautentfernung","Fußpeeling & Entspannungsbad","Gels & Lack","Beratung"],stil:"professional",features:["buchungslink","hausbesuche","terminvereinbarung"] },
   { value:"permanent_makeup",label:"Permanent Make-up & Wimpern",       leistungen:["Microblading","Permanent Make-up Lippen","Wimpernverlängerung","Wimpernlifting","Augenbrauen-Styling","Touch-up & Nachbehandlung"],stil:"modern",features:["buchungslink","terminvereinbarung"] },
-  { value:"sonstige_kosmetik",label:"Sonstige Kosmetik & Körperpflege", leistungen:[],stil:"modern",features:["buchungslink","hausbesuche","terminvereinbarung"] },
+  // Gastronomie
+  { value:"restaurant",      label:"Restaurant / Gasthaus",             leistungen:["Speisekarte","Tagesmenü","Catering","Reservierung","Veranstaltungen","Lieferservice"],stil:"traditional",features:["buchungslink"] },
+  { value:"cafe",            label:"Café / Bäckerei",                   leistungen:["Frühstück","Kuchen & Torten","Kaffeespezialitäten","Catering","Veranstaltungen","Take-away"],stil:"modern",features:["buchungslink"] },
+  { value:"bar",             label:"Bar / Lounge",                      leistungen:["Cocktails & Drinks","Events & Partys","DJ & Live-Musik","Private Feiern","Afterwork","Catering"],stil:"professional",features:["buchungslink"] },
+  { value:"imbiss",          label:"Imbiss / Foodtruck",                leistungen:["Speisekarte","Mittagsmenü","Lieferservice","Catering","Take-away","Events"],stil:"modern",features:[] },
+  { value:"catering",        label:"Catering / Partyservice",           leistungen:["Firmenevents","Hochzeiten","Buffets","Menü-Planung","Getränkeservice","Dekoration"],stil:"professional",features:["kostenvoranschlag"] },
+  // Gesundheit
+  { value:"physiotherapie",  label:"Physiotherapie",                    leistungen:["Manuelle Therapie","Krankengymnastik","Sportphysiotherapie","Lymphdrainage","Elektrotherapie","Hausbesuche"],stil:"professional",features:["buchungslink","hausbesuche","terminvereinbarung"] },
+  { value:"arzt",            label:"Arztpraxis / Ordination",           leistungen:["Allgemeinmedizin","Vorsorgeuntersuchung","Gesundenuntersuchung","Impfungen","Hausbesuche","Akutversorgung"],stil:"professional",features:["buchungslink","terminvereinbarung"] },
+  { value:"zahnarzt",        label:"Zahnarztpraxis",                    leistungen:["Zahnreinigung","Füllungen","Zahnersatz","Implantate","Kieferorthopädie","Ästhetische Zahnmedizin"],stil:"professional",features:["buchungslink","terminvereinbarung"] },
+  { value:"tierarzt",        label:"Tierarztpraxis",                    leistungen:["Vorsorge & Impfungen","Chirurgie","Zahnmedizin","Notfallversorgung","Hausbesuche","Ernährungsberatung"],stil:"professional",features:["notdienst","buchungslink","terminvereinbarung","hausbesuche"] },
+  { value:"apotheke",        label:"Apotheke",                          leistungen:["Rezepteinlösung","Beratung","Naturheilmittel","Kosmetik","Vorbestellung","Lieferservice"],stil:"professional",features:["notdienst"] },
+  { value:"optiker",         label:"Optiker",                           leistungen:["Sehtest","Brillen","Kontaktlinsen","Sonnenbrillen","Reparaturen","Beratung"],stil:"modern",features:["terminvereinbarung"] },
+  { value:"heilpraktiker",   label:"Heilpraktiker / Alternativmedizin", leistungen:["Akupunktur","Homöopathie","Osteopathie","TCM","Naturheilkunde","Ernährungsberatung"],stil:"modern",features:["buchungslink","hausbesuche","terminvereinbarung"] },
+  // Dienstleistungen
+  { value:"steuerberater",   label:"Steuerberater / Buchhaltung",       leistungen:["Buchhaltung","Jahresabschluss","Steuererklärung","Lohnverrechnung","Gründungsberatung","Unternehmensberatung"],stil:"professional",features:["kostenvoranschlag","terminvereinbarung"] },
+  { value:"rechtsanwalt",    label:"Rechtsanwalt / Kanzlei",            leistungen:["Vertragsrecht","Arbeitsrecht","Familienrecht","Mietrecht","Strafrecht","Erstberatung"],stil:"professional",features:["terminvereinbarung"] },
+  { value:"versicherung",    label:"Versicherungsmakler",               leistungen:["Versicherungsvergleich","Beratung","Schadensabwicklung","Vorsorge","Firmenversicherung","Erstgespräch"],stil:"professional",features:["kostenvoranschlag","hausbesuche","terminvereinbarung"] },
+  { value:"immobilien",      label:"Immobilienmakler",                  leistungen:["Verkauf","Vermietung","Bewertung","Beratung","Besichtigungen","Verwaltung"],stil:"professional",features:["kostenvoranschlag","terminvereinbarung"] },
+  { value:"umzug",           label:"Umzug / Transport",                 leistungen:["Privatumzüge","Firmenumzüge","Entrümpelung","Möbelmontage","Lagerung","Verpackungsservice"],stil:"modern",features:["kostenvoranschlag"] },
+  { value:"eventplanung",    label:"Eventplanung / DJ",                 leistungen:["Hochzeiten","Firmenfeiern","Geburtstage","DJ-Service","Dekoration","Technikverleih"],stil:"modern",features:["buchungslink","kostenvoranschlag"] },
+  // IT & Kreativ
+  { value:"webdesign",       label:"Webdesign / IT-Dienstleister",      leistungen:["Website-Erstellung","Online-Shop","SEO","Hosting & Wartung","App-Entwicklung","IT-Support"],stil:"modern",features:["kostenvoranschlag"] },
+  { value:"fotograf",        label:"Fotograf / Videograf",              leistungen:["Hochzeitsfotografie","Businessportraits","Produktfotografie","Eventfotografie","Videoproduktion","Bildbearbeitung"],stil:"modern",features:["buchungslink","kostenvoranschlag"] },
+  { value:"grafiker",        label:"Grafikdesign / Werbung",            leistungen:["Logo & Branding","Print-Design","Social Media Grafiken","Verpackungsdesign","Werbemittel","Illustration"],stil:"modern",features:["kostenvoranschlag"] },
+  // Bildung & Training
+  { value:"fahrschule",      label:"Fahrschule",                        leistungen:["Führerschein B","Führerschein A","Auffrischungskurs","Erste-Hilfe-Kurs","Theoriekurs","Intensivkurs"],stil:"professional",features:["buchungslink"] },
+  { value:"nachhilfe",       label:"Nachhilfe / Lernhilfe",             leistungen:["Mathematik","Deutsch","Englisch","Physik","Prüfungsvorbereitung","Online-Nachhilfe"],stil:"modern",features:["buchungslink","hausbesuche","terminvereinbarung"] },
+  { value:"musikschule",     label:"Musikschule / Musiklehrer",          leistungen:["Klavierunterricht","Gitarrenunterricht","Gesangsunterricht","Schlagzeugunterricht","Musiktheorie","Bandcoaching"],stil:"modern",features:["buchungslink","hausbesuche","terminvereinbarung"] },
+  { value:"trainer",         label:"Personal Trainer / Fitness",         leistungen:["Personal Training","Gruppentraining","Ernährungsberatung","Online-Coaching","Firmenfitness","Reha-Training"],stil:"modern",features:["buchungslink","hausbesuche","terminvereinbarung"] },
+  // Handel
+  { value:"einzelhandel",    label:"Einzelhandel / Geschäft",           leistungen:["Sortiment & Beratung","Bestellung & Lieferung","Geschenkgutscheine","Reparaturservice","Online-Shop","Treueprogramm"],stil:"modern",features:[] },
+  { value:"blumen",          label:"Blumengeschäft / Floristik",        leistungen:["Blumensträuße","Hochzeitsfloristik","Trauerfloristik","Raumgestaltung","Lieferservice","Abo & Pflanzenpflege"],stil:"modern",features:["buchungslink"] },
+  // Sonstige
+  { value:"sonstige",        label:"Sonstiger Beruf",                   leistungen:[],stil:"professional",features:[] },
 ];
 const getBrancheFeatures=b=>(BRANCHEN.find(x=>x.value===b)?.features||[]);
 const BUNDESLAENDER=[{value:"wien",label:"Wien"},{value:"noe",label:"Niederösterreich"},{value:"ooe",label:"Oberösterreich"},{value:"stmk",label:"Steiermark"},{value:"sbg",label:"Salzburg"},{value:"tirol",label:"Tirol"},{value:"ktn",label:"Kärnten"},{value:"vbg",label:"Vorarlberg"},{value:"bgld",label:"Burgenland"}];
@@ -383,48 +416,15 @@ function LandingPage({onStart,onPortal}){
   <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:T.bg}}>
     <W>
       <div style={{marginBottom:52}}>
-        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Branchen-Templates</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihre Branche.</h2>
-        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jede Branche bekommt ein eigenes Design, vorbelegte Leistungen und passende Texte – vollautomatisch.</p>
+        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>50+ Berufe</div>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihren Beruf.</h2>
+        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jeder Beruf bekommt passende Leistungen, Features und ein eigenes Design – vollautomatisch.</p>
       </div>
-      <div className="lp-branchen-card" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
-        <div onMouseEnter={()=>setHovCard("hw")} onMouseLeave={()=>setHovCard(null)} style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",boxShadow:hovCard==="hw"?T.sh4:T.sh2,background:"#fff",transition:"transform .3s,box-shadow .3s",transform:hovCard==="hw"?"translateY(-3px)":"none"}}>
-          <div style={{background:T.dark,padding:"36px 32px",color:"#fff",position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(143,163,184,.12),transparent 60%)"}}/>
-            <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:14}}>
-              <div style={{width:44,height:44,borderRadius:12,background:"rgba(143,163,184,.15)",display:"flex",alignItems:"center",justifyContent:"center"}}><IconHammer/></div>
-              <div><h3 style={{fontSize:"1.2rem",fontWeight:800,letterSpacing:"-.03em"}}>Handwerk</h3><p style={{color:T.accent,fontSize:".82rem",marginTop:3}}>Seriöses, professionelles Design</p></div>
-            </div>
-          </div>
-          <div style={{padding:"24px 32px"}}>
-            <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-              {["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gärtner","Klima & Lüftung","Reinigung"].map(b=><span key={b} style={{fontSize:".75rem",padding:"5px 12px",borderRadius:8,fontWeight:500,background:T.bg,color:T.secondary,border:"1px solid rgba(0,0,0,.06)"}}>{b}</span>)}
-            </div>
-          </div>
-        </div>
-        <div onMouseEnter={()=>setHovCard("ko")} onMouseLeave={()=>setHovCard(null)} style={{borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",boxShadow:hovCard==="ko"?T.sh4:T.sh2,background:"#fff",transition:"transform .3s,box-shadow .3s",transform:hovCard==="ko"?"translateY(-3px)":"none"}}>
-          <div style={{background:"#4A5060",padding:"36px 32px",color:"#fff",position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 80% 20%,rgba(143,163,184,.12),transparent 60%)"}}/>
-            <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:14}}>
-              <div style={{width:44,height:44,borderRadius:12,background:"rgba(255,255,255,.12)",display:"flex",alignItems:"center",justifyContent:"center"}}><IconSparkles/></div>
-              <div><h3 style={{fontSize:"1.2rem",fontWeight:800,letterSpacing:"-.03em"}}>Kosmetik & Körperpflege</h3><p style={{color:"rgba(255,255,255,.65)",fontSize:".82rem",marginTop:3}}>Modernes, elegantes Design</p></div>
-            </div>
-          </div>
-          <div style={{padding:"24px 32px"}}>
-            <div style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Verfügbare Branchen</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-              {["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fußpflege","Permanent Make-up"].map(b=><span key={b} style={{fontSize:".76rem",padding:"5px 12px",borderRadius:8,fontWeight:500,background:T.bg,color:T.secondary,border:"1px solid rgba(0,0,0,.06)"}}>{b}</span>)}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style={{marginTop:20,padding:"20px 28px",borderRadius:12,background:T.bg,border:"1px solid rgba(0,0,0,.06)",borderLeft:`3px solid ${T.accent}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
-        <div>
-          <div style={{fontWeight:700,fontSize:".92rem",color:T.dark,marginBottom:2}}>Weitere Berufe in Planung</div>
-          <div style={{fontSize:".82rem",color:T.textMuted}}>Gastronomie, Handel, Dienstleistungen und mehr kommen 2026.</div>
-        </div>
-        <button disabled style={{padding:"10px 20px",borderRadius:8,fontSize:".84rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,background:T.dark,color:"#fff",border:"none",opacity:.85,whiteSpace:"nowrap",minHeight:44}}>Bald verfügbar</button>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
+        {[{t:"Handwerk",items:["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","Gärtner","Klima & Lüftung","Reinigung"]},{t:"Kosmetik & Pflege",items:["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fußpflege","Permanent Make-up"]},{t:"Gastronomie",items:["Restaurant","Café / Bäckerei","Bar / Lounge","Imbiss / Foodtruck","Catering"]},{t:"Gesundheit",items:["Physiotherapie","Arztpraxis","Zahnarzt","Tierarzt","Apotheke","Optiker","Heilpraktiker"]},{t:"Dienstleistungen",items:["Steuerberater","Rechtsanwalt","Versicherung","Immobilien","Umzug & Transport","Eventplanung"]},{t:"IT & Kreativ",items:["Webdesign / IT","Fotograf","Grafikdesign"]},{t:"Bildung & Training",items:["Fahrschule","Nachhilfe","Musikschule","Personal Trainer"]},{t:"Handel",items:["Einzelhandel","Blumengeschäft"]}].map(g=><div key={g.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"20px 24px",boxShadow:T.sh1}}>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10,letterSpacing:"-.01em"}}>{g.t}</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{g.items.map(b=><span key={b} style={{fontSize:".72rem",padding:"3px 10px",borderRadius:6,fontWeight:500,background:T.bg,color:T.textSub,border:"1px solid rgba(0,0,0,.05)"}}>{b}</span>)}</div>
+        </div>)}
       </div>
     </W>
   </section>
@@ -880,7 +880,7 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
   const pages=[<>
     <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
     <Combobox label="Beruf" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
-    {(data.branche==="sonstige"||data.branche==="sonstige_kosmetik")&&<Field label="Ihre Branche" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
+    {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
     <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Optional"/>
     <Dropdown label="Bundesland" value={data.bundesland} onChange={v=>{up("bundesland")(v);const bl=BUNDESLAENDER.find(b=>b.value===v);up("einsatzgebiet")(bl?bl.label:"")}} options={BUNDESLAENDER} placeholder="Bundesland wählen" required/>
   </>,<>{brancheLeistungen.length>0?(<Checklist label="Leistungen auswählen" options={[...new Set([...brancheLeistungen,...(data.leistungen||[])])]} selected={data.leistungen} onChange={up("leistungen")} hint="Wählen Sie Ihre Leistungen"/>):(<TagInput label="Ihre Leistungen" value={data.extraLeistung} onChange={up("extraLeistung")} placeholder="Leistung eingeben + Enter" hint="Leistung eingeben und Enter drücken – max. 12"/>)}{brancheLeistungen.length>0&&<TagInput label="Zusätzliche Leistungen (optional)" value={data.extraLeistung} onChange={up("extraLeistung")} placeholder="z.B. Beratung, Planung, ..." hint="Leistung eingeben und Enter drücken"/>}{(()=>{const ft=getBrancheFeatures(data.branche);return<>{ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={data.notdienst} onChange={up("notdienst")} desc="Wird prominent angezeigt"/>}{ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={data.meisterbetrieb} onChange={up("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge auf Ihrer Website"/>}{ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={data.kostenvoranschlag} onChange={up("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}{ft.includes("buchungslink")&&<Field label="Online-Buchungslink" value={data.buchungslink} onChange={up("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – optional"/>}{ft.includes("hausbesuche")&&<Toggle label="Hausbesuche" checked={data.hausbesuche} onChange={up("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>}{ft.includes("terminvereinbarung")&&<Toggle label="Nur nach Terminvereinbarung" checked={data.terminvereinbarung} onChange={up("terminvereinbarung")} desc="Kein Walk-in – nur mit Termin"/>}</>;})()}</>,<><Field label="Straße & Hausnummer" value={data.adresse} onChange={up("adresse")} placeholder="Mariahilfer Straße 45/3" required/><div style={{display:"grid",gridTemplateColumns:"120px 1fr",gap:12}}><Field label="PLZ" value={data.plz} onChange={up("plz")} placeholder="1060" required/><Field label="Ort" value={data.ort} onChange={up("ort")} placeholder="Wien" required/></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Telefon" value={data.telefon} onChange={up("telefon")} placeholder="+43 1 234 56 78" required/><Field label="E-Mail" value={data.email} onChange={up("email")} placeholder="office@firma.at" type="email" required/></div><Dropdown label="Öffnungszeiten" value={data.oeffnungszeiten} onChange={up("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen" required/>{data.oeffnungszeiten==="custom"&&<Field label="Ihre Öffnungszeiten" value={data.oeffnungszeitenCustom} onChange={up("oeffnungszeitenCustom")} placeholder={"Mo-Fr: 08:00-17:00\nSa: nach Vereinbarung"} rows={2}/>}<div style={{marginTop:8,paddingTop:16,borderTop:`1px solid ${T.bg3}`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".06em",marginBottom:12}}>Social Media <span style={{fontWeight:400,opacity:.6}}>(optional)</span></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Facebook" value={data.facebook} onChange={up("facebook")} placeholder="facebook.com/ihrefirma"/><Field label="Instagram" value={data.instagram} onChange={up("instagram")} placeholder="instagram.com/ihrefirma"/><Field label="LinkedIn" value={data.linkedin} onChange={up("linkedin")} placeholder="linkedin.com/company/..."/><Field label="TikTok" value={data.tiktok} onChange={up("tiktok")} placeholder="tiktok.com/@ihrefirma"/></div></div></>,<>{(()=>{const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);return(<><Dropdown label="Unternehmensform" value={uf} onChange={up("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen" hint="Für das Impressum (ECG)" required/>

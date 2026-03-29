@@ -292,11 +292,13 @@ export async function onRequestPost({request, env}) {
   const sub  = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
   const betriebstyp = o.branche_label || "Betrieb";
 
-  const leistungen = [...(o.leistungen || [])];
+  const rawLeistungen = [...(o.leistungen || [])];
   if (o.extra_leistung?.trim()) {
     const extras = o.extra_leistung.split(/[,\n]+/).map(s => s.trim()).filter(Boolean);
-    leistungen.push(...extras);
+    rawLeistungen.push(...extras);
   }
+  // Leistungsnamen kapitalisieren (erster Buchstabe gross)
+  const leistungen = rawLeistungen.map(l => l.charAt(0).toUpperCase() + l.slice(1));
   const oez = o.oeffnungszeiten_custom || o.oeffnungszeiten || "Nach Vereinbarung";
   const year = new Date().getFullYear();
   const impressumHtml = buildImpressum(o, pal, year);
@@ -354,9 +356,12 @@ Generiere eine VOLLSTAENDIGE, professionelle HTML-Website fuer einen oesterreich
 AUSGABE: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html>.
 KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen).
 KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden.
-LEISTUNGEN: Setze <!-- LEISTUNGEN --> als Platzhalter (Cards werden automatisch injiziert). Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK.
+LEISTUNGEN: Setze <!-- LEISTUNGEN --> als Platzhalter (Cards werden automatisch injiziert). GENERIERE KEINE eigenen Leistungs-Cards, Icons oder Leistungs-Grids. NUR den Platzhalter-Kommentar. Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK.
 META: <meta name="robots" content="noindex,nofollow"> im <head>.
-STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere: HERO, LEISTUNGEN, UEBER-UNS, KONTAKT${o.buchungslink ? ", TERMIN-CTA" : ""}. Setze <!-- NAV --> nach <body>, <!-- FOOTER --> nach dem letzten Abschnitt, <!-- GALERIE --> zwischen UEBER-UNS und KONTAKT.
+STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere EXAKT diese Sektionen in EXAKT dieser Reihenfolge: HERO → LEISTUNGEN → UEBER-UNS → <!-- GALERIE --> → KONTAKT${o.buchungslink ? " → TERMIN-CTA" : ""}. Setze <!-- NAV --> nach <body>, <!-- FOOTER --> nach dem letzten Abschnitt.
+GALERIE: Setze <!-- GALERIE --> als EINZELNE Zeile zwischen UEBER-UNS und KONTAKT. KEINE eigene Galerie-Sektion generieren, KEINEN "Bilder aus unserem Betrieb"-Text. Nur den Kommentar. Die Galerie wird automatisch eingefuegt.
+KEIN KONTAKTFORMULAR: Generiere KEIN Kontaktformular. Es gibt kein Backend dafuer. Nur Telefon, E-Mail und Adresse als Kontaktmoeglichkeiten.
+LEISTUNGSNAMEN: Die uebergebenen Leistungsnamen im SR-DATEN-BLOCK mit korrekter Gross-/Kleinschreibung verwenden (erster Buchstabe gross).
 
 ═══ SPRACHE & TONALITAET ═══
 - Oesterreichisches Deutsch, formelle Ansprache ("Sie", nicht "Du")
@@ -417,7 +422,8 @@ ${o.kurzbeschreibung ? `Kurzbeschreibung: "${o.kurzbeschreibung}" – als zusaet
 CTA-Buttons: Primaer ("${ctaPrimary}", background:var(--accent), border-radius:${stil.btnR || stil.r}${o.buchungslink ? `, href="${o.buchungslink}", target="_blank"` : `, href="{{TEL_HREF}}"`}) + Sekundaer ("${ctaSecondary}", Ghost-Style, border-radius:${stil.btnR || stil.r}, href="#leistungen"). Mobile: gestapelt, 100% Breite.
 
 LEISTUNGEN: background:#fff.
-Section-Label + H2 ("Unsere Leistungen") + <!-- LEISTUNGEN --> Platzhalter.
+Section-Label + H2 ("Unsere Leistungen") + kurzer Einleitungssatz (1 Satz, was der Betrieb insgesamt anbietet) + <!-- LEISTUNGEN --> Platzhalter.
+WICHTIG: KEINE eigenen Cards, Icons, Listen oder Grids fuer Leistungen generieren. NUR den HTML-Kommentar <!-- LEISTUNGEN --> setzen. Die Cards werden vom System automatisch injiziert.
 ${preislisteUrl ? `Darunter: "Preisliste ansehen" Button (<a href="${preislisteUrl}" target="_blank">, border:1px solid var(--sep), border-radius:${stil.btnR || stil.r}, padding:12px 24px, color:var(--primary)).` : ""}
 
 UEBER UNS: background:var(--bg). Zweispaltig (3fr 2fr), einspaltig mobile.
@@ -472,7 +478,8 @@ ${trustBar}
 SOCIAL MEDIA:
 ${socials.length ? socials.map(s => `• ${s.name}: ${s.url}`).join("\n") : "Keine Social-Media-Links."}
 
-FOTOS: Nein – keine Bildplaetze oder Platzhalter generieren. Eine Foto-Galerie wird automatisch eingefuegt falls Fotos vorhanden sind.
+FOTOS: KEINE Bildplaetze, Platzhalter oder "Bilder aus unserem Betrieb"-Sektionen generieren. Setze NUR <!-- GALERIE --> als einzelne Zeile zwischen UEBER-UNS und KONTAKT (wird automatisch befuellt).
+KONTAKTFORMULAR: KEINES generieren. Kein Formular, keine Input-Felder. Nur Telefon, E-Mail, Adresse.
 
 STIL-FEELING: ${stil.feel}
 

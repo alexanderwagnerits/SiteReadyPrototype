@@ -82,21 +82,19 @@ function legalShell(o, pal, subdomain, title, content) {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:${pal.bg};color:#1f2937;line-height:1.6;-webkit-font-smoothing:antialiased}
-.topbar{background:${pal.p};padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;height:68px;position:sticky;top:0;z-index:100}
+.topbar{background:${pal.p};padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
 .topbar a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s}
 .topbar a:hover{color:#fff}
-.topbar-logo{color:#fff;font-weight:800;font-size:.95rem;text-decoration:none;letter-spacing:-.02em}
-.topbar-links{display:flex;gap:24px;align-items:center}
-.topbar-cta{background:rgba(255,255,255,.12);padding:8px 18px;border-radius:4px;font-weight:700;font-size:.82rem;color:#fff!important}
-.wrap{max-width:760px;margin:0 auto;padding:48px 28px 80px}
-h1{font-size:1.5rem;font-weight:800;color:${pal.p};margin-bottom:8px;letter-spacing:-.03em}
-.h1-sub{font-size:.85rem;color:#64748b;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid ${pal.a}22}
+.topbar-logo{color:#fff;font-weight:800;font-size:.9rem;text-decoration:none;letter-spacing:-.02em}
+.topbar-back{font-size:.8rem;display:flex;align-items:center;gap:6px}
+.wrap{max-width:700px;margin:0 auto;padding:56px 28px 80px}
+h1{font-size:1.4rem;font-weight:800;color:${pal.p};margin-bottom:6px;letter-spacing:-.02em}
+.h1-sub{font-size:.82rem;color:#94a3b8;margin-bottom:40px}
 table{width:100%;border-collapse:collapse;margin-bottom:0}
 td{padding:9px 16px 9px 0;font-size:.9rem;vertical-align:top;border-bottom:1px solid #e8edf2}
 td:first-child{font-weight:600;color:${pal.p};width:200px;white-space:nowrap}
 .section{margin:32px 0}
-.section-title{font-size:1rem;font-weight:700;color:${pal.p};margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-title::after{content:"";flex:1;height:1px;background:#e2e8f0}
+.section-title{font-size:.88rem;font-weight:700;color:${pal.p};margin-bottom:14px}
 .card{background:#fff;border-radius:8px;border:1px solid #e2e8f0;padding:20px 24px;margin-bottom:12px}
 .card-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px}
 .card-title{font-size:.92rem;font-weight:700;color:${pal.p};margin-bottom:4px}
@@ -114,21 +112,16 @@ td:first-child{font-weight:600;color:${pal.p};width:200px;white-space:nowrap}
 .right-item strong{display:block;font-weight:700;color:${pal.p};font-size:.8rem}
 .disclaimer{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;font-size:.8rem;color:#92400e;margin-top:40px;line-height:1.6}
 .disclaimer strong{font-weight:700}
-.footer-bar{background:${pal.p};color:rgba(255,255,255,.5);text-align:center;padding:24px;font-size:.78rem;margin-top:48px}
-.footer-bar a{color:rgba(255,255,255,.5);text-decoration:none;margin:0 12px}
-.footer-bar a:hover{color:rgba(255,255,255,.8)}
+.footer-bar{border-top:1px solid #e2e8f0;color:#94a3b8;text-align:center;padding:24px;font-size:.75rem;margin-top:56px}
+.footer-bar a{color:#94a3b8;text-decoration:none;margin:0 10px}
+.footer-bar a:hover{color:${pal.p}}
 </style>
 </head>
 <body>
-<nav class="topbar">
+<div class="topbar">
 <a href="/s/${subdomain}" class="topbar-logo">${o.firmenname}</a>
-<div class="topbar-links">
-<a href="/s/${subdomain}#leistungen">Leistungen</a>
-<a href="/s/${subdomain}#ueber-uns">\u00dcber uns</a>
-<a href="/s/${subdomain}#kontakt">Kontakt</a>
-${tel ? `<a href="${telHref}" class="topbar-cta">${tel}</a>` : ""}
+<a href="/s/${subdomain}" class="topbar-back">\u2190 Zur\u00fcck zur Website</a>
 </div>
-</nav>
 <div class="wrap">
 ${content}
 </div>

@@ -96,7 +96,7 @@ export async function onRequestGet({params, env}) {
       const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:var(--rLg,8px)"/></div>`;
       const heroStyle = `<style>` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:start;padding-top:88px!important;padding-bottom:40px!important}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-trust{grid-column:1}` +
         `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;height:460px;overflow:hidden;border-radius:var(--rLg,8px)}` +
         `}</style>`;

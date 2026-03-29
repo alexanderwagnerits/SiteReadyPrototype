@@ -184,68 +184,83 @@ function buildImpressum(o, pal, year) {
 </div></section>`;
 }
 
-/* ═══ Branchenspezifische Farbpaletten ═══ */
-const PALETTES = {
-  // Handwerk
-  elektro:          {p:"#0c1d3d", a:"#f59e0b", bg:"#f8faff", s:"#e2e8f0"},
-  installateur:     {p:"#1a3050", a:"#dc2626", bg:"#f8fafc", s:"#e2e8f0"},
-  maler:            {p:"#2c3e50", a:"#e67e22", bg:"#fffef9", s:"#f0e6d3"},
-  tischler:         {p:"#4a2c0a", a:"#d97706", bg:"#fefaf0", s:"#fde68a"},
-  fliesenleger:     {p:"#0f3460", a:"#0891b2", bg:"#f0fdfe", s:"#cffafe"},
-  schlosser:        {p:"#1c1c2e", a:"#64748b", bg:"#f1f5f9", s:"#e2e8f0"},
-  dachdecker:       {p:"#3b1f0a", a:"#b45309", bg:"#fff8f0", s:"#fde68a"},
-  zimmerei:         {p:"#1a3c28", a:"#a16207", bg:"#f7fdf0", s:"#d1fae5"},
-  maurer:           {p:"#2d2d2d", a:"#ea580c", bg:"#fafafa", s:"#e5e7eb"},
-  bodenleger:       {p:"#2d1b69", a:"#b45309", bg:"#fdf8ff", s:"#e9d5ff"},
-  glaser:           {p:"#0c4a6e", a:"#0891b2", bg:"#f0f9ff", s:"#bae6fd"},
-  gaertner:         {p:"#14532d", a:"#15803d", bg:"#f0fdf4", s:"#bbf7d0"},
-  klima:            {p:"#0c2340", a:"#0284c7", bg:"#f0f9ff", s:"#bae6fd"},
-  reinigung:        {p:"#0f2942", a:"#0ea5e9", bg:"#f8fbff", s:"#bae6fd"},
-  sonstige:         {p:"#1e293b", a:"#3b82f6", bg:"#f8fafc", s:"#dbeafe"},
-  // Kosmetik & Koerperpflege
-  kosmetik:         {p:"#4a1942", a:"#c026d3", bg:"#fdf4ff", s:"#f5d0fe"},
-  friseur:          {p:"#1c1917", a:"#b45309", bg:"#fffbeb", s:"#fde68a"},
-  nagel:            {p:"#831843", a:"#db2777", bg:"#fdf2f8", s:"#fbcfe8"},
-  massage:          {p:"#134e4a", a:"#0d9488", bg:"#f0fdfa", s:"#ccfbf1"},
-  tattoo:           {p:"#1c1c2e", a:"#7c3aed", bg:"#f5f3ff", s:"#ede9fe"},
-  fusspflege:       {p:"#0f2942", a:"#0ea5e9", bg:"#f0f9ff", s:"#bae6fd"},
-  permanent_makeup: {p:"#3d0066", a:"#9333ea", bg:"#faf5ff", s:"#e9d5ff"},
-  sonstige_kosmetik:{p:"#831843", a:"#ec4899", bg:"#fdf2f8", s:"#fbcfe8"},
-};
-
-/* Berufsgruppe aus Branche ableiten (kein separates DB-Feld noetig) */
-const KOSMETIK_BRANCHEN = new Set(["kosmetik","friseur","nagel","massage","tattoo","fusspflege","permanent_makeup","sonstige_kosmetik"]);
-const getBerufsgruppe = branche => KOSMETIK_BRANCHEN.has(branche) ? "kosmetik" : "handwerk";
-
+/* ═══ Design-Templates (synchron mit STYLES_MAP in App.js) ═══ */
 const STIL = {
-  professional: {
+  klassisch: {
+    p:"#0f2b5b", a:"#2563eb", bg:"#f8fafc", s:"#e2e8f0",
     font: "Inter",
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
-    r: "6px", rLg: "12px",
-    feel: "serioes, klar, vertrauenswuerdig, geschaeftlich professionell",
+    r: "4px", rLg: "6px", btnR: "4px",
+    feel: "serioes, klar, vertrauenswuerdig, zeitlos, geschaeftlich professionell",
     heroDecor: "3 horizontale Accent-Linien oben rechts (position:absolute, top:48px, right:32px, width:48px/72px/36px, height:2px, background:var(--accent), opacity:.4, gestaffelt mit margin-bottom:8px).",
-    cardStyle: "border-left:3px solid var(--accent); box-shadow:0 1px 8px rgba(0,0,0,.06); padding:28px 24px. Hover: transform:translateY(-3px), box-shadow:0 8px 24px rgba(0,0,0,.1).",
+    cardStyle: "border:1px solid var(--sep); border-left:3px solid var(--accent); box-shadow:none; padding:28px 24px. Hover: transform:translateY(-3px), box-shadow:0 8px 24px rgba(0,0,0,.1).",
     ueberStyle: "Checkmark-Liste: Listenpunkte mit einem einfachen Haken (vor dem Text, Farbe var(--accent), font-weight:700). Sachlicher, direkter Ton.",
   },
   modern: {
-    font: "DM Sans",
-    url: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap",
-    r: "14px", rLg: "24px",
-    feel: "modern, frisch, dynamisch, leicht, einladend",
+    p:"#0f172a", a:"#6366f1", bg:"#fafafa", s:"#f0f0f0",
+    font: "Plus Jakarta Sans",
+    url: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
+    r: "12px", rLg: "16px", btnR: "100px",
+    feel: "modern, dynamisch, frisch, mit Akzenten, einladend",
     heroDecor: "Grosser Hintergrund-Blob: position:absolute, width:480px, height:480px, border-radius:60% 40% 55% 45%, background:var(--accent), opacity:.1, top:-80px, right:-80px, filter:blur(64px), pointer-events:none.",
-    cardStyle: "border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,.07); padding:32px 28px; overflow:hidden. Farbiger Top-Streifen: before-Element oder border-top:4px solid var(--accent). Hover: transform:translateY(-4px), box-shadow:0 12px 32px rgba(0,0,0,.1).",
+    cardStyle: "border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,.07); padding:32px 28px; overflow:hidden; border:none. Farbiger Top-Streifen: before-Element oder border-top:4px solid var(--accent). Hover: transform:translateY(-4px), box-shadow:0 12px 32px rgba(0,0,0,.1).",
     ueberStyle: "Kleine runde Icons (36px, background:var(--accent)22, color:var(--accent), border-radius:50%, display:inline-flex, align-items:center, justify-content:center) vor jedem Vorteilspunkt. Freundlicher, einladender Ton.",
   },
-  traditional: {
-    font: "Source Serif 4",
-    url: "https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700;8..60,800&display=swap",
-    r: "4px", rLg: "8px",
-    feel: "bodenstaendig, erfahren, vertrauenswuerdig, handwerklich solide",
+  elegant: {
+    p:"#292524", a:"#78716c", bg:"#fafaf9", s:"#e7e5e4",
+    font: "Inter",
+    url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+    r: "2px", rLg: "4px", btnR: "2px",
+    feel: "hochwertig, ruhig, minimalistisch, Premium, zurueckhaltend elegant",
     heroDecor: "Klassischer Akzent-Unterstrich direkt unter H1: display:block, width:80px, height:3px, background:var(--accent), margin:16px 0 24px.",
-    cardStyle: "border:1px solid var(--sep); border-top:3px solid var(--accent); padding:28px 24px. Hover: background:#fafaf8, box-shadow:0 4px 16px rgba(0,0,0,.06).",
-    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (–) in Akzentfarbe als Marker. Ruhiger, solider Ton.",
+    cardStyle: "border:1px solid var(--sep); padding:28px 24px; box-shadow:none. Hover: background:#fafaf8, box-shadow:0 4px 16px rgba(0,0,0,.06).",
+    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (–) in Akzentfarbe als Marker. Ruhiger, Premium-Ton mit viel Whitespace.",
   },
 };
+
+/* Custom-Fonts Mapping (fuer stil=custom) */
+const CUSTOM_FONT_URLS = {
+  dm_sans:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",
+  inter:"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+  outfit:"https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap",
+  poppins:"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap",
+  montserrat:"https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",
+  raleway:"https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap",
+  open_sans:"https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap",
+  lato:"https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap",
+  roboto:"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap",
+  nunito:"https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap",
+  work_sans:"https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap",
+  manrope:"https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",
+  space_grotesk:"https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
+  plus_jakarta:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
+  rubik:"https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",
+  source_serif:"https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap",
+  playfair:"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap",
+  lora:"https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",
+  merriweather:"https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap",
+  dm_serif:"https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap",
+};
+const CUSTOM_FONT_FAMILIES = {
+  dm_sans:"'DM Sans',sans-serif",inter:"'Inter',sans-serif",outfit:"'Outfit',sans-serif",poppins:"'Poppins',sans-serif",montserrat:"'Montserrat',sans-serif",raleway:"'Raleway',sans-serif",open_sans:"'Open Sans',sans-serif",lato:"'Lato',sans-serif",roboto:"'Roboto',sans-serif",nunito:"'Nunito',sans-serif",work_sans:"'Work Sans',sans-serif",manrope:"'Manrope',sans-serif",space_grotesk:"'Space Grotesk',sans-serif",plus_jakarta:"'Plus Jakarta Sans',sans-serif",rubik:"'Rubik',sans-serif",source_serif:"'Source Serif 4',Georgia,serif",playfair:"'Playfair Display',Georgia,serif",lora:"'Lora',Georgia,serif",merriweather:"'Merriweather',Georgia,serif",dm_serif:"'DM Serif Display',Georgia,serif",
+};
+
+function buildCustomStil(o) {
+  const c = o.custom_color || "#2563eb";
+  const fk = o.custom_font || "dm_sans";
+  const fontFamily = CUSTOM_FONT_FAMILIES[fk] || CUSTOM_FONT_FAMILIES.dm_sans;
+  const fontName = fontFamily.split(",")[0].replace(/'/g,"");
+  return {
+    p: c, a: c, bg: "#fafafa", s: "#e5e7eb",
+    font: fontName,
+    url: CUSTOM_FONT_URLS[fk] || CUSTOM_FONT_URLS.dm_sans,
+    r: "8px", rLg: "12px", btnR: "8px",
+    feel: "individuell, passend zum eigenen Branding, professionell",
+    heroDecor: "Dezenter Gradient-Overlay mit der Primaerfarbe.",
+    cardStyle: "border:1px solid var(--sep); border-radius:8px; padding:28px 24px; box-shadow:0 1px 3px rgba(0,0,0,.05). Hover: transform:translateY(-3px), box-shadow:0 8px 24px rgba(0,0,0,.08).",
+    ueberStyle: "Checkmark-Liste mit Haken in Akzentfarbe. Professioneller, klarer Ton.",
+  };
+}
 
 export async function onRequestPost({request, env}) {
   try {
@@ -272,13 +287,10 @@ export async function onRequestPost({request, env}) {
   const o = rows[0];
 
   /* Konfiguration */
-  const pal          = PALETTES[o.branche] || PALETTES.sonstige;
-  const stil         = STIL[o.stil]        || STIL.professional;
-  const sub          = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
-  const berufsgruppe = getBerufsgruppe(o.branche);
-  const betriebstyp  = berufsgruppe === "kosmetik"
-    ? "Kosmetik- und Koerperpflegebetrieb"
-    : "Handwerksbetrieb";
+  const stil = o.stil === "custom" ? buildCustomStil(o) : (STIL[o.stil] || STIL.klassisch);
+  const pal  = { p: stil.p, a: stil.a, bg: stil.bg, s: stil.s };
+  const sub  = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  const betriebstyp = o.branche_label || "Betrieb";
 
   const leistungen = [...(o.leistungen || [])];
   if (o.extra_leistung?.trim()) {
@@ -293,7 +305,7 @@ export async function onRequestPost({request, env}) {
 
   /* ─── Trust-Bar Items (nur echte Daten) ─── */
   const trustItems = [];
-  if (o.notdienst && berufsgruppe === "handwerk") trustItems.push("\uD83D\uDEA8 24/7 Notdienst");
+  if (o.notdienst) trustItems.push("\uD83D\uDEA8 24/7 Notdienst");
   trustItems.push(`\uD83D\uDCCD ${o.einsatzgebiet || o.bundesland || "Oesterreich"}`);
   if (leistungen.length >= 3) trustItems.push(`✔ ${leistungen.length} Leistungsbereiche`);
   const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
@@ -318,6 +330,7 @@ Hintergrund:   ${pal.bg}
 Trennfarbe:    ${pal.s}
 Schriftart:    ${stil.font}
 Border-Radius: ${stil.r} (klein), ${stil.rLg} (gross)
+Button-Radius: ${stil.btnR || stil.r}
 Feeling:       ${stil.feel}
 Stil-Dekoration Hero: ${stil.heroDecor}
 Stil-Cards:    ${stil.cardStyle}
@@ -354,7 +367,7 @@ CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text, --text
 ═══ SEITENSTRUKTUR ═══
 
 HERO: min-height:100vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
-${o.notdienst && berufsgruppe === "handwerk" ? "NOTDIENST-BADGE: pulsierender gruener Punkt (CSS keyframes pulse) + '24/7 Notdienst' Text, rgba-weiss-Hintergrund, prominent platziert." : ""}
+${o.notdienst ? "NOTDIENST-BADGE: pulsierender gruener Punkt (CSS keyframes pulse) + '24/7 Notdienst' Text, rgba-weiss-Hintergrund, prominent platziert." : ""}
 Dekorations-Element: ${stil.heroDecor}
 H1: Firmenname, clamp(2.2rem,6vw,4.5rem), font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
 Subtitle: Branche + Einsatzgebiet, color:rgba(255,255,255,.75), clamp(.95rem,2.5vw,1.2rem).
@@ -385,7 +398,7 @@ Ersetze [1 konkreter Satz] usw. mit echtem branchenspezifischem Inhalt. Keine Za
 FIRMA:         ${o.firmenname}
 BRANCHE:       ${o.branche_label || o.branche}
 EINSATZGEBIET: ${o.einsatzgebiet || o.bundesland || "Oesterreich"}
-BESCHREIBUNG:  ${o.kurzbeschreibung || (berufsgruppe === "kosmetik" ? `Ihr ${o.branche_label || "Kosmetik"}-Studio in ${o.ort || "Oesterreich"}` : `Ihr zuverlaessiger ${o.branche_label || "Handwerks"}-Betrieb in ${o.ort || "Oesterreich"}`)}
+BESCHREIBUNG:  ${o.kurzbeschreibung || `Ihr ${o.branche_label || "Betrieb"} in ${o.ort || "Oesterreich"}`}
 
 LEISTUNGEN (${leistungen.length}):
 ${leistungen.map((l, i) => `${i + 1}. ${l}`).join("\n")}
@@ -396,7 +409,7 @@ Telefon:         ${o.telefon || ""}
 E-Mail:          ${o.email || ""}
 Oeffnungszeiten: ${oezLabel}
 
-NOTDIENST: ${o.notdienst && berufsgruppe === "handwerk" ? "JA – 24/7 Notdienst – SEHR PROMINENT darstellen!" : "Nein"}
+NOTDIENST: ${o.notdienst ? "JA – 24/7 Notdienst – SEHR PROMINENT darstellen!" : "Nein"}
 
 TRUST-ITEMS (exakt diese 3 Punkte im Trust-Bar verwenden, nichts aendern):
 ${trustBar}
@@ -495,7 +508,7 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
 
   // ── <title> + Meta-Tags programmatisch ueberschreiben ──
   const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
-  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || (berufsgruppe === "kosmetik" ? "Kosmetik" : "Handwerk")} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
   const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
   html = html.replace(/<title>[^<]*<\/title>/i, `<title>${metaTitle}</title>`);
   html = html.replace(/<meta\s+name=["']description["'][^>]*>/i, "");

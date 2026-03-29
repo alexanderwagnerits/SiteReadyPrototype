@@ -407,29 +407,13 @@ function LandingPage({onStart,onPortal}){
   </section>
 
   {/* DESIGN VARIANTS */}
-  <section className="lp-sec sr-reveal" style={{padding:"96px 0",background:"#fff",borderTop:"1px solid rgba(0,0,0,.04)"}}>
-    <W>
-      <div style={{marginBottom:52}}>
-        <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>4 Design-Varianten</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:500}}>Ihr Stil. Automatisch vorgeschlagen.</h2>
-        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:460}}>Basierend auf Ihrem Beruf schlagen wir den passenden Stil vor — oder Sie wählen Ihren eigenen.</p>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}} className="lp-variants-grid">
-        {[{t:"Klassisch",gradient:STYLES_MAP.klassisch.heroGradient},{t:"Modern",gradient:STYLES_MAP.modern.heroGradient},{t:"Elegant",gradient:STYLES_MAP.elegant.heroGradient},{t:"Eigenes Branding",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)"}].map(v=><div key={v.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"28px 20px",boxShadow:T.sh1,textAlign:"center"}}>
-          <div style={{width:28,height:28,borderRadius:8,background:v.gradient,margin:"0 auto 12px"}}/>
-          <div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>{v.t}</div>
-        </div>)}
-      </div>
-    </W>
-  </section>
-
-  {/* BRANCHEN - Single card with two halves */}
-  <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:T.bg}}>
+  {/* BRANCHEN + DESIGN */}
+  <section className="lp-sec sr-reveal" style={{padding:"96px 0 64px",background:"#fff",borderTop:"1px solid rgba(0,0,0,.04)"}}>
     <W>
       <div style={{marginBottom:52}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>50+ Berufe</div>
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihren Beruf.</h2>
-        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jeder Beruf bekommt passende Leistungen, Features und ein eigenes Design – vollautomatisch.</p>
+        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jeder Beruf bekommt passende Leistungen, Features und ein eigenes Design – vollautomatisch. Wählen Sie aus 4 Design-Stilen oder verwenden Sie Ihr eigenes Branding.</p>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}} className="lp-branchen-card">
         {[{t:"Handwerk",n:18,d:"Elektriker, Installateur, Tischler, KFZ u.v.m."},{t:"Kosmetik & Pflege",n:8,d:"Friseur, Kosmetik, Massage, Nagelstudio u.v.m."},{t:"Gastronomie",n:6,d:"Restaurant, Café, Heuriger, Catering u.v.m."},{t:"Gesundheit",n:10,d:"Physiotherapie, Arzt, Zahnarzt, Psychotherapie u.v.m."},{t:"Dienstleistungen",n:7,d:"Steuerberater, Rechtsanwalt, Immobilien u.v.m."},{t:"Bildung & Training",n:5,d:"Fahrschule, Nachhilfe, Personal Trainer u.v.m."}].map(g=><div key={g.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"24px 28px",boxShadow:T.sh1}}>

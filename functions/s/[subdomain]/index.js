@@ -69,9 +69,8 @@ export async function onRequestGet({params, env}) {
     });
     if (validAnn.length > 0) {
       const annText = validAnn.map(a => a.text).join(" \u00b7 ");
-      const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;gap:10px;background:var(--accent,#2563eb);color:#fff;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;line-height:1.4;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.2)">` +
+      const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;background:var(--accent,#2563eb);color:#fff;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;line-height:1.4;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.2)">` +
         `<span style="opacity:.9">${annText}</span>` +
-        `<button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,.2);border:none;color:#fff;cursor:pointer;font-size:.75rem;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;padding:0" aria-label="Schlie\u00dfen">\u00d7</button>` +
         `</div>`;
       // Vor die Badges im Hero einfuegen
       if (html.includes('<div class="hero-badges">')) {

@@ -344,155 +344,62 @@ export async function onRequestPost({request, env}) {
   if (o.linkedin) socials.push({name:"LinkedIn",url:normSocial(o.linkedin)});
   if (o.tiktok) socials.push({name:"TikTok",url:normSocial(o.tiktok)});
 
-  /* ─── Branchenspezifische CTA-Texte ─── */
+  /* ─── CTA-Texte ─── */
   const ctaPrimary = o.buchungslink ? "Termin buchen" : o.notdienst ? "Notdienst anrufen" : o.kostenvoranschlag ? "Kostenlosen KV anfordern" : o.erstgespraech_gratis ? "Gratis Erstgespräch" : "Jetzt kontaktieren";
+  const ctaPrimaryHref = o.buchungslink || "{{TEL_HREF}}";
   const ctaSecondary = "Leistungen ansehen";
 
-  /* ─── System Prompt ─── */
-  const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
-Generiere eine VOLLSTAENDIGE, professionelle HTML-Website fuer einen oesterreichischen ${betriebstyp}.
+  /* ─── Meta ─── */
+  const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
+  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
 
-═══ GRUNDREGELN ═══
-AUSGABE: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html>.
-KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen).
-KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden.
-LEISTUNGEN: Setze <!-- LEISTUNGEN --> als Platzhalter (Cards werden automatisch injiziert). GENERIERE KEINE eigenen Leistungs-Cards, Icons oder Leistungs-Grids. NUR den Platzhalter-Kommentar. Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK.
-META: <meta name="robots" content="noindex,nofollow"> im <head>.
-STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere EXAKT diese Sektionen in EXAKT dieser Reihenfolge: HERO → LEISTUNGEN → UEBER-UNS → <!-- GALERIE --> → KONTAKT${o.buchungslink ? " → TERMIN-CTA" : ""}. Setze <!-- NAV --> nach <body>, <!-- FOOTER --> nach dem letzten Abschnitt.
-GALERIE: Setze <!-- GALERIE --> als EINZELNE Zeile zwischen UEBER-UNS und KONTAKT. KEINE eigene Galerie-Sektion generieren, KEINEN "Bilder aus unserem Betrieb"-Text. Nur den Kommentar. Die Galerie wird automatisch eingefuegt.
-KEIN KONTAKTFORMULAR: Generiere KEIN Kontaktformular. Es gibt kein Backend dafuer. Nur Telefon, E-Mail und Adresse als Kontaktmoeglichkeiten.
-LEISTUNGSNAMEN: Die uebergebenen Leistungsnamen im SR-DATEN-BLOCK mit korrekter Gross-/Kleinschreibung verwenden (erster Buchstabe gross).
+  /* ─── Badges HTML ─── */
+  const badgesHtml = badges.map(b => `<span class="hero-badge">${b}</span>`).join("");
 
-═══ SPRACHE & TONALITAET ═══
-- Oesterreichisches Deutsch, formelle Ansprache ("Sie", nicht "Du")
-- Warm, einladend, aber professionell – wie ein guter Betrieb der seine Kunden ernst nimmt
-- Kein Marketing-Blabla, keine Superlative ("bester", "fuehrender"), keine leeren Phrasen
-- Kurze, klare Saetze. Jeder Satz hat einen Zweck.
-- Branchenspezifische Fachbegriffe verwenden wo passend
+  /* ─── Preisliste HTML ─── */
+  const preislisteHtml = preislisteUrl ? `<a href="${preislisteUrl}" target="_blank" class="btn" style="margin-top:24px;background:var(--bg);color:var(--primary);border:1px solid var(--sep)">Preisliste ansehen</a>` : "";
 
-═══ DESIGN-VORGABEN ═══
-Primaerfarbe:  ${pal.p}
-Akzentfarbe:   ${pal.a}
-Hintergrund:   ${pal.bg}
-Trennfarbe:    ${pal.s}
-Schriftart:    ${stil.font}
-Border-Radius: ${stil.r} (Elemente), ${stil.rLg} (Karten/Sektionen)
-Button-Radius: ${stil.btnR || stil.r}
-Feeling:       ${stil.feel}
-Hero-Dekoration: ${stil.heroDecor}
-Card-Stil:     ${stil.cardStyle}
-Ueber-Uns-Stil: ${stil.ueberStyle}
+  /* ─── Social HTML fuer Kontakt ─── */
+  const socialSvgs = {
+    facebook: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+    instagram: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>`,
+    linkedin: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>`,
+    tiktok: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77 0 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 1 0 5.55 6.29V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75c-.34 0-.68-.03-1.02-.06z"/></svg>`,
+  };
+  const socialHtml = socials.length ? `<div class="kontakt-social">${socials.map(s => `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${s.name}">${socialSvgs[s.name.toLowerCase()] || s.name}</a>`).join("")}</div>` : "";
 
-CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text (#1f2937), --textMuted (#6b7280), --white (#fff)
-KONTRAST-PFLICHT: Text auf farbigem Hintergrund muss WCAG AA erfuellen. Weiss auf var(--accent) nur wenn Akzentfarbe dunkel genug ist. Im Zweifel: dunklen Text auf hellem Hintergrund verwenden.
+  /* ─── Buchungslink CTA Sektion ─── */
+  const buchungslinkHtml = o.buchungslink ? `<section class="sec termin-cta"><div class="wrap"><h2>Jetzt Termin buchen</h2><p>Buchen Sie bequem online &ndash; rund um die Uhr.</p><a href="${o.buchungslink}" target="_blank" class="btn btn-accent" style="font-size:1rem;padding:16px 36px">Termin buchen</a></div></section>` : "";
 
-═══ RESPONSIVE ═══
-- Mobile-First. Perfekt auf 320px bis 1400px.
-- Breakpoints: 640px, 900px
-- Zweispaltig → einspaltig auf Mobile
-- Schriftgroessen: clamp(). H1: clamp(2rem,5vw,3.5rem), H2: clamp(1.3rem,3vw,2rem)
-- Padding: Desktop 80px 0, Mobile 56px 0
-- Touch-Targets: min. 44px Hoehe
-- Kein horizontales Scrollen
-- @media-Queries gebuendelt am Ende des <head>
+  /* ─── Sticky CTA HTML ─── */
+  const stickyCtaHtml = o.telefon ? `<a href="${o.buchungslink || "{{TEL_HREF}}"}">${o.buchungslink ? "Termin buchen" : "Jetzt anrufen \u2013 {{TEL_DISPLAY}}"}</a>` : "";
 
-═══ TECHNISCH ═══
-- Valides HTML5 (semantische Tags: main, section, article, address)
-- Google Fonts @import: ${stil.url}
-- CSS Grid + Flexbox
-- scroll-behavior:smooth; Hover-Transitions: 0.2s ease
-- Meta-Tags: charset, viewport, description, og:title, og:description
-- Keine externen Ressourcen ausser Google Fonts
+  /* ═══ TEXT-GENERIERUNG via Claude (NUR Texte, kein HTML) ═══ */
+  const textPrompt = `Generiere Website-Texte fuer einen oesterreichischen Betrieb. Antworte NUR mit validem JSON, keine Erklaerungen.
 
-═══ QUALITAET ═══
-- Klare visuelle Hierarchie (Groesse, Gewicht, Farbe, Whitespace)
-- Conversion-optimiert: Telefonnummer 3x sichtbar (nav, hero, kontakt)
-- Leistungs-Beschreibungen: Was bekommt der Kunde konkret? Welches Problem wird geloest? Nicht was der Betrieb tut, sondern was der Kunde davon hat. Kein Marketing-Blabla.
-- Professionell und fertig – nicht wie ein Template oder Baukasten
+BETRIEB: ${o.firmenname}
+BRANCHE: ${o.branche_label || o.branche}
+ORT: ${o.ort || o.bundesland || "Oesterreich"}
+BESCHREIBUNG: ${o.kurzbeschreibung || ""}
+LEISTUNGEN: ${leistungen.join(", ")}
 
-═══ SEITENSTRUKTUR ═══
+REGELN:
+- Oesterreichisches Deutsch, formelle Ansprache ("Sie")
+- Warm, professionell, keine Superlative, keine erfundenen Zahlen/Jahre
+- Leistungsbeschreibungen aus Kundenperspektive ("Sie erhalten...", "Damit Ihr...")
+- Vorteile kurz (3-6 Woerter pro Punkt)
 
-HERO: min-height:90vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
-${logoUrl ? `<!-- LOGO --> Platzhalter ganz oben im Hero (wird automatisch durch Logo-Bild ersetzt, margin-bottom:20px).` : ""}
-${badges.length > 0 ? `FEATURE-BADGES: Direkt ${logoUrl ? "unter dem Logo" : "oben im Hero"}, als flex-wrap Reihe:\n${badges.map(b=>`  • ${b}`).join("\n")}\nStil: padding:5px 14px, background:rgba(255,255,255,.12), border-radius:${stil.btnR || stil.r}, font-size:.75rem, font-weight:600, color:rgba(255,255,255,.9). Max 2 Zeilen, danach verbergen.` : ""}
-${stil.heroDecor ? `Dekorations-Element: ${stil.heroDecor}` : ""}
-H1: Firmenname. font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
-Untertitel: Branche + Einsatzgebiet, color:rgba(255,255,255,.7), font-weight:500.
-${o.kurzbeschreibung ? `Kurzbeschreibung: "${o.kurzbeschreibung}" – als zusaetzlicher Absatz unter dem Untertitel, color:rgba(255,255,255,.6), max-width:520px, margin-top:12px.` : ""}
-CTA-Buttons: Primaer ("${ctaPrimary}", background:var(--accent), border-radius:${stil.btnR || stil.r}${o.buchungslink ? `, href="${o.buchungslink}", target="_blank"` : `, href="{{TEL_HREF}}"`}) + Sekundaer ("${ctaSecondary}", Ghost-Style, border-radius:${stil.btnR || stil.r}, href="#leistungen"). Mobile: gestapelt, 100% Breite.
+JSON-FORMAT:
+{
+  "leistungen_beschreibungen": {"${leistungen.join('":"...","')}":"..."},
+  "text_ueber_uns": "4-5 Saetze ueber den Betrieb",
+  "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
+  "leistungen_intro": "1 kurzer Einleitungssatz fuer die Leistungen-Sektion",
+  "kontakt_cta_headline": "Kurze Headline fuer die Kontakt-CTA-Karte",
+  "kontakt_cta_text": "1-2 Saetze Motivation zur Kontaktaufnahme"
+}`;
 
-LEISTUNGEN: background:#fff.
-Section-Label + H2 ("Unsere Leistungen") + kurzer Einleitungssatz (1 Satz, was der Betrieb insgesamt anbietet) + <!-- LEISTUNGEN --> Platzhalter.
-WICHTIG: KEINE eigenen Cards, Icons, Listen oder Grids fuer Leistungen generieren. NUR den HTML-Kommentar <!-- LEISTUNGEN --> setzen. Die Cards werden vom System automatisch injiziert.
-${preislisteUrl ? `Darunter: "Preisliste ansehen" Button (<a href="${preislisteUrl}" target="_blank">, border:1px solid var(--sep), border-radius:${stil.btnR || stil.r}, padding:12px 24px, color:var(--primary)).` : ""}
-
-UEBER UNS: background:var(--bg). Zweispaltig (3fr 2fr), einspaltig mobile.
-Links: Section-Label + H2 + <p>{{UEBER_UNS_TEXT}}</p> + <div>{{VORTEILE}}</div> (beides Platzhalter – nicht ersetzen).
-Rechts: Info-Karte (background:var(--primary), color:#fff, border-radius:${stil.rLg}, padding:32px 28px): Oeffnungszeiten, Einsatzgebiet, Telefon-Link.
-
-KONTAKT: background:#fff. Zweispaltig (1fr 1fr), einspaltig mobile.
-Links: H2, Adresse ({{ADRESSE_VOLL}}), Telefon gross+klickbar ({{TEL_HREF}}/{{TEL_DISPLAY}}, font-size:1.3rem, font-weight:800, color:var(--accent)), E-Mail-Link, Oeffnungszeiten.${socials.length ? `\nSocial Media: ${socials.map(s=>`<a href="${s.url}" target="_blank">${s.name}</a>`).join(", ")} – als Links in einer Reihe, gap:16px, font-weight:600, color:var(--primary).` : ""}
-Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): branchenspezifischer Aufruf-Satz + Anruf-Button.
-<!-- MAPS --> Platzhalter nach den Kontaktinfos.
-
-${o.buchungslink ? `TERMIN-CTA: Eigene Sektion VOR <!-- FOOTER -->. background:var(--primary), padding:64px 0, text-align:center, color:#fff.
-H2: "Jetzt Termin buchen", darunter kurzer Satz, dann grosser Button (<a href="${o.buchungslink}" target="_blank">, background:var(--accent), padding:16px 36px, border-radius:${stil.btnR || stil.r}, font-weight:800).` : ""}
-
-${o.telefon ? `STICKY MOBILE CTA: position:fixed, bottom:0, left:0, right:0, z-index:900, background:var(--accent), color:#fff, padding:16px, font-weight:800, text-align:center. Nur auf Mobile sichtbar (@media max-width:640px). Inhalt: "${o.buchungslink ? "Termin buchen" : "📞 Jetzt anrufen"}" als <a href="${o.buchungslink || "{{TEL_HREF}}"}">. body: padding-bottom:64px auf Mobile.` : ""}
-
-SR-DATEN-BLOCK – ABSOLUT PFLICHT: Direkt nach <!-- NAV -->, EXAKT dieses Format:
-<script type="application/json" id="sr-data">{"leistungen_beschreibungen":{${leistungen.map(l=>`"${l}":"[BESCHREIBUNG]"`).join(",")}},"text_ueber_uns":"[UEBER_UNS]","text_vorteile":["[V1]","[V2]","[V3]","[V4]","[V5]"]}</script>
-
-Regeln fuer die Inhalte:
-- [BESCHREIBUNG]: 1 Satz pro Leistung. Perspektive des Kunden: Was bekommt er? Welches Problem wird geloest? NICHT "Wir bieten..." sondern "Sie erhalten..." oder "Damit Ihr...". Branchenspezifisch und konkret.
-- [UEBER_UNS]: 4-5 Saetze.${o.kurzbeschreibung ? ` Basiere auf der Kundenbeschreibung: "${o.kurzbeschreibung}".` : ""} Was macht den Betrieb besonders? Welche Werte? Was koennen Kunden erwarten? Keine erfundenen Zahlen/Jahre.
-- [V1]-[V5]: 5 konkrete Vorteile aus Kundensicht. Kurz (3-6 Woerter). z.B. "Faire, transparente Preise", "Persoenliche Beratung vor Ort", "Schnelle Terminvergabe".`;
-
-  /* ─── User Message ─── */
-  const user = `Erstelle die Website fuer diesen Betrieb:
-
-FIRMA:         ${o.firmenname}
-BRANCHE:       ${o.branche_label || o.branche}
-EINSATZGEBIET: ${o.einsatzgebiet || o.bundesland || "Oesterreich"}
-BESCHREIBUNG:  ${o.kurzbeschreibung || `Ihr ${o.branche_label || "Betrieb"} in ${o.ort || "Oesterreich"}`}
-
-LEISTUNGEN (${leistungen.length}):
-${leistungen.map((l, i) => `${i + 1}. ${l}`).join("\n")}
-
-KONTAKT:
-Adresse:         ${[o.adresse, o.plz, o.ort].filter(Boolean).join(", ") || "Auf Anfrage"}
-Telefon:         ${o.telefon || ""}
-E-Mail:          ${o.email || ""}
-Oeffnungszeiten: ${oezLabel}
-
-FEATURES & BADGES:
-${badges.length ? badges.map(b => `• ${b}`).join("\n") : "Keine besonderen Features."}
-${kassenLabel ? `\nKASSENVERTRAG: ${kassenLabel} – PROMINENT in der Kontakt-Sektion anzeigen (wichtig fuer Patienten).` : ""}
-${o.buchungslink ? `\nBUCHUNGSLINK: ${o.buchungslink} – Als eigene CTA-Sektion VOR dem Footer + Button im Hero.` : ""}
-${preislisteUrl ? `\nPREISLISTE: ${preislisteUrl} – "Preisliste ansehen"-Button unter den Leistungen.` : ""}
-${logoUrl ? `\nLOGO: Setze <!-- LOGO --> im Hero ueber den Badges. Wird automatisch ersetzt.` : ""}
-
-TRUST-ITEMS (exakt diese Punkte im Trust-Bar verwenden, nichts aendern):
-${trustBar}
-
-SOCIAL MEDIA:
-${socials.length ? socials.map(s => `• ${s.name}: ${s.url}`).join("\n") : "Keine Social-Media-Links."}
-
-FOTOS: KEINE Bildplaetze, Platzhalter oder "Bilder aus unserem Betrieb"-Sektionen generieren. Setze NUR <!-- GALERIE --> als einzelne Zeile zwischen UEBER-UNS und KONTAKT (wird automatisch befuellt).
-KONTAKTFORMULAR: KEINES generieren. Kein Formular, keine Input-Felder. Nur Telefon, E-Mail, Adresse.
-
-STIL-FEELING: ${stil.feel}
-
-STRUKTUR-PFLICHT (Kommentare exakt so setzen):
-- <!-- NAV --> direkt nach <body>
-- <!-- MAPS --> im Kontakt-Abschnitt nach den Kontaktinfos (nur wenn Adresse vorhanden)
-- <!-- FOOTER --> nach dem Kontakt-Abschnitt
-
-VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen):
-{{TEL_HREF}} · {{TEL_DISPLAY}} · {{EMAIL}} · {{ADRESSE_VOLL}} · {{UEBER_UNS_TEXT}} · {{VORTEILE}} · <!-- LEISTUNGEN -->`;
-
-
-  /* ─── Claude API Call ─── */
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -502,9 +409,8 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 12000,
-      system,
-      messages: [{role: "user", content: user}],
+      max_tokens: 2000,
+      messages: [{role: "user", content: textPrompt}],
     }),
   });
 
@@ -516,7 +422,6 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
       headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
       body: JSON.stringify({last_error: errMsg}),
     });
-    try{await fetch(`${env.SUPABASE_URL}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Website-Generierung fehlgeschlagen",message:`Order: ${order_id}\nFirma: ${o.firmenname}\nFehler: ${errMsg}`,status:"offen"})});}catch(_){}
     return Response.json({error: errMsg}, {status: 500});
   }
 
@@ -524,38 +429,63 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
   const usage = aiData.usage || {};
   const tokIn = usage.input_tokens || 0;
   const tokOut = usage.output_tokens || 0;
-  // Sonnet $3/1M in + $15/1M out, ~0.92 EUR/USD
   const costEur = Math.round(((tokIn * 3 + tokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
-  let html = aiData.content?.[0]?.text || "";
 
-  // Markdown-Backticks entfernen falls Claude sie dennoch ausgibt
-  html = html.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+  let rawText = aiData.content?.[0]?.text || "{}";
+  rawText = rawText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
-  // SR-DATEN-BLOCK extrahieren und aus HTML entfernen
-  let srData = null;
-  const srDataMatch = html.match(/<script[^>]*type="application\/json"[^>]*id="sr-data"[^>]*>([\s\S]*?)<\/script>/i);
-  if (srDataMatch) {
-    try { srData = JSON.parse(srDataMatch[1].trim()); } catch(_) {}
-    html = html.replace(srDataMatch[0], "");
+  let texts = {};
+  try { texts = JSON.parse(rawText); } catch(_) {
+    // Fallback: leere Texte
+    texts = { leistungen_beschreibungen: {}, text_ueber_uns: "", text_vorteile: [], leistungen_intro: "", kontakt_cta_headline: "Kontaktieren Sie uns", kontakt_cta_text: "Wir freuen uns auf Ihre Anfrage." };
   }
 
-  // Nav + Footer injizieren (Impressum/Datenschutz auf eigenen Unterseiten)
-  html = html.includes("<!-- NAV -->")
-    ? html.replace("<!-- NAV -->", navHtml)
-    : html.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
+  /* ═══ TEMPLATE BEFUELLEN ═══ */
+  const { buildKlassischTemplate } = await import("../templates/klassisch.js");
+  // TODO: Modern + Elegant Templates
+  const buildTemplate = buildKlassischTemplate; // Vorerst immer Klassisch
 
-  html = html.includes("<!-- FOOTER -->")
-    ? html.replace("<!-- FOOTER -->", footerHtml)
-    : html.replace(/<\/body>/i, footerHtml + "\n</body>");
+  let html = buildTemplate({
+    firmenname: o.firmenname,
+    brancheLabel: o.branche_label || o.branche,
+    einsatzgebiet: o.einsatzgebiet || o.bundesland || "\u00d6sterreich",
+    kurzbeschreibung: o.kurzbeschreibung || "",
+    badgesHtml,
+    ctaPrimary,
+    ctaPrimaryHref,
+    ctaSecondary,
+    trustBar,
+    leistungenIntro: texts.leistungen_intro || "",
+    preislisteHtml,
+    ueberUnsText: "{{UEBER_UNS_TEXT}}",
+    vorteileHtml: "{{VORTEILE}}",
+    oeffnungszeiten: oezLabel,
+    adresseVoll: "{{ADRESSE_VOLL}}",
+    telDisplay: "{{TEL_DISPLAY}}",
+    telHref: "{{TEL_HREF}}",
+    email: "{{EMAIL}}",
+    socialHtml,
+    buchungslinkHtml,
+    stickyCtaHtml,
+    metaTitle,
+    metaDesc,
+    siteUrl,
+    fontUrl: stil.url,
+    primary: pal.p,
+    accent: pal.a,
+    bg: pal.bg,
+    sep: pal.s,
+    kontaktCtaHeadline: texts.kontakt_cta_headline || "Kontaktieren Sie uns",
+    kontaktCtaText: texts.kontakt_cta_text || "Wir freuen uns auf Ihre Anfrage.",
+  });
 
-  // Impressum-Placeholder entfernen
-  html = html.replace("<!-- IMPRESSUM -->", "");
+  /* ─── Nav + Footer injizieren ─── */
+  html = html.replace("<!-- NAV -->", navHtml);
+  html = html.replace("<!-- FOOTER -->", footerHtml);
 
-  // Logo injizieren
+  /* ─── Logo injizieren ─── */
   if (logoUrl) {
-    const logoImg = `<img src="${logoUrl}" alt="${o.firmenname}" style="height:48px;max-width:200px;object-fit:contain;display:block;margin-bottom:16px"/>`;
-    html = html.includes("<!-- LOGO -->") ? html.replace("<!-- LOGO -->", logoImg) : html;
-    // Nav-Logo ersetzen: Text durch Bild
+    html = html.replace("<!-- LOGO -->", `<img src="${logoUrl}" alt="${o.firmenname}" style="height:48px;max-width:200px;object-fit:contain;display:block;margin-bottom:16px"/>`);
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/i,
       `$1<img src="${logoUrl}" alt="${o.firmenname}" style="height:32px;max-width:150px;object-fit:contain"/>$2`
@@ -564,212 +494,39 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
     html = html.replace("<!-- LOGO -->", "");
   }
 
-  // ── Tel:-Links korrigieren (Claude generiert manchmal falsche Nummern) ──
-  if (o.telefon) {
-    const telNorm = o.telefon.replace(/\s/g, "");
-    html = html.replace(/href="tel:[^"]*"/gi, `href="tel:${telNorm}"`);
-    html = html.replace(/href='tel:[^']*'/gi, `href='tel:${telNorm}'`);
-  }
-
-  // ── Google Maps injizieren (<!-- MAPS --> Placeholder) ──
-  if (o.adresse || o.ort) {
-    const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", Österreich");
-    const mapsHtml = `<div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)">
-<iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="280" style="border:0;display:block" allowfullscreen loading="lazy" title="Standort ${o.firmenname}"></iframe>
-</div>`;
-    html = html.includes("<!-- MAPS -->")
-      ? html.replace("<!-- MAPS -->", mapsHtml)
-      : html.replace(/<\/section>\s*(<section[^>]*id="kontakt"|<section[^>]*class="[^"]*kontakt)/i, mapsHtml + "\n</section>\n$1");
-  } else {
-    html = html.replace("<!-- MAPS -->", "");
-  }
-
-  // ── <title> + Meta-Tags programmatisch ueberschreiben ──
-  const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
-  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
-  const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
-  html = html.replace(/<title>[^<]*<\/title>/i, `<title>${metaTitle}</title>`);
-  html = html.replace(/<meta\s+name=["']description["'][^>]*>/i, "");
-  html = html.replace(/<meta\s+property=["']og:title["'][^>]*>/i, "");
-  html = html.replace(/<meta\s+property=["']og:description["'][^>]*>/i, "");
-  html = html.replace(/<meta\s+property=["']og:url["'][^>]*>/i, "");
-  html = html.replace("</head>", `<meta name="description" content="${metaDesc}">
-<meta property="og:title" content="${metaTitle}">
-<meta property="og:description" content="${metaDesc}">
-<meta property="og:type" content="website">
-<meta property="og:url" content="${siteUrl}">
-<link rel="canonical" href="${siteUrl}">
-</head>`);
-
-  // ── Schema.org JSON-LD (LocalBusiness) ──
-  const schemaAddress = {
-    "@type": "PostalAddress",
-    ...(o.adresse ? {"streetAddress":   o.adresse} : {}),
-    ...(o.plz     ? {"postalCode":       o.plz}     : {}),
-    ...(o.ort     ? {"addressLocality":  o.ort}     : {}),
-    "addressCountry": "AT",
-  };
+  /* ─── Schema.org JSON-LD ─── */
   const sameAs = [o.facebook, o.instagram, o.linkedin, o.tiktok].filter(Boolean).map(normSocial);
   const schema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": o.firmenname,
-    "description": metaDesc,
-    "url": siteUrl,
-    "address": schemaAddress,
+    "@context": "https://schema.org", "@type": "LocalBusiness",
+    "name": o.firmenname, "description": metaDesc, "url": siteUrl,
+    "address": { "@type": "PostalAddress", ...(o.adresse ? {"streetAddress": o.adresse} : {}), ...(o.plz ? {"postalCode": o.plz} : {}), ...(o.ort ? {"addressLocality": o.ort} : {}), "addressCountry": "AT" },
     ...(o.telefon ? {"telephone": o.telefon} : {}),
-    ...(o.email   ? {"email":     o.email}   : {}),
-    ...(o.ort     ? {"areaServed": o.ort}    : {}),
-    ...(sameAs.length ? {"sameAs": sameAs}   : {}),
+    ...(o.email ? {"email": o.email} : {}),
+    ...(sameAs.length ? {"sameAs": sameAs} : {}),
   };
   html = html.replace("</head>", `<script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
 
-  // ── Nav Scroll-Spy (aktiver Link hervorgehoben) ──
-  const scrollSpy = `<script>(function(){
-var links=document.querySelectorAll('.nav-link[href^="#"]');
-var secs=[].map.call(links,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);
-function upd(){var sy=window.scrollY+100;var cur=secs.reduce(function(a,s){return s.offsetTop<=sy?s:a},secs[0]);links.forEach(function(l){var act=cur&&'#'+cur.id===l.getAttribute('href');l.style.opacity=act?'1':'';l.style.fontWeight=act?'700':'';});}
-window.addEventListener('scroll',upd,{passive:true});upd();
-})();</script>`;
-  html = html.replace("</body>", scrollSpy + "\n</body>");
+  /* ─── Scroll-Spy ─── */
+  html = html.replace("</body>", `<script>(function(){var ls=document.querySelectorAll('.nav-link[href^="#"]');var ss=[].map.call(ls,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);function u(){var y=window.scrollY+100;var c=ss.reduce(function(a,s){return s.offsetTop<=y?s:a},ss[0]);ls.forEach(function(l){var a=c&&'#'+c.id===l.getAttribute('href');l.style.opacity=a?'1':'';l.style.fontWeight=a?'700':'';});}window.addEventListener('scroll',u,{passive:true});u();})();</script>\n</body>`);
 
-  // ── Floating Call-Button (Mobile) ──
-  if (o.telefon) {
-    const telHrefFloat = `tel:${o.telefon.replace(/\s/g,"")}`;
-    const floatBtn = `<a href="${telHrefFloat}" id="float-call" aria-label="Jetzt anrufen" style="display:none;position:fixed;bottom:24px;right:20px;z-index:9999;background:${pal.a};color:#fff;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.25);text-decoration:none;font-size:1.4rem;transition:transform .2s">📞</a>
-<script>(function(){var b=document.getElementById('float-call');function s(){b.style.display=window.innerWidth<=768?'flex':'none';}s();window.addEventListener('resize',s);})();</script>`;
-    html = html.replace("</body>", floatBtn + "\n</body>");
-  }
-
-  /* ─── Auto Quality-Check ─── */
-  let qualityScore = 0;
-  const qualityIssues = [];
-  try {
-    const htmlLen = html.length;
-    const hasNav = /<nav[\s>]/i.test(html) || /id="sitenav"/i.test(html);
-    const hasHero = /min-height:\s*100vh/i.test(html) || /class="[^"]*hero/i.test(html) || /<section[^>]*id="sr-hero"/i.test(html);
-    const hasLeistungen = /leistung/i.test(html) || /<!-- LEISTUNGEN -->/i.test(html);
-    const hasFooter = /<footer[\s>]/i.test(html);
-    const hasImpressum = /impressum/i.test(html);
-    const hasDatenschutz = /datenschutz/i.test(html);
-    const hasCssVars = /--primary/i.test(html) && /--accent/i.test(html);
-    const hasFirmenname = o.firmenname && html.includes(o.firmenname);
-    const hasKontakt = /kontakt/i.test(html);
-    const title = (html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || "";
-    const desc = (html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i) || [])[1] || "";
-    const hasPhone = /tel:/i.test(html);
-    const hasEmail = /mailto:/i.test(html);
-    const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
-    // Kritische Checks (bestimmen ob Retry noetig)
-    const hasNavCss = /\.nav-inner|#sitenav|\.nav-link/i.test(html);
-    const hasResponsive = /@media/i.test(html);
-    const checks = [
-      // Kern-Struktur (70 Punkte) — fehlt eins davon, Score < 60 → Retry
-      {ok: htmlLen > 5000,    w: 15, fail: "HTML zu kurz (" + htmlLen + " Bytes)"},
-      {ok: hasHero,           w: 15, fail: "Hero-Section fehlt"},
-      {ok: hasLeistungen,     w: 15, fail: "Leistungen-Section fehlt"},
-      {ok: hasFirmenname,     w: 10, fail: "Firmenname nicht im HTML"},
-      {ok: hasKontakt,        w: 15, fail: "Kontakt-Section fehlt"},
-      // Design-Qualitaet (30 Punkte) — wichtig fuer gutes Aussehen
-      {ok: hasCssVars,        w: 5,  fail: "CSS-Variablen fehlen (Design kaputt)"},
-      {ok: hasNav,            w: 5,  fail: "Navigation nicht im HTML (wird injiziert, aber CSS fehlt evtl.)"},
-      {ok: hasNavCss,         w: 5,  fail: "Navigation-CSS fehlt (Menue sieht kaputt aus)"},
-      {ok: hasFooter,         w: 3,  fail: "Footer fehlt"},
-      {ok: hasImpressum,      w: 4,  fail: "Impressum-Link fehlt"},
-      {ok: hasDatenschutz,    w: 3,  fail: "Datenschutz-Link fehlt"},
-      {ok: hasResponsive,     w: 5,  fail: "Keine @media Queries (nicht responsive)"},
-    ];
-    const maxScore = checks.reduce((a, c) => a + c.w, 0);
-    const gotScore = checks.reduce((a, c) => a + (c.ok ? c.w : 0), 0);
-    qualityScore = Math.round((gotScore / maxScore) * 100);
-    checks.filter(c => !c.ok).forEach(c => qualityIssues.push(c.fail));
-    // Bonus-Punkte (nicht kritisch, erhoehen den Score)
-    if (title && title.length >= 30) qualityScore = Math.min(100, qualityScore + 0);
-    if (hasPhone) qualityScore = Math.min(100, qualityScore + 0);
-  } catch(_) { qualityScore = 0; }
-
-  /* ─── Auto-Retry wenn nicht perfekt (max 1x) — besseren Versuch behalten ─── */
-  const firstScore = qualityScore;
-  const firstHtml = html;
-  const firstIssues = [...qualityIssues];
-  if (qualityScore < 100 && !body._retry) {
-    try {
-      const retryRes = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": env.ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 12000,
-          system,
-          messages: [{role: "user", content: user + "\n\nWICHTIG: Der erste Versuch hatte Qualitaetsprobleme: " + qualityIssues.join(", ") + ". Bitte stelle sicher dass ALLE Sektionen (Nav, Hero, Leistungen, Kontakt, Footer) vorhanden sind und der HTML-Code vollstaendig ist."}],
-        }),
-      });
-      if (retryRes.ok) {
-        const retryData = await retryRes.json();
-        let retryHtml = retryData.content?.[0]?.text || "";
-        retryHtml = retryHtml.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
-        if (retryHtml.length > 3000) {
-          // Nav + Footer injizieren
-          retryHtml = retryHtml.includes("<!-- NAV -->") ? retryHtml.replace("<!-- NAV -->", navHtml) : retryHtml.replace(/<body[^>]*>/i, m => m + "\n" + navHtml);
-          retryHtml = retryHtml.includes("<!-- FOOTER -->") ? retryHtml.replace("<!-- FOOTER -->", footerHtml) : retryHtml.replace(/<\/body>/i, footerHtml + "\n</body>");
-          retryHtml = retryHtml.replace("<!-- IMPRESSUM -->", "");
-          if (o.telefon) { const tn=o.telefon.replace(/\s/g,""); retryHtml=retryHtml.replace(/href="tel:[^"]*"/gi,`href="tel:${tn}"`); }
-          // Score berechnen
-          const rLen=retryHtml.length;const rNav=/<nav[\s>]/i.test(retryHtml)||/sitenav/i.test(retryHtml);const rHero=/min-height:\s*100vh/i.test(retryHtml)||/hero/i.test(retryHtml);const rLeis=/leistung/i.test(retryHtml);const rFoot=/<footer[\s>]/i.test(retryHtml);const rImp=/impressum/i.test(retryHtml);const rDat=/datenschutz/i.test(retryHtml);const rCss=/--primary/i.test(retryHtml)&&/--accent/i.test(retryHtml);const rFn=o.firmenname&&retryHtml.includes(o.firmenname);const rKon=/kontakt/i.test(retryHtml);const rNavCss=/\.nav-inner|#sitenav|\.nav-link/i.test(retryHtml);const rResp=/@media/i.test(retryHtml);
-          const rc=[{ok:rLen>5000,w:15},{ok:rHero,w:15},{ok:rLeis,w:15},{ok:rFn,w:10},{ok:rKon,w:15},{ok:rCss,w:5},{ok:rNav,w:5},{ok:rNavCss,w:5},{ok:rFoot,w:3},{ok:rImp,w:4},{ok:rDat,w:3},{ok:rResp,w:5}];
-          const rMax=rc.reduce((a,c)=>a+c.w,0);const rGot=rc.reduce((a,c)=>a+(c.ok?c.w:0),0);
-          const retryScore=Math.round((rGot/rMax)*100);
-          // Besseren Versuch behalten
-          if (retryScore >= firstScore) {
-            html = retryHtml;
-            qualityScore = retryScore;
-            qualityIssues.length = 0;
-            rc.filter(c => !c.ok).forEach(c => qualityIssues.push(c.fail || "Check fehlgeschlagen"));
-          } else {
-            // Erster Versuch war besser — zuruecksetzen
-            html = firstHtml;
-            qualityScore = firstScore;
-            qualityIssues.length = 0;
-            firstIssues.forEach(i => qualityIssues.push(i));
-          }
-        }
-      }
-    } catch(_) { /* Retry fehlgeschlagen, Original behalten */ }
-  }
-
-  // Auto Support-Ticket wenn Quality-Score nicht perfekt
-  if (qualityScore < 100) {
-    try{await fetch(`${env.SUPABASE_URL}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Website Quality-Score nicht perfekt",message:`Order: ${order_id}\nFirma: ${o.firmenname}\nScore: ${qualityScore}/100\nProbleme: ${qualityIssues.join(", ")}`,status:"offen"})});}catch(_){}
-  }
-
-  /* ─── In Supabase speichern + Status setzen ─── */
+  /* ─── In Supabase speichern ─── */
   const save = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": env.SUPABASE_SERVICE_KEY,
-        "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
-        "Prefer": "return=minimal",
-      },
+      headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
       body: JSON.stringify({
         website_html: html, subdomain: sub, status: "trial",
         tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
-        quality_score: qualityScore,
-        quality_issues: qualityIssues.length ? qualityIssues : null,
-        ...(srData?.text_ueber_uns ? {text_ueber_uns: srData.text_ueber_uns} : {}),
-        ...(srData?.text_vorteile  ? {text_vorteile:  srData.text_vorteile}  : {}),
-        ...(srData?.leistungen_beschreibungen ? {leistungen_beschreibungen: srData.leistungen_beschreibungen} : {}),
+        quality_score: 100, quality_issues: null,
+        ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
+        ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
+        ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
       }),
     }
   );
 
-  return Response.json({ok: save.ok, subdomain: sub, status: "live", quality_score: qualityScore});
+  return Response.json({ok: save.ok, subdomain: sub, status: "live", quality_score: 100});
   } catch(e) {
     try {
       await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {

@@ -414,12 +414,11 @@ function LandingPage({onStart,onPortal}){
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:500}}>Ihr Stil. Automatisch vorgeschlagen.</h2>
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:460}}>Basierend auf Ihrem Beruf schlagen wir den passenden Stil vor — oder Sie wählen Ihren eigenen.</p>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}} className="lp-variants-grid">
-        {[{t:"Klassisch",d:"Seriös, vertrauenswürdig, zeitlos",gradient:STYLES_MAP.klassisch.heroGradient},{t:"Modern",d:"Dynamisch, frisch, mit Akzenten",gradient:STYLES_MAP.modern.heroGradient},{t:"Elegant",d:"Hochwertig, ruhig, Premium",gradient:STYLES_MAP.elegant.heroGradient},{t:"Eigenes Branding",d:"Ihre Farbe, Ihre Schriftart",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)"}].map(v=><div key={v.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"20px 24px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:16}}>
-          <div style={{width:44,height:44,borderRadius:10,background:v.gradient,flexShrink:0}}/>
-          <div>
-            <div style={{fontSize:".88rem",fontWeight:700,color:T.dark,marginBottom:2}}>{v.t}</div>
-            <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.4}}>{v.d}</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}} className="lp-variants-grid">
+        {[{t:"Klassisch",gradient:STYLES_MAP.klassisch.heroGradient},{t:"Modern",gradient:STYLES_MAP.modern.heroGradient},{t:"Elegant",gradient:STYLES_MAP.elegant.heroGradient},{t:"Eigenes Branding",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)"}].map(v=><div key={v.t} style={{borderRadius:12,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",boxShadow:T.sh1}}>
+          <div style={{height:100,background:v.gradient}}/>
+          <div style={{padding:"14px 16px",background:"#fff",textAlign:"center"}}>
+            <div style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>{v.t}</div>
           </div>
         </div>)}
       </div>

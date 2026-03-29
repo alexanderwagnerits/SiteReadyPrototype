@@ -41,11 +41,11 @@ window.addEventListener("unhandledrejection",(ev)=>{logErrorToSupabase(ev.reason
 
 /* ═══ DATA ═══ */
 const FT_HANDWERK=["notdienst","meisterbetrieb","kostenvoranschlag","foerderungsberatung"];
-const FT_KOSMETIK=["buchungslink","hausbesuche","terminvereinbarung"];
-const FT_GASTRO=["buchungslink","lieferservice","barrierefrei","parkplaetze"];
-const FT_GESUNDHEIT=["buchungslink","terminvereinbarung","hausbesuche","kassenvertrag","erstgespraech_gratis","barrierefrei","online_beratung","ratenzahlung"];
+const FT_KOSMETIK=["buchungslink","hausbesuche","terminvereinbarung","preisliste"];
+const FT_GASTRO=["buchungslink","lieferservice","barrierefrei","parkplaetze","preisliste"];
+const FT_GESUNDHEIT=["buchungslink","terminvereinbarung","hausbesuche","kassenvertrag","erstgespraech_gratis","barrierefrei","online_beratung","ratenzahlung","preisliste"];
 const FT_DIENSTLEISTUNG=["terminvereinbarung","kostenvoranschlag","erstgespraech_gratis","online_beratung","hausbesuche"];
-const FT_BILDUNG=["buchungslink","hausbesuche","terminvereinbarung","online_beratung"];
+const FT_BILDUNG=["buchungslink","hausbesuche","terminvereinbarung","online_beratung","preisliste"];
 const BRANCHEN = [
   // Handwerk
   { value:"elektro",         label:"Elektroinstallationen",            leistungen:["Elektroinstallationen","Störungsbehebung & Reparatur","Smart Home Systeme","Photovoltaik & Speicher","Beleuchtungstechnik","Notdienst 24/7"],stil:"professional",features:FT_HANDWERK },
@@ -1048,6 +1048,7 @@ function Portal({session,onLogout}){
         if(o.url_foto3)urls.foto3=o.url_foto3+"?t="+Date.now();
         if(o.url_foto4)urls.foto4=o.url_foto4+"?t="+Date.now();
         if(o.url_foto5)urls.foto5=o.url_foto5+"?t="+Date.now();
+        if(o.url_preisliste)urls.preisliste=o.url_preisliste+"?t="+Date.now();
         setAssetUrls(urls);
       }});
   },[session]);
@@ -1085,10 +1086,10 @@ function Portal({session,onLogout}){
       if(error){showToast("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
-      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
+      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",preisliste:"url_preisliste"};
       const col=colMap[key];
       if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("URL-Update:",upErr.message);}
-      showToast(key==="logo"?"Logo hochgeladen!":"Foto hochgeladen!");
+      showToast(key==="logo"?"Logo hochgeladen!":key==="preisliste"?"Preisliste hochgeladen!":"Foto hochgeladen!");
     }catch(e){showToast("Fehler: "+e.message);}
     setUploading(u=>({...u,[key]:false}));
   };
@@ -1101,7 +1102,7 @@ function Portal({session,onLogout}){
       for(const ext of exts){
         await supabase.storage.from("customer-assets").remove([`${session.user.id}/${key}.${ext}`]).catch(()=>{});
       }
-      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5"};
+      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",preisliste:"url_preisliste"};
       const col=colMap[key];
       if(col){const{error}=await supabase.from("orders").update({[col]:null}).eq("id",order.id);if(error)console.error("Delete URL-Update:",error.message);}
       setAssetUrls(u=>{const n={...u};delete n[key];return n;});
@@ -1784,6 +1785,36 @@ function Portal({session,onLogout}){
         <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,fontSize:".78rem",color:T.textSub}}>
           Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.
         </div>
+        {/* Preisliste */}
+        {getBrancheFeatures(order?.branche).includes("preisliste")&&(()=>{const url=assetUrls.preisliste;const busy=uploading.preisliste;return(
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Preisliste <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>PDF oder Bild Ihrer Preisliste — wird auf der Website als Download angeboten</div>
+              </div>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*,.pdf" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("preisliste",e.target.files[0]);}}/>
+                </label>
+                {url&&<button onClick={()=>deleteAsset("preisliste")} disabled={deleting.preisliste} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting.preisliste?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting.preisliste?"...":"\u00d7"}</button>}
+              </div>
+            </div>
+            {url&&<div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:T.greenLight,borderRadius:T.rSm,border:`1px solid rgba(22,163,74,.15)`}}>
+              <span style={{fontSize:"1.1rem"}}>📄</span>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:600,fontSize:".82rem",color:T.green}}>Preisliste hochgeladen</div>
+                <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Wird auf Ihrer Website als „Preisliste ansehen"-Button angezeigt</div>
+              </div>
+              <a href={url} target="_blank" rel="noreferrer" style={{padding:"6px 14px",background:T.accent,color:"#fff",borderRadius:T.rSm,fontSize:".78rem",fontWeight:700,textDecoration:"none",fontFamily:T.font}}>Ansehen</a>
+            </div>}
+            {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
+              <div style={{fontSize:"1.6rem",marginBottom:4}}>📄</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Preisliste hochgeladen</div>
+            </div>}
+          </div>
+        );})()}
       </div>)}
 
       {/* Tab: Domain */}

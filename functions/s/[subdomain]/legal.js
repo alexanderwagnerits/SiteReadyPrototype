@@ -205,31 +205,25 @@ function legalShell(o, stil, subdomain, title, content) {
 <style>
 @import url('${stil.url}');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:${fontFamily};background:${stil.bg};color:#1f2937;line-height:1.6;-webkit-font-smoothing:antialiased}
-.wrap{max-width:700px;margin:0 auto;padding:56px 28px 80px}
-h1{font-size:1.4rem;font-weight:800;color:${stil.p};margin-bottom:6px;letter-spacing:-.02em}
-.h1-sub{font-size:.82rem;color:#94a3b8;margin-bottom:40px}
-table{width:100%;border-collapse:collapse;margin-bottom:0}
-td{padding:9px 16px 9px 0;font-size:.9rem;vertical-align:top;border-bottom:1px solid ${stil.s}}
+body{font-family:${fontFamily};background:#fff;color:#374151;line-height:1.75;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding:64px 28px 96px}
+h1{font-size:1.6rem;font-weight:700;color:${stil.p};margin-bottom:4px;letter-spacing:-.02em}
+.h1-sub{font-size:.82rem;color:#9ca3af;margin-bottom:48px;font-weight:400}
+h2{font-size:.95rem;font-weight:700;color:${stil.p};margin:48px 0 16px;padding-top:32px;border-top:1px solid ${stil.s}}
+h2:first-of-type{border-top:none;margin-top:0;padding-top:0}
+h3{font-size:.88rem;font-weight:600;color:#374151;margin:24px 0 8px}
+p,li{font-size:.88rem;color:#4b5563}
+a{color:${stil.p};text-decoration:underline;text-decoration-color:${stil.s};text-underline-offset:2px;transition:text-decoration-color .2s}
+a:hover{text-decoration-color:${stil.p}}
+table{width:100%;border-collapse:collapse;margin:16px 0}
+td{padding:10px 16px 10px 0;font-size:.88rem;vertical-align:top;border-bottom:1px solid ${stil.s}}
 td:first-child{font-weight:600;color:${stil.p};width:200px;white-space:nowrap}
-.section{margin:32px 0}
-.section-title{font-size:.88rem;font-weight:700;color:${stil.p};margin-bottom:14px}
-.card{background:#fff;border-radius:${stil.r};border:1px solid ${stil.s};padding:20px 24px;margin-bottom:12px}
-.card-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px}
-.card-title{font-size:.92rem;font-weight:700;color:${stil.p};margin-bottom:4px}
-.card-body{font-size:.87rem;color:#475569;line-height:1.7}
-.card-body a{color:${stil.a};text-decoration:none}
-.card-body a:hover{text-decoration:underline}
-.tag{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:4px;margin-right:4px;margin-top:4px}
-.tag-basis{background:#eff6ff;color:#1d4ed8}
-.tag-drittland{background:#fff7ed;color:#c2410c}
-.tag-dauer{background:#f0fdf4;color:#166534}
-.rights-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:4px}
-.right-item{background:#fff;border:1px solid ${stil.s};border-radius:${stil.r};padding:10px 14px;font-size:.83rem;color:#334155}
-.right-item strong{display:block;font-weight:700;color:${stil.p};font-size:.8rem}
-.disclaimer{background:#fffbeb;border:1px solid #fde68a;border-radius:${stil.r};padding:14px 18px;font-size:.8rem;color:#92400e;margin-top:40px;line-height:1.6}
-.disclaimer strong{font-weight:700}
-@media(max-width:640px){td:first-child{width:auto;white-space:normal}}
+ul{list-style:none;padding:0}
+ul li{padding:4px 0;position:relative;padding-left:16px}
+ul li::before{content:'\\2013';position:absolute;left:0;color:#9ca3af}
+.meta{font-size:.78rem;color:#9ca3af;margin-top:6px;line-height:1.6}
+.note{margin-top:56px;padding-top:24px;border-top:1px solid ${stil.s};font-size:.8rem;color:#9ca3af;line-height:1.7}
+@media(max-width:640px){td:first-child{width:auto;white-space:normal}td{display:block;padding:4px 0}td:first-child{padding-top:12px;border-bottom:none}}
 </style>
 </head>
 <body>
@@ -267,33 +261,21 @@ export async function buildLegalPage(subdomain, page, env) {
     const {rows: irows, firmaVoll, adresse} = buildImpressumRows(o);
     const tRows = irows.map(([l,v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join("");
     content = `<h1>Impressum</h1>
-<p class="h1-sub">Gem\u00e4\u00df &sect; 5 ECG (E-Commerce-Gesetz) und &sect; 25 MedienG</p>
-<div class="card"><table>${tRows}</table></div>
+<p class="h1-sub">Angaben gem\u00e4\u00df \u00a7 5 ECG und \u00a7 25 MedienG</p>
 
-<div class="section">
-<div class="section-title">Online-Streitbeilegung</div>
-<div class="card">
-<div class="card-body">Die Europ\u00e4ische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:<br>
-<a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a><br><br>
-Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</div>
-</div>
-</div>
+<table>${tRows}</table>
 
-<div class="section">
-<div class="section-title">Haftung f\u00fcr Links</div>
-<div class="card">
-<div class="card-body">Diese Website enth\u00e4lt Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. F\u00fcr die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf m\u00f6gliche Rechtsverst\u00f6\u00dfe \u00fcberpr\u00fcft. Rechtswidrige Inhalte waren nicht erkennbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</div>
-</div>
-</div>
+<h2>Online-Streitbeilegung</h2>
+<p>Die Europ\u00e4ische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a></p>
+<p>Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 
-<div class="section">
-<div class="section-title">Urheberrecht</div>
-<div class="card">
-<div class="card-body">Die Inhalte dieser Website unterliegen dem \u00f6sterreichischen Urheberrecht. Die Vervielf\u00e4ltigung, Bearbeitung, Verbreitung und jede Art der Verwertung au\u00dferhalb der Grenzen des Urheberrechtes bed\u00fcrfen der schriftlichen Zustimmung des Betreibers.</div>
-</div>
-</div>
+<h2>Haftung f\u00fcr Links</h2>
+<p>Diese Website enth\u00e4lt Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. F\u00fcr die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf m\u00f6gliche Rechtsverst\u00f6\u00dfe \u00fcberpr\u00fcft. Rechtswidrige Inhalte waren nicht erkennbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
 
-<div class="disclaimer"><strong>Hinweis:</strong> Dieses Impressum wurde automatisch auf Basis Ihrer Angaben erstellt. Bitte pr\u00fcfen Sie die Richtigkeit aller Informationen.</div>`;
+<h2>Urheberrecht</h2>
+<p>Die Inhalte dieser Website unterliegen dem \u00f6sterreichischen Urheberrecht. Die Vervielf\u00e4ltigung, Bearbeitung, Verbreitung und jede Art der Verwertung au\u00dferhalb der Grenzen des Urheberrechtes bed\u00fcrfen der schriftlichen Zustimmung des Betreibers.</p>
+
+<p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte pr\u00fcfen Sie die Richtigkeit aller Informationen.</p>`;
   } else {
     title = "Datenschutzerkl\u00e4rung";
     const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
@@ -304,115 +286,54 @@ Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren
     content = `<h1>Datenschutzerkl\u00e4rung</h1>
 <p class="h1-sub">Gem\u00e4\u00df DSGVO (EU 2016/679) und TKG 2021</p>
 
-<div class="section">
-<div class="section-title">Verantwortlicher</div>
-<div class="card">
-<div class="card-body">
-<strong style="color:#1e293b">${firmaVoll}</strong><br>
-${adresse}${o.email ? `<br><a href="mailto:${o.email}">${o.email}</a>` : ""}${o.telefon ? `<br>${o.telefon}` : ""}
-</div>
-</div>
-</div>
+<h2>Verantwortlicher</h2>
+<p><strong>${firmaVoll}</strong><br>
+${adresse}${o.email ? `<br>${o.email}` : ""}${o.telefon ? `<br>${o.telefon}` : ""}</p>
 
-<div class="section">
-<div class="section-title">Auftragsverarbeiter</div>
-<div class="card">
-<div class="card-label">Website-Erstellung &amp; Betrieb</div>
-<div class="card-title">Wagner IT-Solutions e.U. (SiteReady)</div>
-<div class="card-body">Operngasse 17/23, 1040 Wien &nbsp;&mdash;&nbsp; office@wagner-its.at<br>
-SiteReady erstellt und betreibt diese Website im Auftrag des Verantwortlichen. Grundlage: Auftragsverarbeitungsvertrag gem. Art. 28 DSGVO.</div>
-</div>
-<div class="card" style="margin-top:8px">
-<div class="card-label">Hosting &amp; Auslieferung</div>
-<div class="card-title">Cloudflare Pages &mdash; Cloudflare Inc.</div>
-<div class="card-body">101 Townsend St, San Francisco, CA 94107, USA<br>
-Diese Website wird \u00fcber das globale CDN von Cloudflare ausgeliefert. Dabei werden Zugriffsdaten (IP-Adresse, Zeitstempel, aufgerufene Seite, Browser) in Cloudflare-Rechenzentren verarbeitet.
-<span class="tag tag-basis">Art. 6 Abs. 1 lit. f DSGVO</span>
-<span class="tag tag-drittland">Drittland USA &mdash; Standardvertragsklauseln</span>
-<span class="tag tag-dauer">Speicherdauer: bis 30 Tage</span><br>
-<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></div>
-</div>
-<div class="card" style="margin-top:8px">
-<div class="card-label">Datenbank &amp; Speicherung</div>
-<div class="card-title">Supabase Inc.</div>
-<div class="card-body">970 Toa Payoh North #07-04, Singapore 318992<br>
-Website-Inhalte, Kontaktanfragen und Betriebsdaten werden in einer PostgreSQL-Datenbank bei Supabase gespeichert. Supabase verarbeitet Daten als Sub-Auftragsverarbeiter im Auftrag von Wagner IT-Solutions e.U.
-<span class="tag tag-basis">Art. 6 Abs. 1 lit. b/f DSGVO</span>
-<span class="tag tag-drittland">Hosting: AWS eu-central-1 (Frankfurt)</span>
-<span class="tag tag-dauer">Speicherdauer: Vertragsdauer + gesetzliche Aufbewahrungsfrist</span><br>
-<a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></div>
-</div>
-</div>
+<h2>Auftragsverarbeiter</h2>
 
-<div class="section">
-<div class="section-title">Datenverarbeitungen</div>
+<h3>Website-Erstellung und Betrieb</h3>
+<p>Wagner IT-Solutions e.U. (SiteReady), Operngasse 17/23, 1040 Wien. SiteReady erstellt und betreibt diese Website im Auftrag des Verantwortlichen auf Grundlage eines Auftragsverarbeitungsvertrags gem\u00e4\u00df Art. 28 DSGVO.</p>
 
-<div class="card">
-<div class="card-label">Webschriften</div>
-<div class="card-title">Google Fonts &mdash; Google LLC</div>
-<div class="card-body">Diese Website l\u00e4dt Schriftarten von Google Fonts. Dabei wird Ihre IP-Adresse beim Seitenaufruf an Google-Server \u00fcbertragen. Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.
-<span class="tag tag-basis">Art. 6 Abs. 1 lit. f DSGVO</span>
-<span class="tag tag-drittland">Drittland USA &mdash; Standardvertragsklauseln</span><br>
-<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></div>
-</div>
+<h3>Hosting und Auslieferung</h3>
+<p>Cloudflare Inc., 101 Townsend St, San Francisco, CA 94107, USA. Diese Website wird \u00fcber das Cloudflare-CDN ausgeliefert. Dabei werden Zugriffsdaten (IP-Adresse, Zeitstempel, aufgerufene Seite, Browser) verarbeitet. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Speicherdauer: bis 30 Tage. Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></p>
 
-<div class="card" style="margin-top:8px">
-<div class="card-label">Karteneinbettung</div>
-<div class="card-title">Google Maps &mdash; Google LLC</div>
-<div class="card-body">Diese Website bindet Google Maps zur Standortanzeige ein. Beim Laden der Karte wird Ihre IP-Adresse an Google-Server \u00fcbertragen. Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.
-<span class="tag tag-basis">Art. 6 Abs. 1 lit. f DSGVO</span>
-<span class="tag tag-drittland">Drittland USA &mdash; Standardvertragsklauseln</span><br>
-<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></div>
-</div>
+<h3>Datenbank und Speicherung</h3>
+<p>Supabase Inc. Website-Inhalte, Kontaktanfragen und Betriebsdaten werden in einer PostgreSQL-Datenbank bei Supabase gespeichert (Serverstandort: AWS eu-central-1, Frankfurt). Supabase verarbeitet Daten als Sub-Auftragsverarbeiter im Auftrag von Wagner IT-Solutions e.U. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und f DSGVO. Speicherdauer: Vertragsdauer zuz\u00fcglich gesetzlicher Aufbewahrungsfrist. Weitere Informationen: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></p>
 
-<div class="card" style="margin-top:8px">
-<div class="card-label">Kontaktformular</div>
-<div class="card-title">Kontaktanfragen \u00fcber die Website</div>
-<div class="card-body">Wenn Sie das Kontaktformular auf dieser Website nutzen, werden folgende Daten verarbeitet: Name, E-Mail-Adresse, Telefonnummer (optional) und Ihre Nachricht. Diese Daten werden in einer Datenbank bei Supabase (AWS eu-central-1, Frankfurt) gespeichert und ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage verwendet. Es findet keine Weitergabe an Dritte statt.
-<span class="tag tag-basis">Art. 6 Abs. 1 lit. b DSGVO</span>
-<span class="tag tag-dauer">Speicherdauer: bis Anfrage abgeschlossen, danach gesetzliche Aufbewahrungsfrist (7 Jahre)</span></div>
-</div>
+<h2>Datenverarbeitungen</h2>
 
-<div class="card" style="margin-top:8px">
-<div class="card-label">Kontaktaufnahme</div>
-<div class="card-title">Telefon &amp; E-Mail</div>
-<div class="card-body">Wenn Sie uns per Telefon oder E-Mail kontaktieren, verarbeiten wir Ihre Kontaktdaten und Ihr Anliegen ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage. Es findet keine Weitergabe an Dritte statt.
-<span class="tag tag-basis">Art. 6 Abs. 1 lit. b DSGVO</span>
-<span class="tag tag-dauer">Speicherdauer: bis Anfrage abgeschlossen, danach gesetzliche Aufbewahrungsfrist (7 Jahre)</span></div>
-</div>
+<h3>Webschriften (Google Fonts)</h3>
+<p>Diese Website l\u00e4dt Schriftarten von Google Fonts. Dabei wird Ihre IP-Adresse an Server von Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA \u00fcbertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
 
-<div class="card" style="margin-top:8px">
-<div class="card-label">Cookies &amp; Tracking</div>
-<div class="card-title">Keine Cookies, kein Tracking</div>
-<div class="card-body">Diese Website verwendet keine Cookies und keine Analyse- oder Werbe-Tools. Es werden keine Nutzerprofile erstellt.</div>
-</div>
-</div>
+<h3>Karteneinbettung (Google Maps)</h3>
+<p>Diese Website bindet Google Maps zur Standortanzeige ein. Beim Laden der Karte wird Ihre IP-Adresse an Server von Google LLC \u00fcbertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
 
-<div class="section">
-<div class="section-title">Ihre Rechte</div>
-<div class="rights-grid">
-<div class="right-item"><strong>Auskunft</strong>Art. 15 DSGVO</div>
-<div class="right-item"><strong>Berichtigung</strong>Art. 16 DSGVO</div>
-<div class="right-item"><strong>L\u00f6schung</strong>Art. 17 DSGVO</div>
-<div class="right-item"><strong>Einschr\u00e4nkung</strong>Art. 18 DSGVO</div>
-<div class="right-item"><strong>Daten\u00fcbertragbarkeit</strong>Art. 20 DSGVO</div>
-<div class="right-item"><strong>Widerspruch</strong>Art. 21 DSGVO</div>
-</div>
-<div class="card" style="margin-top:12px">
-<div class="card-body">Beschwerden k\u00f6nnen Sie bei der \u00f6sterreichischen Datenschutzbeh\u00f6rde einreichen:<br>
-<a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a> &nbsp;&mdash;&nbsp; Barichgasse 40&ndash;42, 1030 Wien</div>
-</div>
-</div>
+<h3>Kontaktformular</h3>
+<p>Bei Nutzung des Kontaktformulars werden Name, E-Mail-Adresse, Telefonnummer (optional) und Ihre Nachricht verarbeitet. Die Daten werden in einer Datenbank bei Supabase (AWS eu-central-1, Frankfurt) gespeichert und ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage verwendet. Eine Weitergabe an Dritte findet nicht statt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherdauer: bis zur Erledigung der Anfrage, danach gesetzliche Aufbewahrungsfrist von 7 Jahren.</p>
 
-<div class="section">
-<div class="section-title">Kontakt Datenschutz</div>
-<div class="card">
-<div class="card-body">Bei Fragen zum Datenschutz wenden Sie sich direkt an den Verantwortlichen:<br>
-${o.email ? `<a href="mailto:${o.email}">${o.email}</a>` : firmaVoll}${o.telefon ? ` &nbsp;&mdash;&nbsp; ${o.telefon}` : ""}</div>
-</div>
-</div>
+<h3>Kontakt per Telefon und E-Mail</h3>
+<p>Bei Kontaktaufnahme per Telefon oder E-Mail verarbeiten wir Ihre Kontaktdaten und Ihr Anliegen ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage. Eine Weitergabe an Dritte findet nicht statt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherdauer: bis zur Erledigung der Anfrage, danach gesetzliche Aufbewahrungsfrist von 7 Jahren.</p>
 
-<div class="disclaimer"><strong>Hinweis:</strong> Diese Datenschutzerkl\u00e4rung wurde automatisch auf Basis technischer Parameter erstellt. F\u00fcr eine rechtsverbindliche Pr\u00fcfung empfehlen wir die Kontrolle durch einen Datenschutzexperten.</div>`;
+<h3>Cookies und Tracking</h3>
+<p>Diese Website verwendet keine Cookies und keine Analyse- oder Werbe-Tools. Es werden keine Nutzerprofile erstellt.</p>
+
+<h2>Ihre Rechte</h2>
+<p>Sie haben gegen\u00fcber dem Verantwortlichen folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
+<ul>
+<li>Auskunft \u00fcber Ihre gespeicherten Daten (Art. 15 DSGVO)</li>
+<li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
+<li>L\u00f6schung Ihrer Daten (Art. 17 DSGVO)</li>
+<li>Einschr\u00e4nkung der Verarbeitung (Art. 18 DSGVO)</li>
+<li>Daten\u00fcbertragbarkeit (Art. 20 DSGVO)</li>
+<li>Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li>
+</ul>
+<p>Beschwerden k\u00f6nnen Sie bei der \u00f6sterreichischen Datenschutzbeh\u00f6rde einreichen: Barichgasse 40\u201342, 1030 Wien \u2014 <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a></p>
+
+<h2>Kontakt bei Datenschutzfragen</h2>
+<p>Bei Fragen zum Datenschutz wenden Sie sich direkt an den Verantwortlichen: ${o.email ? `<a href="mailto:${o.email}">${o.email}</a>` : firmaVoll}${o.telefon ? ` \u2014 ${o.telefon}` : ""}</p>
+
+<p class="note">Diese Datenschutzerkl\u00e4rung wurde auf Basis der eingesetzten Dienste und technischen Parameter erstellt. F\u00fcr eine rechtsverbindliche Pr\u00fcfung empfehlen wir die Kontrolle durch einen Datenschutzexperten.</p>`;
   }
 
   const html = legalShell(o, stil, subdomain, title, content);

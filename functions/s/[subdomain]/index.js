@@ -64,7 +64,7 @@ export async function onRequestGet({params, env}) {
       const start = a.date_start || "";
       const end = a.date_end || a.date || "";
       if (start && start > today) return false; // noch nicht gestartet
-      if (end && end < today) return false; // abgelaufen
+      if (end && end < today) return false; // abgelaufen (Enddatum ist inklusive)
       return true;
     });
     if (validAnn.length > 0) {

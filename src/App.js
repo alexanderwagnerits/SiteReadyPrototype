@@ -879,20 +879,32 @@ function Toggle({label,checked,onChange,desc}){return(<label style={{display:"fl
 
 function TagInput({label,value,onChange,placeholder,hint,max=12}){const[input,setInput]=useState("");const[f,setF]=useState(false);const tags=value?value.split("\n").filter(t=>t.trim()):[];const add=()=>{const v=input.trim();if(!v||tags.length>=max)return;onChange([...tags,v].join("\n"));setInput("");};const remove=i=>onChange(tags.filter((_,idx)=>idx!==i).join("\n"));const onKey=e=>{if(e.key==="Enter"){e.preventDefault();add();}};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".78rem",fontWeight:700,color:f?T.accent:T.textSub,letterSpacing:".03em"}}>{label}</label><div onFocus={()=>setF(true)} onBlur={()=>setF(false)} style={{border:f?`2px solid ${T.accent}`:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,padding:"10px 12px",transition:"all .2s",boxShadow:f?`0 0 0 4px ${T.accentGlow}`:"none",minHeight:52}}>{tags.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>{tags.map((t,i)=><span key={i} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"4px 10px",background:T.accentLight,border:`1px solid rgba(143,163,184,.2)`,borderRadius:20,fontSize:"12px",fontWeight:600,color:T.accent}}>{t}<button onClick={()=>remove(i)} style={{display:"flex",alignItems:"center",justifyContent:"center",width:14,height:14,borderRadius:"50%",border:"none",background:"rgba(143,163,184,.2)",color:T.accent,cursor:"pointer",padding:0,fontSize:10,fontWeight:700,lineHeight:1}}>×</button></span>)}</div>}<input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={onKey} placeholder={tags.length===0?placeholder:"Weitere Leistung eingeben + Enter"} style={{border:"none",outline:"none",width:"100%",fontSize:14,fontFamily:T.font,color:T.dark,background:"transparent",padding:0}}/></div>{tags.length>=max&&<div style={{marginTop:4,fontSize:".75rem",color:T.textMuted}}>Maximum ({max}) erreicht</div>}{hint&&tags.length<max&&<div style={{marginTop:4,fontSize:".75rem",color:T.textMuted}}>{hint}</div>}</div>);}
 
-function StylePicker({value,onChange}){return(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>{Object.entries(STYLES_MAP).map(([key,s])=>{const on=value===key;const isCustom=key==="custom";return(<button key={key} onClick={()=>onChange(key)} style={{padding:0,border:on?`2.5px solid ${T.accent}`:`2px solid ${T.bg3}`,borderRadius:T.r,background:T.white,cursor:"pointer",textAlign:"left",transition:"all .25s",fontFamily:T.font,boxShadow:on?`0 0 0 4px ${T.accentGlow}`:"none",overflow:"hidden"}}>
-<div style={{height:48,background:isCustom?"linear-gradient(90deg,#2563eb,#6366f1,#0891b2,#059669,#dc2626,#d97706)":s.heroGradient,position:"relative"}}>
-{isCustom&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M12 20a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"/><path d="M12 6V2"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/></svg></div>}
-{!isCustom&&<div style={{position:"absolute",bottom:6,left:10,display:"flex",gap:3}}>
-<div style={{background:"#fff",borderRadius:s.btnRadius||s.radius,padding:"2px 8px",fontSize:"7px",fontWeight:700,color:s.primary}}>Button</div>
-<div style={{background:"rgba(255,255,255,.2)",borderRadius:s.badgeRadius||"20px",padding:"2px 6px",fontSize:"7px",fontWeight:600,color:"#fff"}}>Badge</div>
+function StylePicker({value,onChange}){
+const styles=[
+  {key:"klassisch",label:"Klassisch",sub:"Seriös & zeitlos",primary:"#0f2b5b",accent:"#2563eb",font:"Inter",btnR:"4px",badgeR:"4px",mock:[{t:"Kontakt",r:"4px",bg:"#0f2b5b"},{t:"Leistungen",r:"4px",bg:"transparent",border:true}]},
+  {key:"modern",label:"Modern",sub:"Frisch & dynamisch",primary:"#111",accent:"#6366f1",font:"DM Sans",btnR:"100px",badgeR:"100px",mock:[{t:"Kontakt",r:"100px",bg:"#6366f1"},{t:"Leistungen",r:"100px",bg:"transparent",border:true}]},
+  {key:"elegant",label:"Elegant",sub:"Minimalistisch & Premium",primary:"#1c1917",accent:"#78716c",font:"Inter",btnR:"2px",badgeR:"2px",mock:[{t:"Kontakt",r:"2px",bg:"#1c1917"},{t:"Leistungen",r:"2px",bg:"transparent",border:true}]},
+  {key:"custom",label:"Eigenes Branding",sub:"Ihre Farben & Schrift",primary:null,accent:null,font:null,btnR:"8px",badgeR:"8px",mock:[]},
+];
+return(<div style={{display:"flex",flexDirection:"column",gap:8}}>
+{styles.map(s=>{const on=value===s.key;const isCustom=s.key==="custom";
+return(<button key={s.key} onClick={()=>onChange(s.key)} style={{display:"flex",alignItems:"stretch",border:"none",padding:0,borderRadius:14,background:on?"#fff":T.bg,cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .2s",boxShadow:on?`0 0 0 2px ${T.accent}, ${T.sh2}`:`0 0 0 1px ${T.bg3}`,overflow:"hidden",minHeight:72}}>
+<div style={{width:6,flexShrink:0,background:on?T.accent:isCustom?"linear-gradient(180deg,#2563eb,#6366f1,#059669,#dc2626)":s.primary,borderRadius:"14px 0 0 14px",transition:"background .2s"}}/>
+<div style={{flex:1,padding:"14px 16px",display:"flex",alignItems:"center",gap:14}}>
+<div style={{flex:1}}>
+<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+<span style={{fontWeight:700,fontSize:".88rem",color:T.dark,letterSpacing:"-.01em"}}>{s.label}</span>
+{on&&<span style={{width:18,height:18,borderRadius:"50%",background:T.accent,color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,flexShrink:0}}>{"\u2713"}</span>}
+</div>
+<div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.4}}>{s.sub}</div>
+</div>
+{!isCustom&&<div style={{display:"flex",gap:4,flexShrink:0}}>
+{s.mock.map((m,i)=><div key={i} style={{padding:"4px 10px",fontSize:"9px",fontWeight:700,borderRadius:m.r,background:m.bg,color:m.bg==="transparent"?"#fff":m.border?"#fff":"#fff",border:m.border?`1.5px solid rgba(255,255,255,.5)`:"1.5px solid transparent",fontFamily:`'${s.font}',sans-serif`,letterSpacing:".02em",...(m.bg==="transparent"?{color:s.primary,border:`1.5px solid ${s.primary}`,background:"transparent"}:{})}}>{m.t}</div>)}
 </div>}
-{on&&<div style={{position:"absolute",top:6,right:6,width:20,height:20,borderRadius:"50%",background:"#fff",color:T.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800}}>{"\u2713"}</div>}
+{isCustom&&<div style={{width:32,height:32,borderRadius:8,background:"conic-gradient(from 0deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)",flexShrink:0}}/>}
 </div>
-<div style={{padding:"10px 12px"}}>
-<div style={{fontWeight:700,fontSize:".85rem",color:T.dark,marginBottom:2}}>{s.label}</div>
-<div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>{s.desc}</div>
-</div>
-</button>)})}</div>)}
+</button>);})}
+</div>)}
 
 /* ═══ PREVIEW (unchanged) ═══ */
 const FONT_OPTIONS=[
@@ -925,23 +937,39 @@ const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{se
 {hasFB&&<Toggle label="Gesellschaft in Liquidation" checked={!!data.liquidation} onChange={v=>up("liquidation")(v?"in Liquidation":"")} desc="Nur wenn zutreffend"/>}
 <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="UID-Nummer / ATU" value={data.uid} onChange={up("uid")} placeholder="ATU12345678" hint="Optional"/><Field label="GISA-Zahl" value={data.gisazahl} onChange={up("gisazahl")} placeholder="z.B. 12345678" hint="Optional"/></div>
 <div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Aufsichtsbehörde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63" hint="Optional"/><Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien" hint="Optional"/></div>
-<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstützte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div><label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${impressumConfirm?T.accent+"44":T.bg3}`,marginBottom:16,marginTop:16}}><input type="checkbox" checked={impressumConfirm} onChange={e=>setImpressumConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/><span style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6}}>Ich bestätige, dass die angegebenen Unternehmensdaten korrekt sind. Das Impressum wird auf Basis dieser Angaben erstellt.</span></label></>);})()}</>,<><p style={{fontSize:".88rem",color:T.textSub,margin:"0 0 6px",lineHeight:1.6}}>Basierend auf Ihrer Branche empfehlen wir:</p><p style={{fontSize:"1rem",fontWeight:700,color:T.dark,margin:"0 0 16px"}}>{STYLES_MAP[data.stil]?.label||"Professionell"}</p><StylePicker value={data.stil} onChange={up("stil")}/>
-{data.stil==="custom"&&<div style={{marginTop:16,padding:"20px",background:T.white,borderRadius:T.r,border:`2px solid ${T.accent}`,boxShadow:`0 0 0 4px ${T.accentGlow}`}}>
-<div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Ihr Branding</div>
-<div style={{marginBottom:16}}>
-<label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Primärfarbe</label>
-<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-{["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} onClick={()=>up("customColor")(c)} style={{width:36,height:36,borderRadius:8,background:c,border:data.customColor===c?`3px solid ${T.dark}`:"3px solid transparent",cursor:"pointer",boxShadow:data.customColor===c?"0 0 0 2px #fff, 0 0 0 4px "+c:"none",transition:"all .15s"}}/>)}
+<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstützte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div><label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${impressumConfirm?T.accent+"44":T.bg3}`,marginBottom:16,marginTop:16}}><input type="checkbox" checked={impressumConfirm} onChange={e=>setImpressumConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/><span style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6}}>Ich bestätige, dass die angegebenen Unternehmensdaten korrekt sind. Das Impressum wird auf Basis dieser Angaben erstellt.</span></label></>);})()}</>,<><div style={{marginBottom:20}}>
+<div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>Design wählen</div>
+<p style={{fontSize:".85rem",color:T.textSub,margin:0,lineHeight:1.6}}>Wählen Sie den Stil für Ihre Website. Sie können ihn jederzeit im Portal ändern.</p>
 </div>
-<div style={{display:"flex",alignItems:"center",gap:8,marginTop:10}}>
-<label style={{fontSize:".75rem",color:T.textMuted,fontWeight:600}}>Oder eigene Farbe:</label>
-<input type="color" value={data.customColor} onChange={e=>up("customColor")(e.target.value)} style={{width:32,height:32,border:`2px solid ${T.bg3}`,borderRadius:6,cursor:"pointer",padding:0}}/>
-<span style={{fontSize:".75rem",color:T.textMuted,fontFamily:T.mono}}>{data.customColor}</span>
+<StylePicker value={data.stil} onChange={up("stil")}/>
+{data.stil==="custom"&&<div style={{marginTop:14,borderRadius:14,overflow:"hidden",background:"#fff",boxShadow:`0 0 0 1px ${T.bg3}, ${T.sh2}`}}>
+<div style={{padding:"16px 18px",background:T.dark,color:"#fff"}}>
+<div style={{fontSize:".82rem",fontWeight:700,letterSpacing:"-.01em"}}>Ihr Branding</div>
+<div style={{fontSize:".72rem",opacity:.6,marginTop:2}}>Farbe und Schriftart für Ihre Website</div>
+</div>
+<div style={{padding:"18px"}}>
+<div style={{marginBottom:18}}>
+<div style={{fontSize:".75rem",fontWeight:700,color:T.textSub,marginBottom:10}}>Primärfarbe</div>
+<div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
+{["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=>{const on=data.customColor===c;return<button key={c} onClick={()=>up("customColor")(c)} style={{width:32,height:32,borderRadius:on?10:16,background:c,border:"none",cursor:"pointer",boxShadow:on?`0 0 0 2px #fff, 0 0 0 3.5px ${c}`:"inset 0 0 0 1px rgba(0,0,0,.1)",transition:"all .2s",transform:on?"scale(1.1)":"scale(1)"}}/>})}
+</div>
+<div style={{display:"flex",alignItems:"center",gap:8}}>
+<div style={{position:"relative",width:28,height:28,flexShrink:0}}>
+<input type="color" value={data.customColor} onChange={e=>up("customColor")(e.target.value)} style={{position:"absolute",inset:0,width:"100%",height:"100%",border:"none",borderRadius:6,cursor:"pointer",padding:0,opacity:0}}/>
+<div style={{width:28,height:28,borderRadius:6,background:"conic-gradient(from 0deg,red,yellow,lime,aqua,blue,magenta,red)",border:`2px solid ${T.bg3}`,pointerEvents:"none"}}/>
+</div>
+<span style={{fontSize:".75rem",color:T.textMuted}}>Eigene Farbe wählen</span>
+<span style={{marginLeft:"auto",fontSize:".72rem",fontFamily:T.mono,color:T.textMuted,background:T.bg,padding:"2px 8px",borderRadius:4}}>{data.customColor}</span>
 </div>
 </div>
+<div style={{height:1,background:T.bg3,margin:"0 -18px",marginBottom:18}}/>
 <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
+</div>
 </div>}
-<div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:6}}>Nach dem Kauf – Self-Service-Portal</div><div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>Logo hochladen &middot; Eigene Fotos hochladen &middot; Preisliste hochladen &middot; Custom Domain verbinden – alles selbst, jederzeit.</div></div></>];
+<div style={{marginTop:16,padding:"14px 18px",borderRadius:12,background:T.bg,border:`1px solid ${T.bg3}`}}>
+<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style={{fontSize:".78rem",fontWeight:700,color:T.dark}}>Nach dem Kauf</span></div>
+<div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.65}}>Logo, Fotos und Preisliste hochladen, Custom Domain verbinden — alles im Self-Service-Portal.</div>
+</div></>];
 
   const formPanel=(<div style={{display:"flex",flexDirection:"column",background:T.bg,borderRight:isMobile?"none":`1px solid ${T.bg3}`,height:isMobile?"100dvh":"100%",overflowY:"hidden",fontFamily:T.font}}>
     <div style={{padding:"20px 24px 0"}}>

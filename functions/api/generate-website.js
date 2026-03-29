@@ -437,8 +437,10 @@ JSON-FORMAT:
 
   /* ═══ TEMPLATE BEFUELLEN ═══ */
   const { buildKlassischTemplate } = await import("../templates/klassisch.js");
-  // TODO: Modern + Elegant Templates
-  const buildTemplate = buildKlassischTemplate; // Vorerst immer Klassisch
+  const { buildModernTemplate } = await import("../templates/modern.js");
+  const { buildElegantTemplate } = await import("../templates/elegant.js");
+  const templateBuilders = { klassisch: buildKlassischTemplate, modern: buildModernTemplate, elegant: buildElegantTemplate };
+  const buildTemplate = templateBuilders[o.stil] || buildKlassischTemplate;
 
   let html = buildTemplate({
     firmenname: o.firmenname,

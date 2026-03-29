@@ -306,11 +306,41 @@ export async function onRequestPost({request, env}) {
   /* ─── Trust-Bar Items (nur echte Daten) ─── */
   const trustItems = [];
   if (o.notdienst) trustItems.push("\uD83D\uDEA8 24/7 Notdienst");
+  if (o.meisterbetrieb) trustItems.push("\uD83C\uDFC6 Meisterbetrieb");
   trustItems.push(`\uD83D\uDCCD ${o.einsatzgebiet || o.bundesland || "Oesterreich"}`);
+  if (o.kostenvoranschlag) trustItems.push("✔ Kostenloser Kostenvoranschlag");
   if (leistungen.length >= 3) trustItems.push(`✔ ${leistungen.length} Leistungsbereiche`);
   const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
-  if (trustItems.length < 3) trustItems.push(`🕐 ${oezLabel}`);
-  const trustBar = trustItems.slice(0, 3).join("  ·  ");
+  if (trustItems.length < 4) trustItems.push(`🕐 ${oezLabel}`);
+  const trustBar = trustItems.slice(0, 4).join("  ·  ");
+
+  /* ─── Feature-Badges (fuer Hero + Info-Sektion) ─── */
+  const badges = [];
+  if (o.notdienst) badges.push("⚡ 24/7 Notdienst");
+  if (o.meisterbetrieb) badges.push("🏆 Meisterbetrieb");
+  if (o.kostenvoranschlag) badges.push("✓ Kostenloser Kostenvoranschlag");
+  if (o.foerderungsberatung) badges.push("💰 Förderungsberatung");
+  if (o.hausbesuche) badges.push("🏠 Hausbesuche möglich");
+  if (o.terminvereinbarung) badges.push("📅 Nur mit Termin");
+  if (o.lieferservice) badges.push("🚚 Lieferservice");
+  if (o.barrierefrei) badges.push("♿ Barrierefrei");
+  if (o.parkplaetze) badges.push("🅿 Parkplätze vorhanden");
+  if (o.erstgespraech_gratis) badges.push("🤝 Erstgespräch gratis");
+  if (o.online_beratung) badges.push("💻 Online-Beratung möglich");
+  if (o.ratenzahlung) badges.push("📋 Ratenzahlung möglich");
+  const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt / Wahltherapeut" : o.kassenvertrag === "privat" ? "Nur Privat" : o.kassenvertrag === "oegk" ? "ÖGK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
+  if (kassenLabel) badges.push(`🏥 ${kassenLabel}`);
+
+  /* ─── Logo URL ─── */
+  const logoUrl = o.url_logo || null;
+  const preislisteUrl = o.url_preisliste || null;
+
+  /* ─── Social Media ─── */
+  const socials = [];
+  if (o.facebook) socials.push({name:"Facebook",url:normSocial(o.facebook)});
+  if (o.instagram) socials.push({name:"Instagram",url:normSocial(o.instagram)});
+  if (o.linkedin) socials.push({name:"LinkedIn",url:normSocial(o.linkedin)});
+  if (o.tiktok) socials.push({name:"TikTok",url:normSocial(o.tiktok)});
 
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
@@ -321,7 +351,7 @@ KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Strikt
 KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden. Verstoss ist inakzeptabel.
 LEISTUNGEN – PFLICHT: Setze <!-- LEISTUNGEN --> als Platzhalter fuer das Cards-Grid (keine Cards selbst generieren – werden automatisch injiziert). Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK mit je 1 konkreten Satz.
 META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
-STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem Kontakt-Abschnitt. Setze <!-- GALERIE --> als eigene Zeile ZWISCHEN den Sektionen UEBER-UNS und KONTAKT (die Galerie wird automatisch eingefuegt wenn Fotos vorhanden sind).
+STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT${o.buchungslink ? ", TERMIN-CTA" : ""}. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem letzten Abschnitt. Setze <!-- GALERIE --> als eigene Zeile ZWISCHEN den Sektionen UEBER-UNS und KONTAKT (die Galerie wird automatisch eingefuegt wenn Fotos vorhanden sind).
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}
@@ -367,29 +397,35 @@ CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text, --text
 ═══ SEITENSTRUKTUR ═══
 
 HERO: min-height:100vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
-${o.notdienst ? "NOTDIENST-BADGE: pulsierender gruener Punkt (CSS keyframes pulse) + '24/7 Notdienst' Text, rgba-weiss-Hintergrund, prominent platziert." : ""}
+${badges.length ? `FEATURE-BADGES im Hero: Zeige diese Badges als kleine Pill-Elemente (display:inline-flex, gap:6px, flex-wrap:wrap) direkt UEBER dem H1:\n${badges.map(b=>`  • ${b}`).join("\n")}\nStil: padding:5px 14px, background:rgba(255,255,255,.15), border-radius:${stil.btnR || stil.r}, font-size:.78rem, font-weight:600, color:#fff, letter-spacing:.03em.` : ""}
 Dekorations-Element: ${stil.heroDecor}
+${logoUrl ? `LOGO: Zeige <!-- LOGO --> als Platzhalter UEBER den Feature-Badges. Wird automatisch mit <img> ersetzt. Groesse: height:48px, max-width:200px, object-fit:contain.` : ""}
 H1: Firmenname, clamp(2.2rem,6vw,4.5rem), font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
 Subtitle: Branche + Einsatzgebiet, color:rgba(255,255,255,.75), clamp(.95rem,2.5vw,1.2rem).
-TRUST-BAR: Direkt nach Subtitle – flex-row, gap:24px, flex-wrap:wrap – die 3 Punkte aus den uebergebenen TRUST-ITEMS anzeigen (opacity:.85, font-size:.85rem, color:#fff). Exakt diese Texte verwenden, nichts hinzuerfinden.
-2 CTA-Buttons: Primaer (background:var(--accent), Anrufen, href="{{TEL_HREF}}") + Ghost (border:2px solid rgba(255,255,255,.5), color:#fff, href="#leistungen"). Mobile: beide Buttons 100% Breite, gestapelt.
-Animierter Keyword-Strip unter den Buttons: CSS-only marquee-Animation, Branche-Keywords, sichtbar auf ALLEN Bildschirmgroessen (overflow:hidden, white-space:nowrap).
+TRUST-BAR: Direkt nach Subtitle – flex-row, gap:24px, flex-wrap:wrap – die Punkte aus den uebergebenen TRUST-ITEMS anzeigen (opacity:.85, font-size:.85rem, color:#fff). Exakt diese Texte verwenden, nichts hinzuerfinden.
+2 CTA-Buttons: Primaer (background:var(--accent), border-radius:${stil.btnR || stil.r}, Anrufen, href="{{TEL_HREF}}") + Ghost (border:2px solid rgba(255,255,255,.5), color:#fff, border-radius:${stil.btnR || stil.r}, href="#leistungen")${o.buchungslink ? ` + Termin-Button (background:#fff, color:var(--accent), border-radius:${stil.btnR || stil.r}, href="${o.buchungslink}", target="_blank", "Termin buchen")` : ""}. Mobile: alle Buttons 100% Breite, gestapelt.
 
 LEISTUNGEN: background:#fff. Section-Label: kleine Oberschrift ("Unser Leistungsangebot", font-size:.72rem, font-weight:700, letter-spacing:.1em, text-transform:uppercase, color:var(--accent)). H2 in Primaerfarbe. Setze <!-- LEISTUNGEN --> als Platzhalter direkt nach der H2 (keine Cards generieren – werden automatisch eingefuegt).
+${preislisteUrl ? `PREISLISTE-BUTTON: Unter den Leistungen einen Button anzeigen: "📄 Preisliste ansehen" als <a href="${preislisteUrl}" target="_blank"> mit background:var(--bg), border:1px solid var(--sep), border-radius:${stil.btnR || stil.r}, padding:12px 24px, font-weight:700, color:var(--primary), margin-top:24px, display:inline-flex, align-items:center, gap:8px.` : ""}
 
 UEBER UNS: background:var(--bg). Zweispaltig desktop (3fr 2fr), einspaltig mobile.
 Links: Section-Label + H2 + <p>{{UEBER_UNS_TEXT}}</p> (Platzhalter – nicht ersetzen) + <div>{{VORTEILE}}</div> (Platzhalter – nicht ersetzen, wird automatisch befuellt).
 Rechts: Karte (background:var(--primary), color:#fff, border-radius:${stil.rLg}, padding:32px 28px) mit: Oeffnungszeiten-Block, Einsatzgebiet-Zeile, Telefon als grosser weisser Link.
 
 KONTAKT: background:#fff. Zweispaltig desktop (1fr 1fr), einspaltig mobile.
-Links: H2, Adressblock ({{ADRESSE_VOLL}}), Telefon als grosser klickbarer Link ({{TEL_HREF}}/{{TEL_DISPLAY}}, font-size:1.5rem, font-weight:800, color:var(--accent)), E-Mail-Link, Oeffnungszeiten.
-Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): kurzer Aufruf-Satz + grosser Anruf-Button (background:var(--accent)).
+Links: H2, Adressblock ({{ADRESSE_VOLL}}), Telefon als grosser klickbarer Link ({{TEL_HREF}}/{{TEL_DISPLAY}}, font-size:1.5rem, font-weight:800, color:var(--accent)), E-Mail-Link, Oeffnungszeiten.${socials.length ? `\nSocial Media Links: ${socials.map(s=>`${s.name} (${s.url})`).join(", ")} – als Icon-Buttons in einer Reihe, font-size:.85rem, gap:12px.` : ""}
+Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): kurzer Aufruf-Satz + grosser Anruf-Button (background:var(--accent), border-radius:${stil.btnR || stil.r}).
 <!-- MAPS --> Platzhalter nach den Kontaktinfos.
+
+${o.buchungslink ? `TERMIN-CTA SEKTION: Eigene Sektion NACH Kontakt (VOR <!-- FOOTER -->). background:var(--primary), padding:64px 0, text-align:center, color:#fff.
+H2: "Jetzt Termin buchen", font-weight:800, margin-bottom:12px.
+Kurzer Text: "Buchen Sie bequem online – rund um die Uhr."
+Grosser CTA-Button: <a href="${o.buchungslink}" target="_blank"> mit background:var(--accent), color:#fff, padding:16px 36px, border-radius:${stil.btnR || stil.r}, font-size:1.1rem, font-weight:800.` : ""}
 
 ${o.telefon ? `STICKY MOBILE CTA: Fixer Anruf-Button am unteren Bildschirmrand. Nur auf Mobile sichtbar (@media(max-width:640px){display:flex} sonst display:none). position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent); color:#fff; padding:16px 24px; font-weight:800; font-size:1rem; text-align:center; text-decoration:none; display:none. Inhalt: "📞 Jetzt anrufen – {{TEL_DISPLAY}}" als <a href="{{TEL_HREF}}">. body bekommt padding-bottom:64px auf Mobile damit Inhalt nicht verdeckt wird.` : ""}
 
 SR-DATEN-BLOCK – ABSOLUT PFLICHT: Fuge diesen Block DIREKT nach <!-- NAV --> (vor der ersten Section) ein, ausgefuellt mit echten KI-generierten Texten. EXAKT dieses Format:
-<script type="application/json" id="sr-data">{"leistungen_beschreibungen":{${leistungen.map(l=>`"${l}":"[1 konkreter Satz]"`).join(",")}},"text_ueber_uns":"[2-3 Saetze zum Betrieb, nur echte Daten, keine Zahlen erfinden]","text_vorteile":["[Vorteil 1]","[Vorteil 2]","[Vorteil 3]","[Vorteil 4]"]}</script>
+<script type="application/json" id="sr-data">{"leistungen_beschreibungen":{${leistungen.map(l=>`"${l}":"[1 konkreter Satz]"`).join(",")}},"text_ueber_uns":"[4-5 Saetze zum Betrieb: Was macht den Betrieb aus? Welche Werte? Was koennen Kunden erwarten? Nur echte Daten, keine Zahlen/Jahre erfinden.]","text_vorteile":["[Vorteil 1]","[Vorteil 2]","[Vorteil 3]","[Vorteil 4]","[Vorteil 5]"]}</script>
 Ersetze [1 konkreter Satz] usw. mit echtem branchenspezifischem Inhalt. Keine Zahlen/Jahre/Kunden erfinden.`;
 
   /* ─── User Message ─── */
@@ -409,12 +445,20 @@ Telefon:         ${o.telefon || ""}
 E-Mail:          ${o.email || ""}
 Oeffnungszeiten: ${oezLabel}
 
-NOTDIENST: ${o.notdienst ? "JA – 24/7 Notdienst – SEHR PROMINENT darstellen!" : "Nein"}
+FEATURES & BADGES:
+${badges.length ? badges.map(b => `• ${b}`).join("\n") : "Keine besonderen Features."}
+${kassenLabel ? `\nKASSENVERTRAG: ${kassenLabel} – PROMINENT in der Kontakt-Sektion anzeigen (wichtig fuer Patienten).` : ""}
+${o.buchungslink ? `\nBUCHUNGSLINK: ${o.buchungslink} – Als eigene CTA-Sektion VOR dem Footer + Button im Hero.` : ""}
+${preislisteUrl ? `\nPREISLISTE: ${preislisteUrl} – "Preisliste ansehen"-Button unter den Leistungen.` : ""}
+${logoUrl ? `\nLOGO: Setze <!-- LOGO --> im Hero ueber den Badges. Wird automatisch ersetzt.` : ""}
 
-TRUST-ITEMS (exakt diese 3 Punkte im Trust-Bar verwenden, nichts aendern):
+TRUST-ITEMS (exakt diese Punkte im Trust-Bar verwenden, nichts aendern):
 ${trustBar}
 
-FOTOS: Nein – keine Bildplaetze oder Platzhalter generieren. Eine Foto-Galerie wird automatisch nach dem Kontakt-Abschnitt eingefuegt falls Fotos vorhanden sind.
+SOCIAL MEDIA:
+${socials.length ? socials.map(s => `• ${s.name}: ${s.url}`).join("\n") : "Keine Social-Media-Links."}
+
+FOTOS: Nein – keine Bildplaetze oder Platzhalter generieren. Eine Foto-Galerie wird automatisch eingefuegt falls Fotos vorhanden sind.
 
 STIL-FEELING: ${stil.feel}
 
@@ -437,7 +481,7 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 8192,
+      max_tokens: 12000,
       system,
       messages: [{role: "user", content: user}],
     }),
@@ -485,6 +529,19 @@ VARIABLEN-PFLICHT (nur diese Platzhalter verwenden, KEINE echten Daten einsetzen
 
   // Impressum-Placeholder entfernen
   html = html.replace("<!-- IMPRESSUM -->", "");
+
+  // Logo injizieren
+  if (logoUrl) {
+    const logoImg = `<img src="${logoUrl}" alt="${o.firmenname}" style="height:48px;max-width:200px;object-fit:contain;display:block;margin-bottom:16px"/>`;
+    html = html.includes("<!-- LOGO -->") ? html.replace("<!-- LOGO -->", logoImg) : html;
+    // Nav-Logo ersetzen: Text durch Bild
+    html = html.replace(
+      /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/i,
+      `$1<img src="${logoUrl}" alt="${o.firmenname}" style="height:32px;max-width:150px;object-fit:contain"/>$2`
+    );
+  } else {
+    html = html.replace("<!-- LOGO -->", "");
+  }
 
   // ── Tel:-Links korrigieren (Claude generiert manchmal falsche Nummern) ──
   if (o.telefon) {
@@ -625,7 +682,7 @@ window.addEventListener('scroll',upd,{passive:true});upd();
         },
         body: JSON.stringify({
           model: "claude-sonnet-4-6",
-          max_tokens: 8192,
+          max_tokens: 12000,
           system,
           messages: [{role: "user", content: user + "\n\nWICHTIG: Der erste Versuch hatte Qualitaetsprobleme: " + qualityIssues.join(", ") + ". Bitte stelle sicher dass ALLE Sektionen (Nav, Hero, Leistungen, Kontakt, Footer) vorhanden sind und der HTML-Code vollstaendig ist."}],
         }),

@@ -165,21 +165,21 @@ export async function onRequestGet({params, env}) {
     const descMap = o.leistungen_beschreibungen || {};
     const stilName = o.stil || "klassisch";
     const cardStyleMap = {
-      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:3px solid var(--accent);padding:28px 24px;background:#fff;border-radius:4px;transition:all .2s ease",
-      modern:     "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:32px 28px;overflow:hidden;border-top:4px solid var(--accent);background:#fff;transition:all .2s ease",
-      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:28px 24px;background:#fff;transition:all .2s ease;border-radius:2px",
-      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:28px 24px;background:#fff;border-radius:8px;transition:all .2s ease",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:4px",
+      modern:     "border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.06);padding:20px 20px;border-top:3px solid var(--accent);background:#fff",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:20px 20px;background:#fff;border-radius:2px",
+      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:8px",
     };
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
       const desc = descMap[l] || descMap[lCapitalized] || "";
       return `<div style="${cardStyle}">` +
-        `<h3 style="color:var(--primary,#0f2b5b);font-weight:700;margin:0 0 8px;font-size:.95rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
-        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.7">${desc}</p>` : "") +
+        `<h3 style="color:var(--primary,#0f2b5b);font-weight:700;margin:0 0 6px;font-size:.88rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.82rem;line-height:1.6">${desc}</p>` : "") +
         `</div>`;
     }).join("");
-    const grid = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px">${cards}</div>`;
+    const grid = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">${cards}</div>`;
     html = html.replace("<!-- LEISTUNGEN -->", grid);
   }
 

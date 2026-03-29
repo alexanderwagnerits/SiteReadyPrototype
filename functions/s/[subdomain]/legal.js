@@ -53,6 +53,13 @@ function buildImpressumRows(o) {
 
   add("Telefon", o.telefon); add("E-Mail", o.email);
   add("UID-Nummer", o.uid_nummer); add("GISA-Zahl", o.gisazahl);
+
+  // Berufsbezeichnung + Verleihungsstaat (§ 5 ECG Abs. 1 Z 9)
+  if (o.berufsbezeichnung) {
+    add("Berufsbezeichnung", o.berufsbezeichnung);
+    add("Verleihungsstaat", o.verleihungsstaat || "\u00d6sterreich");
+  }
+
   if (o.aufsichtsbehoerde) {
     add("Aufsichtsbeh\u00f6rde", o.aufsichtsbehoerde);
   } else if (uf !== "verein" && uf !== "gesnbr") {
@@ -262,6 +269,30 @@ export async function buildLegalPage(subdomain, page, env) {
     content = `<h1>Impressum</h1>
 <p class="h1-sub">Gem\u00e4\u00df &sect; 5 ECG (E-Commerce-Gesetz) und &sect; 25 MedienG</p>
 <div class="card"><table>${tRows}</table></div>
+
+<div class="section">
+<div class="section-title">Online-Streitbeilegung</div>
+<div class="card">
+<div class="card-body">Die Europ\u00e4ische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:<br>
+<a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a><br><br>
+Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">Haftung f\u00fcr Links</div>
+<div class="card">
+<div class="card-body">Diese Website enth\u00e4lt Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. F\u00fcr die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf m\u00f6gliche Rechtsverst\u00f6\u00dfe \u00fcberpr\u00fcft. Rechtswidrige Inhalte waren nicht erkennbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">Urheberrecht</div>
+<div class="card">
+<div class="card-body">Die Inhalte dieser Website unterliegen dem \u00f6sterreichischen Urheberrecht. Die Vervielf\u00e4ltigung, Bearbeitung, Verbreitung und jede Art der Verwertung au\u00dferhalb der Grenzen des Urheberrechtes bed\u00fcrfen der schriftlichen Zustimmung des Betreibers.</div>
+</div>
+</div>
+
 <div class="disclaimer"><strong>Hinweis:</strong> Dieses Impressum wurde automatisch auf Basis Ihrer Angaben erstellt. Bitte pr\u00fcfen Sie die Richtigkeit aller Informationen.</div>`;
   } else {
     title = "Datenschutzerkl\u00e4rung";
@@ -301,6 +332,16 @@ Diese Website wird \u00fcber das globale CDN von Cloudflare ausgeliefert. Dabei 
 <span class="tag tag-dauer">Speicherdauer: bis 30 Tage</span><br>
 <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></div>
 </div>
+<div class="card" style="margin-top:8px">
+<div class="card-label">Datenbank &amp; Speicherung</div>
+<div class="card-title">Supabase Inc.</div>
+<div class="card-body">970 Toa Payoh North #07-04, Singapore 318992<br>
+Website-Inhalte, Kontaktanfragen und Betriebsdaten werden in einer PostgreSQL-Datenbank bei Supabase gespeichert. Supabase verarbeitet Daten als Sub-Auftragsverarbeiter im Auftrag von Wagner IT-Solutions e.U.
+<span class="tag tag-basis">Art. 6 Abs. 1 lit. b/f DSGVO</span>
+<span class="tag tag-drittland">Hosting: AWS eu-central-1 (Frankfurt)</span>
+<span class="tag tag-dauer">Speicherdauer: Vertragsdauer + gesetzliche Aufbewahrungsfrist</span><br>
+<a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></div>
+</div>
 </div>
 
 <div class="section">
@@ -316,9 +357,26 @@ Diese Website wird \u00fcber das globale CDN von Cloudflare ausgeliefert. Dabei 
 </div>
 
 <div class="card" style="margin-top:8px">
+<div class="card-label">Karteneinbettung</div>
+<div class="card-title">Google Maps &mdash; Google LLC</div>
+<div class="card-body">Diese Website bindet Google Maps zur Standortanzeige ein. Beim Laden der Karte wird Ihre IP-Adresse an Google-Server \u00fcbertragen. Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.
+<span class="tag tag-basis">Art. 6 Abs. 1 lit. f DSGVO</span>
+<span class="tag tag-drittland">Drittland USA &mdash; Standardvertragsklauseln</span><br>
+<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></div>
+</div>
+
+<div class="card" style="margin-top:8px">
+<div class="card-label">Kontaktformular</div>
+<div class="card-title">Kontaktanfragen \u00fcber die Website</div>
+<div class="card-body">Wenn Sie das Kontaktformular auf dieser Website nutzen, werden folgende Daten verarbeitet: Name, E-Mail-Adresse, Telefonnummer (optional) und Ihre Nachricht. Diese Daten werden in einer Datenbank bei Supabase (AWS eu-central-1, Frankfurt) gespeichert und ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage verwendet. Es findet keine Weitergabe an Dritte statt.
+<span class="tag tag-basis">Art. 6 Abs. 1 lit. b DSGVO</span>
+<span class="tag tag-dauer">Speicherdauer: bis Anfrage abgeschlossen, danach gesetzliche Aufbewahrungsfrist (7 Jahre)</span></div>
+</div>
+
+<div class="card" style="margin-top:8px">
 <div class="card-label">Kontaktaufnahme</div>
 <div class="card-title">Telefon &amp; E-Mail</div>
-<div class="card-body">Wenn Sie uns kontaktieren, verarbeiten wir Name, Kontaktdaten und Ihr Anliegen ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage. Es findet keine Weitergabe an Dritte statt.
+<div class="card-body">Wenn Sie uns per Telefon oder E-Mail kontaktieren, verarbeiten wir Ihre Kontaktdaten und Ihr Anliegen ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage. Es findet keine Weitergabe an Dritte statt.
 <span class="tag tag-basis">Art. 6 Abs. 1 lit. b DSGVO</span>
 <span class="tag tag-dauer">Speicherdauer: bis Anfrage abgeschlossen, danach gesetzliche Aufbewahrungsfrist (7 Jahre)</span></div>
 </div>

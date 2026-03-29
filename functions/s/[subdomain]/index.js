@@ -259,8 +259,9 @@ export async function onRequestGet({params, env}) {
   //   );
   // }
 
-  // ── Responsive Fixes (Mobile) ──
+  // ── Serve-time Style Fixes ──
   const responsiveStyle = `<style>
+.hero{min-height:100vh}
 @media(max-width:640px){
 .sr-foto-grid{grid-template-columns:1fr 1fr!important}
 .sr-leist-grid{grid-template-columns:1fr!important}

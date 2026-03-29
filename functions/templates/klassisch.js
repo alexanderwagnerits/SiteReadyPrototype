@@ -54,7 +54,7 @@ a{color:inherit}
 .sr-a{opacity:0;animation:sr-up .5s ease forwards}
 
 /* ── Hero ── */
-.hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative}
+.hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative;min-height:100vh}
 .hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:56px 28px 40px}
 .hero-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .hero-badge{padding:5px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.02em}

@@ -1356,24 +1356,26 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".8rem",color:T.textMuted}}>Aktionen, Urlaub oder News — erscheint als Banner auf Ihrer Website.</div>
           </div>):(
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {(order.announcements||[]).map((ann,i)=><div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
+            {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(updated)=>{await supabase.from("orders").update({announcements:updated}).eq("id",order.id);setToastMsg("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
+              <div style={{marginBottom:10}}>
+                <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} onBlur={()=>{const a=[...(order.announcements||[])];saveAnn(a);}} style={{width:"100%",padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+              </div>
               <div style={{display:"flex",gap:8,marginBottom:10}}>
-                <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40}}/>
-                <input type="date" value={ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date:e.target.value};setOrder(o=>({...o,announcements:a}));}} style={{padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".8rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,width:140}}/>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen bis (optional)</div>
+                  <input type="date" value={ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+                </div>
               </div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:".8rem",color:ann.active?T.green:T.textMuted,fontWeight:600}}>
-                  <div style={{width:36,height:20,borderRadius:10,background:ann.active?T.green:T.bg3,position:"relative",transition:"background .2s",cursor:"pointer"}} onClick={()=>{const a=[...(order.announcements||[])];a[i]={...a[i],active:!a[i].active};setOrder(o=>({...o,announcements:a}));}}>
+                  <div style={{width:36,height:20,borderRadius:10,background:ann.active?T.green:T.bg3,position:"relative",transition:"background .2s",cursor:"pointer"}} onClick={()=>{const a=[...(order.announcements||[])];a[i]={...a[i],active:!a[i].active};setOrder(o=>({...o,announcements:a}));saveAnn(a);}}>
                     <div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:ann.active?18:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.15)"}}/>
                   </div>
                   {ann.active?"Sichtbar":"Ausgeblendet"}
                 </label>
-                <div style={{display:"flex",gap:6}}>
-                  <button onClick={async()=>{const a=[...(order.announcements||[])];await supabase.from("orders").update({announcements:a}).eq("id",order.id);setToastMsg("Gespeichert");}} style={{padding:"6px 12px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>Speichern</button>
-                  <button onClick={async()=>{const a=(order.announcements||[]).filter((_,idx)=>idx!==i);await supabase.from("orders").update({announcements:a}).eq("id",order.id);setOrder(o=>({...o,announcements:a}));}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>{"\u00d7"}</button>
-                </div>
+                <button onClick={async()=>{const a=(order.announcements||[]).filter((_,idx)=>idx!==i);await supabase.from("orders").update({announcements:a}).eq("id",order.id);setOrder(o=>({...o,announcements:a}));}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>{"\u00d7"}</button>
               </div>
-            </div>)}
+            </div>})}
           </div>)}
         </div>
         {/* Onboarding-Checkliste */}

@@ -68,8 +68,10 @@ export async function onRequestGet({params, env}) {
       return true;
     });
     if (validAnn.length > 0) {
-      const annHtml = `<div id="sr-announcements" style="background:var(--accent,#2563eb);color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;font-weight:600;line-height:1.5">` +
-        validAnn.map(a => a.text).join(" &nbsp;\u00b7&nbsp; ") +
+      const annText = validAnn.map(a => a.text).join(" \u00b7 ");
+      const annHtml = `<div id="sr-announcements" style="background:rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.85);text-align:center;padding:10px 48px 10px 24px;font-size:.82rem;font-weight:500;line-height:1.5;position:relative">` +
+        `<span style="opacity:.5;margin-right:6px">\u2139</span>${annText}` +
+        `<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:1rem;padding:4px 8px;line-height:1" aria-label="Schlie\u00dfen">\u00d7</button>` +
         `</div>`;
       // Nach </nav> einfuegen
       if (html.includes("</nav>")) {

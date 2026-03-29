@@ -98,7 +98,7 @@ export async function onRequestGet({params, env}) {
         `@media(min-width:900px){` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:start;padding-top:140px!important}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-trust{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;height:380px;overflow:hidden;border-radius:var(--rLg,8px)}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;height:460px;overflow:hidden;border-radius:var(--rLg,8px)}` +
         `}</style>`;
       // Inject image at end of hero-inner
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
@@ -123,11 +123,11 @@ export async function onRequestGet({params, env}) {
   if (leistFotos.length > 0 && html.includes("<!-- LEIST_FOTOS -->")) {
     const items = leistFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--rLg,8px);line-height:0">` +
-      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:3/2">` +
+      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3">` +
       `</div>`
     ).join("");
-    const cols = leistFotos.length <= 2 ? "1fr 1fr" : "repeat(auto-fill,minmax(240px,1fr))";
-    const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:40px">${items}</div>`;
+    const cols = leistFotos.length <= 2 ? "1fr 1fr" : "repeat(auto-fill,minmax(260px,1fr))";
+    const grid = `<div style="display:grid;grid-template-columns:${cols};gap:14px;margin-top:48px">${items}</div>`;
     html = html.replace("<!-- LEIST_FOTOS -->", grid);
   } else {
     html = html.replace("<!-- LEIST_FOTOS -->", "");
@@ -138,11 +138,11 @@ export async function onRequestGet({params, env}) {
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0">` +
-      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:3/2">` +
+      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3">` +
       `</div>`
     ).join("");
-    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : "repeat(auto-fill,minmax(200px,1fr))";
-    const grid = `<div style="display:grid;grid-template-columns:${cols};gap:10px;margin-top:28px">${items}</div>`;
+    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : "repeat(auto-fill,minmax(220px,1fr))";
+    const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
     html = html.replace("<!-- ABOUT_FOTOS -->", grid);
   } else {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");

@@ -76,13 +76,28 @@ export async function onRequestGet({params, env}) {
     }
   }
 
-  // Hero-Bild: erste Section bekommt id="sr-hero", dann CSS-Override mit Bild
+  // Hero-Bild: Layout "full" (Hintergrund) oder "split" (Bild rechts)
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
+  const heroLayout = o.hero_layout || "split";
   if (o.url_hero) {
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.55)),url('${o.url_hero}') center/cover no-repeat!important}` +
-      `#sr-hero h1,#hero h1,#sr-hero h2,#hero h2,#sr-hero p,#hero p{text-shadow:0 2px 12px rgba(0,0,0,.55)}` +
-      `</style>`;
-    html = html.replace('</head>', heroStyle + '</head>');
+    if (heroLayout === "full") {
+      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.55)),url('${o.url_hero}') center/cover no-repeat!important}` +
+        `#sr-hero h1,#hero h1{text-shadow:0 2px 12px rgba(0,0,0,.55)}` +
+        `#sr-hero .hero-sub,#sr-hero .hero-desc{text-shadow:0 1px 8px rgba(0,0,0,.4)}</style>`;
+      html = html.replace('</head>', heroStyle + '</head>');
+    } else {
+      // Split: Bild rechts neben dem Text
+      const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:var(--rLg,8px)"/></div>`;
+      const heroStyle = `<style>` +
+        `@media(min-width:900px){` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center}` +
+        `.hero-inner>div:first-child,.hero-inner>*:not(.hero-img){grid-column:1}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;max-height:480px;overflow:hidden;border-radius:var(--rLg,8px)}` +
+        `}</style>`;
+      // Inject image at end of hero-inner
+      html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
+      html = html.replace('</head>', heroStyle + '</head>');
+    }
   }
 
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)

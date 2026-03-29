@@ -69,13 +69,13 @@ export async function onRequestGet({params, env}) {
     });
     if (validAnn.length > 0) {
       const annText = validAnn.map(a => a.text).join(" \u00b7 ");
-      const annHtml = `<div id="sr-announcements" style="background:var(--primary,#0f2b5b);color:#fff;text-align:center;padding:10px 48px 10px 24px;font-size:.82rem;font-weight:600;line-height:1.5;position:relative;border-bottom:1px solid rgba(255,255,255,.1)">` +
+      const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:7px 16px;border-radius:100px;font-size:.75rem;font-weight:600;line-height:1.4;margin-bottom:16px">` +
         `${annText}` +
-        `<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:1rem;padding:4px 8px;line-height:1" aria-label="Schlie\u00dfen">\u00d7</button>` +
+        `<button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:.85rem;padding:0 2px;line-height:1;flex-shrink:0" aria-label="Schlie\u00dfen">\u00d7</button>` +
         `</div>`;
-      // Nach </nav> einfuegen
-      if (html.includes("</nav>")) {
-        html = html.replace("</nav>", `</nav>\n${annHtml}`);
+      // Vor die Badges im Hero einfuegen
+      if (html.includes('<div class="hero-badges">')) {
+        html = html.replace('<div class="hero-badges">', annHtml + '\n<div class="hero-badges">');
       } else {
         html = html.replace(/<body[^>]*>/i, m => m + "\n" + annHtml);
       }
@@ -261,8 +261,10 @@ export async function onRequestGet({params, env}) {
 
   // ── Serve-time Style Fixes ──
   const responsiveStyle = `<style>
-.hero{min-height:100vh}
+.hero{min-height:100vh;min-height:100svh}
 @media(max-width:640px){
+.hero{justify-content:center}
+.hero-inner{padding-top:24px!important;padding-bottom:24px!important}
 .sr-foto-grid{grid-template-columns:1fr 1fr!important}
 .sr-leist-grid{grid-template-columns:1fr!important}
 .sr-leist-grid div p{font-size:.85rem!important;line-height:1.65!important}

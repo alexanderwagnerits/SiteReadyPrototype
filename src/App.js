@@ -415,11 +415,9 @@ function LandingPage({onStart,onPortal}){
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:460}}>Basierend auf Ihrem Beruf schlagen wir den passenden Stil vor — oder Sie wählen Ihren eigenen.</p>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}} className="lp-variants-grid">
-        {[{t:"Klassisch",gradient:STYLES_MAP.klassisch.heroGradient},{t:"Modern",gradient:STYLES_MAP.modern.heroGradient},{t:"Elegant",gradient:STYLES_MAP.elegant.heroGradient},{t:"Eigenes Branding",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)"}].map(v=><div key={v.t} style={{borderRadius:12,overflow:"hidden",border:"1px solid rgba(0,0,0,.08)",boxShadow:T.sh1}}>
-          <div style={{height:100,background:v.gradient}}/>
-          <div style={{padding:"14px 16px",background:"#fff",textAlign:"center"}}>
-            <div style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>{v.t}</div>
-          </div>
+        {[{t:"Klassisch",gradient:STYLES_MAP.klassisch.heroGradient},{t:"Modern",gradient:STYLES_MAP.modern.heroGradient},{t:"Elegant",gradient:STYLES_MAP.elegant.heroGradient},{t:"Eigenes Branding",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)"}].map(v=><div key={v.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"28px 20px",boxShadow:T.sh1,textAlign:"center"}}>
+          <div style={{width:28,height:28,borderRadius:8,background:v.gradient,margin:"0 auto 12px"}}/>
+          <div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>{v.t}</div>
         </div>)}
       </div>
     </W>

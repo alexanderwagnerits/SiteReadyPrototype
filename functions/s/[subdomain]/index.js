@@ -56,21 +56,25 @@ export async function onRequestGet({params, env}) {
     );
   }
 
-  // Aktuelles-Banner injizieren (aktive Announcements)
-  const announcements = (o.announcements || []).filter(a => a.active && a.text);
+  // Aktuelles-Banner injizieren (aktive Announcements mit Start/Enddatum)
+  const announcements = (o.announcements || []).filter(a => a.active && a.text?.trim());
   if (announcements.length > 0) {
     const today = new Date().toISOString().split("T")[0];
-    const validAnn = announcements.filter(a => !a.date || a.date >= today);
+    const validAnn = announcements.filter(a => {
+      const start = a.date_start || "";
+      const end = a.date_end || a.date || "";
+      if (start && start > today) return false; // noch nicht gestartet
+      if (end && end < today) return false; // abgelaufen
+      return true;
+    });
     if (validAnn.length > 0) {
-      const annHtml = `<div id="sr-announcements" style="background:var(--accent,#2563eb);color:#fff;text-align:center;padding:10px 24px;font-size:.88rem;font-weight:600;font-family:system-ui,sans-serif;line-height:1.5">` +
-        validAnn.map(a => {
-          const dateStr = a.date ? ` <span style="opacity:.75;font-weight:400">(bis ${new Date(a.date).toLocaleDateString("de-AT",{day:"numeric",month:"long"})})</span>` : "";
-          return a.text + dateStr;
-        }).join(" &nbsp;·&nbsp; ") +
+      const annHtml = `<div id="sr-announcements" style="background:var(--accent,#2563eb);color:#fff;text-align:center;padding:12px 24px;font-size:.85rem;font-weight:600;line-height:1.5">` +
+        validAnn.map(a => a.text).join(" &nbsp;\u00b7&nbsp; ") +
         `</div>`;
-      // Nach der Nav einfuegen
-      html = html.replace(/(<\/nav>)/i, `$1\n${annHtml}`);
-      if (!html.includes("sr-announcements")) {
+      // Nach </nav> einfuegen
+      if (html.includes("</nav>")) {
+        html = html.replace("</nav>", `</nav>\n${annHtml}`);
+      } else {
         html = html.replace(/<body[^>]*>/i, m => m + "\n" + annHtml);
       }
     }
@@ -87,12 +91,12 @@ export async function onRequestGet({params, env}) {
       html = html.replace('</head>', heroStyle + '</head>');
     } else {
       // Split: Bild rechts neben dem Text
-      const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;border-radius:var(--rLg,8px)"/></div>`;
+      const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:var(--rLg,8px)"/></div>`;
       const heroStyle = `<style>` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:start;padding-top:140px!important}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-trust{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;height:400px;overflow:hidden;border-radius:var(--rLg,8px)}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;height:380px;overflow:hidden;border-radius:var(--rLg,8px)}` +
         `}</style>`;
       // Inject image at end of hero-inner
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');

@@ -1345,8 +1345,8 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
             <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Aktuelles</div>
-            {(order.announcements||[]).length<3&&<button onClick={async()=>{
-              const a=[...(order.announcements||[]),{text:"",active:true,date:"",id:Date.now()}];
+            {(order.announcements||[]).length<1&&<button onClick={async()=>{
+              const a=[{text:"",active:false,date_start:"",date_end:"",id:Date.now()}];
               await supabase.from("orders").update({announcements:a}).eq("id",order.id);
               setOrder(o=>({...o,announcements:a}));
             }} style={{padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>+ Hinzufügen</button>}
@@ -1356,14 +1356,19 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".8rem",color:T.textMuted}}>Aktionen, Urlaub oder News — erscheint als Banner auf Ihrer Website.</div>
           </div>):(
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(updated)=>{await supabase.from("orders").update({announcements:updated}).eq("id",order.id);setToastMsg("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
+            {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(a)=>{await supabase.from("orders").update({announcements:a}).eq("id",order.id);setToastMsg("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
               <div style={{marginBottom:10}}>
+                <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Text</div>
                 <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} onBlur={()=>{const a=[...(order.announcements||[])];saveAnn(a);}} style={{width:"100%",padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
               </div>
-              <div style={{display:"flex",gap:8,marginBottom:10}}>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen bis (optional)</div>
-                  <input type="date" value={ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+                <div>
+                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen ab</div>
+                  <input type="date" value={ann.date_start||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date_start:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+                </div>
+                <div>
+                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen bis</div>
+                  <input type="date" value={ann.date_end||ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date_end:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
                 </div>
               </div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1373,7 +1378,7 @@ function Portal({session,onLogout}){
                   </div>
                   {ann.active?"Sichtbar":"Ausgeblendet"}
                 </label>
-                <button onClick={async()=>{const a=(order.announcements||[]).filter((_,idx)=>idx!==i);await supabase.from("orders").update({announcements:a}).eq("id",order.id);setOrder(o=>({...o,announcements:a}));}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>{"\u00d7"}</button>
+                <button onClick={async()=>{await supabase.from("orders").update({announcements:[]}).eq("id",order.id);setOrder(o=>({...o,announcements:[]}));}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>{"\u00d7"}</button>
               </div>
             </div>})}
           </div>)}

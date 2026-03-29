@@ -2,11 +2,7 @@
 function buildNav(o, pal, stil) {
   const tel = o.telefon || "";
   return `<style>
-#sitenav{position:sticky;top:0;z-index:1000;background:var(--primary);transition:background .3s,box-shadow .3s}
-#sitenav.scrolled{background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08)}
-#sitenav.scrolled .nav-logo{color:var(--primary)!important}
-#sitenav.scrolled .nav-link{color:var(--primary)!important}
-#sitenav.scrolled .hbg-bar{background:var(--primary)!important}
+#sitenav{position:sticky;top:0;z-index:1000;background:var(--primary)}
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
 .nav-links{display:flex;align-items:center;gap:28px}
 .nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
@@ -47,7 +43,6 @@ var btn=document.getElementById('hbg');
 var mob=document.getElementById('mob-menu');
 var open=false;
 btn.addEventListener('click',function(){open=!open;mob.style.display=open?'block':'none';});
-window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>40);if(window.scrollY>40&&open){open=false;mob.style.display='none';}});
 document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){open=false;mob.style.display='none';});});
 })();
 </script>`;

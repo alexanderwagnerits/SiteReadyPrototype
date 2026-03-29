@@ -135,10 +135,6 @@ a{color:inherit}
 .termin-cta h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:10px;color:#fff}
 .termin-cta p{font-size:.9rem;opacity:.5;margin-bottom:28px}
 
-/* ── Sticky Mobile CTA ── */
-.sticky-mob{display:none;position:fixed;bottom:0;left:0;right:0;z-index:900;background:var(--accent);text-align:center}
-.sticky-mob a{color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;display:block;min-height:52px;line-height:52px}
-@media(max-width:640px){.sticky-mob{display:block}body{padding-bottom:52px}}
 </style>
 </head>
 <body>
@@ -238,7 +234,6 @@ ${buchungslinkHtml}
 
 <!-- FOOTER -->
 
-<div class="sticky-mob">${stickyCtaHtml}</div>
 <script>(function(){var o=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-a');o.unobserve(i.target)}})},{threshold:.15});document.querySelectorAll('.leist,.ueber,.kontakt,.termin-cta').forEach(function(s){o.observe(s)})})();</script>
 </body>
 </html>`;

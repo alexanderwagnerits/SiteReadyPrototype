@@ -55,19 +55,20 @@ a{color:inherit}
 
 /* ── Hero ── */
 .hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative}
-.hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:80px 28px 40px}
-.hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.hero-badge{padding:6px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);font-size:.72rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.02em}
-.hero h1{font-size:clamp(2.2rem,5.5vw,3.4rem);font-weight:800;line-height:1.08;letter-spacing:-.04em;margin-bottom:10px;max-width:680px}
-.hero-sub{font-size:1rem;color:rgba(255,255,255,.5);font-weight:400;margin-bottom:12px}
-.hero-desc{font-size:.92rem;color:rgba(255,255,255,.4);max-width:480px;margin-bottom:24px;line-height:1.75}
-.hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}
+.hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:56px 28px 40px}
+.hero-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.hero-badge{padding:5px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.02em}
+.hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:8px;max-width:600px}
+.hero-sub{font-size:.92rem;color:rgba(255,255,255,.5);font-weight:400;margin-bottom:10px}
+.hero-desc{font-size:.88rem;color:rgba(255,255,255,.38);max-width:440px;margin-bottom:20px;line-height:1.7}
+.hero-btns{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 32px;font-size:.88rem;font-weight:600;text-decoration:none;border-radius:var(--r);transition:all .2s ease;cursor:pointer;border:none;font-family:var(--font)}
 .btn-accent{background:var(--accent);color:#fff}
 .btn-accent:hover{opacity:.85}
 .btn-ghost{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.2)}
 .btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
 .hero-trust{display:none}
+.trust-strip{display:none}
 @media(max-width:640px){
   .hero-btns{flex-direction:column}
   .hero-btns .btn{width:100%;text-align:center}

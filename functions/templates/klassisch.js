@@ -135,6 +135,11 @@ a{color:inherit}
 .termin-cta h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:10px;color:#fff}
 .termin-cta p{font-size:.9rem;opacity:.5;margin-bottom:28px}
 
+.lb{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);align-items:center;justify-content:center;cursor:zoom-out}
+.lb.open{display:flex}
+.lb img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:var(--rLg)}
+.lb-x{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;opacity:.6}
+.lb-x:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -234,7 +239,8 @@ ${buchungslinkHtml}
 
 <!-- FOOTER -->
 
-<script>(function(){var o=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-a');o.unobserve(i.target)}})},{threshold:.15});document.querySelectorAll('.leist,.ueber,.kontakt,.termin-cta').forEach(function(s){o.observe(s)})})();</script>
+<div class="lb" id="sr-lb" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schliessen">\u00d7</button><img id="sr-lb-img" src="" alt=""/></div>
+<script>(function(){var o=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-a');o.unobserve(i.target)}})},{threshold:.15});document.querySelectorAll('.leist,.ueber,.kontakt,.termin-cta').forEach(function(s){o.observe(s)});document.addEventListener('click',function(e){var img=e.target.closest('.sr-zoom');if(img){var lb=document.getElementById('sr-lb');document.getElementById('sr-lb-img').src=img.src;lb.classList.add('open');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('sr-lb').classList.remove('open');});})();</script>
 </body>
 </html>`;
 }

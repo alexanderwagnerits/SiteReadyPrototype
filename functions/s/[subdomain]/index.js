@@ -122,8 +122,8 @@ export async function onRequestGet({params, env}) {
   const leistFotos = [o.url_leist1, o.url_leist2, o.url_leist3, o.url_leist4].filter(Boolean);
   if (leistFotos.length > 0 && html.includes("<!-- LEIST_FOTOS -->")) {
     const items = leistFotos.map(url =>
-      `<div style="overflow:hidden;border-radius:var(--rLg,8px);line-height:0">` +
-      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3">` +
+      `<div style="overflow:hidden;border-radius:var(--rLg,8px);line-height:0;cursor:zoom-in">` +
+      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
       `</div>`
     ).join("");
     const cols = leistFotos.length <= 2 ? "1fr 1fr" : `repeat(${leistFotos.length},1fr)`;
@@ -137,8 +137,8 @@ export async function onRequestGet({params, env}) {
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
-      `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0">` +
-      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3">` +
+      `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
+      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
       `</div>`
     ).join("");
     const cols = aboutFotos.length <= 2 ? "1fr 1fr" : `repeat(${aboutFotos.length},1fr)`;

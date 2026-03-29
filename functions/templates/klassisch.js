@@ -113,15 +113,15 @@ a{color:inherit}
 .kontakt-social{display:flex;gap:10px;margin-top:12px}
 .kontakt-social a{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:var(--r);border:1px solid var(--sep);color:var(--primary);text-decoration:none;transition:all .2s}
 .kontakt-social a:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
-.k-form{background:var(--white);border:1px solid var(--sep);border-radius:var(--rLg);padding:32px 28px}
+.kontakt-form-wrap{margin-top:48px;padding-top:48px;border-top:1px solid var(--sep)}
 .k-form h3{font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:20px}
 .k-form label{display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
 .k-form input,.k-form textarea{width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s;box-sizing:border-box}
 .k-form input:focus,.k-form textarea:focus{border-color:var(--accent)}
 .k-form textarea{resize:vertical}
-.k-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.k-form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .k-form-field{margin-bottom:12px}
-.k-form button{background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--r);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font);width:100%;min-height:48px;transition:opacity .2s}
+.k-form button{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font);min-height:48px;transition:opacity .2s}
 .k-form button:hover{opacity:.85}
 .k-form-ok{display:none;text-align:center;padding:40px 20px}
 .k-form-ok h4{font-size:1.1rem;font-weight:800;color:var(--primary);margin:12px 0 6px}
@@ -227,9 +227,11 @@ ${preislisteHtml}
 </div>
 ${socialHtml}
 </div>
+<div><!-- MAPS --></div>
+</div>
+<div class="kontakt-form-wrap">
 <!-- KONTAKT_FORM -->
 </div>
-<!-- MAPS -->
 </div>
 </section>
 

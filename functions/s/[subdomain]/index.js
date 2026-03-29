@@ -142,9 +142,9 @@ export async function onRequestGet({params, env}) {
       `<div class="k-form-row">` +
       `<div><label>Name *</label><input required type="text" placeholder="Ihr Name"></div>` +
       `<div><label>E-Mail *</label><input required type="email" placeholder="ihre@email.at"></div>` +
+      `<div><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
       `</div>` +
-      `<div class="k-form-field"><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
-      `<div class="k-form-field"><label>Nachricht *</label><textarea required rows="4" placeholder="Ihre Nachricht..."></textarea></div>` +
+      `<div class="k-form-field"><label>Nachricht *</label><textarea required rows="3" placeholder="Ihre Nachricht..."></textarea></div>` +
       `<button type="submit">Nachricht senden</button>` +
       `</form></div>` +
       `<div id="sr-form-ok" class="k-form-ok">` +

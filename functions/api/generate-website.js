@@ -387,12 +387,12 @@ LEISTUNGEN: ${leistungen.join(", ")}
 REGELN:
 - Oesterreichisches Deutsch, formelle Ansprache ("Sie")
 - Warm, professionell, keine Superlative, keine erfundenen Zahlen/Jahre
-- Leistungsbeschreibungen aus Kundenperspektive ("Sie erhalten...", "Damit Ihr...")
+- Leistungsbeschreibungen: MAXIMAL 15 Woerter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
 - Vorteile kurz (3-6 Woerter pro Punkt)
 
 JSON-FORMAT:
 {
-  "leistungen_beschreibungen": {"${leistungen.join('":"...","')}":"..."},
+  "leistungen_beschreibungen": {"${leistungen.join('":"[max 15 Woerter]","')}":"[max 15 Woerter]"},
   "text_ueber_uns": "4-5 Saetze ueber den Betrieb",
   "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
   "leistungen_intro": "1 kurzer Einleitungssatz fuer die Leistungen-Sektion",

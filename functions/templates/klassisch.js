@@ -146,7 +146,6 @@ a{color:inherit}
 
 <section class="hero" id="sr-hero">
 <div class="hero-inner">
-<!-- LOGO -->
 <div class="hero-badges">${badgesHtml}</div>
 <h1>${firmenname}</h1>
 <p class="hero-sub">${brancheLabel} &ndash; ${einsatzgebiet}</p>

@@ -305,33 +305,33 @@ export async function onRequestPost({request, env}) {
   const navHtml      = buildNav(o, pal, stil);
   const footerHtml   = buildFooter(o, pal, year, sub);
 
-  /* ─── Trust-Bar Items (nur echte Daten) ─── */
+  /* ─── Trust-Bar Items (nur echte Daten, keine Emojis) ─── */
   const trustItems = [];
-  if (o.notdienst) trustItems.push("\uD83D\uDEA8 24/7 Notdienst");
-  if (o.meisterbetrieb) trustItems.push("\uD83C\uDFC6 Meisterbetrieb");
-  trustItems.push(`\uD83D\uDCCD ${o.einsatzgebiet || o.bundesland || "Oesterreich"}`);
-  if (o.kostenvoranschlag) trustItems.push("✔ Kostenloser Kostenvoranschlag");
-  if (leistungen.length >= 3) trustItems.push(`✔ ${leistungen.length} Leistungsbereiche`);
-  const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
-  if (trustItems.length < 4) trustItems.push(`🕐 ${oezLabel}`);
-  const trustBar = trustItems.slice(0, 4).join("  ·  ");
+  if (o.notdienst) trustItems.push("24/7 Notdienst");
+  if (o.meisterbetrieb) trustItems.push("Meisterbetrieb");
+  trustItems.push(o.einsatzgebiet || o.bundesland || "Oesterreich");
+  if (o.kostenvoranschlag) trustItems.push("Kostenloser Kostenvoranschlag");
+  if (leistungen.length >= 3) trustItems.push(`${leistungen.length} Leistungsbereiche`);
+  const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo\u2013Fr 8\u201317 Uhr","mo-fr-7-16":"Mo\u2013Fr 7\u201316 Uhr","mo-fr-8-18":"Mo\u2013Fr 8\u201318 Uhr","mo-sa-8-17":"Mo\u2013Sa 8\u201317 Uhr","mo-sa-8-12":"Mo\u2013Sa 8\u201312 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
+  if (trustItems.length < 4) trustItems.push(oezLabel);
+  const trustBar = trustItems.slice(0, 4).join("  \u00b7  ");
 
-  /* ─── Feature-Badges (fuer Hero + Info-Sektion) ─── */
+  /* ─── Feature-Badges (keine Emojis) ─── */
   const badges = [];
-  if (o.notdienst) badges.push("⚡ 24/7 Notdienst");
-  if (o.meisterbetrieb) badges.push("🏆 Meisterbetrieb");
-  if (o.kostenvoranschlag) badges.push("✓ Kostenloser Kostenvoranschlag");
-  if (o.foerderungsberatung) badges.push("💰 Förderungsberatung");
-  if (o.hausbesuche) badges.push("🏠 Hausbesuche möglich");
-  if (o.terminvereinbarung) badges.push("📅 Nur mit Termin");
-  if (o.lieferservice) badges.push("🚚 Lieferservice");
-  if (o.barrierefrei) badges.push("♿ Barrierefrei");
-  if (o.parkplaetze) badges.push("🅿 Parkplätze vorhanden");
-  if (o.erstgespraech_gratis) badges.push("🤝 Erstgespräch gratis");
-  if (o.online_beratung) badges.push("💻 Online-Beratung möglich");
-  if (o.ratenzahlung) badges.push("📋 Ratenzahlung möglich");
-  const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt / Wahltherapeut" : o.kassenvertrag === "privat" ? "Nur Privat" : o.kassenvertrag === "oegk" ? "ÖGK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
-  if (kassenLabel) badges.push(`🏥 ${kassenLabel}`);
+  if (o.notdienst) badges.push("24/7 Notdienst");
+  if (o.meisterbetrieb) badges.push("Meisterbetrieb");
+  if (o.kostenvoranschlag) badges.push("Kostenloser KV");
+  if (o.foerderungsberatung) badges.push("F\u00f6rderungsberatung");
+  if (o.hausbesuche) badges.push("Hausbesuche");
+  if (o.terminvereinbarung) badges.push("Nur mit Termin");
+  if (o.lieferservice) badges.push("Lieferservice");
+  if (o.barrierefrei) badges.push("Barrierefrei");
+  if (o.parkplaetze) badges.push("Parkpl\u00e4tze");
+  if (o.erstgespraech_gratis) badges.push("Erstgespr\u00e4ch gratis");
+  if (o.online_beratung) badges.push("Online-Beratung");
+  if (o.ratenzahlung) badges.push("Ratenzahlung");
+  const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "\u00d6GK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
+  if (kassenLabel) badges.push(kassenLabel);
 
   /* ─── Logo URL ─── */
   const logoUrl = o.url_logo || null;
@@ -483,15 +483,12 @@ JSON-FORMAT:
   html = html.replace("<!-- NAV -->", navHtml);
   html = html.replace("<!-- FOOTER -->", footerHtml);
 
-  /* ─── Logo injizieren ─── */
+  /* ─── Logo in Nav injizieren ─── */
   if (logoUrl) {
-    html = html.replace("<!-- LOGO -->", `<img src="${logoUrl}" alt="${o.firmenname}" style="height:48px;max-width:200px;object-fit:contain;display:block;margin-bottom:16px"/>`);
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/i,
       `$1<img src="${logoUrl}" alt="${o.firmenname}" style="height:32px;max-width:150px;object-fit:contain"/>$2`
     );
-  } else {
-    html = html.replace("<!-- LOGO -->", "");
   }
 
   /* ─── Schema.org JSON-LD ─── */

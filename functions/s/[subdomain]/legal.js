@@ -119,7 +119,7 @@ td:first-child{font-weight:600;color:${pal.p};width:200px;white-space:nowrap}
 </head>
 <body>
 <div class="topbar">
-<a href="/s/${subdomain}" class="topbar-logo">${o.firmenname}</a>
+<a href="/s/${subdomain}" class="topbar-logo">${o.url_logo ? `<img src="${o.url_logo}" alt="${o.firmenname}" style="height:28px;max-width:140px;object-fit:contain">` : o.firmenname}</a>
 <a href="/s/${subdomain}" class="topbar-back">\u2190 Zur\u00fcck zur Website</a>
 </div>
 <div class="wrap">

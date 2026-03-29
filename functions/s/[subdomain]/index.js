@@ -93,12 +93,12 @@ export async function onRequestGet({params, env}) {
       html = html.replace('</head>', heroStyle + '</head>');
     } else {
       // Split: Bild rechts neben dem Text
-      const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:var(--rLg,8px)"/></div>`;
+      const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;border-radius:var(--rLg,8px)"/></div>`;
       const heroStyle = `<style>` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:start;padding-top:56px!important;padding-bottom:32px!important}` +
-        `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-trust{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;height:460px;overflow:hidden;border-radius:var(--rLg,8px)}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center}` +
+        `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns{grid-column:1}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px)}` +
         `}</style>`;
       // Inject image at end of hero-inner
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');

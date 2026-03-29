@@ -97,17 +97,31 @@ export async function onRequestGet({params, env}) {
     html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, "");
   }
 
-  // Galerie serve-time injizieren (zwischen Ueber-uns und Kontakt via <!-- GALERIE -->, Fallback vor Footer)
+  // Fotos aufteilen: Foto 1 = Bildband (fullwidth), Foto 2-5 = Grid-Galerie
   const fotoUrls = [o.url_foto1, o.url_foto2, o.url_foto3, o.url_foto4, o.url_foto5].filter(Boolean);
-  if (fotoUrls.length > 0) {
-    const items = fotoUrls.map(url =>
-      `<div style="overflow:hidden;border-radius:8px;background:#e2e8f0;line-height:0">` +
-      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:auto;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">` +
+
+  // Foto-Band: Erstes Foto als fullwidth Bildband zwischen Leistungen und Über-uns
+  if (fotoUrls.length > 0 && html.includes("<!-- FOTO_BAND -->")) {
+    const bandUrl = fotoUrls[0];
+    const bandHtml = `<div style="width:100%;height:clamp(200px,30vw,360px);overflow:hidden;position:relative">` +
+      `<img src="${bandUrl}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"/>` +
+      `</div>`;
+    html = html.replace("<!-- FOTO_BAND -->", bandHtml);
+  } else {
+    html = html.replace("<!-- FOTO_BAND -->", "");
+  }
+
+  // Galerie: Restliche Fotos (2-5) als Grid zwischen Über-uns und Kontakt
+  const galerieUrls = fotoUrls.slice(1);
+  if (galerieUrls.length > 0) {
+    const items = galerieUrls.map(url =>
+      `<div style="overflow:hidden;border-radius:var(--rLg,8px);line-height:0">` +
+      `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">` +
       `</div>`
     ).join("");
-    const galleryHtml = `<section id="galerie" style="padding:72px 0;background:var(--white,#fff)">` +
+    const galleryHtml = `<section id="galerie" style="padding:64px 0;background:var(--bg,#f8fafc)">` +
       `<div style="max-width:1100px;margin:0 auto;padding:0 28px">` +
-      `<div class="sr-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">${items}</div>` +
+      `<div class="sr-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">${items}</div>` +
       `</div></section>` +
       `<style>@media(max-width:560px){.sr-gallery-grid{grid-template-columns:1fr 1fr!important}}</style>`;
     if (html.includes("<!-- GALERIE -->")) {

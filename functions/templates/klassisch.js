@@ -174,6 +174,8 @@ ${preislisteHtml}
 </div>
 </section>
 
+<!-- FOTO_BAND -->
+
 <section class="sec ueber" id="ueber-uns">
 <div class="wrap">
 <div class="ueber-grid">

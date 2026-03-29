@@ -98,7 +98,7 @@ export async function onRequestGet({params, env}) {
         `@media(min-width:900px){` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:start}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px)}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:2/span 9;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px)}` +
         `}</style>`;
       // Inject image at end of hero-inner
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');

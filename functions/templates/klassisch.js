@@ -67,16 +67,11 @@ a{color:inherit}
 .btn-accent:hover{opacity:.85}
 .btn-ghost{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.2)}
 .btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
-.hero-trust{display:none}
-.trust-strip{display:none}
 @media(max-width:640px){
   .hero-btns{flex-direction:column}
   .hero-btns .btn{width:100%;text-align:center}
-  .hero-inner{padding:80px 20px 56px}
+  .hero-inner{padding:56px 20px 32px}
 }
-
-/* ── Trust Strip ── */
-.trust-strip{background:var(--bg);border-bottom:1px solid var(--sep);padding:14px 0;font-size:.78rem;color:var(--textMuted);text-align:center;letter-spacing:.02em}
 
 /* ── Leistungen ── */
 .leist{padding:96px 0;background:var(--white)}
@@ -159,11 +154,8 @@ a{color:inherit}
 <a href="${ctaPrimaryHref}" class="btn btn-accent">${ctaPrimary}</a>
 <a href="#leistungen" class="btn btn-ghost">${ctaSecondary}</a>
 </div>
-<div class="hero-trust">${trustBar}</div>
 </div>
 </section>
-
-<div class="trust-strip"><div class="w">${trustBar}</div></div>
 
 <section class="leist" id="leistungen">
 <div class="w">

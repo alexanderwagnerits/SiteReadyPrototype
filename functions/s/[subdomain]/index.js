@@ -180,12 +180,10 @@ export async function onRequestGet({params, env}) {
       custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:28px 24px;background:#fff;border-radius:8px;transition:all .2s ease",
     };
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
-    const iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#2563eb)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
       const desc = descMap[l] || descMap[lCapitalized] || "";
       return `<div style="${cardStyle}">` +
-        `<div style="width:34px;height:34px;border-radius:var(--r,4px);background:rgba(37,99,235,.06);display:flex;align-items:center;justify-content:center;margin-bottom:14px">${iconSvg}</div>` +
         `<h3 style="color:var(--primary,#0f2b5b);font-weight:700;margin:0 0 8px;font-size:.95rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
         (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.7">${desc}</p>` : "") +
         `</div>`;

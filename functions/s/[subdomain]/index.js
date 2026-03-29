@@ -87,9 +87,10 @@ export async function onRequestGet({params, env}) {
   const heroLayout = o.hero_layout || "split";
   if (o.url_hero) {
     if (heroLayout === "full") {
-      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.55)),url('${o.url_hero}') center/cover no-repeat!important}` +
-        `#sr-hero h1,#hero h1{text-shadow:0 2px 12px rgba(0,0,0,.55)}` +
-        `#sr-hero .hero-sub,#sr-hero .hero-desc{text-shadow:0 1px 8px rgba(0,0,0,.4)}</style>`;
+      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.65)),url('${o.url_hero}') center/cover no-repeat!important}` +
+        `#sr-hero h1,#hero h1{text-shadow:0 2px 16px rgba(0,0,0,.7)}` +
+        `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 8px rgba(0,0,0,.5)}` +
+        `#sr-hero .hero-btns .btn{text-shadow:none}</style>`;
       html = html.replace('</head>', heroStyle + '</head>');
     } else {
       // Split: Bild rechts neben dem Text

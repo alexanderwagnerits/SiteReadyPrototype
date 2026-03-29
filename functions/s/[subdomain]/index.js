@@ -105,11 +105,9 @@ export async function onRequestGet({params, env}) {
       `<img src="${url}" alt="" loading="lazy" style="width:100%;height:auto;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">` +
       `</div>`
     ).join("");
-    const galleryHtml = `<section id="galerie" style="padding:80px 0;background:var(--bg,#f8fafc)">` +
-      `<div style="max-width:1200px;margin:0 auto;padding:0 24px">` +
-      `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">Einblicke</div>` +
-      `<h2 style="font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:800;color:var(--primary);margin:0 0 32px">Bilder aus unserem Betrieb</h2>` +
-      `<div class="sr-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">${items}</div>` +
+    const galleryHtml = `<section id="galerie" style="padding:72px 0;background:var(--white,#fff)">` +
+      `<div style="max-width:1100px;margin:0 auto;padding:0 28px">` +
+      `<div class="sr-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">${items}</div>` +
       `</div></section>` +
       `<style>@media(max-width:560px){.sr-gallery-grid{grid-template-columns:1fr 1fr!important}}</style>`;
     if (html.includes("<!-- GALERIE -->")) {
@@ -159,20 +157,22 @@ export async function onRequestGet({params, env}) {
       leistungenArr.push(...o.extra_leistung.split(/[,\n]+/).map(s => s.trim()).filter(Boolean));
     }
     const descMap = o.leistungen_beschreibungen || {};
-    const stilName = o.stil || "professional";
+    const stilName = o.stil || "klassisch";
     const cardStyleMap = {
-      professional: "border-left:3px solid var(--accent);box-shadow:0 1px 8px rgba(0,0,0,.06);padding:28px 24px;background:#fff;border-radius:6px;transition:all .2s ease",
-      modern:       "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:32px 28px;overflow:hidden;border-top:4px solid var(--accent);background:#fff;transition:all .2s ease",
-      traditional:  "border:1px solid var(--sep,#e2e8f0);border-top:3px solid var(--accent);padding:28px 24px;background:#fff;transition:all .2s ease;border-radius:4px",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:3px solid var(--accent);padding:28px 24px;background:#fff;border-radius:4px;transition:all .2s ease",
+      modern:     "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:32px 28px;overflow:hidden;border-top:4px solid var(--accent);background:#fff;transition:all .2s ease",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:28px 24px;background:#fff;transition:all .2s ease;border-radius:2px",
+      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:28px 24px;background:#fff;border-radius:8px;transition:all .2s ease",
     };
-    const cardStyle = cardStyleMap[stilName] || cardStyleMap.professional;
-    const emojis = ["\uD83D\uDD27","\u26A1","\uD83C\uDFE0","\uD83D\uDD29","\uD83D\uDEE0","\uD83D\uDCA7","\uD83D\uDD11","\uD83E\uDE9F","\uD83C\uDFA8","\uD83C\uDF3F","\u2744","\u2728","\uD83C\uDF1F","\uD83D\uDC8E","\uD83C\uDFC6"];
+    const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
+    const iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
     const cards = leistungenArr.map((l, i) => {
-      const desc = descMap[l] || "";
+      const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
+      const desc = descMap[l] || descMap[lCapitalized] || "";
       return `<div style="${cardStyle}">` +
-        `<div style="font-size:2rem;margin-bottom:12px">${emojis[i % emojis.length]}</div>` +
-        `<h3 style="color:var(--primary);font-weight:700;margin:0 0 8px;font-size:1.05rem">${l}</h3>` +
-        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.9rem;line-height:1.6">${desc}</p>` : "") +
+        `<div style="width:36px;height:36px;border-radius:4px;background:var(--accent,#2563eb)10;display:flex;align-items:center;justify-content:center;margin-bottom:14px">${iconSvg}</div>` +
+        `<h3 style="color:var(--primary);font-weight:700;margin:0 0 8px;font-size:1rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.88rem;line-height:1.65">${desc}</p>` : "") +
         `</div>`;
     }).join("");
     const grid = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px">${cards}</div>`;
@@ -189,14 +189,14 @@ export async function onRequestGet({params, env}) {
   // Vorteile HTML aus text_vorteile JSON-Array aufbauen
   let vorteileHtml = "";
   if (Array.isArray(o.text_vorteile) && o.text_vorteile.length) {
-    const stil = o.stil || "professional";
+    const stil = o.stil || "klassisch";
     if (stil === "modern") {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">` +
         `<div style="width:36px;height:36px;border-radius:50%;background:var(--accent,#2563eb)22;color:var(--accent,#2563eb);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div>` +
         `<span style="padding-top:8px">${v}</span></div>`
       ).join("");
-    } else if (stil === "traditional") {
+    } else if (stil === "elegant") {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="padding:10px 0;border-bottom:1px solid var(--sep,#e2e8f0)">` +
         `<span style="color:var(--accent);font-weight:700;margin-right:8px">&#8211;</span>${v}</div>`

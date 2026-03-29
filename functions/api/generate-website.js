@@ -342,16 +342,28 @@ export async function onRequestPost({request, env}) {
   if (o.linkedin) socials.push({name:"LinkedIn",url:normSocial(o.linkedin)});
   if (o.tiktok) socials.push({name:"TikTok",url:normSocial(o.tiktok)});
 
+  /* ─── Branchenspezifische CTA-Texte ─── */
+  const ctaPrimary = o.buchungslink ? "Termin buchen" : o.notdienst ? "Notdienst anrufen" : o.kostenvoranschlag ? "Kostenlosen KV anfordern" : o.erstgespraech_gratis ? "Gratis Erstgespräch" : "Jetzt kontaktieren";
+  const ctaSecondary = "Leistungen ansehen";
+
   /* ─── System Prompt ─── */
   const system = `Du bist ein erstklassiger Web-Designer und Senior Frontend-Entwickler.
-Generiere eine VOLLSTAENDIGE, professionelle, wunderschoene HTML-Website fuer einen oesterreichischen ${betriebstyp}.
+Generiere eine VOLLSTAENDIGE, professionelle HTML-Website fuer einen oesterreichischen ${betriebstyp}.
 
-AUSGABE-REGEL: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html> und ende mit </html>.
-KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen). Striktes Token-Budget.
-KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden. Verstoss ist inakzeptabel.
-LEISTUNGEN – PFLICHT: Setze <!-- LEISTUNGEN --> als Platzhalter fuer das Cards-Grid (keine Cards selbst generieren – werden automatisch injiziert). Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK mit je 1 konkreten Satz.
-META: <meta name="robots" content="noindex,nofollow"> im <head> einbauen.
-STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere NUR: <!DOCTYPE html>, <html>, <head> (CSS+Fonts), <body> mit den Sektionen HERO, LEISTUNGEN, UEBER-UNS, KONTAKT${o.buchungslink ? ", TERMIN-CTA" : ""}. Setze <!-- NAV --> direkt nach <body> und <!-- FOOTER --> nach dem letzten Abschnitt. Setze <!-- GALERIE --> als eigene Zeile ZWISCHEN den Sektionen UEBER-UNS und KONTAKT (die Galerie wird automatisch eingefuegt wenn Fotos vorhanden sind).
+═══ GRUNDREGELN ═══
+AUSGABE: Antworte AUSSCHLIESSLICH mit reinem HTML-Code. Kein Markdown, keine Backticks, keine Erklaerungen. Beginne DIREKT mit <!DOCTYPE html>.
+KOMPAKTHEIT: CSS und HTML kompakt (keine Kommentare, kurze Klassennamen).
+KEINE ERFUNDENEN FAKTEN – ABSOLUTE PFLICHT: Keine erfundenen Zahlen, Jahreszahlen, Kundenzahlen, Erfahrungsjahre oder Statistiken. Nur echte, uebergebene Kundendaten verwenden.
+LEISTUNGEN: Setze <!-- LEISTUNGEN --> als Platzhalter (Cards werden automatisch injiziert). Beschreibe alle ${leistungen.length} Leistungen im SR-DATEN-BLOCK.
+META: <meta name="robots" content="noindex,nofollow"> im <head>.
+STRUKTUR: Nav und Footer werden automatisch injiziert. Generiere: HERO, LEISTUNGEN, UEBER-UNS, KONTAKT${o.buchungslink ? ", TERMIN-CTA" : ""}. Setze <!-- NAV --> nach <body>, <!-- FOOTER --> nach dem letzten Abschnitt, <!-- GALERIE --> zwischen UEBER-UNS und KONTAKT.
+
+═══ SPRACHE & TONALITAET ═══
+- Oesterreichisches Deutsch, formelle Ansprache ("Sie", nicht "Du")
+- Warm, einladend, aber professionell – wie ein guter Betrieb der seine Kunden ernst nimmt
+- Kein Marketing-Blabla, keine Superlative ("bester", "fuehrender"), keine leeren Phrasen
+- Kurze, klare Saetze. Jeder Satz hat einen Zweck.
+- Branchenspezifische Fachbegriffe verwenden wo passend
 
 ═══ DESIGN-VORGABEN ═══
 Primaerfarbe:  ${pal.p}
@@ -359,74 +371,76 @@ Akzentfarbe:   ${pal.a}
 Hintergrund:   ${pal.bg}
 Trennfarbe:    ${pal.s}
 Schriftart:    ${stil.font}
-Border-Radius: ${stil.r} (klein), ${stil.rLg} (gross)
+Border-Radius: ${stil.r} (Elemente), ${stil.rLg} (Karten/Sektionen)
 Button-Radius: ${stil.btnR || stil.r}
 Feeling:       ${stil.feel}
-Stil-Dekoration Hero: ${stil.heroDecor}
-Stil-Cards:    ${stil.cardStyle}
-Stil-Ueber-Uns: ${stil.ueberStyle}
+Hero-Dekoration: ${stil.heroDecor}
+Card-Stil:     ${stil.cardStyle}
+Ueber-Uns-Stil: ${stil.ueberStyle}
 
-CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text, --textMuted, --white
+CSS Custom Properties im :root: --primary, --accent, --bg, --sep, --text (#1f2937), --textMuted (#6b7280), --white (#fff)
+KONTRAST-PFLICHT: Text auf farbigem Hintergrund muss WCAG AA erfuellen. Weiss auf var(--accent) nur wenn Akzentfarbe dunkel genug ist. Im Zweifel: dunklen Text auf hellem Hintergrund verwenden.
 
-═══ RESPONSIVE – NICHT VERHANDELBAR ═══
-- Mobile-First. Jede Sektion funktioniert perfekt auf 320px bis 1400px.
-- Breakpoints: 640px (Mobile→Tablet), 900px (Tablet→Desktop)
-- Zweispaltige Layouts: auf Mobile immer einspaltig (grid-template-columns:1fr)
-- Schriftgroessen mit clamp(): H1 clamp(2.2rem,6vw,4.5rem), H2 clamp(1.4rem,3.5vw,2.2rem)
-- Padding Sektionen: Desktop 96px 0, Mobile 64px 0
-- Grid Cards: auto-fill minmax(260px,1fr) – kollabiert korrekt auf Mobile
-- Kein horizontales Scrollen auf irgendeiner Breite
-- Touch-freundliche Tap-Targets: min. 44px Hoehe auf interaktiven Elementen
-- Alle @media-Queries in einem gebundelten <style>-Block am Ende des <head>
+═══ RESPONSIVE ═══
+- Mobile-First. Perfekt auf 320px bis 1400px.
+- Breakpoints: 640px, 900px
+- Zweispaltig → einspaltig auf Mobile
+- Schriftgroessen: clamp(). H1: clamp(2rem,5vw,3.5rem), H2: clamp(1.3rem,3vw,2rem)
+- Padding: Desktop 80px 0, Mobile 56px 0
+- Touch-Targets: min. 44px Hoehe
+- Kein horizontales Scrollen
+- @media-Queries gebuendelt am Ende des <head>
 
-═══ TECHNISCHE ANFORDERUNGEN ═══
-- Valides HTML5 (nav, main, section, footer, article, address)
-- Google Fonts @import im <style>-Tag: ${stil.url}
-- CSS Grid und Flexbox fuer Layouts
-- html { scroll-behavior: smooth; }
-- Hover-Transitions: transition: all 0.2s ease
-- Meta-Tags: charset, viewport, description, og:title
+═══ TECHNISCH ═══
+- Valides HTML5 (semantische Tags: main, section, article, address)
+- Google Fonts @import: ${stil.url}
+- CSS Grid + Flexbox
+- scroll-behavior:smooth; Hover-Transitions: 0.2s ease
+- Meta-Tags: charset, viewport, description, og:title, og:description
 - Keine externen Ressourcen ausser Google Fonts
 
-═══ QUALITAETSSTANDARDS ═══
-- Starke visuelle Hierarchie durch Schriftgroessen und Gewichte
-- Conversion-optimiert: Telefonnummer mind. 3x sichtbar (nav, hero, kontakt)
-- Leistungs-Beschreibungen SELBST VERFASSEN (1 Satz, branchenspezifisch, konkret)
-- Professionell und fertig wirkend – nicht wie ein Template
+═══ QUALITAET ═══
+- Klare visuelle Hierarchie (Groesse, Gewicht, Farbe, Whitespace)
+- Conversion-optimiert: Telefonnummer 3x sichtbar (nav, hero, kontakt)
+- Leistungs-Beschreibungen: Was bekommt der Kunde konkret? Welches Problem wird geloest? Nicht was der Betrieb tut, sondern was der Kunde davon hat. Kein Marketing-Blabla.
+- Professionell und fertig – nicht wie ein Template oder Baukasten
 
 ═══ SEITENSTRUKTUR ═══
 
-HERO: min-height:100vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
-${badges.length ? `FEATURE-BADGES im Hero: Zeige diese Badges als kleine Pill-Elemente (display:inline-flex, gap:6px, flex-wrap:wrap) direkt UEBER dem H1:\n${badges.map(b=>`  • ${b}`).join("\n")}\nStil: padding:5px 14px, background:rgba(255,255,255,.15), border-radius:${stil.btnR || stil.r}, font-size:.78rem, font-weight:600, color:#fff, letter-spacing:.03em.` : ""}
-Dekorations-Element: ${stil.heroDecor}
-${logoUrl ? `LOGO: Zeige <!-- LOGO --> als Platzhalter UEBER den Feature-Badges. Wird automatisch mit <img> ersetzt. Groesse: height:48px, max-width:200px, object-fit:contain.` : ""}
-H1: Firmenname, clamp(2.2rem,6vw,4.5rem), font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
-Subtitle: Branche + Einsatzgebiet, color:rgba(255,255,255,.75), clamp(.95rem,2.5vw,1.2rem).
-TRUST-BAR: Direkt nach Subtitle – flex-row, gap:24px, flex-wrap:wrap – die Punkte aus den uebergebenen TRUST-ITEMS anzeigen (opacity:.85, font-size:.85rem, color:#fff). Exakt diese Texte verwenden, nichts hinzuerfinden.
-2 CTA-Buttons: Primaer (background:var(--accent), border-radius:${stil.btnR || stil.r}, Anrufen, href="{{TEL_HREF}}") + Ghost (border:2px solid rgba(255,255,255,.5), color:#fff, border-radius:${stil.btnR || stil.r}, href="#leistungen")${o.buchungslink ? ` + Termin-Button (background:#fff, color:var(--accent), border-radius:${stil.btnR || stil.r}, href="${o.buchungslink}", target="_blank", "Termin buchen")` : ""}. Mobile: alle Buttons 100% Breite, gestapelt.
+HERO: min-height:90vh; background: radial-gradient(ellipse at top right, ${pal.a}18 0%, transparent 55%), linear-gradient(150deg, ${pal.p} 0%, ${pal.p}ee 100%).
+${logoUrl ? `<!-- LOGO --> Platzhalter ganz oben im Hero (wird automatisch durch Logo-Bild ersetzt, margin-bottom:20px).` : ""}
+${badges.length > 0 ? `FEATURE-BADGES: Direkt ${logoUrl ? "unter dem Logo" : "oben im Hero"}, als flex-wrap Reihe:\n${badges.map(b=>`  • ${b}`).join("\n")}\nStil: padding:5px 14px, background:rgba(255,255,255,.12), border-radius:${stil.btnR || stil.r}, font-size:.75rem, font-weight:600, color:rgba(255,255,255,.9). Max 2 Zeilen, danach verbergen.` : ""}
+${stil.heroDecor ? `Dekorations-Element: ${stil.heroDecor}` : ""}
+H1: Firmenname. font-weight:900, color:#fff, line-height:1.1, letter-spacing:-.02em.
+Untertitel: Branche + Einsatzgebiet, color:rgba(255,255,255,.7), font-weight:500.
+${o.kurzbeschreibung ? `Kurzbeschreibung: "${o.kurzbeschreibung}" – als zusaetzlicher Absatz unter dem Untertitel, color:rgba(255,255,255,.6), max-width:520px, margin-top:12px.` : ""}
+CTA-Buttons: Primaer ("${ctaPrimary}", background:var(--accent), border-radius:${stil.btnR || stil.r}${o.buchungslink ? `, href="${o.buchungslink}", target="_blank"` : `, href="{{TEL_HREF}}"`}) + Sekundaer ("${ctaSecondary}", Ghost-Style, border-radius:${stil.btnR || stil.r}, href="#leistungen"). Mobile: gestapelt, 100% Breite.
 
-LEISTUNGEN: background:#fff. Section-Label: kleine Oberschrift ("Unser Leistungsangebot", font-size:.72rem, font-weight:700, letter-spacing:.1em, text-transform:uppercase, color:var(--accent)). H2 in Primaerfarbe. Setze <!-- LEISTUNGEN --> als Platzhalter direkt nach der H2 (keine Cards generieren – werden automatisch eingefuegt).
-${preislisteUrl ? `PREISLISTE-BUTTON: Unter den Leistungen einen Button anzeigen: "📄 Preisliste ansehen" als <a href="${preislisteUrl}" target="_blank"> mit background:var(--bg), border:1px solid var(--sep), border-radius:${stil.btnR || stil.r}, padding:12px 24px, font-weight:700, color:var(--primary), margin-top:24px, display:inline-flex, align-items:center, gap:8px.` : ""}
+LEISTUNGEN: background:#fff.
+Section-Label + H2 ("Unsere Leistungen") + <!-- LEISTUNGEN --> Platzhalter.
+${preislisteUrl ? `Darunter: "Preisliste ansehen" Button (<a href="${preislisteUrl}" target="_blank">, border:1px solid var(--sep), border-radius:${stil.btnR || stil.r}, padding:12px 24px, color:var(--primary)).` : ""}
 
-UEBER UNS: background:var(--bg). Zweispaltig desktop (3fr 2fr), einspaltig mobile.
-Links: Section-Label + H2 + <p>{{UEBER_UNS_TEXT}}</p> (Platzhalter – nicht ersetzen) + <div>{{VORTEILE}}</div> (Platzhalter – nicht ersetzen, wird automatisch befuellt).
-Rechts: Karte (background:var(--primary), color:#fff, border-radius:${stil.rLg}, padding:32px 28px) mit: Oeffnungszeiten-Block, Einsatzgebiet-Zeile, Telefon als grosser weisser Link.
+UEBER UNS: background:var(--bg). Zweispaltig (3fr 2fr), einspaltig mobile.
+Links: Section-Label + H2 + <p>{{UEBER_UNS_TEXT}}</p> + <div>{{VORTEILE}}</div> (beides Platzhalter – nicht ersetzen).
+Rechts: Info-Karte (background:var(--primary), color:#fff, border-radius:${stil.rLg}, padding:32px 28px): Oeffnungszeiten, Einsatzgebiet, Telefon-Link.
 
-KONTAKT: background:#fff. Zweispaltig desktop (1fr 1fr), einspaltig mobile.
-Links: H2, Adressblock ({{ADRESSE_VOLL}}), Telefon als grosser klickbarer Link ({{TEL_HREF}}/{{TEL_DISPLAY}}, font-size:1.5rem, font-weight:800, color:var(--accent)), E-Mail-Link, Oeffnungszeiten.${socials.length ? `\nSocial Media Links: ${socials.map(s=>`${s.name} (${s.url})`).join(", ")} – als Icon-Buttons in einer Reihe, font-size:.85rem, gap:12px.` : ""}
-Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): kurzer Aufruf-Satz + grosser Anruf-Button (background:var(--accent), border-radius:${stil.btnR || stil.r}).
+KONTAKT: background:#fff. Zweispaltig (1fr 1fr), einspaltig mobile.
+Links: H2, Adresse ({{ADRESSE_VOLL}}), Telefon gross+klickbar ({{TEL_HREF}}/{{TEL_DISPLAY}}, font-size:1.3rem, font-weight:800, color:var(--accent)), E-Mail-Link, Oeffnungszeiten.${socials.length ? `\nSocial Media: ${socials.map(s=>`<a href="${s.url}" target="_blank">${s.name}</a>`).join(", ")} – als Links in einer Reihe, gap:16px, font-weight:600, color:var(--primary).` : ""}
+Rechts: CTA-Karte (background:var(--primary), border-radius:${stil.rLg}, padding:36px 32px, color:#fff): branchenspezifischer Aufruf-Satz + Anruf-Button.
 <!-- MAPS --> Platzhalter nach den Kontaktinfos.
 
-${o.buchungslink ? `TERMIN-CTA SEKTION: Eigene Sektion NACH Kontakt (VOR <!-- FOOTER -->). background:var(--primary), padding:64px 0, text-align:center, color:#fff.
-H2: "Jetzt Termin buchen", font-weight:800, margin-bottom:12px.
-Kurzer Text: "Buchen Sie bequem online – rund um die Uhr."
-Grosser CTA-Button: <a href="${o.buchungslink}" target="_blank"> mit background:var(--accent), color:#fff, padding:16px 36px, border-radius:${stil.btnR || stil.r}, font-size:1.1rem, font-weight:800.` : ""}
+${o.buchungslink ? `TERMIN-CTA: Eigene Sektion VOR <!-- FOOTER -->. background:var(--primary), padding:64px 0, text-align:center, color:#fff.
+H2: "Jetzt Termin buchen", darunter kurzer Satz, dann grosser Button (<a href="${o.buchungslink}" target="_blank">, background:var(--accent), padding:16px 36px, border-radius:${stil.btnR || stil.r}, font-weight:800).` : ""}
 
-${o.telefon ? `STICKY MOBILE CTA: Fixer Anruf-Button am unteren Bildschirmrand. Nur auf Mobile sichtbar (@media(max-width:640px){display:flex} sonst display:none). position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent); color:#fff; padding:16px 24px; font-weight:800; font-size:1rem; text-align:center; text-decoration:none; display:none. Inhalt: "📞 Jetzt anrufen – {{TEL_DISPLAY}}" als <a href="{{TEL_HREF}}">. body bekommt padding-bottom:64px auf Mobile damit Inhalt nicht verdeckt wird.` : ""}
+${o.telefon ? `STICKY MOBILE CTA: position:fixed, bottom:0, left:0, right:0, z-index:900, background:var(--accent), color:#fff, padding:16px, font-weight:800, text-align:center. Nur auf Mobile sichtbar (@media max-width:640px). Inhalt: "${o.buchungslink ? "Termin buchen" : "📞 Jetzt anrufen"}" als <a href="${o.buchungslink || "{{TEL_HREF}}"}">. body: padding-bottom:64px auf Mobile.` : ""}
 
-SR-DATEN-BLOCK – ABSOLUT PFLICHT: Fuge diesen Block DIREKT nach <!-- NAV --> (vor der ersten Section) ein, ausgefuellt mit echten KI-generierten Texten. EXAKT dieses Format:
-<script type="application/json" id="sr-data">{"leistungen_beschreibungen":{${leistungen.map(l=>`"${l}":"[1 konkreter Satz]"`).join(",")}},"text_ueber_uns":"[4-5 Saetze zum Betrieb: Was macht den Betrieb aus? Welche Werte? Was koennen Kunden erwarten? Nur echte Daten, keine Zahlen/Jahre erfinden.]","text_vorteile":["[Vorteil 1]","[Vorteil 2]","[Vorteil 3]","[Vorteil 4]","[Vorteil 5]"]}</script>
-Ersetze [1 konkreter Satz] usw. mit echtem branchenspezifischem Inhalt. Keine Zahlen/Jahre/Kunden erfinden.`;
+SR-DATEN-BLOCK – ABSOLUT PFLICHT: Direkt nach <!-- NAV -->, EXAKT dieses Format:
+<script type="application/json" id="sr-data">{"leistungen_beschreibungen":{${leistungen.map(l=>`"${l}":"[BESCHREIBUNG]"`).join(",")}},"text_ueber_uns":"[UEBER_UNS]","text_vorteile":["[V1]","[V2]","[V3]","[V4]","[V5]"]}</script>
+
+Regeln fuer die Inhalte:
+- [BESCHREIBUNG]: 1 Satz pro Leistung. Perspektive des Kunden: Was bekommt er? Welches Problem wird geloest? NICHT "Wir bieten..." sondern "Sie erhalten..." oder "Damit Ihr...". Branchenspezifisch und konkret.
+- [UEBER_UNS]: 4-5 Saetze.${o.kurzbeschreibung ? ` Basiere auf der Kundenbeschreibung: "${o.kurzbeschreibung}".` : ""} Was macht den Betrieb besonders? Welche Werte? Was koennen Kunden erwarten? Keine erfundenen Zahlen/Jahre.
+- [V1]-[V5]: 5 konkrete Vorteile aus Kundensicht. Kurz (3-6 Woerter). z.B. "Faire, transparente Preise", "Persoenliche Beratung vor Ort", "Schnelle Terminvergabe".`;
 
   /* ─── User Message ─── */
   const user = `Erstelle die Website fuer diesen Betrieb:

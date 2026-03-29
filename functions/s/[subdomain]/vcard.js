@@ -65,11 +65,15 @@ export async function onRequestGet({params, env}) {
 
   // Semantic color tokens per style
   const palettes = {
-    professional: {accent: "#2563eb", accentLight: "#eff6ff", accentHover: "#1d4ed8", primary: "#0f172a", textSecondary: "#475569", textMuted: "#64748b", bg: "#f8fafc", card: "#ffffff", border: "#e2e8f0", borderSubtle: "#f1f5f9", heroBg: "linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#2563eb 100%)", focusRing: "rgba(37,99,235,.4)"},
-    modern:       {accent: "#059669", accentLight: "#ecfdf5", accentHover: "#047857", primary: "#0f172a", textSecondary: "#475569", textMuted: "#64748b", bg: "#f0fdf4", card: "#ffffff", border: "#d1fae5", borderSubtle: "#ecfdf5", heroBg: "linear-gradient(135deg,#064e3b 0%,#065f46 50%,#059669 100%)", focusRing: "rgba(5,150,105,.4)"},
-    traditional:  {accent: "#b45309", accentLight: "#fffbeb", accentHover: "#92400e", primary: "#1c1917", textSecondary: "#57534e", textMuted: "#78716c", bg: "#fefce8", card: "#ffffff", border: "#fde68a", borderSubtle: "#fef3c7", heroBg: "linear-gradient(135deg,#1c1917 0%,#44403c 50%,#b45309 100%)", focusRing: "rgba(180,83,9,.4)"},
+    klassisch:    {accent: "#2563eb", accentLight: "#eff6ff", accentHover: "#1d4ed8", primary: "#0f2b5b", textSecondary: "#475569", textMuted: "#64748b", bg: "#f8fafc", card: "#ffffff", border: "#e2e8f0", borderSubtle: "#f1f5f9", heroBg: "linear-gradient(135deg,#0f2b5b 0%,#1e3a6e 50%,#1e40af 100%)", focusRing: "rgba(37,99,235,.4)"},
+    modern:       {accent: "#6366f1", accentLight: "#eef2ff", accentHover: "#4f46e5", primary: "#0f172a", textSecondary: "#475569", textMuted: "#6b7280", bg: "#fafafa", card: "#ffffff", border: "#f0f0f0", borderSubtle: "#f5f5f5", heroBg: "linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#6366f1 100%)", focusRing: "rgba(99,102,241,.4)"},
+    elegant:      {accent: "#78716c", accentLight: "#f5f5f4", accentHover: "#57534e", primary: "#292524", textSecondary: "#57534e", textMuted: "#78716c", bg: "#fafaf9", card: "#ffffff", border: "#e7e5e4", borderSubtle: "#f5f5f4", heroBg: "linear-gradient(135deg,#292524 0%,#44403c 50%,#57534e 100%)", focusRing: "rgba(120,113,108,.4)"},
+    custom:       {accent: "#2563eb", accentLight: "#eff6ff", accentHover: "#1d4ed8", primary: "#111111", textSecondary: "#475569", textMuted: "#6b7280", bg: "#fafafa", card: "#ffffff", border: "#e5e7eb", borderSubtle: "#f3f4f6", heroBg: "linear-gradient(135deg,#111111 0%,#1f1f1f 50%,#333333 100%)", focusRing: "rgba(37,99,235,.4)"},
+    // Legacy fallbacks
+    professional: {accent: "#2563eb", accentLight: "#eff6ff", accentHover: "#1d4ed8", primary: "#0f2b5b", textSecondary: "#475569", textMuted: "#64748b", bg: "#f8fafc", card: "#ffffff", border: "#e2e8f0", borderSubtle: "#f1f5f9", heroBg: "linear-gradient(135deg,#0f2b5b 0%,#1e3a6e 50%,#1e40af 100%)", focusRing: "rgba(37,99,235,.4)"},
+    traditional:  {accent: "#78716c", accentLight: "#f5f5f4", accentHover: "#57534e", primary: "#292524", textSecondary: "#57534e", textMuted: "#78716c", bg: "#fafaf9", card: "#ffffff", border: "#e7e5e4", borderSubtle: "#f5f5f4", heroBg: "linear-gradient(135deg,#292524 0%,#44403c 50%,#57534e 100%)", focusRing: "rgba(120,113,108,.4)"},
   };
-  const p = palettes[o.stil] || palettes.professional;
+  const p = palettes[o.stil] || palettes.klassisch;
 
   // Build action buttons dynamically
   const actions = [];

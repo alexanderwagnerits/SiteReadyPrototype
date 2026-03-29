@@ -1,16 +1,10 @@
-const PALETTES = {
-  elektro:{p:"#0c1d3d",a:"#f59e0b",bg:"#f8faff"}, installateur:{p:"#1a3050",a:"#dc2626",bg:"#f8fafc"},
-  maler:{p:"#2c3e50",a:"#e67e22",bg:"#fffef9"}, tischler:{p:"#4a2c0a",a:"#d97706",bg:"#fefaf0"},
-  fliesenleger:{p:"#0f3460",a:"#0891b2",bg:"#f0fdfe"}, schlosser:{p:"#1c1c2e",a:"#64748b",bg:"#f1f5f9"},
-  dachdecker:{p:"#3b1f0a",a:"#b45309",bg:"#fff8f0"}, zimmerei:{p:"#1a3c28",a:"#a16207",bg:"#f7fdf0"},
-  maurer:{p:"#2d2d2d",a:"#ea580c",bg:"#fafafa"}, bodenleger:{p:"#2d1b69",a:"#b45309",bg:"#fdf8ff"},
-  glaser:{p:"#0c4a6e",a:"#0891b2",bg:"#f0f9ff"}, gaertner:{p:"#14532d",a:"#15803d",bg:"#f0fdf4"},
-  klima:{p:"#0c2340",a:"#0284c7",bg:"#f0f9ff"}, reinigung:{p:"#0f2942",a:"#0ea5e9",bg:"#f8fbff"},
-  sonstige:{p:"#1e293b",a:"#3b82f6",bg:"#f8fafc"},
-  kosmetik:{p:"#4a1942",a:"#c026d3",bg:"#fdf4ff"}, friseur:{p:"#1c1917",a:"#b45309",bg:"#fffbeb"},
-  nagel:{p:"#831843",a:"#db2777",bg:"#fdf2f8"}, massage:{p:"#134e4a",a:"#0d9488",bg:"#f0fdfa"},
-  tattoo:{p:"#1c1c2e",a:"#7c3aed",bg:"#f5f3ff"}, fusspflege:{p:"#0f2942",a:"#0ea5e9",bg:"#f0f9ff"},
-  permanent_makeup:{p:"#3d0066",a:"#9333ea",bg:"#faf5ff"}, sonstige_kosmetik:{p:"#831843",a:"#ec4899",bg:"#fdf2f8"},
+const STIL_PALETTES = {
+  klassisch:    {p:"#0f2b5b",a:"#2563eb",bg:"#f8fafc"},
+  modern:       {p:"#0f172a",a:"#6366f1",bg:"#fafafa"},
+  elegant:      {p:"#292524",a:"#78716c",bg:"#fafaf9"},
+  custom:       {p:"#111111",a:"#2563eb",bg:"#fafafa"},
+  professional: {p:"#0f2b5b",a:"#2563eb",bg:"#f8fafc"},
+  traditional:  {p:"#292524",a:"#78716c",bg:"#fafaf9"},
 };
 
 function buildImpressumRows(o) {
@@ -153,7 +147,7 @@ export async function buildLegalPage(subdomain, page, env) {
   if (!rows.length) return new Response("Nicht gefunden", {status: 404});
 
   const o = rows[0];
-  const pal = PALETTES[o.branche] || PALETTES.sonstige;
+  const pal = STIL_PALETTES[o.stil] || STIL_PALETTES.klassisch;
 
   let content, title;
 

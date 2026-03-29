@@ -134,29 +134,30 @@ export async function onRequestGet({params, env}) {
   }
 
   // Kontaktformular serve-time injizieren (vor Footer)
-  const contactForm = `<section id="kontakt-formular" style="padding:80px 0;background:#fff">` +
-    `<div style="max-width:640px;margin:0 auto;padding:0 24px">` +
-    `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent,#2563eb);margin-bottom:8px">Kontaktformular</div>` +
-    `<h2 style="font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:800;color:var(--primary,#1e293b);margin:0 0 8px">Schreiben Sie uns</h2>` +
-    `<p style="color:var(--textMuted,#64748b);margin:0 0 32px;font-size:.95rem">Wir melden uns schnellstmoeglich bei Ihnen zurueck.</p>` +
+  const formR = "var(--r,4px)";
+  const contactForm = `<section id="kontakt-formular" style="padding:80px 0;background:var(--bg,#f8fafc)">` +
+    `<div style="max-width:600px;margin:0 auto;padding:0 28px">` +
+    `<div style="font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent,#2563eb);margin-bottom:12px;display:flex;align-items:center;gap:10px"><span style="width:24px;height:1.5px;background:var(--accent,#2563eb)"></span>Kontaktformular</div>` +
+    `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary,#0f2b5b);letter-spacing:-.025em;margin:0 0 8px">Schreiben Sie uns</h2>` +
+    `<p style="color:var(--textMuted,#64748b);margin:0 0 32px;font-size:.9rem;line-height:1.7">Wir melden uns schnellstmoeglich bei Ihnen zurueck.</p>` +
     `<div id="sr-form-wrap">` +
     `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
-    `<div class="sr-fg2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">` +
-    `<div><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">Name *</label>` +
-    `<input required type="text" placeholder="Ihr Name" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></div>` +
-    `<div><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">E-Mail *</label>` +
-    `<input required type="email" placeholder="ihre@email.at" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></div>` +
+    `<div class="sr-fg2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">` +
+    `<div><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">Name *</label>` +
+    `<input required type="text" placeholder="Ihr Name" style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></div>` +
+    `<div><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">E-Mail *</label>` +
+    `<input required type="email" placeholder="ihre@email.at" style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></div>` +
     `</div>` +
-    `<div style="margin-bottom:16px"><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">Telefon</label>` +
-    `<input type="tel" placeholder="+43 ..." style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></div>` +
-    `<div style="margin-bottom:24px"><label style="display:block;font-size:.78rem;font-weight:700;color:var(--primary,#1e293b);margin-bottom:6px">Nachricht *</label>` +
-    `<textarea required rows="5" placeholder="Ihre Nachricht..." style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;color:inherit;outline:none;resize:vertical;box-sizing:border-box" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='#e2e8f0'"></textarea></div>` +
-    `<button type="submit" style="background:var(--accent,#2563eb);color:#fff;border:none;padding:14px 32px;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Nachricht senden</button>` +
+    `<div style="margin-bottom:14px"><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">Telefon</label>` +
+    `<input type="tel" placeholder="+43 ..." style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></div>` +
+    `<div style="margin-bottom:24px"><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">Nachricht *</label>` +
+    `<textarea required rows="5" placeholder="Ihre Nachricht..." style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;resize:vertical;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></textarea></div>` +
+    `<button type="submit" style="background:var(--accent,#2563eb);color:#fff;border:none;padding:13px 32px;border-radius:${formR};font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;min-height:48px;transition:all .25s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 12px rgba(37,99,235,.25)" onmouseover="this.style.boxShadow='0 6px 24px rgba(37,99,235,.35)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(37,99,235,.25)';this.style.transform='none'">Nachricht senden</button>` +
     `</form></div>` +
-    `<div id="sr-form-ok" style="display:none;text-align:center;padding:48px 20px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">` +
-    `<div style="font-size:2.5rem;margin-bottom:12px">&#10003;</div>` +
-    `<h3 style="font-size:1.3rem;font-weight:800;color:var(--primary,#1e293b);margin:0 0 8px">Vielen Dank!</h3>` +
-    `<p style="color:#15803d;margin:0">Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.</p>` +
+    `<div id="sr-form-ok" style="display:none;text-align:center;padding:48px 24px;background:#f0fdf4;border-radius:var(--rLg,8px);border:1px solid #bbf7d0">` +
+    `<div style="font-size:2rem;margin-bottom:12px;color:#16a34a">&#10003;</div>` +
+    `<h3 style="font-size:1.2rem;font-weight:800;color:var(--primary,#0f2b5b);margin:0 0 8px">Vielen Dank!</h3>` +
+    `<p style="color:#15803d;margin:0;font-size:.9rem">Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.</p>` +
     `</div>` +
     `</div></section>` +
     `<style>@media(max-width:560px){.sr-fg2{grid-template-columns:1fr!important}}</style>`;
@@ -179,14 +180,14 @@ export async function onRequestGet({params, env}) {
       custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:28px 24px;background:#fff;border-radius:8px;transition:all .2s ease",
     };
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
-    const iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+    const iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#2563eb)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
       const desc = descMap[l] || descMap[lCapitalized] || "";
       return `<div style="${cardStyle}">` +
-        `<div style="width:36px;height:36px;border-radius:4px;background:var(--accent,#2563eb)10;display:flex;align-items:center;justify-content:center;margin-bottom:14px">${iconSvg}</div>` +
-        `<h3 style="color:var(--primary);font-weight:700;margin:0 0 8px;font-size:1rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
-        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.88rem;line-height:1.65">${desc}</p>` : "") +
+        `<div style="width:34px;height:34px;border-radius:var(--r,4px);background:rgba(37,99,235,.06);display:flex;align-items:center;justify-content:center;margin-bottom:14px">${iconSvg}</div>` +
+        `<h3 style="color:var(--primary,#0f2b5b);font-weight:700;margin:0 0 8px;font-size:.95rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.7">${desc}</p>` : "") +
         `</div>`;
     }).join("");
     const grid = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px">${cards}</div>`;

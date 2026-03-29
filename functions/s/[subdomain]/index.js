@@ -126,7 +126,7 @@ export async function onRequestGet({params, env}) {
       `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3">` +
       `</div>`
     ).join("");
-    const cols = leistFotos.length <= 2 ? "1fr 1fr" : "repeat(auto-fill,minmax(260px,1fr))";
+    const cols = leistFotos.length <= 2 ? "1fr 1fr" : `repeat(${leistFotos.length},1fr)`;
     const grid = `<div style="display:grid;grid-template-columns:${cols};gap:14px;margin-top:48px">${items}</div>`;
     html = html.replace("<!-- LEIST_FOTOS -->", grid);
   } else {
@@ -141,7 +141,7 @@ export async function onRequestGet({params, env}) {
       `<img src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3">` +
       `</div>`
     ).join("");
-    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : "repeat(auto-fill,minmax(220px,1fr))";
+    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : `repeat(${aboutFotos.length},1fr)`;
     const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
     html = html.replace("<!-- ABOUT_FOTOS -->", grid);
   } else {

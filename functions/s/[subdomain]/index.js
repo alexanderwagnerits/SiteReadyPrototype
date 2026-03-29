@@ -133,36 +133,27 @@ export async function onRequestGet({params, env}) {
     html = html.replace(/<!-- GALERIE -->/g, "");
   }
 
-  // Kontaktformular serve-time injizieren (vor Footer)
-  const formR = "var(--r,4px)";
-  const contactForm = `<section id="kontakt-formular" style="padding:80px 0;background:var(--bg,#f8fafc)">` +
-    `<div style="max-width:600px;margin:0 auto;padding:0 28px">` +
-    `<div style="font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent,#2563eb);margin-bottom:12px;display:flex;align-items:center;gap:10px"><span style="width:24px;height:1.5px;background:var(--accent,#2563eb)"></span>Kontaktformular</div>` +
-    `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary,#0f2b5b);letter-spacing:-.025em;margin:0 0 8px">Schreiben Sie uns</h2>` +
-    `<p style="color:var(--textMuted,#64748b);margin:0 0 32px;font-size:.9rem;line-height:1.7">Wir melden uns schnellstmoeglich bei Ihnen zurueck.</p>` +
-    `<div id="sr-form-wrap">` +
-    `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
-    `<div class="sr-fg2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">` +
-    `<div><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">Name *</label>` +
-    `<input required type="text" placeholder="Ihr Name" style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></div>` +
-    `<div><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">E-Mail *</label>` +
-    `<input required type="email" placeholder="ihre@email.at" style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></div>` +
-    `</div>` +
-    `<div style="margin-bottom:14px"><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">Telefon</label>` +
-    `<input type="tel" placeholder="+43 ..." style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></div>` +
-    `<div style="margin-bottom:24px"><label style="display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:6px">Nachricht *</label>` +
-    `<textarea required rows="5" placeholder="Ihre Nachricht..." style="width:100%;padding:12px 14px;border:1.5px solid var(--sep,#e2e8f0);border-radius:${formR};font-size:.88rem;font-family:inherit;background:#fff;color:var(--text,#1f2937);outline:none;resize:vertical;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--accent,#2563eb)'" onblur="this.style.borderColor='var(--sep,#e2e8f0)'"></textarea></div>` +
-    `<button type="submit" style="background:var(--accent,#2563eb);color:#fff;border:none;padding:13px 32px;border-radius:${formR};font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;min-height:48px;transition:all .25s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 12px rgba(37,99,235,.25)" onmouseover="this.style.boxShadow='0 6px 24px rgba(37,99,235,.35)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(37,99,235,.25)';this.style.transform='none'">Nachricht senden</button>` +
-    `</form></div>` +
-    `<div id="sr-form-ok" style="display:none;text-align:center;padding:48px 24px;background:#f0fdf4;border-radius:var(--rLg,8px);border:1px solid #bbf7d0">` +
-    `<div style="font-size:2rem;margin-bottom:12px;color:#16a34a">&#10003;</div>` +
-    `<h3 style="font-size:1.2rem;font-weight:800;color:var(--primary,#0f2b5b);margin:0 0 8px">Vielen Dank!</h3>` +
-    `<p style="color:#15803d;margin:0;font-size:.9rem">Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.</p>` +
-    `</div>` +
-    `</div></section>` +
-    `<style>@media(max-width:560px){.sr-fg2{grid-template-columns:1fr!important}}</style>`;
-  if (html.includes('<footer')) {
-    html = html.replace(/<footer[\s\n>]/i, contactForm + '\n<footer ');
+  // Kontaktformular in die Kontakt-Sektion injizieren (<!-- KONTAKT_FORM --> Platzhalter)
+  if (html.includes("<!-- KONTAKT_FORM -->")) {
+    const inlineForm = `<div class="k-form">` +
+      `<h3>Schreiben Sie uns</h3>` +
+      `<div id="sr-form-wrap">` +
+      `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
+      `<div class="k-form-row">` +
+      `<div><label>Name *</label><input required type="text" placeholder="Ihr Name"></div>` +
+      `<div><label>E-Mail *</label><input required type="email" placeholder="ihre@email.at"></div>` +
+      `</div>` +
+      `<div class="k-form-field"><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
+      `<div class="k-form-field"><label>Nachricht *</label><textarea required rows="4" placeholder="Ihre Nachricht..."></textarea></div>` +
+      `<button type="submit">Nachricht senden</button>` +
+      `</form></div>` +
+      `<div id="sr-form-ok" class="k-form-ok">` +
+      `<div style="font-size:1.8rem;color:#16a34a">&#10003;</div>` +
+      `<h4>Vielen Dank!</h4>` +
+      `<p>Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.</p>` +
+      `</div>` +
+      `</div>`;
+    html = html.replace("<!-- KONTAKT_FORM -->", inlineForm);
   }
 
   // ── Leistungen Cards serve-time injizieren (<!-- LEISTUNGEN --> Platzhalter) ──

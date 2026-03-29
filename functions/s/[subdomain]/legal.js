@@ -79,15 +79,17 @@ function legalShell(o, pal, subdomain, title, content) {
 <meta name="robots" content="noindex,nofollow">
 <title>${title} &ndash; ${o.firmenname}</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6}
-.topbar{background:${pal.p};padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.topbar a{color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem}
-.topbar-logo{color:#fff;font-weight:800;font-size:1rem;text-decoration:none}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:${pal.bg};color:#1f2937;line-height:1.6;-webkit-font-smoothing:antialiased}
+.topbar{background:${pal.p};padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.topbar a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;font-weight:500}
+.topbar a:hover{color:#fff}
+.topbar-logo{color:#fff;font-weight:800;font-size:.95rem;text-decoration:none;letter-spacing:-.02em}
 .topbar-links{display:flex;gap:20px;align-items:center}
-.wrap{max-width:800px;margin:0 auto;padding:48px 24px 80px}
-h1{font-size:1.6rem;font-weight:800;color:${pal.p};margin-bottom:8px}
-.h1-sub{font-size:.9rem;color:#94a3b8;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid ${pal.a}}
+.wrap{max-width:760px;margin:0 auto;padding:48px 28px 80px}
+h1{font-size:1.5rem;font-weight:800;color:${pal.p};margin-bottom:8px;letter-spacing:-.03em}
+.h1-sub{font-size:.85rem;color:#64748b;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid ${pal.a}22}
 table{width:100%;border-collapse:collapse;margin-bottom:0}
 td{padding:9px 16px 9px 0;font-size:.9rem;vertical-align:top;border-bottom:1px solid #e8edf2}
 td:first-child{font-weight:600;color:${pal.p};width:200px;white-space:nowrap}

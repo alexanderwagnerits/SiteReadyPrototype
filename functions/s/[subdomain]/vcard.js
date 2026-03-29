@@ -110,7 +110,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:${p.bg}
 /* === Hero === */
 .hero{background:${p.heroBg};color:#fff;padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,.1) 0%,transparent 60%);pointer-events:none}
-.logo{width:80px;height:80px;border-radius:20px;object-fit:contain;background:#fff;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.2);margin:0 auto 20px;display:block;position:relative}
+.logo{width:80px;height:80px;border-radius:20px;object-fit:contain;background:transparent;padding:0;margin:0 auto 20px;display:block;position:relative}
 .no-logo{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.06));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:#fff;letter-spacing:-.02em;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.12);position:relative}
 h1{font-size:1.5rem;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;position:relative;line-height:1.25}
 .desc{font-size:.875rem;opacity:.75;line-height:1.6;max-width:300px;margin:0 auto;position:relative}

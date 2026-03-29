@@ -55,7 +55,7 @@ a{color:inherit}
 
 /* ── Hero ── */
 .hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative}
-.hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:100px 28px 60px}
+.hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:100px 28px 48px}
 .hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
 .hero-badge{padding:6px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);font-size:.72rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.02em}
 .hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:16px;max-width:680px}
@@ -67,12 +67,15 @@ a{color:inherit}
 .btn-accent:hover{opacity:.85}
 .btn-ghost{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.2)}
 .btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
-.hero-trust{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.8}
+.hero-trust{display:none}
 @media(max-width:640px){
   .hero-btns{flex-direction:column}
   .hero-btns .btn{width:100%;text-align:center}
   .hero-inner{padding:80px 20px 56px}
 }
+
+/* ── Trust Strip ── */
+.trust-strip{background:var(--bg);border-bottom:1px solid var(--sep);padding:14px 0;font-size:.78rem;color:var(--textMuted);text-align:center;letter-spacing:.02em}
 
 /* ── Leistungen ── */
 .leist{padding:96px 0;background:var(--white)}
@@ -158,6 +161,8 @@ a{color:inherit}
 <div class="hero-trust">${trustBar}</div>
 </div>
 </section>
+
+<div class="trust-strip"><div class="w">${trustBar}</div></div>
 
 <section class="leist" id="leistungen">
 <div class="w">

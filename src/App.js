@@ -424,10 +424,11 @@ function LandingPage({onStart,onPortal}){
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:520}}>Maßgeschneidert für Ihren Beruf.</h2>
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>Jeder Beruf bekommt passende Leistungen, Features und ein eigenes Design – vollautomatisch.</p>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
-        {[{t:"Handwerk",items:["Elektriker","Installateur","Maler","Tischler","Fliesenleger","Schlosser","Dachdecker","Zimmerei","Maurer","KFZ-Werkstatt","Aufsperrdienst","Hafner","Raumausstatter","Gärtner","Klima & Lüftung","Reinigung"]},{t:"Kosmetik & Pflege",items:["Kosmetikstudio","Friseursalon","Nagelstudio","Massage & Wellness","Tattoo & Piercing","Fußpflege","Permanent Make-up","Hundesalon"]},{t:"Gastronomie",items:["Restaurant / Gasthaus","Café / Konditorei","Bar / Lounge","Heuriger","Imbiss / Foodtruck","Catering"]},{t:"Gesundheit",items:["Physiotherapie","Arztpraxis","Zahnarzt","Tierarzt","Apotheke","Optiker","Psychotherapie","Ergotherapie","Logopädie","Energetiker"]},{t:"Dienstleistungen",items:["Steuerberater","Rechtsanwalt","Versicherung","Immobilien","Hausverwaltung","Umzug & Transport","Eventplanung"]},{t:"Bildung & Training",items:["Fahrschule","Nachhilfe","Musikschule","Personal Trainer","Yoga / Pilates"]}].map(g=><div key={g.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"20px 24px",boxShadow:T.sh1}}>
-          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10,letterSpacing:"-.01em"}}>{g.t}</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{g.items.map(b=><span key={b} style={{fontSize:".72rem",padding:"3px 10px",borderRadius:6,fontWeight:500,background:T.bg,color:T.textSub,border:"1px solid rgba(0,0,0,.05)"}}>{b}</span>)}</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}} className="lp-branchen-card">
+        {[{t:"Handwerk",n:18,d:"Elektriker, Installateur, Tischler, KFZ u.v.m."},{t:"Kosmetik & Pflege",n:8,d:"Friseur, Kosmetik, Massage, Nagelstudio u.v.m."},{t:"Gastronomie",n:6,d:"Restaurant, Café, Heuriger, Catering u.v.m."},{t:"Gesundheit",n:10,d:"Physiotherapie, Arzt, Zahnarzt, Psychotherapie u.v.m."},{t:"Dienstleistungen",n:7,d:"Steuerberater, Rechtsanwalt, Immobilien u.v.m."},{t:"Bildung & Training",n:5,d:"Fahrschule, Nachhilfe, Personal Trainer u.v.m."}].map(g=><div key={g.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"24px 28px",boxShadow:T.sh1}}>
+          <div style={{fontSize:"1rem",fontWeight:800,color:T.dark,marginBottom:6,letterSpacing:"-.02em"}}>{g.t}</div>
+          <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6,marginBottom:10}}>{g.d}</div>
+          <div style={{fontSize:".75rem",fontWeight:700,color:T.accent}}>{g.n} Berufe</div>
         </div>)}
       </div>
     </W>

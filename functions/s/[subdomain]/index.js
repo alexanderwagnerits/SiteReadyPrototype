@@ -69,7 +69,7 @@ export async function onRequestGet({params, env}) {
     });
     if (validAnn.length > 0) {
       const annText = validAnn.map(a => a.text).join(" \u00b7 ");
-      const annHtml = `<div id="sr-announcements" style="background:var(--accent,#2563eb);color:#fff;text-align:center;padding:9px 48px 9px 24px;font-size:.8rem;font-weight:600;line-height:1.5;position:relative">` +
+      const annHtml = `<div id="sr-announcements" style="background:var(--primary,#0f2b5b);color:#fff;text-align:center;padding:10px 48px 10px 24px;font-size:.82rem;font-weight:600;line-height:1.5;position:relative;border-bottom:1px solid rgba(255,255,255,.1)">` +
         `${annText}` +
         `<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:1rem;padding:4px 8px;line-height:1" aria-label="Schlie\u00dfen">\u00d7</button>` +
         `</div>`;
@@ -127,7 +127,7 @@ export async function onRequestGet({params, env}) {
       `</div>`
     ).join("");
     const cols = leistFotos.length <= 2 ? "1fr 1fr" : `repeat(${leistFotos.length},1fr)`;
-    const grid = `<div style="display:grid;grid-template-columns:${cols};gap:14px;margin-top:48px">${items}</div>`;
+    const grid = `<div class="sr-foto-grid" style="display:grid;grid-template-columns:${cols};gap:14px;margin-top:48px">${items}</div>`;
     html = html.replace("<!-- LEIST_FOTOS -->", grid);
   } else {
     html = html.replace("<!-- LEIST_FOTOS -->", "");
@@ -142,7 +142,7 @@ export async function onRequestGet({params, env}) {
       `</div>`
     ).join("");
     const cols = aboutFotos.length <= 2 ? "1fr 1fr" : `repeat(${aboutFotos.length},1fr)`;
-    const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
+    const grid = `<div class="sr-foto-grid" style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
     html = html.replace("<!-- ABOUT_FOTOS -->", grid);
   } else {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
@@ -198,7 +198,8 @@ export async function onRequestGet({params, env}) {
         (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.82rem;line-height:1.6">${desc}</p>` : "") +
         `</div>`;
     }).join("");
-    const grid = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">${cards}</div>`;
+    const gridCols = leistungenArr.length <= 3 ? `repeat(${leistungenArr.length},1fr)` : "repeat(2,1fr)";
+    const grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:${gridCols};gap:16px">${cards}</div>`;
     html = html.replace("<!-- LEISTUNGEN -->", grid);
   }
 
@@ -257,6 +258,18 @@ export async function onRequestGet({params, env}) {
   //     '<meta name="robots" content="index,follow">'
   //   );
   // }
+
+  // ── Responsive Fixes (Mobile) ──
+  const responsiveStyle = `<style>
+@media(max-width:640px){
+.sr-foto-grid{grid-template-columns:1fr 1fr!important}
+.sr-leist-grid{grid-template-columns:1fr!important}
+.sr-leist-grid div p{font-size:.85rem!important;line-height:1.65!important}
+.sr-leist-grid div h3{font-size:.92rem!important}
+.kontakt-form-wrap{margin-bottom:24px}
+}
+</style>`;
+  html = html.replace("</head>", responsiveStyle + "</head>");
 
   return new Response(html, {
     status: 200,

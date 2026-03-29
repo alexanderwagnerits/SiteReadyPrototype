@@ -414,11 +414,14 @@ function LandingPage({onStart,onPortal}){
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16,maxWidth:500}}>Ihr Stil. Automatisch vorgeschlagen.</h2>
         <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:460}}>Basierend auf Ihrem Beruf schlagen wir den passenden Stil vor — oder Sie wählen Ihren eigenen.</p>
       </div>
-      <div className="lp-variants-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,alignItems:"end"}}>
-        {[{t:"Klassisch",d:"Seriös, vertrauenswürdig, zeitlos",gradient:STYLES_MAP.klassisch.heroGradient,btnR:"4px",accent:"rgba(37,99,235,.25)"},{t:"Modern",d:"Dynamisch, frisch, mit Akzenten",gradient:STYLES_MAP.modern.heroGradient,btnR:"100px",accent:"rgba(99,102,241,.2)"},{t:"Elegant",d:"Hochwertig, ruhig, Premium",gradient:STYLES_MAP.elegant.heroGradient,btnR:"2px",accent:"rgba(120,113,108,.15)"},{t:"Eigenes Branding",d:"Ihre Farbe, Ihre Schriftart",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)",btnR:"8px",accent:"rgba(255,255,255,.1)"}].map((v,i)=>{const[vHov,setVHov]=React.useState(false);return <div key={i} onMouseEnter={()=>setVHov(true)} onMouseLeave={()=>setVHov(false)} style={{borderRadius:16,overflow:"hidden",background:"#fff",border:"1px solid rgba(0,0,0,.07)",transform:vHov?"translateY(-3px)":"none",boxShadow:vHov?T.sh4:T.sh2,transition:"transform .3s,box-shadow .3s"}}>
-          <div style={{background:v.gradient,padding:"48px 24px",color:"#fff",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",inset:0,background:`radial-gradient(circle at 80% 20%,${v.accent},transparent 60%)`}}/><div style={{position:"relative"}}><h3 style={{fontSize:"1.1rem",fontWeight:800,marginBottom:6}}>{v.t}</h3><p style={{fontSize:".82rem",opacity:.65,lineHeight:1.5}}>{v.d}</p></div></div>
-          <div style={{padding:"16px 24px"}}><div style={{display:"flex",gap:6}}><div style={{padding:"5px 14px",borderRadius:v.btnR,background:T.dark,color:"#fff",fontSize:".72rem",fontWeight:700}}>Button</div><div style={{padding:"5px 14px",borderRadius:v.btnR,background:"transparent",color:T.dark,fontSize:".72rem",fontWeight:600,border:`1.5px solid ${T.bg3}`}}>Outlined</div></div></div>
-        </div>})}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}} className="lp-variants-grid">
+        {[{t:"Klassisch",d:"Seriös, vertrauenswürdig, zeitlos",gradient:STYLES_MAP.klassisch.heroGradient},{t:"Modern",d:"Dynamisch, frisch, mit Akzenten",gradient:STYLES_MAP.modern.heroGradient},{t:"Elegant",d:"Hochwertig, ruhig, Premium",gradient:STYLES_MAP.elegant.heroGradient},{t:"Eigenes Branding",d:"Ihre Farbe, Ihre Schriftart",gradient:"conic-gradient(from 180deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)"}].map(v=><div key={v.t} style={{background:"#fff",borderRadius:12,border:"1px solid rgba(0,0,0,.08)",padding:"20px 24px",boxShadow:T.sh1,display:"flex",alignItems:"center",gap:16}}>
+          <div style={{width:44,height:44,borderRadius:10,background:v.gradient,flexShrink:0}}/>
+          <div>
+            <div style={{fontSize:".88rem",fontWeight:700,color:T.dark,marginBottom:2}}>{v.t}</div>
+            <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.4}}>{v.d}</div>
+          </div>
+        </div>)}
       </div>
     </W>
   </section>

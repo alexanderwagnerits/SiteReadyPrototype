@@ -165,16 +165,16 @@ export async function onRequestGet({params, env}) {
     const descMap = o.leistungen_beschreibungen || {};
     const stilName = o.stil || "klassisch";
     const cardStyleMap = {
-      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:4px",
-      modern:     "border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.06);padding:20px 20px;border-top:3px solid var(--accent);background:#fff",
-      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:20px 20px;background:#fff;border-radius:2px",
-      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:8px",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:4px;transition:transform .2s ease,box-shadow .2s ease",
+      modern:     "border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.06);padding:20px 20px;border-top:3px solid var(--accent);background:#fff;transition:transform .2s ease,box-shadow .2s ease",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:20px 20px;background:#fff;border-radius:2px;transition:transform .2s ease,box-shadow .2s ease",
+      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:8px;transition:transform .2s ease,box-shadow .2s ease",
     };
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
       const desc = descMap[l] || descMap[lCapitalized] || "";
-      return `<div style="${cardStyle}">` +
+      return `<div style="${cardStyle}" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">` +
         `<h3 style="color:var(--primary,#0f2b5b);font-weight:700;margin:0 0 6px;font-size:.88rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
         (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.82rem;line-height:1.6">${desc}</p>` : "") +
         `</div>`;

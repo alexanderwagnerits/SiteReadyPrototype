@@ -50,6 +50,8 @@ body{font-family:var(--font);color:var(--text);line-height:1.6;-webkit-font-smoo
 img{max-width:100%;display:block}
 a{color:inherit}
 .w{max-width:var(--maxW);margin:0 auto;padding:0 28px}
+@keyframes sr-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.sr-a{opacity:0;animation:sr-up .5s ease forwards}
 
 /* ── Hero ── */
 .hero{min-height:92vh;background:${primary};color:#fff;display:flex;align-items:center;position:relative}
@@ -240,6 +242,7 @@ ${buchungslinkHtml}
 <!-- FOOTER -->
 
 <div class="sticky-mob">${stickyCtaHtml}</div>
+<script>(function(){var o=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-a');o.unobserve(i.target)}})},{threshold:.15});document.querySelectorAll('.leist,.ueber,.kontakt,.termin-cta').forEach(function(s){o.observe(s)})})();</script>
 </body>
 </html>`;
 }

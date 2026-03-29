@@ -1079,6 +1079,14 @@ function Portal({session,onLogout}){
         if(o.url_foto3)urls.foto3=o.url_foto3+"?t="+Date.now();
         if(o.url_foto4)urls.foto4=o.url_foto4+"?t="+Date.now();
         if(o.url_foto5)urls.foto5=o.url_foto5+"?t="+Date.now();
+        if(o.url_leist1)urls.leist1=o.url_leist1+"?t="+Date.now();
+        if(o.url_leist2)urls.leist2=o.url_leist2+"?t="+Date.now();
+        if(o.url_leist3)urls.leist3=o.url_leist3+"?t="+Date.now();
+        if(o.url_leist4)urls.leist4=o.url_leist4+"?t="+Date.now();
+        if(o.url_about1)urls.about1=o.url_about1+"?t="+Date.now();
+        if(o.url_about2)urls.about2=o.url_about2+"?t="+Date.now();
+        if(o.url_about3)urls.about3=o.url_about3+"?t="+Date.now();
+        if(o.url_about4)urls.about4=o.url_about4+"?t="+Date.now();
         if(o.url_preisliste)urls.preisliste=o.url_preisliste+"?t="+Date.now();
         setAssetUrls(urls);
       }});
@@ -1117,7 +1125,7 @@ function Portal({session,onLogout}){
       if(error){showToast("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
-      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",preisliste:"url_preisliste"};
+      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",preisliste:"url_preisliste"};
       const col=colMap[key];
       if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("URL-Update:",upErr.message);}
       showToast(key==="logo"?"Logo hochgeladen!":key==="preisliste"?"Preisliste hochgeladen!":"Foto hochgeladen!");
@@ -1133,7 +1141,7 @@ function Portal({session,onLogout}){
       for(const ext of exts){
         await supabase.storage.from("customer-assets").remove([`${session.user.id}/${key}.${ext}`]).catch(()=>{});
       }
-      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",preisliste:"url_preisliste"};
+      const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",preisliste:"url_preisliste"};
       const col=colMap[key];
       if(col){const{error}=await supabase.from("orders").update({[col]:null}).eq("id",order.id);if(error)console.error("Delete URL-Update:",error.message);}
       setAssetUrls(u=>{const n={...u};delete n[key];return n;});
@@ -1793,27 +1801,50 @@ const done=checks.filter(c=>c.done).length;if(done===checks.length)return null;r
             <div style={{fontSize:".8rem",color:T.textMuted,marginTop:8}}>Empfohlen: JPG, mind. 1920 &times; 1080 px. Das Bild wird mit einem dunklen Overlay versehen sodass der Text gut lesbar bleibt.</div>
           </div>
         );})()}
-        {/* Fotos */}
+        {/* Leistungen-Fotos */}
+        {(()=>{const keys=["leist1","leist2","leist3","leist4"];return(
         <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Ihre Fotos</div>
-          <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Laden Sie bis zu 5 Fotos hoch – Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt.</div>
-          <div className="pt-photo-grid" style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
-            {ASSETS.slice(1).map(a=>{const url=assetUrls[a.key];const busy=uploading[a.key];return(
-              <div key={a.key} style={{display:"flex",flexDirection:"column",gap:6}}>
-                <div style={{aspectRatio:"1",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
-                  {url?<img src={url} alt={a.label} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style={{fontSize:".72rem",color:T.textMuted,fontWeight:500}}>Foto</span></div>}
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Leistungen-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
+          <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Zeigen Sie Ihre Arbeit — Arbeitsproben, Projekte, Vorher/Nachher. Max. 4 Fotos.</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+            {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
+              <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
+                <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {url?<img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
                 </div>
                 <div style={{display:"flex",gap:4}}>
-                  <label style={{flex:1,display:"block",textAlign:"center",padding:"7px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,minHeight:36,lineHeight:"22px"}}>
-                    {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+                  <label style={{flex:1,textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
+                    {busy?"...":url?"Ersetzen":"Hochladen"}
+                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(k,e.target.files[0]);}}/>
                   </label>
-                  {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"7px 8px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,minHeight:36}}>{deleting[a.key]?"...":"\u00d7"}</button>}
+                  {url&&<button onClick={()=>deleteAsset(k)} disabled={deleting[k]} style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"\u00d7"}</button>}
                 </div>
               </div>
             );})}
           </div>
-        </div>
+        </div>);})()}
+        {/* Über-uns-Fotos */}
+        {(()=>{const keys=["about1","about2","about3","about4"];return(
+        <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Über-uns-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
+          <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Zeigen Sie Ihren Betrieb — Team, Werkstatt, Atmosphäre. Max. 4 Fotos.</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+            {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
+              <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
+                <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {url?<img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
+                </div>
+                <div style={{display:"flex",gap:4}}>
+                  <label style={{flex:1,textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
+                    {busy?"...":url?"Ersetzen":"Hochladen"}
+                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(k,e.target.files[0]);}}/>
+                  </label>
+                  {url&&<button onClick={()=>deleteAsset(k)} disabled={deleting[k]} style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"\u00d7"}</button>}
+                </div>
+              </div>
+            );})}
+          </div>
+        </div>);})()}
         <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,fontSize:".78rem",color:T.textSub}}>
           Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.
         </div>

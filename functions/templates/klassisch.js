@@ -167,10 +167,9 @@ a{color:inherit}
 </div>
 <!-- LEISTUNGEN -->
 ${preislisteHtml}
+<!-- LEIST_FOTOS -->
 </div>
 </section>
-
-<!-- FOTO_BAND -->
 
 <section class="ueber" id="ueber-uns">
 <div class="w">
@@ -179,6 +178,7 @@ ${preislisteHtml}
 <h2>\u00dcber ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
+<!-- ABOUT_FOTOS -->
 </div>
 <div class="info-card">
 <h3>Auf einen Blick</h3>
@@ -202,8 +202,6 @@ ${preislisteHtml}
 </div>
 </div>
 </section>
-
-<!-- GALERIE -->
 
 <section class="kontakt" id="kontakt">
 <div class="w">

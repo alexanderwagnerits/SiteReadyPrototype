@@ -69,9 +69,9 @@ export async function onRequestGet({params, env}) {
     });
     if (validAnn.length > 0) {
       const annText = validAnn.map(a => a.text).join(" \u00b7 ");
-      const annHtml = `<div id="sr-announcements" style="background:var(--primary,#0f2b5b);border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.8);text-align:center;padding:10px 48px 10px 24px;font-size:.82rem;font-weight:500;line-height:1.5;position:relative">` +
-        `<span style="opacity:.45;margin-right:6px">\u2139</span>${annText}` +
-        `<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:1rem;padding:4px 8px;line-height:1" aria-label="Schlie\u00dfen">\u00d7</button>` +
+      const annHtml = `<div id="sr-announcements" style="background:var(--accent,#2563eb);color:#fff;text-align:center;padding:9px 48px 9px 24px;font-size:.8rem;font-weight:600;line-height:1.5;position:relative">` +
+        `${annText}` +
+        `<button onclick="this.parentElement.remove()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:1rem;padding:4px 8px;line-height:1" aria-label="Schlie\u00dfen">\u00d7</button>` +
         `</div>`;
       // Nach </nav> einfuegen
       if (html.includes("</nav>")) {

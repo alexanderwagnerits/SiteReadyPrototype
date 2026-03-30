@@ -91,7 +91,7 @@ a{color:inherit}
 .ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:0}
 .ueber-vorteile li{font-size:.85rem;font-weight:400;opacity:.7;padding:14px 0 14px 24px;position:relative;border-top:1px solid rgba(255,255,255,.08)}
 .ueber-vorteile li:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
-.ueber-vorteile li::before{content:'\u2013';position:absolute;left:0;top:14px;color:var(--accent);font-weight:500}
+.ueber-vorteile li::before{content:'\u2013';position:absolute;left:0;top:14px;color:rgba(255,255,255,.5);font-weight:500}
 .info-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--rLg);padding:32px 28px}
 .info-card h3{font-size:.68rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;opacity:.35;margin-bottom:24px}
 .info-row{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -135,6 +135,8 @@ a{color:inherit}
 .termin-cta{padding:80px 0;background:var(--primary);color:#fff;text-align:center}
 .termin-cta h2{font-size:clamp(1.2rem,3vw,1.6rem);font-weight:300;margin-bottom:10px;color:#fff;letter-spacing:-.01em}
 .termin-cta p{font-size:.85rem;opacity:.4;margin-bottom:28px}
+.termin-cta .btn-accent{background:#fff;color:var(--primary)}
+.termin-cta .btn-accent:hover{opacity:.9}
 
 .lb{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;cursor:zoom-out}
 .lb.open{display:flex}

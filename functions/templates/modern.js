@@ -91,7 +91,7 @@ a{color:inherit}
 .ueber-text{font-size:.92rem;line-height:1.85;opacity:.7;margin-bottom:28px}
 .ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:14px}
 .ueber-vorteile li{font-size:.9rem;font-weight:500;opacity:.85;padding-left:28px;position:relative}
-.ueber-vorteile li::before{content:'\u2713';position:absolute;left:0;top:0;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(99,102,241,.2);color:var(--accent);border-radius:50%;font-size:.65rem;font-weight:700}
+.ueber-vorteile li::before{content:'\u2713';position:absolute;left:0;top:0;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700}
 .info-card{background:rgba(255,255,255,.06);border:none;border-radius:var(--rLg);padding:32px 28px;backdrop-filter:blur(4px)}
 .info-card h3{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.4;margin-bottom:24px}
 .info-row{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -135,6 +135,8 @@ a{color:inherit}
 .termin-cta{padding:80px 0;background:var(--accent);color:#fff;text-align:center}
 .termin-cta h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:10px;color:#fff}
 .termin-cta p{font-size:.9rem;opacity:.7;margin-bottom:28px}
+.termin-cta .btn-accent{background:#fff;color:var(--accent)}
+.termin-cta .btn-accent:hover{opacity:.9}
 
 .lb{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);align-items:center;justify-content:center;cursor:zoom-out}
 .lb.open{display:flex}

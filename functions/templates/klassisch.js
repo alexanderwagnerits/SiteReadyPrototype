@@ -89,7 +89,7 @@ a{color:inherit}
 .ueber-text{font-size:.9rem;line-height:1.85;opacity:.7;margin-bottom:28px}
 .ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:12px}
 .ueber-vorteile li{font-size:.88rem;font-weight:500;opacity:.85;padding-left:20px;position:relative}
-.ueber-vorteile li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;background:var(--accent);border-radius:1px}
+.ueber-vorteile li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;background:rgba(255,255,255,.7);border-radius:1px}
 .info-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--rLg);padding:32px 28px}
 .info-card h3{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.4;margin-bottom:24px}
 .info-row{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -133,6 +133,8 @@ a{color:inherit}
 .termin-cta{padding:80px 0;background:var(--primary);color:#fff;text-align:center}
 .termin-cta h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:10px;color:#fff}
 .termin-cta p{font-size:.9rem;opacity:.5;margin-bottom:28px}
+.termin-cta .btn-accent{background:#fff;color:var(--primary)}
+.termin-cta .btn-accent:hover{opacity:.9}
 
 .lb{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);align-items:center;justify-content:center;cursor:zoom-out}
 .lb.open{display:flex}

@@ -1,4 +1,4 @@
-export async function onRequestPost({request, env}) {
+export async function onRequestPost({request, env, ctx}) {
   const sig = request.headers.get("stripe-signature");
   const body = await request.text();
 
@@ -77,6 +77,16 @@ export async function onRequestPost({request, env}) {
       }
       await patchOrder(orderId, patch);
       await logEvent(orderId, "checkout_completed", {plan: session.metadata?.plan || "monthly", promoted_to_live: !!patch.status});
+      // Wenn noch keine Website generiert wurde -> jetzt automatisch starten
+      if (currentOrder && !currentOrder.website_html && env.SITE_URL && env.ADMIN_SECRET) {
+        const buildUrl = `${env.SITE_URL}/api/start-build`;
+        const buildTask = fetch(buildUrl, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({order_id: orderId}),
+        }).catch(() => {});
+        if (ctx?.waitUntil) ctx.waitUntil(buildTask); else buildTask;
+      }
     }
   }
 

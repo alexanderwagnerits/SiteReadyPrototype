@@ -114,7 +114,8 @@ function buildImpressum(o, pal, year) {
   add("Medieninhaber & Herausgeber", firmaVoll);
 
   if (uf === "einzelunternehmen") {
-    add("Inhaber", o.firmenname); add("Anschrift", adresse);
+    const inhaberName = [o.vorname, o.nachname].filter(Boolean).join(" ") || o.firmenname;
+    add("Inhaber", inhaberName); add("Anschrift", adresse);
     add("Unternehmensgegenstand", o.unternehmensgegenstand);
   } else if (uf === "eu") {
     add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);

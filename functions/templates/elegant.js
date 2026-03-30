@@ -58,7 +58,7 @@ a{color:inherit}
 .hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:72px 28px 56px}
 .hero-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
 .hero-badge{padding:5px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);font-size:.68rem;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase}
-.hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:300;line-height:1.1;letter-spacing:-.03em;margin-bottom:0;max-width:600px}
+.hero h1{font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:300;line-height:1.1;letter-spacing:-.03em;margin-bottom:0;max-width:600px}
 .hero-accent-line{display:block;width:72px;height:2px;background:var(--accent);margin:20px 0 24px;opacity:.6}
 .hero-sub{font-size:.88rem;color:rgba(255,255,255,.45);font-weight:400;margin-bottom:10px;letter-spacing:.02em}
 .hero-desc{font-size:.85rem;color:rgba(255,255,255,.32);max-width:420px;margin-bottom:24px;line-height:1.8}

@@ -214,7 +214,7 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - firmenbuchgericht: Firmenbuchgericht z.B. HG Wien (leer wenn nicht gefunden)
 - gisazahl: GISA-Zahl (nur Ziffern, leer wenn nicht gefunden)
 - branche: Branche des Betriebs (NUR einen dieser Werte – Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige – Kosmetik & Koerperpflege: kosmetik/friseur/nagel/massage/tattoo/fusspflege/permanent_makeup/sonstige_kosmetik)
-- leistungen: Array mit max. 8 konkreten Leistungen (z.B. ["Elektroinstallation","Beleuchtung"]), leeres Array wenn nicht erkennbar
+- leistungen: Array mit max. 8 konkreten Leistungen die EXPLIZIT auf der Website erwaehnt werden (z.B. ["Elektroinstallation","Beleuchtung"]). NUR reale Angebote des Unternehmens – keine erfundenen oder vermuteten Leistungen, keine allgemeinen Begriffe wie "Beratung" ausser diese stehen wirklich auf der Seite. Leeres Array wenn keine konkreten Leistungen erkennbar.
 
 Website-Text:
 ${fullText}${emailHint}`,

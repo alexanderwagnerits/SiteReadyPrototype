@@ -59,7 +59,7 @@ a{color:inherit}
 .hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:64px 28px 48px}
 .hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .hero-badge{padding:6px 14px;background:rgba(255,255,255,.1);border:none;border-radius:100px;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.02em}
-.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px;max-width:600px}
+.hero h1{font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px;max-width:600px}
 .hero-sub{font-size:.95rem;color:rgba(255,255,255,.55);font-weight:500;margin-bottom:10px}
 .hero-desc{font-size:.9rem;color:rgba(255,255,255,.4);max-width:460px;margin-bottom:24px;line-height:1.7}
 .hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}

@@ -86,7 +86,7 @@ export async function onRequestGet({params, env}) {
   const heroLayout = o.hero_layout || "split";
   if (o.url_hero) {
     if (heroLayout === "full") {
-      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.48),rgba(0,0,0,.38)),url('${o.url_hero}') center/cover no-repeat!important}` +
+      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.50)),url('${o.url_hero}') center/cover no-repeat!important}` +
         `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
         `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
         `#sr-hero .hero-btns .btn{text-shadow:none}</style>`;
@@ -203,8 +203,8 @@ export async function onRequestGet({params, env}) {
       const desc = descMap[l] || descMap[lCapitalized] || "";
       return `<div style="${cardStyle}" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.10)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">` +
         `<div style="${iconStyle}">${checkIcon}</div>` +
-        `<h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 8px;font-size:1rem;letter-spacing:-.02em;line-height:1.3">${lCapitalized}</h3>` +
-        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.65">${desc}</p>` : `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.65;opacity:.6">Professionelle Leistung f\u00fcr Ihre Bed\u00fcrfnisse.</p>`) +
+        `<h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">${lCapitalized}</h3>` +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">${desc}</p>` : `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7;opacity:.6">Professionelle Leistung f\u00fcr Ihre Bed\u00fcrfnisse.</p>`) +
         `</div>`;
     }).join("");
     const n = leistungenArr.length;

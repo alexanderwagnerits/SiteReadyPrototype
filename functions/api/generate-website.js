@@ -469,6 +469,7 @@ JSON-FORMAT:
     metaDesc,
     siteUrl,
     fontUrl: stil.url,
+    fontFamily: stil.font ? `'${stil.font}',system-ui,-apple-system,sans-serif` : null,
     primary: pal.p,
     accent: pal.a,
     bg: pal.bg,

@@ -11,7 +11,7 @@ export function buildKlassischTemplate(data) {
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
     socialHtml, buchungslinkHtml, stickyCtaHtml,
-    metaTitle, metaDesc, siteUrl, fontUrl,
+    metaTitle, metaDesc, siteUrl, fontUrl, fontFamily,
     primary, accent, bg, sep,
     kontaktCtaHeadline, kontaktCtaText,
   } = data;
@@ -42,7 +42,7 @@ export function buildKlassischTemplate(data) {
 --white:#fff;
 --r:4px;
 --rLg:8px;
---font:'Inter',system-ui,-apple-system,sans-serif;
+--font:${fontFamily||"'Inter',system-ui,-apple-system,sans-serif"};
 --maxW:1060px;
 }
 html{scroll-behavior:smooth}

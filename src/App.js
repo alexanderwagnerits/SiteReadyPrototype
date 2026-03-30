@@ -1431,45 +1431,47 @@ function Portal({session,onLogout}){
         {/* Onboarding-Checkliste */}
         {(()=>{
   const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
-  const items=[
-    {label:"Website erstellt",done:!!order.website_html,pts:10},
-    {label:"Logo hochgeladen",done:!!assetUrls.logo,pts:20,tab:"medien"},
-    {label:"Kontakt vollständig",done:!!(order.telefon&&order.adresse),pts:15,tab:"website"},
-    {label:"Hero-Bild hochgeladen",done:!!assetUrls.hero,pts:15,tab:"medien"},
-    {label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),pts:15,tab:"medien"},
-    {label:"Leistungen beschriften",done:!!(order.leistungen_beschreibungen&&Object.keys(order.leistungen_beschreibungen).length>0),pts:hasPL?10:15,tab:"website",hint:"Beschreibung & Preis pro Leistung"},
-    ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,pts:15,tab:"medien"}]:[]),
-    {label:"Eigene Domain verbinden",done:false,pts:0,tab:"domain",hint:"Optional – z.B. www.ihre-firma.at",optional:true},
+  const tips=[
+    {label:"Logo hochladen",done:!!assetUrls.logo,tab:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
+    {label:"Foto hochladen",done:!!(assetUrls.hero||assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien",hint:"Hero-Bild oder Arbeitsproben machen einen grossen Unterschied"},
+    {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,tab:"website",hint:"KI-generierten Text anpassen oder personalisieren"},
+    {label:"Leistungen beschriften",done:!!(order.leistungen_beschreibungen&&Object.keys(order.leistungen_beschreibungen).length>0),tab:"website",hint:"Kurze Beschreibung und Preis pro Leistung"},
+    ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,tab:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
+    {label:"Eigene Domain verbinden",done:false,tab:"domain",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
   ];
-  const total=items.reduce((s,i)=>s+i.pts,0);
-  const earned=items.filter(i=>i.done).reduce((s,i)=>s+i.pts,0);
-  const pct=Math.round((earned/total)*100);
-  const barColor=pct>=80?T.green:pct>=50?"#f59e0b":"#ef4444";
-  return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}>
-    <div style={{height:4,background:T.bg3}}><div style={{height:"100%",background:barColor,width:`${pct}%`,transition:"width .5s ease",borderRadius:"0 2px 2px 0"}}/></div>
-    <div style={{padding:"18px 24px"}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-        <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Website-Qualität</div>
-        <div style={{fontSize:"1.1rem",fontWeight:800,color:barColor,fontFamily:T.mono}}>{pct}%</div>
-      </div>
-      <div style={{display:"flex",flexDirection:"column",gap:2}}>
-        {items.map((item,i)=>(
-          <div key={i} onClick={item.tab&&!item.done?()=>setTab(item.tab):undefined}
-            onMouseOver={e=>{if(item.tab&&!item.done)e.currentTarget.style.background=T.bg;}}
-            onMouseOut={e=>{e.currentTarget.style.background="transparent";}}
-            style={{display:"flex",alignItems:"center",gap:10,padding:"7px 8px",borderRadius:T.rSm,cursor:item.tab&&!item.done?"pointer":"default",transition:"background .12s"}}>
-            <div style={{width:18,height:18,borderRadius:"50%",background:item.done?T.green:T.bg3,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".6rem",fontWeight:800,flexShrink:0}}>{item.done?"\u2713":""}</div>
-            <div style={{flex:1}}>
-              <span style={{fontSize:".875rem",color:item.done?T.textMuted:T.dark}}>{item.label}</span>
-              {item.hint&&!item.done&&<div style={{fontSize:".72rem",color:T.textMuted,marginTop:1}}>{item.hint}</div>}
-            </div>
-            {!item.done&&!item.optional&&<span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,background:T.bg,padding:"2px 7px",borderRadius:100,flexShrink:0}}>+{item.pts}%</span>}
-            {!item.done&&item.optional&&<span style={{fontSize:".72rem",fontWeight:600,color:T.textMuted,background:T.bg,padding:"2px 7px",borderRadius:100,flexShrink:0}}>Optional</span>}
-            {item.tab&&!item.done&&<span style={{fontSize:".75rem",color:T.accent,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>}
+  const open=tips.filter(t=>!t.done&&!t.optional);
+  if(open.length===0)return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,padding:"18px 24px",display:"flex",alignItems:"center",gap:12}}>
+    <div style={{width:32,height:32,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"1rem"}}>{"✓"}</div>
+    <div><div style={{fontSize:".88rem",fontWeight:700,color:T.green}}>Ihre Website ist vollständig eingerichtet!</div><div style={{fontSize:".78rem",color:T.textMuted,marginTop:2}}>Sie können jederzeit weitere Anpassungen vornehmen.</div></div>
+  </div>);
+  const shown=open.slice(0,3);
+  const optionalTip=tips.find(t=>t.optional&&!t.done);
+  return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,padding:"18px 24px"}}>
+    <div style={{fontSize:".78rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>{"Tipps zur Verbesserung"}</div>
+    <div style={{display:"flex",flexDirection:"column",gap:4}}>
+      {shown.map((tip,i)=>(
+        <div key={i} onClick={()=>setTab(tip.tab)}
+          onMouseOver={e=>e.currentTarget.style.background=T.bg}
+          onMouseOut={e=>e.currentTarget.style.background="transparent"}
+          style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s"}}>
+          <div style={{width:6,height:6,borderRadius:"50%",background:T.accent,flexShrink:0}}/>
+          <div style={{flex:1}}>
+            <div style={{fontSize:".875rem",fontWeight:600,color:T.dark}}>{tip.label}</div>
+            <div style={{fontSize:".75rem",color:T.textMuted,marginTop:1}}>{tip.hint}</div>
           </div>
-        ))}
-      </div>
-      {pct===100&&<div style={{marginTop:12,padding:"10px 14px",background:T.greenLight,borderRadius:T.rSm,fontSize:".82rem",fontWeight:600,color:T.green,textAlign:"center"}}>{"Ihre Website ist vollständig eingerichtet!"}</div>}
+          <span style={{fontSize:".75rem",color:T.accent,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
+        </div>
+      ))}
+      {optionalTip&&<div onClick={()=>setTab(optionalTip.tab)}
+        onMouseOver={e=>e.currentTarget.style.background=T.bg}
+        onMouseOut={e=>e.currentTarget.style.background="transparent"}
+        style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s",marginTop:4,paddingTop:12,borderTop:`1px solid ${T.bg3}`}}>
+        <div style={{flex:1}}>
+          <div style={{fontSize:".8rem",color:T.textMuted}}>{optionalTip.label} <span style={{fontSize:".72rem",background:T.bg,padding:"1px 7px",borderRadius:100,marginLeft:4}}>Optional</span></div>
+          <div style={{fontSize:".72rem",color:T.textMuted,marginTop:1}}>{optionalTip.hint}</div>
+        </div>
+        <span style={{fontSize:".75rem",color:T.textMuted,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
+      </div>}
     </div>
   </div>);
 })()}

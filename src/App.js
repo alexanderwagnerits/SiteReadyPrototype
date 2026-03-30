@@ -229,6 +229,62 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .pt-photo-grid{grid-template-columns:repeat(3,1fr)!important}
 }`;
 
+const pCss=`
+.pt-layout{display:flex;height:100vh;overflow:hidden}
+.pt-sb{width:236px;background:#111111;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.pt-sb-top{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.pt-sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.pt-sb-logo{height:24px;filter:brightness(0) invert(1);opacity:.88}
+.pt-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
+.pt-sb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
+@keyframes sb-blink{0%,100%{opacity:1}50%{opacity:.45}}
+.pt-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}
+.pt-sb-nav::-webkit-scrollbar{display:none}
+.pt-sb-grp{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 8px 5px}
+.pt-sb-grp:first-child{padding-top:4px}
+.pt-ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:.91rem;font-weight:500;transition:all .12s;user-select:none;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
+.pt-ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.pt-ni.active{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
+.pt-ni svg{flex-shrink:0;opacity:.5;transition:opacity .12s}
+.pt-ni.active svg,.pt-ni:hover svg{opacity:.85}
+.pt-ni-ch{margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.22);transition:transform .18s;line-height:1}
+.pt-ni.open .pt-ni-ch{transform:rotate(90deg)}
+.pt-sub{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.pt-sub.open{max-height:400px}
+.pt-si{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 32px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.32);font-size:.86rem;font-weight:500;transition:all .12s;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
+.pt-si::before{content:'';width:3px;height:3px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.7}
+.pt-si:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.68)}
+.pt-si.active{color:rgba(255,255,255,.9);font-weight:600}
+.pt-sb-foot{padding:12px 10px 14px;border-top:1px solid rgba(255,255,255,.07)}
+.pt-sb-user{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .12s;background:transparent;border:none;width:100%;font-family:inherit}
+.pt-sb-user:hover{background:rgba(255,255,255,.05)}
+.pt-sb-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:rgba(255,255,255,.72);flex-shrink:0}
+.pt-sb-email{font-size:.76rem;color:rgba(255,255,255,.4);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.pt-sb-out{color:rgba(255,255,255,.22);flex-shrink:0;transition:color .12s}
+.pt-sb-user:hover .pt-sb-out{color:rgba(255,255,255,.55)}
+.pt-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#F5F5F2}
+.pt-mh{padding:28px 36px 0;flex-shrink:0}
+.pt-bc{font-size:.76rem;color:#6B7280;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.pt-bc b{color:#4A4F5A}
+.pt-mh-title{font-size:1.35rem;font-weight:800;color:#111111;letter-spacing:-.025em;line-height:1.2}
+.pt-mh-sub{font-size:.87rem;color:#6B7280;margin-top:3px}
+.pt-mh-line{height:1px;background:#E0E0DB;margin:20px 36px 0;flex-shrink:0}
+.pt-mb{padding:20px 36px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.pt-hero{background:#111111;border-radius:12px;padding:24px 28px;position:relative;overflow:hidden}
+.pt-hero::after{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(143,163,184,.14) 0%,transparent 65%);pointer-events:none}
+.pt-hero-live{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.03em;color:#4ade80;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.14);border-radius:100px;padding:4px 11px;margin-bottom:12px}
+.pt-hero-live-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-hero-url{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin-bottom:2px}
+.pt-hero-url em{color:rgba(255,255,255,.22);font-style:normal}
+.pt-hero-hint{font-size:.78rem;color:rgba(255,255,255,.32);margin-bottom:18px}
+.pt-hero-btns{display:flex;gap:8px;flex-wrap:wrap}
+.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#111;border:none;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;letter-spacing:-.01em}
+.pt-btn-w:hover{opacity:.88}
+.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.09);border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.pt-btn-gw:hover{background:rgba(255,255,255,.12);color:rgba(255,255,255,.88)}
+`;
+
 /* ═══ LANDING PAGE ═══ */
 function LandingPage({onStart,onPortal}){
   const[scrolled,setScrolled]=useState(false);
@@ -1054,7 +1110,10 @@ function PortalLogin({onBack}){
 
 /* ═══ PORTAL DASHBOARD ═══ */
 function Portal({session,onLogout}){
-  const[tab,setTab]=useState("website");
+  const[page,setPage]=useState("overview");
+  const PAGE_TAB={overview:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",impressum:"website",aktuelles:"website",medien:"medien",teilen:"marketing",seo:"seo",domain:"domain",rechnungen:"rechnungen",account:"account",support:"support"};
+  const tab=PAGE_TAB[page]||"website";
+  const nav=p=>{setPage(p);setEditSection(null);};
   const[order,setOrder]=useState(null);
   const[editSection,setEditSection]=useState(null);
   const[saving,setSaving]=useState(false);
@@ -1225,7 +1284,7 @@ function Portal({session,onLogout}){
     const j=await r.json();
     setInvoices(j.charges||[]);
   };
-  useEffect(()=>{if(tab==="rechnungen")loadInvoices();},[tab]);
+  useEffect(()=>{if(page==="rechnungen")loadInvoices();},[page]);
 
   const saveSection=async(section)=>{
     if(!order||!supabase)return;
@@ -1278,28 +1337,161 @@ function Portal({session,onLogout}){
     {key:"foto5",label:"Foto 5",desc:""},
   ];
 
-  return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",flexDirection:"column"}}><style>{css}</style>
-    {/* Topbar */}
-    <div className="pt-topbar" style={{background:"#fff",borderBottom:`1px solid ${T.bg3}`,padding:"0 32px",flexShrink:0}}>
-      <div style={{height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{display:"flex",alignItems:"center",gap:16}}>
-          <img src="/logo.png" alt="SiteReady" style={{height:32}}/>
-          <div style={{width:1,height:24,background:T.bg3}}/>
-          <span className="pt-sub-bar" style={{fontSize:".8rem",color:T.textMuted,fontFamily:T.mono}}>{sub}.siteready.at</span>
+  const SUBS=["grunddaten","leistungen","kontakt","ueberuns","social","design","impressum","aktuelles"];
+  const inhalteOpen=SUBS.includes(page);
+  const userInitials=(session?.user?.email||"??").slice(0,2).toUpperCase();
+  const pageMeta={
+    overview:{title:"Übersicht",sub:"Willkommen zurück"},
+    grunddaten:{bc:"Inhalte",title:"Grunddaten",sub:"Firmenname, Slogan und Einsatzgebiet"},
+    leistungen:{bc:"Inhalte",title:"Leistungen",sub:"Beschreibungen und Preise – jederzeit anpassbar"},
+    kontakt:{bc:"Inhalte",title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon, Öffnungszeiten und Buchungslink"},
+    ueberuns:{bc:"Inhalte",title:"Über uns",sub:"KI-generierte Texte – jederzeit anpassbar"},
+    social:{bc:"Inhalte",title:"Social Media",sub:"Links erscheinen im Footer Ihrer Website"},
+    design:{bc:"Inhalte",title:"Design",sub:"Stil und Erscheinungsbild Ihrer Website"},
+    impressum:{bc:"Inhalte",title:"Unternehmen & Impressum",sub:"Rechtliche Pflichtangaben – Änderungen werden von uns geprüft"},
+    aktuelles:{bc:"Inhalte",title:"Aktuelles",sub:"Kurzfristige Meldung als Banner auf Ihrer Website"},
+    medien:{title:"Fotos & Logo",sub:"Hochwertige Fotos machen den größten Unterschied"},
+    teilen:{title:"Teilen & QR-Code",sub:"Links, QR-Code und Firmen-Flyer für Ihre Website"},
+    seo:{title:"SEO & Google",sub:"Sichtbarkeit in Suchmaschinen"},
+    domain:{title:"Domain",sub:"Eigene Domain verbinden"},
+    rechnungen:{title:"Rechnungen",sub:"Ihre Zahlungsübersicht"},
+    account:{title:"Account",sub:"Ihre Konto- und Abonnementdaten"},
+    support:{title:"Support",sub:"Wir sind für Sie da"},
+  };
+  const pm=pageMeta[page]||{title:page};
+  const pCss=`
+.pt-layout{display:flex;height:100vh;overflow:hidden;font-family:'DM Sans',system-ui,sans-serif}
+.pt-sb{width:236px;background:#111111;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.pt-sb-top{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.pt-sb-brand{margin-bottom:18px}
+.pt-sb-logo{height:24px;filter:brightness(0) invert(1);opacity:.88;display:block}
+.pt-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
+.pt-sb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
+@keyframes sb-blink{0%,100%{opacity:1}50%{opacity:.45}}
+.pt-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}
+.pt-sb-nav::-webkit-scrollbar{display:none}
+.pt-sb-grp{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 8px 5px}
+.pt-ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:.91rem;font-weight:500;transition:all .12s;user-select:none;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
+.pt-ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.pt-ni.pactive{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
+.pt-ni svg{flex-shrink:0;opacity:.5;transition:opacity .12s}
+.pt-ni.pactive svg,.pt-ni:hover svg{opacity:.85}
+.pt-ni-ch{margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.22);transition:transform .18s;line-height:1}
+.pt-ni.popen .pt-ni-ch{transform:rotate(90deg)}
+.pt-sub{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.pt-sub.popen{max-height:400px}
+.pt-si{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 32px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.32);font-size:.86rem;font-weight:500;transition:all .12s;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
+.pt-si:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.68)}
+.pt-si.pactive{color:rgba(255,255,255,.9);font-weight:600}
+.pt-sb-foot{padding:12px 10px 14px;border-top:1px solid rgba(255,255,255,.07)}
+.pt-sb-user{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .12s;background:transparent;border:none;width:100%;font-family:inherit}
+.pt-sb-user:hover{background:rgba(255,255,255,.05)}
+.pt-sb-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:rgba(255,255,255,.72);flex-shrink:0}
+.pt-sb-email{font-size:.76rem;color:rgba(255,255,255,.4);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.pt-sb-out{color:rgba(255,255,255,.22);flex-shrink:0}
+.pt-sb-user:hover .pt-sb-out{color:rgba(255,255,255,.55)}
+.pt-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#F5F5F2}
+.pt-mh{padding:28px 36px 0;flex-shrink:0}
+.pt-bc{font-size:.76rem;color:#6B7280;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.pt-bc b{color:#4A4F5A}
+.pt-mh-title{font-size:1.35rem;font-weight:800;color:#111111;letter-spacing:-.025em;line-height:1.2}
+.pt-mh-sub{font-size:.87rem;color:#6B7280;margin-top:3px}
+.pt-mh-line{height:1px;background:#E0E0DB;margin:20px 36px 0;flex-shrink:0}
+.pt-mb{padding:20px 36px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.pt-hero-card{background:#111111;border-radius:12px;padding:24px 28px;position:relative;overflow:hidden}
+.pt-hero-card::after{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(143,163,184,.14) 0%,transparent 65%);pointer-events:none}
+.pt-hlive{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:#4ade80;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.14);border-radius:100px;padding:4px 11px;margin-bottom:12px}
+.pt-hlive-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-hurl{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin-bottom:2px}
+.pt-hurl em{color:rgba(255,255,255,.22);font-style:normal}
+.pt-hhint{font-size:.78rem;color:rgba(255,255,255,.32);margin-bottom:18px}
+.pt-hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#111;border:none;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;text-decoration:none;letter-spacing:-.01em}
+.pt-btn-w:hover{opacity:.88}
+.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.09);border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.pt-btn-gw:hover{background:rgba(255,255,255,.12);color:rgba(255,255,255,.88)}
+`;
+  return(<div className="pt-layout"><style>{css+pCss}</style>
+    {/* Sidebar */}
+    <aside className="pt-sb">
+      <div className="pt-sb-top">
+        <div className="pt-sb-brand">
+          <img className="pt-sb-logo" src="/logo.png" alt="SiteReady" onError={e=>e.currentTarget.style.display="none"}/>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <span className="pt-email" style={{fontSize:".8rem",color:T.textMuted}}>{session?.user?.email}</span>
-          <button onClick={onLogout} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:8,background:"transparent",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}
-            onMouseOver={e=>{e.currentTarget.style.borderColor=T.dark;e.currentTarget.style.color=T.dark;}}
-            onMouseOut={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textMuted;}}>Logout</button>
+        <div className="pt-sb-site">
+          <div className="pt-sb-dot"/>
+          <div className="pt-sb-url">{sub}.siteready.at</div>
         </div>
       </div>
-    </div>
-    {/* Content */}
-    <div style={{maxWidth:880,width:"100%",margin:"0 auto",padding:"32px 24px",flex:1}}>
-      <div style={{marginBottom:8}}>
-        <h1 style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.02em"}}>{order?.firmenname||"Willkommen"}</h1>
+      <nav className="pt-sb-nav">
+        <div className="pt-sb-grp">Meine Website</div>
+        <button className={`pt-ni${page==="overview"?" pactive":""}`} onClick={()=>nav("overview")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          Übersicht
+        </button>
+        <button className={`pt-ni${inhalteOpen?" popen pactive":""}`} onClick={()=>{if(!inhalteOpen)nav("grunddaten");}}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
+          Inhalte
+          <span className="pt-ni-ch">›</span>
+        </button>
+        <div className={`pt-sub${inhalteOpen?" popen":""}`}>
+          {[["grunddaten","Grunddaten"],["leistungen","Leistungen"],["kontakt","Kontakt & Zeiten"],["ueberuns","Über uns"],["social","Social Media"],["design","Design"],["impressum","Unternehmen & Impressum"],["aktuelles","Aktuelles"]].map(([p,label])=>(
+            <button key={p} className={`pt-si${page===p?" pactive":""}`} onClick={()=>nav(p)}>{label}</button>
+          ))}
+        </div>
+        <button className={`pt-ni${page==="medien"?" pactive":""}`} onClick={()=>nav("medien")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Fotos & Logo
+        </button>
+        <button className={`pt-ni${page==="teilen"?" pactive":""}`} onClick={()=>nav("teilen")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Teilen & QR-Code
+        </button>
+        <div className="pt-sb-grp">Einstellungen</div>
+        <button className={`pt-ni${page==="seo"?" pactive":""}`} onClick={()=>nav("seo")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          SEO & Google
+        </button>
+        <button className={`pt-ni${page==="domain"?" pactive":""}`} onClick={()=>nav("domain")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Domain
+        </button>
+        <div className="pt-sb-grp">Konto</div>
+        <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Rechnungen
+        </button>
+        <button className={`pt-ni${page==="account"?" pactive":""}`} onClick={()=>nav("account")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Account
+        </button>
+        <button className={`pt-ni${page==="support"?" pactive":""}`} onClick={()=>nav("support")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Support
+        </button>
+      </nav>
+      <div className="pt-sb-foot">
+        <button className="pt-sb-user" onClick={onLogout}>
+          <div className="pt-sb-av">{userInitials}</div>
+          <div className="pt-sb-email">{session?.user?.email}</div>
+          <div className="pt-sb-out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </div>
+        </button>
       </div>
+    </aside>
+    {/* Main */}
+    <main className="pt-main">
+      {order?.status!=="pending"&&<>
+        <div className="pt-mh">
+          {pm.bc&&<div className="pt-bc">{pm.bc} <b>›</b> {pm.title}</div>}
+          <div className="pt-mh-title">{pm.title}</div>
+          {pm.sub&&<div className="pt-mh-sub">{pm.sub}</div>}
+        </div>
+        <div className="pt-mh-line"/>
+      </>}
+      <div className="pt-mb">
       {/* Trial-Banner */}
       {order?.status==="trial"&&(<div style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
         <div>
@@ -1340,13 +1532,66 @@ function Portal({session,onLogout}){
       {/* Build-Screen: status===pending (Generierung laeuft) */}
       {order?.status==="pending"&&<BuildScreen session={session} setOrder={setOrder}/>}
 
-      {/* Tab Nav */}
-      {order?.status!=="pending"&&<div className="pt-tab-nav" style={{display:"flex",gap:4,background:T.bg2,borderRadius:T.r,padding:4,marginBottom:28,width:"fit-content",flexWrap:"nowrap"}}>
-        {TABS.map(t=>{const active=tab===t.id;return(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",background:active?"#fff":"transparent",cursor:"pointer",borderRadius:T.rSm,fontFamily:T.font,fontWeight:active?700:500,fontSize:".8rem",color:active?T.dark:T.textMuted,boxShadow:active?T.sh2:"none",transition:"all .2s",whiteSpace:"nowrap",flexShrink:0,display:"flex",alignItems:"center",gap:6,minHeight:40}} dangerouslySetInnerHTML={{__html:(t.icon||"")+`<span>${t.label}</span>`}}/>);})}
-      </div>}
 
-      {/* Tab: Website */}
-      {tab==="website"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {/* Übersicht-Seite */}
+      {page==="overview"&&order&&order.status!=="pending"&&(<>
+        <div className="pt-hero-card">
+          <div className="pt-hlive"><div className="pt-hlive-dot"/>Live</div>
+          <div className="pt-hurl"><em>https://</em>{sub}.siteready.at</div>
+          <div className="pt-hhint">Ihre Website ist öffentlich erreichbar &middot; Änderungen sind sofort sichtbar</div>
+          <div className="pt-hbtns">
+            <a href={`https://sitereadyprototype.pages.dev/s/${sub}`} target="_blank" rel="noreferrer" className="pt-btn-w">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Website öffnen
+            </a>
+            <button className="pt-btn-gw" onClick={()=>{navigator.clipboard.writeText(`https://sitereadyprototype.pages.dev/s/${sub}`);showToast("Link kopiert!");}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Link kopieren
+            </button>
+            <button className="pt-btn-gw" onClick={()=>nav("teilen")}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              QR-Code & Teilen
+            </button>
+          </div>
+        </div>
+        {(()=>{
+          const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
+          const tips=[
+            {label:"Logo hochladen",done:!!assetUrls.logo,page:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
+            {label:"Foto hochladen",done:!!(assetUrls.hero||assetUrls.leist1||assetUrls.leist2||assetUrls.leist3),page:"medien",hint:"Hero-Bild oder Arbeitsproben machen einen grossen Unterschied"},
+            {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,page:"ueberuns",hint:"KI-generierten Text anpassen oder personalisieren"},
+            {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),page:"leistungen",hint:"Preise direkt auf den Leistungskarten anzeigen"},
+            ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,page:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
+            {label:"Eigene Domain verbinden",done:false,page:"domain",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
+          ];
+          const open=tips.filter(t=>!t.done&&!t.optional);
+          if(open.length===0)return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"18px 24px",display:"flex",alignItems:"center",gap:12}}>
+            <div style={{width:32,height:32,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:T.green,fontWeight:700}}>{"✓"}</div>
+            <div><div style={{fontSize:".88rem",fontWeight:700,color:T.green}}>Ihre Website ist vollständig eingerichtet!</div><div style={{fontSize:".78rem",color:T.textMuted,marginTop:2}}>Sie können jederzeit weitere Anpassungen vornehmen.</div></div>
+          </div>);
+          const shown=open.slice(0,3);
+          const optionalTip=tips.find(t=>t.optional&&!t.done);
+          return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"18px 24px"}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Tipps zur Verbesserung</div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {shown.map((tip,i)=>(
+                <div key={i} onClick={()=>nav(tip.page)} onMouseOver={e=>e.currentTarget.style.background=T.bg} onMouseOut={e=>e.currentTarget.style.background="transparent"} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s"}}>
+                  <div style={{width:6,height:6,borderRadius:"50%",background:T.accent,flexShrink:0}}/>
+                  <div style={{flex:1}}><div style={{fontSize:".875rem",fontWeight:600,color:T.dark}}>{tip.label}</div><div style={{fontSize:".75rem",color:T.textMuted,marginTop:1}}>{tip.hint}</div></div>
+                  <span style={{fontSize:".75rem",color:T.accent,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
+                </div>
+              ))}
+              {optionalTip&&<div onClick={()=>nav(optionalTip.page)} onMouseOver={e=>e.currentTarget.style.background=T.bg} onMouseOut={e=>e.currentTarget.style.background="transparent"} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s",marginTop:4,paddingTop:12,borderTop:`1px solid ${T.bg3}`}}>
+                <div style={{flex:1}}><div style={{fontSize:".8rem",color:T.textMuted}}>{optionalTip.label} <span style={{fontSize:".72rem",background:T.bg,padding:"1px 7px",borderRadius:100,marginLeft:4}}>Optional</span></div></div>
+                <span style={{fontSize:".75rem",color:T.textMuted,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
+              </div>}
+            </div>
+          </div>);
+        })()}
+      </>)}
+
+      {/* Tab: Website (Inhalte-Unterseiten) */}
+      {tab==="website"&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Website Status */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Website Status</div>
@@ -1450,7 +1695,7 @@ function Portal({session,onLogout}){
     <div style={{fontSize:".78rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>{"Tipps zur Verbesserung"}</div>
     <div style={{display:"flex",flexDirection:"column",gap:4}}>
       {shown.map((tip,i)=>(
-        <div key={i} onClick={()=>setTab(tip.tab)}
+        <div key={i} onClick={()=>nav(tip.tab==="website"?"overview":tip.tab)}
           onMouseOver={e=>e.currentTarget.style.background=T.bg}
           onMouseOut={e=>e.currentTarget.style.background="transparent"}
           style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s"}}>
@@ -1462,7 +1707,7 @@ function Portal({session,onLogout}){
           <span style={{fontSize:".75rem",color:T.accent,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
         </div>
       ))}
-      {optionalTip&&<div onClick={()=>setTab(optionalTip.tab)}
+      {optionalTip&&<div onClick={()=>nav(optionalTip.tab==="website"?"overview":optionalTip.tab)}
         onMouseOver={e=>e.currentTarget.style.background=T.bg}
         onMouseOut={e=>e.currentTarget.style.background="transparent"}
         style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s",marginTop:4,paddingTop:12,borderTop:`1px solid ${T.bg3}`}}>
@@ -1492,7 +1737,7 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
             <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Unternehmen & Impressum</div>
-            <button onClick={()=>setTab("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
+            <button onClick={()=>nav("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
           </div>
           <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===order.unternehmensform)?.label||order.unternehmensform}/>
           <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
@@ -1583,7 +1828,7 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Design & Stil</div>
-            <button onClick={()=>setTab("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
+            <button onClick={()=>nav("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
           </div>
           <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
           <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
@@ -2024,22 +2269,22 @@ function Portal({session,onLogout}){
             {!assetUrls.logo&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+10</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Logo hochladen</span>
-              <button onClick={()=>setTab("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
             {!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3)&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+10</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Fotos hochladen</span>
-              <button onClick={()=>setTab("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
             {!order.telefon&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+5</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Telefonnummer ergänzen</span>
-              <button onClick={()=>{setTab("website");setEditSection("kontakt");}} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("kontakt")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
             {!order.kurzbeschreibung&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+5</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Kurzbeschreibung hinzufügen</span>
-              <button onClick={()=>{setTab("website");setEditSection("grunddaten");}} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("grunddaten")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
           </div>}
         </div>}
@@ -2093,7 +2338,8 @@ function Portal({session,onLogout}){
           <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>DNS-Änderungen dauern bis zu 48 Stunden. Sobald alles aktiv ist, schreiben Sie uns an <strong>support@siteready.at</strong> – wir schalten Ihre Domain frei.</div>
         </div>
       </div>)}
-    </div>
+      </div>
+    </main>
   </div>);
 }
 

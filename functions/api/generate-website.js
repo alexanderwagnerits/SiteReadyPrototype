@@ -388,7 +388,7 @@ REGELN:
 
 JSON-FORMAT:
 {
-  "leistungen_beschreibungen": {"${leistungen.join('":"[max 15 Woerter]","')}":"[max 15 Woerter]"},
+  "leistungen_beschreibungen": {"${leistungen.join('":"[2 kurze Saetze, max 25 Woerter]","')}":"[2 kurze Saetze, max 25 Woerter]"},
   "text_ueber_uns": "4-5 Saetze ueber den Betrieb",
   "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
   "leistungen_intro": "1 kurzer Einleitungssatz fuer die Leistungen-Sektion",

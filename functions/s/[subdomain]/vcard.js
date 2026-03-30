@@ -33,7 +33,7 @@ export async function onRequestGet({params, env}) {
   if (!subdomain) return new Response("Not Found", {status: 404});
 
   const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,kurzbeschreibung,email,telefon,adresse,plz,ort,bundesland,oeffnungszeiten,einsatzgebiet,leistungen,facebook,instagram,linkedin,tiktok,url_logo,stil,status`,
+    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,kurzbeschreibung,email,telefon,adresse,plz,ort,bundesland,oeffnungszeiten,einsatzgebiet,facebook,instagram,linkedin,tiktok,url_logo,stil,status`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
   if (!r.ok) return new Response("Fehler", {status: 502});
@@ -53,7 +53,6 @@ export async function onRequestGet({params, env}) {
   const oez = OEZ_LABELS[o.oeffnungszeiten] || o.oeffnungszeiten || "";
   const websiteUrl = `https://sitereadyprototype.pages.dev/s/${subdomain}`;
   const vcardUrl = `/s/${subdomain}/vcard-contact`;
-  const leistungen = o.leistungen || [];
   const firmenname = esc(o.firmenname || subdomain);
 
   const socials = [
@@ -209,10 +208,6 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;posi
       ${o.einsatzgebiet ? `<div class="info-row"><div class="info-icon" aria-hidden="true">${ICONS.area}</div><div class="info-text"><div class="info-label">Einsatzgebiet</div><div class="info-value">${esc(o.einsatzgebiet)}</div></div></div>` : ""}
     </section>
 
-    ${leistungen.length ? `<section class="section" aria-label="Leistungen">
-      <div class="section-title">Leistungen</div>
-      <div class="tags" role="list">${leistungen.map(l => `<span class="tag" role="listitem">${esc(l)}</span>`).join("")}</div>
-    </section>` : ""}
   </main>
 
   <footer class="footer">Erstellt mit <a href="https://sitereadyprototype.pages.dev">SiteReady</a></footer>

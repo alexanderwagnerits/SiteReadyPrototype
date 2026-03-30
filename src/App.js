@@ -1355,10 +1355,10 @@ function Portal({session,onLogout}){
               <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
               <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live – Ihre Website ist erreichbar":"In Bearbeitung"}</span>
             </div>
-            {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"Visitenkarte",v:`https://sitereadyprototype.pages.dev/s/${sub}/vcard`,link:true},{l:"Status",v:STATUS_LABELS[order.status]||order.status}].map(({l,v,link})=>(
+            {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"Digitale Visitenkarte",v:`https://sitereadyprototype.pages.dev/s/${sub}/vcard`,link:true,hint:"Kontakt per QR-Code oder Link teilen"},{l:"Status",v:STATUS_LABELS[order.status]||order.status}].map(({l,v,link,hint})=>(
               <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
                 <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
-                {link?<a href={v} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}
+                <div>{link?<a href={v} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}{hint&&<div style={{fontSize:".72rem",color:T.textMuted,marginTop:2}}>{hint}</div>}</div>
               </div>))}
           </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
         </div>
@@ -1418,7 +1418,7 @@ function Portal({session,onLogout}){
             </div>)}
           </>):(<>
             {(order.announcements||[]).length===0
-              ?<div style={{fontSize:".88rem",color:T.textMuted}}>Keine Meldungen aktiv</div>
+              ?<div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Meldung erstellt. Hier können Sie kurzfristige Infos wie Betriebsurlaub, Aktionen oder News als Banner auf Ihrer Website anzeigen.</div>
               :(order.announcements||[]).map((ann,i)=><div key={ann.id||i} style={{display:"flex",alignItems:"center",gap:10}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:ann.active?T.green:T.bg3,flexShrink:0}}/>
                 <div style={{flex:1}}>

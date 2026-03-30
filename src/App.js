@@ -622,6 +622,7 @@ function SuccessPage({data,onBack,onPortal}){
   const[saveErr,setSaveErr]=useState("");
   const[vorname,setVorname]=useState(data.vorname||"");
   const[nachname,setNachname]=useState(data.nachname||"");
+  const[loginEmail,setLoginEmail]=useState(data.email||"");
   const[pw,setPw]=useState("");
   const[pw2,setPw2]=useState("");
   const[pwTouched,setPwTouched]=useState(false);
@@ -632,14 +633,15 @@ function SuccessPage({data,onBack,onPortal}){
   const[agbAccepted,setAgbAccepted]=useState(false);
   const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
   const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwoerter stimmen nicht ueberein":"";
-  const regOk=vorname.trim().length>0&&nachname.trim().length>0&&pw.length>=8&&pw===pw2;
+  const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail);
+  const regOk=vorname.trim().length>0&&nachname.trim().length>0&&emailValid&&pw.length>=8&&pw===pw2;
   const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
   const handleOrder=async()=>{
     if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausfüllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // 0. Account erstellen
-    const{data:authData,error:authErr}=await supabase.auth.signUp({email:data.email,password:pw,options:{data:{firmenname:data.firmenname,vorname,nachname}}});
+    const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:data.firmenname,vorname,nachname}}});
     if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);return;}
     const userId=authData?.user?.id||null;
     // 1. Bestellung in Supabase speichern (UUID client-seitig generieren)
@@ -671,13 +673,13 @@ function SuccessPage({data,onBack,onPortal}){
     }catch(_){}
     setSaving(false);
     // 3. Bestaetigungsseite zeigen statt sofortigem Redirect
-    localStorage.setItem("sr_pending_email",data.email);
+    localStorage.setItem("sr_pending_email",loginEmail);
     setConfirmed(true);
   };
   const resendEmail=async()=>{
     if(!supabase||resending)return;
     setResending(true);
-    await supabase.auth.resend({type:"signup",email:data.email});
+    await supabase.auth.resend({type:"signup",email:loginEmail});
     setResending(false);setResent(true);
     setTimeout(()=>setResent(false),5000);
   };
@@ -789,8 +791,9 @@ function SuccessPage({data,onBack,onPortal}){
               </div>
             </div>
             <div style={{marginBottom:10}}>
-              <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:T.textSub}}>E-Mail</label>
-              <div style={{padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",background:"#f8fafc",color:T.textMuted,fontFamily:T.font,minHeight:44,boxSizing:"border-box"}}>{data.email||"–"}</div>
+              <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:T.textSub}}>Login-E-Mail <span style={{color:T.red}}>*</span></label>
+              <input type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} placeholder="ihre@email.at" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box",minHeight:44}}/>
+              {data.email&&loginEmail!==data.email&&<div style={{marginTop:4,fontSize:".75rem",color:T.textMuted}}>Website-Kontakt bleibt: {data.email}</div>}
             </div>
             <div style={{marginBottom:10}}>
               <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:pwErr?T.red:T.textSub}}>Passwort{" "}<span style={{color:T.red}}>*</span></label>

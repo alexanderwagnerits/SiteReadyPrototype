@@ -1111,7 +1111,7 @@ function PortalLogin({onBack}){
 /* ═══ PORTAL DASHBOARD ═══ */
 function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
-  const PAGE_TAB={overview:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",impressum:"website",aktuelles:"website",medien:"medien",teilen:"marketing",seo:"seo",domain:"domain",rechnungen:"rechnungen",account:"account",support:"support"};
+  const PAGE_TAB={overview:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",impressum:"website",aktuelles:"website",medien:"medien",teilen:"marketing",seo:"seo",domain:"domain",rechnungen:"rechnungen",account:"account",support:"support",fotos:"medien"};
   const tab=PAGE_TAB[page]||"website";
   const nav=p=>{setPage(p);setEditSection(null);};
   const[order,setOrder]=useState(null);
@@ -1142,6 +1142,8 @@ function Portal({session,onLogout}){
   const[gUrl,setGUrl]=useState("");
   const[gSaved,setGSaved]=useState(false);
   const[deleting,setDeleting]=useState({});
+  const[impressumConfirmOpen,setImpressumConfirmOpen]=useState(false);
+  const[impressumChecked,setImpressumChecked]=useState(false);
   const showToast=(msg)=>{setToastMsg(msg);setTimeout(()=>setToastMsg(null),2500);};
 
   useEffect(()=>{
@@ -1296,14 +1298,15 @@ function Portal({session,onLogout}){
       texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
       design:{stil:order.stil,fotos:order.fotos},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
+      impressum:{unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl},
     };
     await supabase.from("orders").update(fields[section]||{}).eq("id",order.id);
     setSaving(false);setSaved(section);setTimeout(()=>setSaved(false),3000);
     setEditSection(null);
   };
 
-  const SectionHeader=({id,label,badge})=>(
-    <div style={{marginBottom:16,paddingBottom:14,borderBottom:`1px solid ${T.bg3}`}}>
+  const SectionHeader=({id,label,badge,desc,onSave})=>(
+    <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>{label}</div>
@@ -1313,12 +1316,13 @@ function Portal({session,onLogout}){
           {saved===id&&<span style={{color:T.green,fontSize:".8rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
           {editSection===id
             ?<><button onClick={()=>setEditSection(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>Abbrechen</button>
-              <button onClick={()=>saveSection(id)} disabled={saving} style={{padding:"7px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".8rem",fontWeight:700,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>{saving?"Speichert...":"Speichern"}</button></>
+              <button onClick={()=>onSave?onSave():saveSection(id)} disabled={saving} style={{padding:"7px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".8rem",fontWeight:700,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>{saving?"Speichert...":"Speichern"}</button></>
             :<button onClick={()=>setEditSection(id)} style={{padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}
               onMouseOver={e=>{e.currentTarget.style.borderColor=T.dark;e.currentTarget.style.color=T.dark;}}
               onMouseOut={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textMuted;}}>Bearbeiten</button>}
         </div>
       </div>
+      {desc&&<div style={{fontSize:".78rem",color:T.textMuted,marginTop:7,lineHeight:1.55}}>{desc}</div>}
     </div>
   );
 
@@ -1337,26 +1341,32 @@ function Portal({session,onLogout}){
     {key:"foto5",label:"Foto 5",desc:""},
   ];
 
-  const SUBS=["grunddaten","leistungen","kontakt","ueberuns","social","design","impressum","aktuelles"];
-  const inhalteOpen=SUBS.includes(page);
   const userInitials=(session?.user?.email||"??").slice(0,2).toUpperCase();
+  const comp=order?{
+    grunddaten:!!(order.firmenname&&order.kurzbeschreibung),
+    leistungen:!!(order.leistungen?.length>0),
+    kontakt:!!(order.adresse&&order.telefon),
+    ueberuns:!!(order.text_ueber_uns),
+    medien:!!(assetUrls.logo||assetUrls.hero||assetUrls.foto1),
+    impressum:!!(order.unternehmensform||order.uid_nummer),
+  }:{};
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
-    grunddaten:{bc:"Inhalte",title:"Grunddaten",sub:"Firmenname, Slogan und Einsatzgebiet"},
-    leistungen:{bc:"Inhalte",title:"Leistungen",sub:"Beschreibungen und Preise – jederzeit anpassbar"},
-    kontakt:{bc:"Inhalte",title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon, Öffnungszeiten und Buchungslink"},
-    ueberuns:{bc:"Inhalte",title:"Über uns",sub:"KI-generierte Texte – jederzeit anpassbar"},
-    social:{bc:"Inhalte",title:"Social Media",sub:"Links erscheinen im Footer Ihrer Website"},
-    design:{bc:"Inhalte",title:"Design",sub:"Stil und Erscheinungsbild Ihrer Website"},
-    impressum:{bc:"Inhalte",title:"Unternehmen & Impressum",sub:"Rechtliche Pflichtangaben – Änderungen werden von uns geprüft"},
-    aktuelles:{bc:"Inhalte",title:"Aktuelles",sub:"Kurzfristige Meldung als Banner auf Ihrer Website"},
-    medien:{title:"Fotos & Logo",sub:"Hochwertige Fotos machen den größten Unterschied"},
-    teilen:{title:"Teilen & QR-Code",sub:"Links, QR-Code und Firmen-Flyer für Ihre Website"},
-    seo:{title:"SEO & Google",sub:"Sichtbarkeit in Suchmaschinen"},
-    domain:{title:"Domain",sub:"Eigene Domain verbinden"},
-    rechnungen:{title:"Rechnungen",sub:"Ihre Zahlungsübersicht"},
-    account:{title:"Account",sub:"Ihre Konto- und Abonnementdaten"},
-    support:{title:"Support",sub:"Wir sind für Sie da"},
+    grunddaten:{title:"Grunddaten",sub:"Firmenname, Kurzbeschreibung und Einsatzgebiet Ihres Unternehmens"},
+    leistungen:{title:"Leistungen",sub:"Diese Leistungen erscheinen als Karten auf Ihrer Website – mit Beschreibung und Preis"},
+    kontakt:{title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps"},
+    ueberuns:{title:"Über uns",sub:"Der persönliche Vorstellungstext und Ihre Stärken – bearbeiten Sie den KI-Text nach Wunsch"},
+    social:{title:"Social Media",sub:"Ihre Social-Media-Profile erscheinen als Icons im Footer Ihrer Website"},
+    design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
+    impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
+    aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
+    medien:{title:"Fotos & Logo",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
+    teilen:{title:"Teilen & QR-Code",sub:"QR-Code, Visitenkarte und Firmen-Flyer für Ihre Website"},
+    seo:{title:"SEO & Google",sub:"Diese Angaben sieht Google – gut ausgefüllt verbessert das Ihre Auffindbarkeit nachweislich"},
+    domain:{title:"Eigene Domain",sub:"Verbinden Sie Ihre Domain z.B. www.ihre-firma.at statt der Standard-Subdomain"},
+    rechnungen:{title:"Rechnungen",sub:"Ihre Zahlungsübersicht und Abonnement-Verwaltung"},
+    account:{title:"Account",sub:"E-Mail-Adresse und Passwort Ihres Kundenkontos"},
+    support:{title:"Support",sub:"Wir sind für Sie da – Antwort in der Regel innerhalb von 24 Stunden"},
   };
   const pm=pageMeta[page]||{title:page};
   const pCss=`
@@ -1381,9 +1391,8 @@ function Portal({session,onLogout}){
 .pt-ni.popen .pt-ni-ch{transform:rotate(90deg)}
 .pt-sub{overflow:hidden;max-height:0;transition:max-height .25s ease}
 .pt-sub.popen{max-height:400px}
-.pt-si{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 32px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.32);font-size:.86rem;font-weight:500;transition:all .12s;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
-.pt-si:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.68)}
-.pt-si.pactive{color:rgba(255,255,255,.9);font-weight:600}
+.pt-comp{width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:auto;flex-shrink:0}
+.pt-done{width:6px;height:6px;border-radius:50%;background:#4ade80;margin-left:auto;flex-shrink:0;opacity:.7}
 .pt-sb-foot{padding:12px 10px 14px;border-top:1px solid rgba(255,255,255,.07)}
 .pt-sb-user{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .12s;background:transparent;border:none;width:100%;font-family:inherit}
 .pt-sb-user:hover{background:rgba(255,255,255,.05)}
@@ -1429,25 +1438,28 @@ function Portal({session,onLogout}){
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           Übersicht
         </button>
-        <button className={`pt-ni${inhalteOpen?" popen pactive":""}`} onClick={()=>{if(!inhalteOpen)nav("grunddaten");}}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
-          Inhalte
-          <span className="pt-ni-ch">›</span>
-        </button>
-        <div className={`pt-sub${inhalteOpen?" popen":""}`}>
-          {[["grunddaten","Grunddaten"],["leistungen","Leistungen"],["kontakt","Kontakt & Zeiten"],["ueberuns","Über uns"],["social","Social Media"],["design","Design"],["impressum","Unternehmen & Impressum"],["aktuelles","Aktuelles"]].map(([p,label])=>(
-            <button key={p} className={`pt-si${page===p?" pactive":""}`} onClick={()=>nav(p)}>{label}</button>
-          ))}
-        </div>
-        <button className={`pt-ni${page==="medien"?" pactive":""}`} onClick={()=>nav("medien")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Fotos & Logo
-        </button>
+        {[
+          ["grunddaten","Grunddaten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6H4z"/><circle cx="17" cy="17" r="3"/></svg>`,true],
+          ["leistungen","Leistungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,true],
+          ["kontakt","Kontakt & Zeiten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,true],
+          ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,true],
+          ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
+          ["medien","Fotos & Medien",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,true],
+          ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
+          ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,true],
+        ].map(([p,label,iconSvg,hasComp])=>(
+          <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
+            <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
+            {label}
+            {hasComp&&comp[p]===false&&<span className="pt-comp"/>}
+            {hasComp&&comp[p]===true&&<span className="pt-done"/>}
+          </button>
+        ))}
+        <div className="pt-sb-grp">Sichtbarkeit</div>
         <button className={`pt-ni${page==="teilen"?" pactive":""}`} onClick={()=>nav("teilen")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Teilen & QR-Code
         </button>
-        <div className="pt-sb-grp">Einstellungen</div>
         <button className={`pt-ni${page==="seo"?" pactive":""}`} onClick={()=>nav("seo")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           SEO & Google
@@ -1455,6 +1467,11 @@ function Portal({session,onLogout}){
         <button className={`pt-ni${page==="domain"?" pactive":""}`} onClick={()=>nav("domain")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           Domain
+        </button>
+        <div className="pt-sb-grp">Einstellungen</div>
+        <button className={`pt-ni${page==="design"?" pactive":""}`} onClick={()=>nav("design")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>
+          Design
         </button>
         <div className="pt-sb-grp">Konto</div>
         <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
@@ -1658,7 +1675,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="grunddaten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="grunddaten" label="Grunddaten" badge="instant"/>
+          <SectionHeader id="grunddaten" label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen in der Kopfzeile Ihrer Website und in Suchergebnissen."/>
           {editSection==="grunddaten"?(<>
             <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
             <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
@@ -1670,21 +1687,39 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="impressum"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
-            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Unternehmen & Impressum</div>
-            <button onClick={()=>nav("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
-          </div>
-          <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===order.unternehmensform)?.label||order.unternehmensform}/>
-          <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
-          <InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/>
-          <InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/>
-          <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
-          <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
-            Impressum-Daten sind rechtlich relevant. Aenderungen werden von uns geprueft und innerhalb von 48h umgesetzt.
-          </div>
+          <SectionHeader id="impressum" label="Unternehmen & Impressum" badge="instant"
+            desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Direkt bearbeitbar – eine Bestätigung stellt sicher, dass die Angaben korrekt sind."
+            onSave={()=>setImpressumConfirmOpen(true)}/>
+          {editSection==="impressum"?(<>
+            <Dropdown label="Unternehmensform" value={order.unternehmensform||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
+            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678"/>
+            <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a"/>
+            <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="Handelsgericht Wien"/>
+            <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678"/>
+          </>):(<>
+            <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===order.unternehmensform)?.label||order.unternehmensform}/>
+            <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
+            <InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/>
+            <InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/>
+            <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
+          </>)}
+          {impressumConfirmOpen&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}}>
+            <div style={{background:"#fff",borderRadius:T.r,padding:"32px 28px",maxWidth:440,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
+              <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:8}}>Impressum bestätigen</div>
+              <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,margin:"0 0 20px"}}>Falsche Impressum-Angaben können rechtliche Konsequenzen haben. Bitte prüfen Sie alle Felder sorgfältig.</p>
+              <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",marginBottom:24}}>
+                <input type="checkbox" checked={impressumChecked} onChange={e=>setImpressumChecked(e.target.checked)} style={{marginTop:3,flexShrink:0,width:16,height:16,cursor:"pointer"}}/>
+                <span style={{fontSize:".85rem",color:T.dark,lineHeight:1.5}}>Ich bestätige, dass alle Angaben korrekt und vollständig sind.</span>
+              </label>
+              <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                <button onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                <button disabled={!impressumChecked} onClick={()=>{saveSection("impressum");setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:impressumChecked?T.dark:"#ccc",color:"#fff",cursor:impressumChecked?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
+              </div>
+            </div>
+          </div>}
         </div>}
         {page==="kontakt"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant"/>
+          <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant" desc="Adresse und Öffnungszeiten erscheinen im Kontaktbereich und werden für Google Maps verwendet."/>
           {editSection==="kontakt"?(<>
             <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
             <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
@@ -1701,7 +1736,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
+          <SectionHeader id="leistungen" label="Leistungen" badge="instant" desc="Ihre Leistungen erscheinen als Karten auf der Website. Mit Beschreibung und Preis erhalten Sie deutlich mehr Anfragen."/>
           {editSection==="leistungen"?(<>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Reihenfolge & Beschreibung"}</div>
@@ -1742,7 +1777,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="texte" label="Website-Texte" badge="instant"/>
+          <SectionHeader id="texte" label="Über uns & Vorteile" badge="instant" desc="Der persönliche Vorstellungstext und Ihre Stärken. Bearbeiten Sie den KI-generierten Text nach Wunsch."/>
           {editSection==="texte"?(<>
             <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
             <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
@@ -1767,7 +1802,7 @@ function Portal({session,onLogout}){
           </div>
         </div>}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="social" label="Social Media" badge="instant"/>
+          <SectionHeader id="social" label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>
           {editSection==="social"?(<>
             <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} placeholder="https://facebook.com/..." hint="Optional"/>
             <Field label="Instagram" value={order.instagram||""} onChange={upOrder("instagram")} placeholder="https://instagram.com/..." hint="Optional"/>

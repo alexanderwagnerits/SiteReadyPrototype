@@ -1435,7 +1435,7 @@ function Portal({session,onLogout}){
     {label:"Logo hochladen",done:!!assetUrls.logo,tab:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
     {label:"Foto hochladen",done:!!(assetUrls.hero||assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien",hint:"Hero-Bild oder Arbeitsproben machen einen grossen Unterschied"},
     {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,tab:"website",hint:"KI-generierten Text anpassen oder personalisieren"},
-    {label:"Leistungen beschriften",done:!!(order.leistungen_beschreibungen&&Object.keys(order.leistungen_beschreibungen).length>0),tab:"website",hint:"Kurze Beschreibung und Preis pro Leistung"},
+    {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),tab:"website",hint:"Preise direkt auf den Leistungskarten anzeigen"},
     ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,tab:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
     {label:"Eigene Domain verbinden",done:false,tab:"domain",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
   ];

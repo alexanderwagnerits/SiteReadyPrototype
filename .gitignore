@@ -8,3 +8,5 @@ package-lock.json
 .screenshots
 .playwright-mcp
 skills-lock.json
+test-results/
+playwright-report/

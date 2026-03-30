@@ -76,10 +76,11 @@ a{color:inherit}
 /* ── Leistungen ── */
 .leist{padding:96px 0;background:linear-gradient(180deg,#fff 0%,var(--bg,#f8fafc) 100%)}
 .leist-top{margin-bottom:48px}
-.leist-label{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
-.leist h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px}
-.leist-intro{color:var(--textMuted);font-size:.9rem;max-width:520px;line-height:1.7}
+.leist-label{display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)}
+.leist h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:14px}
+.leist-intro{color:var(--textMuted);font-size:.95rem;max-width:560px;line-height:1.75}
 @media(min-width:900px){.leist{padding:120px 0}}
+@media(max-width:640px){.sr-leist-grid{grid-template-columns:1fr!important}}
 
 /* ── Über uns ── */
 .ueber{padding:96px 0;background:var(--primary);color:#fff}

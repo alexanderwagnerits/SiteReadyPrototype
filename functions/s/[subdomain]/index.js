@@ -183,23 +183,33 @@ export async function onRequestGet({params, env}) {
     }
     const descMap = o.leistungen_beschreibungen || {};
     const stilName = o.stil || "klassisch";
+    const checkIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     const cardStyleMap = {
-      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:4px solid var(--accent);padding:24px 22px;background:linear-gradient(135deg,#fff 80%,#f8fafc);border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
-      modern:     "border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.07);padding:24px 22px;border-top:4px solid var(--accent);background:#fff;transition:transform .2s ease,box-shadow .2s ease",
-      elegant:    "border:1px solid var(--sep,#e7e5e4);border-top:2px solid var(--accent);padding:28px 22px;background:#fff;border-radius:2px;box-shadow:0 1px 6px rgba(0,0,0,.04);transition:transform .2s ease,box-shadow .2s ease",
-      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:4px solid var(--accent);padding:24px 22px;background:linear-gradient(135deg,#fff 80%,#f8fafc);border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);padding:28px 26px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
+      modern:     "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:28px 26px;background:#fff;transition:transform .2s ease,box-shadow .2s ease",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:32px 26px;background:#fff;border-radius:2px;transition:transform .2s ease,box-shadow .2s ease",
+      custom:     "border:1px solid var(--sep,#e5e7eb);padding:28px 26px;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
+    };
+    const iconStyleMap = {
+      klassisch: "width:42px;height:42px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0",
+      modern:    "width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0",
+      elegant:   "width:32px;height:32px;border-radius:2px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:20px;flex-shrink:0;opacity:.85",
+      custom:    "width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0",
     };
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
+    const iconStyle = iconStyleMap[stilName] || iconStyleMap.klassisch;
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
       const desc = descMap[l] || descMap[lCapitalized] || "";
-      return `<div style="${cardStyle}" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">` +
-        `<h3 style="color:var(--primary,#0f2b5b);font-weight:700;margin:0 0 6px;font-size:.88rem;letter-spacing:-.01em">${lCapitalized}</h3>` +
-        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.82rem;line-height:1.6">${desc}</p>` : "") +
+      return `<div style="${cardStyle}" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.10)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">` +
+        `<div style="${iconStyle}">${checkIcon}</div>` +
+        `<h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 8px;font-size:1rem;letter-spacing:-.02em;line-height:1.3">${lCapitalized}</h3>` +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.65">${desc}</p>` : `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.85rem;line-height:1.65;opacity:.6">Professionelle Leistung f\u00fcr Ihre Bed\u00fcrfnisse.</p>`) +
         `</div>`;
     }).join("");
-    const gridCols = leistungenArr.length <= 3 ? `repeat(${leistungenArr.length},1fr)` : "repeat(2,1fr)";
-    const grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:${gridCols};gap:16px">${cards}</div>`;
+    const n = leistungenArr.length;
+    const gridCols = n === 1 ? "1fr" : n <= 3 ? `repeat(${n},1fr)` : n === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
+    const grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:${gridCols};gap:20px">${cards}</div>`;
     html = html.replace("<!-- LEISTUNGEN -->", grid);
   }
 

@@ -81,6 +81,7 @@ a{color:inherit}
 .leist h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:300;color:var(--primary);letter-spacing:-.02em;margin-bottom:14px}
 .leist-intro{color:var(--textMuted);font-size:.88rem;max-width:500px;line-height:1.8}
 @media(min-width:900px){.leist{padding:120px 0}}
+@media(max-width:640px){.sr-leist-grid{grid-template-columns:1fr!important}}
 
 /* ── Ueber uns ── */
 .ueber{padding:96px 0;background:var(--primary);color:#fff}

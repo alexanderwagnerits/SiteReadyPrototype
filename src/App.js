@@ -1439,6 +1439,7 @@ function Portal({session,onLogout}){
     {label:"Foto hochgeladen",done:!!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),pts:15,tab:"medien"},
     {label:"Leistungen beschriften",done:!!(order.leistungen_beschreibungen&&Object.keys(order.leistungen_beschreibungen).length>0),pts:hasPL?10:15,tab:"website",hint:"Beschreibung & Preis pro Leistung"},
     ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,pts:15,tab:"medien"}]:[]),
+    {label:"Eigene Domain verbinden",done:false,pts:0,tab:"domain",hint:"Optional – z.B. www.ihre-firma.at",optional:true},
   ];
   const total=items.reduce((s,i)=>s+i.pts,0);
   const earned=items.filter(i=>i.done).reduce((s,i)=>s+i.pts,0);
@@ -1462,7 +1463,8 @@ function Portal({session,onLogout}){
               <span style={{fontSize:".875rem",color:item.done?T.textMuted:T.dark}}>{item.label}</span>
               {item.hint&&!item.done&&<div style={{fontSize:".72rem",color:T.textMuted,marginTop:1}}>{item.hint}</div>}
             </div>
-            {!item.done&&<span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,background:T.bg,padding:"2px 7px",borderRadius:100,flexShrink:0}}>+{item.pts}%</span>}
+            {!item.done&&!item.optional&&<span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,background:T.bg,padding:"2px 7px",borderRadius:100,flexShrink:0}}>+{item.pts}%</span>}
+            {!item.done&&item.optional&&<span style={{fontSize:".72rem",fontWeight:600,color:T.textMuted,background:T.bg,padding:"2px 7px",borderRadius:100,flexShrink:0}}>Optional</span>}
             {item.tab&&!item.done&&<span style={{fontSize:".75rem",color:T.accent,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>}
           </div>
         ))}

@@ -31,14 +31,15 @@
     .intro p{font-size:.95rem;color:#555;line-height:1.7}
 
     /* Steps */
-    .steps{background:#fff;border-radius:14px;border:1px solid rgba(0,0,0,.07);padding:28px 28px 20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-    .steps h2{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8b919e;margin-bottom:20px}
-    .step{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
-    .step:last-child{margin-bottom:0}
-    .step-num{width:28px;height:28px;border-radius:8px;background:#111;color:#fff;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .steps{background:#fff;border-radius:14px;border:1px solid rgba(0,0,0,.07);padding:28px 28px 24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+    .steps h2{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8b919e;margin-bottom:24px}
+    .step{display:flex;gap:16px;margin-bottom:20px;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid rgba(0,0,0,.06)}
+    .step:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+    .step-num{width:36px;height:36px;border-radius:10px;background:#111;color:#fff;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
     .step-body{}
-    .step-body strong{font-size:.9rem;color:#111;font-weight:700;display:block;margin-bottom:2px}
-    .step-body span{font-size:.82rem;color:#666;line-height:1.55}
+    .step-body strong{font-size:1rem;color:#111;font-weight:800;display:block;margin-bottom:4px}
+    .step-body span{font-size:.88rem;color:#555;line-height:1.6}
+    .step-body a{color:#111;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
     /* Kreditkarte */
     .card-box{background:#111;border-radius:14px;padding:20px 24px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px}
@@ -58,25 +59,25 @@
     .feedback .sub{font-size:.84rem;color:#666;margin-bottom:24px;line-height:1.5}
 
     /* Stars */
-    .stars-wrap{margin-bottom:20px}
-    .stars-label{font-size:.8rem;font-weight:700;color:#555;margin-bottom:8px;display:block}
-    .stars{display:flex;gap:6px}
-    .star{font-size:1.8rem;cursor:pointer;color:#d1d5db;transition:color .12s;line-height:1;background:none;border:none;padding:0}
+    .stars-wrap{margin-bottom:24px;background:#f9fafb;border-radius:10px;padding:16px 18px;border:1px solid #e5e7eb}
+    .stars-label{font-size:.88rem;font-weight:700;color:#333;margin-bottom:12px;display:block}
+    .stars{display:flex;gap:8px}
+    .star{font-size:2.4rem;cursor:pointer;color:#d1d5db;transition:color .12s,transform .1s;line-height:1;background:none;border:none;padding:4px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
     .star.active{color:#F59E0B}
-    .star:hover{color:#F59E0B}
+    .star:hover{color:#F59E0B;transform:scale(1.15)}
 
     /* Form fields */
-    .field{margin-bottom:16px}
-    .field label{display:block;font-size:.8rem;font-weight:700;color:#555;margin-bottom:6px;letter-spacing:.02em}
-    .field input,.field textarea{width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.875rem;color:#111;background:#fff;outline:none;transition:border-color .15s;resize:vertical}
+    .field{margin-bottom:18px}
+    .field label{display:block;font-size:.85rem;font-weight:700;color:#333;margin-bottom:8px;letter-spacing:.01em}
+    .field input,.field textarea{width:100%;padding:13px 16px;border:2px solid #e5e7eb;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:#111;background:#fff;outline:none;transition:border-color .15s;resize:vertical;min-height:48px}
     .field input:focus,.field textarea:focus{border-color:#111}
-    .field textarea{min-height:90px}
-    .field .hint{font-size:.75rem;color:#9ca3af;margin-top:4px}
-    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field textarea{min-height:100px}
+    .field .hint{font-size:.78rem;color:#9ca3af;margin-top:5px}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
     /* Submit */
-    .submit-btn{width:100%;padding:14px;border:none;border-radius:10px;background:#111;color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .15s,box-shadow .15s}
-    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+    .submit-btn{width:100%;padding:17px;border:none;border-radius:12px;background:#111;color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px;transition:transform .15s,box-shadow .15s;min-height:56px}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.22)}
     .submit-btn:active{transform:translateY(0)}
     .submit-btn:disabled{background:#d1d5db;cursor:not-allowed;transform:none;box-shadow:none}
 
@@ -125,7 +126,8 @@
       <div class="step-num">01</div>
       <div class="step-body">
         <strong>Website erstellen</strong>
-        <span>Gehe auf <a href="/" style="color:#111;font-weight:700">siteready.at</a> → „Jetzt Website erstellen". Füll den Fragebogen aus: Beruf wählen, Leistungen, Kontaktdaten, Unternehmensform und Design.</span>
+        <span>Füll den Fragebogen aus: Beruf wählen, Leistungen, Kontaktdaten, Unternehmensform und Design.</span>
+        <a href="/" style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:11px 20px;background:#111;color:#fff;border-radius:8px;font-weight:700;font-size:.88rem;text-decoration:none;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Jetzt starten &#8594;</a>
       </div>
     </div>
 

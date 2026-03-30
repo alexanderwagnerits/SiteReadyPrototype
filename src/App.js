@@ -1399,18 +1399,17 @@ function Portal({session,onLogout}){
 .pt-mh-sub{font-size:.87rem;color:#6B7280;margin-top:3px}
 .pt-mh-line{height:1px;background:#E0E0DB;margin:20px 36px 0;flex-shrink:0}
 .pt-mb{padding:20px 36px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
-.pt-hero-card{background:#111111;border-radius:12px;padding:24px 28px;position:relative;overflow:hidden}
-.pt-hero-card::after{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(143,163,184,.14) 0%,transparent 65%);pointer-events:none}
-.pt-hlive{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:#4ade80;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.14);border-radius:100px;padding:4px 11px;margin-bottom:12px}
-.pt-hlive-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:sb-blink 2.5s ease-in-out infinite}
-.pt-hurl{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin-bottom:2px}
-.pt-hurl em{color:rgba(255,255,255,.22);font-style:normal}
-.pt-hhint{font-size:.78rem;color:rgba(255,255,255,.32);margin-bottom:18px}
+.pt-hero-card{background:#fff;border-radius:12px;padding:24px 28px;border:1px solid #E0E0DB;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.pt-hlive{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:100px;padding:4px 11px;margin-bottom:12px}
+.pt-hlive-dot{width:5px;height:5px;border-radius:50%;background:#16a34a;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-hurl{font-size:1.05rem;font-weight:700;color:#111111;letter-spacing:-.01em;margin-bottom:2px}
+.pt-hurl em{color:#9ca3af;font-style:normal}
+.pt-hhint{font-size:.78rem;color:#6B7280;margin-bottom:18px}
 .pt-hbtns{display:flex;gap:8px;flex-wrap:wrap}
-.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#111;border:none;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;text-decoration:none;letter-spacing:-.01em}
+.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#8FA3B8;color:#fff;border:none;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;text-decoration:none;letter-spacing:-.01em}
 .pt-btn-w:hover{opacity:.88}
-.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.09);border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
-.pt-btn-gw:hover{background:rgba(255,255,255,.12);color:rgba(255,255,255,.88)}
+.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#4A4F5A;border:1.5px solid #E0E0DB;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.pt-btn-gw:hover{background:#F5F5F2;border-color:#ccc}
 `;
   return(<div className="pt-layout"><style>{css+pCss}</style>
     {/* Sidebar */}
@@ -1591,24 +1590,9 @@ function Portal({session,onLogout}){
       </>)}
 
       {/* Tab: Website (Inhalte-Unterseiten) */}
-      {tab==="website"&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>
-        {/* Website Status */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Website Status</div>
-          {order?(<>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
-              <div style={{width:12,height:12,borderRadius:"50%",background:order.status==="live"?T.green:"#f59e0b",boxShadow:`0 0 0 4px ${order.status==="live"?"rgba(22,163,74,.15)":"rgba(245,158,11,.15)"}`}}/>
-              <span style={{fontWeight:700,fontSize:".95rem",color:order.status==="live"?T.green:"#f59e0b"}}>{order.status==="live"?"Live – Ihre Website ist erreichbar":"In Bearbeitung"}</span>
-            </div>
-            {[{l:"Website-URL",v:`https://sitereadyprototype.pages.dev/s/${sub}`,link:true},{l:"Digitale Visitenkarte",v:`https://sitereadyprototype.pages.dev/s/${sub}/vcard`,link:true,hint:"Kontakt per QR-Code oder Link teilen"},{l:"Status",v:STATUS_LABELS[order.status]||order.status}].map(({l,v,link,hint})=>(
-              <div key={l} className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`}}>
-                <span style={{fontSize:".78rem",color:T.textMuted,fontWeight:600}}>{l}</span>
-                <div>{link?<a href={v} target="_blank" rel="noreferrer" style={{fontSize:".88rem",color:T.accent,textDecoration:"none"}}>{v}</a>:<span style={{fontSize:".88rem",color:T.dark}}>{v}</span>}{hint&&<div style={{fontSize:".72rem",color:T.textMuted,marginTop:2}}>{hint}</div>}</div>
-              </div>))}
-          </>):<div style={{color:T.textMuted,fontSize:".88rem"}}>Bestellung wird geladen...</div>}
-        </div>
+      {tab==="website"&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<>
         {/* Aktuelles / News */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+        {page==="aktuelles"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{marginBottom:16,paddingBottom:14,borderBottom:`1px solid ${T.bg3}`}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -1672,56 +1656,8 @@ function Portal({session,onLogout}){
                 </div>
               </div>)}
           </>)}
-        </div>
-        {/* Onboarding-Checkliste */}
-        {(()=>{
-  const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
-  const tips=[
-    {label:"Logo hochladen",done:!!assetUrls.logo,tab:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
-    {label:"Foto hochladen",done:!!(assetUrls.hero||assetUrls.foto1||assetUrls.foto2||assetUrls.foto3),tab:"medien",hint:"Hero-Bild oder Arbeitsproben machen einen grossen Unterschied"},
-    {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,tab:"website",hint:"KI-generierten Text anpassen oder personalisieren"},
-    {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),tab:"website",hint:"Preise direkt auf den Leistungskarten anzeigen"},
-    ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,tab:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
-    {label:"Eigene Domain verbinden",done:false,tab:"domain",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
-  ];
-  const open=tips.filter(t=>!t.done&&!t.optional);
-  if(open.length===0)return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,padding:"18px 24px",display:"flex",alignItems:"center",gap:12}}>
-    <div style={{width:32,height:32,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"1rem"}}>{"✓"}</div>
-    <div><div style={{fontSize:".88rem",fontWeight:700,color:T.green}}>Ihre Website ist vollständig eingerichtet!</div><div style={{fontSize:".78rem",color:T.textMuted,marginTop:2}}>Sie können jederzeit weitere Anpassungen vornehmen.</div></div>
-  </div>);
-  const shown=open.slice(0,3);
-  const optionalTip=tips.find(t=>t.optional&&!t.done);
-  return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,padding:"18px 24px"}}>
-    <div style={{fontSize:".78rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>{"Tipps zur Verbesserung"}</div>
-    <div style={{display:"flex",flexDirection:"column",gap:4}}>
-      {shown.map((tip,i)=>(
-        <div key={i} onClick={()=>nav(tip.tab==="website"?"overview":tip.tab)}
-          onMouseOver={e=>e.currentTarget.style.background=T.bg}
-          onMouseOut={e=>e.currentTarget.style.background="transparent"}
-          style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s"}}>
-          <div style={{width:6,height:6,borderRadius:"50%",background:T.accent,flexShrink:0}}/>
-          <div style={{flex:1}}>
-            <div style={{fontSize:".875rem",fontWeight:600,color:T.dark}}>{tip.label}</div>
-            <div style={{fontSize:".75rem",color:T.textMuted,marginTop:1}}>{tip.hint}</div>
-          </div>
-          <span style={{fontSize:".75rem",color:T.accent,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
-        </div>
-      ))}
-      {optionalTip&&<div onClick={()=>nav(optionalTip.tab==="website"?"overview":optionalTip.tab)}
-        onMouseOver={e=>e.currentTarget.style.background=T.bg}
-        onMouseOut={e=>e.currentTarget.style.background="transparent"}
-        style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:T.rSm,cursor:"pointer",transition:"background .12s",marginTop:4,paddingTop:12,borderTop:`1px solid ${T.bg3}`}}>
-        <div style={{flex:1}}>
-          <div style={{fontSize:".8rem",color:T.textMuted}}>{optionalTip.label} <span style={{fontSize:".72rem",background:T.bg,padding:"1px 7px",borderRadius:100,marginLeft:4}}>Optional</span></div>
-          <div style={{fontSize:".72rem",color:T.textMuted,marginTop:1}}>{optionalTip.hint}</div>
-        </div>
-        <span style={{fontSize:".75rem",color:T.textMuted,fontWeight:700,flexShrink:0}}>{"\u2192"}</span>
-      </div>}
-    </div>
-  </div>);
-})()}
-        {/* Grunddaten */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="grunddaten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="grunddaten" label="Grunddaten" badge="instant"/>
           {editSection==="grunddaten"?(<>
             <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
@@ -1732,9 +1668,8 @@ function Portal({session,onLogout}){
             <InfoRow label="Beschreibung" value={order.kurzbeschreibung}/>
             <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
           </>)}
-        </div>
-        {/* Firmenbuch & Impressum */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="impressum"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
             <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Unternehmen & Impressum</div>
             <button onClick={()=>nav("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
@@ -1747,9 +1682,8 @@ function Portal({session,onLogout}){
           <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
             Impressum-Daten sind rechtlich relevant. Aenderungen werden von uns geprueft und innerhalb von 48h umgesetzt.
           </div>
-        </div>
-        {/* Kontakt */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="kontakt"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant"/>
           {editSection==="kontakt"?(<>
             <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
@@ -1765,9 +1699,8 @@ function Portal({session,onLogout}){
             <InfoRow label="Telefon" value={order.telefon}/>
             <InfoRow label="Oeffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
           </>)}
-        </div>
-        {/* Leistungen */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="leistungen" label="Leistungen" badge="instant"/>
           {editSection==="leistungen"?(<>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
@@ -1807,9 +1740,8 @@ function Portal({session,onLogout}){
             <div style={{marginTop:10,padding:"9px 12px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,lineHeight:1.6}}>Über "Bearbeiten" können Sie pro Leistung eine Beschreibung und einen Preis hinterlegen – wird sofort auf Ihrer Website angezeigt.</div>
             {(()=>{const ft=getBrancheFeatures(order?.branche);return<>{ft.includes("notdienst")&&<InfoRow label="24h Notdienst" value={order.notdienst?"Ja":"Nein"}/>}{ft.includes("meisterbetrieb")&&<InfoRow label="Meisterbetrieb" value={order.meisterbetrieb?"Ja":"Nein"}/>}{ft.includes("kostenvoranschlag")&&<InfoRow label="Kostenloser KV" value={order.kostenvoranschlag?"Ja":"Nein"}/>}{ft.includes("foerderungsberatung")&&<InfoRow label="Förderungsberatung" value={order.foerderungsberatung?"Ja":"Nein"}/>}{ft.includes("buchungslink")&&<InfoRow label="Buchungslink" value={order.buchungslink||"\u2014"}/>}{ft.includes("hausbesuche")&&<InfoRow label="Hausbesuche" value={order.hausbesuche?"Ja":"Nein"}/>}{ft.includes("terminvereinbarung")&&<InfoRow label="Nur mit Termin" value={order.terminvereinbarung?"Ja":"Nein"}/>}{ft.includes("lieferservice")&&<InfoRow label="Lieferservice" value={order.lieferservice?"Ja":"Nein"}/>}{ft.includes("barrierefrei")&&<InfoRow label="Barrierefrei" value={order.barrierefrei?"Ja":"Nein"}/>}{ft.includes("parkplaetze")&&<InfoRow label="Parkplätze" value={order.parkplaetze?"Ja":"Nein"}/>}{ft.includes("kassenvertrag")&&<InfoRow label="Kassenvertrag" value={order.kassenvertrag||"\u2014"}/>}{ft.includes("erstgespraech_gratis")&&<InfoRow label="Erstgespräch gratis" value={order.erstgespraech_gratis?"Ja":"Nein"}/>}{ft.includes("online_beratung")&&<InfoRow label="Online-Beratung" value={order.online_beratung?"Ja":"Nein"}/>}{ft.includes("ratenzahlung")&&<InfoRow label="Ratenzahlung" value={order.ratenzahlung?"Ja":"Nein"}/>}</>;})()}
           </>)}
-        </div>
-        {/* Website-Texte */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="texte" label="Website-Texte" badge="instant"/>
           {editSection==="texte"?(<>
             <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
@@ -1823,9 +1755,8 @@ function Portal({session,onLogout}){
               Texte werden automatisch bei der Website-Generierung erstellt und koennen danach hier bearbeitet werden.
             </div>
           )}
-        </div>
-        {/* Design */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="design"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Design & Stil</div>
             <button onClick={()=>nav("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
@@ -1834,9 +1765,8 @@ function Portal({session,onLogout}){
           <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
             Ein Design-Wechsel ist ein komplettes Redesign Ihrer Website. Schreiben Sie uns kurz ueber den Support-Tab – wir setzen das für Sie um.
           </div>
-        </div>
-        {/* Social Media */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        </div>}
+        {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="social" label="Social Media" badge="instant"/>
           {editSection==="social"?(<>
             <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} placeholder="https://facebook.com/..." hint="Optional"/>
@@ -1849,9 +1779,9 @@ function Portal({session,onLogout}){
             <InfoRow label="LinkedIn" value={order.linkedin}/>
             <InfoRow label="TikTok" value={order.tiktok}/>
           </>)}
-        </div>
+        </div>}
 
-      </div>)}
+      </>)}
 
       {/* Tab: Rechnungen */}
       {tab==="rechnungen"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2042,15 +1972,26 @@ function Portal({session,onLogout}){
             </div>
           </div>
         </div>);})()}
-        {/* Firmen-Flyer PDF — verschoben vor Website teilen */}
+        {/* Firmen-Flyer PDF */}
+        {(()=>{const flyerQrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&data=${encodeURIComponent(`https://sitereadyprototype.pages.dev/s/${sub}`)}`;return(
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Firmen-Flyer (PDF)</div>
-          <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6,margin:"0 0 16px"}}>Professioneller One-Pager im Design Ihrer Website — für Kunden, Pinnwände und als E-Mail-Beilage.</p>
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Firmen-Flyer (PDF)</div>
+          <div style={{display:"flex",gap:24,alignItems:"flex-start",flexWrap:"wrap"}}>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,flexShrink:0}}>
+              <div style={{width:140,height:140,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,overflow:"hidden",background:T.bg}}>
+                <img src={flyerQrUrl} alt="QR-Code" style={{width:"100%",height:"100%",display:"block"}}/>
+              </div>
+              <button onClick={async()=>{try{const r=await fetch(flyerQrUrl);const b=await r.blob();const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=`${sub}-qr.png`;a.click();URL.revokeObjectURL(u);}catch(e){window.open(flyerQrUrl,"_blank");}}} style={{padding:"7px 14px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,width:"100%",textAlign:"center"}}>QR herunterladen</button>
+            </div>
+            <div style={{flex:1,minWidth:200}}>
+              <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,margin:"0 0 14px"}}>Professioneller One-Pager im Design Ihrer Website — für Kunden, Pinnwände und als E-Mail-Beilage.</p>
           <button onClick={()=>{const s=STYLES_MAP[order.stil]||STYLES_MAP.klassisch;const websiteUrl=`https://sitereadyprototype.pages.dev/s/${sub}`;const qr=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(websiteUrl)}`;const leistungen=[...(order.leistungen||[]),...(order.extra_leistung?order.extra_leistung.split("\n").map(x=>x.trim()).filter(Boolean):[])];const logoHtml=assetUrls.logo?`<img src="${assetUrls.logo}" alt="Logo" style="height:56px;max-width:200px;object-fit:contain;"/>`:``;const oezLabel=({"mo-fr-8-17":"Mo\u2013Fr 8\u201317 Uhr","mo-fr-7-16":"Mo\u2013Fr 7\u201316 Uhr","mo-fr-8-18":"Mo\u2013Fr 8\u201318 Uhr","mo-sa-8-17":"Mo\u2013Sa 8\u201317 Uhr","mo-sa-8-12":"Mo\u2013Sa 8\u201312 Uhr","vereinbarung":"Nach Vereinbarung"})[order.oeffnungszeiten]||order.oeffnungszeiten||"";const htmlContent=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${order.firmenname||"Firmen-Flyer"}</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet"><style>@page{size:A4;margin:0;}body{font-family:${s.font};color:${s.text};margin:0;padding:0;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}*{box-sizing:border-box;}.hero{background:${s.heroGradient};color:#fff;padding:48px 40px 40px;position:relative;overflow:hidden;}.hero::before{content:'';position:absolute;inset:0;background:${s.heroOverlay};}.hero-content{position:relative;z-index:1;}.hero h1{font-size:32px;font-weight:800;margin:0 0 8px;letter-spacing:-.02em;line-height:1.15;}.hero p{font-size:15px;opacity:.8;margin:0;max-width:400px;line-height:1.6;}.hero-logo{margin-bottom:20px;}.body{padding:36px 40px 28px;}.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:${s.accent};margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid ${s.borderColor};}.leistungen{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;margin-bottom:32px;}.leistung{font-size:13px;padding:4px 0;display:flex;align-items:center;gap:8px;}.check{color:${s.accent};font-weight:700;font-size:14px;}.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;margin-bottom:32px;}.contact-label{font-weight:700;color:${s.textMuted};font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}.contact-value{font-size:13px;font-weight:500;color:${s.text};}.footer{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;background:${s.bg};border-top:2px solid ${s.borderColor};}.qr-section{display:flex;align-items:center;gap:14px;}.qr-text{font-size:12px;color:${s.textMuted};}.qr-text strong{display:block;color:${s.text};font-size:13px;margin-bottom:2px;}.branding{font-size:10px;color:${s.textLight};}</style></head><body><div class="hero"><div class="hero-content">${logoHtml?`<div class="hero-logo">${logoHtml}</div>`:""}<h1>${order.firmenname||""}</h1>${order.kurzbeschreibung?`<p>${order.kurzbeschreibung}</p>`:""}</div></div><div class="body">${leistungen.length?`<div class="section-title">Unsere Leistungen</div><div class="leistungen">${leistungen.map(l=>`<div class="leistung"><span class="check">\u2713</span>${l}</div>`).join("")}</div>`:""}<div class="section-title">Kontakt</div><div class="contact-grid">${order.adresse?`<div><div class="contact-label">Adresse</div><div class="contact-value">${order.adresse}${order.plz||order.ort?", "+[order.plz,order.ort].filter(Boolean).join(" "):""}</div></div>`:""} ${order.telefon?`<div><div class="contact-label">Telefon</div><div class="contact-value">${order.telefon}</div></div>`:""} ${order.email?`<div><div class="contact-label">E-Mail</div><div class="contact-value">${order.email}</div></div>`:""} ${oezLabel?`<div><div class="contact-label">\u00D6ffnungszeiten</div><div class="contact-value">${oezLabel}</div></div>`:""} ${order.einsatzgebiet?`<div><div class="contact-label">Einsatzgebiet</div><div class="contact-value">${order.einsatzgebiet}</div></div>`:""}</div></div><div class="footer"><div class="qr-section"><img src="${qr}" alt="QR" style="width:72px;height:72px;border-radius:${s.radius};"/><div class="qr-text"><strong>Besuchen Sie uns online</strong>${sub}.siteready.at</div></div><div class="branding">Erstellt mit SiteReady.at</div></div></body></html>`;const iframe=document.createElement("iframe");iframe.style.cssText="position:fixed;top:-9999px;left:-9999px;width:794px;height:1123px;";document.body.appendChild(iframe);iframe.contentDocument.write(htmlContent);iframe.contentDocument.close();iframe.onload=()=>{setTimeout(()=>{iframe.contentWindow.print();setTimeout(()=>document.body.removeChild(iframe),1000);},500);};}} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 20px",background:T.dark,color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontFamily:T.font,fontSize:".82rem",fontWeight:700}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             PDF erstellen &amp; herunterladen
           </button>
-        </div>
+            </div>
+          </div>
+        </div>);})()}
         {/* Website teilen */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Website teilen</div>

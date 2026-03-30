@@ -227,18 +227,18 @@ export async function onRequestGet({params, env}) {
     if (stil === "modern") {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">` +
-        `<div style="width:36px;height:36px;border-radius:50%;background:var(--accent,#2563eb)22;color:var(--accent,#2563eb);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div>` +
+        `<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div>` +
         `<span style="padding-top:8px">${v}</span></div>`
       ).join("");
     } else if (stil === "elegant") {
       vorteileHtml = o.text_vorteile.map(v =>
-        `<div style="padding:10px 0;border-bottom:1px solid var(--sep,#e2e8f0)">` +
-        `<span style="color:var(--accent);font-weight:700;margin-right:8px">&#8211;</span>${v}</div>`
+        `<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)">` +
+        `<span style="color:rgba(255,255,255,.5);font-weight:300;margin-right:8px">&#8211;</span>${v}</div>`
       ).join("");
     } else {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">` +
-        `<span style="color:var(--accent);font-weight:700;flex-shrink:0">&#10003;</span><span>${v}</span></div>`
+        `<span style="color:rgba(255,255,255,.8);font-weight:700;flex-shrink:0">&#10003;</span><span>${v}</span></div>`
       ).join("");
     }
   }

@@ -54,7 +54,7 @@ a{color:inherit}
 .sr-a{opacity:0;animation:sr-up .5s ease forwards}
 
 /* ── Hero ── */
-.hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative;min-height:100vh}
+.hero{background:linear-gradient(135deg,${primary} 0%,color-mix(in srgb,${primary} 75%,#000) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:100vh}
 .hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:56px 28px 40px}
 .hero-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .hero-badge{padding:5px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.02em}
@@ -74,7 +74,7 @@ a{color:inherit}
 }
 
 /* ── Leistungen ── */
-.leist{padding:96px 0;background:var(--white)}
+.leist{padding:96px 0;background:linear-gradient(180deg,#fff 0%,var(--bg,#f8fafc) 100%)}
 .leist-top{margin-bottom:48px}
 .leist-label{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
 .leist h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px}
@@ -100,7 +100,7 @@ a{color:inherit}
 .info-row-value a:hover{opacity:.7}
 
 /* ── Kontakt ── */
-.kontakt{padding:96px 0;background:var(--bg)}
+.kontakt{padding:96px 0;background:linear-gradient(180deg,var(--bg,#f8fafc) 0%,#fff 100%)}
 .kontakt-grid{display:grid;gap:48px}
 @media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.kontakt{padding:120px 0}}
 .kontakt h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:28px}

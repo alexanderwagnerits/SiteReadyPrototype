@@ -86,9 +86,9 @@ export async function onRequestGet({params, env}) {
   const heroLayout = o.hero_layout || "split";
   if (o.url_hero) {
     if (heroLayout === "full") {
-      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.65)),url('${o.url_hero}') center/cover no-repeat!important}` +
-        `#sr-hero h1,#hero h1{text-shadow:0 2px 16px rgba(0,0,0,.7)}` +
-        `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 8px rgba(0,0,0,.5)}` +
+      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.48),rgba(0,0,0,.38)),url('${o.url_hero}') center/cover no-repeat!important}` +
+        `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
+        `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
         `#sr-hero .hero-btns .btn{text-shadow:none}</style>`;
       html = html.replace('</head>', heroStyle + '</head>');
     } else {
@@ -184,10 +184,10 @@ export async function onRequestGet({params, env}) {
     const descMap = o.leistungen_beschreibungen || {};
     const stilName = o.stil || "klassisch";
     const cardStyleMap = {
-      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:4px;transition:transform .2s ease,box-shadow .2s ease",
-      modern:     "border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.06);padding:20px 20px;border-top:3px solid var(--accent);background:#fff;transition:transform .2s ease,box-shadow .2s ease",
-      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:20px 20px;background:#fff;border-radius:2px;transition:transform .2s ease,box-shadow .2s ease",
-      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:3px solid var(--accent);padding:20px 20px;background:#fff;border-radius:8px;transition:transform .2s ease,box-shadow .2s ease",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);border-left:4px solid var(--accent);padding:24px 22px;background:linear-gradient(135deg,#fff 80%,#f8fafc);border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
+      modern:     "border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.07);padding:24px 22px;border-top:4px solid var(--accent);background:#fff;transition:transform .2s ease,box-shadow .2s ease",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);border-top:2px solid var(--accent);padding:28px 22px;background:#fff;border-radius:2px;box-shadow:0 1px 6px rgba(0,0,0,.04);transition:transform .2s ease,box-shadow .2s ease",
+      custom:     "border:1px solid var(--sep,#e5e7eb);border-left:4px solid var(--accent);padding:24px 22px;background:linear-gradient(135deg,#fff 80%,#f8fafc);border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
     };
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
     const cards = leistungenArr.map((l, i) => {

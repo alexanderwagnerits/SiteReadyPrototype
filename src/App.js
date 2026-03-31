@@ -1350,6 +1350,23 @@ function Portal({session,onLogout}){
     medien:!!(assetUrls.logo||assetUrls.hero||assetUrls.foto1),
     impressum:!!(order.unternehmensform||order.uid_nummer),
   }:{};
+  const astItems=order?[
+    {label:"Logo hochladen",done:!!assetUrls.logo,pts:20,page:"medien"},
+    {label:"Grunddaten ausfüllen",done:!!(order.firmenname&&order.kurzbeschreibung),pts:15,page:"grunddaten"},
+    {label:"Leistungen hinzufügen",done:!!(order.leistungen?.length>0),pts:20,page:"leistungen"},
+    {label:"Kontakt & Adresse",done:!!(order.adresse&&order.telefon),pts:15,page:"kontakt"},
+    {label:"Headerfoto hochladen",done:!!(assetUrls.hero||assetUrls.foto1),pts:15,page:"medien"},
+    {label:"Über uns Text",done:!!order.text_ueber_uns,pts:10,page:"ueberuns"},
+    {label:"Impressum ausfüllen",done:!!(order.unternehmensform||order.uid_nummer),pts:5,page:"impressum"},
+    {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),pts:0,page:"medien",optional:true},
+    {label:"Social Media",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),pts:0,page:"social",optional:true},
+    {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
+    {label:"Aktuelles / Meldung",done:!!(order.announcements?.some(a=>a.active)),pts:0,page:"aktuelles",optional:true},
+    {label:"SEO-Texte",done:!!(order.seo_title||order.seo_description),pts:0,page:"seo",optional:true},
+    {label:"Eigene Domain",done:false,pts:0,page:"domain",optional:true},
+  ]:[];
+  const astScore=astItems.filter(i=>!i.optional).reduce((s,i)=>s+(i.done?i.pts:0),0);
+  const astDone=astScore>=100;
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
     grunddaten:{title:"Grunddaten",sub:"Firmenname, Kurzbeschreibung und Einsatzgebiet Ihres Unternehmens"},
@@ -1360,7 +1377,7 @@ function Portal({session,onLogout}){
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
-    medien:{title:"Fotos & Logo",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
+    medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
     teilen:{title:"Teilen & QR-Code",sub:"QR-Code, Visitenkarte und Firmen-Flyer für Ihre Website"},
     seo:{title:"SEO & Google",sub:"Diese Angaben sieht Google – gut ausgefüllt verbessert das Ihre Auffindbarkeit nachweislich"},
     domain:{title:"Eigene Domain",sub:"Verbinden Sie Ihre Domain z.B. www.ihre-firma.at statt der Standard-Subdomain"},
@@ -1410,6 +1427,8 @@ function Portal({session,onLogout}){
 .pt-mb{padding:20px 36px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .pt-hero-card{background:#fff;border-radius:12px;padding:24px 28px;border:1px solid #E0E0DB;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .pt-hlive{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:100px;padding:4px 11px;margin-bottom:12px}
+.pt-hlive-trial{color:#7c3aed;background:#f5f3ff;border-color:#ddd6fe}
+.pt-hlive-trial .pt-hlive-dot{background:#7c3aed}
 .pt-hlive-dot{width:5px;height:5px;border-radius:50%;background:#16a34a;animation:sb-blink 2.5s ease-in-out infinite}
 .pt-hurl{font-size:1.05rem;font-weight:700;color:#111111;letter-spacing:-.01em;margin-bottom:2px}
 .pt-hurl em{color:#9ca3af;font-style:normal}
@@ -1419,6 +1438,26 @@ function Portal({session,onLogout}){
 .pt-btn-w:hover{opacity:.88}
 .pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#4A4F5A;border:1.5px solid #E0E0DB;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
 .pt-btn-gw:hover{background:#F5F5F2;border-color:#ccc}
+.pt-ast{width:272px;flex-shrink:0;border-left:1px solid #E0E0DB;background:#fff;display:flex;flex-direction:column;overflow:hidden}
+.pt-ast-h{padding:20px 20px 0;flex-shrink:0}
+.pt-ast-title{font-size:.8rem;font-weight:800;color:#111;letter-spacing:-.01em;margin-bottom:2px}
+.pt-ast-sub{font-size:.72rem;color:#6B7280;margin-bottom:14px}
+.pt-ast-bar-wrap{height:6px;background:#E0E0DB;border-radius:100px;overflow:hidden;margin-bottom:4px}
+.pt-ast-bar-fill{height:100%;border-radius:100px;background:#4ade80;transition:width .4s ease}
+.pt-ast-pts{font-size:.68rem;font-weight:700;color:#16a34a;margin-bottom:14px}
+.pt-ast-divider{height:1px;background:#E0E0DB;margin:0 0 8px}
+.pt-ast-scroll{flex:1;overflow-y:auto;padding:8px 12px 20px;scrollbar-width:none;display:flex;flex-direction:column;gap:3px}
+.pt-ast-scroll::-webkit-scrollbar{display:none}
+.pt-ast-item{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;border:none;background:transparent;width:100%;font-family:inherit;transition:background .1s;text-align:left}
+.pt-ast-item:hover{background:#F5F5F2}
+.pt-ast-ck{width:18px;height:18px;border-radius:50%;border:1.5px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pt-ast-ck.done{background:#4ade80;border-color:#4ade80}
+.pt-ast-ck.done svg{display:block}
+.pt-ast-ck svg{display:none}
+.pt-ast-label{font-size:.82rem;font-weight:500;color:#374151;flex:1;line-height:1.3}
+.pt-ast-label.done{color:#9CA3AF;text-decoration:line-through}
+.pt-ast-pts-badge{font-size:.68rem;font-weight:700;color:#6B7280;flex-shrink:0;padding:2px 6px;background:#F3F4F6;border-radius:100px}
+.pt-ast-optional{font-size:.65rem;font-weight:600;color:#9CA3AF;flex-shrink:0;padding:2px 6px;background:#F9FAFB;border-radius:100px;border:1px solid #E5E7EB}
 `;
   return(<div className="pt-layout"><style>{css+pCss}</style>
     {/* Sidebar */}
@@ -1552,7 +1591,7 @@ function Portal({session,onLogout}){
       {/* Übersicht-Seite */}
       {page==="overview"&&order&&order.status!=="pending"&&(<>
         <div className="pt-hero-card">
-          <div className="pt-hlive"><div className="pt-hlive-dot"/>Live</div>
+          <div className={`pt-hlive${order.status==="trial"?" pt-hlive-trial":""}`}><div className="pt-hlive-dot"/>{order.status==="trial"?"Testphase":"Live"}</div>
           <div className="pt-hurl"><em>https://</em>{sub}.siteready.at</div>
           <div className="pt-hhint">Ihre Website ist öffentlich erreichbar &middot; Änderungen sind sofort sichtbar</div>
           <div className="pt-hbtns">
@@ -1792,14 +1831,14 @@ function Portal({session,onLogout}){
           )}
         </div>}
         {page==="design"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Design & Stil</div>
-            <button onClick={()=>nav("support")} style={{padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Aenderung anfragen</button>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
+            <div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:3}}>Design & Stil</div>
+              <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.5}}>Farben, Typografie und Erscheinungsbild Ihrer Website. Ein Wechsel ist ein komplettes Redesign – anfragen genügt.</div>
+            </div>
+            <button onClick={()=>nav("support")} style={{marginLeft:16,flexShrink:0,padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Änderung anfragen</button>
           </div>
           <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
-          <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
-            Ein Design-Wechsel ist ein komplettes Redesign Ihrer Website. Schreiben Sie uns kurz ueber den Support-Tab – wir setzen das für Sie um.
-          </div>
         </div>}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="social" label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>
@@ -2316,6 +2355,36 @@ function Portal({session,onLogout}){
       </div>)}
       </div>
     </main>
+    {!astDone&&order&&<aside className="pt-ast">
+      <div className="pt-ast-h">
+        <div className="pt-ast-title">Einrichtungsassistent</div>
+        <div className="pt-ast-sub">Vervollständigen Sie Ihre Website</div>
+        <div className="pt-ast-bar-wrap"><div className="pt-ast-bar-fill" style={{width:`${astScore}%`}}/></div>
+        <div className="pt-ast-pts">{astScore} / 100 Punkte</div>
+      </div>
+      <div className="pt-ast-divider"/>
+      <div className="pt-ast-scroll">
+        {astItems.filter(i=>!i.optional).map((item,idx)=>(
+          <button key={idx} className="pt-ast-item" onClick={()=>nav(item.page)}>
+            <div className={`pt-ast-ck${item.done?" done":""}`}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
+            {!item.done&&<span className="pt-ast-pts-badge">+{item.pts}</span>}
+          </button>
+        ))}
+        {astItems.some(i=>i.optional)&&<div style={{fontSize:".68rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"10px 8px 4px"}}>Optional</div>}
+        {astItems.filter(i=>i.optional).map((item,idx)=>(
+          <button key={idx} className="pt-ast-item" onClick={()=>nav(item.page)}>
+            <div className={`pt-ast-ck${item.done?" done":""}`}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
+            <span className="pt-ast-optional">Optional</span>
+          </button>
+        ))}
+      </div>
+    </aside>}
   </div>);
 }
 

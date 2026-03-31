@@ -1298,7 +1298,7 @@ function Portal({session,onLogout}){
       texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
       design:{stil:order.stil,fotos:order.fotos},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
-      impressum:{unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl},
+      impressum:{unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname},
     };
     await supabase.from("orders").update(fields[section]||{}).eq("id",order.id);
     setSaving(false);setSaved(section);setTimeout(()=>setSaved(false),3000);
@@ -1486,6 +1486,7 @@ function Portal({session,onLogout}){
           ["medien","Fotos & Medien",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,true],
           ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
           ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,true],
+          ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
@@ -1506,11 +1507,6 @@ function Portal({session,onLogout}){
         <button className={`pt-ni${page==="domain"?" pactive":""}`} onClick={()=>nav("domain")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           Domain
-        </button>
-        <div className="pt-sb-grp">Einstellungen</div>
-        <button className={`pt-ni${page==="design"?" pactive":""}`} onClick={()=>nav("design")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>
-          Design
         </button>
         <div className="pt-sb-grp">Konto</div>
         <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
@@ -1643,6 +1639,16 @@ function Portal({session,onLogout}){
             </div>
           </div>);
         })()}
+        <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"18px 24px",display:"flex",alignItems:"center",gap:16,opacity:.7}}>
+          <div style={{width:38,height:38,borderRadius:T.rSm,background:T.bg2,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:2}}>FAQ & häufige Fragen</div>
+            <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>Antworten auf häufige Fragen zu Ihrer Website – bald verfügbar</div>
+          </div>
+          <div style={{fontSize:".72rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"3px 9px",borderRadius:100,flexShrink:0,border:`1px solid rgba(143,163,184,.2)`}}>Bald</div>
+        </div>
       </>)}
 
       {/* Tab: Website (Inhalte-Unterseiten) */}
@@ -1729,19 +1735,34 @@ function Portal({session,onLogout}){
           <SectionHeader id="impressum" label="Unternehmen & Impressum" badge="instant"
             desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Direkt bearbeitbar – eine Bestätigung stellt sicher, dass die Angaben korrekt sind."
             onSave={()=>setImpressumConfirmOpen(true)}/>
-          {editSection==="impressum"?(<>
-            <Dropdown label="Unternehmensform" value={order.unternehmensform||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
-            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678"/>
-            <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a"/>
-            <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="Handelsgericht Wien"/>
-            <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678"/>
+          {(()=>{const uf=order.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
+          return editSection==="impressum"?(<>
+            <Dropdown label="Unternehmensform" value={uf||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
+            {uf==="einzelunternehmen"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <Field label="Vorname Inhaber" value={order.vorname||""} onChange={upOrder("vorname")} placeholder="Maria"/>
+              <Field label="Nachname Inhaber" value={order.nachname||""} onChange={upOrder("nachname")} placeholder="Muster"/>
+            </div>}
+            {uf==="gesnbr"&&<Field label="Gesellschafter" value={order.gesellschafter||""} onChange={upOrder("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
+            {hasFB&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a"/>
+              <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="HG Wien"/>
+            </div>}
+            {uf==="gmbh"&&<Field label="Geschäftsführer" value={order.geschaeftsfuehrer||""} onChange={upOrder("geschaeftsfuehrer")} placeholder="Vor- und Nachname" hint="Für das Impressum"/>}
+            {uf==="ag"&&<><Field label="Vorstand" value={order.vorstand||""} onChange={upOrder("vorstand")} placeholder="Vor- und Nachname"/><Field label="Aufsichtsrat" value={order.aufsichtsrat||""} onChange={upOrder("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
+            {uf==="verein"&&<><Field label="ZVR-Zahl" value={order.zvr_zahl||""} onChange={upOrder("zvr_zahl")} placeholder="z.B. 123456789"/><Field label="Vertretungsbefugte Organe" value={order.vertretungsorgane||""} onChange={upOrder("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}
+            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional"/>
+            <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678" hint="Optional"/>
           </>):(<>
-            <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===order.unternehmensform)?.label||order.unternehmensform}/>
+            <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf}/>
+            {uf==="einzelunternehmen"&&<InfoRow label="Inhaber" value={[order.vorname,order.nachname].filter(Boolean).join(" ")}/>}
+            {uf==="gesnbr"&&<InfoRow label="Gesellschafter" value={order.gesellschafter}/>}
+            {hasFB&&<><InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/><InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/></>}
+            {uf==="gmbh"&&<InfoRow label="Geschäftsführer" value={order.geschaeftsfuehrer}/>}
+            {uf==="ag"&&<><InfoRow label="Vorstand" value={order.vorstand}/><InfoRow label="Aufsichtsrat" value={order.aufsichtsrat}/></>}
+            {uf==="verein"&&<><InfoRow label="ZVR-Zahl" value={order.zvr_zahl}/><InfoRow label="Vertretungsorgane" value={order.vertretungsorgane}/></>}
             <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
-            <InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/>
-            <InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/>
             <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
-          </>)}
+          </>);})()}
           {impressumConfirmOpen&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}}>
             <div style={{background:"#fff",borderRadius:T.r,padding:"32px 28px",maxWidth:440,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
               <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:8}}>Impressum bestätigen</div>

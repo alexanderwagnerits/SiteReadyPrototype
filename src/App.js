@@ -1031,7 +1031,8 @@ const qCss=`
 .q-mob-progress{flex:1;height:4px;background:${T.bg3};border-radius:100px;overflow:hidden}
 .q-mob-fill{height:100%;background:${T.dark};border-radius:100px;transition:width .4s ease}
 .q-mob-pct{font-size:.72rem;font-weight:700;color:${T.textMuted};font-family:${T.mono}}
-@media(max-width:900px){.q-sb{display:none}.q-mob-bar{display:flex}.q-mb{max-width:100%}.q-split{grid-template-columns:1fr}.q-split-right{padding-left:0;border-left:none;padding-top:16px;border-top:1px solid ${T.bg3};margin-top:8px}.q-mh{padding:20px 20px 0}.q-mh-line{margin:16px 20px 0}.q-mb{padding:20px}.q-footer{padding:12px 20px}}
+@media(max-width:900px){.q-sb{display:none}.q-mob-bar{display:flex}.q-mb{max-width:100%}.q-split{grid-template-columns:1fr}.q-split-right{padding-left:0;border-left:none;padding-top:16px;border-top:1px solid ${T.bg3};margin-top:8px}.q-mh{padding:20px 20px 0}.q-mh-line{margin:16px 20px 0}.q-mb{padding:20px}.q-footer{padding:12px 20px}.q-color-row{gap:6px}.q-color-dot{width:30px;height:30px}}
+@media(max-width:600px){.q-mh-title{font-size:1.1rem}.q-mh-sub{font-size:.8rem}.q-inline-2{grid-template-columns:1fr!important}.q-import-row{flex-direction:column}.q-summary-row{flex-direction:column;gap:2px}.q-summary-row span:last-child{text-align:left}.q-color-dot{width:28px;height:28px}.q-color-row{gap:5px}.q-hex{width:90px;font-size:.78rem}}
 `;
 function Questionnaire({data,setData,onComplete,onBack}){
   const SECS=[{id:"start",label:"Start",icon:<><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></>},{id:"grunddaten",label:"Grunddaten",icon:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>},{id:"leistungen",label:"Leistungen",icon:<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>},{id:"kontakt",label:"Kontakt",icon:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>},{id:"impressum",label:"Impressum",icon:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>},{id:"design",label:"Design",icon:<><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>},{id:"fertig",label:"Fertig",icon:<polyline points="20 6 9 17 4 12"/>}];
@@ -1078,7 +1079,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
     {step>0&&step<SECS.length-1&&<div className="q-mob-bar"><span className="q-mob-step">Schritt {step} von 5 — {SECS[step].label}</span><div className="q-mob-progress"><div className="q-mob-fill" style={{width:`${pct}%`}}/></div><span className="q-mob-pct">{pct}%</span></div>}
     {/* 0: Start */}
     <div id="q-sec-0" className={`q-section${step===0?" q-vis":""}`}>
-      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:36,overflowY:"auto"}}>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"36px 20px",overflowY:"auto"}}>
         <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
           <img src="/logo.png" alt="SiteReady" style={{height:32,marginBottom:24}} onError={e=>{e.currentTarget.style.display="none"}}/>
           <div style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,letterSpacing:"-.03em",lineHeight:1.2,marginBottom:8}}>Ihre professionelle Website<br/>in wenigen Minuten.</div>
@@ -1137,8 +1138,8 @@ function Questionnaire({data,setData,onComplete,onBack}){
         <div className="q-split">
           <div>
             <Field label="Straße & Hausnummer" value={data.adresse} onChange={up("adresse")} placeholder="Mariahilfer Straße 45/3" required/>
-            <div style={{display:"grid",gridTemplateColumns:"120px 1fr",gap:12}}><Field label="PLZ" value={data.plz} onChange={up("plz")} placeholder="1060" required/><Field label="Ort" value={data.ort} onChange={up("ort")} placeholder="Wien" required/></div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Telefon" value={data.telefon} onChange={up("telefon")} placeholder="+43 1 234 56 78" required/><Field label="E-Mail" value={data.email} onChange={up("email")} placeholder="office@firma.at" type="email" required/></div>
+            <div className="q-inline-2" style={{display:"grid",gridTemplateColumns:"120px 1fr",gap:12}}><Field label="PLZ" value={data.plz} onChange={up("plz")} placeholder="1060" required/><Field label="Ort" value={data.ort} onChange={up("ort")} placeholder="Wien" required/></div>
+            <div className="q-inline-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Telefon" value={data.telefon} onChange={up("telefon")} placeholder="+43 1 234 56 78" required/><Field label="E-Mail" value={data.email} onChange={up("email")} placeholder="office@firma.at" type="email" required/></div>
             <Dropdown label="Öffnungszeiten" value={data.oeffnungszeiten} onChange={up("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen" required/>
             {data.oeffnungszeiten==="custom"&&<Field label="Ihre Öffnungszeiten" value={data.oeffnungszeitenCustom} onChange={up("oeffnungszeitenCustom")} placeholder={"Mo-Fr: 08:00-17:00\nSa: nach Vereinbarung"} rows={2}/>}
           </div>
@@ -1160,10 +1161,10 @@ function Questionnaire({data,setData,onComplete,onBack}){
         <div className="q-split">
           <div>
             <Dropdown label="Unternehmensform" value={uf} onChange={up("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen" required/>
-            {uf==="einzelunternehmen"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Vorname" value={data.vorname} onChange={up("vorname")} placeholder="Maria" required/><Field label="Nachname" value={data.nachname} onChange={up("nachname")} placeholder="Muster" required/></div>}
+            {uf==="einzelunternehmen"&&<div className="q-inline-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Vorname" value={data.vorname} onChange={up("vorname")} placeholder="Maria" required/><Field label="Nachname" value={data.nachname} onChange={up("nachname")} placeholder="Muster" required/></div>}
             {(uf==="einzelunternehmen"||uf==="gesnbr")&&<Field label="Unternehmensgegenstand" value={data.unternehmensgegenstand} onChange={up("unternehmensgegenstand")} placeholder="z.B. Elektroinstallation" hint="Optional"/>}
             {uf==="gesnbr"&&<Field label="Gesellschafter" value={data.gesellschafter} onChange={up("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
-            {hasFB&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Firmenbuchnr." value={data.firmenbuchnummer} onChange={up("firmenbuchnummer")} placeholder="FN 123456 a" required/><Field label="FB-Gericht" value={data.firmenbuchgericht} onChange={up("firmenbuchgericht")} placeholder="HG Wien" required/></div>}
+            {hasFB&&<div className="q-inline-2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Firmenbuchnr." value={data.firmenbuchnummer} onChange={up("firmenbuchnummer")} placeholder="FN 123456 a" required/><Field label="FB-Gericht" value={data.firmenbuchgericht} onChange={up("firmenbuchgericht")} placeholder="HG Wien" required/></div>}
             {uf==="gmbh"&&<Field label="Geschäftsführer" value={data.geschaeftsfuehrer} onChange={up("geschaeftsfuehrer")} placeholder="Vor- und Nachname" required/>}
             {uf==="ag"&&<><Field label="Vorstand" value={data.vorstand} onChange={up("vorstand")} placeholder="Vor- und Nachname" required/><Field label="Aufsichtsrat" value={data.aufsichtsrat} onChange={up("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
             {uf==="verein"&&<><Field label="ZVR-Zahl" value={data.zvr_zahl} onChange={up("zvr_zahl")} placeholder="z.B. 123456789" required/><Field label="Vertretungsorgane" value={data.vertretungsorgane} onChange={up("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}

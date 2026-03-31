@@ -252,7 +252,7 @@ const pCss=`
 .pt-ni.open .pt-ni-ch{transform:rotate(90deg)}
 .pt-sub{overflow:hidden;max-height:0;transition:max-height .25s ease}
 .pt-sub.open{max-height:400px}
-.pt-si{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 32px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.32);font-size:.86rem;font-weight:500;transition:all .12s;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
+.pt-si{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 32px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.32);font-size:.86rem;font-weight:500;transition:all .12s;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
 .pt-si::before{content:'';width:3px;height:3px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.7}
 .pt-si:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.68)}
 .pt-si.active{color:rgba(255,255,255,.9);font-weight:600}
@@ -281,7 +281,7 @@ const pCss=`
 .pt-hero-btns{display:flex;gap:8px;flex-wrap:wrap}
 .pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#111;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;letter-spacing:-.01em}
 .pt-btn-w:hover{opacity:.88}
-.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.09);border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.09);border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
 .pt-btn-gw:hover{background:rgba(255,255,255,.12);color:rgba(255,255,255,.88)}
 `;
 
@@ -497,9 +497,9 @@ function LandingPage({onStart,onPortal}){
         <div onMouseEnter={()=>setHovCard("pr")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 32px",position:"relative",border:`2.5px solid ${T.dark}`,boxShadow:hovCard==="pr"?T.sh4:"0 8px 32px rgba(0,0,0,0.10)",transform:hovCard==="pr"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
           <span style={{position:"absolute",top:-13,left:32,background:T.dark,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
           <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,marginBottom:28,maxWidth:280,position:"relative"}}>
-            <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:7,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
+            <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:8,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
             {[["monthly","Monatlich"],["yearly","Jährlich"]].map(([val,lbl])=>(
-              <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:7,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
+              <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:8,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
                 {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
               </button>
             ))}

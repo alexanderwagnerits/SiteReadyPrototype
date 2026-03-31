@@ -963,85 +963,284 @@ return(<div style={{fontFamily:s.font,background:s.bg,color:s.text,minHeight:"10
 {/* ── Footer ── */}
 <div style={{background:s.primary,color:"#fff",padding:`${compact?"16px":"24px"} ${px} ${compact?"12px":"16px"}`,fontSize:"11px"}}><div style={{display:compact?"block":"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:"24px",paddingBottom:"14px"}}><div><div style={{fontWeight:800,fontSize:"13px",marginBottom:"4px"}}>{d.firmenname||"Firmenname"}</div>{d.kurzbeschreibung&&<p style={{opacity:.55,fontSize:"11px",lineHeight:1.6,margin:"0 0 8px",maxWidth:"220px"}}>{d.kurzbeschreibung}</p>}{d.telefon&&<div style={{opacity:.8,fontWeight:700,fontSize:"12px"}}>{d.telefon}</div>}</div>{!compact&&<div><div style={{fontWeight:700,fontSize:"10px",textTransform:"uppercase",letterSpacing:".1em",opacity:.4,marginBottom:"10px"}}>Navigation</div><div style={{display:"flex",flexDirection:"column",gap:"6px",opacity:.6,fontSize:"11px"}}><span>Leistungen</span><span>Über uns</span><span>Kontakt</span><span>Impressum</span><span>Datenschutz</span></div></div>}{!compact&&<div><div style={{fontWeight:700,fontSize:"10px",textTransform:"uppercase",letterSpacing:".1em",opacity:.4,marginBottom:"10px"}}>Kontakt</div><div style={{display:"flex",flexDirection:"column",gap:"6px",opacity:.6,fontSize:"11px"}}>{adressFull&&<span>{adressFull}</span>}{d.telefon&&<span>{d.telefon}</span>}{d.email&&<span>{d.email}</span>}</div></div>}</div><div style={{borderTop:"1px solid rgba(255,255,255,.1)",paddingTop:"10px",display:"flex",justifyContent:"space-between",opacity:.4,fontSize:"10px"}}><span>&copy; {new Date().getFullYear()} {d.firmenname||"Firmenname"}</span><span>Impressum &middot; Datenschutz</span></div></div></div>)}
 
-/* ═══ QUESTIONNAIRE (unified light premium) ═══ */
+/* ═══ QUESTIONNAIRE (sidebar layout — matches portal) ═══ */
+const qCss=`
+.q-layout{display:flex;height:100dvh;overflow:hidden}
+.q-sb{width:236px;background:#111;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.q-sb-top{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.q-sb-logo{height:24px;filter:brightness(0) invert(1);opacity:.88;display:block;margin-bottom:18px}
+.q-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
+.q-sb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
+.q-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}.q-sb-nav::-webkit-scrollbar{display:none}
+.q-sb-grp{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 8px 5px}
+.q-sb-ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:.91rem;font-weight:500;transition:all .12s;user-select:none;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
+.q-sb-ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.q-sb-ni.q-active{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
+.q-sb-ni.q-done{color:rgba(255,255,255,.55)}
+.q-sb-ni.q-future{opacity:.35;cursor:default}
+.q-sb-ni.q-future:hover{background:transparent;color:rgba(255,255,255,.45)}
+.q-sb-ni svg{flex-shrink:0;opacity:.5;transition:opacity .12s}
+.q-sb-ni.q-active svg,.q-sb-ni:hover svg{opacity:.85}
+.q-sb-comp{width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:auto;flex-shrink:0}
+.q-sb-done{width:6px;height:6px;border-radius:50%;background:#4ade80;margin-left:auto;flex-shrink:0;opacity:.7}
+.q-sb-progress{padding:14px 18px;border-top:1px solid rgba(255,255,255,.07)}
+.q-sb-bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden}
+.q-sb-bar-fill{height:100%;background:#4ade80;border-radius:100px;transition:width .4s ease}
+.q-sb-pct{font-size:.68rem;font-weight:700;color:#4ade80;margin-top:5px}
+.q-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:${T.bg}}
+.q-mh{padding:28px 36px 0;flex-shrink:0}
+.q-mh-bc{font-size:.76rem;color:${T.textMuted};margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.q-mh-bc b{color:${T.textSub}}
+.q-mh-title{font-size:1.35rem;font-weight:800;color:${T.dark};letter-spacing:-.025em;line-height:1.2}
+.q-mh-sub{font-size:.87rem;color:${T.textMuted};margin-top:3px}
+.q-mh-line{height:1px;background:${T.bg3};margin:20px 36px 0;flex-shrink:0}
+.q-mb{padding:24px 36px 32px;flex:1;overflow-y:auto;max-width:720px}
+.q-section{display:none;flex-direction:column;flex:1;overflow:hidden}
+.q-section.q-vis{display:flex;animation:q-in .3s ease}
+@keyframes q-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.q-footer{padding:16px 36px;border-top:1px solid ${T.bg3};background:${T.bg};flex-shrink:0;display:flex;align-items:center;gap:12px}
+.q-split{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;align-items:start}
+.q-split-right{padding-left:24px;border-left:1px solid ${T.bg3}}
+.q-split-title{font-size:.78rem;font-weight:700;color:${T.textSub};text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+.q-content-card{background:${T.white};border:1px solid ${T.bg3};border-radius:${T.r};padding:28px;box-shadow:${T.sh1}}
+.q-summary-table{text-align:left;padding:16px;background:${T.bg};border-radius:${T.rSm}}
+.q-summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid ${T.bg3};font-size:.82rem}
+.q-summary-row:last-child{border-bottom:none}
+.q-color-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.q-color-dot{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;padding:0;background:none}
+.q-color-dot:hover{transform:scale(1.12)}
+.q-color-dot.q-sel{border-color:${T.dark};box-shadow:0 0 0 2px #fff,0 0 0 4px ${T.dark};transform:scale(1.1)}
+.q-color-custom{display:flex;align-items:center;gap:12px;padding:12px 14px;background:${T.bg};border-radius:${T.rSm}}
+.q-hex{font-family:${T.mono};font-size:.88rem;font-weight:500;color:${T.dark};background:${T.white};border:2px solid ${T.bg3};border-radius:${T.rSm};padding:8px 12px;width:110px;outline:none;transition:border-color .2s;text-transform:uppercase}
+.q-hex:focus{border-color:${T.dark}}
+.q-btn-next{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:${T.dark};color:#fff;border:none;border-radius:${T.rSm};font-family:${T.font};font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s;min-height:44px}
+.q-btn-next:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.q-btn-next:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.q-btn-back{padding:10px 16px;background:${T.white};color:${T.textSub};border:1.5px solid ${T.bg3};border-radius:${T.rSm};font-family:${T.font};font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s;min-height:44px}
+.q-btn-back:hover{border-color:#ccc;color:${T.dark}}
+.q-import-row{display:flex;gap:8px}
+.q-import-input{flex:1;padding:10px 14px;border:2px solid ${T.bg3};border-radius:${T.rSm};font-size:.875rem;font-family:${T.font};background:${T.bg};color:${T.dark};outline:none;transition:border-color .2s}
+.q-import-input:focus{border-color:${T.dark};box-shadow:0 0 0 3px rgba(17,17,17,.06)}
+.q-import-input::placeholder{color:#b5b8c0}
+.q-import-btn{padding:10px 20px;background:${T.dark};color:#fff;border:none;border-radius:${T.rSm};font-family:${T.font};font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.q-import-btn:hover{opacity:.88}
+.q-import-btn:disabled{opacity:.4;cursor:not-allowed}
+.q-mob-bar{display:none;padding:12px 20px;background:${T.white};border-bottom:1px solid ${T.bg3};flex-shrink:0;align-items:center;gap:12px}
+.q-mob-step{font-size:.78rem;font-weight:600;color:${T.textSub};white-space:nowrap}
+.q-mob-progress{flex:1;height:4px;background:${T.bg3};border-radius:100px;overflow:hidden}
+.q-mob-fill{height:100%;background:${T.dark};border-radius:100px;transition:width .4s ease}
+.q-mob-pct{font-size:.72rem;font-weight:700;color:${T.textMuted};font-family:${T.mono}}
+@media(max-width:900px){.q-sb{display:none}.q-mob-bar{display:flex}.q-mb{max-width:100%}.q-split{grid-template-columns:1fr}.q-split-right{padding-left:0;border-left:none;padding-top:16px;border-top:1px solid ${T.bg3};margin-top:8px}.q-mh{padding:20px 20px 0}.q-mh-line{margin:16px 20px 0}.q-mb{padding:20px}.q-footer{padding:12px 20px}}
+`;
 function Questionnaire({data,setData,onComplete,onBack}){
-  const[step,setStep]=useState(0);const ref=useRef(null);const[isMobile]=useState(typeof window!=="undefined"&&window.innerWidth<768);const[showPreview,setShowPreview]=useState(false);const[showImport,setShowImport]=useState(true);const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[impressumConfirm,setImpressumConfirm]=useState(false);const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");try{const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl})});const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen})}));setImportLoading(false);setShowImport(false);}catch(e){setImportErr("Verbindungsfehler: "+e.message);setImportLoading(false);}};
-const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);const go=n=>{setStep(n);if(ref.current)ref.current.scrollTop=0;if(isMobile&&n===STEPS.length-1)setShowPreview(true);};const pct=((step+1)/STEPS.length)*100;const selectedBranche=BRANCHEN.find(b=>b.value===data.branche);const brancheLeistungen=selectedBranche?selectedBranche.leistungen:[];const onBrancheChange=val=>{const b=BRANCHEN.find(x=>x.value===val);setData(d=>({...d,branche:val,brancheLabel:b?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,leistungen:[],extraLeistung:""}))};  const legalOk=(()=>{const uf=data.unternehmensform;if(!uf)return false;if(uf==="einzelunternehmen"&&(!data.vorname?.trim()||!data.nachname?.trim()))return false;const needsFB=["eu","gmbh","og","kg","ag"].includes(uf);if(needsFB&&(!data.firmenbuchnummer?.trim()||!data.firmenbuchgericht?.trim()))return false;if(uf==="gmbh"&&!data.geschaeftsfuehrer?.trim())return false;if(uf==="ag"&&!data.vorstand?.trim())return false;if(uf==="verein"&&!data.zvr_zahl?.trim())return false;return true;})();
-  const stepValid=[!!(data.firmenname?.trim()&&data.branche&&data.bundesland&&data.kurzbeschreibung?.trim()),!!(data.leistungen?.length>0||data.extraLeistung?.trim()),!!(data.adresse?.trim()&&data.plz?.trim()&&data.ort?.trim()&&data.telefon?.trim()&&data.email?.trim()&&data.oeffnungszeiten),legalOk&&impressumConfirm,true];
-  const pages=[<>
-    <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
-    <Combobox label="Beruf" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
-    {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
-    <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Ihr Slogan oder Kurzpitch – erscheint direkt im Hero-Bereich Ihrer Website" required/>
-    <Dropdown label="Bundesland" value={data.bundesland} onChange={v=>{up("bundesland")(v);const bl=BUNDESLAENDER.find(b=>b.value===v);up("einsatzgebiet")(bl?bl.label:"")}} options={BUNDESLAENDER} placeholder="Bundesland wählen" required/>
-  </>,<>{brancheLeistungen.length>0?(<Checklist label="Leistungen auswählen" options={[...new Set([...brancheLeistungen,...(data.leistungen||[])])]} selected={data.leistungen} onChange={up("leistungen")} hint="Wählen Sie Ihre Leistungen"/>):(<TagInput label="Ihre Leistungen" value={data.extraLeistung} onChange={up("extraLeistung")} placeholder="Leistung eingeben + Enter" hint="Leistung eingeben und Enter drücken – max. 12"/>)}{brancheLeistungen.length>0&&<TagInput label="Zusätzliche Leistungen (optional)" value={data.extraLeistung} onChange={up("extraLeistung")} placeholder="z.B. Beratung, Planung, ..." hint="Leistung eingeben und Enter drücken"/>}{(()=>{const ft=data.branche==="sonstige"?["notdienst","meisterbetrieb","kostenvoranschlag","foerderungsberatung","buchungslink","hausbesuche","terminvereinbarung","lieferservice","barrierefrei","parkplaetze","kassenvertrag","erstgespraech_gratis","online_beratung","ratenzahlung"]:getBrancheFeatures(data.branche);if(!ft.length)return null;return<>{data.branche==="sonstige"&&<div style={{padding:"10px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,fontSize:".78rem",color:T.accent,marginBottom:12}}>Wählen Sie die Features, die zu Ihrem Beruf passen:</div>}{ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={data.notdienst} onChange={up("notdienst")} desc="Wird prominent angezeigt"/>}{ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={data.meisterbetrieb} onChange={up("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge auf Ihrer Website"/>}{ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={data.kostenvoranschlag} onChange={up("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}{ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={data.foerderungsberatung} onChange={up("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}{ft.includes("buchungslink")&&<Field label="Online-Buchungslink" value={data.buchungslink} onChange={up("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – optional"/>}{ft.includes("hausbesuche")&&<Toggle label="Hausbesuche" checked={data.hausbesuche} onChange={up("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>}{ft.includes("terminvereinbarung")&&<Toggle label="Nur nach Terminvereinbarung" checked={data.terminvereinbarung} onChange={up("terminvereinbarung")} desc="Kein Walk-in – nur mit Termin"/>}{ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={data.lieferservice} onChange={up("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}{ft.includes("barrierefrei")&&<Toggle label="Barrierefrei" checked={data.barrierefrei} onChange={up("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>}{ft.includes("parkplaetze")&&<Toggle label="Parkplätze vorhanden" checked={data.parkplaetze} onChange={up("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>}{ft.includes("kassenvertrag")&&<Dropdown label="Kassenvertrag" value={data.kassenvertrag} onChange={up("kassenvertrag")} options={[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt / Wahltherapeut"},{value:"privat",label:"Nur Privat"}]} placeholder="Kassenvertrag wählen" hint="Wichtig für Patienten"/>}{ft.includes("erstgespraech_gratis")&&<Toggle label="Erstgespräch gratis" checked={data.erstgespraech_gratis} onChange={up("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>}{ft.includes("online_beratung")&&<Toggle label="Online-Beratung" checked={data.online_beratung} onChange={up("online_beratung")} desc="Beratung per Video-Call möglich"/>}{ft.includes("ratenzahlung")&&<Toggle label="Ratenzahlung möglich" checked={data.ratenzahlung} onChange={up("ratenzahlung")} desc="Zahlung in Raten anbieten"/>}</>;})()}<div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>KI generiert Beschreibungen automatisch</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Für jede Leistung wird automatisch ein Beschreibungstext erstellt. Im Portal können Sie diese jederzeit anpassen und optional Preise hinzufügen.</div></div></>,<><Field label="Straße & Hausnummer" value={data.adresse} onChange={up("adresse")} placeholder="Mariahilfer Straße 45/3" required/><div style={{display:"grid",gridTemplateColumns:"120px 1fr",gap:12}}><Field label="PLZ" value={data.plz} onChange={up("plz")} placeholder="1060" required/><Field label="Ort" value={data.ort} onChange={up("ort")} placeholder="Wien" required/></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Telefon" value={data.telefon} onChange={up("telefon")} placeholder="+43 1 234 56 78" required/><Field label="E-Mail" value={data.email} onChange={up("email")} placeholder="office@firma.at" type="email" required/></div><Dropdown label="Öffnungszeiten" value={data.oeffnungszeiten} onChange={up("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen" required/>{data.oeffnungszeiten==="custom"&&<Field label="Ihre Öffnungszeiten" value={data.oeffnungszeitenCustom} onChange={up("oeffnungszeitenCustom")} placeholder={"Mo-Fr: 08:00-17:00\nSa: nach Vereinbarung"} rows={2}/>}<div style={{marginTop:8,paddingTop:16,borderTop:`1px solid ${T.bg3}`}}><div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".06em",marginBottom:12}}>Social Media <span style={{fontWeight:400,opacity:.6}}>(optional)</span></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Facebook" value={data.facebook} onChange={up("facebook")} placeholder="https://facebook.com/ihrefirma" hint={data.facebook&&!data.facebook.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/><Field label="Instagram" value={data.instagram} onChange={up("instagram")} placeholder="https://instagram.com/ihrefirma" hint={data.instagram&&!data.instagram.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/><Field label="LinkedIn" value={data.linkedin} onChange={up("linkedin")} placeholder="https://linkedin.com/company/..." hint={data.linkedin&&!data.linkedin.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/><Field label="TikTok" value={data.tiktok} onChange={up("tiktok")} placeholder="https://tiktok.com/@ihrefirma" hint={data.tiktok&&!data.tiktok.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/></div></div></>,<>{(()=>{const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);return(<><Dropdown label="Unternehmensform" value={uf} onChange={up("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen" hint="Für das Impressum (ECG)" required/>
-{uf==="einzelunternehmen"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Vorname Inhaber" value={data.vorname} onChange={up("vorname")} placeholder="Maria" required/><Field label="Nachname Inhaber" value={data.nachname} onChange={up("nachname")} placeholder="Muster" required/></div>}
-{(uf==="einzelunternehmen"||uf==="gesnbr")&&<Field label="Unternehmensgegenstand" value={data.unternehmensgegenstand} onChange={up("unternehmensgegenstand")} placeholder="z.B. Elektroinstallation und -handel" hint="Optional"/>}
-{uf==="gesnbr"&&<Field label="Gesellschafter" value={data.gesellschafter} onChange={up("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
-{hasFB&&<div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Firmenbuchnummer" value={data.firmenbuchnummer} onChange={up("firmenbuchnummer")} placeholder="FN 123456 a" required/><Field label="Firmenbuchgericht" value={data.firmenbuchgericht} onChange={up("firmenbuchgericht")} placeholder="HG Wien" required/></div>}
-{uf==="gmbh"&&<Field label="Geschäftsführer" value={data.geschaeftsfuehrer} onChange={up("geschaeftsfuehrer")} placeholder="Vor- und Nachname" hint="Für das Impressum" required/>}
-{uf==="ag"&&<><Field label="Vorstand" value={data.vorstand} onChange={up("vorstand")} placeholder="Vor- und Nachname" required/><Field label="Aufsichtsrat" value={data.aufsichtsrat} onChange={up("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
-{uf==="verein"&&<><Field label="ZVR-Zahl" value={data.zvr_zahl} onChange={up("zvr_zahl")} placeholder="z.B. 123456789" required/><Field label="Vertretungsbefugte Organe" value={data.vertretungsorgane} onChange={up("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}
-{hasFB&&<Toggle label="Gesellschaft in Liquidation" checked={!!data.liquidation} onChange={v=>up("liquidation")(v?"in Liquidation":"")} desc="Nur wenn zutreffend"/>}
-<div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="UID-Nummer / ATU" value={data.uid} onChange={up("uid")} placeholder="ATU12345678" hint="Optional"/><Field label="GISA-Zahl" value={data.gisazahl} onChange={up("gisazahl")} placeholder="z.B. 12345678" hint="Optional"/></div>
-<div className="pt-field-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Aufsichtsbehörde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63" hint="Optional"/><Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien" hint="Optional"/></div>
-<div style={{marginTop:8,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><div style={{fontSize:".78rem",color:T.accent,lineHeight:1.65}}>Diese Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).<br/>Unterstützte Rechtsformen: e.U., Einzelunternehmen, GmbH, OG, KG, AG, Verein, GesbR. Bei anderen Rechtsformen bitte vorab Kontakt aufnehmen.</div></div><label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${impressumConfirm?T.accent+"44":T.bg3}`,marginBottom:16,marginTop:16}}><input type="checkbox" checked={impressumConfirm} onChange={e=>setImpressumConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/><span style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6}}>Ich bestätige, dass die angegebenen Unternehmensdaten korrekt sind. Das Impressum wird auf Basis dieser Angaben erstellt.</span></label></>);})()}</>,<><div style={{marginBottom:8}}>
-<p style={{fontSize:".85rem",color:T.textSub,margin:0,lineHeight:1.6}}>Basierend auf Ihrer Branche empfehlen wir: <strong style={{color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</strong></p>
-</div>
-<StylePicker value={data.stil} onChange={up("stil")}/>
-{data.stil==="custom"&&<div style={{marginTop:4}}>
-<div style={{marginBottom:16}}>
-<label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Primärfarbe</label>
-<div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>
-{["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} onClick={()=>up("customColor")(c)} style={{width:34,height:34,borderRadius:T.rSm,background:c,border:data.customColor===c?`3px solid ${T.dark}`:"3px solid transparent",cursor:"pointer",boxShadow:data.customColor===c?`0 0 0 2px #fff, 0 0 0 4px ${c}`:"none",transition:"all .15s"}}/>)}
-</div>
-<div style={{display:"flex",alignItems:"center",gap:8}}>
-<input type="color" value={data.customColor} onChange={e=>up("customColor")(e.target.value)} style={{width:34,height:34,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
-<span style={{fontSize:".78rem",color:T.textMuted}}>Eigene Farbe</span>
-<span style={{fontSize:".75rem",color:T.textMuted,fontFamily:T.mono,marginLeft:"auto"}}>{data.customColor}</span>
-</div>
-</div>
-<Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
-</div>}
-<div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}>
-<div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:4}}>Nach dem Kauf – Self-Service-Portal</div>
-<div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Logo hochladen &middot; Eigene Fotos hochladen &middot; Preisliste hochladen &middot; Custom Domain verbinden – alles selbst, jederzeit.</div>
-</div></>];
+  const SECS=[{id:"start",label:"Start",icon:<><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></>},{id:"grunddaten",label:"Grunddaten",icon:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>},{id:"leistungen",label:"Leistungen",icon:<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>},{id:"kontakt",label:"Kontakt",icon:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>},{id:"impressum",label:"Impressum",icon:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>},{id:"design",label:"Design",icon:<><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>},{id:"fertig",label:"Fertig",icon:<polyline points="20 6 9 17 4 12"/>}];
+  const[step,setStep]=useState(0);
+  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");
+  const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");try{const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl})});const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen})}));setImportLoading(false);go(1);}catch(e){setImportErr("Verbindungsfehler: "+e.message);setImportLoading(false);}};
+  const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
+  const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
+  const pct=step===0?0:Math.round((step/(SECS.length-1))*100);
+  const selectedBranche=BRANCHEN.find(b=>b.value===data.branche);const brancheLeistungen=selectedBranche?selectedBranche.leistungen:[];
+  const onBrancheChange=val=>{const b=BRANCHEN.find(x=>x.value===val);setData(d=>({...d,branche:val,brancheLabel:b?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,leistungen:[],extraLeistung:""}))};
+  const legalOk=(()=>{const u=data.unternehmensform;if(!u)return false;if(u==="einzelunternehmen"&&(!data.vorname?.trim()||!data.nachname?.trim()))return false;const needsFB=["eu","gmbh","og","kg","ag"].includes(u);if(needsFB&&(!data.firmenbuchnummer?.trim()||!data.firmenbuchgericht?.trim()))return false;if(u==="gmbh"&&!data.geschaeftsfuehrer?.trim())return false;if(u==="ag"&&!data.vorstand?.trim())return false;if(u==="verein"&&!data.zvr_zahl?.trim())return false;return true})();
+  const sv1=!!(data.firmenname?.trim()&&data.branche&&data.bundesland&&data.kurzbeschreibung?.trim());
+  const sv2=!!(data.leistungen?.length>0||data.extraLeistung?.trim());
+  const sv3=!!(data.adresse?.trim()&&data.plz?.trim()&&data.ort?.trim()&&data.telefon?.trim()&&data.email?.trim()&&data.oeffnungszeiten);
+  const sv4=legalOk&&impressumConfirm;
+  const allValid=sv1&&sv2&&sv3&&sv4;
+  const svArr=[true,sv1,sv2,sv3,sv4,true,allValid];
+  const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
+  const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>›</span> <b>{bc}</b></div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
+  const ftr=(back,next,label,disabled,style)=><div className="q-footer">{back&&<button className="q-btn-back" onClick={()=>go(step-1)}>Zurück</button>}<button className="q-btn-next" onClick={next} disabled={disabled} style={style}>{label} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button></div>;
+  const chevron=<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 
-  const formPanel=(<div style={{display:"flex",flexDirection:"column",background:T.bg,borderRight:isMobile?"none":`1px solid ${T.bg3}`,height:isMobile?"100dvh":"100%",overflowY:"hidden",fontFamily:T.font}}>
-    <div style={{padding:"20px 24px 0"}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}><button onClick={onBack} style={{background:"none",border:"none",cursor:"pointer",fontSize:16,color:T.textMuted,padding:2}}>{"\u2190"}</button><img src="/logo.png" alt="SiteReady" style={{height:36}}/></div>
-        {isMobile&&<button onClick={()=>setShowPreview(!showPreview)} style={{fontSize:".75rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"5px 12px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:T.font}}>{showPreview?"Formular":"Vorschau"}</button>}
+  return(<div className="q-layout"><style>{css+qCss}</style>
+  {/* Sidebar */}
+  <aside className="q-sb">
+    <div className="q-sb-top">
+      <img className="q-sb-logo" src="/logo.png" alt="SiteReady" onError={e=>{e.currentTarget.style.display="none"}}/>
+      <div className="q-sb-site"><div className="q-sb-dot"/><div className="q-sb-url">Website erstellen</div></div>
+    </div>
+    <nav className="q-sb-nav">
+      <div className="q-sb-grp">Schritte</div>
+      {SECS.map((s,i)=><button key={s.id} className={`q-sb-ni${i===step?" q-active":""}${i<step?" q-done":""}${i>step?" q-future":""}`} onClick={()=>{if(i<=step)go(i)}}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg>
+        {s.label}
+        {i<step&&<span className="q-sb-done"/>}
+        {i===step&&i>0&&<span className="q-sb-comp"/>}
+      </button>)}
+    </nav>
+    <div className="q-sb-progress"><div className="q-sb-bar-wrap"><div className="q-sb-bar-fill" style={{width:`${pct}%`}}/></div><div className="q-sb-pct">{pct}%</div></div>
+  </aside>
+  {/* Main */}
+  <div className="q-main">
+    {step>0&&step<SECS.length-1&&<div className="q-mob-bar"><span className="q-mob-step">Schritt {step} von 5 — {SECS[step].label}</span><div className="q-mob-progress"><div className="q-mob-fill" style={{width:`${pct}%`}}/></div><span className="q-mob-pct">{pct}%</span></div>}
+    {/* 0: Start */}
+    <div id="q-sec-0" className={`q-section${step===0?" q-vis":""}`}>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:36,overflowY:"auto"}}>
+        <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
+          <img src="/logo.png" alt="SiteReady" style={{height:32,marginBottom:24}} onError={e=>{e.currentTarget.style.display="none"}}/>
+          <div style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,letterSpacing:"-.03em",lineHeight:1.2,marginBottom:8}}>Ihre professionelle Website<br/>in wenigen Minuten.</div>
+          <div style={{fontSize:".9rem",color:T.textMuted,marginBottom:40,lineHeight:1.5}}>Impressum nach ECG, DSGVO und Google-Indexierung inklusive.</div>
+          <div className="q-content-card" style={{textAlign:"left",marginBottom:24}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+              <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Website importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Wir übernehmen Ihre Daten automatisch</div></div>
+            </div>
+            <div className="q-import-row">
+              <input className="q-import-input" type="url" value={importUrl} onChange={e=>setImportUrl(e.target.value)} placeholder="https://www.ihre-website.at" onKeyDown={e=>{if(e.key==="Enter")e.preventDefault()}}/>
+              <button className="q-import-btn" onClick={doImport} disabled={!importConfirm||importLoading}>{importLoading?"Wird gelesen...":"Importieren"}</button>
+            </div>
+            {importErr&&<div style={{marginTop:8,padding:"8px 12px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:T.red}}>{importErr}</div>}
+            <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${importConfirm?T.accent+"44":T.bg3}`,marginTop:12}}>
+              <input type="checkbox" checked={importConfirm} onChange={e=>setImportConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
+              <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
+            </label>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:24,color:"#b5b8c0",fontSize:".82rem",fontWeight:500}}><div style={{flex:1,height:1,background:T.bg3}}/> oder <div style={{flex:1,height:1,background:T.bg3}}/></div>
+          <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>Ohne Import starten {chevron}</button>
+          <div style={{marginTop:16,display:"flex",justifyContent:"center",gap:24,fontSize:".72rem",color:T.textMuted}}>
+            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Fertig in 5 Min.</span>
+            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> DSGVO-konform</span>
+            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Keine Vorkenntnisse</span>
+          </div>
+        </div>
       </div>
-      {!showImport&&<><div style={{display:"flex",alignItems:"center",gap:10,margin:"14px 0 16px"}}><div style={{flex:1,height:4,borderRadius:2,background:T.bg3,overflow:"hidden"}}><div style={{height:"100%",borderRadius:2,background:T.dark,width:`${pct}%`,transition:"width .4s"}}/></div><span style={{fontSize:".75rem",color:T.textMuted,fontWeight:600,fontFamily:T.mono}}>{step+1}/{STEPS.length}</span></div>
-      <div style={{display:"flex",gap:2,background:T.bg3,borderRadius:T.rSm,padding:3}}>
-        {STEPS.map((s,i)=>{const done=i<step&&stepValid[i];const cur=i===step;return(<button key={s.id} onClick={()=>go(i)} style={{flex:1,padding:"9px 4px",border:"none",background:cur?T.white:"transparent",cursor:"pointer",borderRadius:cur?8:0,fontFamily:T.font,transition:"all .2s",boxShadow:cur?T.sh1:"none"}}><div style={{fontSize:".75rem",fontWeight:700,color:done?T.accent:cur?T.dark:T.textMuted,letterSpacing:".08em",marginBottom:2}}>{done?"\u2713":s.num}</div><div style={{fontSize:".78rem",fontWeight:cur?700:500,color:cur?T.dark:done?T.accent:T.textMuted}}>{s.title}</div></button>);})}
-      </div></>}
     </div>
-    <div ref={ref} style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{showImport?(<div><div style={{display:"inline-flex",alignItems:"center",gap:6,background:T.accentLight,color:T.accent,padding:"5px 14px",borderRadius:100,fontSize:".75rem",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",marginBottom:18}}>Optionaler Vorschritt</div><h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:10,letterSpacing:"-.02em"}}>Haben Sie schon eine Website?</h2><p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:24}}>Wir importieren Ihre Daten automatisch – Sie prüfen und korrigieren nur noch.</p><Field label="Ihre aktuelle Website-URL" value={importUrl} onChange={setImportUrl} placeholder="https://ihre-website.at" hint="Bitte nur Ihre eigene Website angeben"/><div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:16}}><div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",background:"#fefce8",borderRadius:T.rSm,border:"1px solid #fde68a"}}><span style={{fontSize:".8rem",flexShrink:0,fontWeight:700,color:"#92400e"}}>!</span><span style={{fontSize:".78rem",color:"#92400e",lineHeight:1.6}}><strong>Nur Ihre eigene Website:</strong> Bitte geben Sie ausschließlich eine Website an, für die Sie berechtigt sind. Das Importieren fremder Daten ist aus Datenschutzgründen nicht erlaubt.</span></div><div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}><span style={{fontSize:".8rem",flexShrink:0,fontWeight:700,color:T.accent}}>i</span><span style={{fontSize:".78rem",color:T.accent,lineHeight:1.6}}><strong>Bitte Daten prüfen:</strong> Die importierten Informationen werden automatisch erkannt und können unvollständig sein. Im nächsten Schritt können Sie alles korrigieren und ergänzen.</span></div></div>{importErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:T.red}}>{importErr}</div>}{importLoading?(<div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,marginBottom:12}}><div style={{width:18,height:18,borderRadius:"50%",border:`2.5px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite",flexShrink:0}}/><span style={{fontSize:".88rem",color:T.accent,fontWeight:600}}>Website wird analysiert...</span></div>):(<><label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${importConfirm?T.accent+"44":T.bg3}`,marginBottom:16,marginTop:16}}><input type="checkbox" checked={importConfirm} onChange={e=>setImportConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/><span style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6}}>Ich bestätige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span></label><button onClick={doImport} disabled={!importConfirm} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:importConfirm?T.dark:"#cbd5e1",color:"#fff",cursor:importConfirm?"pointer":"not-allowed",fontSize:".92rem",fontWeight:700,fontFamily:T.font,boxShadow:importConfirm?"0 2px 12px rgba(0,0,0,.12)":"none",marginBottom:12}}>Daten importieren &rarr;</button></>)}</div>):pages[step]}</div>
-    <div style={{padding:"16px 24px",borderTop:`1px solid ${T.bg3}`,display:"flex",justifyContent:showImport?"flex-end":"space-between",background:"rgba(255,255,255,.92)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",boxShadow:"0 -2px 12px rgba(0,0,0,.04)"}}>
-      {showImport?(<button onClick={()=>{setShowImport(false);}} style={{padding:"12px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Ohne Import starten</button>):(<>{step>0?<button onClick={()=>go(step-1)} style={{padding:"12px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:10,background:"transparent",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück</button>:<div/>}{step<STEPS.length-1?<button onClick={()=>go(step+1)} disabled={!stepValid[step]} className="sr-form-btn" style={{padding:"12px 24px",border:"none",borderRadius:10,background:stepValid[step]?T.dark:"#cbd5e1",color:"#fff",cursor:stepValid[step]?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid[step]?"0 2px 12px rgba(0,0,0,.12)":"none",transition:"background .2s"}}>Weiter &rarr;</button>:<button onClick={onComplete} disabled={!stepValid.every(v=>v)} className="sr-form-btn" style={{padding:"12px 24px",border:"none",borderRadius:10,background:stepValid.every(v=>v)?T.dark:"#cbd5e1",color:"#fff",cursor:stepValid.every(v=>v)?"pointer":"not-allowed",fontSize:".85rem",fontWeight:700,fontFamily:T.font,boxShadow:stepValid.every(v=>v)?"0 2px 12px rgba(0,0,0,.12)":"none",transition:"background .2s"}}>Website erstellen &rarr;</button>}</>)}
+    {/* 1: Grunddaten */}
+    <div id="q-sec-1" className={`q-section${step===1?" q-vis":""}`}>
+      {hdr("Grunddaten","Grunddaten","Erzählen Sie uns von Ihrem Unternehmen.")}
+      <div className="q-mb">
+        <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
+        <Combobox label="Beruf / Branche" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
+        {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
+        <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Erscheint im Hero-Bereich. Daraus generieren wir auch Ihren Über-uns-Text und Ihre Vorteile." required/>
+        <Dropdown label="Bundesland" value={data.bundesland} onChange={v=>{up("bundesland")(v);const bl=BUNDESLAENDER.find(b=>b.value===v);up("einsatzgebiet")(bl?bl.label:"")}} options={BUNDESLAENDER} placeholder="Bundesland wählen" required/>
+      </div>
+      {ftr(true,()=>go(2),"Weiter",!sv1)}
     </div>
+    {/* 2: Leistungen */}
+    <div id="q-sec-2" className={`q-section${step===2?" q-vis":""}`}>
+      {hdr("Leistungen","Leistungen","Wählen Sie Ihre Leistungen. Diese erscheinen als Karten auf Ihrer Website.")}
+      <div className="q-mb">
+        {brancheLeistungen.length>0?<Checklist label="Leistungen auswählen" options={[...new Set([...brancheLeistungen,...(data.leistungen||[])])]} selected={data.leistungen} onChange={up("leistungen")} hint="Wählen Sie Ihre Leistungen"/>:<TagInput label="Ihre Leistungen" value={data.extraLeistung} onChange={up("extraLeistung")} placeholder="Leistung eingeben + Enter" hint="Leistung eingeben und Enter drücken – max. 12"/>}
+        {brancheLeistungen.length>0&&<TagInput label="Zusätzliche Leistungen (optional)" value={data.extraLeistung} onChange={up("extraLeistung")} placeholder="z.B. Beratung, Planung, ..." hint="Leistung eingeben und Enter drücken"/>}
+        <div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>KI generiert Leistungs-Beschreibungen</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Für jede Leistung erstellen wir automatisch einen Beschreibungstext. Im Portal können Sie diese anpassen, Preise eintragen und Fotos pro Leistung zuordnen.</div></div>
+      </div>
+      {ftr(true,()=>go(3),"Weiter",!sv2)}
+    </div>
+    {/* 3: Standort & Kontakt */}
+    <div id="q-sec-3" className={`q-section${step===3?" q-vis":""}`}>
+      {hdr("Standort & Kontakt","Standort & Kontakt","Ihre Adresse und Erreichbarkeit auf der Website.")}
+      <div className="q-mb" style={{maxWidth:900}}>
+        <div className="q-split">
+          <div>
+            <Field label="Straße & Hausnummer" value={data.adresse} onChange={up("adresse")} placeholder="Mariahilfer Straße 45/3" required/>
+            <div style={{display:"grid",gridTemplateColumns:"120px 1fr",gap:12}}><Field label="PLZ" value={data.plz} onChange={up("plz")} placeholder="1060" required/><Field label="Ort" value={data.ort} onChange={up("ort")} placeholder="Wien" required/></div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Telefon" value={data.telefon} onChange={up("telefon")} placeholder="+43 1 234 56 78" required/><Field label="E-Mail" value={data.email} onChange={up("email")} placeholder="office@firma.at" type="email" required/></div>
+            <Dropdown label="Öffnungszeiten" value={data.oeffnungszeiten} onChange={up("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen" required/>
+            {data.oeffnungszeiten==="custom"&&<Field label="Ihre Öffnungszeiten" value={data.oeffnungszeitenCustom} onChange={up("oeffnungszeitenCustom")} placeholder={"Mo-Fr: 08:00-17:00\nSa: nach Vereinbarung"} rows={2}/>}
+          </div>
+          <div className="q-split-right">
+            <div className="q-split-title">Social Media <span style={{fontWeight:400,opacity:.6}}>(optional)</span></div>
+            <Field label="Facebook" value={data.facebook} onChange={up("facebook")} placeholder="https://facebook.com/ihrefirma" hint={data.facebook&&!data.facebook.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
+            <Field label="Instagram" value={data.instagram} onChange={up("instagram")} placeholder="https://instagram.com/ihrefirma" hint={data.instagram&&!data.instagram.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
+            <Field label="LinkedIn" value={data.linkedin} onChange={up("linkedin")} placeholder="https://linkedin.com/company/..." hint={data.linkedin&&!data.linkedin.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
+            <Field label="TikTok" value={data.tiktok} onChange={up("tiktok")} placeholder="https://tiktok.com/@ihrefirma" hint={data.tiktok&&!data.tiktok.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
+          </div>
+        </div>
+      </div>
+      {ftr(true,()=>go(4),"Weiter",!sv3)}
+    </div>
+    {/* 4: Impressum */}
+    <div id="q-sec-4" className={`q-section${step===4?" q-vis":""}`}>
+      {hdr("Impressum","Impressum","Gesetzlich vorgeschrieben (ECG). Wird automatisch als Unterseite erstellt.")}
+      <div className="q-mb" style={{maxWidth:900}}>
+        <div className="q-split">
+          <div>
+            <Dropdown label="Unternehmensform" value={uf} onChange={up("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen" required/>
+            {uf==="einzelunternehmen"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Vorname" value={data.vorname} onChange={up("vorname")} placeholder="Maria" required/><Field label="Nachname" value={data.nachname} onChange={up("nachname")} placeholder="Muster" required/></div>}
+            {(uf==="einzelunternehmen"||uf==="gesnbr")&&<Field label="Unternehmensgegenstand" value={data.unternehmensgegenstand} onChange={up("unternehmensgegenstand")} placeholder="z.B. Elektroinstallation" hint="Optional"/>}
+            {uf==="gesnbr"&&<Field label="Gesellschafter" value={data.gesellschafter} onChange={up("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
+            {hasFB&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><Field label="Firmenbuchnr." value={data.firmenbuchnummer} onChange={up("firmenbuchnummer")} placeholder="FN 123456 a" required/><Field label="FB-Gericht" value={data.firmenbuchgericht} onChange={up("firmenbuchgericht")} placeholder="HG Wien" required/></div>}
+            {uf==="gmbh"&&<Field label="Geschäftsführer" value={data.geschaeftsfuehrer} onChange={up("geschaeftsfuehrer")} placeholder="Vor- und Nachname" required/>}
+            {uf==="ag"&&<><Field label="Vorstand" value={data.vorstand} onChange={up("vorstand")} placeholder="Vor- und Nachname" required/><Field label="Aufsichtsrat" value={data.aufsichtsrat} onChange={up("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
+            {uf==="verein"&&<><Field label="ZVR-Zahl" value={data.zvr_zahl} onChange={up("zvr_zahl")} placeholder="z.B. 123456789" required/><Field label="Vertretungsorgane" value={data.vertretungsorgane} onChange={up("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}
+            {hasFB&&<Toggle label="In Liquidation" checked={!!data.liquidation} onChange={v=>up("liquidation")(v?"in Liquidation":"")} desc="Nur wenn zutreffend"/>}
+            <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"12px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${impressumConfirm?T.accent+"44":T.bg3}`,marginTop:12}}>
+              <input type="checkbox" checked={impressumConfirm} onChange={e=>setImpressumConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
+              <span style={{fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, dass die Angaben korrekt sind und als Impressum veröffentlicht werden.</span>
+            </label>
+          </div>
+          <div className="q-split-right">
+            <div className="q-split-title">Weitere Angaben <span style={{fontWeight:400,opacity:.6}}>(optional)</span></div>
+            <Field label="UID-Nummer / ATU" value={data.uid} onChange={up("uid")} placeholder="ATU12345678"/>
+            <Field label="GISA-Zahl" value={data.gisazahl} onChange={up("gisazahl")} placeholder="z.B. 12345678"/>
+            <Field label="Aufsichtsbehörde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63"/>
+            <Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien"/>
+            <div style={{marginTop:8,padding:"10px 12px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".72rem",color:T.textSub,lineHeight:1.6}}>Alle Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).</div></div>
+          </div>
+        </div>
+      </div>
+      {ftr(true,()=>go(5),"Weiter",!sv4)}
+    </div>
+    {/* 5: Design */}
+    <div id="q-sec-5" className={`q-section${step===5?" q-vis":""}`}>
+      {hdr("Design","Design",<>Basierend auf Ihrer Branche empfehlen wir: <strong style={{color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</strong></>)}
+      <div className="q-mb" style={{maxWidth:900}}>
+        <div className="q-split">
+          <div>
+            <StylePicker value={data.stil} onChange={up("stil")}/>
+            <div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Stil jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Im Self-Service-Portal können Sie Design, Farben und Schrift jederzeit anpassen.</div></div>
+          </div>
+          {data.stil==="custom"&&<div className="q-split-right">
+            <div className="q-split-title">Eigenes Branding</div>
+            <div style={{marginBottom:18}}>
+              <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Primärfarbe</label>
+              <div style={{background:T.white,border:`2px solid ${T.bg3}`,borderRadius:T.r,padding:18}}>
+                <div className="q-color-row">
+                  {["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} className={`q-color-dot${data.customColor===c?" q-sel":""}`} style={{background:c}} onClick={()=>{up("customColor")(c);setHexInput(c.toUpperCase())}}/>)}
+                </div>
+                <div className="q-color-custom">
+                  <input type="color" value={data.customColor} onChange={e=>{up("customColor")(e.target.value);setHexInput(e.target.value.toUpperCase())}} style={{width:40,height:40,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
+                  <input className="q-hex" value={hexInput} maxLength={7} onChange={e=>{const v=e.target.value;setHexInput(v);if(/^#[0-9A-Fa-f]{6}$/.test(v))up("customColor")(v)}} placeholder="#000000"/>
+                  <div style={{width:24,height:24,borderRadius:6,background:data.customColor,border:"1px solid rgba(0,0,0,.1)",marginLeft:"auto"}}/>
+                </div>
+              </div>
+            </div>
+            <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
+          </div>}
+        </div>
+      </div>
+      {ftr(true,()=>go(6),"Weiter")}
+    </div>
+    {/* 6: Zusammenfassung */}
+    <div id="q-sec-6" className={`q-section${step===6?" q-vis":""}`}>
+      {hdr("Zusammenfassung","Alles bereit!","Prüfen Sie Ihre Angaben und erstellen Sie Ihre Website.")}
+      <div className="q-mb">
+        <div className="q-content-card">
+          <div className="q-summary-table" style={{marginBottom:0}}>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Unternehmen</span><span style={{fontWeight:600,color:T.dark}}>{data.firmenname||"–"}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Branche</span><span style={{fontWeight:600,color:T.dark}}>{data.brancheLabel||data.brancheCustom||"–"}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Standort</span><span style={{fontWeight:600,color:T.dark}}>{data.plz&&data.ort?`${data.plz} ${data.ort}`:"–"}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Leistungen</span><span style={{fontWeight:600,color:T.dark}}>{(data.leistungen?.length||0)+(data.extraLeistung?.split(",").filter(s=>s.trim()).length||0)} ausgewählt</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Kontakt</span><span style={{fontWeight:600,color:T.dark}}>{data.telefon||"–"}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Impressum</span><span style={{fontWeight:600,color:T.dark}}>{uf?UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf:"–"}{legalOk&&impressumConfirm?" – vollständig":""}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</span></div>
+          </div>
+        </div>
+        <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:6}}>Nach der Erstellung verfeinern Sie im Portal:</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {["Logo hochladen","Fotos hinzufügen","Preise eintragen","Branchenfeatures","Eigene Domain","Ankündigungen"].map(t=><span key={t} style={{fontSize:".72rem",padding:"4px 10px",background:T.white,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}
+          </div>
+        </div>
+      </div>
+      {ftr(true,onComplete,"Website erstellen lassen",!allValid,{background:T.green})}
+    </div>
+  </div>
   </div>);
-
-  if(isMobile){if(showPreview)return<div style={{minHeight:"100vh",background:T.bg}}><div style={{padding:"10px 14px",background:T.white,borderBottom:`1px solid ${T.bg3}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>Vorschau</span><button onClick={()=>setShowPreview(false)} style={{fontSize:".82rem",fontWeight:600,color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font}}>{"\u2190"} Formular</button></div><Preview d={data} compact/></div>;return formPanel}
-
-  const[previewMobile,setPreviewMobile]=useState(false);
-  return(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",height:"100vh",overflow:"hidden"}}><style>{css}</style>{formPanel}<div style={{display:"flex",flexDirection:"column",overflow:"hidden",background:T.bg2}}>
-    <div style={{padding:"12px 18px",background:T.white,borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:10}}>
-      <div style={{display:"flex",gap:5}}>{["#ff5f57","#febc2e","#28c840"].map(c=><span key={c} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}</div>
-      <div style={{flex:1,background:T.bg,borderRadius:8,padding:"7px 16px",fontSize:".78rem",color:T.textMuted,display:"flex",alignItems:"center",gap:6,border:`1px solid ${T.bg3}`,fontFamily:T.mono}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>{data.firmenname?`${data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}.siteready.at`:"firmenname.siteready.at"}</div>
-      <div style={{display:"flex",gap:2,background:T.bg,borderRadius:6,padding:2}}>
-        <button onClick={()=>setPreviewMobile(false)} style={{padding:"4px 8px",border:"none",borderRadius:4,background:!previewMobile?T.white:"transparent",cursor:"pointer",boxShadow:!previewMobile?T.sh1:"none",display:"flex",alignItems:"center"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={!previewMobile?T.dark:T.textMuted} strokeWidth="2" strokeLinecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></button>
-        <button onClick={()=>setPreviewMobile(true)} style={{padding:"4px 8px",border:"none",borderRadius:4,background:previewMobile?T.white:"transparent",cursor:"pointer",boxShadow:previewMobile?T.sh1:"none",display:"flex",alignItems:"center"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={previewMobile?T.dark:T.textMuted} strokeWidth="2" strokeLinecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></button>
-      </div>
-    </div>
-    <div style={{padding:"9px 18px",background:"#fffbeb",borderBottom:`1px solid #fde68a`,fontSize:".8rem",color:"#92400e",textAlign:"center",fontWeight:500}}>&#9888;&#65039; <strong>Stilvorschau</strong> &ndash; Die fertige Website wird professionell gestaltet &amp; mit Ihrem individuellen Text befüllt. Diese Vorschau zeigt nur den Farbstil.</div>
-    <div style={{flex:1,overflowY:"auto",display:"flex",justifyContent:"center",alignItems:previewMobile?"flex-start":"stretch",padding:previewMobile?"20px 10px":"0",background:previewMobile?T.bg2:T.white}}>
-      <div style={{width:previewMobile?"375px":"100%",background:T.white,borderRadius:previewMobile?T.rLg:T.rSm,boxShadow:previewMobile?T.sh4:T.sh3,border:"1px solid rgba(0,0,0,.04)",overflow:"hidden",margin:previewMobile?0:10,...(previewMobile?{maxHeight:"100%",overflowY:"auto"}:{})}}><Preview d={data} compact={previewMobile}/></div>
-    </div>
-  </div></div>);
 }
 
 /* ═══ PORTAL LOGIN ═══ */

@@ -279,7 +279,7 @@ const pCss=`
 .pt-hero-url em{color:rgba(255,255,255,.22);font-style:normal}
 .pt-hero-hint{font-size:.78rem;color:rgba(255,255,255,.32);margin-bottom:18px}
 .pt-hero-btns{display:flex;gap:8px;flex-wrap:wrap}
-.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#111;border:none;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;letter-spacing:-.01em}
+.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#111;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;letter-spacing:-.01em}
 .pt-btn-w:hover{opacity:.88}
 .pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.09);border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
 .pt-btn-gw:hover{background:rgba(255,255,255,.12);color:rgba(255,255,255,.88)}
@@ -674,7 +674,6 @@ function LandingPage({onStart,onPortal}){
 /* ═══ SUCCESS ═══ */
 function SuccessPage({data,onBack,onPortal}){
   const[saving,setSaving]=useState(false);
-  const[saved,setSaved]=useState(false);
   const[saveErr,setSaveErr]=useState("");
   const[vorname,setVorname]=useState(data.vorname||"");
   const[nachname,setNachname]=useState(data.nachname||"");
@@ -688,7 +687,7 @@ function SuccessPage({data,onBack,onPortal}){
   const[resent,setResent]=useState(false);
   const[agbAccepted,setAgbAccepted]=useState(false);
   const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
-  const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwoerter stimmen nicht ueberein":"";
+  const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
   const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail);
   const regOk=vorname.trim().length>0&&nachname.trim().length>0&&emailValid&&pw.length>=8&&pw===pw2;
   const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
@@ -696,11 +695,9 @@ function SuccessPage({data,onBack,onPortal}){
     if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausfüllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
-    // 0. Account erstellen
     const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:data.firmenname,vorname,nachname}}});
     if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);return;}
     const userId=authData?.user?.id||null;
-    // 1. Bestellung in Supabase speichern (UUID client-seitig generieren)
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
       id:orderId,user_id:userId,vorname,nachname,
@@ -719,16 +716,8 @@ function SuccessPage({data,onBack,onPortal}){
       website_ziel:null
     });
     if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
-    // 2. Website-Generierung starten (mit Service-Key statt User-Token)
-    try{
-      await fetch("/api/start-build",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({order_id:orderId})
-      });
-    }catch(_){}
+    try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(_){}
     setSaving(false);
-    // 3. Bestaetigungsseite zeigen statt sofortigem Redirect
     localStorage.setItem("sr_pending_email",loginEmail);
     setConfirmed(true);
   };
@@ -739,153 +728,178 @@ function SuccessPage({data,onBack,onPortal}){
     setResending(false);setResent(true);
     setTimeout(()=>setResent(false),5000);
   };
-  const included=[
-    {t:"Subdomain sofort live",d:`${sub}.siteready.at – sofort erreichbar.`},
-    {t:"Texte individuell formuliert",d:"Passend zu Ihrer Branche und Ihrem Betrieb."},
-    {t:"Impressum (ECG) inklusive",d:"Anwaltlich geprüft und eingebaut."},
-    {t:"DSGVO inklusive",d:"Anwaltlich geprüft und eingebaut."},
-    {t:"SEO & Google-Indexierung",d:"Ihre Website ist für Google sichtbar sobald sie live geschaltet wird."},
-    ...(data.fotos?[{t:"Branchenfotos als Platzhalter",d:"Passende Fotos für Ihre Branche bereits eingebaut."}]:[]),
-  ];
-  const portal=[
-    {t:"Logo hochladen",d:"Wird oben in der Navigation angezeigt."},
-    {t:"Bilder hochladen",d:"Eigene Fotos ersetzen die Platzhalter auf Ihrer Website."},
-    {t:"Daten jederzeit anpassen",d:"Adresse, Telefon, Leistungen – änderbar wenn sich etwas ändert."},
-    {t:"Custom Domain verbinden",d:"z.B. www.ihre-firma.at statt der Subdomain."},
-  ];
-  /* Bestaetigungsseite nach Account-Erstellung */
-  if(confirmed)return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",padding:"0 24px"}}><style>{css}</style>
-    <div style={{maxWidth:480,width:"100%",textAlign:"center"}}>
-      <div style={{width:72,height:72,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2rem",margin:"0 auto 24px",border:"2px solid rgba(22,163,74,.2)"}}>{"\u2713"}</div>
-      <h1 style={{fontSize:"1.8rem",fontWeight:800,color:T.dark,margin:"0 0 8px",letterSpacing:"-.03em"}}>Account erstellt!</h1>
-      <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,margin:"0 0 24px"}}>Wir haben eine Bestätigungs-E-Mail an <strong>{data.email}</strong> gesendet. Bitte bestätigen Sie Ihre E-Mail-Adresse, um sich einloggen zu können.</p>
-      {/* Hinweis-Box */}
-      <div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#fefce8",border:"1px solid #fde68a",borderRadius:T.rSm,padding:"14px 16px",marginBottom:12,textAlign:"left"}}>
-        <span style={{width:20,height:20,borderRadius:6,background:"#fde68a",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".75rem",fontWeight:700,color:"#92400e",flexShrink:0}}>{"\u2709"}</span>
-        <div style={{fontSize:".82rem",color:"#92400e",lineHeight:1.6}}>
-          <strong>Prüfen Sie auch Ihren Spam-Ordner.</strong> Die E-Mail kann einige Minuten dauern. Falls nach 10 Minuten nichts ankommt, senden wir automatisch eine neue.
+  /* Sidebar sections */
+  const qSecs=[{l:"Start"},{l:"Grunddaten"},{l:"Leistungen"},{l:"Kontakt"},{l:"Impressum"},{l:"Design"},{l:"Fertig"}];
+  const qIcons=["M12 12 12 8","M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z","M14 2H6a2 2 0 00-2 2v16h12a2 2 0 002-2V8z","M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z","M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z","M13.5 6.5.5.5","M20 6 9 17 4 12"];
+  const helpCol=<div className="q-split-right">
+    <div className="q-split-title">Hilfe</div>
+    <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"18px 20px",boxShadow:T.sh1,marginBottom:14}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+        <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></div>
+        <div style={{flex:1}}>
+          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:4}}>Keine E-Mail erhalten?</div>
+          <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.6,marginBottom:8}}>Prüfen Sie Ihren Spam-Ordner. Die E-Mail kann einige Minuten dauern.</div>
+          <button onClick={resendEmail} disabled={resending} style={{background:"none",border:"none",color:T.accent,fontWeight:700,fontSize:".78rem",cursor:resending?"wait":"pointer",fontFamily:T.font,padding:0,textDecoration:"underline",textUnderlineOffset:"3px"}}>{resent?"Gesendet!":resending?"Wird gesendet...":"Bestätigungsmail erneut senden"}</button>
         </div>
-      </div>
-      {/* Website-Generierung Info */}
-      <div style={{display:"flex",alignItems:"flex-start",gap:10,background:T.accentLight,border:`1px solid rgba(143,163,184,.15)`,borderRadius:T.rSm,padding:"14px 16px",marginBottom:24,textAlign:"left"}}>
-        <span style={{width:20,height:20,borderRadius:6,background:T.accentLight,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".75rem",fontWeight:700,color:T.accent,flexShrink:0}}>{"\u2192"}</span>
-        <div style={{fontSize:".82rem",color:T.accent,lineHeight:1.6}}>
-          <strong>Ihre Website wird gerade erstellt</strong> und ist in wenigen Minuten unter <strong>{sub}.siteready.at</strong> erreichbar. Sie können den Fortschritt nach dem Login im Portal verfolgen.
-        </div>
-      </div>
-      {/* Buttons */}
-      <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
-        <button onClick={()=>onPortal?.()} style={{padding:"14px 32px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".95rem",fontWeight:700,fontFamily:T.font,cursor:"pointer",boxShadow:"0 2px 16px rgba(0,0,0,.12)"}}>
-          E-Mail bestätigt? Zum Portal &rarr;
-        </button>
-        <button onClick={resendEmail} disabled={resending} style={{padding:"10px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,fontSize:".82rem",fontWeight:600,fontFamily:T.font,cursor:resending?"wait":"pointer"}}>
-          {resent?"Erneut gesendet!":resending?"Wird gesendet...":"Keine E-Mail erhalten? Erneut senden"}
-        </button>
-      </div>
-      <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>
-        7 Tage kostenlos testen &middot; Keine Kreditkarte erforderlich
       </div>
     </div>
-  </div>);
+    <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"18px 20px",boxShadow:T.sh1,marginBottom:14}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+        <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div style={{flex:1}}>
+          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:4}}>Falsche E-Mail-Adresse?</div>
+          <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Bitte registrieren Sie sich erneut mit der richtigen Adresse.</div>
+        </div>
+      </div>
+    </div>
+    <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"18px 20px",boxShadow:T.sh1}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+        <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <div style={{flex:1}}>
+          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch immer Probleme?</div>
+          <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.6}}>Kontaktieren Sie uns direkt:</div>
+          <a href="mailto:support@siteready.at" style={{fontSize:".78rem",fontWeight:700,color:T.accent,textDecoration:"none",marginTop:4,display:"inline-block"}}>support@siteready.at</a>
+        </div>
+      </div>
+    </div>
+  </div>;
 
-  return(<div className="sp-page" style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",flexDirection:"column",overflow:"hidden"}}><style>{css}</style>
-    {/* Top bar */}
-    <div className="sp-topbar" style={{padding:"0 40px",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",justifyContent:"space-between",height:72,flexShrink:0}}>
-      <div style={{display:"flex",alignItems:"center",gap:10}}><img src="/logo.png" alt="SiteReady" style={{height:36}}/></div>
-      <button onClick={onBack} style={{padding:"8px 18px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"transparent",color:T.text,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>{"\u2190"} Zurück zur Vorschau</button>
+  return(<div className="q-layout"><style>{css+qCss}</style>
+  {/* Sidebar */}
+  <aside className="q-sb">
+    <div className="q-sb-top">
+      <img className="q-sb-logo" src="/logo.png" alt="SiteReady" onError={e=>{e.currentTarget.style.display="none"}}/>
+      <div className="q-sb-site"><div className="q-sb-dot"/><div className="q-sb-url">{sub}.siteready.at</div></div>
     </div>
-    {/* Content */}
-    <div className="sp-content" style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"32px 40px",gap:24,maxWidth:1100,margin:"0 auto",width:"100%"}}>
-      {/* Header */}
-      <div className="sp-header" style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <div>
-          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Ihre Bestellung</div>
-          <h1 style={{fontSize:"1.9rem",fontWeight:800,color:T.dark,margin:0,letterSpacing:"-.04em",lineHeight:1.05}}>Alles bereit – jetzt freischalten.</h1>
-        </div>
-        <div style={{display:"inline-flex",alignItems:"center",gap:10,background:T.bg,border:`1.5px solid rgba(22,163,74,.2)`,borderRadius:T.rSm,padding:"12px 20px",flexShrink:0}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:T.green,boxShadow:"0 0 0 3px rgba(22,163,74,.15)"}}/>
-          <span style={{fontSize:".9rem",fontWeight:700,color:T.dark,fontFamily:T.mono}}>{sub}.siteready.at</span>
-          <span style={{fontSize:".75rem",fontWeight:700,color:T.green,background:T.greenLight,padding:"3px 8px",borderRadius:4,textTransform:"uppercase",letterSpacing:".06em"}}>Live</span>
+    <nav className="q-sb-nav">
+      <div className="q-sb-grp">Website erstellen</div>
+      {qSecs.map((s,i)=><button key={i} className="q-sb-ni q-done">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {s.l}<span className="q-sb-done"/>
+      </button>)}
+      <div className="q-sb-grp" style={{marginTop:8}}>Account</div>
+      <button className={`q-sb-ni${confirmed?" q-done":" q-active"}`}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Account erstellen
+        {confirmed?<span className="q-sb-done"/>:<span className="q-sb-comp"/>}
+      </button>
+    </nav>
+    <div className="q-sb-progress"><div className="q-sb-bar-wrap"><div className="q-sb-bar-fill" style={{width:"100%"}}/></div><div className="q-sb-pct">100%</div></div>
+  </aside>
+  {/* Main */}
+  <div className="q-main">
+    {confirmed?<>
+      {/* Bestätigungsseite */}
+      <div className="q-mh">
+        <div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>›</span> <b>Account erstellt</b></div>
+        <div className="q-mh-title">Account erstellt!</div>
+        <div className="q-mh-sub">Nur noch Ihre E-Mail-Adresse bestätigen, dann können Sie sich einloggen.</div>
+      </div>
+      <div style={{margin:"16px 36px 0",padding:"12px 18px",background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,display:"flex",alignItems:"center",gap:12}}>
+        <div style={{width:8,height:8,borderRadius:"50%",background:T.green,animation:"sb-blink 2.5s ease-in-out infinite",flexShrink:0}}/>
+        <span style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{sub}.siteready.at</span>
+        <span style={{fontSize:".72rem",fontWeight:700,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:4,textTransform:"uppercase",letterSpacing:".06em"}}>Live</span>
+      </div>
+      <div className="q-mh-line"/>
+      <div className="q-mb" style={{maxWidth:900}}>
+        <div className="q-split">
+          <div>
+            {/* Success card */}
+            <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1,marginBottom:16}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:14,marginBottom:16}}>
+                <div style={{width:40,height:40,borderRadius:10,background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div>
+                  <div style={{fontSize:".95rem",fontWeight:800,color:T.dark,marginBottom:4}}>Ihre Website ist bereit!</div>
+                  <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Wir haben eine Bestätigungs-E-Mail an <strong style={{color:T.dark}}>{loginEmail}</strong> gesendet. Bitte bestätigen Sie diese, um sich einloggen zu können.</div>
+                </div>
+              </div>
+              <div style={{height:1,background:T.bg3,marginBottom:16}}/>
+              <div style={{display:"flex",alignItems:"flex-start",gap:10,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
+                <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,flexShrink:0}}>→</div>
+                <div style={{fontSize:".78rem",color:T.accent,lineHeight:1.6}}><strong>Ihre Website ist live</strong> und unter <strong>{sub}.siteready.at</strong> erreichbar. Im Portal können Sie Logo, Fotos und Texte anpassen.</div>
+              </div>
+            </div>
+            {/* Next steps */}
+            <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1}}>
+              <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".06em",marginBottom:12}}>Nächste Schritte</div>
+              {[{n:"1",t:"E-Mail-Adresse bestätigen",active:true},{n:"2",t:"Im Portal einloggen"},{n:"3",t:"Logo, Fotos und Texte anpassen"}].map(s=><div key={s.n} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                <div style={{width:24,height:24,borderRadius:"50%",background:s.active?T.greenLight:T.bg,color:s.active?T.green:T.textMuted,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".72rem",fontWeight:800,flexShrink:0,border:`1px solid ${s.active?"rgba(22,163,74,.15)":T.bg3}`}}>{s.n}</div>
+                <span style={{fontSize:".82rem",color:s.active?T.dark:T.textMuted,fontWeight:500}}>{s.t}</span>
+              </div>)}
+            </div>
+          </div>
+          {helpCol}
         </div>
       </div>
-      {/* 2 Karten */}
-      <div className="sp-grid" style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:24}}>
-        {/* Paket + Preis */}
-        <div className="sp-card" style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`2px solid ${T.bg3}`,boxShadow:T.sh2}}>
-          <div className="sp-price-row" style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:20,paddingBottom:20,borderBottom:`1px solid ${T.bg3}`,flexWrap:"wrap",gap:12}}>
-            <div>
-              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>7 Tage kostenlos testen</div>
-              <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                <span style={{fontSize:"2.6rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.04em",lineHeight:1}}>{"\u20AC"}0</span>
-                <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>heute</span>
+      <div className="q-footer">
+        <button className="q-btn-next" onClick={()=>onPortal?.()}>E-Mail bestätigt? Zum Portal <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <span style={{fontSize:".72rem",color:T.textMuted,marginLeft:"auto"}}>7 Tage kostenlos · Keine Kreditkarte nötig</span>
+      </div>
+    </>:<>
+      {/* Registrierungsseite */}
+      <div className="q-mh">
+        <div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>›</span> <b>Account erstellen</b></div>
+        <div className="q-mh-title">Ihre Website wird gerade erstellt!</div>
+        <div className="q-mh-sub">Erstellen Sie jetzt Ihren Account, um die Website freizuschalten.</div>
+      </div>
+      <div style={{margin:"16px 36px 0",padding:"12px 18px",background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,display:"flex",alignItems:"center",gap:12}}>
+        <div style={{width:8,height:8,borderRadius:"50%",background:T.green,animation:"sb-blink 2.5s ease-in-out infinite",flexShrink:0}}/>
+        <span style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{sub}.siteready.at</span>
+        <span style={{fontSize:".72rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:4}}>Wird erstellt...</span>
+      </div>
+      <div className="q-mh-line"/>
+      <div className="q-mb" style={{maxWidth:900}}>
+        <div className="q-split">
+          <div>
+            {/* Price card */}
+            <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"18px 22px",boxShadow:T.sh1,marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+              <div>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.green,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>7 Tage kostenlos</div>
+                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                  <span style={{fontSize:"2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.04em",lineHeight:1}}>{"\u20AC"}0</span>
+                  <span style={{fontSize:".82rem",color:T.textMuted}}>heute</span>
+                </div>
               </div>
-              <div style={{fontSize:".78rem",color:T.textMuted,marginTop:4}}>Ab {"\u20AC"}15.30/Monat (jährl.) oder {"\u20AC"}18/Monat (monatl.) &middot; Karte erst nach 7 Tagen belastet</div>
+              <div style={{fontSize:".72rem",color:T.textMuted,textAlign:"right",lineHeight:1.6}}>Danach {"\u20AC"}15,30/Mon. (jährl.)<br/>oder {"\u20AC"}18/Mon. · Jederzeit kündbar</div>
             </div>
-            <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${agbAccepted?T.accent+"44":T.bg3}`,marginBottom:16,marginTop:16}}>
+            {/* Form */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <Field label="Vorname" value={vorname} onChange={setVorname} placeholder="Alexander" required/>
+              <Field label="Nachname" value={nachname} onChange={setNachname} placeholder="Wagner" required/>
+            </div>
+            <Field label="Login-E-Mail" value={loginEmail} onChange={setLoginEmail} placeholder="ihre@email.at" type="email" required/>
+            {data.email&&loginEmail!==data.email&&<div style={{marginTop:-14,marginBottom:14,fontSize:".75rem",color:T.textMuted}}>Website-Kontakt bleibt: {data.email}</div>}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:pwErr?T.red:T.textSub,letterSpacing:".03em"}}>Passwort <span style={{color:T.red}}>*</span></label><input type="password" value={pw} onChange={e=>setPw(e.target.value)} onBlur={()=>setPwTouched(true)} placeholder="Mind. 8 Zeichen" style={{width:"100%",padding:"12px 14px",border:`2px solid ${pwErr?T.red:T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",minHeight:44,boxSizing:"border-box"}}/>{pwErr&&<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>{pwErr}</div>}</div>
+              <div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:pw2Err?T.red:T.textSub,letterSpacing:".03em"}}>Bestätigen <span style={{color:T.red}}>*</span></label><input type="password" value={pw2} onChange={e=>setPw2(e.target.value)} onBlur={()=>setPw2Touched(true)} placeholder="Wiederholen" style={{width:"100%",padding:"12px 14px",border:`2px solid ${pw2Err?T.red:T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",minHeight:44,boxSizing:"border-box"}}/>{pw2Err&&<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>{pw2Err}</div>}</div>
+            </div>
+            <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"12px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${agbAccepted?T.accent+"44":T.bg3}`,marginBottom:14}}>
               <input type="checkbox" checked={agbAccepted} onChange={e=>setAgbAccepted(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
-              <span style={{fontSize:".82rem",color:T.textSub,lineHeight:1.6}}>Ich akzeptiere die <a href="#" onClick={e=>e.stopPropagation()} style={{color:T.accent,textDecoration:"underline"}}>AGB und Nutzungsbedingungen</a></span>
+              <span style={{fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>Ich akzeptiere die <span style={{color:T.accent,textDecoration:"underline",cursor:"pointer"}}>AGB und Nutzungsbedingungen</span></span>
             </label>
-            {saved
-              ?<div style={{display:"flex",alignItems:"center",gap:8,padding:"12px 20px",background:T.greenLight,borderRadius:T.rSm,border:"1px solid rgba(22,163,74,.2)"}}>
-                <span style={{color:T.green,fontWeight:700,fontSize:".88rem"}}>{"\u2713"} Weiterleitung...</span>
+            <div style={{padding:"10px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)",fontSize:".75rem",color:T.accent,lineHeight:1.6}}>Nach der Registrierung erhalten Sie eine Bestätigungs-E-Mail. Bitte bestätigen Sie diese, um sich einloggen zu können.</div>
+            {saveErr&&<div style={{marginTop:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:T.red}}>{saveErr}</div>}
+          </div>
+          {/* Right: Features */}
+          <div className="q-split-right">
+            <div className="q-split-title">Inklusive</div>
+            {["Subdomain sofort live","Texte individuell von KI formuliert","Impressum ECG-konform","DSGVO automatisch integriert","SEO & Google-Indexierung",data.fotos?"Branchenfotos als Platzhalter":null,"Self-Service-Portal","Logo & Fotos hochladen","Daten jederzeit anpassen","Custom Domain möglich","SSL-Zertifikat inklusive"].filter(Boolean).map((t,i,a)=><React.Fragment key={t}>
+              {i===6&&<div style={{height:1,background:T.bg3,margin:"4px 0"}}/>}
+              <div style={{display:"flex",alignItems:"center",gap:10,fontSize:".82rem",fontWeight:500,color:T.dark,padding:"6px 0"}}>
+                <span style={{width:20,height:20,borderRadius:6,background:T.greenLight,color:T.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"}</span>{t}
               </div>
-              :<button onClick={handleOrder} disabled={saving||!regOk||!agbAccepted} style={{padding:"12px 24px",border:"none",borderRadius:T.rSm,background:saving?T.bg3:(!regOk||!agbAccepted)?"#cbd5e1":T.dark,color:"#fff",fontSize:".88rem",fontWeight:700,fontFamily:T.font,cursor:saving?"wait":(!regOk||!agbAccepted)?"not-allowed":"pointer",whiteSpace:"nowrap",transition:"background .2s"}}>
-                {saving?"Website wird erstellt...":"Kostenlos starten \u2192"}
-              </button>}
-          </div>
-          {/* Registrierung */}
-          <div style={{marginBottom:20}}>
-            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Account erstellen</div>
-            <div className="sp-name-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-              <div>
-                <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:T.textSub}}>Vorname <span style={{color:T.red}}>*</span></label>
-                <input value={vorname} onChange={e=>setVorname(e.target.value)} placeholder="Alexander" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box",minHeight:44}}/>
-              </div>
-              <div>
-                <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:T.textSub}}>Nachname <span style={{color:T.red}}>*</span></label>
-                <input value={nachname} onChange={e=>setNachname(e.target.value)} placeholder="Wagner" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box",minHeight:44}}/>
-              </div>
-            </div>
-            <div style={{marginBottom:10}}>
-              <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:T.textSub}}>Login-E-Mail <span style={{color:T.red}}>*</span></label>
-              <input type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} placeholder="ihre@email.at" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box",minHeight:44}}/>
-              {data.email&&loginEmail!==data.email&&<div style={{marginTop:4,fontSize:".75rem",color:T.textMuted}}>Website-Kontakt bleibt: {data.email}</div>}
-            </div>
-            <div style={{marginBottom:10}}>
-              <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:pwErr?T.red:T.textSub}}>Passwort{" "}<span style={{color:T.red}}>*</span></label>
-              <input type="password" value={pw} onChange={e=>setPw(e.target.value)} onBlur={()=>setPwTouched(true)} placeholder="Mindestens 8 Zeichen" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${pwErr?T.red:T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box",minHeight:44}}/>
-              {pwErr&&<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>{pwErr}</div>}
-            </div>
-            <div>
-              <label style={{display:"block",marginBottom:5,fontSize:".8rem",fontWeight:700,color:pw2Err?T.red:T.textSub}}>Passwort bestätigen{" "}<span style={{color:T.red}}>*</span></label>
-              <input type="password" value={pw2} onChange={e=>setPw2(e.target.value)} onBlur={()=>setPw2Touched(true)} placeholder="Passwort wiederholen" style={{width:"100%",padding:"11px 14px",border:`1.5px solid ${pw2Err?T.red:T.bg3}`,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:"#fff",color:T.dark,outline:"none",boxSizing:"border-box",minHeight:44}}/>
-              {pw2Err&&<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>{pw2Err}</div>}
-            </div>
-          </div>
-          {saveErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:"#dc2626"}}>{saveErr}</div>}
-          <div className="sp-incl-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-            {included.map((s,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-              <div style={{width:20,height:20,borderRadius:6,background:T.greenLight,color:T.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}>{"\u2713"}</div>
-              <span style={{fontWeight:600,fontSize:".82rem",color:T.dark}}>{s.t}</span>
-            </div>)}
-          </div>
-          <div style={{marginTop:12,textAlign:"center",fontSize:".75rem",color:T.textMuted}}>Sichere Zahlung via Stripe &middot; Karte, EPS, PayPal</div>
-        </div>
-        {/* Portal */}
-        <div className="sp-card" style={{background:T.bg,borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
-            <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Self-Service-Portal</div>
-            <span style={{fontSize:".75rem",fontWeight:700,background:T.accentLight,color:T.accent,padding:"2px 8px",borderRadius:4,letterSpacing:".06em"}}>Nach Kauf</span>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {portal.map((s,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-              <div style={{width:20,height:20,borderRadius:6,background:T.accentLight,color:T.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,flexShrink:0,border:`1px solid rgba(143,163,184,.15)`}}>{"\u2192"}</div>
-              <div style={{flex:1}}><span style={{fontWeight:600,fontSize:".82rem",color:T.dark}}>{s.t}</span><span style={{fontSize:".75rem",fontWeight:400,color:T.textMuted,marginLeft:6}}>optional</span></div>
-            </div>)}
+            </React.Fragment>)}
           </div>
         </div>
       </div>
-    </div>
+      <div className="q-footer">
+        <button className="q-btn-next" onClick={handleOrder} disabled={saving||!regOk||!agbAccepted} style={{background:saving?T.bg3:(!regOk||!agbAccepted)?"#cbd5e1":T.dark}}>
+          {saving?"Website wird erstellt...":"Account erstellen & freischalten"} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <span style={{fontSize:".72rem",color:T.textMuted,marginLeft:"auto"}}>Keine Kreditkarte nötig · Sichere Zahlung via Stripe</span>
+      </div>
+    </>}
+  </div>
   </div>);
 }
 
@@ -1102,9 +1116,9 @@ function Questionnaire({data,setData,onComplete,onBack}){
           <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:24,color:"#b5b8c0",fontSize:".82rem",fontWeight:500}}><div style={{flex:1,height:1,background:T.bg3}}/> oder <div style={{flex:1,height:1,background:T.bg3}}/></div>
           <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>Ohne Import starten {chevron}</button>
           <div style={{marginTop:16,display:"flex",justifyContent:"center",gap:24,fontSize:".72rem",color:T.textMuted}}>
-            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Fertig in 5 Min.</span>
+            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Fertig in unter 10 Min.</span>
+            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> 7 Tage kostenlos</span>
             <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> DSGVO-konform</span>
-            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Keine Vorkenntnisse</span>
           </div>
         </div>
       </div>
@@ -1575,6 +1589,7 @@ function Portal({session,onLogout}){
     ueberuns:{title:"Über uns",sub:"Der persönliche Vorstellungstext und Ihre Stärken – bearbeiten Sie den KI-Text nach Wunsch"},
     social:{title:"Social Media",sub:"Ihre Social-Media-Profile erscheinen als Icons im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
+    branchenfeatures:{title:"Branchenfeatures",sub:"Branchenspezifische Funktionen und Badges für Ihre Website"},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
     medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
@@ -1634,9 +1649,9 @@ function Portal({session,onLogout}){
 .pt-hurl em{color:#9ca3af;font-style:normal}
 .pt-hhint{font-size:.78rem;color:#6B7280;margin-bottom:18px}
 .pt-hbtns{display:flex;gap:8px;flex-wrap:wrap}
-.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#8FA3B8;color:#fff;border:none;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;text-decoration:none;letter-spacing:-.01em}
+.pt-btn-w{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#111;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;text-decoration:none;letter-spacing:-.01em}
 .pt-btn-w:hover{opacity:.88}
-.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#4A4F5A;border:1.5px solid #E0E0DB;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#4A4F5A;border:1.5px solid #E0E0DB;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
 .pt-btn-gw:hover{background:#F5F5F2;border-color:#ccc}
 .pt-ast{width:272px;flex-shrink:0;border-left:1px solid #E0E0DB;background:#fff;display:flex;flex-direction:column;overflow:hidden}
 .pt-ast-h{padding:20px 20px 0;flex-shrink:0}
@@ -1687,6 +1702,7 @@ function Portal({session,onLogout}){
           ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
           ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,true],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
+          ["branchenfeatures","Branchenfeatures",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
@@ -2060,6 +2076,48 @@ function Portal({session,onLogout}){
             <button onClick={()=>nav("support")} style={{marginLeft:16,flexShrink:0,padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Änderung anfragen</button>
           </div>
           <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
+        </div>}
+        {page==="branchenfeatures"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="branchenfeatures" label="Branchenfeatures" desc={`Spezifische Funktionen für ${order.branche_label||"Ihre Branche"}. Diese werden als Badges und Hinweise auf Ihrer Website angezeigt.`}/>
+          {editSection==="branchenfeatures"?(<>
+            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return<div style={{fontSize:".82rem",color:T.textMuted,padding:"12px 0"}}>Für diese Branche sind derzeit keine speziellen Features verfügbar.</div>;return<>
+              {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
+              {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
+              {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}
+              {ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={!!order.foerderungsberatung} onChange={upOrder("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}
+              {ft.includes("buchungslink")&&<Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – optional"/>}
+              {ft.includes("hausbesuche")&&<Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>}
+              {ft.includes("terminvereinbarung")&&<Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in – nur mit Termin"/>}
+              {ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}
+              {ft.includes("barrierefrei")&&<Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>}
+              {ft.includes("parkplaetze")&&<Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>}
+              {ft.includes("kassenvertrag")&&<Dropdown label="Kassenvertrag" value={order.kassenvertrag||""} onChange={upOrder("kassenvertrag")} options={[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt / Wahltherapeut"},{value:"privat",label:"Nur Privat"}]} placeholder="Kassenvertrag wählen" hint="Wichtig für Patienten"/>}
+              {ft.includes("erstgespraech_gratis")&&<Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>}
+              {ft.includes("online_beratung")&&<Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Video-Call möglich"/>}
+              {ft.includes("ratenzahlung")&&<Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>}
+            </>;})()}
+          </>):(<>
+            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return<div style={{fontSize:".82rem",color:T.textMuted,padding:"12px 0"}}>Für diese Branche sind derzeit keine speziellen Features verfügbar.</div>;const items=[];
+              if(ft.includes("notdienst"))items.push({l:"24h Notdienst",v:order.notdienst?"Aktiv":"–"});
+              if(ft.includes("meisterbetrieb"))items.push({l:"Meisterbetrieb",v:order.meisterbetrieb?"Aktiv":"–"});
+              if(ft.includes("kostenvoranschlag"))items.push({l:"Kostenvoranschlag",v:order.kostenvoranschlag?"Aktiv":"–"});
+              if(ft.includes("foerderungsberatung"))items.push({l:"Förderungsberatung",v:order.foerderungsberatung?"Aktiv":"–"});
+              if(ft.includes("buchungslink"))items.push({l:"Buchungslink",v:order.buchungslink||"–"});
+              if(ft.includes("hausbesuche"))items.push({l:"Hausbesuche",v:order.hausbesuche?"Aktiv":"–"});
+              if(ft.includes("terminvereinbarung"))items.push({l:"Terminvereinbarung",v:order.terminvereinbarung?"Aktiv":"–"});
+              if(ft.includes("lieferservice"))items.push({l:"Lieferservice",v:order.lieferservice?"Aktiv":"–"});
+              if(ft.includes("barrierefrei"))items.push({l:"Barrierefrei",v:order.barrierefrei?"Aktiv":"–"});
+              if(ft.includes("parkplaetze"))items.push({l:"Parkplätze",v:order.parkplaetze?"Aktiv":"–"});
+              if(ft.includes("kassenvertrag"))items.push({l:"Kassenvertrag",v:order.kassenvertrag?[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt"},{value:"privat",label:"Nur Privat"}].find(o=>o.value===order.kassenvertrag)?.label||"–":"–"});
+              if(ft.includes("erstgespraech_gratis"))items.push({l:"Erstgespräch gratis",v:order.erstgespraech_gratis?"Aktiv":"–"});
+              if(ft.includes("online_beratung"))items.push({l:"Online-Beratung",v:order.online_beratung?"Aktiv":"–"});
+              if(ft.includes("ratenzahlung"))items.push({l:"Ratenzahlung",v:order.ratenzahlung?"Aktiv":"–"});
+              return items.map((it,i)=><InfoRow key={i} label={it.l} value={it.v}/>);})()}
+          </>)}
+          <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:4}}>Weitere Branchenfeatures</div>
+            <div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Zusätzliche branchenspezifische Funktionen wie Speisekarte, Galerie, Team-Vorstellung und mehr sind in Planung.</div>
+          </div>
         </div>}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="social" label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>

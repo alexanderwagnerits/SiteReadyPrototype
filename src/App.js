@@ -1325,7 +1325,7 @@ function PortalLogin({onBack}){
 /* ═══ PORTAL DASHBOARD ═══ */
 function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
-  const PAGE_TAB={overview:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",ablauf:"website",social:"website",design:"website",impressum:"website",aktuelles:"website",medien:"medien",teilen:"marketing",seo:"seo",domain:"domain",rechnungen:"rechnungen",account:"account",support:"support",fotos:"medien"};
+  const PAGE_TAB={overview:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",impressum:"website",aktuelles:"website",medien:"medien",teilen:"marketing",seo:"seo",domain:"domain",rechnungen:"rechnungen",account:"account",support:"support",fotos:"medien"};
   const tab=PAGE_TAB[page]||"website";
   const nav=p=>{setPage(p);setEditSection(null);};
   const[order,setOrder]=useState(null);
@@ -1581,7 +1581,7 @@ function Portal({session,onLogout}){
     {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
     {label:"Fotos zu Leistungen",done:!!(order.leistungen_fotos&&Object.values(order.leistungen_fotos||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),pts:0,page:"ueberuns",optional:true},
-    {label:"Ablauf beschreiben",done:!!(order.ablauf_schritte?.some(s=>s.titel)),pts:0,page:"ablauf",optional:true},
+    {label:"Ablauf beschreiben",done:!!(order.ablauf_schritte?.some(s=>s.titel)),pts:0,page:"ueberuns",optional:true},
     {label:"Aktuelles / Meldung",done:!!(order.announcements?.some(a=>a.active)),pts:0,page:"aktuelles",optional:true},
     {label:"SEO-Texte",done:!!(order.seo_title||order.seo_description),pts:0,page:"seo",optional:true},
     {label:"Eigene Domain",done:false,pts:0,page:"domain",optional:true},
@@ -1593,8 +1593,7 @@ function Portal({session,onLogout}){
     grunddaten:{title:"Grunddaten",sub:"Firmenname, Kurzbeschreibung und Einsatzgebiet Ihres Unternehmens"},
     leistungen:{title:"Leistungen",sub:"Diese Leistungen erscheinen als Karten auf Ihrer Website – mit Beschreibung und Preis"},
     kontakt:{title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps"},
-    ueberuns:{title:"Über uns",sub:"Der persönliche Vorstellungstext und Ihre Stärken – bearbeiten Sie den KI-Text nach Wunsch"},
-    ablauf:{title:"Ablauf",sub:"Zeigen Sie Ihren Kunden wie die Zusammenarbeit abläuft – Schritt für Schritt"},
+    ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
     social:{title:"Social Media",sub:"Ihre Social-Media-Profile erscheinen als Icons im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
     branchenfeatures:{title:"Branchenfeatures",sub:"Branchenspezifische Funktionen und Badges für Ihre Website"},
@@ -1705,7 +1704,6 @@ function Portal({session,onLogout}){
           ["leistungen","Leistungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,true],
           ["kontakt","Kontakt & Zeiten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,true],
           ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,true],
-          ["ablauf","Ablauf",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>`,false],
           ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
           ["medien","Fotos & Medien",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,true],
           ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
@@ -2144,7 +2142,7 @@ function Portal({session,onLogout}){
             )):(<div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Teammitglieder hinzugefügt. Über "Bearbeiten" können Sie Ihr Team vorstellen.</div>)}
           </>)}
         </div>}
-        {page==="ablauf"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader id="ablauf" label="Ablauf" badge="instant" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Erscheint als eigene Section auf der Website."/>
           {editSection==="ablauf"?(<>
             {(order.ablauf_schritte||[]).map((s,i)=>(

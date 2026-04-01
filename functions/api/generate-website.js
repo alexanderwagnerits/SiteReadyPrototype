@@ -353,7 +353,7 @@ export async function onRequestPost({request, env}) {
   const ctaSecondary = "Leistungen ansehen";
 
   /* ─── Meta ─── */
-  const metaTitle = `${o.firmenname} \u2013 ${o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
+  const metaTitle = `${o.firmenname} \u2013 ${o.spezialisierung || o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
   const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
   const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
 
@@ -471,7 +471,7 @@ JSON-FORMAT:
 
   let html = buildTemplate({
     firmenname: o.firmenname,
-    brancheLabel: o.branche_label || o.branche,
+    brancheLabel: o.spezialisierung || o.branche_label || o.branche,
     einsatzgebiet: o.einsatzgebiet || o.bundesland || "\u00d6sterreich",
     kurzbeschreibung: o.kurzbeschreibung || "",
     trustLeisteHtml,

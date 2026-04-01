@@ -2131,7 +2131,9 @@ function Portal({session,onLogout}){
         {page==="branchenfeatures"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="branchenfeatures" label="Branchenfeatures" desc={`Spezifische Funktionen für ${order.branche_label||"Ihre Branche"}. Diese werden als Badges und Hinweise auf Ihrer Website angezeigt.`}/>
           {editSection==="branchenfeatures"?(<>
-            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return<div style={{fontSize:".82rem",color:T.textMuted,padding:"12px 0"}}>Für diese Branche sind derzeit keine speziellen Features verfügbar.</div>;return<>
+            <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird im Hero-Bereich und in Suchmaschinen angezeigt — leer lassen wenn nicht zutreffend"/>
+            <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr., ÖRAK-Nr., GISA-Zahl" hint="Wird im Über-uns-Bereich angezeigt — optional"/>
+            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;return<>
               {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
               {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
               {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}
@@ -2148,7 +2150,9 @@ function Portal({session,onLogout}){
               {ft.includes("ratenzahlung")&&<Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>}
             </>;})()}
           </>):(<>
-            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return<div style={{fontSize:".82rem",color:T.textMuted,padding:"12px 0"}}>Für diese Branche sind derzeit keine speziellen Features verfügbar.</div>;const items=[];
+            {order.spezialisierung&&<InfoRow label="Spezialisierung" value={order.spezialisierung}/>}
+            {order.berufsregister_nr&&<InfoRow label="Berufsregister-Nr." value={order.berufsregister_nr}/>}
+            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;const items=[];
               if(ft.includes("notdienst"))items.push({l:"24h Notdienst",v:order.notdienst?"Aktiv":"–"});
               if(ft.includes("meisterbetrieb"))items.push({l:"Meisterbetrieb",v:order.meisterbetrieb?"Aktiv":"–"});
               if(ft.includes("kostenvoranschlag"))items.push({l:"Kostenvoranschlag",v:order.kostenvoranschlag?"Aktiv":"–"});

@@ -121,8 +121,9 @@ export async function onRequestGet({params, env}) {
   // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
   html = html.replace("<!-- LEIST_FOTOS -->", "");
 
-  // Team-Members — unter den Vorteilen in der Über-uns Sektion
+  // Team-Members + Berufsregister-Nr. — rechte Spalte in Über-uns
   const teamMembers = Array.isArray(o.team_members) ? o.team_members.filter(m => m && m.name) : [];
+  const berufsregNr = o.berufsregister_nr ? `<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:.75rem;opacity:.4"><span style="text-transform:uppercase;letter-spacing:.1em;font-weight:600">Berufsregister-Nr.</span><br><span style="font-weight:500;opacity:1">${o.berufsregister_nr}</span></div>` : "";
   if (teamMembers.length > 0 && html.includes("<!-- TEAM -->")) {
     const personIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
     const cards = teamMembers.map(m => {
@@ -132,7 +133,9 @@ export async function onRequestGet({params, env}) {
         : `<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.08)">${personIcon}</div>`;
       return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0">${avatar}<div><div style="font-weight:700;font-size:.95rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.8rem;opacity:.55;margin-top:2px">${m.rolle}</div>` : ""}</div></div>`;
     }).join("");
-    html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}</div>`);
+    html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
+  } else if (berufsregNr) {
+    html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">${berufsregNr}</div>`);
   } else {
     html = html.replace("<!-- TEAM -->", "");
   }

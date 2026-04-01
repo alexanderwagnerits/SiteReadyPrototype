@@ -2006,20 +2006,20 @@ function Portal({session,onLogout}){
         {page==="kontakt"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant" desc="Adresse und Öffnungszeiten erscheinen im Kontaktbereich und werden für Google Maps verwendet."/>
           {editSection==="kontakt"?(<>
-            <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1"/>
+            <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1" hint="Wird auf der Website und für Google Maps verwendet"/>
             <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
               <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
               <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
-              <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78"/>
+              <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78" hint="Wird als klickbarer Anruf-Button angezeigt"/>
             </div>
             <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten wählen"/>
             {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
-            <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder={"z.B. Annahmeschluss 30 Min vor Ende\nRezepte per E-Mail vorbestellen\nParkplätze vorhanden"} rows={3} hint="Jede Zeile wird als eigener Hinweis angezeigt — max. 5 Zeilen. Permanente Infos für Ihre Kunden."/>
+            <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Parkplätze, Hygienehinweise, Anfahrt etc."/>
           </>):(<>
             <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
             <InfoRow label="Telefon" value={order.telefon}/>
-            <InfoRow label="Oeffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
-            {order.gut_zu_wissen&&<InfoRow label="Gut zu wissen" value={order.gut_zu_wissen}/>}
+            <InfoRow label="Öffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
+            {order.gut_zu_wissen&&<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Gut zu wissen</div>{order.gut_zu_wissen.split("\n").filter(s=>s.trim()).map((line,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,fontSize:".82rem",color:T.dark,lineHeight:1.5,padding:"3px 0"}}><span style={{color:T.accent,flexShrink:0,marginTop:1}}>&#8226;</span>{line.trim()}</div>)}</div>}
           </>)}
         </div>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2078,9 +2078,26 @@ function Portal({session,onLogout}){
               <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzufügen"}</button>
             </div>
           </>):(<>
-            {(order.leistungen||[]).map((l,i)=><InfoRow key={i} label={i===0?"Leistungen":""} value={l}/>)}
-            {order.extra_leistung?.split("\n").filter(s=>s.trim()).map((l,i)=><InfoRow key={i} label={i===0?"Zusatz":""} value={l}/>)}
-            <div style={{marginTop:10,padding:"9px 12px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,lineHeight:1.6}}>Über "Bearbeiten" können Sie pro Leistung eine Beschreibung, Preis und Foto hinterlegen – wird sofort auf Ihrer Website angezeigt.</div>
+            {(order.leistungen||[]).map((l,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:i<(order.leistungen||[]).length-1?`1px solid ${T.bg3}`:"none"}}>
+                {(order.leistungen_fotos||{})[l]?<img src={(order.leistungen_fotos||{})[l]} alt="" style={{width:44,height:33,objectFit:"cover",borderRadius:4,flexShrink:0}}/>:<div style={{width:44,height:33,borderRadius:4,background:T.bg,flexShrink:0}}/>}
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{l}</div>
+                  {(order.leistungen_beschreibungen||{})[l]&&<div style={{fontSize:".75rem",color:T.textMuted,marginTop:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{(order.leistungen_beschreibungen||{})[l]}</div>}
+                </div>
+                {(order.leistungen_preise||{})[l]&&<div style={{fontSize:".78rem",fontWeight:700,color:T.accent,flexShrink:0}}>{(order.leistungen_preise||{})[l]}</div>}
+              </div>
+            ))}
+            {order.extra_leistung?.split("\n").filter(s=>s.trim()).map((l,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:`1px solid ${T.bg3}`}}>
+                {(order.leistungen_fotos||{})[l]?<img src={(order.leistungen_fotos||{})[l]} alt="" style={{width:44,height:33,objectFit:"cover",borderRadius:4,flexShrink:0}}/>:<div style={{width:44,height:33,borderRadius:4,background:T.bg,flexShrink:0}}/>}
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{l} <span style={{fontSize:".7rem",fontWeight:500,color:T.textMuted}}>Zusatz</span></div>
+                  {(order.leistungen_beschreibungen||{})[l]&&<div style={{fontSize:".75rem",color:T.textMuted,marginTop:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{(order.leistungen_beschreibungen||{})[l]}</div>}
+                </div>
+                {(order.leistungen_preise||{})[l]&&<div style={{fontSize:".78rem",fontWeight:700,color:T.accent,flexShrink:0}}>{(order.leistungen_preise||{})[l]}</div>}
+              </div>
+            ))}
           </>)}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2088,7 +2105,7 @@ function Portal({session,onLogout}){
           {editSection==="texte"?(<>
             <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
             <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
-            {[0,1,2,3].map(i=><Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}}/>)}
+            {[0,1,2,3].map(i=>{const ph=["z.B. Über 10 Jahre Erfahrung","z.B. Persönliche Beratung","z.B. Faire Preise","z.B. Flexible Termine"][i];return<Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}} placeholder={ph}/>})}
           </>):order.text_ueber_uns!=null?(<>
             <InfoRow label={"Über uns"} value={order.text_ueber_uns||"\u2014"}/>
             <InfoRow label="Vorteile" value={Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).join(" \u00b7 "):"\u2014"}/>
@@ -2165,7 +2182,7 @@ function Portal({session,onLogout}){
           {editSection==="branchenfeatures"?(<>
             <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird im Hero-Bereich und in Suchmaschinen angezeigt — leer lassen wenn nicht zutreffend"/>
             <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr., ÖRAK-Nr., GISA-Zahl" hint="Wird im Über-uns-Bereich angezeigt — optional"/>
-            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;return<>
+            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;return<><div style={{margin:"16px 0 12px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Branchenspezifisch</div>
               {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
               {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
               {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}

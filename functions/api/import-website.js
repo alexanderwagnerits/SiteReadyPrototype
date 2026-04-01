@@ -66,19 +66,49 @@ export async function onRequestPost({request, env}) {
     const subpagePatterns = [
       /kontakt|contact/i, /impressum|imprint|legal/i, /leistungen|services|angebot/i,
       /ueber-uns|about|team/i, /preise|pricing/i, /galerie|gallery|portfolio/i,
+      /schwerpunkt/i, /angebot/i, /behandlung/i, /therapie/i,
     ];
+    // Link-Text Patterns (fuer Wix/JS-Seiten wo URLs nicht sprechend sind)
+    const linkTextPatterns = /kontakt|impressum|leistung|service|angebot|\u00fcber\s*(uns|mich)|about|team|preis|schwerpunkt|behandlung|therapie|galerie|portfolio/i;
     const foundLinks = new Set();
     if (mainHtml) {
+      // URL-basierte Erkennung
       for (const m of mainHtml.matchAll(/href=["']([^"'#]+)["']/gi)) {
         let href = m[1];
         if (href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("javascript:")) continue;
         if (!href.startsWith("http")) href = href.startsWith("/") ? base + href : base + "/" + href;
         try {
           const u = new URL(href);
-          if (u.origin !== base) continue; // nur gleiche Domain
+          if (u.origin !== base) continue;
           const path = u.pathname.toLowerCase();
           if (subpagePatterns.some(p => p.test(path))) foundLinks.add(href);
         } catch(_) {}
+      }
+      // Link-Text-basierte Erkennung (wichtig fuer Wix/JS-Seiten)
+      for (const m of mainHtml.matchAll(/<a[^>]+href=["']([^"'#]+)["'][^>]*>([^<]{2,40})<\/a>/gi)) {
+        const href = m[1];
+        const text = m[2].trim();
+        if (linkTextPatterns.test(text)) {
+          let fullUrl = href;
+          if (!fullUrl.startsWith("http")) fullUrl = fullUrl.startsWith("/") ? base + fullUrl : base + "/" + fullUrl;
+          try {
+            const u = new URL(fullUrl);
+            if (u.origin === base) foundLinks.add(fullUrl);
+          } catch(_) {}
+        }
+      }
+    }
+    // Auch aus Jina-Haupttext Links extrahieren (fuer JS-Seiten mit Wix-Routing)
+    if (mainText) {
+      for (const m of mainText.matchAll(/\[([^\]]{2,40})\]\((https?:\/\/[^\s)]+)\)/gi)) {
+        const text = m[1];
+        const href = m[2];
+        if (linkTextPatterns.test(text)) {
+          try {
+            const u = new URL(href);
+            if (u.origin === base) foundLinks.add(href);
+          } catch(_) {}
+        }
       }
     }
 
@@ -168,7 +198,7 @@ export async function onRequestPost({request, env}) {
         const path = new URL(pageUrl).pathname.toLowerCase();
         if (/kontakt|contact/.test(path)) subpageTexts.kontakt = text.slice(0, 3000);
         else if (/impressum|imprint|legal/.test(path)) subpageTexts.impressum = text.slice(0, 4000);
-        else if (/leistungen|services|angebot|preise/.test(path)) subpageTexts.leistungen = text.slice(0, 3000);
+        else if (/leistungen|services|angebot|preise|schwerpunkt|behandlung|therapie/.test(path)) subpageTexts.leistungen = (subpageTexts.leistungen || "") + "\n" + text.slice(0, 3000);
         else if (/ueber|about|team/.test(path)) subpageTexts.ueberuns = text.slice(0, 3000);
         else subpageTexts.sonstige = (subpageTexts.sonstige || "") + "\n" + text.slice(0, 1500);
       }

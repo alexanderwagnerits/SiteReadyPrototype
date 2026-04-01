@@ -227,15 +227,16 @@ JSON-Felder:
 - firmenbuchnummer: FN... (leer wenn nicht gefunden)
 - firmenbuchgericht: z.B. HG Wien (leer wenn nicht gefunden)
 - gisazahl: Nur Ziffern (leer wenn nicht gefunden)
-- branche: NUR einer dieser Werte:
+- branche: NUR einer dieser Werte (waehle den passendsten):
   Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/baumeister
   Kosmetik: friseur/kosmetik/nagel/massage/tattoo/fusspflege/permanent_makeup
   Gastro: restaurant/cafe/baeckerei/catering
-  Gesundheit: arzt/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker
+  Gesundheit: arzt (auch Allgemeinmedizin, Facharzt, Ordination)/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker
   Dienstleistung: steuerberater/rechtsanwalt/fotograf/versicherung/immobilien/hausverwaltung/umzug/eventplanung
   Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga
-  Sonstige: sonstige
-- leistungen: Array mit max 8 konkreten Leistungen die EXPLIZIT auf der Website stehen. NUR echte Angebote, nichts erfinden. Leeres Array wenn keine konkreten Leistungen erkennbar.
+  Sonstige: sonstige (nur wenn KEINE der obigen Branchen passt)
+  WICHTIG: Arzt-Ordinationen (Allgemeinmedizin, Facharzt, etc.) = "arzt". Immer eine Branche zuordnen wenn moeglich!
+- leistungen: Array mit max 8 konkreten Leistungen/Angeboten die auf der Website stehen. Suche in allen Abschnitten (Hauptseite, Leistungen-Seite, Angebot, Preise). Beispiel Nagelstudio: ["Gelnägel","Acrylnägel","Maniküre","Nail Art","Nagelverstärkung"]. NUR echte Angebote, nichts erfinden. Leeres Array wenn keine Leistungen erkennbar.
 - spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
 - oeffnungszeiten: Oeffnungszeiten als Freitext. Leer wenn nicht gefunden.
 - gut_zu_wissen: Permanente Kundenhinweise von der Website, getrennt durch \\n. Max 5. Leer wenn nichts Relevantes.

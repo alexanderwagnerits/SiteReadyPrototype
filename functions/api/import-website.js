@@ -98,19 +98,6 @@ export async function onRequestPost({request, env}) {
         }
       }
     }
-    // Auch aus Jina-Haupttext Links extrahieren (fuer JS-Seiten mit Wix-Routing)
-    if (mainText) {
-      for (const m of mainText.matchAll(/\[([^\]]{2,40})\]\((https?:\/\/[^\s)]+)\)/gi)) {
-        const text = m[1];
-        const href = m[2];
-        if (linkTextPatterns.test(text)) {
-          try {
-            const u = new URL(href);
-            if (u.origin === base) foundLinks.add(href);
-          } catch(_) {}
-        }
-      }
-    }
 
     /* ═══ 4. JINA ALS PRIMAERE TEXT-QUELLE (rendert auch JS-Seiten) ═══ */
     const fetchJina = async (pageUrl) => {
@@ -141,6 +128,20 @@ export async function onRequestPost({request, env}) {
 
     if (!mainText || mainText.length < 50) {
       return Response.json({error: "Website konnte nicht geladen werden. Bitte prüfen Sie die URL."}, {status: 400});
+    }
+
+    // Links aus Jina-Haupttext extrahieren (fuer JS-Seiten mit Wix-Routing)
+    if (mainText) {
+      for (const m of mainText.matchAll(/\[([^\]]{2,40})\]\((https?:\/\/[^\s)]+)\)/gi)) {
+        const text = m[1];
+        const href = m[2];
+        if (linkTextPatterns.test(text)) {
+          try {
+            const u = new URL(href);
+            if (u.origin === base) foundLinks.add(href);
+          } catch(_) {}
+        }
+      }
     }
 
     // Emails + Phones auch aus Jina-Text sammeln

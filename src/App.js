@@ -1575,6 +1575,8 @@ function Portal({session,onLogout}){
     {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),pts:0,page:"medien",optional:true},
     {label:"Social Media",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),pts:0,page:"social",optional:true},
     {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
+    {label:"Fotos zu Leistungen",done:!!(order.leistungen_fotos&&Object.values(order.leistungen_fotos||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
+    {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),pts:0,page:"ueberuns",optional:true},
     {label:"Aktuelles / Meldung",done:!!(order.announcements?.some(a=>a.active)),pts:0,page:"aktuelles",optional:true},
     {label:"SEO-Texte",done:!!(order.seo_title||order.seo_description),pts:0,page:"seo",optional:true},
     {label:"Eigene Domain",done:false,pts:0,page:"domain",optional:true},

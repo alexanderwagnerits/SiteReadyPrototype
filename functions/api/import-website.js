@@ -7,189 +7,195 @@ export async function onRequestPost({request, env}) {
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
     const base = new URL(cleanUrl).origin;
 
-    // 1. Hauptseite als HTML laden
+    /* ═══ 1. HAUPTSEITE HTML LADEN (fuer Links, Emails, Social, Telefon) ═══ */
     let mainHtml = "";
-    let pageText = "";
     try {
       const r = await fetch(cleanUrl, {
-        headers: {"User-Agent": "Mozilla/5.0", "Accept": "text/html", "Accept-Language": "de-AT,de;q=0.9"},
+        headers: {"User-Agent": "Mozilla/5.0 (compatible; SiteReady/1.0)", "Accept": "text/html", "Accept-Language": "de-AT,de;q=0.9"},
         redirect: "follow", signal: AbortSignal.timeout(10000),
       });
       if (r.ok) mainHtml = await r.text();
     } catch(e) { /* ignore */ }
 
-    // Alle E-Mail-Adressen aus HTML sammeln (mailto + plain text)
+    /* ═══ 2. STRUKTURIERTE DATEN AUS HTML EXTRAHIEREN ═══ */
     const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+    const phoneRegex = /(?:\+43|0043|0)\s*(?:\d[\s\-/]*){6,12}\d/g;
     const allEmails = new Set();
-    if (mainHtml) {
+    const allPhones = new Set();
+    const socialLinks = {facebook:"", instagram:"", linkedin:"", tiktok:""};
+
+    const extractFromHtml = (html) => {
+      if (!html) return;
       // mailto: Links
-      for (const m of mainHtml.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
+      for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
         allEmails.add(m[1].toLowerCase());
       }
-      // JSON-LD Structured Data (schema.org) – vor dem Script-Strippen parsen
-      for (const m of mainHtml.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+      // tel: Links
+      for (const m of html.matchAll(/href=["']tel:([^"']+)["']/gi)) {
+        const phone = m[1].replace(/\s/g, "").replace(/%20/g, "");
+        if (phone.length >= 8) allPhones.add(phone);
+      }
+      // JSON-LD Structured Data
+      for (const m of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
         try {
-          const ldText = m[1];
-          for (const em of ldText.matchAll(emailRegex)) allEmails.add(em[0].toLowerCase());
+          const ld = m[1];
+          for (const em of ld.matchAll(emailRegex)) allEmails.add(em[0].toLowerCase());
+          for (const ph of ld.matchAll(/"telephone"\s*:\s*"([^"]+)"/gi)) allPhones.add(ph[1].replace(/\s/g, ""));
         } catch(_) {}
       }
-      // Plain-text Emails im sichtbaren Inhalt
-      const visibleText = mainHtml
-        .replace(/<script[\s\S]*?<\/script>/gi, " ")
-        .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<[^>]+>/g, " ");
-      for (const m of visibleText.matchAll(emailRegex)) {
-        allEmails.add(m[0].toLowerCase());
+      // Plain-text Emails + Phones
+      const visText = html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ");
+      for (const m of visText.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
+      for (const m of visText.matchAll(phoneRegex)) {
+        const phone = m[0].replace(/[\s\-/]/g, "");
+        if (phone.length >= 8) allPhones.add(phone);
       }
-    }
-
-    // Social Media Links direkt aus HTML extrahieren
-    const socialLinks = {facebook:"", instagram:"", linkedin:"", tiktok:""};
-    if (mainHtml) {
-      const hrefs = [...mainHtml.matchAll(/href=["']([^"']+)["']/gi)].map(m => m[1]);
+      // Social Media Links
+      const hrefs = [...html.matchAll(/href=["']([^"']+)["']/gi)].map(m => m[1]);
       for (const h of hrefs) {
         if (!socialLinks.facebook  && /facebook\.com\//i.test(h)  && !/sharer|share|login|dialog/i.test(h)) socialLinks.facebook  = h;
         if (!socialLinks.instagram && /instagram\.com\//i.test(h) && !/sharer|share|login/i.test(h))        socialLinks.instagram = h;
         if (!socialLinks.linkedin  && /linkedin\.com\//i.test(h)  && !/sharer|share|login/i.test(h))        socialLinks.linkedin  = h;
         if (!socialLinks.tiktok    && /tiktok\.com\//i.test(h)    && !/sharer|share|login/i.test(h))        socialLinks.tiktok    = h;
       }
-    }
+    };
 
-    // Impressum-Link aus HTML-Links extrahieren
-    let impressumUrl = "";
+    extractFromHtml(mainHtml);
+
+    /* ═══ 3. ALLE RELEVANTEN UNTERSEITEN FINDEN ═══ */
+    const subpagePatterns = [
+      /kontakt|contact/i, /impressum|imprint|legal/i, /leistungen|services|angebot/i,
+      /ueber-uns|about|team/i, /preise|pricing/i, /galerie|gallery|portfolio/i,
+    ];
+    const foundLinks = new Set();
     if (mainHtml) {
-      const linkMatches = [...mainHtml.matchAll(/href=["']([^"']+)["']/gi)];
-      for (const m of linkMatches) {
-        const href = m[1];
-        if (/impressum|imprint|rechtliches|legal/i.test(href)) {
-          impressumUrl = href.startsWith("http") ? href : href.startsWith("/") ? base + href : base + "/" + href;
-          break;
-        }
-      }
-      if (!impressumUrl) {
-        const anchorMatches = [...mainHtml.matchAll(/<a[^>]+href=["']([^"']+)["'][^>]*>([^<]+)<\/a>/gi)];
-        for (const m of anchorMatches) {
-          if (/impressum|imprint/i.test(m[2])) {
-            const href = m[1];
-            impressumUrl = href.startsWith("http") ? href : href.startsWith("/") ? base + href : base + "/" + href;
-            break;
-          }
-        }
+      for (const m of mainHtml.matchAll(/href=["']([^"'#]+)["']/gi)) {
+        let href = m[1];
+        if (href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("javascript:")) continue;
+        if (!href.startsWith("http")) href = href.startsWith("/") ? base + href : base + "/" + href;
+        try {
+          const u = new URL(href);
+          if (u.origin !== base) continue; // nur gleiche Domain
+          const path = u.pathname.toLowerCase();
+          if (subpagePatterns.some(p => p.test(path))) foundLinks.add(href);
+        } catch(_) {}
       }
     }
 
-    // Hauptseiten-Text aus HTML
-    if (mainHtml) {
-      pageText = mainHtml
-        .replace(/<script[\s\S]*?<\/script>/gi, " ")
-        .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-        .replace(/\s{2,}/g, " ").trim();
-    }
-
-    // Fallback: Jina fuer Hauptseite
-    if (!pageText || pageText.length < 100) {
+    /* ═══ 4. JINA ALS PRIMAERE TEXT-QUELLE (rendert auch JS-Seiten) ═══ */
+    const fetchJina = async (pageUrl) => {
       try {
-        const r = await fetch("https://r.jina.ai/" + cleanUrl, {
+        const r = await fetch("https://r.jina.ai/" + pageUrl, {
           headers: {"Accept": "text/plain", "X-Return-Format": "text"},
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(12000),
         });
-        if (r.ok) pageText = await r.text();
-      } catch(e) { /* ignore */ }
+        if (r.ok) return await r.text();
+      } catch(e) {}
+      return "";
+    };
+
+    // Hauptseite via Jina (rendert JS, besser als HTML-Strip)
+    let mainText = await fetchJina(cleanUrl);
+
+    // Fallback: HTML-Strip wenn Jina fehlschlaegt
+    if (!mainText || mainText.length < 100) {
+      if (mainHtml) {
+        mainText = mainHtml
+          .replace(/<script[\s\S]*?<\/script>/gi, " ")
+          .replace(/<style[\s\S]*?<\/style>/gi, " ")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+          .replace(/\s{2,}/g, " ").trim();
+      }
     }
 
-    if (!pageText || pageText.length < 50) {
-      return Response.json({error: "Website konnte nicht geladen werden."}, {status: 400});
+    if (!mainText || mainText.length < 50) {
+      return Response.json({error: "Website konnte nicht geladen werden. Bitte prüfen Sie die URL."}, {status: 400});
     }
 
-    // Emails aus pageText extrahieren (fängt auch JS-gerenderte Emails via Jina)
-    for (const m of pageText.matchAll(emailRegex)) {
-      allEmails.add(m[0].toLowerCase());
+    // Emails + Phones auch aus Jina-Text sammeln
+    for (const m of mainText.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
+    for (const m of mainText.matchAll(phoneRegex)) {
+      const phone = m[0].replace(/[\s\-/]/g, "");
+      if (phone.length >= 8) allPhones.add(phone);
     }
 
-    // Kontakt-Seite fetchen (zusaetzliche Email-Quelle)
-    const kontaktTargets = ["/kontakt", "/contact", "/kontakt.html", "/contact.html", "/de/kontakt"].map(p => base + p);
-    for (const kUrl of kontaktTargets) {
+    /* ═══ 5. UNTERSEITEN LADEN (parallel, max 5) ═══ */
+    const subpageTexts = {};
+    const subpageUrls = [...foundLinks].slice(0, 5);
+
+    // Auch Standard-Pfade versuchen falls nicht in Links gefunden
+    const standardPaths = {
+      kontakt: ["/kontakt", "/contact", "/kontakt.html"],
+      impressum: ["/impressum", "/impressum.html", "/de/impressum"],
+      leistungen: ["/leistungen", "/services", "/angebot", "/leistungen.html"],
+      ueberuns: ["/ueber-uns", "/about", "/about-us", "/team"],
+    };
+
+    for (const [key, paths] of Object.entries(standardPaths)) {
+      if (!subpageUrls.some(u => paths.some(p => u.toLowerCase().includes(p.replace("/", ""))))) {
+        for (const p of paths) {
+          subpageUrls.push(base + p);
+          break; // nur ersten Pfad pro Kategorie
+        }
+      }
+    }
+
+    const uniqueUrls = [...new Set(subpageUrls)].slice(0, 8);
+
+    await Promise.all(uniqueUrls.map(async (pageUrl) => {
+      // HTML fetch fuer Emails/Phones
       try {
-        const r = await fetch(kUrl, {
-          headers: {"User-Agent": "Mozilla/5.0", "Accept": "text/html"},
+        const r = await fetch(pageUrl, {
+          headers: {"User-Agent": "Mozilla/5.0 (compatible; SiteReady/1.0)", "Accept": "text/html"},
           redirect: "follow", signal: AbortSignal.timeout(6000),
         });
         if (r.ok) {
           const html = await r.text();
-          for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
-            allEmails.add(m[1].toLowerCase());
-          }
-          for (const m of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
-            try { for (const em of m[1].matchAll(emailRegex)) allEmails.add(em[0].toLowerCase()); } catch(_) {}
-          }
-          const visText = html
-            .replace(/<script[\s\S]*?<\/script>/gi, " ")
-            .replace(/<style[\s\S]*?<\/style>/gi, " ")
-            .replace(/<[^>]+>/g, " ");
-          for (const m of visText.matchAll(emailRegex)) {
-            allEmails.add(m[0].toLowerCase());
-          }
-          break; // erste erfolgreiche Kontakt-Seite reicht
+          extractFromHtml(html);
         }
-      } catch(e) { /* ignore */ }
-    }
+      } catch(e) {}
 
-    // Impressum laden
-    let impressumText = "";
-    const impressumTargets = impressumUrl
-      ? [impressumUrl]
-      : ["/impressum", "/index.php/impressum", "/impressum.html", "/de/impressum", "/rechtliches/impressum", "/ueber-uns/impressum"].map(p => base + p);
+      // Jina fuer Text
+      const text = await fetchJina(pageUrl);
+      if (text && text.length > 50) {
+        const path = new URL(pageUrl).pathname.toLowerCase();
+        if (/kontakt|contact/.test(path)) subpageTexts.kontakt = text.slice(0, 3000);
+        else if (/impressum|imprint|legal/.test(path)) subpageTexts.impressum = text.slice(0, 4000);
+        else if (/leistungen|services|angebot|preise/.test(path)) subpageTexts.leistungen = text.slice(0, 3000);
+        else if (/ueber|about|team/.test(path)) subpageTexts.ueberuns = text.slice(0, 3000);
+        else subpageTexts.sonstige = (subpageTexts.sonstige || "") + "\n" + text.slice(0, 1500);
+      }
+    }));
 
-    for (const impUrl of impressumTargets) {
-      try {
-        const r = await fetch(impUrl, {
-          headers: {"User-Agent": "Mozilla/5.0", "Accept": "text/html"},
-          redirect: "follow", signal: AbortSignal.timeout(8000),
-        });
-        if (r.ok) {
-          const html = await r.text();
-          // Auch Impressum-Emails sammeln
-          for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) {
-            allEmails.add(m[1].toLowerCase());
-          }
-          const impVisText = html
-            .replace(/<script[\s\S]*?<\/script>/gi, " ")
-            .replace(/<style[\s\S]*?<\/style>/gi, " ")
-            .replace(/<[^>]+>/g, " ");
-          for (const m of impVisText.matchAll(emailRegex)) {
-            allEmails.add(m[0].toLowerCase());
-          }
-          const text = html
-            .replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
-            .replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
-            .replace(/\s{2,}/g, " ").trim();
-          if (text.length > 100 && /ATU|FN\s*\d|GISA|Medieninhaber|Firmenbuch|Gewerbe|Unternehmensgegenstand/i.test(text)) {
-            impressumText = text.slice(0, 5000);
-            break;
-          }
-        }
-      } catch(e) { /* ignore */ }
-    }
-
-    // Spam-Emails filtern (no-reply, info@siteready etc.)
+    /* ═══ 6. SPAM FILTERN ═══ */
     const filteredEmails = [...allEmails].filter(e =>
-      !/noreply|no-reply|donotreply|support@stripe|mailer|bounce|postmaster|webmaster|siteready/i.test(e)
+      !/noreply|no-reply|donotreply|support@stripe|mailer|bounce|postmaster|webmaster|siteready|wix\.com|squarespace/i.test(e)
     );
+    const filteredPhones = [...allPhones].filter(p => p.length >= 8 && p.length <= 16);
 
+    /* ═══ 7. GESAMTTEXT FUER CLAUDE ZUSAMMENBAUEN ═══ */
     const anthropicKey = env.ANTHROPIC_API_KEY;
     if (!anthropicKey) return Response.json({error: "API-Konfigurationsfehler."}, {status: 500});
 
-    const mainExcerpt = pageText.slice(0, 4000);
-    const fullText = impressumText
-      ? mainExcerpt + "\n\n=== IMPRESSUM ===\n" + impressumText
-      : mainExcerpt + "\n\n" + pageText.slice(-2000);
+    let fullText = "=== HAUPTSEITE ===\n" + mainText.slice(0, 4000);
+    if (subpageTexts.leistungen) fullText += "\n\n=== LEISTUNGEN ===\n" + subpageTexts.leistungen;
+    if (subpageTexts.ueberuns) fullText += "\n\n=== UEBER UNS ===\n" + subpageTexts.ueberuns;
+    if (subpageTexts.kontakt) fullText += "\n\n=== KONTAKT ===\n" + subpageTexts.kontakt;
+    if (subpageTexts.impressum) fullText += "\n\n=== IMPRESSUM ===\n" + subpageTexts.impressum;
+    if (subpageTexts.sonstige) fullText += "\n\n=== WEITERE SEITEN ===\n" + subpageTexts.sonstige.slice(0, 2000);
+
+    // Auf max ~12000 Zeichen begrenzen (Haiku Token-Limit)
+    fullText = fullText.slice(0, 12000);
 
     const emailHint = filteredEmails.length > 0
-      ? `\n\nGefundene E-Mail-Adressen auf der Website: ${filteredEmails.join(", ")}\nWaehle die primaere Kontakt-E-Mail des Unternehmens (nicht no-reply, nicht Drittanbieter).`
+      ? `\n\nGefundene E-Mail-Adressen: ${filteredEmails.join(", ")}\nWaehle die primaere Kontakt-E-Mail (nicht no-reply, nicht Drittanbieter).`
+      : "";
+    const phoneHint = filteredPhones.length > 0
+      ? `\nGefundene Telefonnummern: ${filteredPhones.join(", ")}\nWaehle die primaere Kontakt-Telefonnummer.`
       : "";
 
+    /* ═══ 8. CLAUDE HAIKU EXTRAKTION ═══ */
     const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {"Content-Type": "application/json", "x-api-key": anthropicKey, "anthropic-version": "2023-06-01"},
@@ -199,35 +205,50 @@ export async function onRequestPost({request, env}) {
         messages: [{
           role: "user",
           content: `Extrahiere aus folgendem Website-Text die Daten eines oesterreichischen Unternehmens.
-Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit diesen Feldern:
-- firmenname: Name des Unternehmens (max 60 Zeichen)
-- telefon: Telefonnummer (oesterreichisches Format, leer wenn nicht gefunden)
-- email: Primaere Kontakt-E-Mail-Adresse des Unternehmens (leer wenn nicht gefunden)
-- plz: Postleitzahl 4-stellig (leer wenn nicht gefunden)
+Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum).
+
+WICHTIG:
+- Nur Informationen extrahieren die TATSAECHLICH im Text stehen
+- NICHTS erfinden oder vermuten
+- Leere Strings "" fuer nicht gefundene Felder
+- Oesterreichisches Format fuer Telefon, PLZ etc.
+
+JSON-Felder:
+- firmenname: Offizieller Name (max 60 Zeichen)
+- telefon: Telefonnummer im Format +43... (leer wenn nicht gefunden)
+- email: Primaere Kontakt-E-Mail (leer wenn nicht gefunden)
+- plz: 4-stellige Postleitzahl (leer wenn nicht gefunden)
 - ort: Ortsname (leer wenn nicht gefunden)
-- adresse: Strassenname mit Hausnummer (leer wenn nicht gefunden)
-- kurzbeschreibung: Kurze Beschreibung was das Unternehmen macht (max 200 Zeichen)
-- bundesland: Oesterreichisches Bundesland (wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld, leer wenn nicht erkennbar)
-- unternehmensform: Rechtsform (eu/einzelunternehmen/gmbh/og/kg/ag/verein/gesnbr/sonstige, leer wenn nicht erkennbar)
-- uid: UID-Nummer im Format ATU12345678 (leer wenn nicht gefunden)
-- firmenbuchnummer: Firmenbuchnummer z.B. FN 123456 a (leer wenn nicht gefunden)
-- firmenbuchgericht: Firmenbuchgericht z.B. HG Wien (leer wenn nicht gefunden)
-- gisazahl: GISA-Zahl (nur Ziffern, leer wenn nicht gefunden)
-- branche: Branche des Betriebs (NUR einen dieser Werte – Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige – Kosmetik & Koerperpflege: kosmetik/friseur/nagel/massage/tattoo/fusspflege/permanent_makeup/sonstige_kosmetik)
-- leistungen: Array mit max. 8 konkreten Leistungen die EXPLIZIT auf der Website erwaehnt werden (z.B. ["Elektroinstallation","Beleuchtung"]). NUR reale Angebote des Unternehmens – keine erfundenen oder vermuteten Leistungen, keine allgemeinen Begriffe wie "Beratung" ausser diese stehen wirklich auf der Seite. Leeres Array wenn keine konkreten Leistungen erkennbar.
-- spezialisierung: Fachgebiet oder Spezialisierung (z.B. "Allgemeinmedizin", "Elektroinstallationen & Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
-- oeffnungszeiten: Oeffnungszeiten als Freitext (z.B. "Mo-Fr 8-17, Sa 8-12"). Leer wenn nicht gefunden.
-- gut_zu_wissen: Permanente Hinweise fuer Kunden die auf der Website stehen, getrennt durch Zeilenumbruch (z.B. "Annahmeschluss 30 Min vor Ende\nRezepte per E-Mail vorbestellen"). Max 5 Zeilen. Leer wenn nichts Relevantes gefunden.
+- adresse: Strasse mit Hausnummer (leer wenn nicht gefunden)
+- kurzbeschreibung: Was das Unternehmen macht, 1-2 Saetze (max 200 Zeichen)
+- bundesland: NUR einer dieser Werte: wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld (leer wenn nicht erkennbar)
+- unternehmensform: NUR einer dieser Werte: eu/einzelunternehmen/gmbh/og/kg/ag/verein/gesnbr (leer wenn nicht erkennbar)
+- uid: UID-Nummer ATU... (leer wenn nicht gefunden)
+- firmenbuchnummer: FN... (leer wenn nicht gefunden)
+- firmenbuchgericht: z.B. HG Wien (leer wenn nicht gefunden)
+- gisazahl: Nur Ziffern (leer wenn nicht gefunden)
+- branche: NUR einer dieser Werte:
+  Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/baumeister
+  Kosmetik: friseur/kosmetik/nagel/massage/tattoo/fusspflege/permanent_makeup
+  Gastro: restaurant/cafe/baeckerei/catering
+  Gesundheit: arzt/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker
+  Dienstleistung: steuerberater/rechtsanwalt/fotograf/versicherung/immobilien/hausverwaltung/umzug/eventplanung
+  Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga
+  Sonstige: sonstige
+- leistungen: Array mit max 8 konkreten Leistungen die EXPLIZIT auf der Website stehen. NUR echte Angebote, nichts erfinden. Leeres Array wenn keine konkreten Leistungen erkennbar.
+- spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
+- oeffnungszeiten: Oeffnungszeiten als Freitext. Leer wenn nicht gefunden.
+- gut_zu_wissen: Permanente Kundenhinweise von der Website, getrennt durch \\n. Max 5. Leer wenn nichts Relevantes.
 
 Website-Text:
-${fullText}${emailHint}`,
+${fullText}${emailHint}${phoneHint}`,
         }],
       }),
     });
 
     if (!claudeResp.ok) {
       const errText = await claudeResp.text();
-      return Response.json({error: "KI-Analyse fehlgeschlagen: " + errText}, {status: 500});
+      return Response.json({error: "Analyse fehlgeschlagen: " + errText}, {status: 500});
     }
 
     const claudeData = await claudeResp.json();
@@ -241,37 +262,55 @@ ${fullText}${emailHint}`,
       extracted = {};
     }
 
+    /* ═══ 9. DATEN NORMALISIEREN UND VALIDIEREN ═══ */
+
     // Unternehmensform normalisieren
     const ufRaw = (extracted.unternehmensform || "").toLowerCase().replace(/[\s.]/g, "");
     const ufMap = {"eu":"eu","einzelunternehmen":"einzelunternehmen","gmbh":"gmbh","og":"og","kg":"kg","ag":"ag","verein":"verein","gesnbr":"gesnbr","gesbr":"gesnbr"};
-    const unternehmensform = ufMap[ufRaw] || (ufRaw.includes("gmbh")?"gmbh":ufRaw.includes("eu")?"eu":ufRaw.includes("einzelunternehmen")?"einzelunternehmen":extracted.unternehmensform||"");
+    const unternehmensform = ufMap[ufRaw] || (ufRaw.includes("gmbh")?"gmbh":ufRaw.includes("eu")?"eu":ufRaw.includes("einzelunternehmen")?"einzelunternehmen":"");
 
-    // Email: zuerst pruefen ob eine Email die gleiche Domain wie die Website hat
+    // Email: Domain-Match priorisieren
     const siteDomain = new URL(cleanUrl).hostname.replace(/^www\./, "");
     const domainMatch = filteredEmails.find(e => e.split("@")[1] === siteDomain);
-
     const claudeEmail = (extracted.email || "").toLowerCase();
     const finalEmail = domainMatch
       || (filteredEmails.includes(claudeEmail) ? claudeEmail : "")
       || filteredEmails[0]
       || "";
 
+    // Telefon: tel:-Link priorisieren, dann Claude
+    const claudePhone = (extracted.telefon || "").replace(/[\s\-/]/g, "");
+    const finalPhone = filteredPhones[0] || claudePhone || "";
+
+    // PLZ validieren (4-stellig, oesterreichisch)
+    const plzRaw = (extracted.plz || "").replace(/\D/g, "");
+    const plz = plzRaw.length === 4 ? plzRaw : "";
+
+    // Bundesland validieren
+    const validBundeslaender = ["wien","noe","ooe","stmk","sbg","tirol","ktn","vbg","bgld"];
+    const bundesland = validBundeslaender.includes(extracted.bundesland) ? extracted.bundesland : "";
+
+    // Leistungen: Duplikate entfernen, leere raus
+    const leistungen = Array.isArray(extracted.leistungen)
+      ? [...new Set(extracted.leistungen.map(l => l?.trim()).filter(Boolean))].slice(0, 8)
+      : [];
+
     return Response.json({
-      firmenname: extracted.firmenname || "",
-      telefon: extracted.telefon || "",
+      firmenname: (extracted.firmenname || "").slice(0, 60),
+      telefon: finalPhone,
       email: finalEmail,
-      plz: extracted.plz || "",
+      plz,
       ort: extracted.ort || "",
       adresse: extracted.adresse || "",
-      kurzbeschreibung: extracted.kurzbeschreibung || "",
-      bundesland: extracted.bundesland || "",
+      kurzbeschreibung: (extracted.kurzbeschreibung || "").slice(0, 200),
+      bundesland,
       unternehmensform,
       uid: extracted.uid || "",
       firmenbuchnummer: extracted.firmenbuchnummer || "",
       firmenbuchgericht: extracted.firmenbuchgericht || "",
       gisazahl: extracted.gisazahl || "",
       branche: extracted.branche || "",
-      leistungen: Array.isArray(extracted.leistungen) ? extracted.leistungen.slice(0, 8) : [],
+      leistungen,
       spezialisierung: extracted.spezialisierung || "",
       oeffnungszeiten_import: extracted.oeffnungszeiten || "",
       gut_zu_wissen: extracted.gut_zu_wissen || "",

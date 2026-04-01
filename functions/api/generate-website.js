@@ -479,6 +479,8 @@ JSON-FORMAT:
     sep: pal.s,
     kontaktCtaHeadline: texts.kontakt_cta_headline || "Kontaktieren Sie uns",
     kontaktCtaText: texts.kontakt_cta_text || "Wir freuen uns auf Ihre Anfrage.",
+    borderRadius: stil.r || null,
+    borderRadiusLg: stil.rLg || null,
   });
 
   /* ─── Nav + Footer injizieren ─── */

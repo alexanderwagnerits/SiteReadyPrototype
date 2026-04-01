@@ -14,6 +14,7 @@ export function buildKlassischTemplate(data) {
     metaTitle, metaDesc, siteUrl, fontUrl, fontFamily,
     primary, accent, bg, sep,
     kontaktCtaHeadline, kontaktCtaText,
+    borderRadius, borderRadiusLg,
   } = data;
 
   return `<!DOCTYPE html>
@@ -40,8 +41,8 @@ export function buildKlassischTemplate(data) {
 --text:#1f2937;
 --textMuted:#64748b;
 --white:#fff;
---r:4px;
---rLg:8px;
+--r:${borderRadius||"4px"};
+--rLg:${borderRadiusLg||"8px"};
 --font:${fontFamily||"'Inter',system-ui,-apple-system,sans-serif"};
 --maxW:1060px;
 }

@@ -242,7 +242,7 @@ JSON-Felder:
   Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga
   Sonstige: sonstige (nur wenn KEINE der obigen Branchen passt)
   WICHTIG: Arzt-Ordinationen (Allgemeinmedizin, Facharzt, etc.) = "arzt". Immer eine Branche zuordnen wenn moeglich!
-- leistungen: Array mit max 8 konkreten Leistungen/Angeboten die auf der Website stehen. Suche in allen Abschnitten (Hauptseite, Leistungen-Seite, Angebot, Preise). Beispiel Nagelstudio: ["Gelnägel","Acrylnägel","Maniküre","Nail Art","Nagelverstärkung"]. NUR echte Angebote, nichts erfinden. Leeres Array wenn keine Leistungen erkennbar.
+- leistungen: Array mit max 8 konkreten Leistungen/Angeboten. Suche in allen Abschnitten. NUR sinnvolle Dienstleistungen die ein Kunde buchen wuerde — keine Navigationspunkte, keine internen Begriffe, keine Wiederholungen. Formuliere klar und professionell (z.B. "Hundetraining" nicht "Hunde Training"). Wenn etwas unklar ist, lieber weglassen. Leeres Array wenn keine konkreten Leistungen erkennbar.
 - spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
 - oeffnungszeiten: Oeffnungszeiten als Freitext. Leer wenn nicht gefunden.
 - gut_zu_wissen: Permanente Kundenhinweise von der Website, getrennt durch \\n. Max 5. Leer wenn nichts Relevantes.

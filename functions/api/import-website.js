@@ -277,6 +277,7 @@ JSON-Felder:
 - spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
 - oeffnungszeiten: Oeffnungszeiten als Freitext. Leer wenn nicht gefunden.
 - gut_zu_wissen: Permanente Kundenhinweise von der Website, getrennt durch \\n. Max 5. Leer wenn nichts Relevantes.
+- bewertungen: Array mit max 5 Kundenbewertungen/Testimonials die auf der Website stehen. Format: [{"name":"Kundenname","text":"Bewertungstext","sterne":5}]. Sterne 1-5 (0 wenn nicht erkennbar). NUR echte Bewertungen von der Website, NICHTS erfinden. Leeres Array wenn keine gefunden.
 
 Website-Text:
 ${fullText}${emailHint}${phoneHint}`,
@@ -352,6 +353,7 @@ ${fullText}${emailHint}${phoneHint}`,
       spezialisierung: extracted.spezialisierung || "",
       oeffnungszeiten_import: extracted.oeffnungszeiten || "",
       gut_zu_wissen: extracted.gut_zu_wissen || "",
+      bewertungen: Array.isArray(extracted.bewertungen) ? extracted.bewertungen.filter(b => b && b.text).slice(0, 5) : [],
       facebook:  socialLinks.facebook  || "",
       instagram: socialLinks.instagram || "",
       linkedin:  socialLinks.linkedin  || "",

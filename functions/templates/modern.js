@@ -196,6 +196,8 @@ ${preislisteHtml}
 </div>
 </section>
 
+<!-- BEWERTUNGEN -->
+
 <section class="kontakt" id="kontakt">
 <div class="w">
 <div class="kontakt-grid">

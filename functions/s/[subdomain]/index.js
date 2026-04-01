@@ -191,6 +191,26 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- ABLAUF -->", "");
   }
 
+  // Kundenbewertungen — zwischen Über uns und Kontakt
+  const bewertungen = Array.isArray(o.bewertungen) ? o.bewertungen.filter(b => b && b.text) : [];
+  if (bewertungen.length > 0 && html.includes("<!-- BEWERTUNGEN -->")) {
+    const starSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    const emptyStar = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--sep)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    const cards = bewertungen.slice(0, 6).map(b => {
+      const stars = b.sterne ? Array.from({length:5}, (_,i) => i < b.sterne ? starSvg : emptyStar).join("") : "";
+      return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:24px;display:flex;flex-direction:column;gap:12px">` +
+        (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
+        `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${b.text}\u201c</p>` +
+        `<div style="font-size:.82rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</div>` +
+        `</div>`;
+    }).join("");
+    const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
+    const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">Kundenstimmen</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2></div><div style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div></div></section>`;
+    html = html.replace("<!-- BEWERTUNGEN -->", section);
+  } else {
+    html = html.replace("<!-- BEWERTUNGEN -->", "");
+  }
+
   // Kontakt-Infos — Features + Gut zu wissen zusammengeführt als einheitliches Grid
   const kontaktInfoItems = [];
   const kIcon = (svg) => `<div class="kontakt-info-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></div>`;

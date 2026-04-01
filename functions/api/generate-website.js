@@ -515,7 +515,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
       method: "PATCH",
       headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
       body: JSON.stringify({
-        website_html: html, subdomain: sub, status: "trial",
+        website_html: html, subdomain: sub, status: o.status === "live" ? "live" : "trial",
         tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
         quality_score: 100, quality_issues: null,
         ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
@@ -528,7 +528,11 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     }
   );
 
-  return Response.json({ok: save.ok, subdomain: sub, status: "live", quality_score: 100});
+  if (!save.ok) {
+    const saveErr = await save.text().catch(() => "");
+    return Response.json({error: "Speichern fehlgeschlagen: " + (saveErr || `HTTP ${save.status}`)}, {status: 500});
+  }
+  return Response.json({ok: true, subdomain: sub, status: "live", quality_score: 100});
   } catch(e) {
     try {
       await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {

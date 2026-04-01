@@ -118,20 +118,8 @@ export async function onRequestGet({params, env}) {
     html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, "");
   }
 
-  // Leistungen-Fotos (max 4) — unter den Leistungs-Cards
-  const leistFotos = [o.url_leist1, o.url_leist2, o.url_leist3, o.url_leist4].filter(Boolean);
-  if (leistFotos.length > 0 && html.includes("<!-- LEIST_FOTOS -->")) {
-    const items = leistFotos.map(url =>
-      `<div style="overflow:hidden;border-radius:var(--rLg,8px);line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
-      `</div>`
-    ).join("");
-    const cols = leistFotos.length <= 2 ? "1fr 1fr" : `repeat(${leistFotos.length},1fr)`;
-    const grid = `<div class="sr-foto-grid" style="display:grid;grid-template-columns:${cols};gap:14px;margin-top:48px">${items}</div>`;
-    html = html.replace("<!-- LEIST_FOTOS -->", grid);
-  } else {
-    html = html.replace("<!-- LEIST_FOTOS -->", "");
-  }
+  // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
+  html = html.replace("<!-- LEIST_FOTOS -->", "");
 
   // Über-uns-Fotos (max 4) — unter dem Text in der dunklen Sektion
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4].filter(Boolean);
@@ -185,10 +173,10 @@ export async function onRequestGet({params, env}) {
     const stilName = o.stil || "klassisch";
     const checkIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     const cardStyleMap = {
-      klassisch:  "border:1px solid var(--sep,#e2e8f0);padding:28px 26px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
-      modern:     "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);padding:28px 26px;background:#fff;transition:transform .2s ease,box-shadow .2s ease",
-      elegant:    "border:1px solid var(--sep,#e7e5e4);padding:32px 26px;background:#fff;border-radius:2px;transition:transform .2s ease,box-shadow .2s ease",
-      custom:     "border:1px solid var(--sep,#e5e7eb);padding:28px 26px;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
+      modern:     "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);background:#fff;transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);background:#fff;border-radius:2px;transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
+      custom:     "border:1px solid var(--sep,#e5e7eb);background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
     };
     const iconStyleMap = {
       klassisch: "width:42px;height:42px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0",
@@ -196,19 +184,34 @@ export async function onRequestGet({params, env}) {
       elegant:   "width:32px;height:32px;border-radius:2px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:20px;flex-shrink:0;opacity:.85",
       custom:    "width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0",
     };
+    const gradients = [
+      "linear-gradient(135deg,color-mix(in srgb,var(--accent) 85%,#000) 0%,var(--accent) 100%)",
+      "linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 60%,#fff) 100%)",
+      "linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,var(--accent)) 0%,var(--accent) 100%)",
+      "linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--accent) 70%,var(--primary)) 100%)",
+      "linear-gradient(135deg,color-mix(in srgb,var(--accent) 90%,#000) 0%,color-mix(in srgb,var(--accent) 60%,#fff) 100%)",
+      "linear-gradient(135deg,var(--accent) 0%,var(--primary) 100%)",
+    ];
     const cardStyle = cardStyleMap[stilName] || cardStyleMap.klassisch;
     const iconStyle = iconStyleMap[stilName] || iconStyleMap.klassisch;
     const preisMap = o.leistungen_preise || {};
+    const fotoMap = o.leistungen_fotos || {};
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
       const desc = descMap[l] || descMap[lCapitalized] || "";
       const preis = preisMap[l] || preisMap[lCapitalized] || "";
+      const foto = fotoMap[l] || fotoMap[lCapitalized] || "";
+      const imgArea = foto
+        ? `<div style="height:160px;overflow:hidden"><img src="${foto}" alt="${lCapitalized}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
+        : `<div style="height:120px;background:${gradients[i % gradients.length]};opacity:.85"></div>`;
       return `<div class="sr-fade" style="${cardStyle}" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.10)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">` +
+        imgArea +
+        `<div style="padding:24px 26px">` +
         `<div style="${iconStyle}">${checkIcon}</div>` +
         `<h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">${lCapitalized}</h3>` +
         (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">${desc}</p>` : `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7;opacity:.6">Professionelle Leistung f\u00fcr Ihre Bed\u00fcrfnisse.</p>`) +
         (preis ? `<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.06);font-size:.92rem;font-weight:700;color:var(--accent,#6366f1)">${preis}</div>` : "") +
-        `</div>`;
+        `</div></div>`;
     }).join("");
     const n = leistungenArr.length;
     const gridCols = n === 1 ? "1fr" : n <= 3 ? `repeat(${n},1fr)` : n === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";

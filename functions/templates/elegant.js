@@ -10,7 +10,7 @@ export function buildElegantTemplate(data) {
     trustBar, leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
-    socialHtml, kontaktFeatHtml, buchungslinkHtml, stickyCtaHtml,
+    socialHtml, buchungslinkHtml, stickyCtaHtml,
     metaTitle, metaDesc, siteUrl, fontUrl,
     primary, accent, bg, sep,
     kontaktCtaHeadline, kontaktCtaText,
@@ -97,9 +97,12 @@ a{color:inherit}
 .ueber-vorteile li{font-size:.95rem;font-weight:400;opacity:.85;padding:14px 0 14px 24px;position:relative;border-top:1px solid rgba(255,255,255,.08)}
 .ueber-vorteile li:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
 .ueber-vorteile li::before{content:'\u2013';position:absolute;left:0;top:14px;color:rgba(255,255,255,.5);font-weight:500}
-.kontakt-features{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid var(--sep)}
-.kontakt-feat{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:500;color:var(--primary);background:#fff;padding:6px 14px;border-radius:var(--r);border:1px solid var(--sep);letter-spacing:.01em}
-.kontakt-feat svg{color:var(--accent);flex-shrink:0;opacity:.7}
+.kontakt-infos{margin-top:32px;padding-top:28px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kontakt-info-item{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--text)}
+.kontakt-info-icon{width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 6%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kontakt-info-icon svg{color:var(--accent);opacity:.7}
+@media(max-width:768px){.kontakt-infos{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.kontakt-infos{grid-template-columns:1fr}}
 
 /* ── Kontakt ── */
 .kontakt{padding:100px 0;background:var(--bg)}
@@ -216,11 +219,10 @@ ${preislisteHtml}
 <div class="kontakt-item-value">{{OEFFNUNGSZEITEN}}</div>
 </div>
 ${socialHtml}
-${kontaktFeatHtml}
-<!-- GUT_ZU_WISSEN -->
 </div>
 <div><!-- MAPS --></div>
 </div>
+<!-- KONTAKT_INFOS -->
 <div class="kontakt-form-wrap">
 <!-- KONTAKT_FORM -->
 </div>

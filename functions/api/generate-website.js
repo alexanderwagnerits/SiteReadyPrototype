@@ -327,14 +327,6 @@ export async function onRequestPost({request, env}) {
   const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "\u00d6GK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
   if (kassenLabel) trustBadges.push(kassenLabel);
 
-  /* Praktisch = hilft bei der Nutzung (Kontakt-Section) */
-  const kontaktBadges = [];
-  if (o.hausbesuche) kontaktBadges.push("Hausbesuche");
-  if (o.terminvereinbarung) kontaktBadges.push("Nur mit Termin");
-  if (o.lieferservice) kontaktBadges.push("Lieferservice");
-  if (o.barrierefrei) kontaktBadges.push("Barrierefrei");
-  if (o.parkplaetze) kontaktBadges.push("Parkpl\u00e4tze");
-  if (o.online_beratung) kontaktBadges.push("Online-Beratung");
 
   /* ─── Logo URL ─── */
   const logoUrl = o.url_logo || null;
@@ -376,8 +368,6 @@ export async function onRequestPost({request, env}) {
   const trustItems2 = trustBadges.map(b => `<div class="trust-item">${featureIcon[b]||defaultIcon}<span>${b}</span></div>`);
   const trustLeisteHtml = trustItems2.length > 0 ? `<div class="trust"><div class="w"><div class="trust-items">${trustItems2.join("")}</div></div></div>` : "";
 
-  /* Kontakt-Features HTML (Pill-Badges in der Kontakt-Section) */
-  const kontaktFeatHtml = kontaktBadges.length > 0 ? `<div class="kontakt-features">${kontaktBadges.map(b => `<div class="kontakt-feat">${featureIcon[b]||defaultIcon}<span>${b}</span></div>`).join("")}</div>` : "";
 
   /* ─── Preisliste HTML ─── */
   const preislisteHtml = preislisteUrl ? `<a href="${preislisteUrl}" target="_blank" class="btn" style="margin-top:24px;background:var(--bg);color:var(--primary);border:1px solid var(--sep)">Preisliste ansehen</a>` : "";
@@ -489,7 +479,6 @@ JSON-FORMAT:
     telHref: "{{TEL_HREF}}",
     email: "{{EMAIL}}",
     socialHtml,
-    kontaktFeatHtml,
     buchungslinkHtml,
     stickyCtaHtml,
     metaTitle,

@@ -2012,12 +2012,20 @@ function Portal({session,onLogout}){
             </div>
             <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten wählen"/>
             {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
-            <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Parkplätze, Hygienehinweise, Anfahrt etc."/>
+            <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
+            <div style={{margin:"16px 0 12px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Vor-Ort-Infos</div>
+            <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
+            <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
+            <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
+            <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
+            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Video-Call möglich"/>
+            <Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>
           </>):(<>
             <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
             <InfoRow label="Telefon" value={order.telefon}/>
             <InfoRow label="Öffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
             {order.gut_zu_wissen&&<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Gut zu wissen</div>{order.gut_zu_wissen.split("\n").filter(s=>s.trim()).map((line,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,fontSize:".82rem",color:T.dark,lineHeight:1.5,padding:"3px 0"}}><span style={{color:T.accent,flexShrink:0,marginTop:1}}>&#8226;</span>{line.trim()}</div>)}</div>}
+            {(()=>{const items=[];if(order.terminvereinbarung)items.push("Nur mit Termin");if(order.barrierefrei)items.push("Barrierefrei");if(order.parkplaetze)items.push("Parkplätze");if(order.hausbesuche)items.push("Hausbesuche");if(order.online_beratung)items.push("Online-Beratung");if(order.lieferservice)items.push("Lieferservice");return items.length>0?<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Vor-Ort-Infos</div><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{items.map((it,i)=><span key={i} style={{fontSize:".78rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"3px 10px",borderRadius:100}}>{it}</span>)}</div></div>:null;})()}
           </>)}
         </div>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2186,15 +2194,10 @@ function Portal({session,onLogout}){
               {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}
               {ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={!!order.foerderungsberatung} onChange={upOrder("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}
               {ft.includes("buchungslink")&&<Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – optional"/>}
-              {ft.includes("hausbesuche")&&<Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>}
-              {ft.includes("terminvereinbarung")&&<Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in – nur mit Termin"/>}
-              {ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}
-              {ft.includes("barrierefrei")&&<Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>}
-              {ft.includes("parkplaetze")&&<Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>}
               {ft.includes("kassenvertrag")&&<Dropdown label="Kassenvertrag" value={order.kassenvertrag||""} onChange={upOrder("kassenvertrag")} options={[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt / Wahltherapeut"},{value:"privat",label:"Nur Privat"}]} placeholder="Kassenvertrag wählen" hint="Wichtig für Patienten"/>}
               {ft.includes("erstgespraech_gratis")&&<Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>}
-              {ft.includes("online_beratung")&&<Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Video-Call möglich"/>}
               {ft.includes("ratenzahlung")&&<Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>}
+              {ft.includes("preisliste")&&<div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter Fotos & Medien hochladen.</div>}
             </>;})()}
           </>):(<>
             {order.spezialisierung&&<InfoRow label="Spezialisierung" value={order.spezialisierung}/>}
@@ -2205,14 +2208,8 @@ function Portal({session,onLogout}){
               if(ft.includes("kostenvoranschlag"))items.push({l:"Kostenvoranschlag",v:order.kostenvoranschlag?"Aktiv":"–"});
               if(ft.includes("foerderungsberatung"))items.push({l:"Förderungsberatung",v:order.foerderungsberatung?"Aktiv":"–"});
               if(ft.includes("buchungslink"))items.push({l:"Buchungslink",v:order.buchungslink||"–"});
-              if(ft.includes("hausbesuche"))items.push({l:"Hausbesuche",v:order.hausbesuche?"Aktiv":"–"});
-              if(ft.includes("terminvereinbarung"))items.push({l:"Terminvereinbarung",v:order.terminvereinbarung?"Aktiv":"–"});
-              if(ft.includes("lieferservice"))items.push({l:"Lieferservice",v:order.lieferservice?"Aktiv":"–"});
-              if(ft.includes("barrierefrei"))items.push({l:"Barrierefrei",v:order.barrierefrei?"Aktiv":"–"});
-              if(ft.includes("parkplaetze"))items.push({l:"Parkplätze",v:order.parkplaetze?"Aktiv":"–"});
               if(ft.includes("kassenvertrag"))items.push({l:"Kassenvertrag",v:order.kassenvertrag?[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt"},{value:"privat",label:"Nur Privat"}].find(o=>o.value===order.kassenvertrag)?.label||"–":"–"});
               if(ft.includes("erstgespraech_gratis"))items.push({l:"Erstgespräch gratis",v:order.erstgespraech_gratis?"Aktiv":"–"});
-              if(ft.includes("online_beratung"))items.push({l:"Online-Beratung",v:order.online_beratung?"Aktiv":"–"});
               if(ft.includes("ratenzahlung"))items.push({l:"Ratenzahlung",v:order.ratenzahlung?"Aktiv":"–"});
               return items.map((it,i)=><InfoRow key={i} label={it.l} value={it.v}/>);})()}
           </>)}

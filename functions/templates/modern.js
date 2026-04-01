@@ -10,7 +10,7 @@ export function buildModernTemplate(data) {
     trustBar, leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
-    socialHtml, kontaktFeatHtml, buchungslinkHtml, stickyCtaHtml,
+    socialHtml, buchungslinkHtml, stickyCtaHtml,
     metaTitle, metaDesc, siteUrl, fontUrl,
     primary, accent, bg, sep,
     kontaktCtaHeadline, kontaktCtaText,
@@ -97,9 +97,12 @@ a{color:inherit}
 .ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:14px}
 .ueber-vorteile li{font-size:.95rem;font-weight:500;opacity:.9;padding-left:28px;position:relative}
 .ueber-vorteile li::before{content:'\u2713';position:absolute;left:0;top:0;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700}
-.kontakt-features{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid var(--sep)}
-.kontakt-feat{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--primary);background:#fff;padding:8px 16px;border-radius:100px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.kontakt-feat svg{color:var(--accent);flex-shrink:0}
+.kontakt-infos{margin-top:32px;padding-top:28px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kontakt-info-item{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text)}
+.kontakt-info-icon{width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kontakt-info-icon svg{color:var(--accent)}
+@media(max-width:768px){.kontakt-infos{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.kontakt-infos{grid-template-columns:1fr}}
 
 /* ── Kontakt ── */
 .kontakt{padding:100px 0;background:var(--bg)}
@@ -215,11 +218,10 @@ ${preislisteHtml}
 <div class="kontakt-item-value">{{OEFFNUNGSZEITEN}}</div>
 </div>
 ${socialHtml}
-${kontaktFeatHtml}
-<!-- GUT_ZU_WISSEN -->
 </div>
 <div><!-- MAPS --></div>
 </div>
+<!-- KONTAKT_INFOS -->
 <div class="kontakt-form-wrap">
 <!-- KONTAKT_FORM -->
 </div>

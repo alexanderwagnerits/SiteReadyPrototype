@@ -409,8 +409,22 @@ JSON-FORMAT:
   "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
   "leistungen_intro": "1 kurzer Einleitungssatz fuer die Leistungen-Sektion",
   "kontakt_cta_headline": "Kurze Headline fuer die Kontakt-CTA-Karte",
-  "kontakt_cta_text": "1-2 Saetze Motivation zur Kontaktaufnahme"
-}`;
+  "kontakt_cta_text": "1-2 Saetze Motivation zur Kontaktaufnahme",
+  "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"},{"titel":"Schritt 2","text":"Kurze Beschreibung"},{"titel":"Schritt 3","text":"Kurze Beschreibung"}],
+  "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3"
+}
+
+ZUSAETZLICHE REGELN fuer ablauf_schritte:
+- 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit ablaeuft
+- Titel: 2-4 Woerter. Text: 1 kurzer Satz, max 10 Woerter
+- Beispiel Arzt: Termin vereinbaren, Erstgespraech, Untersuchung, Befund
+- Beispiel Handwerker: Anfrage, Besichtigung & KV, Terminvereinbarung, Umsetzung
+
+ZUSAETZLICHE REGELN fuer gut_zu_wissen:
+- 2-3 branchentypische permanente Hinweise fuer Kunden, getrennt durch Zeilenumbruch
+- Nur relevante, konkrete Infos. Keine Floskeln.
+- Beispiel Arzt: Bitte e-Card mitbringen\nAnnahmeschluss 30 Min vor Ordinationsende
+- Beispiel Friseur: Termine koennen bis 24h vorher kostenlos storniert werden`;
 
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -536,6 +550,9 @@ JSON-FORMAT:
         ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
         ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
         ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
+        ...(texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
+        ...(texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
+        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen","ablauf_schritte","gut_zu_wissen"],
       }),
     }
   );

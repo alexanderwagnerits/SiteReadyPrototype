@@ -215,6 +215,9 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum) mit dies
 - gisazahl: GISA-Zahl (nur Ziffern, leer wenn nicht gefunden)
 - branche: Branche des Betriebs (NUR einen dieser Werte – Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/sonstige – Kosmetik & Koerperpflege: kosmetik/friseur/nagel/massage/tattoo/fusspflege/permanent_makeup/sonstige_kosmetik)
 - leistungen: Array mit max. 8 konkreten Leistungen die EXPLIZIT auf der Website erwaehnt werden (z.B. ["Elektroinstallation","Beleuchtung"]). NUR reale Angebote des Unternehmens – keine erfundenen oder vermuteten Leistungen, keine allgemeinen Begriffe wie "Beratung" ausser diese stehen wirklich auf der Seite. Leeres Array wenn keine konkreten Leistungen erkennbar.
+- spezialisierung: Fachgebiet oder Spezialisierung (z.B. "Allgemeinmedizin", "Elektroinstallationen & Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
+- oeffnungszeiten: Oeffnungszeiten als Freitext (z.B. "Mo-Fr 8-17, Sa 8-12"). Leer wenn nicht gefunden.
+- gut_zu_wissen: Permanente Hinweise fuer Kunden die auf der Website stehen, getrennt durch Zeilenumbruch (z.B. "Annahmeschluss 30 Min vor Ende\nRezepte per E-Mail vorbestellen"). Max 5 Zeilen. Leer wenn nichts Relevantes gefunden.
 
 Website-Text:
 ${fullText}${emailHint}`,
@@ -269,6 +272,9 @@ ${fullText}${emailHint}`,
       gisazahl: extracted.gisazahl || "",
       branche: extracted.branche || "",
       leistungen: Array.isArray(extracted.leistungen) ? extracted.leistungen.slice(0, 8) : [],
+      spezialisierung: extracted.spezialisierung || "",
+      oeffnungszeiten_import: extracted.oeffnungszeiten || "",
+      gut_zu_wissen: extracted.gut_zu_wissen || "",
       facebook:  socialLinks.facebook  || "",
       instagram: socialLinks.instagram || "",
       linkedin:  socialLinks.linkedin  || "",

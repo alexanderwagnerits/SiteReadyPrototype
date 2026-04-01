@@ -713,6 +713,9 @@ function SuccessPage({data,onBack,onPortal}){
       kammer_berufsrecht:data.kammer_berufsrecht,aufsichtsbehoerde:data.aufsichtsbehoerde,
       stil:data.stil,custom_color:data.customColor||null,custom_font:data.customFont||null,fotos:data.fotos,subdomain:sub,status:"pending",
       facebook:data.facebook||null,instagram:data.instagram||null,linkedin:data.linkedin||null,tiktok:data.tiktok||null,
+      oeffnungszeiten_custom:data.oeffnungszeitenCustom||null,
+      ...(importExtras.spezialisierung?{spezialisierung:importExtras.spezialisierung}:{}),
+      ...(importExtras.gut_zu_wissen?{gut_zu_wissen:importExtras.gut_zu_wissen}:{}),
       website_ziel:null
     });
     if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
@@ -1051,8 +1054,8 @@ const qCss=`
 function Questionnaire({data,setData,onComplete,onBack}){
   const SECS=[{id:"start",label:"Start",icon:<><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></>},{id:"grunddaten",label:"Grunddaten",icon:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>},{id:"leistungen",label:"Leistungen",icon:<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>},{id:"kontakt",label:"Kontakt",icon:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>},{id:"impressum",label:"Impressum",icon:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>},{id:"design",label:"Design",icon:<><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>},{id:"fertig",label:"Fertig",icon:<polyline points="20 6 9 17 4 12"/>}];
   const[step,setStep]=useState(0);
-  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");
-  const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");try{const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl})});const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen})}));setImportLoading(false);go(1);}catch(e){setImportErr("Verbindungsfehler: "+e.message);setImportLoading(false);}};
+  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");
+  const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");try{const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl})});const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom}));setImportExtras({spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||""});setImportLoading(false);go(1);}catch(e){setImportErr("Verbindungsfehler: "+e.message);setImportLoading(false);}};
   const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
   const pct=step===0?0:Math.round((step/(SECS.length-1))*100);
@@ -1523,8 +1526,14 @@ function Portal({session,onLogout}){
     setEditSection(null);
   };
 
-  const SectionHeader=({id,label,badge,desc,onSave})=>(
+  const isAiGen=(field)=>Array.isArray(order?.ai_generated)&&order.ai_generated.includes(field);
+  const SectionHeader=({id,label,badge,desc,onSave,aiField,onRemove})=>(
     <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
+      {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>KI-generiert — bitte prüfen und bei Bedarf anpassen</span>
+        {onRemove&&<button onClick={onRemove} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>}
+      </div>}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>{label}</div>
@@ -2012,6 +2021,11 @@ function Portal({session,onLogout}){
             </div>
             <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten wählen"/>
             {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
+            {isAiGen("gut_zu_wissen")&&order.gut_zu_wissen&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,marginBottom:4,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>KI-generiert — bitte prüfen</span>
+              <button onClick={async()=>{await supabase.from("orders").update({gut_zu_wissen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}).eq("id",order.id);setOrder(o=>({...o,gut_zu_wissen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}));showToast("Hinweise entfernt");}} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
+            </div>}
             <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
             <div style={{margin:"16px 0 12px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Vor-Ort-Infos</div>
             <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
@@ -2029,7 +2043,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen" badge="instant" desc="Ihre Leistungen erscheinen als Karten auf der Website. Mit Beschreibung und Preis erhalten Sie deutlich mehr Anfragen."/>
+          <SectionHeader id="leistungen" label="Leistungen" badge="instant" desc="Ihre Leistungen erscheinen als Karten auf der Website. Mit Beschreibung und Preis erhalten Sie deutlich mehr Anfragen." aiField="leistungen_beschreibungen"/>
           {editSection==="leistungen"?(<>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Reihenfolge & Beschreibung"}</div>
@@ -2107,7 +2121,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="texte" label="Über uns & Vorteile" badge="instant" desc="Der persönliche Vorstellungstext und Ihre Stärken. Bearbeiten Sie den KI-generierten Text nach Wunsch."/>
+          <SectionHeader id="texte" label="Über uns & Vorteile" badge="instant" desc="Der persönliche Vorstellungstext und Ihre Stärken. Bearbeiten Sie den KI-generierten Text nach Wunsch." aiField="text_ueber_uns"/>
           {editSection==="texte"?(<>
             <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
             <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
@@ -2151,7 +2165,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <SectionHeader id="ablauf" label="Ablauf" badge="instant" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Erscheint als eigene Section auf der Website."/>
+          <SectionHeader id="ablauf" label="Ablauf" badge="instant" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Erscheint als eigene Section auf der Website." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
           {editSection==="ablauf"?(<>
             {(order.ablauf_schritte||[]).map((s,i)=>(
               <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>

@@ -10,7 +10,7 @@ export function buildModernTemplate(data) {
     trustBar, leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
-    socialHtml, buchungslinkHtml, stickyCtaHtml,
+    socialHtml, kontaktFeatHtml, buchungslinkHtml, stickyCtaHtml,
     metaTitle, metaDesc, siteUrl, fontUrl,
     primary, accent, bg, sep,
     kontaktCtaHeadline, kontaktCtaText,
@@ -97,14 +97,9 @@ a{color:inherit}
 .ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:14px}
 .ueber-vorteile li{font-size:.95rem;font-weight:500;opacity:.9;padding-left:28px;position:relative}
 .ueber-vorteile li::before{content:'\u2713';position:absolute;left:0;top:0;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700}
-.info-card{background:rgba(255,255,255,.06);border:none;border-radius:var(--rLg);padding:32px 28px;backdrop-filter:blur(4px)}
-.info-card h3{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.4;margin-bottom:24px}
-.info-row{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-.info-row:last-child{border-bottom:none}
-.info-row-label{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;opacity:.4;margin-bottom:4px}
-.info-row-value{font-size:1rem;font-weight:600}
-.info-row-value a{color:#fff;text-decoration:none}
-.info-row-value a:hover{opacity:.7}
+.kontakt-features{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid var(--sep)}
+.kontakt-feat{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--primary);background:#fff;padding:8px 16px;border-radius:100px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.kontakt-feat svg{color:var(--accent);flex-shrink:0}
 
 /* ── Kontakt ── */
 .kontakt{padding:100px 0;background:var(--bg)}
@@ -187,27 +182,10 @@ ${preislisteHtml}
 <h2>\u00dcber ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
-<!-- TEAM -->
 <!-- ABOUT_FOTOS -->
 </div>
-<div class="info-card sr-fade">
-<h3>Auf einen Blick</h3>
-<div class="info-row">
-<div class="info-row-label">\u00d6ffnungszeiten</div>
-<div class="info-row-value">{{OEFFNUNGSZEITEN}}</div>
-</div>
-<div class="info-row">
-<div class="info-row-label">Einsatzgebiet</div>
-<div class="info-row-value">${einsatzgebiet}</div>
-</div>
-<div class="info-row">
-<div class="info-row-label">Telefon</div>
-<div class="info-row-value"><a href="{{TEL_HREF}}">{{TEL_DISPLAY}}</a></div>
-</div>
-<div class="info-row">
-<div class="info-row-label">E-Mail</div>
-<div class="info-row-value"><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
-</div>
+<div class="sr-fade">
+<!-- TEAM -->
 </div>
 </div>
 </div>
@@ -235,6 +213,7 @@ ${preislisteHtml}
 <div class="kontakt-item-value">{{OEFFNUNGSZEITEN}}</div>
 </div>
 ${socialHtml}
+${kontaktFeatHtml}
 </div>
 <div><!-- MAPS --></div>
 </div>

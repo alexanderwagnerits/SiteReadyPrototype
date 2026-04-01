@@ -315,22 +315,26 @@ export async function onRequestPost({request, env}) {
   if (trustItems.length < 4) trustItems.push(oezLabel);
   const trustBar = trustItems.slice(0, 4).join("  \u00b7  ");
 
-  /* ─── Feature-Badges (keine Emojis) ─── */
-  const badges = [];
-  if (o.notdienst) badges.push("24/7 Notdienst");
-  if (o.meisterbetrieb) badges.push("Meisterbetrieb");
-  if (o.kostenvoranschlag) badges.push("Kostenloser KV");
-  if (o.foerderungsberatung) badges.push("F\u00f6rderungsberatung");
-  if (o.hausbesuche) badges.push("Hausbesuche");
-  if (o.terminvereinbarung) badges.push("Nur mit Termin");
-  if (o.lieferservice) badges.push("Lieferservice");
-  if (o.barrierefrei) badges.push("Barrierefrei");
-  if (o.parkplaetze) badges.push("Parkpl\u00e4tze");
-  if (o.erstgespraech_gratis) badges.push("Erstgespr\u00e4ch gratis");
-  if (o.online_beratung) badges.push("Online-Beratung");
-  if (o.ratenzahlung) badges.push("Ratenzahlung");
+  /* ─── Features aufgeteilt: Trust-Signale vs. Praktisches ─── */
+  /* Trust = ueberzeugt den Besucher (Trust-Leiste) */
+  const trustBadges = [];
+  if (o.notdienst) trustBadges.push("24/7 Notdienst");
+  if (o.meisterbetrieb) trustBadges.push("Meisterbetrieb");
+  if (o.kostenvoranschlag) trustBadges.push("Kostenloser KV");
+  if (o.foerderungsberatung) trustBadges.push("F\u00f6rderungsberatung");
+  if (o.erstgespraech_gratis) trustBadges.push("Erstgespr\u00e4ch gratis");
+  if (o.ratenzahlung) trustBadges.push("Ratenzahlung");
   const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "\u00d6GK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
-  if (kassenLabel) badges.push(kassenLabel);
+  if (kassenLabel) trustBadges.push(kassenLabel);
+
+  /* Praktisch = hilft bei der Nutzung (Kontakt-Section) */
+  const kontaktBadges = [];
+  if (o.hausbesuche) kontaktBadges.push("Hausbesuche");
+  if (o.terminvereinbarung) kontaktBadges.push("Nur mit Termin");
+  if (o.lieferservice) kontaktBadges.push("Lieferservice");
+  if (o.barrierefrei) kontaktBadges.push("Barrierefrei");
+  if (o.parkplaetze) kontaktBadges.push("Parkpl\u00e4tze");
+  if (o.online_beratung) kontaktBadges.push("Online-Beratung");
 
   /* ─── Logo URL ─── */
   const logoUrl = o.url_logo || null;
@@ -369,8 +373,11 @@ export async function onRequestPost({request, env}) {
     "Ratenzahlung":`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
   };
   const defaultIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-  const trustItems2 = badges.map(b => `<div class="trust-item">${featureIcon[b]||defaultIcon}<span>${b}</span></div>`);
+  const trustItems2 = trustBadges.map(b => `<div class="trust-item">${featureIcon[b]||defaultIcon}<span>${b}</span></div>`);
   const trustLeisteHtml = trustItems2.length > 0 ? `<div class="trust"><div class="w"><div class="trust-items">${trustItems2.join("")}</div></div></div>` : "";
+
+  /* Kontakt-Features HTML (Pill-Badges in der Kontakt-Section) */
+  const kontaktFeatHtml = kontaktBadges.length > 0 ? `<div class="kontakt-features">${kontaktBadges.map(b => `<div class="kontakt-feat">${featureIcon[b]||defaultIcon}<span>${b}</span></div>`).join("")}</div>` : "";
 
   /* ─── Preisliste HTML ─── */
   const preislisteHtml = preislisteUrl ? `<a href="${preislisteUrl}" target="_blank" class="btn" style="margin-top:24px;background:var(--bg);color:var(--primary);border:1px solid var(--sep)">Preisliste ansehen</a>` : "";
@@ -482,6 +489,7 @@ JSON-FORMAT:
     telHref: "{{TEL_HREF}}",
     email: "{{EMAIL}}",
     socialHtml,
+    kontaktFeatHtml,
     buchungslinkHtml,
     stickyCtaHtml,
     metaTitle,

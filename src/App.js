@@ -1607,7 +1607,7 @@ function Portal({session,onLogout}){
     ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
     social:{title:"Social Media",sub:"Ihre Social-Media-Profile erscheinen als Icons im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
-    branchenfeatures:{title:"Spezielle Funktionen",sub:"Funktionen und Hinweise speziell für Ihre Branche"},
+    branchenfeatures:{title:"Merkmale",sub:"Alles was Kunden über Ihr Geschäft wissen sollten — wird auf Ihrer Website und in Google angezeigt"},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
     medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
@@ -1720,7 +1720,7 @@ function Portal({session,onLogout}){
           ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
           ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,true],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
-          ["branchenfeatures","Spezielle Funktionen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
+          ["branchenfeatures","Merkmale",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
@@ -2029,19 +2029,13 @@ function Portal({session,onLogout}){
               <button onClick={async()=>{await supabase.from("orders").update({gut_zu_wissen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}).eq("id",order.id);setOrder(o=>({...o,gut_zu_wissen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}));showToast("Hinweise entfernt");}} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
             </div>}
             <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
-            <div style={{margin:"16px 0 12px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Vor-Ort-Infos</div>
-            <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
-            <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
-            <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
-            <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
-            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Videoanruf möglich"/>
-            <Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>
+            <div style={{margin:"16px 0 8px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,padding:"8px 12px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted}}>Vor-Ort-Infos, Erreichbarkeit und weitere Merkmale finden Sie unter <button onClick={()=>nav("branchenfeatures")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Merkmale</button>.</div>
           </>):(<>
             <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
             <InfoRow label="Telefon" value={order.telefon}/>
             <InfoRow label="Öffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
             {order.gut_zu_wissen&&<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Gut zu wissen</div>{order.gut_zu_wissen.split("\n").filter(s=>s.trim()).map((line,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,fontSize:".82rem",color:T.dark,lineHeight:1.5,padding:"3px 0"}}><span style={{color:T.accent,flexShrink:0,marginTop:1}}>&#8226;</span>{line.trim()}</div>)}</div>}
-            {(()=>{const items=[];if(order.terminvereinbarung)items.push("Nur mit Termin");if(order.barrierefrei)items.push("Barrierefrei");if(order.parkplaetze)items.push("Parkplätze");if(order.hausbesuche)items.push("Hausbesuche");if(order.online_beratung)items.push("Online-Beratung");if(order.lieferservice)items.push("Lieferservice");return items.length>0?<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Vor-Ort-Infos</div><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{items.map((it,i)=><span key={i} style={{fontSize:".78rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"3px 10px",borderRadius:100}}>{it}</span>)}</div></div>:null;})()}
+            {(()=>{const items=[];if(order.terminvereinbarung)items.push("Nur mit Termin");if(order.barrierefrei)items.push("Barrierefrei");if(order.parkplaetze)items.push("Parkplätze");if(order.hausbesuche)items.push("Hausbesuche");if(order.online_beratung)items.push("Online-Beratung");if(order.lieferservice)items.push("Lieferservice");if(order.kartenzahlung)items.push("Kartenzahlung");if(order.wlan)items.push("WLAN");if(order.klimatisiert)items.push("Klimatisiert");if(order.kinderfreundlich)items.push("Kinderfreundlich");if(order.hunde_willkommen)items.push("Hunde willkommen");if(order.gastgarten)items.push("Gastgarten");if(order.takeaway)items.push("Take-away");return items.length>0?<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Merkmale</div><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{items.map((it,i)=><span key={i} style={{fontSize:".78rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"3px 10px",borderRadius:100}}>{it}</span>)}</div></div>:null;})()}
           </>)}
         </div>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2222,41 +2216,52 @@ function Portal({session,onLogout}){
           </div>
           <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
         </div>}
-        {page==="branchenfeatures"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="branchenfeatures" label="Spezielle Funktionen" desc={`Funktionen und Hinweise speziell für ${order.branche_label||"Ihre Branche"}. Diese werden auf Ihrer Website angezeigt und stärken das Vertrauen Ihrer Kunden.`}/>
+        {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader id="branchenfeatures" label="Merkmale" desc={`Alles was Kunden über ${order.firmenname||"Ihr Geschäft"} wissen sollten — wird auf Ihrer Website und in Google angezeigt.`}/>
           {editSection==="branchenfeatures"?(<>
-            <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird oben auf der Website und in Google angezeigt — leer lassen wenn nicht zutreffend"/>
-            <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr. für Ärzte, GISA-Zahl für Gewerbe" hint="Wird im Über-uns-Bereich auf der Website angezeigt — nur ausfüllen wenn vorhanden"/>
-            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;return<><div style={{margin:"16px 0 12px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Branchenspezifisch</div>
-              {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
-              {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
-              {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}
-              {ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={!!order.foerderungsberatung} onChange={upOrder("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}
-              {ft.includes("buchungslink")&&<Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – optional"/>}
-              {ft.includes("kassenvertrag")&&<Dropdown label="Kassenvertrag" value={order.kassenvertrag||""} onChange={upOrder("kassenvertrag")} options={[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt / Wahltherapeut"},{value:"privat",label:"Nur Privat"}]} placeholder="Kassenvertrag wählen" hint="Wichtig für Patienten"/>}
-              {ft.includes("erstgespraech_gratis")&&<Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>}
-              {ft.includes("ratenzahlung")&&<Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>}
-              {ft.includes("preisliste")&&<div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter Fotos & Medien hochladen.</div>}
-            </>;})()}
+            {subH("Erreichbarkeit")}
+            <Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – erscheint als eigener Bereich auf der Website"/>
+            <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
+            <Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>
+            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Videoanruf möglich"/>
+            <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
+
+            {subH("Vor Ort")}
+            <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
+            <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
+            <Toggle label="Kartenzahlung" checked={!!order.kartenzahlung} onChange={upOrder("kartenzahlung")} desc="Bankomat- oder Kreditkarte"/>
+            <Toggle label="WLAN" checked={!!order.wlan} onChange={upOrder("wlan")} desc="Kostenloses WLAN für Kunden"/>
+            <Toggle label="Klimatisiert" checked={!!order.klimatisiert} onChange={upOrder("klimatisiert")} desc="Klimaanlage vorhanden"/>
+            <Toggle label="Kinderfreundlich" checked={!!order.kinderfreundlich} onChange={upOrder("kinderfreundlich")} desc="Spielecke, Kinderstuhl o.ä. vorhanden"/>
+            <Toggle label="Hunde willkommen" checked={!!order.hunde_willkommen} onChange={upOrder("hunde_willkommen")} desc="Hunde dürfen mitgebracht werden"/>
+            {ft.includes("gastgarten")&&<Toggle label="Gastgarten / Terrasse" checked={!!order.gastgarten} onChange={upOrder("gastgarten")} desc="Sitzplätze im Freien"/>}
+            {ft.includes("takeaway")&&<Toggle label="Take-away / Abholung" checked={!!order.takeaway} onChange={upOrder("takeaway")} desc="Speisen zum Mitnehmen"/>}
+            {ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}
+
+            {subH("Vertrauen & Qualität")}
+            <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird oben auf der Website angezeigt — leer lassen wenn nicht zutreffend"/>
+            <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr. für Ärzte, GISA-Zahl für Gewerbe" hint="Nur ausfüllen wenn vorhanden"/>
+            {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
+            {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
+            {ft.includes("kassenvertrag")&&<Dropdown label="Kassenvertrag" value={order.kassenvertrag||""} onChange={upOrder("kassenvertrag")} options={[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt / Wahltherapeut"},{value:"privat",label:"Nur Privat"}]} placeholder="Kassenvertrag wählen" hint="Wichtig für Patienten"/>}
+            <Toggle label="Zertifiziert / geprüft" checked={!!order.zertifiziert} onChange={upOrder("zertifiziert")} desc="z.B. TÜV, ISO, WKO-Qualitätszeichen"/>
+            <Toggle label="Versichert" checked={!!order.versichert} onChange={upOrder("versichert")} desc="Haftpflichtversicherung vorhanden"/>
+
+            {subH("Angebot & Preis")}
+            {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}
+            <Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>
+            {ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={!!order.foerderungsberatung} onChange={upOrder("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}
+            <Toggle label="Gutscheine erhältlich" checked={!!order.gutscheine} onChange={upOrder("gutscheine")} desc="Geschenkgutscheine zum Kaufen"/>
+            <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Fotos & Medien</button> hochladen.</div>
           </>):(<>
-            {order.spezialisierung&&<InfoRow label="Spezialisierung" value={order.spezialisierung}/>}
-            {order.berufsregister_nr&&<InfoRow label="Berufsregister-Nr." value={order.berufsregister_nr}/>}
-            {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;const items=[];
-              if(ft.includes("notdienst"))items.push({l:"24h Notdienst",v:order.notdienst?"Aktiv":"–"});
-              if(ft.includes("meisterbetrieb"))items.push({l:"Meisterbetrieb",v:order.meisterbetrieb?"Aktiv":"–"});
-              if(ft.includes("kostenvoranschlag"))items.push({l:"Kostenvoranschlag",v:order.kostenvoranschlag?"Aktiv":"–"});
-              if(ft.includes("foerderungsberatung"))items.push({l:"Förderungsberatung",v:order.foerderungsberatung?"Aktiv":"–"});
-              if(ft.includes("buchungslink"))items.push({l:"Buchungslink",v:order.buchungslink||"–"});
-              if(ft.includes("kassenvertrag"))items.push({l:"Kassenvertrag",v:order.kassenvertrag?[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt"},{value:"privat",label:"Nur Privat"}].find(o=>o.value===order.kassenvertrag)?.label||"–":"–"});
-              if(ft.includes("erstgespraech_gratis"))items.push({l:"Erstgespräch gratis",v:order.erstgespraech_gratis?"Aktiv":"–"});
-              if(ft.includes("ratenzahlung"))items.push({l:"Ratenzahlung",v:order.ratenzahlung?"Aktiv":"–"});
-              return items.map((it,i)=><InfoRow key={i} label={it.l} value={it.v}/>);})()}
+            {(()=>{const sectionData=[
+              {title:"Erreichbarkeit",items:[{l:"Buchungslink",v:order.buchungslink||null},{l:"Nur mit Termin",v:order.terminvereinbarung},{l:"Erstgespräch gratis",v:order.erstgespraech_gratis},{l:"Online-Beratung",v:order.online_beratung},{l:"Hausbesuche",v:order.hausbesuche}]},
+              {title:"Vor Ort",items:[{l:"Barrierefrei",v:order.barrierefrei},{l:"Parkplätze",v:order.parkplaetze},{l:"Kartenzahlung",v:order.kartenzahlung},{l:"WLAN",v:order.wlan},{l:"Klimatisiert",v:order.klimatisiert},{l:"Kinderfreundlich",v:order.kinderfreundlich},{l:"Hunde willkommen",v:order.hunde_willkommen},...(ft.includes("gastgarten")?[{l:"Gastgarten",v:order.gastgarten}]:[]),...(ft.includes("takeaway")?[{l:"Take-away",v:order.takeaway}]:[]),...(ft.includes("lieferservice")?[{l:"Lieferservice",v:order.lieferservice}]:[])]},
+              {title:"Vertrauen & Qualität",items:[{l:"Spezialisierung",v:order.spezialisierung||null},{l:"Berufsregister-Nr.",v:order.berufsregister_nr||null},...(ft.includes("meisterbetrieb")?[{l:"Meisterbetrieb",v:order.meisterbetrieb}]:[]),...(ft.includes("notdienst")?[{l:"24h Notdienst",v:order.notdienst}]:[]),...(ft.includes("kassenvertrag")?[{l:"Kassenvertrag",v:order.kassenvertrag?[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt"},{value:"privat",label:"Nur Privat"}].find(o=>o.value===order.kassenvertrag)?.label||null:null}]:[]),{l:"Zertifiziert",v:order.zertifiziert},{l:"Versichert",v:order.versichert}]},
+              {title:"Angebot & Preis",items:[...(ft.includes("kostenvoranschlag")?[{l:"Kostenvoranschlag",v:order.kostenvoranschlag}]:[]),{l:"Ratenzahlung",v:order.ratenzahlung},...(ft.includes("foerderungsberatung")?[{l:"Förderungsberatung",v:order.foerderungsberatung}]:[]),{l:"Gutscheine",v:order.gutscheine}]}
+            ];return sectionData.map((sec,si)=>{const active=sec.items.filter(it=>it.v);if(!active.length)return null;return<div key={si}><div style={{margin:si?"20px 0 8px":"0 0 8px",paddingTop:si?16:0,borderTop:si?`1px solid ${T.bg3}`:"none",fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted}}>{sec.title}</div>{active.map((it,i)=><InfoRow key={i} label={it.l} value={typeof it.v==="string"?it.v:"Aktiv"}/>)}</div>});})()}
           </>)}
-          <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:4}}>Tipp</div>
-            <div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Ihre Mitarbeiter können Sie unter "Über uns" vorstellen. Fotos pro Leistung laden Sie im Leistungen-Bereich hoch.</div>
-          </div>
-        </div>}
+        </div>})()}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="social" label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>
           {editSection==="social"?(<>

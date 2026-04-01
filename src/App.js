@@ -1561,7 +1561,7 @@ function Portal({session,onLogout}){
     leistungen:!!(order.leistungen?.length>0),
     kontakt:!!(order.adresse&&order.telefon),
     ueberuns:!!(order.text_ueber_uns),
-    medien:!!(assetUrls.logo||assetUrls.hero||assetUrls.foto1),
+    medien:!!(assetUrls.logo||assetUrls.hero),
     impressum:!!(order.unternehmensform||order.uid_nummer),
   }:{};
   const astItems=order?[
@@ -1827,7 +1827,7 @@ function Portal({session,onLogout}){
           const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
           const tips=[
             {label:"Logo hochladen",done:!!assetUrls.logo,page:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
-            {label:"Foto hochladen",done:!!(assetUrls.hero||assetUrls.leist1||assetUrls.leist2||assetUrls.leist3),page:"medien",hint:"Hero-Bild oder Arbeitsproben machen einen grossen Unterschied"},
+            {label:"Foto hochladen",done:!!(assetUrls.hero),page:"medien",hint:"Hero-Bild macht einen grossen Unterschied"},
             {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,page:"ueberuns",hint:"KI-generierten Text anpassen oder personalisieren"},
             {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),page:"leistungen",hint:"Preise direkt auf den Leistungskarten anzeigen"},
             ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,page:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
@@ -2498,28 +2498,11 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".78rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>Empfohlen: JPG, mind. 1920 &times; 1080 px &middot; Querformat &middot; Ohne Textüberlagerungen (Bild wird automatisch mit Farbverlauf abgedunkelt)</div>
           </div>
         );})()}
-        {/* Leistungen-Fotos */}
-        {(()=>{const keys=["leist1","leist2","leist3","leist4"];return(
-        <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Leistungen-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
-          <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Zeigen Sie Ihre Arbeit — Arbeitsproben, Projekte, Vorher/Nachher. Max. 4 Fotos.</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-            {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
-              <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
-                <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {url?<img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
-                </div>
-                <div style={{display:"flex",gap:4}}>
-                  <label style={{flex:1,textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
-                    {busy?"...":url?"Ersetzen":"Hochladen"}
-                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(k,e.target.files[0]);}}/>
-                  </label>
-                  {url&&<button onClick={()=>deleteAsset(k)} disabled={deleting[k]} style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"\u00d7"}</button>}
-                </div>
-              </div>
-            );})}
-          </div>
-        </div>);})()}
+        {/* Leistungen-Fotos: jetzt im Leistungen-Editor pro Card */}
+        <div style={{background:"#fff",borderRadius:T.r,padding:"16px 24px",border:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:12}}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.5}}>Leistungsfotos können Sie direkt im <span style={{fontWeight:700,color:T.accent,cursor:"pointer"}} onClick={()=>nav("leistungen")}>Leistungen-Editor</span> pro Leistung zuordnen.</div>
+        </div>
         {/* Über-uns-Fotos */}
         {(()=>{const keys=["about1","about2","about3","about4"];return(
         <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>

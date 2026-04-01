@@ -52,6 +52,8 @@ a{color:inherit}
 .w{max-width:var(--maxW);margin:0 auto;padding:0 28px}
 @keyframes sr-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 .sr-a{opacity:0;animation:sr-up .5s ease forwards}
+.sr-fade{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.sr-fade.sr-vis{opacity:1;transform:translateY(0)}
 
 /* ── Hero ── */
 .hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative;overflow:hidden;min-height:100vh}
@@ -75,19 +77,19 @@ a{color:inherit}
 }
 
 /* ── Leistungen ── */
-.leist{padding:96px 0;background:linear-gradient(180deg,#fff 0%,var(--bg,#f8fafc) 100%)}
+.leist{padding:100px 0;background:#fff}
 .leist-top{margin-bottom:48px}
 .leist-label{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:rgba(99,102,241,.08);padding:6px 14px;border-radius:100px}
 .leist h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:14px}
 .leist-intro{color:var(--textMuted);font-size:1.05rem;max-width:520px;line-height:1.75}
-@media(min-width:900px){.leist{padding:120px 0}}
+@media(min-width:900px){.leist{padding:140px 0}}
 @media(max-width:640px){.sr-leist-grid{grid-template-columns:1fr!important}}
 
 /* ── Ueber uns ── */
-.ueber{padding:96px 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+.ueber{padding:100px 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
 .ueber::before{content:'';position:absolute;width:360px;height:360px;border-radius:50%;background:var(--accent);opacity:.06;bottom:-120px;left:-80px;filter:blur(48px);pointer-events:none}
 .ueber-grid{display:grid;gap:48px;position:relative;z-index:1}
-@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.ueber{padding:120px 0}}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.ueber{padding:140px 0}}
 .ueber h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.03em;margin-bottom:20px;color:#fff}
 .ueber-text{font-size:1rem;line-height:1.9;opacity:.75;margin-bottom:28px}
 .ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:14px}
@@ -103,9 +105,9 @@ a{color:inherit}
 .info-row-value a:hover{opacity:.7}
 
 /* ── Kontakt ── */
-.kontakt{padding:96px 0;background:var(--bg)}
+.kontakt{padding:100px 0;background:var(--bg)}
 .kontakt-grid{display:grid;gap:48px}
-@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.kontakt{padding:120px 0}}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.kontakt{padding:140px 0}}
 .kontakt h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:28px}
 .kontakt-item{margin-bottom:20px}
 .kontakt-item-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
@@ -164,7 +166,7 @@ a{color:inherit}
 
 <section class="leist" id="leistungen">
 <div class="w">
-<div class="leist-top">
+<div class="leist-top sr-fade">
 <div class="leist-label">Leistungen</div>
 <h2>Was wir f\u00fcr Sie tun</h2>
 <p class="leist-intro">${leistungenIntro}</p>
@@ -178,13 +180,13 @@ ${preislisteHtml}
 <section class="ueber" id="ueber-uns">
 <div class="w">
 <div class="ueber-grid">
-<div>
+<div class="sr-fade">
 <h2>\u00dcber ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
 <!-- ABOUT_FOTOS -->
 </div>
-<div class="info-card">
+<div class="info-card sr-fade">
 <h3>Auf einen Blick</h3>
 <div class="info-row">
 <div class="info-row-label">\u00d6ffnungszeiten</div>
@@ -210,7 +212,7 @@ ${preislisteHtml}
 <section class="kontakt" id="kontakt">
 <div class="w">
 <div class="kontakt-grid">
-<div>
+<div class="sr-fade">
 <h2>So erreichen Sie uns</h2>
 <div class="kontakt-item">
 <div class="kontakt-item-label">Adresse</div>
@@ -243,7 +245,7 @@ ${buchungslinkHtml}
 <!-- FOOTER -->
 
 <div class="lb" id="sr-lb" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schliessen">\u00d7</button><img id="sr-lb-img" src="" alt=""/></div>
-<script>(function(){var o=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-a');o.unobserve(i.target)}})},{threshold:.15});document.querySelectorAll('.leist,.ueber,.kontakt,.termin-cta').forEach(function(s){o.observe(s)});document.addEventListener('click',function(e){var img=e.target.closest('.sr-zoom');if(img){var lb=document.getElementById('sr-lb');document.getElementById('sr-lb-img').src=img.src;lb.classList.add('open');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('sr-lb').classList.remove('open');});})();</script>
+<script>(function(){var o=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-a');o.unobserve(i.target)}})},{threshold:.15});document.querySelectorAll('.leist,.ueber,.kontakt,.termin-cta').forEach(function(s){o.observe(s)});var f=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-vis');f.unobserve(i.target)}})},{threshold:.08,rootMargin:'0px 0px -60px 0px'});document.querySelectorAll('.sr-leist-grid,.ueber-grid,.kontakt-grid').forEach(function(p){var ch=p.children;for(var j=0;j<ch.length;j++){ch[j].style.transitionDelay=j*120+'ms';if(!ch[j].classList.contains('sr-fade'))ch[j].classList.add('sr-fade');f.observe(ch[j])}});document.querySelectorAll('.sr-fade').forEach(function(el){f.observe(el)});document.addEventListener('click',function(e){var img=e.target.closest('.sr-zoom');if(img){var lb=document.getElementById('sr-lb');document.getElementById('sr-lb-img').src=img.src;lb.classList.add('open');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('sr-lb').classList.remove('open');});})();</script>
 </body>
 </html>`;
 }

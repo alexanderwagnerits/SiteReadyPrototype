@@ -550,9 +550,9 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
         ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
         ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
         ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
-        ...(texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
-        ...(texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
-        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen","ablauf_schritte","gut_zu_wissen"],
+        ...(!o.ablauf_schritte?.length && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
+        ...(!o.gut_zu_wissen && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
+        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[])],
       }),
     }
   );

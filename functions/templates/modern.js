@@ -6,8 +6,8 @@
 export function buildModernTemplate(data) {
   const {
     firmenname, brancheLabel, einsatzgebiet, kurzbeschreibung,
-    trustLeisteHtml, ctaPrimary, ctaPrimaryHref, ctaSecondary,
-    trustBar, leistungenIntro, preislisteHtml,
+    ctaPrimary, ctaPrimaryHref, ctaSecondary,
+    leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
     socialHtml, buchungslinkHtml, stickyCtaHtml,
@@ -163,7 +163,7 @@ a{color:inherit}
 </div>
 </section>
 
-${trustLeisteHtml}
+<!-- TRUST -->
 
 <section class="leist" id="leistungen">
 <div class="w">

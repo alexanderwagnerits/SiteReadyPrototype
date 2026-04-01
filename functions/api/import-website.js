@@ -159,8 +159,8 @@ export async function onRequestPost({request, env}) {
     const standardPaths = {
       kontakt: ["/kontakt", "/contact", "/kontakt.html"],
       impressum: ["/impressum", "/impressum.html", "/de/impressum"],
-      leistungen: ["/leistungen", "/services", "/angebot", "/leistungen.html"],
-      ueberuns: ["/ueber-uns", "/about", "/about-us", "/team"],
+      leistungen: ["/leistungen", "/services", "/angebot", "/leistungen.html", "/schwerpunkte", "/behandlungen", "/preise"],
+      ueberuns: ["/ueber-uns", "/about", "/about-us", "/team", "/ueber-mich"],
     };
 
     for (const [key, paths] of Object.entries(standardPaths)) {

@@ -121,6 +121,22 @@ export async function onRequestGet({params, env}) {
   // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
   html = html.replace("<!-- LEIST_FOTOS -->", "");
 
+  // Team-Members — unter den Vorteilen in der Über-uns Sektion
+  const teamMembers = Array.isArray(o.team_members) ? o.team_members.filter(m => m && m.name) : [];
+  if (teamMembers.length > 0 && html.includes("<!-- TEAM -->")) {
+    const personIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    const cards = teamMembers.map(m => {
+      const hasImg = !!m.foto;
+      const avatar = hasImg
+        ? `<img src="${m.foto}" alt="${m.name}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.15)">`
+        : `<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.08)">${personIcon}</div>`;
+      return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0">${avatar}<div><div style="font-weight:700;font-size:.95rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.8rem;opacity:.55;margin-top:2px">${m.rolle}</div>` : ""}</div></div>`;
+    }).join("");
+    html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}</div>`);
+  } else {
+    html = html.replace("<!-- TEAM -->", "");
+  }
+
   // Über-uns-Fotos (max 4) — unter dem Text in der dunklen Sektion
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {

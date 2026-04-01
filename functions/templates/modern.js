@@ -6,7 +6,7 @@
 export function buildModernTemplate(data) {
   const {
     firmenname, brancheLabel, einsatzgebiet, kurzbeschreibung,
-    badgesHtml, ctaPrimary, ctaPrimaryHref, ctaSecondary,
+    trustLeisteHtml, ctaPrimary, ctaPrimaryHref, ctaSecondary,
     trustBar, leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
@@ -59,9 +59,11 @@ a{color:inherit}
 .hero{background:${primary};color:#fff;display:flex;align-items:center;position:relative;overflow:hidden;min-height:100vh}
 .hero::before{content:'';position:absolute;width:480px;height:480px;border-radius:60% 40% 55% 45%;background:${accent};opacity:.1;top:-80px;right:-80px;filter:blur(64px);pointer-events:none}
 .hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:64px 28px 48px}
-.hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.hero-badge{padding:6px 14px;background:rgba(255,255,255,.1);border:none;border-radius:100px;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.02em}
 .hero h1{font-size:clamp(3rem,7vw,5rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:14px;max-width:700px}
+.trust{padding:20px 0;background:var(--bg,#fafafa)}
+.trust-items{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 24px}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;color:var(--primary);background:#fff;padding:8px 16px;border-radius:100px;box-shadow:0 1px 4px rgba(0,0,0,.06);white-space:nowrap}
+.trust-item svg{color:var(--accent);flex-shrink:0}
 .hero-sub{font-size:1.1rem;color:rgba(255,255,255,.65);font-weight:500;margin-bottom:12px}
 .hero-desc{font-size:1rem;color:rgba(255,255,255,.55);max-width:480px;margin-bottom:28px;line-height:1.75}
 .hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}
@@ -153,7 +155,6 @@ a{color:inherit}
 
 <section class="hero" id="sr-hero">
 <div class="hero-inner">
-<div class="hero-badges">${badgesHtml}</div>
 <h1>${firmenname}</h1>
 <p class="hero-sub">${brancheLabel} &ndash; ${einsatzgebiet}</p>
 <p class="hero-desc">${kurzbeschreibung}</p>
@@ -163,6 +164,8 @@ a{color:inherit}
 </div>
 </div>
 </section>
+
+${trustLeisteHtml}
 
 <section class="leist" id="leistungen">
 <div class="w">
@@ -184,6 +187,7 @@ ${preislisteHtml}
 <h2>\u00dcber ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
+<!-- TEAM -->
 <!-- ABOUT_FOTOS -->
 </div>
 <div class="info-card sr-fade">

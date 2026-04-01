@@ -2087,6 +2087,35 @@ function Portal({session,onLogout}){
             </div>
           )}
         </div>}
+        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
+          <SectionHeader id="team" label="Team" badge="instant" desc="Stellen Sie Ihr Team vor — Name, Rolle und optional ein Foto. Erscheint auf der Website im Über-uns-Bereich."/>
+          {editSection==="team"?(<>
+            {(order.team_members||[]).map((m,i)=>(
+              <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px"}}>
+                  {m.foto?(<img src={m.foto} alt="" style={{width:40,height:40,borderRadius:"50%",objectFit:"cover",border:`1px solid ${T.bg3}`}}/>):(<div style={{width:40,height:40,borderRadius:"50%",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>)}
+                  <div style={{flex:1}}>
+                    <input value={m.name||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],name:e.target.value};upOrder("team_members")(a);}} placeholder="Name" style={{width:"100%",padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
+                    <input value={m.rolle||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],rolle:e.target.value};upOrder("team_members")(a);}} placeholder="Rolle (z.B. Geschäftsführer)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".78rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
+                  </div>
+                  <label style={{padding:"5px 10px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".72rem",fontWeight:600,color:T.textSub,flexShrink:0}}>
+                    {m.foto?"Ändern":"Foto"}
+                    <input type="file" accept="image/*" style={{display:"none"}} onChange={async(e)=>{const file=e.target.files?.[0];if(!file||!session?.user?.id)return;const ext=file.name.split(".").pop().toLowerCase();const path=`${session.user.id}/team_${i}.${ext}`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const a=[...(order.team_members||[])];a[i]={...a[i],foto:data.publicUrl};await supabase.from("orders").update({team_members:a}).eq("id",order.id);setOrder(o=>({...o,team_members:a}));showToast("Foto hochgeladen!");}}/>
+                  </label>
+                  <button onClick={()=>{const a=[...(order.team_members||[])].filter((_,j)=>j!==i);upOrder("team_members")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
+                </div>
+              </div>
+            ))}
+            <button onClick={()=>{const a=[...(order.team_members||[]),{name:"",rolle:"",foto:""}];upOrder("team_members")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Teammitglied hinzufügen"}</button>
+          </>):(<>
+            {(order.team_members||[]).length>0?(order.team_members||[]).filter(m=>m.name).map((m,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<(order.team_members||[]).filter(m2=>m2.name).length-1?`1px solid ${T.bg3}`:"none"}}>
+                {m.foto?(<img src={m.foto} alt="" style={{width:36,height:36,borderRadius:"50%",objectFit:"cover"}}/>):(<div style={{width:36,height:36,borderRadius:"50%",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>)}
+                <div><div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{m.name}</div>{m.rolle&&<div style={{fontSize:".75rem",color:T.textMuted}}>{m.rolle}</div>}</div>
+              </div>
+            )):(<div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Teammitglieder hinzugefügt. Über "Bearbeiten" können Sie Ihr Team vorstellen.</div>)}
+          </>)}
+        </div>}
         {page==="design"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
             <div>
@@ -2135,8 +2164,8 @@ function Portal({session,onLogout}){
               return items.map((it,i)=><InfoRow key={i} label={it.l} value={it.v}/>);})()}
           </>)}
           <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:4}}>Weitere Branchenfeatures</div>
-            <div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Zusätzliche branchenspezifische Funktionen wie Speisekarte, Galerie, Team-Vorstellung und mehr sind in Planung.</div>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:4}}>Tipp</div>
+            <div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Team-Vorstellung finden Sie unter "Über uns". Fotos pro Leistung können Sie im Leistungen-Editor hochladen.</div>
           </div>
         </div>}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>

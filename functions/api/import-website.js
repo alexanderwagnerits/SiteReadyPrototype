@@ -156,9 +156,15 @@ export async function onRequestPost({request, env}) {
         }
       } catch(e) {}
 
-      // Jina fuer Text
+      // Jina fuer Text + Emails/Phones
       const text = await fetchJina(pageUrl);
       if (text && text.length > 50) {
+        // Emails + Phones aus Jina-Text sammeln (wichtig fuer JS-Seiten!)
+        for (const m of text.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
+        for (const m of text.matchAll(phoneRegex)) {
+          const phone = m[0].replace(/[\s\-/]/g, "");
+          if (phone.length >= 8) allPhones.add(phone);
+        }
         const path = new URL(pageUrl).pathname.toLowerCase();
         if (/kontakt|contact/.test(path)) subpageTexts.kontakt = text.slice(0, 3000);
         else if (/impressum|imprint|legal/.test(path)) subpageTexts.impressum = text.slice(0, 4000);

@@ -1133,7 +1133,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
         <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
         <Combobox label="Beruf / Branche" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
         {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
-        <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Erscheint im Hero-Bereich. Daraus generieren wir auch Ihren Über-uns-Text und Ihre Vorteile." required/>
+        <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Erscheint oben auf Ihrer Website. Daraus erstellen wir automatisch Ihren Über-uns-Text und Ihre Vorteile." required/>
         <Dropdown label="Bundesland" value={data.bundesland} onChange={v=>{up("bundesland")(v);const bl=BUNDESLAENDER.find(b=>b.value===v);up("einsatzgebiet")(bl?bl.label:"")}} options={BUNDESLAENDER} placeholder="Bundesland wählen" required/>
       </div>
       {ftr(true,()=>go(2),"Weiter",!sv1)}
@@ -1531,7 +1531,7 @@ function Portal({session,onLogout}){
     <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
       {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>KI-generiert — bitte prüfen und bei Bedarf anpassen</span>
+        <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>Automatisch erstellt — bitte prüfen und bei Bedarf anpassen</span>
         {onRemove&&<button onClick={onRemove} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>}
       </div>}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1582,7 +1582,7 @@ function Portal({session,onLogout}){
     {label:"Grunddaten ausfüllen",done:!!(order.firmenname&&order.kurzbeschreibung),pts:15,page:"grunddaten"},
     {label:"Leistungen hinzufügen",done:!!(order.leistungen?.length>0),pts:20,page:"leistungen"},
     {label:"Kontakt & Adresse",done:!!(order.adresse&&order.telefon),pts:15,page:"kontakt"},
-    {label:"Headerfoto hochladen",done:!!(assetUrls.hero||assetUrls.foto1),pts:15,page:"medien"},
+    {label:"Titelbild hochladen",done:!!(assetUrls.hero||assetUrls.foto1),pts:15,page:"medien"},
     {label:"Über uns Text",done:!!order.text_ueber_uns,pts:10,page:"ueberuns"},
     {label:"Impressum ausfüllen",done:!!(order.unternehmensform||order.uid_nummer),pts:5,page:"impressum"},
     {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),pts:0,page:"medien",optional:true},
@@ -1592,7 +1592,7 @@ function Portal({session,onLogout}){
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),pts:0,page:"ueberuns",optional:true},
     {label:"Ablauf beschreiben",done:!!(order.ablauf_schritte?.some(s=>s.titel)),pts:0,page:"ueberuns",optional:true},
     {label:"Aktuelles / Meldung",done:!!(order.announcements?.some(a=>a.active)),pts:0,page:"aktuelles",optional:true},
-    {label:"SEO-Texte",done:!!(order.seo_title||order.seo_description),pts:0,page:"seo",optional:true},
+    {label:"Google-Texte anpassen",done:!!(order.seo_title||order.seo_description),pts:0,page:"seo",optional:true},
     {label:"Eigene Domain",done:false,pts:0,page:"domain",optional:true},
   ]:[];
   const astScore=astItems.filter(i=>!i.optional).reduce((s,i)=>s+(i.done?i.pts:0),0);
@@ -1605,7 +1605,7 @@ function Portal({session,onLogout}){
     ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
     social:{title:"Social Media",sub:"Ihre Social-Media-Profile erscheinen als Icons im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
-    branchenfeatures:{title:"Branchenfeatures",sub:"Branchenspezifische Funktionen und Badges für Ihre Website"},
+    branchenfeatures:{title:"Spezielle Funktionen",sub:"Funktionen und Hinweise speziell für Ihre Branche"},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
     medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
@@ -1718,7 +1718,7 @@ function Portal({session,onLogout}){
           ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
           ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,true],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
-          ["branchenfeatures","Branchenfeatures",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
+          ["branchenfeatures","Spezielle Funktionen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
@@ -1792,7 +1792,7 @@ function Portal({session,onLogout}){
       {showPlanModal&&(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>setShowPlanModal(false)}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"36px 32px",maxWidth:480,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
           <div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:6}}>Plan waehlen</div>
-          <div style={{fontSize:".85rem",color:T.textSub,marginBottom:28}}>Karte wird erst nach der Testphase belastet. Jederzeit kuendbar.</div>
+          <div style={{fontSize:".85rem",color:T.textSub,marginBottom:28}}>Karte wird erst nach der Testphase belastet. Jederzeit kündbar.</div>
           <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24}}>
             <button onClick={()=>subscribe("monthly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.r,background:"#fff",cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .2s"}}>
               <div style={{fontWeight:700,fontSize:".95rem",color:T.dark}}>Monatlich</div>
@@ -1841,7 +1841,7 @@ function Portal({session,onLogout}){
           const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
           const tips=[
             {label:"Logo hochladen",done:!!assetUrls.logo,page:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
-            {label:"Foto hochladen",done:!!(assetUrls.hero),page:"medien",hint:"Hero-Bild macht einen grossen Unterschied"},
+            {label:"Titelbild hochladen",done:!!(assetUrls.hero),page:"medien",hint:"Das grosse Bild oben auf Ihrer Website"},
             {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,page:"ueberuns",hint:"KI-generierten Text anpassen oder personalisieren"},
             {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),page:"leistungen",hint:"Preise direkt auf den Leistungskarten anzeigen"},
             ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,page:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
@@ -1952,7 +1952,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="grunddaten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="grunddaten" label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen in der Kopfzeile Ihrer Website und in Suchergebnissen."/>
+          <SectionHeader id="grunddaten" label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
           {editSection==="grunddaten"?(<>
             <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
             <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
@@ -2011,7 +2011,7 @@ function Portal({session,onLogout}){
           </div>}
         </div>}
         {page==="kontakt"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant" desc="Adresse und Öffnungszeiten erscheinen im Kontaktbereich und werden für Google Maps verwendet."/>
+          <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant" desc="Ihre Adresse und Öffnungszeiten werden unten auf der Website angezeigt und sind über Google Maps auffindbar."/>
           {editSection==="kontakt"?(<>
             <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1" hint="Wird auf der Website und für Google Maps verwendet"/>
             <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
@@ -2019,11 +2019,11 @@ function Portal({session,onLogout}){
               <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
               <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78" hint="Wird als klickbarer Anruf-Button angezeigt"/>
             </div>
-            <Dropdown label="Oeffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Oeffnungszeiten wählen"/>
-            {order.oeffnungszeiten==="custom"&&<Field label="Eigene Oeffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
+            <Dropdown label="Öffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen"/>
+            {order.oeffnungszeiten==="custom"&&<Field label="Eigene Öffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
             {isAiGen("gut_zu_wissen")&&order.gut_zu_wissen&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,marginBottom:4,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>KI-generiert — bitte prüfen</span>
+              <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>Automatisch erstellt — bitte prüfen</span>
               <button onClick={async()=>{await supabase.from("orders").update({gut_zu_wissen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}).eq("id",order.id);setOrder(o=>({...o,gut_zu_wissen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}));showToast("Hinweise entfernt");}} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
             </div>}
             <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
@@ -2032,7 +2032,7 @@ function Portal({session,onLogout}){
             <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
             <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
             <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
-            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Video-Call möglich"/>
+            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Videoanruf möglich"/>
             <Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>
           </>):(<>
             <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
@@ -2043,7 +2043,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen" badge="instant" desc="Ihre Leistungen erscheinen als Karten auf der Website. Mit Beschreibung und Preis erhalten Sie deutlich mehr Anfragen." aiField="leistungen_beschreibungen"/>
+          <SectionHeader id="leistungen" label="Leistungen" badge="instant" desc="Ihre Leistungen werden mit Bild, Beschreibung und Preis auf der Website angezeigt. Detaillierte Angaben führen zu mehr Anfragen." aiField="leistungen_beschreibungen"/>
           {editSection==="leistungen"?(<>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Reihenfolge & Beschreibung"}</div>
@@ -2121,7 +2121,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="texte" label="Über uns & Vorteile" badge="instant" desc="Der persönliche Vorstellungstext und Ihre Stärken. Bearbeiten Sie den KI-generierten Text nach Wunsch." aiField="text_ueber_uns"/>
+          <SectionHeader id="texte" label="Über uns & Vorteile" badge="instant" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
           {editSection==="texte"?(<>
             <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
             <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
@@ -2131,7 +2131,7 @@ function Portal({session,onLogout}){
             <InfoRow label="Vorteile" value={Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).join(" \u00b7 "):"\u2014"}/>
           </>):(
             <div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>
-              Texte werden automatisch bei der Website-Generierung erstellt und koennen danach hier bearbeitet werden.
+              Texte werden automatisch erstellt und können danach hier bearbeitet werden.
             </div>
           )}
         </div>}
@@ -2198,10 +2198,10 @@ function Portal({session,onLogout}){
           <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
         </div>}
         {page==="branchenfeatures"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="branchenfeatures" label="Branchenfeatures" desc={`Spezifische Funktionen für ${order.branche_label||"Ihre Branche"}. Diese werden als Badges und Hinweise auf Ihrer Website angezeigt.`}/>
+          <SectionHeader id="branchenfeatures" label="Spezielle Funktionen" desc={`Funktionen und Hinweise speziell für ${order.branche_label||"Ihre Branche"}. Diese werden auf Ihrer Website angezeigt und stärken das Vertrauen Ihrer Kunden.`}/>
           {editSection==="branchenfeatures"?(<>
-            <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird im Hero-Bereich und in Suchmaschinen angezeigt — leer lassen wenn nicht zutreffend"/>
-            <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr., ÖRAK-Nr., GISA-Zahl" hint="Wird im Über-uns-Bereich angezeigt — optional"/>
+            <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird oben auf der Website und in Google angezeigt — leer lassen wenn nicht zutreffend"/>
+            <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr. für Ärzte, GISA-Zahl für Gewerbe" hint="Wird im Über-uns-Bereich auf der Website angezeigt — nur ausfüllen wenn vorhanden"/>
             {(()=>{const ft=getBrancheFeatures(order.branche);if(!ft.length)return null;return<><div style={{margin:"16px 0 12px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Branchenspezifisch</div>
               {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
               {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
@@ -2229,7 +2229,7 @@ function Portal({session,onLogout}){
           </>)}
           <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
             <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:4}}>Tipp</div>
-            <div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Team-Vorstellung finden Sie unter "Über uns". Fotos pro Leistung können Sie im Leistungen-Editor hochladen.</div>
+            <div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Ihre Mitarbeiter können Sie unter "Über uns" vorstellen. Fotos pro Leistung laden Sie im Leistungen-Bereich hoch.</div>
           </div>
         </div>}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2305,10 +2305,10 @@ function Portal({session,onLogout}){
           </div>):(<>
             <Dropdown label="Betreff" value={supportSubject} onChange={setSupportSubject} options={[
               {value:"Technisches Problem",label:"Technisches Problem"},
-              {value:"Aenderungswunsch",label:"Aenderungswunsch"},
+              {value:"Aenderungswunsch",label:"Änderungswunsch"},
               {value:"Frage zur Rechnung",label:"Frage zur Rechnung"},
               {value:"Custom Domain",label:"Custom Domain"},
-              {value:"Kuendigung",label:"Kuendigung"},
+              {value:"Kuendigung",label:"Kündigung"},
               {value:"Sonstiges",label:"Sonstiges"},
             ]} placeholder="Betreff waehlen"/>
             <Field label="Ihre Nachricht" value={supportMsg} onChange={setSupportMsg} placeholder="Beschreiben Sie Ihr Anliegen..." rows={4}/>
@@ -2329,9 +2329,9 @@ function Portal({session,onLogout}){
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>{"Häufige Fragen"}</div>
           {[
             {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
-            {q:"Kann ich den Text auf meiner Website selbst aendern?",a:"Ja – im Self-Service-Portal koennen Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
-            {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kuendbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
-            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, im Tab 'Logo & Fotos' koennen Sie Ihr Logo sowie bis zu 5 eigene Fotos hochladen – Betriebsfotos, Team, Arbeitsproben, Atmosphaere. Sie entscheiden was passt."},
+            {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
+            {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kündbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
+            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, unter 'Fotos & Medien' können Sie Ihr Logo sowie eigene Fotos hochladen – Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt."},
             {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
           ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
             <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
@@ -2365,7 +2365,7 @@ function Portal({session,onLogout}){
             {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{pwErr}</div>}
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <button onClick={async()=>{
-                if(!newPw||newPw!==newPw2){setPwErr("Passwoerter stimmen nicht ueberein.");return;}
+                if(!newPw||newPw!==newPw2){setPwErr("Passwörter stimmen nicht überein.");return;}
                 if(newPw.length<6){setPwErr("Mindestens 6 Zeichen.");return;}
                 setPwSaving(true);setPwErr("");
                 const{error}=await supabase.auth.updateUser({password:newPw});
@@ -2407,7 +2407,7 @@ function Portal({session,onLogout}){
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>Kündigung</div>
-          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.7,margin:"0 0 14px"}}>Für eine Kündigung schreiben Sie bitte an <strong>support@siteready.at</strong>.{order?.subscription_plan==="yearly"?" Bitte beachten Sie die Mindestlaufzeit von 12 Monaten.":" Das Monatsabo ist jederzeit kuendbar."}</p>
+          <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.7,margin:"0 0 14px"}}>Für eine Kündigung schreiben Sie bitte an <strong>support@siteready.at</strong>.{order?.subscription_plan==="yearly"?" Bitte beachten Sie die Mindestlaufzeit von 12 Monaten.":" Das Monatsabo ist jederzeit kündbar."}</p>
         </div>
       </div>)}
 
@@ -2528,8 +2528,8 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Hero-Bild <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild fuer den oberen Bereich der Website</div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild für den oberen Bereich der Website</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
@@ -2555,7 +2555,7 @@ function Portal({session,onLogout}){
             </div>
             </>}
             {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
-              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Hero-Bild hochgeladen – Farbverlauf bleibt aktiv</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Titelbild hochgeladen – Farbverlauf bleibt aktiv</div>
             </div>}
             <div style={{fontSize:".78rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>Empfohlen: JPG, mind. 1920 &times; 1080 px &middot; Querformat &middot; Ohne Textüberlagerungen (Bild wird automatisch mit Farbverlauf abgedunkelt)</div>
           </div>
@@ -2652,7 +2652,7 @@ function Portal({session,onLogout}){
             </div>
             <div>
               <div style={{fontSize:".9rem",fontWeight:700,color:T.dark}}>{order.quality_score>=90?"Ausgezeichnet":order.quality_score>=80?"Gut":"Verbesserungspotenzial"}</div>
-              <div style={{fontSize:".82rem",color:T.textMuted,marginTop:2}}>{order.quality_score>=90?"Ihre Website ist optimal aufgestellt.":"Mit wenigen Schritten koennen Sie den Score verbessern."}</div>
+              <div style={{fontSize:".82rem",color:T.textMuted,marginTop:2}}>{order.quality_score>=90?"Ihre Website ist optimal aufgestellt.":"Mit wenigen Schritten können Sie den Score verbessern."}</div>
             </div>
           </div>
           {order.quality_score<95&&<div style={{display:"flex",flexDirection:"column",gap:8}}>

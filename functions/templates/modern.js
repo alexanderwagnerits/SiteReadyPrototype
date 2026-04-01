@@ -175,6 +175,8 @@ ${preislisteHtml}
 </div>
 </section>
 
+<!-- ABLAUF -->
+
 <section class="ueber" id="ueber-uns">
 <div class="w">
 <div class="ueber-grid">
@@ -214,6 +216,7 @@ ${preislisteHtml}
 </div>
 ${socialHtml}
 ${kontaktFeatHtml}
+<!-- GUT_ZU_WISSEN -->
 </div>
 <div><!-- MAPS --></div>
 </div>

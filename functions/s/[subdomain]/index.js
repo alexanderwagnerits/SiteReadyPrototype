@@ -141,18 +141,45 @@ export async function onRequestGet({params, env}) {
   }
 
   // Über-uns-Fotos (max 4) — unter dem Text in der dunklen Sektion
-  const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4].filter(Boolean);
+  const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
       `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
       `</div>`
     ).join("");
-    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : `repeat(${aboutFotos.length},1fr)`;
+    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${aboutFotos.length},1fr)` : "repeat(4,1fr)";
     const grid = `<div class="sr-foto-grid" style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
     html = html.replace("<!-- ABOUT_FOTOS -->", grid);
   } else {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
+  }
+
+  // Ablauf-Section — "So läuft es ab" zwischen Leistungen und Über uns
+  const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
+  if (ablaufSteps.length >= 2 && html.includes("<!-- ABLAUF -->")) {
+    const steps = ablaufSteps.slice(0, 5).map((s, i) =>
+      `<div style="flex:1;text-align:center;min-width:140px">` +
+      `<div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">${i + 1}</div>` +
+      `<div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">${s.titel}</div>` +
+      (s.text ? `<div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">${s.text}</div>` : "") +
+      `</div>`
+    ).join(`<div style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>`);
+    const section = `<section style="padding:80px 0;background:var(--bg,#f8fafc)"><div class="w"><div style="text-align:center;margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">So l\u00e4uft es ab</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Ihr Weg zu uns</h2></div><div style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap">${steps}</div></div></section>`;
+    html = html.replace("<!-- ABLAUF -->", section);
+  } else {
+    html = html.replace("<!-- ABLAUF -->", "");
+  }
+
+  // "Gut zu wissen" — permanente Hinweise in der Kontakt-Section
+  const gzwText = o.gut_zu_wissen || "";
+  const gzwLines = gzwText.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 5);
+  if (gzwLines.length > 0 && html.includes("<!-- GUT_ZU_WISSEN -->")) {
+    const infoIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#2563eb)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+    const items = gzwLines.map(l => `<div style="display:flex;align-items:flex-start;gap:8px;font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6"><span style="flex-shrink:0;margin-top:2px">${infoIcon}</span><span>${l}</span></div>`).join("");
+    html = html.replace("<!-- GUT_ZU_WISSEN -->", `<div style="margin-top:20px;padding:16px 18px;background:var(--bg,#f8fafc);border-radius:var(--rLg,8px);display:flex;flex-direction:column;gap:8px"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted,#64748b);margin-bottom:2px">Gut zu wissen</div>${items}</div>`);
+  } else {
+    html = html.replace("<!-- GUT_ZU_WISSEN -->", "");
   }
 
   // Legacy: alte Platzhalter entfernen falls noch vorhanden

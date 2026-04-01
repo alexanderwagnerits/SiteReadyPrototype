@@ -205,7 +205,7 @@ export async function onRequestGet({params, env}) {
         `</div>`;
     }).join("");
     const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
-    const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">Kundenstimmen</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2></div><div style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div></div></section>`;
+    const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px"><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2></div><div style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div></div></section>`;
     html = html.replace("<!-- BEWERTUNGEN -->", section);
   } else {
     html = html.replace("<!-- BEWERTUNGEN -->", "");

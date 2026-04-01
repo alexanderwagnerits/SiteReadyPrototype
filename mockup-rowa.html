@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROWA Sonnenenergie GmbH – Photovoltaik-Spezialist</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--primary:#0f2b5b;
+--accent:#2563eb;
+--bg:#f8fafc;
+--sep:#e2e8f0;
+--text:#1f2937;
+--textMuted:#64748b;
+--white:#fff;
+--r:4px;
+--rLg:8px;
+--font:'Inter',system-ui,-apple-system,sans-serif;
+--maxW:1060px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1.05rem;-webkit-font-smoothing:antialiased;background:var(--white)}
+img{max-width:100%;display:block}
+a{color:inherit}
+.w{max-width:var(--maxW);margin:0 auto;padding:0 28px}
+
+/* ── Nav ── */
+#sitenav{position:sticky;top:0;z-index:1000;background:var(--primary);transition:box-shadow .3s ease}
+#sitenav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.18)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;transition:height .3s ease}
+#sitenav.scrolled .nav-inner{height:56px}
+.nav-logo{font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
+.nav-link:hover{opacity:.7}
+.nav-cta{background:var(--accent);color:#fff!important;padding:9px 18px;border-radius:var(--r);font-weight:700;font-size:.85rem;white-space:nowrap}
+.nav-cta:hover{opacity:.85!important}
+.nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px}
+.nav-hamburger svg{color:#fff}
+
+/* ── Hero ── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,43,91,.92) 0%,rgba(15,43,91,.7) 50%,rgba(15,43,91,.4) 100%)}
+.hero-inner{position:relative;z-index:1;width:100%;max-width:var(--maxW);margin:0 auto;padding:56px 28px 40px;color:#fff}
+.hero h1{font-size:clamp(3rem,7vw,5rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:14px;max-width:700px}
+.hero-sub{font-size:1.1rem;color:rgba(255,255,255,.65);font-weight:500;margin-bottom:12px}
+.hero-desc{font-size:1rem;color:rgba(255,255,255,.55);max-width:480px;margin-bottom:28px;line-height:1.75}
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:15px 36px;font-size:.95rem;font-weight:600;text-decoration:none;border-radius:var(--r);transition:all .2s ease;cursor:pointer;border:none;font-family:var(--font)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{opacity:.85}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.2)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
+
+/* ── Trust-Leiste ── */
+.trust{padding:18px 0;background:var(--bg);border-bottom:1px solid var(--sep)}
+.trust-items{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px}
+.trust-item{display:flex;align-items:center;gap:7px;font-size:.82rem;font-weight:600;color:var(--primary);white-space:nowrap}
+.trust-item svg{color:var(--accent);flex-shrink:0}
+
+/* ── Leistungen ── */
+.leist{padding:100px 0;background:#fff}
+.leist-top{margin-bottom:48px}
+.leist-label{display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)}
+.leist h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:14px}
+.leist-intro{color:var(--textMuted);font-size:1.05rem;max-width:560px;line-height:1.75}
+.leist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.leist-card{border:1px solid var(--sep);background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden}
+.leist-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.10)}
+.leist-card-gradient{height:120px;opacity:.85}
+.leist-card-body{padding:24px 26px}
+.leist-card-icon{width:42px;height:42px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.leist-card h3{color:var(--primary);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3}
+.leist-card p{color:var(--textMuted);margin:0;font-size:.95rem;line-height:1.7}
+.leist-card-preis{margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.06);font-size:.92rem;font-weight:700;color:var(--accent)}
+@media(min-width:900px){.leist{padding:140px 0}}
+@media(max-width:640px){.leist-grid{grid-template-columns:1fr}}
+
+/* ── Ablauf ── */
+.ablauf{padding:100px 0;background:var(--bg)}
+.ablauf h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:14px;text-align:center}
+.ablauf-intro{color:var(--textMuted);font-size:1.05rem;text-align:center;max-width:560px;margin:0 auto 56px}
+.ablauf-steps{display:flex;align-items:flex-start;justify-content:center;gap:0;flex-wrap:wrap;max-width:900px;margin:0 auto}
+.ablauf-step{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:160px;max-width:220px;position:relative}
+.ablauf-num{width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:1.2rem;display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative;z-index:1}
+.ablauf-step h4{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:6px}
+.ablauf-step p{font-size:.82rem;color:var(--textMuted);line-height:1.6;max-width:160px}
+.ablauf-chevron{display:flex;align-items:center;padding-top:14px;color:var(--sep);flex-shrink:0}
+.ablauf-chevron svg{width:28px;height:28px}
+@media(min-width:900px){.ablauf{padding:140px 0}}
+@media(max-width:700px){
+.ablauf-steps{flex-direction:column;align-items:center;gap:8px}
+.ablauf-chevron{transform:rotate(90deg);padding-top:0}
+}
+
+/* ── Ueber uns ── */
+.ueber{padding:100px 0;background:var(--primary);color:#fff}
+.ueber-grid{display:grid;gap:48px}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.ueber{padding:140px 0}}
+.ueber h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;letter-spacing:-.03em;margin-bottom:20px;color:#fff}
+.ueber-text{font-size:1rem;line-height:1.9;opacity:.75;margin-bottom:28px}
+.ueber-vorteile{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.ueber-vorteile li{font-size:.95rem;font-weight:500;opacity:.9;padding-left:20px;position:relative}
+.ueber-vorteile li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;background:rgba(255,255,255,.7);border-radius:1px}
+
+/* About Fotos */
+.about-fotos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.about-foto{border-radius:6px;overflow:hidden;aspect-ratio:1;cursor:pointer;position:relative}
+.about-foto img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.about-foto:hover img{transform:scale(1.08)}
+@media(max-width:640px){.about-fotos{grid-template-columns:repeat(2,1fr)}}
+
+/* Team */
+.team-col{display:flex;flex-direction:column;gap:0}
+.team-header{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:16px}
+.team-card{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.team-card:last-child{border-bottom:none}
+.team-avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.08);overflow:hidden}
+.team-avatar img{width:100%;height:100%;object-fit:cover}
+.team-name{font-weight:700;font-size:.95rem;color:#fff}
+.team-rolle{font-size:.8rem;opacity:.55;margin-top:2px}
+
+/* ── Kontakt ── */
+.kontakt{padding:100px 0;background:var(--bg)}
+.kontakt-grid{display:grid;gap:48px}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1fr;gap:72px;align-items:start}.kontakt{padding:140px 0}}
+.kontakt h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:28px}
+.kontakt-item{margin-bottom:20px}
+.kontakt-item-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
+.kontakt-item-value{font-size:1rem;font-weight:500}
+.kontakt-tel{font-size:1.2rem;font-weight:800;color:var(--primary);text-decoration:none;display:inline-block;margin:4px 0}
+.kontakt-tel:hover{color:var(--accent)}
+.kontakt-email{color:var(--primary);text-decoration:none;font-weight:600}
+.kontakt-email:hover{color:var(--accent)}
+
+/* Kontakt-Infos Responsive */
+@media(max-width:768px){.kontakt-infos{grid-template-columns:1fr 1fr!important}}
+@media(max-width:480px){.kontakt-infos{grid-template-columns:1fr!important}}
+
+/* Maps Placeholder */
+.maps-placeholder{background:#e2e8f0;border-radius:var(--rLg);height:320px;display:flex;align-items:center;justify-content:center;color:var(--textMuted);font-size:.85rem;font-weight:600}
+
+/* ── Kontaktformular ── */
+.kontakt-form-wrap{margin-top:48px;padding-top:48px;border-top:1px solid var(--sep)}
+.k-form h3{font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:20px}
+.k-form label{display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
+.k-form input,.k-form textarea{width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s;box-sizing:border-box}
+.k-form input:focus,.k-form textarea:focus{border-color:var(--accent)}
+.k-form textarea{resize:vertical}
+.k-form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.k-form-field{margin-bottom:12px}
+.k-form button{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font);min-height:48px;transition:opacity .2s}
+.k-form button:hover{opacity:.85}
+@media(max-width:640px){.k-form-row{grid-template-columns:1fr}}
+
+/* ── Footer ── */
+footer{background:var(--primary);color:#fff;padding:56px 0 0;font-family:inherit}
+.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;padding-bottom:48px}
+.ft-brand{font-weight:800;font-size:1.05rem;margin-bottom:12px;letter-spacing:-.01em}
+.ft-desc{opacity:.65;line-height:1.75;font-size:.85rem;margin-bottom:16px;max-width:280px}
+.ft-group-title{font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px}
+.ft-link{display:block;color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;margin-bottom:10px}
+.ft-link:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.1);padding:20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.ft-copy{opacity:.4;font-size:.78rem}
+.ft-legal{display:flex;gap:20px}
+.ft-legal a{opacity:.4;font-size:.78rem;color:#fff;text-decoration:none}
+@media(max-width:768px){.ft-grid{grid-template-columns:1fr}}
+
+/* ── Lightbox ── */
+.lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;cursor:pointer}
+.lightbox.active{display:flex}
+.lightbox img{max-width:90%;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lightbox-close{position:absolute;top:20px;right:24px;color:#fff;font-size:2rem;cursor:pointer;opacity:.7;transition:opacity .2s;background:none;border:none;font-family:inherit}
+.lightbox-close:hover{opacity:1}
+
+/* ── Animations ── */
+.sr-fade{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.sr-fade.sr-vis{opacity:1;transform:translateY(0)}
+
+/* ── Mobile Nav ── */
+@media(max-width:768px){
+.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--primary);flex-direction:column;padding:16px 24px 24px;gap:16px;box-shadow:0 12px 32px rgba(0,0,0,.2)}
+.nav-links.open{display:flex}
+.nav-hamburger{display:block}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="sitenav">
+<div class="nav-inner">
+<a href="#" class="nav-logo">ROWA Sonnenenergie</a>
+<button class="nav-hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="nav-links">
+<a href="#leistungen" class="nav-link">Leistungen</a>
+<a href="#ueber-uns" class="nav-link">Über uns</a>
+<a href="#kontakt" class="nav-link">Kontakt</a>
+<a href="tel:+4368181773362" class="nav-link nav-cta">+43 681 81773362</a>
+</div>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="sr-hero">
+<div class="hero-bg">
+<img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1920&q=80" alt="Photovoltaikanlage" loading="eager">
+</div>
+<div class="hero-inner">
+<h1>ROWA Sonnenenergie</h1>
+<p class="hero-sub">Photovoltaik-Spezialist &ndash; Planung, Montage &amp; Inbetriebnahme</p>
+<p class="hero-desc">Photovoltaik-Spezialist mit umfassendem Service von Planung über Montage bis zur Inbetriebnahme von PV-Anlagen.</p>
+<div class="hero-btns">
+<a href="#kontakt" class="btn btn-accent">Kostenlos anfragen</a>
+<a href="#leistungen" class="btn btn-ghost">Leistungen ansehen</a>
+</div>
+</div>
+</section>
+
+<!-- TRUST-LEISTE -->
+<div class="trust">
+<div class="w">
+<div class="trust-items">
+<div class="trust-item">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 18 16 11"/></svg>
+<span>Kostenloser Kostenvoranschlag</span>
+</div>
+<div class="trust-item">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+<span>Förderungsberatung</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- LEISTUNGEN -->
+<section class="leist" id="leistungen">
+<div class="w">
+<div class="leist-top sr-fade">
+<div class="leist-label">Leistungen</div>
+<h2>Unsere Leistungen im Überblick</h2>
+<p class="leist-intro">Von der Planung bis zur Inbetriebnahme Ihrer Photovoltaikanlage – alles aus einer Hand.</p>
+</div>
+<div class="leist-grid">
+<div class="leist-card sr-fade">
+<div class="leist-card-gradient" style="background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 85%,#000) 0%,var(--accent) 100%)"></div>
+<div class="leist-card-body">
+<div class="leist-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div>
+<h3>Photovoltaikanlagen Planung und Montage</h3>
+<p>Individuelle Planung und fachgerechte Montage Ihrer PV-Anlage – maßgeschneidert für Ihr Dach.</p>
+</div>
+</div>
+<div class="leist-card sr-fade" style="transition-delay:120ms">
+<div class="leist-card-gradient" style="background:linear-gradient(135deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 60%,#fff) 100%)"></div>
+<div class="leist-card-body">
+<div class="leist-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="22" height="12" rx="2"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/></svg></div>
+<h3>PV-Speichersysteme</h3>
+<p>Moderne Speicherlösungen für maximale Eigenverbrauchsquote und Unabhängigkeit vom Stromnetz.</p>
+</div>
+</div>
+<div class="leist-card sr-fade" style="transition-delay:240ms">
+<div class="leist-card-gradient" style="background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,var(--accent)) 0%,var(--accent) 100%)"></div>
+<div class="leist-card-body">
+<div class="leist-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+<h3>Zählpunkteinreichung beim Stromlieferant</h3>
+<p>Wir übernehmen die komplette Anmeldung und Einreichung beim zuständigen Netzbetreiber.</p>
+</div>
+</div>
+<div class="leist-card sr-fade" style="transition-delay:360ms">
+<div class="leist-card-gradient" style="background:linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--accent) 70%,var(--primary)) 100%)"></div>
+<div class="leist-card-body">
+<div class="leist-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v4"/><path d="M12 19v4"/><circle cx="12" cy="12" r="7"/><path d="M8.5 12h7"/><path d="M12 8.5v7"/></svg></div>
+<h3>Förderabwicklung</h3>
+<p>Vollständige Abwicklung aller verfügbaren Förderungen – damit Sie das Maximum herausholen.</p>
+</div>
+</div>
+<div class="leist-card sr-fade" style="transition-delay:480ms">
+<div class="leist-card-gradient" style="background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 90%,#000) 0%,color-mix(in srgb,var(--accent) 60%,#fff) 100%)"></div>
+<div class="leist-card-body">
+<div class="leist-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+<h3>Elektroinstallation</h3>
+<p>Fachgerechte Elektroinstallationen als Basis für Ihre Photovoltaikanlage und darüber hinaus.</p>
+</div>
+</div>
+<div class="leist-card sr-fade" style="transition-delay:600ms">
+<div class="leist-card-gradient" style="background:linear-gradient(135deg,var(--accent) 0%,var(--primary) 100%)"></div>
+<div class="leist-card-body">
+<div class="leist-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+<h3>Wartung und Reparatur</h3>
+<p>Regelmäßige Wartung und schnelle Reparatur für optimale Leistung Ihrer Anlage.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ABLAUF -->
+<section class="ablauf" id="ablauf">
+<div class="w">
+<div class="sr-fade">
+<h2>So läuft es ab</h2>
+<p class="ablauf-intro">Von der ersten Anfrage bis zur fertigen PV-Anlage – transparent und unkompliziert.</p>
+</div>
+<div class="ablauf-steps sr-fade">
+<div class="ablauf-step">
+<div class="ablauf-num">1</div>
+<h4>Anfrage &amp; Beratung</h4>
+<p>Wir besprechen Ihre Wünsche und Möglichkeiten</p>
+</div>
+<div class="ablauf-chevron">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+<div class="ablauf-step">
+<div class="ablauf-num">2</div>
+<h4>Planung &amp; Angebot</h4>
+<p>Individuelle Planung und transparentes Angebot</p>
+</div>
+<div class="ablauf-chevron">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+<div class="ablauf-step">
+<div class="ablauf-num">3</div>
+<h4>Montage</h4>
+<p>Professionelle Installation durch unser Team</p>
+</div>
+<div class="ablauf-chevron">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+<div class="ablauf-step">
+<div class="ablauf-num">4</div>
+<h4>Inbetriebnahme</h4>
+<p>Fertige Anlage, Förderabwicklung inklusive</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- UEBER UNS -->
+<section class="ueber" id="ueber-uns">
+<div class="w">
+<div class="ueber-grid">
+<div class="sr-fade">
+<h2>Über ROWA Sonnenenergie</h2>
+<p class="ueber-text">ROWA Sonnenenergie ist Ihr verlässlicher Partner für Photovoltaik in Österreich. Von der ersten Beratung über die fachgerechte Montage bis zur vollständigen Inbetriebnahme – wir kümmern uns um alles. Unser erfahrenes Team sorgt dafür, dass Ihre PV-Anlage effizient arbeitet und Sie langfristig Energiekosten sparen.</p>
+<ul class="ueber-vorteile">
+<li>Rundum-Sorglos-Paket</li>
+<li>Schnelle Lieferung</li>
+<li>Förderabwicklung inklusive</li>
+<li>Technischer Support</li>
+</ul>
+<div class="about-fotos">
+<div class="about-foto" onclick="openLightbox(this)"><img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=600&q=80" alt="Photovoltaikanlage" loading="lazy"></div>
+<div class="about-foto" onclick="openLightbox(this)"><img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80" alt="Solarpanels" loading="lazy"></div>
+<div class="about-foto" onclick="openLightbox(this)"><img src="https://images.unsplash.com/photo-1559302504-64aae6ca6548?w=600&q=80" alt="Montage" loading="lazy"></div>
+<div class="about-foto" onclick="openLightbox(this)"><img src="https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=600&q=80" alt="Team" loading="lazy"></div>
+</div>
+</div>
+<div class="team-col sr-fade">
+<div class="team-header">Unser Team</div>
+<div class="team-card">
+<div class="team-avatar">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+</div>
+<div>
+<div class="team-name">Robert Wagner</div>
+<div class="team-rolle">Geschäftsführer</div>
+</div>
+</div>
+<div class="team-card">
+<div class="team-avatar">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+</div>
+<div>
+<div class="team-name">Thomas Kern</div>
+<div class="team-rolle">Projektleitung</div>
+</div>
+</div>
+<div class="team-card">
+<div class="team-avatar">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+</div>
+<div>
+<div class="team-name">Sabine Müller</div>
+<div class="team-rolle">Büro &amp; Förderungen</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- KUNDENBEWERTUNGEN -->
+<section style="padding:80px 0;background:#fff">
+<div class="w">
+<div style="text-align:center;margin-bottom:40px" class="sr-fade">
+<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+<div class="sr-fade" style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg);padding:24px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">&bdquo;Perfekt und kompetent, vom ersten Kontakt bis zur Fertigstellung. Alle Preise und Termine gehalten wie vereinbart, so soll es sein. Idealer Partner f&uuml;r unser Photovoltaik-Projekt.&ldquo;</p>
+<div style="font-size:.82rem;font-weight:700;color:var(--primary)">Matthias Kayczuck</div>
+</div>
+<div class="sr-fade" style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg);padding:24px;display:flex;flex-direction:column;gap:12px;transition-delay:120ms">
+<div style="display:flex;gap:2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">&bdquo;Wer einen zuverl&auml;ssigen Spezialisten zu einem vern&uuml;nftigen Preis sucht sollte ROWA kontaktieren. Von der Beauftragung bis zur Inbetriebnahme vergingen nicht einmal 3 Wochen.&ldquo;</p>
+<div style="font-size:.82rem;font-weight:700;color:var(--primary)">Alexander Forst</div>
+</div>
+<div class="sr-fade" style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg);padding:24px;display:flex;flex-direction:column;gap:12px;transition-delay:240ms">
+<div style="display:flex;gap:2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">&bdquo;Super kompetente Beratung, unschlagbarer Preis, schnelle Lieferung. Perfekte Erkl&auml;rung &ndash; auch am Telefon immer hilfsbereit!&ldquo;</p>
+<div style="font-size:.82rem;font-weight:700;color:var(--primary)">Thomas Dirnw&ouml;ber</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- KONTAKT -->
+<section class="kontakt" id="kontakt">
+<div class="w">
+<div class="kontakt-grid">
+<div class="sr-fade">
+<h2>Kontakt &amp; Anfrage</h2>
+<div class="kontakt-item">
+<div class="kontakt-item-label">Telefon</div>
+<a href="tel:+4368181773362" class="kontakt-tel">+43 681 81773362</a>
+</div>
+<div class="kontakt-item">
+<div class="kontakt-item-label">E-Mail</div>
+<a href="mailto:office@rowa-sonnenenergie.at" class="kontakt-email">office@rowa-sonnenenergie.at</a>
+</div>
+<div class="kontakt-item">
+<div class="kontakt-item-label">Erreichbarkeit</div>
+<div class="kontakt-item-value">Mo–Fr 7:00–20:00 Uhr, Sa 8:00–14:00 Uhr</div>
+</div>
+<div class="kontakt-item">
+<div class="kontakt-item-label">Facebook</div>
+<a href="https://www.facebook.com/ROWASonnenenergie" class="kontakt-email" target="_blank" rel="noopener">ROWA Sonnenenergie auf Facebook</a>
+</div>
+
+</div>
+<div class="sr-fade">
+<div class="maps-placeholder">Google Maps Karte</div>
+</div>
+</div>
+<!-- Features + Gut zu wissen — volle Breite unter dem 2-Spalten-Grid -->
+<div class="kontakt-infos" style="margin-top:32px;padding-top:28px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+<div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text)">
+<div style="width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+<span>Hausbesuche</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text)">
+<div style="width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+<span>Rundum-Sorglos-Paket mit allen Schritten bis zur fertigen Anlage</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text)">
+<div style="width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+<span>Finanzierungsmöglichkeiten verfügbar</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text)">
+<div style="width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="18" rx="2"/><line x1="1" y1="9" x2="23" y2="9"/></svg></div>
+<span>Schnelle Lieferung durch ausgeklügeltes Lagersystem</span>
+</div>
+</div>
+
+<!-- Kontaktformular -->
+<div class="kontakt-form-wrap">
+<div class="k-form">
+<h3>Unverbindlich anfragen</h3>
+<div class="k-form-row">
+<div><label>Name *</label><input required type="text" placeholder="Ihr Name"></div>
+<div><label>E-Mail *</label><input required type="email" placeholder="ihre@email.at"></div>
+<div><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>
+</div>
+<div class="k-form-field">
+<label>Ihr Anliegen *</label>
+<textarea rows="4" required placeholder="Beschreiben Sie kurz, wobei wir Ihnen helfen können."></textarea>
+</div>
+<button type="submit">Anfrage senden</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div style="max-width:1200px;margin:0 auto;padding:0 24px">
+<div class="ft-grid">
+<div>
+<div class="ft-brand">ROWA Sonnenenergie GmbH</div>
+<p class="ft-desc">Ihr Photovoltaik-Spezialist in Österreich. Von der Planung bis zur Inbetriebnahme – alles aus einer Hand.</p>
+<a href="tel:+4368181773362" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">+43 681 81773362</a>
+</div>
+<div>
+<div class="ft-group-title">Navigation</div>
+<a href="#leistungen" class="ft-link">Leistungen</a>
+<a href="#ueber-uns" class="ft-link">Über uns</a>
+<a href="#kontakt" class="ft-link">Kontakt</a>
+<a href="#" class="ft-link">Impressum</a>
+<a href="#" class="ft-link">Datenschutz</a>
+</div>
+<div>
+<div class="ft-group-title">Kontakt</div>
+<a href="tel:+4368181773362" class="ft-link" style="font-weight:600;color:rgba(255,255,255,.85)">+43 681 81773362</a>
+<a href="mailto:office@rowa-sonnenenergie.at" class="ft-link">office@rowa-sonnenenergie.at</a>
+<a href="https://www.facebook.com/ROWASonnenenergie" class="ft-link" target="_blank" rel="noopener">Facebook</a>
+</div>
+</div>
+<div class="ft-bottom">
+<span class="ft-copy">2026 ROWA Sonnenenergie GmbH</span>
+<div class="ft-legal">
+<a href="#">Impressum</a>
+<a href="#">Datenschutz</a>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+<button class="lightbox-close" aria-label="Schließen">x</button>
+<img id="lightbox-img" src="" alt="Vergrößerung">
+</div>
+
+<script>
+// Nav scroll effect
+(function(){
+var nav=document.getElementById('sitenav');
+var sc=false;
+window.addEventListener('scroll',function(){
+var s=window.scrollY>60;
+if(s!==sc){sc=s;if(s)nav.classList.add('scrolled');else nav.classList.remove('scrolled');}
+},{passive:true});
+
+// Scroll animations
+var f=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-vis');f.unobserve(i.target)}})},{threshold:.08,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.sr-fade').forEach(function(el){f.observe(el)});
+})();
+
+// Lightbox
+function openLightbox(el){
+var img=el.querySelector('img');
+document.getElementById('lightbox-img').src=img.src;
+document.getElementById('lightbox').classList.add('active');
+document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+document.getElementById('lightbox').classList.remove('active');
+document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox()});
+</script>
+</body>
+</html>

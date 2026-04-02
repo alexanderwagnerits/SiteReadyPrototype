@@ -40,77 +40,111 @@ window.addEventListener("error",(ev)=>{logErrorToSupabase(ev.error||ev.message,"
 window.addEventListener("unhandledrejection",(ev)=>{logErrorToSupabase(ev.reason,"unhandledrejection");});
 
 /* ═══ DATA ═══ */
+const FT_ALLGEMEIN=["buchungslink","terminvereinbarung","erstgespraech_gratis","online_beratung","hausbesuche","barrierefrei","parkplaetze","kartenzahlung","preisliste","ratenzahlung","gutscheine","zertifiziert"];
 const FT_HANDWERK=["notdienst","meisterbetrieb","kostenvoranschlag","foerderungsberatung"];
-const FT_KOSMETIK=["buchungslink","hausbesuche","terminvereinbarung","preisliste"];
-const FT_GASTRO=["buchungslink","lieferservice","barrierefrei","parkplaetze","preisliste"];
-const FT_GESUNDHEIT=["buchungslink","terminvereinbarung","hausbesuche","kassenvertrag","erstgespraech_gratis","barrierefrei","online_beratung","ratenzahlung","preisliste"];
-const FT_DIENSTLEISTUNG=["terminvereinbarung","kostenvoranschlag","erstgespraech_gratis","online_beratung","hausbesuche"];
-const FT_BILDUNG=["buchungslink","hausbesuche","terminvereinbarung","online_beratung","preisliste"];
+const FT_GASTRO=["gastgarten","takeaway","lieferservice"];
+const FT_GESUNDHEIT=["kassenvertrag","notdienst"];
+const FT_DIENSTLEISTUNG=["kostenvoranschlag"];
+const BRANCHEN_GRUPPEN={
+  handwerk:{label:"Handwerk",features:FT_HANDWERK},
+  kosmetik:{label:"Kosmetik & Körperpflege",features:[]},
+  gastro:{label:"Gastronomie",features:FT_GASTRO},
+  gesundheit:{label:"Gesundheit",features:FT_GESUNDHEIT},
+  dienstleistung:{label:"Dienstleistungen",features:FT_DIENSTLEISTUNG},
+  bildung:{label:"Bildung & Training",features:[]},
+};
 const BRANCHEN = [
   // Handwerk
-  { value:"elektro",         label:"Elektroinstallationen",            leistungen:["Elektroinstallationen","Störungsbehebung & Reparatur","Smart Home Systeme","Photovoltaik & Speicher","Beleuchtungstechnik","Notdienst 24/7"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"installateur",    label:"Installateur / Heizung / Sanitär", leistungen:["Heizungsinstallation & Wartung","Sanitärinstallationen","Rohrreinigung","Badsanierung","Wärmepumpen","Notdienst 24/7"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"maler",           label:"Malerei & Anstrich",                leistungen:["Innenmalerei","Fassadenanstrich","Tapezierarbeiten","Lackierarbeiten","Schimmelbehandlung","Farbberatung"],stil:"modern",features:FT_HANDWERK },
-  { value:"tischler",        label:"Tischlerei",                        leistungen:["Möbel nach Maß","Küchenbau","Innenausbau","Fenster & Türen","Reparaturen","Restaurierung"],stil:"elegant",features:FT_HANDWERK },
-  { value:"fliesenleger",    label:"Fliesenleger / Plattenleger",       leistungen:["Fliesenverlegung","Badsanierung","Natursteinarbeiten","Terrassenplatten","Abdichtungen","Reparaturen"],stil:"modern",features:FT_HANDWERK },
-  { value:"schlosser",       label:"Schlosserei / Metallbau",           leistungen:["Stahl- & Metallbau","Geländer & Zäune","Tore & Türen","Schweißarbeiten","Aufsperrdienst","Sonderanfertigungen"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"dachdecker",      label:"Dachdecker / Spengler",             leistungen:["Dachsanierung","Dachdämmung","Flachdach","Dachrinnen & Spenglerarbeiten","Dachfenster","Notdienst"],stil:"elegant",features:FT_HANDWERK },
-  { value:"zimmerei",        label:"Zimmerei",                          leistungen:["Dachstühle & Holzbau","Carports & Terrassen","Aufstockungen","Holzfassaden","Sanierung & Altholz","Sonderanfertigungen"],stil:"elegant",features:FT_HANDWERK },
-  { value:"maurer",          label:"Maurer / Baumeister",               leistungen:["Rohbau & Mauerwerk","Zu- & Umbauten","Sanierung & Renovierung","Fassadenarbeiten","Estricharbeiten","Abbrucharbeiten"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"bodenleger",      label:"Bodenleger / Parkett",              leistungen:["Parkettverlegung","Laminat & Vinyl","Schleifen & Versiegeln","Teppichboden","Reparaturen","Bodenberatung"],stil:"modern",features:FT_HANDWERK },
-  { value:"glaser",          label:"Glaser",                            leistungen:["Glasreparaturen","Isolierglas","Spiegel & Glasmöbel","Duschwände","Glasfassaden","Notdienst"],stil:"modern",features:FT_HANDWERK },
-  { value:"gaertner",        label:"Gärtner / Landschaftsbau",         leistungen:["Gartengestaltung","Pflasterarbeiten","Bepflanzung & Pflege","Bewässerungssysteme","Zaunbau","Baumschnitt & Pflege"],stil:"modern",features:FT_HANDWERK },
-  { value:"klima",           label:"Klimatechnik / Lüftung",           leistungen:["Klimaanlagen Installation","Lüftungsanlagen","Wartung & Service","Wärmepumpen","Kühltechnik","Notdienst"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"reinigung",       label:"Reinigung / Gebäudeservice",       leistungen:["Gebäudereinigung","Fensterreinigung","Grundreinigung","Teppichreinigung","Fassadenreinigung","Winterdienst"],stil:"modern",features:FT_HANDWERK },
-  { value:"kfz",             label:"KFZ-Werkstatt / Mechaniker",       leistungen:["KFZ-Service & Inspektion","Reparaturen","Pickerl (§57a)","Reifenservice","Klimaanlagen-Service","Lackierung & Karosserie"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"aufsperrdienst",  label:"Aufsperrdienst / Schlüsseldienst", leistungen:["Türöffnung","Schlossaustausch","Schließanlagen","Sicherheitsberatung","Tresoröffnung","Notdienst 24/7"],stil:"klassisch",features:FT_HANDWERK },
-  { value:"hafner",          label:"Hafner / Ofenbau",                  leistungen:["Kachelofenbau","Kaminbau","Ofensanierung","Fliesenarbeiten","Ofenplanung & Beratung","Wartung & Reinigung"],stil:"elegant",features:FT_HANDWERK },
-  { value:"raumausstatter",  label:"Raumausstatter / Polsterer",        leistungen:["Polsterarbeiten","Vorhänge & Gardinen","Sonnenschutz","Bodenbeläge","Wandgestaltung","Raumplanung"],stil:"modern",features:FT_HANDWERK },
+  { value:"elektro",         label:"Elektroinstallationen",            gruppe:"handwerk",leistungen:["Elektroinstallationen","Störungsbehebung & Reparatur","Smart Home Systeme","Photovoltaik & Speicher","Beleuchtungstechnik","Notdienst 24/7"],stil:"klassisch" },
+  { value:"installateur",    label:"Installateur / Heizung / Sanitär", gruppe:"handwerk",leistungen:["Heizungsinstallation & Wartung","Sanitärinstallationen","Rohrreinigung","Badsanierung","Wärmepumpen","Notdienst 24/7"],stil:"klassisch" },
+  { value:"maler",           label:"Malerei & Anstrich",               gruppe:"handwerk",leistungen:["Innenmalerei","Fassadenanstrich","Tapezierarbeiten","Lackierarbeiten","Schimmelbehandlung","Farbberatung"],stil:"modern" },
+  { value:"tischler",        label:"Tischlerei",                       gruppe:"handwerk",leistungen:["Möbel nach Maß","Küchenbau","Innenausbau","Fenster & Türen","Reparaturen","Restaurierung"],stil:"elegant" },
+  { value:"fliesenleger",    label:"Fliesenleger / Plattenleger",      gruppe:"handwerk",leistungen:["Fliesenverlegung","Badsanierung","Natursteinarbeiten","Terrassenplatten","Abdichtungen","Reparaturen"],stil:"modern" },
+  { value:"schlosser",       label:"Schlosserei / Metallbau",          gruppe:"handwerk",leistungen:["Stahl- & Metallbau","Geländer & Zäune","Tore & Türen","Schweißarbeiten","Aufsperrdienst","Sonderanfertigungen"],stil:"klassisch" },
+  { value:"dachdecker",      label:"Dachdecker / Spengler",            gruppe:"handwerk",leistungen:["Dachsanierung","Dachdämmung","Flachdach","Dachrinnen & Spenglerarbeiten","Dachfenster","Notdienst"],stil:"elegant" },
+  { value:"zimmerei",        label:"Zimmerei",                         gruppe:"handwerk",leistungen:["Dachstühle & Holzbau","Carports & Terrassen","Aufstockungen","Holzfassaden","Sanierung & Altholz","Sonderanfertigungen"],stil:"elegant" },
+  { value:"maurer",          label:"Maurer / Baumeister",              gruppe:"handwerk",leistungen:["Rohbau & Mauerwerk","Zu- & Umbauten","Sanierung & Renovierung","Fassadenarbeiten","Estricharbeiten","Abbrucharbeiten"],stil:"klassisch" },
+  { value:"bodenleger",      label:"Bodenleger / Parkett",             gruppe:"handwerk",leistungen:["Parkettverlegung","Laminat & Vinyl","Schleifen & Versiegeln","Teppichboden","Reparaturen","Bodenberatung"],stil:"modern" },
+  { value:"glaser",          label:"Glaser",                           gruppe:"handwerk",leistungen:["Glasreparaturen","Isolierglas","Spiegel & Glasmöbel","Duschwände","Glasfassaden","Notdienst"],stil:"modern" },
+  { value:"gaertner",        label:"Gärtner / Landschaftsbau",        gruppe:"handwerk",leistungen:["Gartengestaltung","Pflasterarbeiten","Bepflanzung & Pflege","Bewässerungssysteme","Zaunbau","Baumschnitt & Pflege"],stil:"modern" },
+  { value:"klima",           label:"Klimatechnik / Lüftung",          gruppe:"handwerk",leistungen:["Klimaanlagen Installation","Lüftungsanlagen","Wartung & Service","Wärmepumpen","Kühltechnik","Notdienst"],stil:"klassisch" },
+  { value:"reinigung",       label:"Reinigung / Gebäudeservice",      gruppe:"handwerk",leistungen:["Gebäudereinigung","Fensterreinigung","Grundreinigung","Teppichreinigung","Fassadenreinigung","Winterdienst"],stil:"modern" },
+  { value:"kfz",             label:"KFZ-Werkstatt / Mechaniker",      gruppe:"handwerk",leistungen:["KFZ-Service & Inspektion","Reparaturen","Pickerl (§57a)","Reifenservice","Klimaanlagen-Service","Lackierung & Karosserie"],stil:"klassisch" },
+  { value:"aufsperrdienst",  label:"Aufsperrdienst / Schlüsseldienst",gruppe:"handwerk",leistungen:["Türöffnung","Schlossaustausch","Schließanlagen","Sicherheitsberatung","Tresoröffnung","Notdienst 24/7"],stil:"klassisch" },
+  { value:"hafner",          label:"Hafner / Ofenbau",                 gruppe:"handwerk",leistungen:["Kachelofenbau","Kaminbau","Ofensanierung","Fliesenarbeiten","Ofenplanung & Beratung","Wartung & Reinigung"],stil:"elegant" },
+  { value:"raumausstatter",  label:"Raumausstatter / Polsterer",      gruppe:"handwerk",leistungen:["Polsterarbeiten","Vorhänge & Gardinen","Sonnenschutz","Bodenbeläge","Wandgestaltung","Raumplanung"],stil:"modern" },
+  { value:"goldschmied",     label:"Goldschmied / Juwelier",          gruppe:"handwerk",leistungen:["Schmuckherstellung","Reparaturen","Gravuren","Trauringe","Edelsteinarbeiten","Beratung"],stil:"elegant" },
+  { value:"schneider",       label:"Schneider / Änderungsschneiderei",gruppe:"handwerk",leistungen:["Änderungen & Reparaturen","Maßanfertigungen","Hochzeitsmode","Lederarbeiten","Vorhänge & Textilien","Beratung"],stil:"elegant" },
+  { value:"rauchfangkehrer", label:"Rauchfangkehrer",                  gruppe:"handwerk",leistungen:["Kehrung & Überprüfung","Abgasmessung","Feuerstättenbescheid","Brandschutzberatung","Kamininspektion","Gutachten"],stil:"klassisch" },
+  { value:"schaedlingsbekaempfung",label:"Schädlingsbekämpfung",       gruppe:"handwerk",leistungen:["Insektenbekämpfung","Nagetierbekämpfung","Taubenabwehr","Holzschutz","Desinfektion","Beratung & Prävention"],stil:"klassisch" },
   // Kosmetik & Körperpflege
-  { value:"kosmetik",        label:"Kosmetikstudio",                    leistungen:["Gesichtsbehandlungen","Körperpflege & Peeling","Waxing & Haarentfernung","Anti-Aging-Behandlungen","Augenbrauen & Wimpern","Beratung & Pflegeroutine"],stil:"modern",features:FT_KOSMETIK },
-  { value:"friseur",         label:"Friseursalon",                      leistungen:["Haarschnitt Damen & Herren","Färben & Strähnchen","Hochzeitsstyling","Haarbehandlungen","Kinder-Haarschnitt","Bartpflege"],stil:"modern",features:FT_KOSMETIK },
-  { value:"nagel",           label:"Nagelstudio",                       leistungen:["Gel-Nägel & Shellac","Nagelverlängerung","Nail Art & Design","Nagelreparatur","Fußpflege & Nagellack","Beratung"],stil:"modern",features:FT_KOSMETIK },
-  { value:"massage",         label:"Massage & Wellness",                leistungen:["Klassische Massage","Sportmassage","Entspannungsmassage","Hot-Stone-Massage","Triggerpunkt-Therapie","Lymphdrainage"],stil:"modern",features:FT_KOSMETIK },
-  { value:"tattoo",          label:"Tattoo & Piercing",                 leistungen:["Custom Tattoos","Cover-ups & Korrekturen","Piercing","Beratung & Design","Pflege & Nachsorge","Laser-Entfernung"],stil:"klassisch",features:FT_KOSMETIK },
-  { value:"fusspflege",      label:"Fußpflege",                         leistungen:["Medizinische Fußpflege","Nagelpflege & Korrektur","Hornhautentfernung","Fußpeeling & Entspannungsbad","Diabetische Fußpflege","Beratung"],stil:"klassisch",features:FT_KOSMETIK },
-  { value:"permanent_makeup",label:"Permanent Make-up & Wimpern",       leistungen:["Microblading","Permanent Make-up Lippen","Wimpernverlängerung","Wimpernlifting","Augenbrauen-Styling","Touch-up & Nachbehandlung"],stil:"modern",features:FT_KOSMETIK },
-  { value:"hundesalon",      label:"Hundesalon / Tierbetreuung",        leistungen:["Hundefrisur & Pflege","Baden & Föhnen","Krallenpflege","Tierbetreuung","Gassi-Service","Hundetraining"],stil:"modern",features:FT_KOSMETIK },
+  { value:"kosmetik",        label:"Kosmetikstudio",                   gruppe:"kosmetik",leistungen:["Gesichtsbehandlungen","Körperpflege & Peeling","Waxing & Haarentfernung","Anti-Aging-Behandlungen","Augenbrauen & Wimpern","Beratung & Pflegeroutine"],stil:"modern" },
+  { value:"friseur",         label:"Friseursalon",                     gruppe:"kosmetik",leistungen:["Haarschnitt Damen & Herren","Färben & Strähnchen","Hochzeitsstyling","Haarbehandlungen","Kinder-Haarschnitt","Bartpflege"],stil:"modern" },
+  { value:"nagel",           label:"Nagelstudio",                      gruppe:"kosmetik",leistungen:["Gel-Nägel & Shellac","Nagelverlängerung","Nail Art & Design","Nagelreparatur","Fußpflege & Nagellack","Beratung"],stil:"modern" },
+  { value:"massage",         label:"Massage & Wellness",               gruppe:"kosmetik",leistungen:["Klassische Massage","Sportmassage","Entspannungsmassage","Hot-Stone-Massage","Triggerpunkt-Therapie","Lymphdrainage"],stil:"modern" },
+  { value:"tattoo",          label:"Tattoo & Piercing",                gruppe:"kosmetik",leistungen:["Custom Tattoos","Cover-ups & Korrekturen","Piercing","Beratung & Design","Pflege & Nachsorge","Laser-Entfernung"],stil:"klassisch" },
+  { value:"fusspflege",      label:"Fußpflege",                        gruppe:"kosmetik",leistungen:["Medizinische Fußpflege","Nagelpflege & Korrektur","Hornhautentfernung","Fußpeeling & Entspannungsbad","Diabetische Fußpflege","Beratung"],stil:"klassisch" },
+  { value:"permanent_makeup",label:"Permanent Make-up & Wimpern",      gruppe:"kosmetik",leistungen:["Microblading","Permanent Make-up Lippen","Wimpernverlängerung","Wimpernlifting","Augenbrauen-Styling","Touch-up & Nachbehandlung"],stil:"modern" },
+  { value:"hundesalon",      label:"Hundesalon / Tierbetreuung",       gruppe:"kosmetik",leistungen:["Hundefrisur & Pflege","Baden & Föhnen","Krallenpflege","Tierbetreuung","Gassi-Service","Hundetraining"],stil:"modern" },
   // Gastronomie
-  { value:"restaurant",      label:"Restaurant / Gasthaus",             leistungen:["Speisekarte","Tagesmenü","Catering","Reservierung","Veranstaltungen","Lieferservice"],stil:"elegant",features:FT_GASTRO },
-  { value:"cafe",            label:"Café / Konditorei",                 leistungen:["Frühstück","Kuchen & Torten","Kaffeespezialitäten","Catering","Veranstaltungen","Take-away"],stil:"modern",features:FT_GASTRO },
-  { value:"bar",             label:"Bar / Lounge",                      leistungen:["Cocktails & Drinks","Events & Partys","DJ & Live-Musik","Private Feiern","Afterwork","Catering"],stil:"klassisch",features:FT_GASTRO },
-  { value:"heuriger",        label:"Heuriger / Buschenschank",          leistungen:["Eigenbauweine","Kalte Jause","Saisonale Schmankerl","Gartenbereich","Weinverkostung","Veranstaltungen"],stil:"elegant",features:FT_GASTRO },
-  { value:"imbiss",          label:"Imbiss / Foodtruck",                leistungen:["Speisekarte","Mittagsmenü","Lieferservice","Catering","Take-away","Events"],stil:"modern",features:FT_GASTRO },
-  { value:"catering",        label:"Catering / Partyservice",           leistungen:["Firmenevents","Hochzeiten","Buffets","Menü-Planung","Getränkeservice","Dekoration"],stil:"klassisch",features:FT_GASTRO },
+  { value:"restaurant",      label:"Restaurant / Gasthaus",            gruppe:"gastro",leistungen:["Speisekarte","Tagesmenü","Catering","Reservierung","Veranstaltungen","Lieferservice"],stil:"elegant" },
+  { value:"cafe",            label:"Café / Konditorei",                gruppe:"gastro",leistungen:["Frühstück","Kuchen & Torten","Kaffeespezialitäten","Catering","Veranstaltungen","Take-away"],stil:"modern" },
+  { value:"bar",             label:"Bar / Lounge",                     gruppe:"gastro",leistungen:["Cocktails & Drinks","Events & Partys","DJ & Live-Musik","Private Feiern","Afterwork","Catering"],stil:"klassisch" },
+  { value:"heuriger",        label:"Heuriger / Buschenschank",         gruppe:"gastro",leistungen:["Eigenbauweine","Kalte Jause","Saisonale Schmankerl","Gartenbereich","Weinverkostung","Veranstaltungen"],stil:"elegant" },
+  { value:"imbiss",          label:"Imbiss / Foodtruck",               gruppe:"gastro",leistungen:["Speisekarte","Mittagsmenü","Lieferservice","Catering","Take-away","Events"],stil:"modern" },
+  { value:"catering",        label:"Catering / Partyservice",          gruppe:"gastro",leistungen:["Firmenevents","Hochzeiten","Buffets","Menü-Planung","Getränkeservice","Dekoration"],stil:"klassisch" },
+  { value:"baeckerei",       label:"Bäckerei / Konditor",              gruppe:"gastro",leistungen:["Brot & Gebäck","Torten & Kuchen","Frühstück","Catering","Saisongebäck","Bestellung & Vorbestellung"],stil:"elegant" },
+  { value:"fleischerei",     label:"Fleischerei / Metzger",            gruppe:"gastro",leistungen:["Frischfleisch","Wurst & Aufschnitt","Catering & Partyplatten","Grillspezialitäten","Regionale Produkte","Vorbestellung"],stil:"klassisch" },
   // Gesundheit
-  { value:"physiotherapie",  label:"Physiotherapie",                    leistungen:["Manuelle Therapie","Bewegungstherapie","Sportphysiotherapie","Lymphdrainage","Elektrotherapie","Hausbesuche"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"arzt",            label:"Arztpraxis / Ordination",           leistungen:["Allgemeinmedizin","Vorsorgeuntersuchung","Gesundenuntersuchung","Impfungen","Hausbesuche","Akutversorgung"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"zahnarzt",        label:"Zahnarztpraxis",                    leistungen:["Zahnreinigung","Füllungen","Zahnersatz","Implantate","Kieferorthopädie","Ästhetische Zahnmedizin"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"tierarzt",        label:"Tierarztpraxis",                    leistungen:["Vorsorge & Impfungen","Chirurgie","Zahnmedizin","Notfallversorgung","Hausbesuche","Ernährungsberatung"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"apotheke",        label:"Apotheke",                          leistungen:["Rezepteinlösung","Beratung","Naturheilmittel","Kosmetik","Vorbestellung","Lieferservice"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"optiker",         label:"Optiker",                           leistungen:["Sehtest","Brillen","Kontaktlinsen","Sonnenbrillen","Reparaturen","Beratung"],stil:"modern",features:FT_GESUNDHEIT },
-  { value:"psychotherapie",  label:"Psychotherapie",                    leistungen:["Einzeltherapie","Paartherapie","Kinder- & Jugendtherapie","Krisenintervention","Online-Therapie","Erstgespräch"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"ergotherapie",    label:"Ergotherapie",                      leistungen:["Handtherapie","Kinder-Ergotherapie","Neurologische Therapie","Arbeitsplatzberatung","Hilfsmittelberatung","Hausbesuche"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"logopaedie",      label:"Logopädie",                         leistungen:["Sprachtherapie","Stimmtherapie","Schlucktherapie","Kinder-Sprachförderung","Stotterbehandlung","Hausbesuche"],stil:"klassisch",features:FT_GESUNDHEIT },
-  { value:"energetiker",     label:"Energetiker / Humanenergetiker",    leistungen:["Energetische Körperarbeit","Meridianarbeit","Aromatherapie","Kinesiologie","Klangschalentherapie","Beratung"],stil:"modern",features:FT_GESUNDHEIT },
+  { value:"physiotherapie",  label:"Physiotherapie",                   gruppe:"gesundheit",leistungen:["Manuelle Therapie","Bewegungstherapie","Sportphysiotherapie","Lymphdrainage","Elektrotherapie","Hausbesuche"],stil:"klassisch" },
+  { value:"arzt",            label:"Arztpraxis / Ordination",          gruppe:"gesundheit",leistungen:["Allgemeinmedizin","Vorsorgeuntersuchung","Gesundenuntersuchung","Impfungen","Hausbesuche","Akutversorgung"],stil:"klassisch" },
+  { value:"zahnarzt",        label:"Zahnarztpraxis",                   gruppe:"gesundheit",leistungen:["Zahnreinigung","Füllungen","Zahnersatz","Implantate","Kieferorthopädie","Ästhetische Zahnmedizin"],stil:"klassisch" },
+  { value:"tierarzt",        label:"Tierarztpraxis",                   gruppe:"gesundheit",leistungen:["Vorsorge & Impfungen","Chirurgie","Zahnmedizin","Notfallversorgung","Hausbesuche","Ernährungsberatung"],stil:"klassisch" },
+  { value:"apotheke",        label:"Apotheke",                         gruppe:"gesundheit",leistungen:["Rezepteinlösung","Beratung","Naturheilmittel","Kosmetik","Vorbestellung","Lieferservice"],stil:"klassisch" },
+  { value:"optiker",         label:"Optiker",                          gruppe:"gesundheit",leistungen:["Sehtest","Brillen","Kontaktlinsen","Sonnenbrillen","Reparaturen","Beratung"],stil:"modern" },
+  { value:"psychotherapie",  label:"Psychotherapie",                   gruppe:"gesundheit",leistungen:["Einzeltherapie","Paartherapie","Kinder- & Jugendtherapie","Krisenintervention","Online-Therapie","Erstgespräch"],stil:"klassisch" },
+  { value:"ergotherapie",    label:"Ergotherapie",                     gruppe:"gesundheit",leistungen:["Handtherapie","Kinder-Ergotherapie","Neurologische Therapie","Arbeitsplatzberatung","Hilfsmittelberatung","Hausbesuche"],stil:"klassisch" },
+  { value:"logopaedie",      label:"Logopädie",                        gruppe:"gesundheit",leistungen:["Sprachtherapie","Stimmtherapie","Schlucktherapie","Kinder-Sprachförderung","Stotterbehandlung","Hausbesuche"],stil:"klassisch" },
+  { value:"energetiker",     label:"Energetiker / Humanenergetiker",   gruppe:"gesundheit",leistungen:["Energetische Körperarbeit","Meridianarbeit","Aromatherapie","Kinesiologie","Klangschalentherapie","Beratung"],stil:"modern" },
+  { value:"hebamme",         label:"Hebamme",                          gruppe:"gesundheit",leistungen:["Schwangerschaftsbetreuung","Geburtsvorbereitung","Nachsorge","Stillberatung","Rückbildung","Hausbesuche"],stil:"klassisch" },
+  { value:"diaetologe",      label:"Diätologe / Ernährungsberatung",   gruppe:"gesundheit",leistungen:["Ernährungsberatung","Diätplanung","Stoffwechselanalyse","Gewichtsmanagement","Sporternährung","Erstgespräch"],stil:"modern" },
+  { value:"hoerakustiker",   label:"Hörakustiker",                     gruppe:"gesundheit",leistungen:["Hörtest","Hörgeräte-Anpassung","Service & Reparatur","Gehörschutz","Tinnitus-Beratung","Erstberatung"],stil:"klassisch" },
+  { value:"zahntechnik",     label:"Zahntechnik",                      gruppe:"gesundheit",leistungen:["Kronen & Brücken","Prothesen","Implantatsuprakonstruktion","Veneers","Schienen","Reparaturen"],stil:"klassisch" },
+  { value:"heilmasseur",     label:"Heilmasseur",                      gruppe:"gesundheit",leistungen:["Heilmassage","Lymphdrainage","Reflexzonenmassage","Bindegewebsmassage","Sportmassage","Hausbesuche"],stil:"klassisch" },
   // Dienstleistungen
-  { value:"steuerberater",   label:"Steuerberater / Buchhaltung",       leistungen:["Buchhaltung","Jahresabschluss","Steuererklärung","Lohnverrechnung","Gründungsberatung","Unternehmensberatung"],stil:"klassisch",features:FT_DIENSTLEISTUNG },
-  { value:"rechtsanwalt",    label:"Rechtsanwalt / Kanzlei",            leistungen:["Vertragsrecht","Arbeitsrecht","Familienrecht","Mietrecht","Strafrecht","Erstberatung"],stil:"klassisch",features:FT_DIENSTLEISTUNG },
-  { value:"versicherung",    label:"Versicherungsmakler",               leistungen:["Versicherungsvergleich","Beratung","Schadensabwicklung","Vorsorge","Firmenversicherung","Erstgespräch"],stil:"klassisch",features:FT_DIENSTLEISTUNG },
-  { value:"immobilien",      label:"Immobilienmakler",                  leistungen:["Verkauf","Vermietung","Bewertung","Beratung","Besichtigungen","Verwaltung"],stil:"klassisch",features:FT_DIENSTLEISTUNG },
-  { value:"hausverwaltung",  label:"Hausverwaltung",                    leistungen:["Objektverwaltung","Betriebskostenabrechnung","Eigentümervertretung","Mieterverwaltung","Instandhaltung","Sanierungsbetreuung"],stil:"klassisch",features:FT_DIENSTLEISTUNG },
-  { value:"umzug",           label:"Umzug / Transport",                 leistungen:["Privatumzüge","Firmenumzüge","Entrümpelung","Möbelmontage","Lagerung","Verpackungsservice"],stil:"modern",features:FT_DIENSTLEISTUNG },
-  { value:"eventplanung",    label:"Eventplanung / DJ",                 leistungen:["Hochzeiten","Firmenfeiern","Geburtstage","DJ-Service","Dekoration","Technikverleih"],stil:"modern",features:FT_DIENSTLEISTUNG },
+  { value:"steuerberater",   label:"Steuerberater / Buchhaltung",      gruppe:"dienstleistung",leistungen:["Buchhaltung","Jahresabschluss","Steuererklärung","Lohnverrechnung","Gründungsberatung","Unternehmensberatung"],stil:"klassisch" },
+  { value:"rechtsanwalt",    label:"Rechtsanwalt / Kanzlei",           gruppe:"dienstleistung",leistungen:["Vertragsrecht","Arbeitsrecht","Familienrecht","Mietrecht","Strafrecht","Erstberatung"],stil:"klassisch" },
+  { value:"versicherung",    label:"Versicherungsmakler",              gruppe:"dienstleistung",leistungen:["Versicherungsvergleich","Beratung","Schadensabwicklung","Vorsorge","Firmenversicherung","Erstgespräch"],stil:"klassisch" },
+  { value:"immobilien",      label:"Immobilienmakler",                 gruppe:"dienstleistung",leistungen:["Verkauf","Vermietung","Bewertung","Beratung","Besichtigungen","Verwaltung"],stil:"klassisch" },
+  { value:"hausverwaltung",  label:"Hausverwaltung",                   gruppe:"dienstleistung",leistungen:["Objektverwaltung","Betriebskostenabrechnung","Eigentümervertretung","Mieterverwaltung","Instandhaltung","Sanierungsbetreuung"],stil:"klassisch" },
+  { value:"umzug",           label:"Umzug / Transport",                gruppe:"dienstleistung",leistungen:["Privatumzüge","Firmenumzüge","Entrümpelung","Möbelmontage","Lagerung","Verpackungsservice"],stil:"modern" },
+  { value:"eventplanung",    label:"Eventplanung / DJ",                gruppe:"dienstleistung",leistungen:["Hochzeiten","Firmenfeiern","Geburtstage","DJ-Service","Dekoration","Technikverleih"],stil:"modern" },
+  { value:"fotograf",        label:"Fotograf / Videograf",             gruppe:"dienstleistung",leistungen:["Hochzeitsfotografie","Businessfotos","Produktfotografie","Eventfotografie","Videoproduktion","Bildbearbeitung"],stil:"modern" },
+  { value:"florist",         label:"Florist / Blumenladen",            gruppe:"dienstleistung",leistungen:["Sträuße & Gestecke","Hochzeitsfloristik","Trauerfloristik","Dekoration","Zimmerpflanzen","Lieferservice"],stil:"elegant" },
+  { value:"architekt",       label:"Architekt / Planungsbüro",         gruppe:"dienstleistung",leistungen:["Entwurfsplanung","Einreichplanung","Ausführungsplanung","Bauleitung","Sanierungsplanung","Beratung"],stil:"elegant" },
+  { value:"it_service",      label:"IT-Service / EDV-Betreuung",       gruppe:"dienstleistung",leistungen:["IT-Support","Netzwerk & Server","Cloud-Lösungen","Datensicherung","Software-Beratung","Wartungsverträge"],stil:"modern" },
+  { value:"werbeagentur",    label:"Werbeagentur / Grafik & Design",   gruppe:"dienstleistung",leistungen:["Corporate Design","Webdesign","Print & Drucksorten","Social Media","Fotografie","Kampagnenplanung"],stil:"modern" },
+  { value:"bestattung",      label:"Bestattung",                       gruppe:"dienstleistung",leistungen:["Erdbestattung","Feuerbestattung","Trauerfeier","Überführung","Vorsorge","Beratung & Begleitung"],stil:"elegant" },
+  { value:"notar",           label:"Notar",                            gruppe:"dienstleistung",leistungen:["Kaufverträge","Gesellschaftsverträge","Beglaubigungen","Verlassenschaften","Eheverträge","Vorsorgevollmacht"],stil:"klassisch" },
+  { value:"finanzberater",   label:"Finanzberater / Vermögensberatung",gruppe:"dienstleistung",leistungen:["Vermögensaufbau","Altersvorsorge","Finanzplanung","Kreditberatung","Veranlagung","Erstgespräch"],stil:"klassisch" },
+  { value:"reisebuero",      label:"Reisebüro",                        gruppe:"dienstleistung",leistungen:["Pauschalreisen","Individualreisen","Flugbuchung","Kreuzfahrten","Gruppenreisen","Reiseversicherung"],stil:"modern" },
+  { value:"innenarchitekt",  label:"Innenarchitekt / Raumdesign",      gruppe:"dienstleistung",leistungen:["Raumkonzepte","Farbberatung","Möbelplanung","Lichtplanung","Materialberatung","Umbauplanung"],stil:"elegant" },
+  { value:"textilreinigung", label:"Textilreinigung / Wäscherei",      gruppe:"dienstleistung",leistungen:["Chemische Reinigung","Hemdenservice","Lederreinigung","Teppichreinigung","Expressservice","Abhol- & Lieferservice"],stil:"klassisch" },
   // Bildung & Training
-  { value:"fahrschule",      label:"Fahrschule",                        leistungen:["Führerschein B","Führerschein A","Auffrischungskurs","Erste-Hilfe-Kurs","Theoriekurs","Intensivkurs"],stil:"klassisch",features:FT_BILDUNG },
-  { value:"nachhilfe",       label:"Nachhilfe / Lernhilfe",             leistungen:["Mathematik","Deutsch","Englisch","Physik","Prüfungsvorbereitung","Online-Nachhilfe"],stil:"modern",features:FT_BILDUNG },
-  { value:"musikschule",     label:"Musikschule / Musiklehrer",          leistungen:["Klavierunterricht","Gitarrenunterricht","Gesangsunterricht","Schlagzeugunterricht","Musiktheorie","Bandcoaching"],stil:"modern",features:FT_BILDUNG },
-  { value:"trainer",         label:"Personal Trainer / Fitness",         leistungen:["Personal Training","Gruppentraining","Ernährungsberatung","Online-Coaching","Firmenfitness","Reha-Training"],stil:"modern",features:FT_BILDUNG },
-  { value:"yoga",            label:"Yoga / Pilates Studio",              leistungen:["Hatha Yoga","Vinyasa Yoga","Pilates","Meditation","Workshops","Online-Kurse"],stil:"modern",features:FT_BILDUNG },
+  { value:"fahrschule",      label:"Fahrschule",                       gruppe:"bildung",leistungen:["Führerschein B","Führerschein A","Auffrischungskurs","Erste-Hilfe-Kurs","Theoriekurs","Intensivkurs"],stil:"klassisch" },
+  { value:"nachhilfe",       label:"Nachhilfe / Lernhilfe",            gruppe:"bildung",leistungen:["Mathematik","Deutsch","Englisch","Physik","Prüfungsvorbereitung","Online-Nachhilfe"],stil:"modern" },
+  { value:"musikschule",     label:"Musikschule / Musiklehrer",         gruppe:"bildung",leistungen:["Klavierunterricht","Gitarrenunterricht","Gesangsunterricht","Schlagzeugunterricht","Musiktheorie","Bandcoaching"],stil:"modern" },
+  { value:"trainer",         label:"Personal Trainer / Fitness",        gruppe:"bildung",leistungen:["Personal Training","Gruppentraining","Ernährungsberatung","Online-Coaching","Firmenfitness","Reha-Training"],stil:"modern" },
+  { value:"yoga",            label:"Yoga / Pilates Studio",             gruppe:"bildung",leistungen:["Hatha Yoga","Vinyasa Yoga","Pilates","Meditation","Workshops","Online-Kurse"],stil:"modern" },
+  { value:"hundeschule",     label:"Hundeschule / Hundetrainer",        gruppe:"bildung",leistungen:["Welpenkurs","Grundgehorsam","Verhaltensberatung","Agility","Einzeltraining","Gruppenkurse"],stil:"modern" },
+  { value:"tanzschule",      label:"Tanzschule",                        gruppe:"bildung",leistungen:["Standardtänze","Lateintänze","Hochzeitstanz","Kindertanzen","Workshops","Privatstunden"],stil:"elegant" },
+  { value:"reitschule",      label:"Reitschule / Reitstall",            gruppe:"bildung",leistungen:["Reitunterricht","Longierstunden","Ausritte","Ferienkurse","Pferdeeinstellung","Beritt"],stil:"elegant" },
+  { value:"schwimmschule",   label:"Schwimmschule",                     gruppe:"bildung",leistungen:["Babyschwimmen","Kinderschwimmkurse","Erwachsenenkurse","Techniktraining","Aquafitness","Einzelunterricht"],stil:"modern" },
   // Sonstige
-  { value:"sonstige",        label:"Anderer Beruf (nicht in der Liste)", leistungen:[],stil:"klassisch",features:[] },
+  { value:"sonstige",        label:"Anderer Beruf (nicht in der Liste)",gruppe:"",leistungen:[],stil:"klassisch" },
 ];
-const getBrancheFeatures=b=>(BRANCHEN.find(x=>x.value===b)?.features||[]);
+const getBrancheFeatures=b=>{const br=BRANCHEN.find(x=>x.value===b);if(!br)return[];const g=BRANCHEN_GRUPPEN[br.gruppe];return[...FT_ALLGEMEIN,...(g?.features||[])]};
+const getBrancheGruppe=b=>{const br=BRANCHEN.find(x=>x.value===b);return br?.gruppe?BRANCHEN_GRUPPEN[br.gruppe]:null};
 const BUNDESLAENDER=[{value:"wien",label:"Wien"},{value:"noe",label:"Niederösterreich"},{value:"ooe",label:"Oberösterreich"},{value:"stmk",label:"Steiermark"},{value:"sbg",label:"Salzburg"},{value:"tirol",label:"Tirol"},{value:"ktn",label:"Kärnten"},{value:"vbg",label:"Vorarlberg"},{value:"bgld",label:"Burgenland"}];
 const OEFFNUNGSZEITEN=[{value:"mo-fr-8-17",label:"Mo-Fr: 08:00-17:00"},{value:"mo-fr-7-16",label:"Mo-Fr: 07:00-16:00"},{value:"mo-fr-8-18",label:"Mo-Fr: 08:00-18:00"},{value:"mo-sa-8-17",label:"Mo-Sa: 08:00-17:00"},{value:"mo-sa-8-12",label:"Mo-Fr: 08:00-17:00, Sa: 08:00-12:00"},{value:"vereinbarung",label:"Nach Vereinbarung"},{value:"custom",label:"Eigene Zeiten eingeben"}];
 const UNTERNEHMENSFORMEN=[{value:"eu",label:"Einzelunternehmen (e.U.)"},{value:"einzelunternehmen",label:"Einzelunternehmen (nicht eingetragen)"},{value:"gmbh",label:"GmbH"},{value:"og",label:"OG"},{value:"kg",label:"KG"},{value:"ag",label:"AG"},{value:"verein",label:"Verein"},{value:"gesnbr",label:"GesbR"}];
@@ -1133,6 +1167,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
       <div className="q-mb">
         <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
         <Combobox label="Beruf / Branche" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
+        {data.branche&&data.branche!=="sonstige"&&getBrancheGruppe(data.branche)&&<div style={{marginTop:-12,marginBottom:16,fontSize:".78rem",color:T.textMuted}}>Berufsgruppe: <span style={{fontWeight:600,color:T.accent}}>{getBrancheGruppe(data.branche).label}</span></div>}
         {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
         <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Erscheint oben auf Ihrer Website. Daraus erstellen wir automatisch Ihren Über-uns-Text und Ihre Vorteile." required/>
         <Dropdown label="Bundesland" value={data.bundesland} onChange={v=>{up("bundesland")(v);const bl=BUNDESLAENDER.find(b=>b.value===v);up("einsatzgebiet")(bl?bl.label:"")}} options={BUNDESLAENDER} placeholder="Bundesland wählen" required/>
@@ -1961,6 +1996,7 @@ function Portal({session,onLogout}){
             <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
           </>):(<>
             <InfoRow label="Firmenname" value={order.firmenname}/>
+            <InfoRow label="Beruf" value={<>{order.branche_label||order.branche}{getBrancheGruppe(order.branche)&&<span style={{marginLeft:8,fontSize:".75rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"2px 8px",borderRadius:100}}>{getBrancheGruppe(order.branche).label}</span>}</>}/>
             <InfoRow label="Beschreibung" value={order.kurzbeschreibung}/>
             <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
           </>)}

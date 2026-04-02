@@ -53,27 +53,21 @@ export async function onRequestPost({request, env, ctx}) {
       body: JSON.stringify(patch),
     });
 
-    // Website-Generierung im Hintergrund + Auto-Retry nach 5 Min bei Fehler
-    const siteUrl = env.SITE_URL || "https://sitereadyprototype.pages.dev";
-    if (env.ADMIN_SECRET) {
-      ctx.waitUntil((async () => {
-        const genUrl = `${siteUrl}/api/generate-website?key=${env.ADMIN_SECRET}`;
-        const genBody = JSON.stringify({order_id: order.id});
-        const genHeaders = {"Content-Type": "application/json"};
+    // Website-Generierung im Hintergrund (direkter Funktionsaufruf)
+    const { generateWebsite } = await import("./generate-website.js");
+    ctx.waitUntil((async () => {
+      // 1. Versuch
+      try {
+        await generateWebsite(order.id, env);
+        return;
+      } catch(_) {}
 
-        // 1. Versuch
-        try {
-          const r = await fetch(genUrl, {method: "POST", headers: genHeaders, body: genBody});
-          if (r.ok) return; // Erfolg
-        } catch(_) {}
-
-        // 2. Versuch nach 5 Minuten
-        await new Promise(res => setTimeout(res, 5 * 60 * 1000));
-        try {
-          await fetch(genUrl, {method: "POST", headers: genHeaders, body: genBody});
-        } catch(_) {}
-      })());
-    }
+      // 2. Versuch nach 5 Minuten
+      await new Promise(res => setTimeout(res, 5 * 60 * 1000));
+      try {
+        await generateWebsite(order.id, env);
+      } catch(_) {}
+    })());
 
     // Auto-Resend Bestaetigungsmail nach 10 Min falls nicht bestaetigt
     if (body.order_id && env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {

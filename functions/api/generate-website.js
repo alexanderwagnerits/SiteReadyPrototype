@@ -261,28 +261,15 @@ function buildCustomStil(o) {
   };
 }
 
-export async function onRequestPost({request, env}) {
-  try {
-  const url = new URL(request.url);
-  const key = url.searchParams.get("key");
-  if (!key || key !== env.ADMIN_SECRET) {
-    return Response.json({error: "Unauthorized"}, {status: 401});
-  }
-
-  let body;
-  try { body = await request.json(); } catch(e) {
-    return Response.json({error: "Invalid JSON"}, {status: 400});
-  }
-  const {order_id} = body;
-  if (!order_id) return Response.json({error: "order_id required"}, {status: 400});
-
+/* Exportierte Core-Funktion fuer direkten Aufruf (z.B. aus start-build.js) */
+export async function generateWebsite(order_id, env) {
   /* Bestellung laden */
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}&select=*`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
   const rows = await r.json();
-  if (!rows.length) return Response.json({error: "Order not found"}, {status: 404});
+  if (!rows.length) throw new Error("Order not found");
   const o = rows[0];
 
   /* Konfiguration */
@@ -421,7 +408,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
       headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
       body: JSON.stringify({last_error: errMsg}),
     });
-    return Response.json({error: errMsg}, {status: 500});
+    throw new Error(errMsg);
   }
 
   const aiData = await aiRes.json();
@@ -530,17 +517,28 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
 
   if (!save.ok) {
     const saveErr = await save.text().catch(() => "");
-    return Response.json({error: "Speichern fehlgeschlagen: " + (saveErr || `HTTP ${save.status}`)}, {status: 500});
+    throw new Error("Speichern fehlgeschlagen: " + (saveErr || `HTTP ${save.status}`));
   }
-  return Response.json({ok: true, subdomain: sub, status: "live", quality_score: 100});
+  return {ok: true, subdomain: sub, status: "live", quality_score: 100};
+}
+
+/* HTTP-Handler (Admin-Endpoint) */
+export async function onRequestPost({request, env}) {
+  try {
+    const url = new URL(request.url);
+    const key = url.searchParams.get("key");
+    if (!key || key !== env.ADMIN_SECRET) {
+      return Response.json({error: "Unauthorized"}, {status: 401});
+    }
+    let body;
+    try { body = await request.json(); } catch(e) {
+      return Response.json({error: "Invalid JSON"}, {status: 400});
+    }
+    const {order_id} = body;
+    if (!order_id) return Response.json({error: "order_id required"}, {status: 400});
+    const result = await generateWebsite(order_id, env);
+    return Response.json(result);
   } catch(e) {
-    try {
-      await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
-        method: "PATCH",
-        headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
-        body: JSON.stringify({last_error: "Interner Fehler: " + e.message}),
-      });
-    } catch(_) {}
     return Response.json({error: "Interner Fehler: " + e.message}, {status: 500});
   }
 }

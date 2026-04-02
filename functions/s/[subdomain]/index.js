@@ -322,7 +322,8 @@ export async function onRequestGet({params, env}) {
   const telHref = tel ? "tel:" + tel.replace(/\s/g, "") : "";
   const adresseVoll = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   const oezKey = o.oeffnungszeiten || "";
-  const oezLabel = oezKey === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[oezKey] || oezKey || "Nach Vereinbarung");
+  const oezRaw = oezKey === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[oezKey] || oezKey || "Nach Vereinbarung");
+  const oezLabel = oezRaw.replace(/\n/g, "<br>").replace(/,\s*/g, "<br>");
 
   // Vorteile HTML aus text_vorteile JSON-Array aufbauen
   let vorteileHtml = "";

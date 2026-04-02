@@ -755,6 +755,8 @@ function SuccessPage({data,onBack,onPortal}){
     });
     if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
     try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(_){}
+    /* Auto-Login nach signUp (kein E-Mail-Bestätigung nötig) */
+    try{await supabase.auth.signInWithPassword({email:loginEmail,password:pw});}catch(_){}
     setSaving(false);
     localStorage.setItem("sr_pending_email",loginEmail);
     setConfirmed(true);

@@ -278,6 +278,9 @@ JSON-Felder:
 - oeffnungszeiten: Oeffnungszeiten als Freitext. Leer wenn nicht gefunden.
 - gut_zu_wissen: Permanente Kundenhinweise von der Website, getrennt durch \\n. Max 5. Leer wenn nichts Relevantes.
 - bewertungen: Array mit max 5 Kundenbewertungen/Testimonials die auf der Website stehen. Format: [{"name":"Kundenname","text":"Bewertungstext","sterne":5}]. Sterne 1-5 (0 wenn nicht erkennbar). NUR echte Bewertungen von der Website, NICHTS erfinden. Leeres Array wenn keine gefunden.
+- merkmale: Objekt mit erkannten Merkmalen/Features. NUR auf true setzen wenn KLAR im Text erwaehnt. Alle anderen weglassen.
+  Moegliche Keys: kassenvertrag (Wert: "alle_kassen"/"wahlarzt"/"privat"/"oegk"/"bvaeb"/"svs"), barrierefrei (true/false), parkplaetze (true/false), notdienst (true/false), meisterbetrieb (true/false), terminvereinbarung (true/false), erstgespraech_gratis (true/false), online_beratung (true/false), hausbesuche (true/false), kartenzahlung (true/false), ratenzahlung (true/false), gutscheine (true/false), zertifiziert (true/false), kostenvoranschlag (true/false), foerderungsberatung (true/false), gastgarten (true/false), takeaway (true/false), lieferservice (true/false)
+  Beispiele: "Alle Kassen" oder "Kassenvertrag" = kassenvertrag:"alle_kassen". "Wahlarzt" = kassenvertrag:"wahlarzt". "Barrierefrei" oder "behindertengerecht" = barrierefrei:true. "Meisterbetrieb" = meisterbetrieb:true. "Online-Terminbuchung" = terminvereinbarung:true.
 
 Website-Text:
 ${fullText}${emailHint}${phoneHint}`,
@@ -334,6 +337,9 @@ ${fullText}${emailHint}${phoneHint}`,
       ? [...new Set(extracted.leistungen.map(l => l?.trim()).filter(Boolean))].slice(0, 8)
       : [];
 
+    // Merkmale extrahieren
+    const merkmale = extracted.merkmale || {};
+
     return Response.json({
       firmenname: (extracted.firmenname || "").slice(0, 60),
       telefon: finalPhone,
@@ -358,6 +364,7 @@ ${fullText}${emailHint}${phoneHint}`,
       instagram: socialLinks.instagram || "",
       linkedin:  socialLinks.linkedin  || "",
       tiktok:    socialLinks.tiktok    || "",
+      merkmale,
     });
 
   } catch(e) {

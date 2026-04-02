@@ -174,7 +174,8 @@ export async function onRequestGet({params, env}) {
         `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
         `</div>`
       ).join("");
-      const cols = aboutFotosForTeamSlot.length === 1 ? "1fr" : "1fr 1fr";
+      const n = aboutFotosForTeamSlot.length;
+      const cols = n === 1 ? "1fr" : n === 2 ? "1fr" : "1fr 1fr";
       const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div>`;
       html = html.replace("<!-- TEAM -->", grid);
       html = html.replace("<!-- ABOUT_FOTOS -->", "");
@@ -328,7 +329,7 @@ export async function onRequestGet({params, env}) {
       const foto = findInMap(fotoMap, l) || findInMap(fotoMap, lCapitalized);
       const imgArea = foto
         ? `<div style="height:160px;overflow:hidden"><img src="${foto}" alt="${lCapitalized}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
-        : `<div style="height:120px;background:${gradients[i % gradients.length]};opacity:.85"></div>`;
+        : "";
       return `<div class="sr-fade" style="${cardStyle}" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.10)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">` +
         imgArea +
         `<div style="padding:24px 26px">` +

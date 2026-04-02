@@ -80,7 +80,7 @@ export async function onRequestGet({params, env}) {
   // Logo in Nav injizieren (ersetzt Firmenname-Text durch <img>)
   if (o.url_logo) {
     html = html.replace(
-      /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/,
+      /(<a[^>]*id="site-nav-logo"[^>]*>)[\s\S]*?(<\/a>)/,
       `$1<img src="${o.url_logo}" alt="Logo" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
     );
   }

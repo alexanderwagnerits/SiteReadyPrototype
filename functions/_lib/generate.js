@@ -4,7 +4,7 @@ function buildNav(o, pal, stil) {
   return `<style>
 #sitenav{position:sticky;top:0;z-index:1000;background:var(--primary);transition:box-shadow .3s ease,background .3s ease}
 #sitenav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.18)}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;transition:height .3s ease}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:80px;display:flex;align-items:center;justify-content:space-between;transition:height .3s ease}
 #sitenav.scrolled .nav-inner{height:56px}
 .nav-links{display:flex;align-items:center;gap:28px}
 .nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
@@ -476,7 +476,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   if (logoUrl) {
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/i,
-      `$1<img src="${logoUrl}" alt="${o.firmenname}" style="height:32px;max-width:150px;object-fit:contain"/>$2`
+      `$1<img src="${logoUrl}" alt="${o.firmenname}" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px"/>$2`
     );
   }
 

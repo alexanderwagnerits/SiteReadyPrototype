@@ -166,10 +166,24 @@ export async function onRequestGet({params, env}) {
   } else if (berufsregNr) {
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">${berufsregNr}</div>`);
   } else {
-    html = html.replace("<!-- TEAM -->", "");
+    // Kein Team — About-Fotos in die rechte Spalte verschieben
+    const aboutFotosForTeamSlot = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
+    if (aboutFotosForTeamSlot.length > 0) {
+      const items = aboutFotosForTeamSlot.map(url =>
+        `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
+        `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+        `</div>`
+      ).join("");
+      const cols = aboutFotosForTeamSlot.length === 1 ? "1fr" : "1fr 1fr";
+      const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div>`;
+      html = html.replace("<!-- TEAM -->", grid);
+      html = html.replace("<!-- ABOUT_FOTOS -->", "");
+    } else {
+      html = html.replace("<!-- TEAM -->", "");
+    }
   }
 
-  // Über-uns-Fotos (max 4) — unter dem Text in der dunklen Sektion
+  // Über-uns-Fotos (max 8) — unter dem Text, nur wenn nicht schon rechts angezeigt
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
@@ -177,7 +191,7 @@ export async function onRequestGet({params, env}) {
       `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
       `</div>`
     ).join("");
-    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${aboutFotos.length},1fr)` : "repeat(4,1fr)";
+    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${Math.min(aboutFotos.length, 4)},1fr)` : "repeat(4,1fr)";
     const grid = `<div class="sr-foto-grid" style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
     html = html.replace("<!-- ABOUT_FOTOS -->", grid);
   } else {
@@ -336,7 +350,19 @@ export async function onRequestGet({params, env}) {
   const adresseVoll = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   const oezKey = o.oeffnungszeiten || "";
   const oezRaw = oezKey === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[oezKey] || oezKey || "Nach Vereinbarung");
-  const oezLabel = oezRaw.replace(/\n/g, "<br>").replace(/,\s*/g, "<br>");
+  // Mehrzeilige Öffnungszeiten als kleine Tabelle darstellen
+  const oezLines = oezRaw.split(/[,\n]+/).map(s => s.trim()).filter(Boolean);
+  let oezLabel;
+  if (oezLines.length > 1) {
+    const rows = oezLines.map(line => {
+      const m = line.match(/^(Mo|Di|Mi|Do|Fr|Sa|So|Mon|Die|Mit|Don|Fre|Sam|Son)[a-z]*\.?\s*[:\-]?\s*(.*)/i);
+      if (m) return `<tr><td style="font-weight:600;padding:3px 16px 3px 0;white-space:nowrap;vertical-align:top">${m[1]}</td><td style="padding:3px 0">${m[2]}</td></tr>`;
+      return `<tr><td colspan="2" style="padding:3px 0">${line}</td></tr>`;
+    }).join("");
+    oezLabel = `<table style="font-size:.9rem;line-height:1.5;border-collapse:collapse">${rows}</table>`;
+  } else {
+    oezLabel = oezRaw;
+  }
 
   // Vorteile HTML aus text_vorteile JSON-Array aufbauen
   let vorteileHtml = "";

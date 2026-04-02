@@ -62,6 +62,13 @@ export async function onRequestGet({params, env}) {
     if (o.gutscheine) trustItems.push({l:"Gutscheine",i:tIcon(`<path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>`)});
     const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "\u00d6GK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
     if (kassenLabel) trustItems.push({l:kassenLabel,i:tIcon(`<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`)});
+    if (o.barrierefrei) trustItems.push({l:"Barrierefrei",i:tIcon(`<circle cx="12" cy="4" r="2"/><path d="M12 6v6l4 4"/><path d="M8 12l-2 6h12"/>`)});
+    if (o.terminvereinbarung) trustItems.push({l:"Online-Termin",i:tIcon(`<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`)});
+    if (o.kartenzahlung) trustItems.push({l:"Kartenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
+    if (o.parkplaetze) trustItems.push({l:"Parkpl\u00e4tze",i:tIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`)});
+    if (o.gastgarten) trustItems.push({l:"Gastgarten",i:tIcon(`<circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>`)});
+    if (o.takeaway) trustItems.push({l:"Take-away",i:tIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`)});
+    if (o.lieferservice) trustItems.push({l:"Lieferservice",i:tIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`)});
     if (trustItems.length > 0) {
       const items = trustItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
       html = html.replace("<!-- TRUST -->", `<div class="trust"><div class="w"><div class="trust-items">${items}</div></div></div>`);
@@ -74,7 +81,7 @@ export async function onRequestGet({params, env}) {
   if (o.url_logo) {
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/,
-      `$1<img src="${o.url_logo}" alt="Logo" style="height:38px;width:auto;object-fit:contain;display:block;max-width:160px">$2`
+      `$1<img src="${o.url_logo}" alt="Logo" style="height:52px;width:auto;object-fit:contain;display:block;max-width:200px">$2`
     );
   }
 
@@ -151,9 +158,9 @@ export async function onRequestGet({params, env}) {
     const cards = teamMembers.map(m => {
       const hasImg = !!m.foto;
       const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${m.name}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.15)">`
-        : `<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.08)">${personIcon}</div>`;
-      return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0">${avatar}<div><div style="font-weight:700;font-size:.95rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.8rem;opacity:.55;margin-top:2px">${m.rolle}</div>` : ""}</div></div>`;
+        ? `<img src="${m.foto}" alt="${m.name}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
+        : `<div style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:3px solid rgba(255,255,255,.08)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+      return `<div style="display:flex;align-items:center;gap:16px;padding:16px 0">${avatar}<div><div style="font-weight:700;font-size:1.05rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.85rem;opacity:.55;margin-top:3px">${m.rolle}</div>` : ""}</div></div>`;
     }).join("");
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
   } else if (berufsregNr) {
@@ -167,7 +174,7 @@ export async function onRequestGet({params, env}) {
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:3/2;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
       `</div>`
     ).join("");
     const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${aboutFotos.length},1fr)` : "repeat(4,1fr)";
@@ -294,11 +301,17 @@ export async function onRequestGet({params, env}) {
     const iconStyle = iconStyleMap[stilName] || iconStyleMap.klassisch;
     const preisMap = o.leistungen_preise || {};
     const fotoMap = o.leistungen_fotos || {};
+    const findInMap = (map, key) => {
+      if (map[key]) return map[key];
+      const kLow = key.toLowerCase();
+      for (const [k, v] of Object.entries(map)) { if (k.toLowerCase() === kLow) return v; }
+      return "";
+    };
     const cards = leistungenArr.map((l, i) => {
       const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
-      const desc = descMap[l] || descMap[lCapitalized] || "";
-      const preis = preisMap[l] || preisMap[lCapitalized] || "";
-      const foto = fotoMap[l] || fotoMap[lCapitalized] || "";
+      const desc = findInMap(descMap, l) || findInMap(descMap, lCapitalized);
+      const preis = findInMap(preisMap, l) || findInMap(preisMap, lCapitalized);
+      const foto = findInMap(fotoMap, l) || findInMap(fotoMap, lCapitalized);
       const imgArea = foto
         ? `<div style="height:160px;overflow:hidden"><img src="${foto}" alt="${lCapitalized}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
         : `<div style="height:120px;background:${gradients[i % gradients.length]};opacity:.85"></div>`;

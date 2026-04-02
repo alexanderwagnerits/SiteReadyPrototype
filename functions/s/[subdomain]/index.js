@@ -81,7 +81,7 @@ export async function onRequestGet({params, env}) {
   if (o.url_logo) {
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[^<]*(<\/a>)/,
-      `$1<img src="${o.url_logo}" alt="Logo" style="height:52px;width:auto;object-fit:contain;display:block;max-width:200px">$2`
+      `$1<img src="${o.url_logo}" alt="Logo" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
     );
   }
 
@@ -158,9 +158,9 @@ export async function onRequestGet({params, env}) {
     const cards = teamMembers.map(m => {
       const hasImg = !!m.foto;
       const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${m.name}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
-        : `<div style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:3px solid rgba(255,255,255,.08)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
-      return `<div style="display:flex;align-items:center;gap:16px;padding:16px 0">${avatar}<div><div style="font-weight:700;font-size:1.05rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.85rem;opacity:.55;margin-top:3px">${m.rolle}</div>` : ""}</div></div>`;
+        ? `<img src="${m.foto}" alt="${m.name}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
+        : `<div style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:3px solid rgba(255,255,255,.08)"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+      return `<div style="display:flex;align-items:center;gap:18px;padding:18px 0">${avatar}<div><div style="font-weight:700;font-size:1.15rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.9rem;opacity:.55;margin-top:4px">${m.rolle}</div>` : ""}</div></div>`;
     }).join("");
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
   } else if (berufsregNr) {
@@ -174,7 +174,7 @@ export async function onRequestGet({params, env}) {
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:3/2;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
       `</div>`
     ).join("");
     const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${aboutFotos.length},1fr)` : "repeat(4,1fr)";

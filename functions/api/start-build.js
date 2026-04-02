@@ -54,7 +54,7 @@ export async function onRequestPost({request, env, ctx}) {
     });
 
     // Website-Generierung im Hintergrund (direkter Funktionsaufruf)
-    const { generateWebsite } = await import("./generate-website.js");
+    const { generateWebsite } = await import("../_lib/generate.js");
     ctx.waitUntil((async () => {
       // 1. Versuch
       try {

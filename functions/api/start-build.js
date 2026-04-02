@@ -54,7 +54,7 @@ export async function onRequestPost({request, env, ctx}) {
     });
 
     // Website-Generierung im Hintergrund + Auto-Retry nach 5 Min bei Fehler
-    const siteUrl = env.SITE_URL || new URL(request.url).origin;
+    const siteUrl = env.SITE_URL || "https://sitereadyprototype.pages.dev";
     if (env.ADMIN_SECRET) {
       ctx.waitUntil((async () => {
         const genUrl = `${siteUrl}/api/generate-website?key=${env.ADMIN_SECRET}`;

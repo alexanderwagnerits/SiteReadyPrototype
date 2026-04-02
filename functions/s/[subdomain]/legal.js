@@ -86,11 +86,11 @@ function buildLegalNav(o, stil, subdomain) {
   const telDisplay = tel;
   const telHref = tel ? `tel:${tel.replace(/\\s/g,"")}` : "";
   const logoHtml = o.url_logo
-    ? `<img src="${o.url_logo}" alt="${o.firmenname}" style="height:32px;max-width:150px;object-fit:contain">`
+    ? `<img src="${o.url_logo}" alt="${o.firmenname}" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">`
     : o.firmenname;
   return `<style>
 #sitenav{position:sticky;top:0;z-index:1000;background:${stil.p}}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:80px;display:flex;align-items:center;justify-content:space-between}
 .nav-links{display:flex;align-items:center;gap:28px}
 .nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
 .nav-link:hover{opacity:.7}

@@ -1397,11 +1397,10 @@ function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
   const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",branchenfeatures:"website",medien:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
   const tab=PAGE_TAB[page]||"website";
-  const nav=p=>{setPage(p==="domain"?"seo":p);setEditSection(null);};
+  const nav=p=>{setPage(p==="domain"?"seo":p);};
   const[order,setOrder]=useState(null);
-  const[editSection,setEditSection]=useState(null);
+  const originalOrderRef=useRef(null);
   const[saving,setSaving]=useState(false);
-  const[saved,setSaved]=useState(false);
   const[uploading,setUploading]=useState({});
   const[assetUrls,setAssetUrls]=useState({});
   const[invoices,setInvoices]=useState(null);
@@ -1436,6 +1435,7 @@ function Portal({session,onLogout}){
     supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1)
       .then(({data})=>{if(data&&data.length>0){
         setOrder(data[0]);
+        originalOrderRef.current=JSON.parse(JSON.stringify(data[0]));
         if(data[0].google_maps_url){setGUrl(data[0].google_maps_url);setGSaved(true);}
         // Assets aus url_* Spalten laden (keine HEAD-Requests noetig)
         const o=data[0];const urls={};
@@ -1464,24 +1464,52 @@ function Portal({session,onLogout}){
   },[session]);
 
   const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));
-
-  const save=async()=>{
+  const isDirty=order&&originalOrderRef.current&&JSON.stringify(order)!==JSON.stringify(originalOrderRef.current);
+  const saveAll=async()=>{
     if(!order||!supabase)return;
-    setSaving(true);setSaved(false);
-    await supabase.from("orders").update({
-      firmenname:order.firmenname,adresse:order.adresse,plz:order.plz,ort:order.ort,
-      telefon:order.telefon,leistungen:order.leistungen,extra_leistung:order.extra_leistung,
-      notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,kurzbeschreibung:order.kurzbeschreibung,
+    setSaving(true);
+    const{error}=await supabase.from("orders").update({
+      firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet,
+      adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,
       oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,
-      einsatzgebiet:order.einsatzgebiet,uid_nummer:order.uid_nummer,
-      unternehmensform:order.unternehmensform,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,
-      facebook:order.facebook||null,instagram:order.instagram||null,linkedin:order.linkedin||null,tiktok:order.tiktok||null,
-      stil:order.stil,fotos:order.fotos,
-      text_ueber_uns:order.text_ueber_uns||null,
-      text_vorteile:order.text_vorteile||null,
+      kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,
+      whatsapp:order.whatsapp||null,
+      buchungslink:order.buchungslink||null,terminvereinbarung:order.terminvereinbarung,
+      erstgespraech_gratis:order.erstgespraech_gratis,online_beratung:order.online_beratung,
+      hausbesuche:order.hausbesuche,barrierefrei:order.barrierefrei,parkplaetze:order.parkplaetze,
+      kartenzahlung:order.kartenzahlung,gastgarten:order.gastgarten,takeaway:order.takeaway,
+      lieferservice:order.lieferservice,
+      leistungen:order.leistungen,extra_leistung:order.extra_leistung,
+      notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,
+      kostenvoranschlag:order.kostenvoranschlag,
       leistungen_beschreibungen:order.leistungen_beschreibungen||null,
+      leistungen_preise:order.leistungen_preise||null,
+      leistungen_fotos:order.leistungen_fotos||null,
+      text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,
+      facebook:order.facebook||null,instagram:order.instagram||null,
+      linkedin:order.linkedin||null,tiktok:order.tiktok||null,
+      stil:order.stil,fotos:order.fotos,
+      custom_color:order.custom_color||null,custom_accent:order.custom_accent||null,
+      custom_bg:order.custom_bg||null,custom_text:order.custom_text||null,
+      custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,
+      custom_font:order.custom_font||null,custom_radius:order.custom_radius||null,
+      spezialisierung:order.spezialisierung||null,berufsregister_nr:order.berufsregister_nr||null,
+      zertifiziert:order.zertifiziert,ratenzahlung:order.ratenzahlung,gutscheine:order.gutscheine,
+      unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,
+      firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,
+      gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,
+      vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,
+      zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,
+      gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname,
     }).eq("id",order.id);
-    setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),3000);
+    setSaving(false);
+    if(!error){
+      originalOrderRef.current=JSON.parse(JSON.stringify(order));
+      showToast("Gespeichert");
+    }
+  };
+  const discardChanges=()=>{
+    if(originalOrderRef.current)setOrder(JSON.parse(JSON.stringify(originalOrderRef.current)));
   };
 
   const upload=async(key,file)=>{
@@ -1577,46 +1605,33 @@ function Portal({session,onLogout}){
   };
   useEffect(()=>{if(page==="rechnungen")loadInvoices();},[page]);
 
-  const saveSection=async(section)=>{
+  const saveImpressum=async()=>{
     if(!order||!supabase)return;
-    setSaving(true);setSaved(false);
-    const fields={
-      grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
-      hero:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
-      kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,whatsapp:order.whatsapp||null,buchungslink:order.buchungslink||null,terminvereinbarung:order.terminvereinbarung,erstgespraech_gratis:order.erstgespraech_gratis,online_beratung:order.online_beratung,hausbesuche:order.hausbesuche,barrierefrei:order.barrierefrei,parkplaetze:order.parkplaetze,kartenzahlung:order.kartenzahlung,gastgarten:order.gastgarten,takeaway:order.takeaway,lieferservice:order.lieferservice},
-      leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,leistungen_beschreibungen:order.leistungen_beschreibungen||null,leistungen_preise:order.leistungen_preise||null,leistungen_fotos:order.leistungen_fotos||null},
-      texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
-      design:{stil:order.stil,fotos:order.fotos,custom_color:order.custom_color||null,custom_accent:order.custom_accent||null,custom_bg:order.custom_bg||null,custom_text:order.custom_text||null,custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,custom_font:order.custom_font||null,custom_radius:order.custom_radius||null},
-      social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
-      impressum:{unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname},
-    };
-    await supabase.from("orders").update(fields[section]||{}).eq("id",order.id);
-    setSaving(false);setSaved(section);setTimeout(()=>setSaved(false),3000);
-    setEditSection(null);
+    setSaving(true);
+    await supabase.from("orders").update({
+      unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,
+      firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,
+      gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,
+      vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,
+      zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,
+      gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname,
+    }).eq("id",order.id);
+    setSaving(false);
+    originalOrderRef.current=JSON.parse(JSON.stringify(order));
+    showToast("Impressum gespeichert");
   };
 
   const isAiGen=(field)=>Array.isArray(order?.ai_generated)&&order.ai_generated.includes(field);
-  const SectionHeader=({id,label,badge,desc,onSave,aiField,onRemove})=>(
+  const SectionHeader=({label,badge,desc,aiField,onRemove})=>(
     <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
       {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>Automatisch erstellt — bitte prüfen und bei Bedarf anpassen</span>
         {onRemove&&<button onClick={onRemove} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>}
       </div>}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div style={{fontSize:".92rem",fontWeight:700,color:T.dark}}>{label}</div>
-          {badge==="instant"&&<span title="Änderungen sind sofort auf Ihrer Website sichtbar – kein Neugenerieren nötig" style={{fontSize:".7rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,cursor:"help"}}>Live</span>}
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          {saved===id&&<span style={{color:T.green,fontSize:".85rem",fontWeight:600}}>{"\u2713"} Gespeichert</span>}
-          {editSection===id
-            ?<><button onClick={()=>setEditSection(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>Abbrechen</button>
-              <button onClick={()=>onSave?onSave():saveSection(id)} disabled={saving} style={{padding:"7px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>{saving?"Speichert...":"Speichern"}</button></>
-            :<button onClick={()=>setEditSection(id)} style={{padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}
-              onMouseOver={e=>{e.currentTarget.style.borderColor=T.dark;e.currentTarget.style.color=T.dark;}}
-              onMouseOut={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textMuted;}}>Bearbeiten</button>}
-        </div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}>
+        <div style={{fontSize:".92rem",fontWeight:700,color:T.dark}}>{label}</div>
+        {badge==="instant"&&<span title="Änderungen sind sofort auf Ihrer Website sichtbar" style={{fontSize:".7rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,cursor:"help"}}>Live</span>}
       </div>
       {desc&&<div style={{fontSize:".85rem",color:T.textMuted,marginTop:7,lineHeight:1.55}}>{desc}</div>}
     </div>
@@ -1882,6 +1897,19 @@ function Portal({session,onLogout}){
         <div className="pt-mh-line"/>
       </>}
       <div className="pt-mb">
+      {isDirty&&page!=="impressum"&&(
+        <div style={{position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between",
+          padding:"12px 20px",background:"#111",borderRadius:T.rSm,boxShadow:"0 4px 16px rgba(0,0,0,.15)",marginBottom:12}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <div style={{width:6,height:6,borderRadius:"50%",background:"#f59e0b"}}/>
+            <span style={{fontSize:".88rem",fontWeight:600,color:"#fff"}}>Ungespeicherte Änderungen</span>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={discardChanges} style={{padding:"7px 16px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.7)",cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Verwerfen</button>
+            <button onClick={saveAll} disabled={saving} style={{padding:"7px 20px",border:"none",borderRadius:T.rSm,background:"#fff",color:"#111",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Speichern"}</button>
+          </div>
+        </div>
+      )}
       {/* Trial-Banner */}
       {order?.status==="trial"&&(<div style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
         <div>
@@ -1994,82 +2022,49 @@ function Portal({session,onLogout}){
       {(tab==="website"||tab==="extras")&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<>
         {/* Aktuelles / News */}
         {page==="aktuelles"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-          <div style={{marginBottom:16,paddingBottom:14,borderBottom:`1px solid ${T.bg3}`}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Aktuelles</div>
-                <span style={{fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100}}>Live</span>
+          <SectionHeader label="Aktuelles" badge="instant" desc="Kurzfristige Infos wie Betriebsurlaub, Aktionen oder News — erscheint als Banner auf Ihrer Website."/>
+          {(order.announcements||[]).length<1&&<button onClick={async()=>{
+            const a=[{text:"",active:false,date_start:"",date_end:"",id:Date.now()}];
+            await supabase.from("orders").update({announcements:a}).eq("id",order.id);
+            setOrder(o=>({...o,announcements:a}));
+          }} style={{padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s",marginBottom:12}}>+ Hinzufügen</button>}
+          {(order.announcements||[]).length===0?(<div style={{padding:"24px 16px",textAlign:"center",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+            <div style={{fontSize:".85rem",color:T.textMuted,marginBottom:4}}>Keine Meldungen</div>
+            <div style={{fontSize:".8rem",color:T.textMuted}}>Aktionen, Urlaub oder News — erscheint als Banner auf Ihrer Website.</div>
+          </div>):(
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(a)=>{await supabase.from("orders").update({announcements:a}).eq("id",order.id);setToastMsg("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
+              <div style={{marginBottom:10}}>
+                <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Text</div>
+                <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} onBlur={()=>{const a=[...(order.announcements||[])];saveAnn(a);}} style={{width:"100%",padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                {editSection==="aktuelles"
-                  ?<><button onClick={()=>setEditSection(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}>Schliessen</button></>
-                  :<button onClick={()=>setEditSection("aktuelles")} style={{padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s"}}
-                    onMouseOver={e=>{e.currentTarget.style.borderColor=T.dark;e.currentTarget.style.color=T.dark;}}
-                    onMouseOut={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textMuted;}}>Bearbeiten</button>}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+                <div>
+                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen ab</div>
+                  <input type="date" value={ann.date_start||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date_start:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+                </div>
+                <div>
+                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen bis</div>
+                  <input type="date" value={ann.date_end||ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date_end:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+                </div>
               </div>
-            </div>
-          </div>
-          {editSection==="aktuelles"?(<>
-            {(order.announcements||[]).length<1&&<button onClick={async()=>{
-              const a=[{text:"",active:false,date_start:"",date_end:"",id:Date.now()}];
-              await supabase.from("orders").update({announcements:a}).eq("id",order.id);
-              setOrder(o=>({...o,announcements:a}));
-            }} style={{padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,minHeight:36,transition:"all .15s",marginBottom:12}}>+ Hinzufügen</button>}
-            {(order.announcements||[]).length===0?(<div style={{padding:"24px 16px",textAlign:"center",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
-              <div style={{fontSize:".85rem",color:T.textMuted,marginBottom:4}}>Keine Meldungen</div>
-              <div style={{fontSize:".8rem",color:T.textMuted}}>Aktionen, Urlaub oder News — erscheint als Banner auf Ihrer Website.</div>
-            </div>):(
-            <div style={{display:"flex",flexDirection:"column",gap:10}}>
-              {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(a)=>{await supabase.from("orders").update({announcements:a}).eq("id",order.id);setToastMsg("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
-                <div style={{marginBottom:10}}>
-                  <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Text</div>
-                  <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} onBlur={()=>{const a=[...(order.announcements||[])];saveAnn(a);}} style={{width:"100%",padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
-                  <div>
-                    <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen ab</div>
-                    <input type="date" value={ann.date_start||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date_start:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:".8rem",color:ann.active?T.green:T.textMuted,fontWeight:600}}>
+                  <div style={{width:36,height:20,borderRadius:10,background:ann.active?T.green:T.bg3,position:"relative",transition:"background .2s",cursor:"pointer"}} onClick={()=>{const a=[...(order.announcements||[])];a[i]={...a[i],active:!a[i].active};setOrder(o=>({...o,announcements:a}));saveAnn(a);}}>
+                    <div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:ann.active?18:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.15)"}}/>
                   </div>
-                  <div>
-                    <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Anzeigen bis</div>
-                    <input type="date" value={ann.date_end||ann.date||""} onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],date_end:e.target.value};setOrder(o=>({...o,announcements:a}));saveAnn(a);}} style={{width:"100%",padding:"8px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.textMuted,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
-                  </div>
-                </div>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                  <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:".8rem",color:ann.active?T.green:T.textMuted,fontWeight:600}}>
-                    <div style={{width:36,height:20,borderRadius:10,background:ann.active?T.green:T.bg3,position:"relative",transition:"background .2s",cursor:"pointer"}} onClick={()=>{const a=[...(order.announcements||[])];a[i]={...a[i],active:!a[i].active};setOrder(o=>({...o,announcements:a}));saveAnn(a);}}>
-                      <div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:ann.active?18:2,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.15)"}}/>
-                    </div>
-                    {ann.active?"Sichtbar":"Ausgeblendet"}
-                  </label>
-                  <button onClick={async()=>{await supabase.from("orders").update({announcements:[]}).eq("id",order.id);setOrder(o=>({...o,announcements:[]}));setEditSection(null);}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>Entfernen</button>
-                </div>
-              </div>})}
-            </div>)}
-          </>):(<>
-            {(order.announcements||[]).length===0
-              ?<div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Meldung erstellt. Hier können Sie kurzfristige Infos wie Betriebsurlaub, Aktionen oder News als Banner auf Ihrer Website anzeigen.</div>
-              :(order.announcements||[]).map((ann,i)=><div key={ann.id||i} style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{width:8,height:8,borderRadius:"50%",background:ann.active?T.green:T.bg3,flexShrink:0}}/>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:".88rem",color:T.dark,fontWeight:500}}>{ann.text||<span style={{color:T.textMuted,fontStyle:"italic"}}>Kein Text</span>}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted}}>{ann.date_start&&ann.date_end?`${ann.date_start} – ${ann.date_end}`:ann.date_start||ann.date_end||"Kein Zeitraum"} · {ann.active?"Sichtbar":"Ausgeblendet"}</div>
-                </div>
-              </div>)}
-          </>)}
+                  {ann.active?"Sichtbar":"Ausgeblendet"}
+                </label>
+                <button onClick={async()=>{await supabase.from("orders").update({announcements:[]}).eq("id",order.id);setOrder(o=>({...o,announcements:[]}));}} style={{padding:"6px 10px",border:`1.5px solid #fca5a5`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,minHeight:32}}>Entfernen</button>
+              </div>
+            </div>})}
+          </div>)}
         </div>}
         {page==="grunddaten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="grunddaten" label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
-          {editSection==="grunddaten"?(<>
-            <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
-            <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
-            <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
-          </>):(<>
-            <InfoRow label="Firmenname" value={order.firmenname}/>
-            <InfoRow label="Beruf" value={<>{order.branche_label||order.branche}{getBrancheGruppe(order.branche)&&<span style={{marginLeft:8,fontSize:".75rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"2px 8px",borderRadius:100}}>{getBrancheGruppe(order.branche).label}</span>}</>}/>
-            <InfoRow label="Beschreibung" value={order.kurzbeschreibung}/>
-            <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
-          </>)}
+          <SectionHeader label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
+          <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
+          <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
+          <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
         {page==="hero"&&<>
@@ -2155,24 +2150,17 @@ function Portal({session,onLogout}){
           );})()}
           {/* Grunddaten fields */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <SectionHeader id="hero" label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
-            {editSection==="hero"?(<>
-              <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
-              <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
-              <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
-            </>):(<>
-              <InfoRow label="Firmenname" value={order.firmenname}/>
-              <InfoRow label="Beschreibung" value={order.kurzbeschreibung}/>
-              <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
-            </>)}
+            <SectionHeader label="Firmenname & Beschreibung" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
+            <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
+            <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
+            <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
           </div>
         </>}
         {page==="impressum"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="impressum" label="Unternehmen & Impressum" badge="instant"
-            desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Direkt bearbeitbar – eine Bestätigung stellt sicher, dass die Angaben korrekt sind."
-            onSave={()=>setImpressumConfirmOpen(true)}/>
+          <SectionHeader label="Unternehmen & Impressum" badge="instant"
+            desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Änderungen erfordern eine Bestätigung."/>
           {(()=>{const uf=order.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
-          return editSection==="impressum"?(<>
+          return<>
             <Dropdown label="Unternehmensform" value={uf||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
             {uf==="einzelunternehmen"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <Field label="Vorname Inhaber" value={order.vorname||""} onChange={upOrder("vorname")} placeholder="Maria"/>
@@ -2188,17 +2176,10 @@ function Portal({session,onLogout}){
             {uf==="verein"&&<><Field label="ZVR-Zahl" value={order.zvr_zahl||""} onChange={upOrder("zvr_zahl")} placeholder="z.B. 123456789"/><Field label="Vertretungsbefugte Organe" value={order.vertretungsorgane||""} onChange={upOrder("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}
             <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional"/>
             <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678" hint="Optional"/>
-          </>):(<>
-            <InfoRow label="Unternehmensform" value={UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf}/>
-            {uf==="einzelunternehmen"&&<InfoRow label="Inhaber" value={[order.vorname,order.nachname].filter(Boolean).join(" ")}/>}
-            {uf==="gesnbr"&&<InfoRow label="Gesellschafter" value={order.gesellschafter}/>}
-            {hasFB&&<><InfoRow label="Firmenbuchnummer" value={order.firmenbuchnummer}/><InfoRow label="Firmenbuchgericht" value={order.firmenbuchgericht}/></>}
-            {uf==="gmbh"&&<InfoRow label="Geschäftsführer" value={order.geschaeftsfuehrer}/>}
-            {uf==="ag"&&<><InfoRow label="Vorstand" value={order.vorstand}/><InfoRow label="Aufsichtsrat" value={order.aufsichtsrat}/></>}
-            {uf==="verein"&&<><InfoRow label="ZVR-Zahl" value={order.zvr_zahl}/><InfoRow label="Vertretungsorgane" value={order.vertretungsorgane}/></>}
-            <InfoRow label="UID-Nummer" value={order.uid_nummer}/>
-            <InfoRow label="GISA-Zahl" value={order.gisazahl}/>
-          </>);})()}
+            <div style={{marginTop:16}}>
+              <button onClick={()=>setImpressumConfirmOpen(true)} disabled={saving} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Impressum speichern"}</button>
+            </div>
+          </>;})()}
           {impressumConfirmOpen&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}}>
             <div style={{background:"#fff",borderRadius:T.r,padding:"32px 28px",maxWidth:440,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
               <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:8}}>Impressum bestätigen</div>
@@ -2209,20 +2190,24 @@ function Portal({session,onLogout}){
               </label>
               <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
                 <button onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-                <button disabled={!impressumChecked} onClick={()=>{saveSection("impressum");setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:impressumChecked?T.dark:"#ccc",color:"#fff",cursor:impressumChecked?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
+                <button disabled={!impressumChecked} onClick={()=>{saveImpressum();setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:impressumChecked?T.dark:"#ccc",color:"#fff",cursor:impressumChecked?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
               </div>
             </div>
           </div>}
         </div>}
-        {page==="kontakt"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="kontakt" label="Kontakt & Adresse" badge="instant" desc="Ihre Adresse und Öffnungszeiten werden unten auf der Website angezeigt und sind über Google Maps auffindbar."/>
-          {editSection==="kontakt"?(<>
+        {page==="kontakt"&&<>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Adresse & Kontakt" badge="instant" desc="Ihre Adresse und Telefonnummer werden auf der Website angezeigt und sind über Google Maps auffindbar."/>
             <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1" hint="Wird auf der Website und für Google Maps verwendet"/>
             <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
               <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
               <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
               <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78" hint="Wird als klickbarer Anruf-Button angezeigt"/>
             </div>
+            <Field label="WhatsApp-Nummer" value={order.whatsapp||""} onChange={upOrder("whatsapp")} placeholder="+43 664 123 45 67" hint="Wenn ausgefüllt, erscheint ein WhatsApp-Button auf Ihrer Website. Leer lassen = kein Button."/>
+          </div>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Öffnungszeiten & Formular" badge="instant" desc="Öffnungszeiten, Hinweise und Kontaktformular-Einstellungen."/>
             <Dropdown label="Öffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen"/>
             {order.oeffnungszeiten==="custom"&&<Field label="Eigene Öffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
             {isAiGen("gut_zu_wissen")&&order.gut_zu_wissen&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,marginBottom:4,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
@@ -2232,17 +2217,16 @@ function Portal({session,onLogout}){
             </div>}
             <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
             <Dropdown label="Kontaktformular" value={order.kontakt_formular||"auto"} onChange={upOrder("kontakt_formular")} options={[{value:"auto",label:"Automatisch (je nach Branche)"},{value:"standard",label:"Standard — Name, E-Mail, Nachricht"},{value:"termin",label:"Terminanfrage — mit Wunschtermin & Uhrzeit"},{value:"angebot",label:"Angebotsanfrage — mit Adresse & Beschreibung"},{value:"reservierung",label:"Reservierung — mit Datum, Uhrzeit & Personen"}]} hint="Bestimmt welche Felder Ihr Kontaktformular auf der Website hat"/>
-            <Field label="WhatsApp-Nummer" value={order.whatsapp||""} onChange={upOrder("whatsapp")} placeholder="+43 664 123 45 67" hint="Wenn ausgefüllt, erscheint ein WhatsApp-Button auf Ihrer Website. Leer lassen = kein Button."/>
-
-            {(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<>
-            {subH("Erreichbarkeit")}
+          </div>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Erreichbarkeit & Vor Ort" badge="instant" desc="Zusätzliche Angaben zu Terminvereinbarung, Barrierefreiheit und mehr."/>
+            {(()=>{const ft=getBrancheFeatures(order.branche);return<>
             <Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – erscheint als eigener Bereich auf der Website"/>
             <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
             <Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>
             <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Videoanruf möglich"/>
             <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
-
-            {subH("Vor Ort")}
+            <div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Vor Ort</div>
             <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
             <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
             <Toggle label="Kartenzahlung" checked={!!order.kartenzahlung} onChange={upOrder("kartenzahlung")} desc="Bankomat- oder Kreditkarte"/>
@@ -2250,19 +2234,10 @@ function Portal({session,onLogout}){
             {ft.includes("takeaway")&&<Toggle label="Take-away / Abholung" checked={!!order.takeaway} onChange={upOrder("takeaway")} desc="Speisen zum Mitnehmen"/>}
             {ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}
             </>;})()}
-          </>):(<>
-            <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
-            <InfoRow label="Telefon" value={order.telefon}/>
-            <InfoRow label="Öffnungszeiten" value={order.oeffnungszeiten==="custom"?order.oeffnungszeiten_custom:(OEFFNUNGSZEITEN.find(o=>o.value===order.oeffnungszeiten)?.label)}/>
-            <InfoRow label="Kontaktformular" value={({auto:"Automatisch",standard:"Standard",termin:"Terminanfrage",angebot:"Angebotsanfrage",reservierung:"Reservierung"})[order.kontakt_formular||"auto"]}/>
-            <InfoRow label="WhatsApp" value={order.whatsapp}/>
-            {order.gut_zu_wissen&&<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Gut zu wissen</div>{order.gut_zu_wissen.split("\n").filter(s=>s.trim()).map((line,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,fontSize:".82rem",color:T.dark,lineHeight:1.5,padding:"3px 0"}}><span style={{color:T.accent,flexShrink:0,marginTop:1}}>&#8226;</span>{line.trim()}</div>)}</div>}
-            {(()=>{const items=[];if(order.terminvereinbarung)items.push("Nur mit Termin");if(order.barrierefrei)items.push("Barrierefrei");if(order.parkplaetze)items.push("Parkplätze");if(order.hausbesuche)items.push("Hausbesuche");if(order.online_beratung)items.push("Online-Beratung");if(order.lieferservice)items.push("Lieferservice");if(order.kartenzahlung)items.push("Kartenzahlung");if(order.gastgarten)items.push("Gastgarten");if(order.takeaway)items.push("Take-away");return items.length>0?<div style={{marginTop:8}}><div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted,marginBottom:6}}>Merkmale</div><div style={{display:"flex",flexWrap:"wrap",gap:6}}>{items.map((it,i)=><span key={i} style={{fontSize:".78rem",fontWeight:600,color:T.accent,background:T.accentLight,padding:"3px 10px",borderRadius:100}}>{it}</span>)}</div></div>:null;})()}
-          </>)}
-        </div>}
+          </div>
+        </>}
         {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="leistungen" label="Leistungen" badge="instant" desc="Ihre Leistungen werden mit Bild, Beschreibung und Preis auf der Website angezeigt. Detaillierte Angaben führen zu mehr Anfragen." aiField="leistungen_beschreibungen"/>
-          {editSection==="leistungen"?(<>
+          <SectionHeader label="Leistungen" badge="instant" desc="Ihre Leistungen werden mit Bild, Beschreibung und Preis auf der Website angezeigt. Detaillierte Angaben führen zu mehr Anfragen." aiField="leistungen_beschreibungen"/>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Reihenfolge & Beschreibung"}</div>
               {(order.leistungen||[]).map((l,i,arr)=>(
@@ -2315,118 +2290,60 @@ function Portal({session,onLogout}){
               ))}
               <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzufügen"}</button>
             </div>
-          </>):(<>
-            {(order.leistungen||[]).map((l,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:i<(order.leistungen||[]).length-1?`1px solid ${T.bg3}`:"none"}}>
-                {(order.leistungen_fotos||{})[l]?<img src={(order.leistungen_fotos||{})[l]} alt="" style={{width:44,height:33,objectFit:"cover",borderRadius:4,flexShrink:0}}/>:<div style={{width:44,height:33,borderRadius:4,background:T.bg,flexShrink:0}}/>}
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{l}</div>
-                  {(order.leistungen_beschreibungen||{})[l]&&<div style={{fontSize:".75rem",color:T.textMuted,marginTop:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{(order.leistungen_beschreibungen||{})[l]}</div>}
-                </div>
-                {(order.leistungen_preise||{})[l]&&<div style={{fontSize:".78rem",fontWeight:700,color:T.accent,flexShrink:0}}>{(order.leistungen_preise||{})[l]}</div>}
-              </div>
-            ))}
-            {order.extra_leistung?.split("\n").filter(s=>s.trim()).map((l,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:`1px solid ${T.bg3}`}}>
-                {(order.leistungen_fotos||{})[l]?<img src={(order.leistungen_fotos||{})[l]} alt="" style={{width:44,height:33,objectFit:"cover",borderRadius:4,flexShrink:0}}/>:<div style={{width:44,height:33,borderRadius:4,background:T.bg,flexShrink:0}}/>}
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{l} <span style={{fontSize:".7rem",fontWeight:500,color:T.textMuted}}>Zusatz</span></div>
-                  {(order.leistungen_beschreibungen||{})[l]&&<div style={{fontSize:".75rem",color:T.textMuted,marginTop:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{(order.leistungen_beschreibungen||{})[l]}</div>}
-                </div>
-                {(order.leistungen_preise||{})[l]&&<div style={{fontSize:".78rem",fontWeight:700,color:T.accent,flexShrink:0}}>{(order.leistungen_preise||{})[l]}</div>}
-              </div>
-            ))}
-          </>)}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="texte" label="Über uns & Vorteile" badge="instant" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
-          {editSection==="texte"?(<>
-            <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
-            <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
-            {[0,1,2,3].map(i=>{const ph=["z.B. Über 10 Jahre Erfahrung","z.B. Persönliche Beratung","z.B. Faire Preise","z.B. Flexible Termine"][i];return<Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}} placeholder={ph}/>})}
-          </>):order.text_ueber_uns!=null?(<>
-            <InfoRow label={"Über uns"} value={order.text_ueber_uns||"\u2014"}/>
-            <InfoRow label="Vorteile" value={Array.isArray(order.text_vorteile)?order.text_vorteile.filter(Boolean).join(" \u00b7 "):"\u2014"}/>
-          </>):(
-            <div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>
-              Texte werden automatisch erstellt und können danach hier bearbeitet werden.
+          <SectionHeader label="Über uns & Vorteile" badge="instant" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
+          <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
+          <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
+          {[0,1,2,3].map(i=>{const ph=["z.B. Über 10 Jahre Erfahrung","z.B. Persönliche Beratung","z.B. Faire Preise","z.B. Flexible Termine"][i];return<Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}} placeholder={ph}/>})}
+        </div>}
+        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
+          <SectionHeader label="Team" badge="instant" desc="Stellen Sie Ihr Team vor — Name, Rolle und optional ein Foto. Erscheint auf der Website im Über-uns-Bereich."/>
+          {(order.team_members||[]).map((m,i)=>(
+            <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px"}}>
+                {m.foto?(<img src={m.foto} alt="" style={{width:40,height:40,borderRadius:"50%",objectFit:"cover",border:`1px solid ${T.bg3}`}}/>):(<div style={{width:40,height:40,borderRadius:"50%",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>)}
+                <div style={{flex:1}}>
+                  <input value={m.name||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],name:e.target.value};upOrder("team_members")(a);}} placeholder="Name" style={{width:"100%",padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
+                  <input value={m.rolle||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],rolle:e.target.value};upOrder("team_members")(a);}} placeholder="Rolle (z.B. Geschäftsführer)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".78rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
+                </div>
+                <label style={{padding:"5px 10px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".72rem",fontWeight:600,color:T.textSub,flexShrink:0}}>
+                  {m.foto?"Ändern":"Foto"}
+                  <input type="file" accept="image/*" style={{display:"none"}} onChange={async(e)=>{const file=e.target.files?.[0];if(!file||!session?.user?.id)return;const ext=file.name.split(".").pop().toLowerCase();const path=`${session.user.id}/team_${i}.${ext}`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const a=[...(order.team_members||[])];a[i]={...a[i],foto:data.publicUrl};await supabase.from("orders").update({team_members:a}).eq("id",order.id);setOrder(o=>({...o,team_members:a}));showToast("Foto hochgeladen!");}}/>
+                </label>
+                <button onClick={()=>{const a=[...(order.team_members||[])].filter((_,j)=>j!==i);upOrder("team_members")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
+              </div>
             </div>
-          )}
+          ))}
+          <button onClick={()=>{const a=[...(order.team_members||[]),{name:"",rolle:"",foto:""}];upOrder("team_members")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Teammitglied hinzufügen"}</button>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <SectionHeader id="team" label="Team" badge="instant" desc="Stellen Sie Ihr Team vor — Name, Rolle und optional ein Foto. Erscheint auf der Website im Über-uns-Bereich."/>
-          {editSection==="team"?(<>
-            {(order.team_members||[]).map((m,i)=>(
-              <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px"}}>
-                  {m.foto?(<img src={m.foto} alt="" style={{width:40,height:40,borderRadius:"50%",objectFit:"cover",border:`1px solid ${T.bg3}`}}/>):(<div style={{width:40,height:40,borderRadius:"50%",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>)}
-                  <div style={{flex:1}}>
-                    <input value={m.name||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],name:e.target.value};upOrder("team_members")(a);}} placeholder="Name" style={{width:"100%",padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
-                    <input value={m.rolle||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],rolle:e.target.value};upOrder("team_members")(a);}} placeholder="Rolle (z.B. Geschäftsführer)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".78rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
-                  </div>
-                  <label style={{padding:"5px 10px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".72rem",fontWeight:600,color:T.textSub,flexShrink:0}}>
-                    {m.foto?"Ändern":"Foto"}
-                    <input type="file" accept="image/*" style={{display:"none"}} onChange={async(e)=>{const file=e.target.files?.[0];if(!file||!session?.user?.id)return;const ext=file.name.split(".").pop().toLowerCase();const path=`${session.user.id}/team_${i}.${ext}`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:true});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const a=[...(order.team_members||[])];a[i]={...a[i],foto:data.publicUrl};await supabase.from("orders").update({team_members:a}).eq("id",order.id);setOrder(o=>({...o,team_members:a}));showToast("Foto hochgeladen!");}}/>
-                  </label>
-                  <button onClick={()=>{const a=[...(order.team_members||[])].filter((_,j)=>j!==i);upOrder("team_members")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
-                </div>
+          <SectionHeader label="Ablauf" badge="instant" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Erscheint als eigene Section auf der Website." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
+          {(order.ablauf_schritte||[]).map((s,i)=>(
+            <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>
+                <div style={{width:28,height:28,borderRadius:"50%",background:T.accent,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:".78rem",flexShrink:0}}>{i+1}</div>
+                <input value={s.titel||""} onChange={e=>{const a=[...(order.ablauf_schritte||[])];a[i]={...a[i],titel:e.target.value};upOrder("ablauf_schritte")(a);}} placeholder="Schritt-Titel (z.B. Erstgespräch)" style={{flex:1,padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
+                <button onClick={()=>{const a=[...(order.ablauf_schritte||[])].filter((_,j)=>j!==i);upOrder("ablauf_schritte")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
               </div>
-            ))}
-            <button onClick={()=>{const a=[...(order.team_members||[]),{name:"",rolle:"",foto:""}];upOrder("team_members")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Teammitglied hinzufügen"}</button>
-          </>):(<>
-            {(order.team_members||[]).length>0?(order.team_members||[]).filter(m=>m.name).map((m,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<(order.team_members||[]).filter(m2=>m2.name).length-1?`1px solid ${T.bg3}`:"none"}}>
-                {m.foto?(<img src={m.foto} alt="" style={{width:36,height:36,borderRadius:"50%",objectFit:"cover"}}/>):(<div style={{width:36,height:36,borderRadius:"50%",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>)}
-                <div><div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{m.name}</div>{m.rolle&&<div style={{fontSize:".75rem",color:T.textMuted}}>{m.rolle}</div>}</div>
-              </div>
-            )):(<div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Teammitglieder hinzugefügt. Über "Bearbeiten" können Sie Ihr Team vorstellen.</div>)}
-          </>)}
+              <input value={s.text||""} onChange={e=>{const a=[...(order.ablauf_schritte||[])];a[i]={...a[i],text:e.target.value};upOrder("ablauf_schritte")(a);}} placeholder="Kurze Beschreibung (optional)" style={{width:"100%",padding:"8px 12px",border:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+            </div>
+          ))}
+          {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <SectionHeader id="ablauf" label="Ablauf" badge="instant" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Erscheint als eigene Section auf der Website." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
-          {editSection==="ablauf"?(<>
-            {(order.ablauf_schritte||[]).map((s,i)=>(
-              <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>
-                  <div style={{width:28,height:28,borderRadius:"50%",background:T.accent,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:".78rem",flexShrink:0}}>{i+1}</div>
-                  <input value={s.titel||""} onChange={e=>{const a=[...(order.ablauf_schritte||[])];a[i]={...a[i],titel:e.target.value};upOrder("ablauf_schritte")(a);}} placeholder="Schritt-Titel (z.B. Erstgespräch)" style={{flex:1,padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
-                  <button onClick={()=>{const a=[...(order.ablauf_schritte||[])].filter((_,j)=>j!==i);upOrder("ablauf_schritte")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
-                </div>
-                <input value={s.text||""} onChange={e=>{const a=[...(order.ablauf_schritte||[])];a[i]={...a[i],text:e.target.value};upOrder("ablauf_schritte")(a);}} placeholder="Kurze Beschreibung (optional)" style={{width:"100%",padding:"8px 12px",border:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box"}}/>
+          <SectionHeader label="Kundenbewertungen" badge="instant" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
+          {(order.bewertungen||[]).map((b,i)=>(
+            <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>
+                <input value={b.name||""} onChange={e=>{const a=[...(order.bewertungen||[])];a[i]={...a[i],name:e.target.value};upOrder("bewertungen")(a);}} placeholder="Name des Kunden" style={{flex:1,padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
+                <div style={{display:"flex",gap:2}}>{[1,2,3,4,5].map(s=><button key={s} onClick={()=>{const a=[...(order.bewertungen||[])];a[i]={...a[i],sterne:s};upOrder("bewertungen")(a);}} style={{background:"none",border:"none",cursor:"pointer",padding:1,fontSize:"1rem",color:(b.sterne||0)>=s?T.accent:T.bg3}}>&#9733;</button>)}</div>
+                <button onClick={()=>{const a=[...(order.bewertungen||[])].filter((_,j)=>j!==i);upOrder("bewertungen")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
               </div>
-            ))}
-            {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
-          </>):(<>
-            {(order.ablauf_schritte||[]).length>0?(order.ablauf_schritte||[]).filter(s=>s.titel).map((s,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 0",borderBottom:i<(order.ablauf_schritte||[]).filter(s2=>s2.titel).length-1?`1px solid ${T.bg3}`:"none"}}>
-                <div style={{width:24,height:24,borderRadius:"50%",background:T.accentLight,color:T.accent,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:".72rem",flexShrink:0}}>{i+1}</div>
-                <div><div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{s.titel}</div>{s.text&&<div style={{fontSize:".78rem",color:T.textMuted,marginTop:2}}>{s.text}</div>}</div>
-              </div>
-            )):(<div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Schritte hinzugefügt. Über "Bearbeiten" können Sie Ihren Ablauf in 3–5 Schritten beschreiben.</div>)}
-          </>)}
-        </div>}
-        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <SectionHeader id="bewertungen" label="Kundenbewertungen" badge="instant" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
-          {editSection==="bewertungen"?(<>
-            {(order.bewertungen||[]).map((b,i)=>(
-              <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>
-                  <input value={b.name||""} onChange={e=>{const a=[...(order.bewertungen||[])];a[i]={...a[i],name:e.target.value};upOrder("bewertungen")(a);}} placeholder="Name des Kunden" style={{flex:1,padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
-                  <div style={{display:"flex",gap:2}}>{[1,2,3,4,5].map(s=><button key={s} onClick={()=>{const a=[...(order.bewertungen||[])];a[i]={...a[i],sterne:s};upOrder("bewertungen")(a);}} style={{background:"none",border:"none",cursor:"pointer",padding:1,fontSize:"1rem",color:(b.sterne||0)>=s?T.accent:T.bg3}}>&#9733;</button>)}</div>
-                  <button onClick={()=>{const a=[...(order.bewertungen||[])].filter((_,j)=>j!==i);upOrder("bewertungen")(a);}} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"\u00d7"}</button>
-                </div>
-                <textarea value={b.text||""} onChange={e=>{const a=[...(order.bewertungen||[])];a[i]={...a[i],text:e.target.value};upOrder("bewertungen")(a);}} placeholder="Was sagt der Kunde über Sie?" rows={2} style={{width:"100%",padding:"9px 12px",border:"none",resize:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box",lineHeight:1.5}}/>
-              </div>
-            ))}
-            {(order.bewertungen||[]).length<6&&<button onClick={()=>{const a=[...(order.bewertungen||[]),{name:"",text:"",sterne:5}];upOrder("bewertungen")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Bewertung hinzufügen"}</button>}
-          </>):(<>
-            {(order.bewertungen||[]).length>0?(order.bewertungen||[]).filter(b=>b.text).map((b,i)=>(
-              <div key={i} style={{padding:"12px 0",borderBottom:i<(order.bewertungen||[]).filter(b2=>b2.text).length-1?`1px solid ${T.bg3}`:"none"}}>
-                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>{b.sterne?<div style={{display:"flex",gap:1}}>{[1,2,3,4,5].map(s=><span key={s} style={{color:s<=b.sterne?T.accent:T.bg3,fontSize:".85rem"}}>&#9733;</span>)}</div>:null}<span style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>{b.name||"Kunde"}</span></div>
-                <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6,fontStyle:"italic"}}>&bdquo;{b.text}&ldquo;</div>
-              </div>
-            )):(<div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Bewertungen. Über "Bearbeiten" können Sie Kundenstimmen hinzufügen — diese erscheinen auf Ihrer Website.</div>)}
-          </>)}
+              <textarea value={b.text||""} onChange={e=>{const a=[...(order.bewertungen||[])];a[i]={...a[i],text:e.target.value};upOrder("bewertungen")(a);}} placeholder="Was sagt der Kunde über Sie?" rows={2} style={{width:"100%",padding:"9px 12px",border:"none",resize:"none",fontSize:".82rem",fontFamily:T.font,background:"#fafafa",color:T.dark,outline:"none",boxSizing:"border-box",lineHeight:1.5}}/>
+            </div>
+          ))}
+          {(order.bewertungen||[]).length<6&&<button onClick={()=>{const a=[...(order.bewertungen||[]),{name:"",text:"",sterne:5}];upOrder("bewertungen")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Bewertung hinzufügen"}</button>}
         </div>}
         {page==="design"&&(()=>{
           const s=STYLES_MAP[order.stil||"klassisch"]||STYLES_MAP.klassisch;
@@ -2460,8 +2377,7 @@ function Portal({session,onLogout}){
           );
           return<div style={{display:"flex",flexDirection:"column",gap:16}}>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <SectionHeader id="design" label="Design & Farben" badge="instant" desc="Passen Sie Farben, Schriftart und Ecken Ihrer Website an. Alle Änderungen sind sofort sichtbar."/>
-            {editSection==="design"?(<>
+            <SectionHeader label="Design & Farben" badge="instant" desc="Passen Sie Farben, Schriftart und Ecken Ihrer Website an. Alle Änderungen sind sofort sichtbar."/>
               <InfoRow label="Stil" value={s.label||order.stil}/>
 
               {/* Paletten */}
@@ -2500,58 +2416,33 @@ function Portal({session,onLogout}){
               </div>
 
               {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{marginTop:16,padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}
-            </>):(<>
-              <InfoRow label="Stil" value={s.label||order.stil}/>
-              <div style={{display:"flex",gap:10,marginTop:12,flexWrap:"wrap"}}>
-                {[{l:"Primär",v:dv("custom_color",s.primary)},{l:"Akzent",v:dv("custom_accent",s.accent)},{l:"Hintergrund",v:dv("custom_bg",s.bg)},{l:"Text",v:dv("custom_text",s.text||"#1f2937")},{l:"Sekundär",v:dv("custom_text_muted",s.textMuted||"#64748b")},{l:"Linien",v:dv("custom_sep",s.borderColor||"#e2e8f0")}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:6}}>
-                  <div style={{width:20,height:20,borderRadius:4,background:c.v,border:"1px solid rgba(0,0,0,.1)"}}/>
-                  <div style={{fontSize:".78rem",color:T.textMuted}}>{c.l}</div>
-                </div>)}
-              </div>
-              {(order.custom_font||order.custom_radius)&&<div style={{display:"flex",gap:12,marginTop:8}}>
-                {order.custom_font&&<div style={{fontSize:".82rem",color:T.textSub}}><strong>Schrift:</strong> {FONT_OPTIONS.find(f=>f.value===order.custom_font)?.label||order.custom_font}</div>}
-                {order.custom_radius&&<div style={{fontSize:".82rem",color:T.textSub}}><strong>Ecken:</strong> {order.custom_radius}</div>}
-              </div>}
-            </>)}
           </div>
         </div>;})()}
-        {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="branchenfeatures" label="Merkmale" badge="instant" desc="Was zeichnet Ihren Betrieb aus? Diese Angaben erscheinen als Badges auf Ihrer Website."/>
-          {editSection==="branchenfeatures"?(<>
-            {subH("Vertrauen & Qualität")}
+        {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);return<>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Vertrauen & Qualität" badge="instant" desc="Spezialisierung, Meisterbetrieb, Notdienst und mehr — erscheinen als Badges auf Ihrer Website."/>
             <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird oben auf der Website angezeigt — leer lassen wenn nicht zutreffend"/>
             <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr. für Ärzte, GISA-Zahl für Gewerbe" hint="Nur ausfüllen wenn vorhanden"/>
             {ft.includes("meisterbetrieb")&&<Toggle label="Meisterbetrieb" checked={!!order.meisterbetrieb} onChange={upOrder("meisterbetrieb")} desc="Zeigt ein Meisterbetrieb-Badge"/>}
             {ft.includes("notdienst")&&<Toggle label="24h Notdienst" checked={!!order.notdienst} onChange={upOrder("notdienst")} desc="Wird prominent auf Ihrer Website angezeigt"/>}
             {ft.includes("kassenvertrag")&&<Dropdown label="Kassenvertrag" value={order.kassenvertrag||""} onChange={upOrder("kassenvertrag")} options={[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt / Wahltherapeut"},{value:"privat",label:"Nur Privat"}]} placeholder="Kassenvertrag wählen" hint="Wichtig für Patienten"/>}
             <Toggle label="Zertifiziert / geprüft" checked={!!order.zertifiziert} onChange={upOrder("zertifiziert")} desc="z.B. TÜV, ISO, WKO-Qualitätszeichen"/>
-
-            {subH("Angebot & Preis")}
+          </div>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Angebot & Preis" badge="instant" desc="Kostenvoranschlag, Ratenzahlung und Gutscheine."/>
             {ft.includes("kostenvoranschlag")&&<Toggle label="Kostenloser Kostenvoranschlag" checked={!!order.kostenvoranschlag} onChange={upOrder("kostenvoranschlag")} desc="Wird als Vertrauens-Badge angezeigt"/>}
             <Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>
             {ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={!!order.foerderungsberatung} onChange={upOrder("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}
             <Toggle label="Gutscheine erhältlich" checked={!!order.gutscheine} onChange={upOrder("gutscheine")} desc="Geschenkgutscheine zum Kaufen"/>
             <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter <button onClick={()=>nav("leistungen")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Leistungen</button> hochladen.</div>
-          </>):(<>
-            {(()=>{const sectionData=[
-              {title:"Vertrauen & Qualität",items:[{l:"Spezialisierung",v:order.spezialisierung||null},{l:"Berufsregister-Nr.",v:order.berufsregister_nr||null},...(ft.includes("meisterbetrieb")?[{l:"Meisterbetrieb",v:order.meisterbetrieb}]:[]),...(ft.includes("notdienst")?[{l:"24h Notdienst",v:order.notdienst}]:[]),...(ft.includes("kassenvertrag")?[{l:"Kassenvertrag",v:order.kassenvertrag?[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt"},{value:"privat",label:"Nur Privat"}].find(o=>o.value===order.kassenvertrag)?.label||null:null}]:[]),{l:"Zertifiziert",v:order.zertifiziert}]},
-              {title:"Angebot & Preis",items:[...(ft.includes("kostenvoranschlag")?[{l:"Kostenvoranschlag",v:order.kostenvoranschlag}]:[]),{l:"Ratenzahlung",v:order.ratenzahlung},...(ft.includes("foerderungsberatung")?[{l:"Förderungsberatung",v:order.foerderungsberatung}]:[]),{l:"Gutscheine",v:order.gutscheine}]}
-            ];return sectionData.map((sec,si)=>{const active=sec.items.filter(it=>it.v);if(!active.length)return null;return<div key={si}><div style={{margin:si?"20px 0 8px":"0 0 8px",paddingTop:si?16:0,borderTop:si?`1px solid ${T.bg3}`:"none",fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted}}>{sec.title}</div>{active.map((it,i)=><InfoRow key={i} label={it.l} value={typeof it.v==="string"?it.v:"Aktiv"}/>)}</div>});})()}
-          </>)}
-        </div>})()}
+          </div>
+        </>})()}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="social" label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>
-          {editSection==="social"?(<>
-            <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} onBlur={()=>upOrder("facebook")(normalizeSocial("facebook",order.facebook))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
-            <Field label="Instagram" value={order.instagram||""} onChange={upOrder("instagram")} onBlur={()=>upOrder("instagram")(normalizeSocial("instagram",order.instagram))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
-            <Field label="LinkedIn" value={order.linkedin||""} onChange={upOrder("linkedin")} onBlur={()=>upOrder("linkedin")(normalizeSocial("linkedin",order.linkedin))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
-            <Field label="TikTok" value={order.tiktok||""} onChange={upOrder("tiktok")} onBlur={()=>upOrder("tiktok")(normalizeSocial("tiktok",order.tiktok))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
-          </>):(<>
-            <InfoRow label="Facebook" value={order.facebook}/>
-            <InfoRow label="Instagram" value={order.instagram}/>
-            <InfoRow label="LinkedIn" value={order.linkedin}/>
-            <InfoRow label="TikTok" value={order.tiktok}/>
-          </>)}
+          <SectionHeader label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>
+          <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} onBlur={()=>upOrder("facebook")(normalizeSocial("facebook",order.facebook))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+          <Field label="Instagram" value={order.instagram||""} onChange={upOrder("instagram")} onBlur={()=>upOrder("instagram")(normalizeSocial("instagram",order.instagram))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+          <Field label="LinkedIn" value={order.linkedin||""} onChange={upOrder("linkedin")} onBlur={()=>upOrder("linkedin")(normalizeSocial("linkedin",order.linkedin))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+          <Field label="TikTok" value={order.tiktok||""} onChange={upOrder("tiktok")} onBlur={()=>upOrder("tiktok")(normalizeSocial("tiktok",order.tiktok))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
         </div>}
 
       </>)}

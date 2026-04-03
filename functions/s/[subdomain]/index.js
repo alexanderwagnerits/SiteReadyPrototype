@@ -499,6 +499,15 @@ export async function onRequestGet({params, env}) {
 </style>`;
   html = html.replace("</head>", responsiveStyle + "</head>");
 
+  // ── Custom Farben serve-time ueberschreiben ──
+  if (o.custom_color || o.custom_accent) {
+    let colorOverride = ":root{";
+    if (o.custom_color) colorOverride += `--primary:${o.custom_color};`;
+    if (o.custom_accent) colorOverride += `--accent:${o.custom_accent};`;
+    colorOverride += "}";
+    html = html.replace("</head>", `<style>${colorOverride}</style></head>`);
+  }
+
   // ── WhatsApp Floating Button ──
   if (o.whatsapp) {
     const waNum = o.whatsapp.replace(/[\s\-\/()]/g, "").replace(/^0/, "+43");

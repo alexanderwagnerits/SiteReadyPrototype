@@ -1584,7 +1584,7 @@ function Portal({session,onLogout}){
       kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,whatsapp:order.whatsapp||null},
       leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,leistungen_beschreibungen:order.leistungen_beschreibungen||null,leistungen_preise:order.leistungen_preise||null,leistungen_fotos:order.leistungen_fotos||null},
       texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
-      design:{stil:order.stil,fotos:order.fotos},
+      design:{stil:order.stil,fotos:order.fotos,custom_color:order.custom_color||null,custom_accent:order.custom_accent||null},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
       impressum:{unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname},
     };
@@ -2278,14 +2278,41 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="design"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,paddingBottom:12,borderBottom:`1px solid ${T.bg3}`}}>
-            <div>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:3}}>Design & Stil</div>
-              <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.5}}>Farben, Typografie und Erscheinungsbild Ihrer Website. Ein Wechsel ist ein komplettes Redesign – anfragen genügt.</div>
+          <SectionHeader id="design" label="Design & Farben" badge="instant" desc="Passen Sie die Farben Ihrer Website an. Änderungen sind sofort sichtbar."/>
+          {editSection==="design"?(<>
+            <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
+            <div style={{marginTop:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <div>
+                <label style={{display:"block",fontSize:".85rem",fontWeight:700,color:T.textSub,marginBottom:8}}>Primärfarbe</label>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <input type="color" value={order.custom_color||STYLES_MAP[order.stil||"klassisch"]?.primary||"#0f2b5b"} onChange={e=>upOrder("custom_color")(e.target.value)} style={{width:44,height:44,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:2}}/>
+                  <div>
+                    <div style={{fontSize:".85rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{order.custom_color||STYLES_MAP[order.stil||"klassisch"]?.primary||"#0f2b5b"}</div>
+                    <div style={{fontSize:".78rem",color:T.textMuted}}>Navigation, Überschriften, Über-uns</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label style={{display:"block",fontSize:".85rem",fontWeight:700,color:T.textSub,marginBottom:8}}>Akzentfarbe</label>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <input type="color" value={order.custom_accent||STYLES_MAP[order.stil||"klassisch"]?.accent||"#2563eb"} onChange={e=>upOrder("custom_accent")(e.target.value)} style={{width:44,height:44,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:2}}/>
+                  <div>
+                    <div style={{fontSize:".85rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{order.custom_accent||STYLES_MAP[order.stil||"klassisch"]?.accent||"#2563eb"}</div>
+                    <div style={{fontSize:".78rem",color:T.textMuted}}>Buttons, Links, Highlights</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <button onClick={()=>nav("support")} style={{marginLeft:16,flexShrink:0,padding:"6px 16px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Änderung anfragen</button>
-          </div>
-          <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
+            {(order.custom_color||order.custom_accent)&&<button onClick={()=>{upOrder("custom_color")(null);upOrder("custom_accent")(null);}} style={{marginTop:12,padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Auf Standard zurücksetzen</button>}
+          </>):(<>
+            <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
+            <div style={{display:"flex",gap:12,marginTop:12}}>
+              {[{l:"Primärfarbe",v:order.custom_color||STYLES_MAP[order.stil||"klassisch"]?.primary||"#0f2b5b"},{l:"Akzentfarbe",v:order.custom_accent||STYLES_MAP[order.stil||"klassisch"]?.accent||"#2563eb"}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:24,height:24,borderRadius:6,background:c.v,border:`1px solid ${T.bg3}`}}/>
+                <div><div style={{fontSize:".78rem",color:T.textMuted}}>{c.l}</div><div style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{c.v}</div></div>
+              </div>)}
+            </div>
+          </>)}
         </div>}
         {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="branchenfeatures" label="Merkmale" desc={`Alles was Kunden über ${order.firmenname||"Ihr Geschäft"} wissen sollten — wird auf Ihrer Website und in Google angezeigt.`}/>

@@ -2464,41 +2464,16 @@ function Portal({session,onLogout}){
                 </div>
               </div>
 
-              {/* Farben */}
-              <div style={{marginTop:20,marginBottom:8}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Farben einzeln anpassen</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
-                  <ColorPicker label="Primärfarbe" hint="Navigation, Über-uns" field="custom_color" fallback={s.primary}/>
-                  <ColorPicker label="Akzentfarbe" hint="Buttons, Links" field="custom_accent" fallback={s.accent}/>
-                  <ColorPicker label="Hintergrund" hint="Seitenhintergrund" field="custom_bg" fallback={s.bg}/>
-                  <ColorPicker label="Textfarbe" hint="Haupttext" field="custom_text" fallback={s.text||"#1f2937"}/>
-                  <ColorPicker label="Sekundärtext" hint="Hints, Labels" field="custom_text_muted" fallback={s.textMuted||"#64748b"}/>
-                  <ColorPicker label="Trennlinien" hint="Borders, Rahmen" field="custom_sep" fallback={s.borderColor||"#e2e8f0"}/>
-                </div>
+              {/* Farben — nur Primary + Accent */}
+              <div style={{marginTop:20,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+                <ColorPicker label="Primärfarbe" hint="Navigation, Überschriften, Über-uns" field="custom_color" fallback={s.primary}/>
+                <ColorPicker label="Akzentfarbe" hint="Buttons, Links, Highlights" field="custom_accent" fallback={s.accent}/>
               </div>
 
-              {/* Schriftart */}
-              <div style={{marginTop:20,marginBottom:8}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Schriftart</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                  {FONT_OPTIONS.map(f=>{const isActive=f.value===(order.custom_font||"");return(
-                    <button key={f.value} onClick={()=>upOrder("custom_font")(f.value||null)} style={{padding:"10px 14px",border:`2px solid ${isActive?T.dark:T.bg3}`,borderRadius:T.rSm,background:isActive?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s"}}>
-                      <div style={{fontSize:".88rem",fontWeight:isActive?700:500,color:isActive?T.dark:T.textSub}}>{f.label}</div>
-                    </button>
-                  );})}
-                </div>
-              </div>
-
-              {/* Border-Radius */}
-              <div style={{marginTop:20}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Ecken</div>
-                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {RADIUS_OPTIONS.map(r=>{const isActive=r.value===(order.custom_radius||"");return(
-                    <button key={r.value} onClick={()=>upOrder("custom_radius")(r.value||null)} style={{padding:"10px 16px",border:`2px solid ${isActive?T.dark:T.bg3}`,borderRadius:r.value||s.radius||"4px",background:isActive?T.bg:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:isActive?700:500,color:isActive?T.dark:T.textSub,fontFamily:T.font,transition:"border-color .15s"}}>
-                      {r.label}
-                    </button>
-                  );})}
-                </div>
+              {/* Schriftart + Ecken als Dropdowns */}
+              <div style={{marginTop:20,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+                <Dropdown label="Schriftart" value={order.custom_font||""} onChange={upOrder("custom_font")} options={FONT_OPTIONS} placeholder="Standard (vom Stil)"/>
+                <Dropdown label="Ecken" value={order.custom_radius||""} onChange={upOrder("custom_radius")} options={RADIUS_OPTIONS} placeholder="Standard (vom Stil)"/>
               </div>
 
               {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{marginTop:16,padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}

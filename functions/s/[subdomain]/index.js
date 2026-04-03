@@ -283,7 +283,7 @@ export async function onRequestGet({params, env}) {
     let extraFields = "";
     let msgLabel = "Nachricht";
     let msgPlaceholder = "Ihre Nachricht...";
-    let msgRows = 4;
+    let msgRows = 5;
     let btnText = "Nachricht senden";
     let okText = "Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.";
 
@@ -318,7 +318,7 @@ export async function onRequestGet({params, env}) {
         `<div class="k-form-field"><label>Adresse / Einsatzort</label><input type="text" placeholder="Straße, PLZ Ort"></div>`;
       msgLabel = "Beschreibung des Anliegens";
       msgPlaceholder = "Was soll gemacht werden? Bitte beschreiben Sie Ihr Anliegen möglichst genau.";
-      msgRows = 5;
+      msgRows = 6;
       btnText = "Anfrage senden";
       okText = "Wir haben Ihre Anfrage erhalten und melden uns für einen Termin oder ein Angebot.";
     }
@@ -333,7 +333,7 @@ export async function onRequestGet({params, env}) {
       `<div><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
       `</div>` +
       extraFields +
-      `<div class="k-form-field"><label>${msgLabel} *</label><textarea required rows="${msgRows}" placeholder="${msgPlaceholder}" style="min-height:120px"></textarea></div>` +
+      `<div class="k-form-field"><label>${msgLabel} *</label><textarea required rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +
       `<button type="submit">${btnText}</button>` +
       `</form></div>` +
       `<div id="sr-form-ok" class="k-form-ok">` +

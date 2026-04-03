@@ -124,7 +124,7 @@ a{color:inherit}
 .k-form label{display:block;font-size:.62rem;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--textMuted);margin-bottom:5px}
 .k-form input,.k-form textarea{width:100%;padding:11px 14px;border:1px solid var(--sep);border-radius:var(--r);font-size:.85rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s;box-sizing:border-box}
 .k-form input:focus,.k-form textarea:focus{border-color:var(--accent)}
-.k-form textarea{resize:vertical;min-height:120px}
+.k-form textarea{resize:vertical;min-height:160px}
 .k-form select{min-height:44px}
 .k-form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .k-form-row-2{grid-template-columns:1fr 1fr}

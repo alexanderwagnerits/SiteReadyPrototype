@@ -5,6 +5,25 @@ const supabase = (process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SU
   ? createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY)
   : null;
 
+/* ═══ Social Media Helper ═══ */
+const SOCIAL_BASES = {
+  facebook: "https://facebook.com/",
+  instagram: "https://instagram.com/",
+  linkedin: "https://linkedin.com/company/",
+  tiktok: "https://tiktok.com/@",
+};
+function normalizeSocial(platform, val) {
+  if (!val) return "";
+  val = val.trim();
+  if (!val) return "";
+  // Schon eine URL → so lassen
+  if (val.startsWith("http://") || val.startsWith("https://") || val.includes(".com/")) return val;
+  // @ am Anfang entfernen
+  val = val.replace(/^@/, "");
+  if (!val) return "";
+  return (SOCIAL_BASES[platform] || "https://") + val;
+}
+
 /* ═══ ERROR LOGGING ═══ */
 let lastAutoTicket=0;
 const logErrorToSupabase=async(error,source="js")=>{
@@ -944,7 +963,7 @@ function SuccessPage({data,onBack,onPortal}){
 }
 
 /* ═══ FORM COMPONENTS (unified light premium) ═══ */
-function Field({label,value,onChange,placeholder,type="text",rows,hint,required}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const err=required&&touched&&!value?.trim();const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";const base={width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,transition:"color .2s",letterSpacing:".03em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label>{rows?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows} onFocus={()=>setF(true)} onBlur={()=>{setF(false);setTouched(true);}} style={{...base,resize:"vertical",lineHeight:1.5}}/>:<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={()=>{setF(false);setTouched(true);}} style={base}/>}{err?<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>Pflichtfeld</div>:hint&&<div style={{marginTop:5,fontSize:".75rem",color:T.textMuted}}>{hint}</div>}</div>)}
+function Field({label,value,onChange,placeholder,type="text",rows,hint,required,onBlur:onBlurProp}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const err=required&&touched&&!value?.trim();const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";const base={width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44};const handleBlur=()=>{setF(false);setTouched(true);if(onBlurProp)onBlurProp();};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,transition:"color .2s",letterSpacing:".03em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label>{rows?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows} onFocus={()=>setF(true)} onBlur={handleBlur} style={{...base,resize:"vertical",lineHeight:1.5}}/>:<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={handleBlur} style={base}/>}{err?<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>Pflichtfeld</div>:hint&&<div style={{marginTop:5,fontSize:".75rem",color:T.textMuted}}>{hint}</div>}</div>)}
 
 function Dropdown({label,value,onChange,options,placeholder,hint,required}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const err=required&&touched&&!value;const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,letterSpacing:".03em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label><select value={value} onChange={e=>onChange(e.target.value)} onFocus={()=>setF(true)} onBlur={()=>{setF(false);setTouched(true);}} style={{width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:value?T.dark:T.textMuted,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",cursor:"pointer",appearance:"none",minHeight:44,backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%238b919e' stroke-width='1.5'/%3E%3C/svg%3E\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 16px center"}}><option value="" disabled>{placeholder||"Bitte wählen"}</option>{options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>{err?<div style={{marginTop:4,fontSize:".75rem",color:T.red}}>Pflichtfeld</div>:hint&&<div style={{marginTop:5,fontSize:".75rem",color:T.textMuted}}>{hint}</div>}</div>)}
 function Combobox({label,value,onChange,options,placeholder,hint,required}){
@@ -1200,10 +1219,10 @@ function Questionnaire({data,setData,onComplete,onBack}){
           </div>
           <div className="q-split-right">
             <div className="q-split-title">Social Media <span style={{fontWeight:400,opacity:.6}}>(optional)</span></div>
-            <Field label="Facebook" value={data.facebook} onChange={up("facebook")} placeholder="https://facebook.com/ihrefirma" hint={data.facebook&&!data.facebook.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
-            <Field label="Instagram" value={data.instagram} onChange={up("instagram")} placeholder="https://instagram.com/ihrefirma" hint={data.instagram&&!data.instagram.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
-            <Field label="LinkedIn" value={data.linkedin} onChange={up("linkedin")} placeholder="https://linkedin.com/company/..." hint={data.linkedin&&!data.linkedin.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
-            <Field label="TikTok" value={data.tiktok} onChange={up("tiktok")} placeholder="https://tiktok.com/@ihrefirma" hint={data.tiktok&&!data.tiktok.startsWith("http")?"Bitte vollständige URL mit https:// eingeben":"Optional"}/>
+            <Field label="Facebook" value={data.facebook} onChange={up("facebook")} onBlur={()=>up("facebook")(normalizeSocial("facebook",data.facebook))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+            <Field label="Instagram" value={data.instagram} onChange={up("instagram")} onBlur={()=>up("instagram")(normalizeSocial("instagram",data.instagram))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+            <Field label="LinkedIn" value={data.linkedin} onChange={up("linkedin")} onBlur={()=>up("linkedin")(normalizeSocial("linkedin",data.linkedin))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+            <Field label="TikTok" value={data.tiktok} onChange={up("tiktok")} onBlur={()=>up("tiktok")(normalizeSocial("tiktok",data.tiktok))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
           </div>
         </div>
       </div>
@@ -2298,10 +2317,10 @@ function Portal({session,onLogout}){
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="social" label="Social Media" badge="instant" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>
           {editSection==="social"?(<>
-            <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} placeholder="https://facebook.com/..." hint="Optional"/>
-            <Field label="Instagram" value={order.instagram||""} onChange={upOrder("instagram")} placeholder="https://instagram.com/..." hint="Optional"/>
-            <Field label="LinkedIn" value={order.linkedin||""} onChange={upOrder("linkedin")} placeholder="https://linkedin.com/..." hint="Optional"/>
-            <Field label="TikTok" value={order.tiktok||""} onChange={upOrder("tiktok")} placeholder="https://tiktok.com/..." hint="Optional"/>
+            <Field label="Facebook" value={order.facebook||""} onChange={upOrder("facebook")} onBlur={()=>upOrder("facebook")(normalizeSocial("facebook",order.facebook))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+            <Field label="Instagram" value={order.instagram||""} onChange={upOrder("instagram")} onBlur={()=>upOrder("instagram")(normalizeSocial("instagram",order.instagram))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+            <Field label="LinkedIn" value={order.linkedin||""} onChange={upOrder("linkedin")} onBlur={()=>upOrder("linkedin")(normalizeSocial("linkedin",order.linkedin))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
+            <Field label="TikTok" value={order.tiktok||""} onChange={upOrder("tiktok")} onBlur={()=>upOrder("tiktok")(normalizeSocial("tiktok",order.tiktok))} placeholder="ihrefirma" hint="Benutzername oder Link"/>
           </>):(<>
             <InfoRow label="Facebook" value={order.facebook}/>
             <InfoRow label="Instagram" value={order.instagram}/>

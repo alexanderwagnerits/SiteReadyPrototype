@@ -1648,21 +1648,21 @@ function Portal({session,onLogout}){
     impressum:!!(order.unternehmensform||order.uid_nummer),
   }:{};
   const wizardSteps=order?[
-    {label:"Logo hochladen",desc:"Laden Sie Ihr Firmenlogo hoch — es erscheint in der Navigation Ihrer Website.",done:!!assetUrls.logo,page:"hero"},
-    {label:"Titelbild hochladen",desc:"Ein Headerbild macht den ersten Eindruck — ideal ein Foto Ihres Betriebs oder Ihrer Arbeit.",done:!!(assetUrls.hero||assetUrls.foto1),page:"hero"},
-    {label:"Grunddaten prüfen",desc:"Prüfen Sie Firmenname und Beschreibung — der Text wurde automatisch erstellt.",done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
-    {label:"Merkmale auswählen",desc:"Wählen Sie aus was auf Sie zutrifft — Meisterbetrieb, Notdienst, Barrierefrei und mehr.",done:!!(order.notdienst||order.meisterbetrieb||order.barrierefrei||order.kostenvoranschlag||order.terminvereinbarung),page:"branchenfeatures"},
-    {label:"Leistungen prüfen",desc:"Wir haben Beschreibungen erstellt. Prüfen Sie ob alles stimmt — Sie können Texte, Preise und Fotos ergänzen.",done:!!(order.leistungen?.length>0),page:"leistungen"},
-    {label:"Über-uns prüfen",desc:"Ihr Vorstellungstext wurde automatisch erstellt. Passen Sie ihn an und ergänzen Sie Ihr Team.",done:!!order.text_ueber_uns,page:"ueberuns"},
-    {label:"Kontaktdaten prüfen",desc:"Stimmen Adresse, Telefon und Öffnungszeiten? Diese Daten erscheinen auf der Website und in Google.",done:!!(order.adresse&&order.telefon),page:"kontakt"},
+    {label:"Logo hochladen",desc:"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",done:!!assetUrls.logo,page:"hero"},
+    {label:"Titelbild wählen",desc:"Das große Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb, Ihrer Arbeit oder Ihrem Team.",done:!!(assetUrls.hero||assetUrls.foto1),page:"hero"},
+    {label:"Firmenname & Beschreibung prüfen",desc:"Diese Texte stehen ganz oben auf Ihrer Website. Wir haben sie für Sie erstellt — bitte prüfen und bei Bedarf anpassen.",done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
+    {label:"Merkmale angeben",desc:"Sind Sie Meisterbetrieb? Bieten Sie Notdienst oder kostenlosen Kostenvoranschlag? Diese Angaben erscheinen als Badges auf Ihrer Website.",done:!!(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag),page:"branchenfeatures"},
+    {label:"Leistungen prüfen",desc:"Ihre Leistungen werden als Karten auf der Website angezeigt. Wir haben Beschreibungen erstellt — Sie können Texte anpassen und Preise oder Fotos ergänzen.",done:!!(order.leistungen?.length>0),page:"leistungen"},
+    {label:"Über-uns Text prüfen",desc:"Der Vorstellungstext wurde automatisch erstellt. Lesen Sie ihn durch und passen Sie ihn an. Hier können Sie auch Ihr Team und Fotos hinzufügen.",done:!!order.text_ueber_uns,page:"ueberuns"},
+    {label:"Kontaktdaten prüfen",desc:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps. Hier können Sie auch angeben ob Sie z.B. barrierefrei oder per Kartenzahlung erreichbar sind.",done:!!(order.adresse&&order.telefon),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
-    {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
-    {label:"Social Media",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
+    {label:"Fotos hinzufügen",done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
+    {label:"Social Media verknüpfen",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
     {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
-    {label:"Bewertungen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
-    {label:"WhatsApp-Button",done:!!order.whatsapp,page:"kontakt",isNew:true},
+    {label:"Kundenbewertungen hinzufügen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
+    {label:"WhatsApp-Button aktivieren",done:!!order.whatsapp,page:"kontakt",isNew:true},
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;

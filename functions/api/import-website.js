@@ -1,7 +1,11 @@
+import { createLogger } from "../_lib/log.js";
+
 export async function onRequestPost({request, env}) {
+  const log = createLogger(env);
   try {
     const {url} = await request.json();
     if (!url) return Response.json({error: "URL fehlt"}, {status: 400});
+    log.time("import");
 
     let cleanUrl = url.trim();
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
@@ -127,6 +131,7 @@ export async function onRequestPost({request, env}) {
     }
 
     if (!mainText || mainText.length < 50) {
+      await log.error("import", {message: "Website nicht lesbar", url: cleanUrl});
       return Response.json({error: "Die Website konnte nicht gelesen werden. Mögliche Gründe: Die Seite ist passwortgeschützt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar. Sie können die Daten manuell eingeben oder das Problem unter support@siteready.at melden — wir schauen uns an, woran es liegt."}, {status: 400});
     }
 
@@ -290,6 +295,7 @@ ${fullText}${emailHint}${phoneHint}`,
 
     if (!claudeResp.ok) {
       const errText = await claudeResp.text();
+      await log.error("import", {message: "Claude API Fehler: " + errText.slice(0, 500), url: cleanUrl});
       return Response.json({error: "Die Analyse der Website ist fehlgeschlagen. Bitte versuchen Sie es erneut oder melden Sie das Problem unter support@siteready.at"}, {status: 500});
     }
 
@@ -368,6 +374,7 @@ ${fullText}${emailHint}${phoneHint}`,
     });
 
   } catch(e) {
+    await log.error("import", {message: e.message, stack: e.stack});
     return Response.json({error: "Der Import ist fehlgeschlagen. Bitte prüfen Sie die URL und versuchen Sie es erneut. Bei wiederholtem Fehler melden Sie sich unter support@siteready.at"}, {status: 500});
   }
 }

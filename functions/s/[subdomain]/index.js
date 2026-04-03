@@ -32,7 +32,15 @@ export async function onRequestGet({params, env}) {
     `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=*`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
-  if (!r.ok) return new Response("Fehler beim Laden", {status: 502});
+  if (!r.ok) {
+    // DB-Fehler loggen
+    try {
+      const { createLogger } = await import("../../_lib/log.js");
+      const log = createLogger(env);
+      await log.error("serve", {message: `DB-Fehler ${r.status} fuer /${subdomain}`, url: `/s/${subdomain}`});
+    } catch(_) {}
+    return new Response("Fehler beim Laden", {status: 502});
+  }
 
   const rows = await r.json();
   if (!rows.length) {

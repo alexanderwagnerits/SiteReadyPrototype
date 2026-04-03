@@ -1,5 +1,8 @@
+import { createLogger } from "../_lib/log.js";
+
 export async function onRequestPost(context) {
   const {request, env, waitUntil} = context;
+  const log = createLogger(env);
   try {
     // Body parsen
     let body = {};
@@ -38,6 +41,8 @@ export async function onRequestPost(context) {
       order = orders[0];
     }
 
+    await log.info(order.id, "build_started", {source: body.order_id ? "signup" : "portal", fotos});
+
     // trial_expires_at setzen (7 Tage ab jetzt), Status bleibt pending bis Generierung fertig
     const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const patch = {regen_requested: false, trial_expires_at: trialExpiresAt};
@@ -60,17 +65,20 @@ export async function onRequestPost(context) {
       // 1. Versuch
       try {
         await generateWebsite(order.id, env);
+        await log.info(order.id, "build_success", {attempt: 1});
         return;
       } catch(e1) {
-        console.error("Generate Versuch 1 fehlgeschlagen:", e1.message);
+        await log.error("start-build", {message: "Versuch 1 fehlgeschlagen: " + e1.message, stack: e1.stack});
       }
 
       // 2. Versuch nach 5 Minuten
       await new Promise(res => setTimeout(res, 5 * 60 * 1000));
       try {
         await generateWebsite(order.id, env);
+        await log.info(order.id, "build_success", {attempt: 2});
       } catch(e2) {
-        console.error("Generate Versuch 2 fehlgeschlagen:", e2.message);
+        await log.error("start-build", {message: "Versuch 2 fehlgeschlagen: " + e2.message, stack: e2.stack});
+        await log.info(order.id, "build_failed", {message: e2.message});
         // Fehler in DB loggen damit Portal/BuildScreen ihn anzeigen kann
         try {
           await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order.id}`, {
@@ -114,6 +122,7 @@ export async function onRequestPost(context) {
 
     return Response.json({ok: true});
   } catch(e) {
+    await log.error("start-build", {message: e.message, stack: e.stack});
     return Response.json({error: "Interner Fehler: " + e.message}, {status: 500});
   }
 }

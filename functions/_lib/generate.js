@@ -263,6 +263,10 @@ function buildCustomStil(o) {
 
 /* Exportierte Core-Funktion fuer direkten Aufruf (z.B. aus start-build.js) */
 export async function generateWebsite(order_id, env) {
+  const { createLogger } = await import("./log.js");
+  const log = createLogger(env);
+  log.time("generate");
+
   /* Bestellung laden */
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}&select=*`,
@@ -271,6 +275,7 @@ export async function generateWebsite(order_id, env) {
   const rows = await r.json();
   if (!rows.length) throw new Error("Order not found");
   const o = rows[0];
+  await log.info(order_id, "generate_start", {firmenname: o.firmenname, stil: o.stil, branche: o.branche});
 
   /* Konfiguration */
   const stil = o.stil === "custom" ? buildCustomStil(o) : (STIL[o.stil] || STIL.klassisch);
@@ -403,6 +408,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   if (!aiRes.ok) {
     const err = await aiRes.json().catch(() => ({}));
     const errMsg = "Claude API Fehler: " + (err.error?.message || `HTTP ${aiRes.status}`);
+    await log.error("generate", {message: errMsg, url: "api.anthropic.com"});
     await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
       method: "PATCH",
       headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
@@ -518,6 +524,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
 
   if (!save.ok) {
     const saveErr = await save.text().catch(() => "");
+    await log.error("generate", {message: "Speichern fehlgeschlagen: " + (saveErr || `HTTP ${save.status}`)});
     throw new Error("Speichern fehlgeschlagen: " + (saveErr || `HTTP ${save.status}`));
   }
 
@@ -533,6 +540,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     });
   } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }
 
+  await log.timeEnd("generate", order_id, "generate_done");
   return {ok: true, subdomain: sub, status: "live"};
 }
 

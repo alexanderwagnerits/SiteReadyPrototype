@@ -262,8 +262,69 @@ export async function onRequestGet({params, env}) {
 
   // Kontaktformular in die Kontakt-Sektion injizieren (<!-- KONTAKT_FORM --> Platzhalter)
   if (html.includes("<!-- KONTAKT_FORM -->")) {
+    const br = (o.branche || "").toLowerCase();
+    // Explizite Wahl aus Portal oder automatisch nach Branche
+    let formType = o.kontakt_formular || "auto";
+    if (formType === "auto") {
+      if (["restaurant","cafe","bar","heuriger","imbiss","catering","baeckerei","fleischerei"].includes(br)) formType = "reservierung";
+      else if (["kosmetik","friseur","nagel","massage","tattoo","fusspflege","permanent_makeup","hundesalon",
+        "physiotherapie","arzt","zahnarzt","tierarzt","psychotherapie","ergotherapie","logopaedie",
+        "energetiker","hebamme","diaetologe","hoerakustiker","heilmasseur","optiker"].includes(br)) formType = "termin";
+      else if (["elektro","installateur","maler","tischler","fliesenleger","schlosser","dachdecker",
+        "zimmerei","maurer","bodenleger","glaser","gaertner","klima","reinigung","kfz","hafner",
+        "raumausstatter","umzug","schaedlingsbekaempfung"].includes(br)) formType = "angebot";
+      else formType = "standard";
+    }
+    const gastro = formType === "reservierung";
+    const termin = formType === "termin";
+    const angebot = formType === "angebot";
+
+    let headline = "Schreiben Sie uns";
+    let extraFields = "";
+    let msgLabel = "Nachricht";
+    let msgPlaceholder = "Ihre Nachricht...";
+    let msgRows = 4;
+    let btnText = "Nachricht senden";
+    let okText = "Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.";
+
+    if (gastro) {
+      headline = "Reservierung anfragen";
+      extraFields =
+        `<div class="k-form-row">` +
+        `<div><label>Datum</label><input type="date"></div>` +
+        `<div><label>Uhrzeit</label><input type="time"></div>` +
+        `<div><label>Personen</label><input type="number" min="1" max="50" placeholder="2"></div>` +
+        `</div>`;
+      msgLabel = "Anmerkungen";
+      msgPlaceholder = "z.B. Allergien, Kinderhochstuhl, besondere Wünsche...";
+      btnText = "Reservierung anfragen";
+      okText = "Wir haben Ihre Reservierungsanfrage erhalten und bestätigen diese so rasch wie möglich.";
+    } else if (termin) {
+      headline = "Termin anfragen";
+      extraFields =
+        `<div class="k-form-row k-form-row-2">` +
+        `<div><label>Wunschtermin</label><input type="date"></div>` +
+        `<div><label>Bevorzugte Uhrzeit</label><select style="width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);box-sizing:border-box;min-height:44px">` +
+        `<option value="">Egal</option><option>Vormittag</option><option>Nachmittag</option><option>Abend</option>` +
+        `</select></div>` +
+        `</div>`;
+      msgLabel = "Anliegen";
+      msgPlaceholder = "Welche Behandlung oder welches Anliegen?";
+      btnText = "Termin anfragen";
+      okText = "Wir haben Ihre Terminanfrage erhalten und melden uns zur Bestätigung.";
+    } else if (angebot) {
+      headline = "Anfrage senden";
+      extraFields =
+        `<div class="k-form-field"><label>Adresse / Einsatzort</label><input type="text" placeholder="Straße, PLZ Ort"></div>`;
+      msgLabel = "Beschreibung des Anliegens";
+      msgPlaceholder = "Was soll gemacht werden? Bitte beschreiben Sie Ihr Anliegen möglichst genau.";
+      msgRows = 5;
+      btnText = "Anfrage senden";
+      okText = "Wir haben Ihre Anfrage erhalten und melden uns für einen Termin oder ein Angebot.";
+    }
+
     const inlineForm = `<div class="k-form">` +
-      `<h3>Schreiben Sie uns</h3>` +
+      `<h3>${headline}</h3>` +
       `<div id="sr-form-wrap">` +
       `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
       `<div class="k-form-row">` +
@@ -271,13 +332,14 @@ export async function onRequestGet({params, env}) {
       `<div><label>E-Mail *</label><input required type="email" placeholder="ihre@email.at"></div>` +
       `<div><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
       `</div>` +
-      `<div class="k-form-field"><label>Nachricht *</label><textarea required rows="3" placeholder="Ihre Nachricht..."></textarea></div>` +
-      `<button type="submit">Nachricht senden</button>` +
+      extraFields +
+      `<div class="k-form-field"><label>${msgLabel} *</label><textarea required rows="${msgRows}" placeholder="${msgPlaceholder}" style="min-height:120px"></textarea></div>` +
+      `<button type="submit">${btnText}</button>` +
       `</form></div>` +
       `<div id="sr-form-ok" class="k-form-ok">` +
       `<div style="font-size:1.8rem;color:#16a34a">&#10003;</div>` +
       `<h4>Vielen Dank!</h4>` +
-      `<p>Wir haben Ihre Nachricht erhalten und melden uns bald bei Ihnen.</p>` +
+      `<p>${okText}</p>` +
       `</div>` +
       `</div>`;
     html = html.replace("<!-- KONTAKT_FORM -->", inlineForm);

@@ -123,15 +123,17 @@ a{color:inherit}
 .k-form label{display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
 .k-form input,.k-form textarea{width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s;box-sizing:border-box}
 .k-form input:focus,.k-form textarea:focus{border-color:var(--accent)}
-.k-form textarea{resize:vertical}
+.k-form textarea{resize:vertical;min-height:120px}
+.k-form select{min-height:44px}
 .k-form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.k-form-row-2{grid-template-columns:1fr 1fr}
 .k-form-field{margin-bottom:12px}
 .k-form button{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font);min-height:48px;transition:opacity .2s}
 .k-form button:hover{opacity:.85}
 .k-form-ok{display:none;text-align:center;padding:40px 20px}
 .k-form-ok h4{font-size:1.1rem;font-weight:800;color:var(--primary);margin:12px 0 6px}
 .k-form-ok p{color:var(--textMuted);font-size:.88rem}
-@media(max-width:640px){.k-form-row{grid-template-columns:1fr}}
+@media(max-width:640px){.k-form-row,.k-form-row-2{grid-template-columns:1fr}}
 
 /* ── Termin CTA ── */
 .termin-cta{padding:80px 0;background:var(--primary);color:#fff;text-align:center}

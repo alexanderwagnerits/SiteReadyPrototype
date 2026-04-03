@@ -1583,7 +1583,7 @@ function Portal({session,onLogout}){
     const fields={
       grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
       hero:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
-      kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,whatsapp:order.whatsapp||null},
+      kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,whatsapp:order.whatsapp||null,buchungslink:order.buchungslink||null,terminvereinbarung:order.terminvereinbarung,erstgespraech_gratis:order.erstgespraech_gratis,online_beratung:order.online_beratung,hausbesuche:order.hausbesuche,barrierefrei:order.barrierefrei,parkplaetze:order.parkplaetze,kartenzahlung:order.kartenzahlung,gastgarten:order.gastgarten,takeaway:order.takeaway,lieferservice:order.lieferservice},
       leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,leistungen_beschreibungen:order.leistungen_beschreibungen||null,leistungen_preise:order.leistungen_preise||null,leistungen_fotos:order.leistungen_fotos||null},
       texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
       design:{stil:order.stil,fotos:order.fotos,custom_color:order.custom_color||null,custom_accent:order.custom_accent||null,custom_bg:order.custom_bg||null,custom_text:order.custom_text||null,custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,custom_font:order.custom_font||null,custom_radius:order.custom_radius||null},
@@ -1687,9 +1687,9 @@ function Portal({session,onLogout}){
     leistungen:{title:"Leistungen",sub:"Diese Leistungen erscheinen als Karten auf Ihrer Website – mit Beschreibung und Preis"},
     kontakt:{title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps"},
     ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
-    social:{title:"Footer & Social Media",sub:"Social-Media-Links erscheinen im Footer Ihrer Website"},
+    social:{title:"Social Media",sub:"Ihre Profile erscheinen als Icons auf Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
-    branchenfeatures:{title:"Merkmale & Vertrauen",sub:"Alles was Kunden über Ihr Geschäft wissen sollten — wird auf Ihrer Website und in Google angezeigt"},
+    branchenfeatures:{title:"Merkmale",sub:"Was zeichnet Ihren Betrieb aus? Diese Angaben erscheinen als Badges auf Ihrer Website."},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
     medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
@@ -1814,11 +1814,11 @@ function Portal({session,onLogout}){
         </button>
         {[
           ["hero","Header & Hero",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,true],
-          ["branchenfeatures","Merkmale & Vertrauen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
+          ["branchenfeatures","Merkmale",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
           ["leistungen","Leistungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,true],
           ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,true],
           ["kontakt","Kontakt",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,true],
-          ["social","Footer & Social",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
+          ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
@@ -2233,7 +2233,23 @@ function Portal({session,onLogout}){
             <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
             <Dropdown label="Kontaktformular" value={order.kontakt_formular||"auto"} onChange={upOrder("kontakt_formular")} options={[{value:"auto",label:"Automatisch (je nach Branche)"},{value:"standard",label:"Standard — Name, E-Mail, Nachricht"},{value:"termin",label:"Terminanfrage — mit Wunschtermin & Uhrzeit"},{value:"angebot",label:"Angebotsanfrage — mit Adresse & Beschreibung"},{value:"reservierung",label:"Reservierung — mit Datum, Uhrzeit & Personen"}]} hint="Bestimmt welche Felder Ihr Kontaktformular auf der Website hat"/>
             <Field label="WhatsApp-Nummer" value={order.whatsapp||""} onChange={upOrder("whatsapp")} placeholder="+43 664 123 45 67" hint="Wenn ausgefüllt, erscheint ein WhatsApp-Button auf Ihrer Website. Leer lassen = kein Button."/>
-            <div style={{margin:"16px 0 8px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,padding:"8px 12px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted}}>Vor-Ort-Infos, Erreichbarkeit und weitere Merkmale finden Sie unter <button onClick={()=>nav("branchenfeatures")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Merkmale</button>.</div>
+
+            {(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<>
+            {subH("Erreichbarkeit")}
+            <Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – erscheint als eigener Bereich auf der Website"/>
+            <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
+            <Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>
+            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Videoanruf möglich"/>
+            <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
+
+            {subH("Vor Ort")}
+            <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
+            <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
+            <Toggle label="Kartenzahlung" checked={!!order.kartenzahlung} onChange={upOrder("kartenzahlung")} desc="Bankomat- oder Kreditkarte"/>
+            {ft.includes("gastgarten")&&<Toggle label="Gastgarten / Terrasse" checked={!!order.gastgarten} onChange={upOrder("gastgarten")} desc="Sitzplätze im Freien"/>}
+            {ft.includes("takeaway")&&<Toggle label="Take-away / Abholung" checked={!!order.takeaway} onChange={upOrder("takeaway")} desc="Speisen zum Mitnehmen"/>}
+            {ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}
+            </>;})()}
           </>):(<>
             <InfoRow label="Adresse" value={[order.adresse,[order.plz,order.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}/>
             <InfoRow label="Telefon" value={order.telefon}/>
@@ -2493,23 +2509,8 @@ function Portal({session,onLogout}){
           </div>
         </div>;})()}
         {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="branchenfeatures" label="Merkmale & Vertrauen" badge="instant" desc={`Alles was Kunden über ${order.firmenname||"Ihr Geschäft"} wissen sollten — wird auf Ihrer Website und in Google angezeigt.`}/>
+          <SectionHeader id="branchenfeatures" label="Merkmale" badge="instant" desc="Was zeichnet Ihren Betrieb aus? Diese Angaben erscheinen als Badges auf Ihrer Website."/>
           {editSection==="branchenfeatures"?(<>
-            {subH("Erreichbarkeit")}
-            <Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – erscheint als eigener Bereich auf der Website"/>
-            <Toggle label="Nur nach Terminvereinbarung" checked={!!order.terminvereinbarung} onChange={upOrder("terminvereinbarung")} desc="Kein Walk-in — nur mit Termin"/>
-            <Toggle label="Erstgespräch gratis" checked={!!order.erstgespraech_gratis} onChange={upOrder("erstgespraech_gratis")} desc="Kostenloses Erstgespräch anbieten"/>
-            <Toggle label="Online-Beratung" checked={!!order.online_beratung} onChange={upOrder("online_beratung")} desc="Beratung per Videoanruf möglich"/>
-            <Toggle label="Hausbesuche" checked={!!order.hausbesuche} onChange={upOrder("hausbesuche")} desc="Ich komme auch zu Ihnen nach Hause"/>
-
-            {subH("Vor Ort")}
-            <Toggle label="Barrierefrei" checked={!!order.barrierefrei} onChange={upOrder("barrierefrei")} desc="Rollstuhlgerecht zugänglich"/>
-            <Toggle label="Parkplätze vorhanden" checked={!!order.parkplaetze} onChange={upOrder("parkplaetze")} desc="Eigene Parkplätze für Kunden"/>
-            <Toggle label="Kartenzahlung" checked={!!order.kartenzahlung} onChange={upOrder("kartenzahlung")} desc="Bankomat- oder Kreditkarte"/>
-            {ft.includes("gastgarten")&&<Toggle label="Gastgarten / Terrasse" checked={!!order.gastgarten} onChange={upOrder("gastgarten")} desc="Sitzplätze im Freien"/>}
-            {ft.includes("takeaway")&&<Toggle label="Take-away / Abholung" checked={!!order.takeaway} onChange={upOrder("takeaway")} desc="Speisen zum Mitnehmen"/>}
-            {ft.includes("lieferservice")&&<Toggle label="Lieferservice" checked={!!order.lieferservice} onChange={upOrder("lieferservice")} desc="Lieferung direkt zu Ihnen"/>}
-
             {subH("Vertrauen & Qualität")}
             <Field label="Spezialisierung / Fachgebiet" value={order.spezialisierung||""} onChange={upOrder("spezialisierung")} placeholder="z.B. Allgemeinmedizin, Strafrecht, Hochzeitsfotografie" hint="Wird oben auf der Website angezeigt — leer lassen wenn nicht zutreffend"/>
             <Field label="Berufsregister-Nr." value={order.berufsregister_nr||""} onChange={upOrder("berufsregister_nr")} placeholder="z.B. ÖÄK-Nr. für Ärzte, GISA-Zahl für Gewerbe" hint="Nur ausfüllen wenn vorhanden"/>
@@ -2526,8 +2527,6 @@ function Portal({session,onLogout}){
             <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter <button onClick={()=>nav("leistungen")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Leistungen</button> hochladen.</div>
           </>):(<>
             {(()=>{const sectionData=[
-              {title:"Erreichbarkeit",items:[{l:"Buchungslink",v:order.buchungslink||null},{l:"Nur mit Termin",v:order.terminvereinbarung},{l:"Erstgespräch gratis",v:order.erstgespraech_gratis},{l:"Online-Beratung",v:order.online_beratung},{l:"Hausbesuche",v:order.hausbesuche}]},
-              {title:"Vor Ort",items:[{l:"Barrierefrei",v:order.barrierefrei},{l:"Parkplätze",v:order.parkplaetze},{l:"Kartenzahlung",v:order.kartenzahlung},...(ft.includes("gastgarten")?[{l:"Gastgarten",v:order.gastgarten}]:[]),...(ft.includes("takeaway")?[{l:"Take-away",v:order.takeaway}]:[]),...(ft.includes("lieferservice")?[{l:"Lieferservice",v:order.lieferservice}]:[])]},
               {title:"Vertrauen & Qualität",items:[{l:"Spezialisierung",v:order.spezialisierung||null},{l:"Berufsregister-Nr.",v:order.berufsregister_nr||null},...(ft.includes("meisterbetrieb")?[{l:"Meisterbetrieb",v:order.meisterbetrieb}]:[]),...(ft.includes("notdienst")?[{l:"24h Notdienst",v:order.notdienst}]:[]),...(ft.includes("kassenvertrag")?[{l:"Kassenvertrag",v:order.kassenvertrag?[{value:"alle_kassen",label:"Alle Kassen"},{value:"oegk",label:"ÖGK"},{value:"bvaeb",label:"BVAEB"},{value:"svs",label:"SVS"},{value:"wahlarzt",label:"Wahlarzt"},{value:"privat",label:"Nur Privat"}].find(o=>o.value===order.kassenvertrag)?.label||null:null}]:[]),{l:"Zertifiziert",v:order.zertifiziert}]},
               {title:"Angebot & Preis",items:[...(ft.includes("kostenvoranschlag")?[{l:"Kostenvoranschlag",v:order.kostenvoranschlag}]:[]),{l:"Ratenzahlung",v:order.ratenzahlung},...(ft.includes("foerderungsberatung")?[{l:"Förderungsberatung",v:order.foerderungsberatung}]:[]),{l:"Gutscheine",v:order.gutscheine}]}
             ];return sectionData.map((sec,si)=>{const active=sec.items.filter(it=>it.v);if(!active.length)return null;return<div key={si}><div style={{margin:si?"20px 0 8px":"0 0 8px",paddingTop:si?16:0,borderTop:si?`1px solid ${T.bg3}`:"none",fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".1em",color:T.textMuted}}>{sec.title}</div>{active.map((it,i)=><InfoRow key={i} label={it.l} value={typeof it.v==="string"?it.v:"Aktiv"}/>)}</div>});})()}

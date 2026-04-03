@@ -1657,8 +1657,8 @@ function Portal({session,onLogout}){
     {label:"Kontaktdaten prüfen",desc:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps. Hier können Sie auch angeben ob Sie z.B. barrierefrei oder per Kartenzahlung erreichbar sind.",done:!!(order.adresse&&order.telefon),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
-    {label:"Fotos hinzufügen",done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
-    {label:"Social Media verknüpfen",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
+    {label:"Betriebsfotos hochladen",done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
+    {label:"Social Media Profile angeben",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
     {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
     {label:"Kundenbewertungen hinzufügen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},

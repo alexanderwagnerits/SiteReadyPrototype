@@ -2957,7 +2957,7 @@ const STATUS_FLOW=["pending","in_arbeit","trial","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
 
-const DESKTOP_ONLY_TABS=["support","system","kosten","arch-system","arch-flows","docs"];
+const DESKTOP_ONLY_TABS=["finanzen","support","system","arch-system","arch-flows","docs"];
 
 function Admin({adminKey}){
   const[tab,setTab]=useState("start");

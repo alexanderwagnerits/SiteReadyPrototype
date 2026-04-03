@@ -3380,37 +3380,46 @@ function Admin({adminKey}){
   const lowQuality=orders.filter(o=>o.quality_score!==null&&o.quality_score!==undefined&&o.quality_score<80);
   if(lowQuality.length)alerts.push({type:"warn",msg:`${lowQuality.length} Website${lowQuality.length>1?"s":""} mit Quality-Score unter 80`,action:()=>{setTab("sites");if(lowQuality.length===1)setSel(lowQuality[0]);}});
   const TABS=[
-    {id:"start",label:"Start",section:"ADMIN"},
-    {id:"sites",label:"Sites",badge:regenBadge},
-    {id:"finanzen",label:"Finanzen"},
-    {id:"support",label:"Support",badge:tickets.filter(t=>t.status==="offen").length||null},
-    {id:"system",label:"System"},
-    {id:"arch-system",label:"System-Architektur",section:"DOKUMENTATION"},
-    {id:"arch-flows",label:"Flows"},
-    {id:"docs",label:"Dokumentation"},
+    {id:"start",label:"Dashboard",icon:`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,section:"ADMIN"},
+    {id:"sites",label:"Sites",icon:`<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,badge:regenBadge},
+    {id:"finanzen",label:"Finanzen",icon:`<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>`},
+    {id:"support",label:"Support",icon:`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,badge:tickets.filter(t=>t.status==="offen").length||null},
+    {id:"system",label:"System",icon:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>`},
+    {id:"arch-system",label:"Architektur",icon:`<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>`,section:"DOKUMENTATION"},
+    {id:"arch-flows",label:"Flows",icon:`<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`},
+    {id:"docs",label:"Dokumentation",icon:`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`},
   ];
 
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
-    {/* Topbar */}
-    <div style={{background:"#0c0e12",padding:"0 32px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-      <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <img src="/icon.png" alt="SR" style={{height:20,filter:"brightness(0) invert(1)",opacity:.7}}/>
-        <span style={{fontSize:".88rem",fontWeight:800,color:"#fff",letterSpacing:"-.02em"}}>SiteReady</span>
-        <span style={{fontSize:".75rem",fontWeight:700,color:"#f59e0b",background:"rgba(245,158,11,.15)",padding:"3px 10px",borderRadius:4,letterSpacing:".08em"}}>ADMIN</span>
-      </div>
-      <button onClick={load} style={{padding:"6px 16px",border:"1px solid rgba(255,255,255,.15)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.6)",cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,minHeight:36}}>Aktualisieren</button>
-    </div>
-
-    <div className="ad-wrap" style={{display:"flex",height:"calc(100vh - 56px)"}}>
-      {/* Sidebar */}
-      <div className="ad-sidebar" style={{width:200,background:"#fff",borderRight:`1px solid ${T.bg3}`,padding:"16px 0",flexShrink:0}}>
-        {TABS.map(t=><div key={t.id}>
-          {t.section&&<div style={{padding:"16px 20px 4px",fontSize:".75rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".12em"}}>{t.section}</div>}
-          <button onClick={()=>setTab(t.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"10px 20px",border:"none",background:tab===t.id?T.accentLight:"transparent",color:tab===t.id?T.accent:T.textSub,textAlign:"left",cursor:"pointer",fontSize:".85rem",fontWeight:tab===t.id?700:500,fontFamily:T.font,borderLeft:tab===t.id?`3px solid ${T.accent}`:"3px solid transparent"}}>
-            <span>{t.label}</span>
-            {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".75rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
+    <div className="ad-wrap" style={{display:"flex",height:"100vh"}}>
+      {/* Sidebar — gleicher Stil wie Kunden-Portal */}
+      <div className="ad-sidebar" style={{width:236,background:"#111111",display:"flex",flexDirection:"column",flexShrink:0,overflow:"hidden"}}>
+        <div style={{padding:"22px 18px 18px",borderBottom:"1px solid rgba(255,255,255,.07)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+            <img src="/logo.png" alt="SiteReady" style={{height:24,filter:"brightness(0) invert(1)",opacity:.88}} onError={e=>{e.currentTarget.style.display="none"}}/>
+            <span style={{fontSize:".7rem",fontWeight:700,color:"#f59e0b",background:"rgba(245,158,11,.12)",padding:"3px 8px",borderRadius:4,letterSpacing:".08em"}}>ADMIN</span>
+          </div>
+          <button onClick={load} style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"9px 12px",background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",borderRadius:8,color:"rgba(255,255,255,.5)",cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Aktualisieren
           </button>
-        </div>)}
+        </div>
+        <nav style={{padding:"12px 10px",flex:1,overflowY:"auto"}}>
+          {TABS.map(t=><div key={t.id}>
+            {t.section&&<div style={{fontSize:".64rem",fontWeight:700,letterSpacing:".09em",textTransform:"uppercase",color:"rgba(255,255,255,.2)",padding:"14px 8px 5px"}}>{t.section}</div>}
+            <button onClick={()=>setTab(t.id)} className={`pt-ni${tab===t.id?" active":""}`} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:8,cursor:"pointer",color:tab===t.id?"#fff":"rgba(255,255,255,.45)",fontSize:".91rem",fontWeight:tab===t.id?600:500,background:tab===t.id?"rgba(255,255,255,.09)":"transparent",border:"none",width:"100%",fontFamily:"inherit",textAlign:"left",transition:"all .12s"}}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:tab===t.id?.85:.5}} dangerouslySetInnerHTML={{__html:t.icon}}/>
+              <span style={{flex:1}}>{t.label}</span>
+              {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".72rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
+            </button>
+          </div>)}
+        </nav>
+        <div style={{padding:"12px 10px 14px",borderTop:"1px solid rgba(255,255,255,.07)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",fontSize:".78rem",color:"rgba(255,255,255,.3)"}}>
+            <span style={{width:7,height:7,borderRadius:"50%",background:orders.length>0?"#4ade80":"#f59e0b",flexShrink:0}}/>
+            {orders.length} Sites &middot; {orders.filter(o=>o.status==="live").length} Live
+          </div>
+        </div>
       </div>
 
       {/* Main */}
@@ -3798,7 +3807,7 @@ function Admin({adminKey}){
           <div style={{marginTop:24}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Frontend-Fehler</div>
+                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Fehler-Log</div>
                 {errorLogs.length>0&&<span style={{background:T.red,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"2px 8px",borderRadius:100}}>{errorLogs.length}</span>}
               </div>
               <div style={{display:"flex",gap:6}}>
@@ -3808,12 +3817,12 @@ function Admin({adminKey}){
             </div>
             {errorLogs.length===0?(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"24px",textAlign:"center"}}>
               <div style={{fontSize:".85rem",color:T.green,fontWeight:600}}>{"\u2713"} Keine Fehler</div>
-              <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Frontend läuft fehlerfrei</div>
+              <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Keine Frontend- oder Backend-Fehler</div>
             </div>):(<div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:400,overflowY:"auto"}}>
               {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"12px 14px"}}>
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10,marginBottom:6}}>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    <span style={{background:e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>{e.source==="unhandledrejection"?"Promise":e.source==="window.onerror"?"JS":"Error"}</span>
+                    <span style={{background:["generate","start-build","import","serve"].includes(e.source)?"#eff6ff":e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:["generate","start-build","import","serve"].includes(e.source)?"#1e40af":e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>{({"unhandledrejection":"Promise","window.onerror":"JS","generate":"Generate","start-build":"Build","import":"Import","serve":"Serve"})[e.source]||e.source||"Error"}</span>
                     {e.user_email&&<span style={{fontSize:".75rem",color:T.accent,fontWeight:600}}>{e.user_email}</span>}
                   </div>
                   <span style={{fontSize:".75rem",color:T.textMuted,flexShrink:0}}>{new Date(e.created_at).toLocaleString("de-AT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
@@ -4062,8 +4071,8 @@ function Admin({adminKey}){
         const copyVal=(key,val)=>{navigator.clipboard?.writeText(val||"");setCopied(key);setTimeout(()=>setCopied(k=>k===key?null:k),1500);};
         const CopyBtn=({k,v})=>v?<button onClick={()=>copyVal(k,v)} title="Kopieren" style={{background:"none",border:"none",cursor:"pointer",padding:"2px 4px",color:copied===k?T.green:T.textMuted,fontSize:".75rem",lineHeight:1,flexShrink:0}}>{copied===k?"\u2713":"\u29c9"}</button>:null;
         const relTime=(iso)=>{if(!iso)return"";const m=Math.floor((Date.now()-new Date(iso).getTime())/60000);const h=Math.floor(m/60);const d=Math.floor(h/24);if(m<1)return"gerade";if(m<60)return`vor ${m} Min`;if(h<24)return`vor ${h} Std`;if(d<7)return`vor ${d}d`;return new Date(iso).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"});};
-        const logLabel=(action,details)=>{const d=details||{};switch(action){case"website_generated":return"Website erstmals generiert";case"website_regenerated":return"Website neu generiert";case"status_changed":return`Status: ${STATUS_LABELS[d.from]||d.from} \u2192 ${STATUS_LABELS[d.to]||d.to}`;case"offline":return"Offline genommen";case"online":return"Wieder online gesetzt";case"subdomain_changed":return`Subdomain: ${d.from} \u2192 ${d.to}`;case"stil_changed":return`Stil: ${d.from} \u2192 ${d.to}`;case"trial_extended":return`Trial +${d.days} Tage verlaengert`;case"ticket_created":return`Ticket erstellt: ${d.subject||""}`;case"ticket_answered":return`Ticket beantwortet: ${d.subject||""}`;case"checkout_completed":return`Checkout: ${d.plan||"monatlich"}`;case"payment_succeeded":return d.promoted_to_live?"Zahlung \u2192 Live geschaltet":"Zahlung erfolgreich";case"payment_failed":return"Zahlung fehlgeschlagen";case"subscription_canceled":return"Abo beendet";case"subscription_updated":return`Abo-Status: ${d.status||""}`;default:return action;}};
-        const logIcon=(action)=>({"website_generated":"\u2728","website_regenerated":"\u21bb","status_changed":"\u21aa","offline":"\u23f8","online":"\u25b6","subdomain_changed":"\u270f","stil_changed":"\u25a3","trial_extended":"\u23e9","ticket_created":"\u2709","ticket_answered":"\u2713","checkout_completed":"\u2714","payment_succeeded":"\u2714","payment_failed":"\u26a0","subscription_canceled":"\u2716","subscription_updated":"\u21ba"}[action]||"\u25cf");
+        const logLabel=(action,details)=>{const d=typeof details==="string"?JSON.parse(details||"{}"):details||{};switch(action){case"website_generated":return"Website erstmals generiert";case"website_regenerated":return"Website neu generiert";case"build_started":return`Build gestartet (${d.source||"?"})`;case"build_success":return`Build erfolgreich${d.attempt>1?" (2. Versuch)":""}`;case"build_failed":return`Build fehlgeschlagen: ${d.message||""}`;case"generate_start":return`Generierung gestartet (${d.stil||"?"})`;case"generate_done":return`Generierung fertig${d.duration_ms?` (${(d.duration_ms/1000).toFixed(1)}s)`:""}`;case"status_changed":return`Status: ${STATUS_LABELS[d.from]||d.from} \u2192 ${STATUS_LABELS[d.to]||d.to}`;case"offline":return"Offline genommen";case"online":return"Wieder online gesetzt";case"subdomain_changed":return`Subdomain: ${d.from} \u2192 ${d.to}`;case"stil_changed":return`Stil: ${d.from} \u2192 ${d.to}`;case"trial_extended":return`Trial +${d.days} Tage verlaengert`;case"ticket_created":return`Ticket erstellt: ${d.subject||""}`;case"ticket_answered":return`Ticket beantwortet: ${d.subject||""}`;case"checkout_completed":return`Checkout: ${d.plan||"monatlich"}`;case"payment_succeeded":return d.promoted_to_live?"Zahlung \u2192 Live geschaltet":"Zahlung erfolgreich";case"payment_failed":return"Zahlung fehlgeschlagen";case"subscription_canceled":return"Abo beendet";case"subscription_updated":return`Abo-Status: ${d.status||""}`;default:return action;}};
+        const logIcon=(action)=>({"website_generated":"\u2728","website_regenerated":"\u21bb","build_started":"\u25b6","build_success":"\u2705","build_failed":"\u274c","generate_start":"\u2699","generate_done":"\u2728","status_changed":"\u21aa","offline":"\u23f8","online":"\u25b6","subdomain_changed":"\u270f","stil_changed":"\u25a3","trial_extended":"\u23e9","ticket_created":"\u2709","ticket_answered":"\u2713","checkout_completed":"\u2714","payment_succeeded":"\u2714","payment_failed":"\u26a0","subscription_canceled":"\u2716","subscription_updated":"\u21ba"}[action]||"\u25cf");
         return(<div onClick={e=>{if(e.target===e.currentTarget)setSel(null);}} style={{position:"fixed",inset:0,zIndex:2000,background:"rgba(0,0,0,.35)",display:"flex",alignItems:"center",justifyContent:"center",padding:"2.5vh 2.5vw"}}>
         <div style={{background:"#fff",borderRadius:14,width:"95vw",maxWidth:1600,maxHeight:"95vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,.2)",overflowY:"auto"}}>
           {/* Modal Header */}
@@ -4345,13 +4354,13 @@ function Admin({adminKey}){
                   ?<div style={{fontSize:".8rem",color:T.textMuted}}>Laedt...</div>
                   :(orderLogs[sel.id]||[]).length===0
                     ?<div style={{fontSize:".8rem",color:T.textMuted}}>Noch keine Aktivitaeten.</div>
-                    :<div style={{display:"flex",flexDirection:"column",gap:4,maxHeight:220,overflowY:"auto"}}>
+                    :<div style={{display:"flex",flexDirection:"column",gap:4,maxHeight:360,overflowY:"auto"}}>
                         {(orderLogs[sel.id]||[]).map(log=>(
                           <div key={log.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"7px 10px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
                             <span style={{fontSize:".8rem",flexShrink:0,minWidth:16,textAlign:"center"}}>{logIcon(log.action)}</span>
                             <div style={{flex:1,minWidth:0}}>
                               <div style={{fontSize:".77rem",color:T.dark,fontWeight:600,lineHeight:1.3}}>{logLabel(log.action,log.details)}</div>
-                              {log.actor==="system"&&<div style={{fontSize:".75rem",color:T.textMuted}}>via Stripe</div>}
+                              {log.actor==="system"&&["payment_succeeded","payment_failed","checkout_completed","subscription_canceled","subscription_updated"].includes(log.action)&&<div style={{fontSize:".75rem",color:T.textMuted}}>via Stripe</div>}
                             </div>
                             <div style={{fontSize:".75rem",color:T.textMuted,flexShrink:0,whiteSpace:"nowrap",paddingTop:1}}>{relTime(log.created_at)}</div>
                           </div>

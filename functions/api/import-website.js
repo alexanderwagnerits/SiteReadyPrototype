@@ -127,7 +127,7 @@ export async function onRequestPost({request, env}) {
     }
 
     if (!mainText || mainText.length < 50) {
-      return Response.json({error: "Die Website konnte nicht gelesen werden. Mögliche Gründe: Die Seite ist passwortgeschützt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar. Sie können die Daten auch manuell eingeben."}, {status: 400});
+      return Response.json({error: "Die Website konnte nicht gelesen werden. Mögliche Gründe: Die Seite ist passwortgeschützt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar. Sie können die Daten manuell eingeben oder uns den Import unter support@siteready.at überlassen."}, {status: 400});
     }
 
     // Links aus Jina-Haupttext extrahieren (fuer JS-Seiten mit Wix-Routing)
@@ -290,7 +290,7 @@ ${fullText}${emailHint}${phoneHint}`,
 
     if (!claudeResp.ok) {
       const errText = await claudeResp.text();
-      return Response.json({error: "Die Analyse der Website ist fehlgeschlagen. Bitte versuchen Sie es erneut oder geben Sie die Daten manuell ein."}, {status: 500});
+      return Response.json({error: "Die Analyse der Website ist fehlgeschlagen. Bitte versuchen Sie es erneut oder schreiben Sie uns an support@siteready.at — wir übernehmen den Import für Sie."}, {status: 500});
     }
 
     const claudeData = await claudeResp.json();
@@ -368,6 +368,6 @@ ${fullText}${emailHint}${phoneHint}`,
     });
 
   } catch(e) {
-    return Response.json({error: "Der Import ist fehlgeschlagen. Bitte prüfen Sie die URL und versuchen Sie es erneut."}, {status: 500});
+    return Response.json({error: "Der Import ist fehlgeschlagen. Bitte prüfen Sie die URL und versuchen Sie es erneut, oder schreiben Sie uns an support@siteready.at"}, {status: 500});
   }
 }

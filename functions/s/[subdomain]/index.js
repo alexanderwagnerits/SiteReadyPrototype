@@ -499,13 +499,31 @@ export async function onRequestGet({params, env}) {
 </style>`;
   html = html.replace("</head>", responsiveStyle + "</head>");
 
-  // ── Custom Farben serve-time ueberschreiben ──
-  if (o.custom_color || o.custom_accent) {
-    let colorOverride = ":root{";
-    if (o.custom_color) colorOverride += `--primary:${o.custom_color};`;
-    if (o.custom_accent) colorOverride += `--accent:${o.custom_accent};`;
-    colorOverride += "}";
-    html = html.replace("</head>", `<style>${colorOverride}</style></head>`);
+  // ── Custom Design serve-time ueberschreiben (Farben, Font, Radius) ──
+  const customDesign = [
+    o.custom_color && `--primary:${o.custom_color}`,
+    o.custom_accent && `--accent:${o.custom_accent}`,
+    o.custom_bg && `--bg:${o.custom_bg}`,
+    o.custom_text && `--text:${o.custom_text}`,
+    o.custom_text_muted && `--textMuted:${o.custom_text_muted}`,
+    o.custom_sep && `--sep:${o.custom_sep}`,
+    o.custom_radius && `--r:${o.custom_radius}`,
+    o.custom_radius && `--rLg:${parseInt(o.custom_radius)+4}px`,
+  ].filter(Boolean);
+
+  // Font: URL importieren + font-family ueberschreiben
+  const FONT_URLS = {dm_sans:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",inter:"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",outfit:"https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap",poppins:"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap",montserrat:"https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",raleway:"https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap",open_sans:"https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap",lato:"https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap",roboto:"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap",nunito:"https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap",work_sans:"https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap",manrope:"https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",space_grotesk:"https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",plus_jakarta:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",rubik:"https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",source_serif:"https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap",playfair:"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap",lora:"https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",merriweather:"https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap",dm_serif:"https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap"};
+  const FONT_FAMILIES = {dm_sans:"'DM Sans',sans-serif",inter:"'Inter',sans-serif",outfit:"'Outfit',sans-serif",poppins:"'Poppins',sans-serif",montserrat:"'Montserrat',sans-serif",raleway:"'Raleway',sans-serif",open_sans:"'Open Sans',sans-serif",lato:"'Lato',sans-serif",roboto:"'Roboto',sans-serif",nunito:"'Nunito',sans-serif",work_sans:"'Work Sans',sans-serif",manrope:"'Manrope',sans-serif",space_grotesk:"'Space Grotesk',sans-serif",plus_jakarta:"'Plus Jakarta Sans',sans-serif",rubik:"'Rubik',sans-serif",source_serif:"'Source Serif 4',Georgia,serif",playfair:"'Playfair Display',Georgia,serif",lora:"'Lora',Georgia,serif",merriweather:"'Merriweather',Georgia,serif",dm_serif:"'DM Serif Display',Georgia,serif"};
+
+  let fontImport = "";
+  if (o.custom_font && FONT_URLS[o.custom_font]) {
+    fontImport = `@import url('${FONT_URLS[o.custom_font]}');`;
+    customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
+  }
+
+  if (customDesign.length || fontImport) {
+    const overrideStyle = `<style>${fontImport}${customDesign.length ? `:root{${customDesign.join(";")}}` : ""}</style>`;
+    html = html.replace("</head>", overrideStyle + "</head>");
   }
 
   // ── WhatsApp Floating Button ──

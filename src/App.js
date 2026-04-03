@@ -1586,7 +1586,7 @@ function Portal({session,onLogout}){
       kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,whatsapp:order.whatsapp||null},
       leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,leistungen_beschreibungen:order.leistungen_beschreibungen||null,leistungen_preise:order.leistungen_preise||null,leistungen_fotos:order.leistungen_fotos||null},
       texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
-      design:{stil:order.stil,fotos:order.fotos,custom_color:order.custom_color||null,custom_accent:order.custom_accent||null},
+      design:{stil:order.stil,fotos:order.fotos,custom_color:order.custom_color||null,custom_accent:order.custom_accent||null,custom_bg:order.custom_bg||null,custom_text:order.custom_text||null,custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,custom_font:order.custom_font||null,custom_radius:order.custom_radius||null},
       social:{facebook:order.facebook,instagram:order.instagram,linkedin:order.linkedin,tiktok:order.tiktok},
       impressum:{unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname},
     };
@@ -2412,43 +2412,111 @@ function Portal({session,onLogout}){
             )):(<div style={{padding:"14px 16px",background:T.bg,borderRadius:T.rSm,fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Noch keine Bewertungen. Über "Bearbeiten" können Sie Kundenstimmen hinzufügen — diese erscheinen auf Ihrer Website.</div>)}
           </>)}
         </div>}
-        {page==="design"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="design" label="Design & Farben" badge="instant" desc="Passen Sie die Farben Ihrer Website an. Änderungen sind sofort sichtbar."/>
-          {editSection==="design"?(<>
-            <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
-            <div style={{marginTop:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              <div>
-                <label style={{display:"block",fontSize:".85rem",fontWeight:700,color:T.textSub,marginBottom:8}}>Primärfarbe</label>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <input type="color" value={order.custom_color||STYLES_MAP[order.stil||"klassisch"]?.primary||"#0f2b5b"} onChange={e=>upOrder("custom_color")(e.target.value)} style={{width:44,height:44,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:2}}/>
-                  <div>
-                    <div style={{fontSize:".85rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{order.custom_color||STYLES_MAP[order.stil||"klassisch"]?.primary||"#0f2b5b"}</div>
-                    <div style={{fontSize:".78rem",color:T.textMuted}}>Navigation, Überschriften, Über-uns</div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label style={{display:"block",fontSize:".85rem",fontWeight:700,color:T.textSub,marginBottom:8}}>Akzentfarbe</label>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <input type="color" value={order.custom_accent||STYLES_MAP[order.stil||"klassisch"]?.accent||"#2563eb"} onChange={e=>upOrder("custom_accent")(e.target.value)} style={{width:44,height:44,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:2}}/>
-                  <div>
-                    <div style={{fontSize:".85rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{order.custom_accent||STYLES_MAP[order.stil||"klassisch"]?.accent||"#2563eb"}</div>
-                    <div style={{fontSize:".78rem",color:T.textMuted}}>Buttons, Links, Highlights</div>
-                  </div>
+        {page==="design"&&(()=>{
+          const s=STYLES_MAP[order.stil||"klassisch"]||STYLES_MAP.klassisch;
+          const dv=(k,fallback)=>order[k]||fallback;
+          const FONT_OPTIONS=[
+            {value:"",label:"Standard (vom Stil)"},{value:"dm_sans",label:"DM Sans"},{value:"inter",label:"Inter"},{value:"outfit",label:"Outfit"},{value:"poppins",label:"Poppins"},{value:"montserrat",label:"Montserrat"},{value:"raleway",label:"Raleway"},{value:"open_sans",label:"Open Sans"},{value:"lato",label:"Lato"},{value:"roboto",label:"Roboto"},{value:"nunito",label:"Nunito"},{value:"work_sans",label:"Work Sans"},{value:"manrope",label:"Manrope"},{value:"space_grotesk",label:"Space Grotesk"},{value:"plus_jakarta",label:"Plus Jakarta Sans"},{value:"rubik",label:"Rubik"},{value:"source_serif",label:"Source Serif (Serif)"},{value:"playfair",label:"Playfair Display (Serif)"},{value:"lora",label:"Lora (Serif)"},{value:"merriweather",label:"Merriweather (Serif)"},{value:"dm_serif",label:"DM Serif Display (Serif)"},
+          ];
+          const RADIUS_OPTIONS=[{value:"",label:"Standard (vom Stil)"},{value:"0px",label:"Eckig (0px)"},{value:"4px",label:"Leicht gerundet (4px)"},{value:"8px",label:"Gerundet (8px)"},{value:"12px",label:"Stark gerundet (12px)"},{value:"16px",label:"Sehr rund (16px)"}];
+          const PALETTES=[
+            {name:"Standard",desc:"Originalfarben des gewählten Stils",colors:{custom_color:null,custom_accent:null,custom_bg:null,custom_text:null,custom_text_muted:null,custom_sep:null}},
+            {name:"Dunkel & Professionell",desc:"Navy + Gold",colors:{custom_color:"#0f172a",custom_accent:"#b45309",custom_bg:"#f8fafc",custom_text:"#1e293b",custom_text_muted:"#64748b",custom_sep:"#e2e8f0"}},
+            {name:"Warm & Natürlich",desc:"Waldgrün + Terrakotta",colors:{custom_color:"#365314",custom_accent:"#c2410c",custom_bg:"#fefce8",custom_text:"#1c1917",custom_text_muted:"#78716c",custom_sep:"#e7e5e4"}},
+            {name:"Frisch & Modern",desc:"Indigo + Cyan",colors:{custom_color:"#312e81",custom_accent:"#0891b2",custom_bg:"#f8fafc",custom_text:"#0f172a",custom_text_muted:"#6b7280",custom_sep:"#e5e7eb"}},
+            {name:"Elegant & Ruhig",desc:"Anthrazit + Taupe",colors:{custom_color:"#292524",custom_accent:"#78716c",custom_bg:"#fafaf9",custom_text:"#1c1917",custom_text_muted:"#78716c",custom_sep:"#e7e5e4"}},
+            {name:"Vertrauen & Sicherheit",desc:"Blau + Grün",colors:{custom_color:"#1e3a5f",custom_accent:"#059669",custom_bg:"#f0fdf4",custom_text:"#1e293b",custom_text_muted:"#64748b",custom_sep:"#d1fae5"}},
+            {name:"Energetisch & Jung",desc:"Violett + Pink",colors:{custom_color:"#4c1d95",custom_accent:"#db2777",custom_bg:"#faf5ff",custom_text:"#1e1b4b",custom_text_muted:"#6b7280",custom_sep:"#e9d5ff"}},
+          ];
+          const applyPalette=(p)=>{Object.entries(p.colors).forEach(([k,v])=>upOrder(k)(v));};
+          const hasCustom=order.custom_color||order.custom_accent||order.custom_bg||order.custom_text||order.custom_text_muted||order.custom_sep||order.custom_font||order.custom_radius;
+          const ColorPicker=({label,hint,field,fallback})=>(
+            <div>
+              <label style={{display:"block",fontSize:".85rem",fontWeight:700,color:T.textSub,marginBottom:8}}>{label}</label>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <input type="color" value={dv(field,fallback)} onChange={e=>upOrder(field)(e.target.value)} style={{width:40,height:40,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:2}}/>
+                <div>
+                  <div style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{dv(field,fallback)}</div>
+                  <div style={{fontSize:".78rem",color:T.textMuted}}>{hint}</div>
                 </div>
               </div>
             </div>
-            {(order.custom_color||order.custom_accent)&&<button onClick={()=>{upOrder("custom_color")(null);upOrder("custom_accent")(null);}} style={{marginTop:12,padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Auf Standard zurücksetzen</button>}
-          </>):(<>
-            <InfoRow label="Stil" value={STYLES_MAP[order.stil||"klassisch"]?.label||order.stil}/>
-            <div style={{display:"flex",gap:12,marginTop:12}}>
-              {[{l:"Primärfarbe",v:order.custom_color||STYLES_MAP[order.stil||"klassisch"]?.primary||"#0f2b5b"},{l:"Akzentfarbe",v:order.custom_accent||STYLES_MAP[order.stil||"klassisch"]?.accent||"#2563eb"}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:24,height:24,borderRadius:6,background:c.v,border:`1px solid ${T.bg3}`}}/>
-                <div><div style={{fontSize:".78rem",color:T.textMuted}}>{c.l}</div><div style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{c.v}</div></div>
-              </div>)}
-            </div>
-          </>)}
-        </div>}
+          );
+          return<div style={{display:"flex",flexDirection:"column",gap:16}}>
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader id="design" label="Design & Farben" badge="instant" desc="Passen Sie Farben, Schriftart und Ecken Ihrer Website an. Alle Änderungen sind sofort sichtbar."/>
+            {editSection==="design"?(<>
+              <InfoRow label="Stil" value={s.label||order.stil}/>
+
+              {/* Paletten */}
+              <div style={{marginTop:20,marginBottom:8}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Farbpalette wählen</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8}}>
+                  {PALETTES.map((p,i)=>{const pc=p.colors;const isActive=i===0?!hasCustom:false;return(
+                    <button key={i} onClick={()=>applyPalette(p)} style={{padding:"12px",border:`2px solid ${isActive?T.dark:T.bg3}`,borderRadius:T.rSm,background:isActive?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s"}}>
+                      <div style={{display:"flex",gap:4,marginBottom:8}}>
+                        {[pc.custom_color||s.primary,pc.custom_accent||s.accent,pc.custom_bg||s.bg,pc.custom_text||"#1f2937"].map((c,j)=>c&&<div key={j} style={{width:16,height:16,borderRadius:4,background:c,border:"1px solid rgba(0,0,0,.1)"}}/>)}
+                      </div>
+                      <div style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>{p.name}</div>
+                      <div style={{fontSize:".72rem",color:T.textMuted}}>{p.desc}</div>
+                    </button>
+                  );})}
+                </div>
+              </div>
+
+              {/* Farben */}
+              <div style={{marginTop:20,marginBottom:8}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Farben einzeln anpassen</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+                  <ColorPicker label="Primärfarbe" hint="Navigation, Über-uns" field="custom_color" fallback={s.primary}/>
+                  <ColorPicker label="Akzentfarbe" hint="Buttons, Links" field="custom_accent" fallback={s.accent}/>
+                  <ColorPicker label="Hintergrund" hint="Seitenhintergrund" field="custom_bg" fallback={s.bg}/>
+                  <ColorPicker label="Textfarbe" hint="Haupttext" field="custom_text" fallback={s.text||"#1f2937"}/>
+                  <ColorPicker label="Sekundärtext" hint="Hints, Labels" field="custom_text_muted" fallback={s.textMuted||"#64748b"}/>
+                  <ColorPicker label="Trennlinien" hint="Borders, Rahmen" field="custom_sep" fallback={s.borderColor||"#e2e8f0"}/>
+                </div>
+              </div>
+
+              {/* Schriftart */}
+              <div style={{marginTop:20,marginBottom:8}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Schriftart</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                  {FONT_OPTIONS.map(f=>{const isActive=f.value===(order.custom_font||"");return(
+                    <button key={f.value} onClick={()=>upOrder("custom_font")(f.value||null)} style={{padding:"10px 14px",border:`2px solid ${isActive?T.dark:T.bg3}`,borderRadius:T.rSm,background:isActive?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s"}}>
+                      <div style={{fontSize:".88rem",fontWeight:isActive?700:500,color:isActive?T.dark:T.textSub}}>{f.label}</div>
+                    </button>
+                  );})}
+                </div>
+              </div>
+
+              {/* Border-Radius */}
+              <div style={{marginTop:20}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Ecken</div>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {RADIUS_OPTIONS.map(r=>{const isActive=r.value===(order.custom_radius||"");return(
+                    <button key={r.value} onClick={()=>upOrder("custom_radius")(r.value||null)} style={{padding:"10px 16px",border:`2px solid ${isActive?T.dark:T.bg3}`,borderRadius:r.value||s.radius||"4px",background:isActive?T.bg:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:isActive?700:500,color:isActive?T.dark:T.textSub,fontFamily:T.font,transition:"border-color .15s"}}>
+                      {r.label}
+                    </button>
+                  );})}
+                </div>
+              </div>
+
+              {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{marginTop:16,padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}
+            </>):(<>
+              <InfoRow label="Stil" value={s.label||order.stil}/>
+              <div style={{display:"flex",gap:10,marginTop:12,flexWrap:"wrap"}}>
+                {[{l:"Primär",v:dv("custom_color",s.primary)},{l:"Akzent",v:dv("custom_accent",s.accent)},{l:"Hintergrund",v:dv("custom_bg",s.bg)},{l:"Text",v:dv("custom_text",s.text||"#1f2937")},{l:"Sekundär",v:dv("custom_text_muted",s.textMuted||"#64748b")},{l:"Linien",v:dv("custom_sep",s.borderColor||"#e2e8f0")}].map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:6}}>
+                  <div style={{width:20,height:20,borderRadius:4,background:c.v,border:"1px solid rgba(0,0,0,.1)"}}/>
+                  <div style={{fontSize:".78rem",color:T.textMuted}}>{c.l}</div>
+                </div>)}
+              </div>
+              {(order.custom_font||order.custom_radius)&&<div style={{display:"flex",gap:12,marginTop:8}}>
+                {order.custom_font&&<div style={{fontSize:".82rem",color:T.textSub}}><strong>Schrift:</strong> {FONT_OPTIONS.find(f=>f.value===order.custom_font)?.label||order.custom_font}</div>}
+                {order.custom_radius&&<div style={{fontSize:".82rem",color:T.textSub}}><strong>Ecken:</strong> {order.custom_radius}</div>}
+              </div>}
+            </>)}
+          </div>
+        </div>;})()}
         {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="branchenfeatures" label="Merkmale & Vertrauen" badge="instant" desc={`Alles was Kunden über ${order.firmenname||"Ihr Geschäft"} wissen sollten — wird auf Ihrer Website und in Google angezeigt.`}/>
           {editSection==="branchenfeatures"?(<>

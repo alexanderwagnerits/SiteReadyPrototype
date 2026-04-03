@@ -1395,9 +1395,9 @@ function PortalLogin({onBack}){
 /* ═══ PORTAL DASHBOARD ═══ */
 function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
-  const PAGE_TAB={overview:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",impressum:"website",aktuelles:"website",medien:"medien",teilen:"marketing",seo:"seo",domain:"domain",rechnungen:"rechnungen",account:"account",support:"support",fotos:"medien"};
+  const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",branchenfeatures:"website",medien:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
   const tab=PAGE_TAB[page]||"website";
-  const nav=p=>{setPage(p);setEditSection(null);};
+  const nav=p=>{setPage(p==="domain"?"seo":p);setEditSection(null);};
   const[order,setOrder]=useState(null);
   const[editSection,setEditSection]=useState(null);
   const[saving,setSaving]=useState(false);
@@ -1428,6 +1428,7 @@ function Portal({session,onLogout}){
   const[deleting,setDeleting]=useState({});
   const[impressumConfirmOpen,setImpressumConfirmOpen]=useState(false);
   const[impressumChecked,setImpressumChecked]=useState(false);
+  const[wizardOpen,setWizardOpen]=useState(true);
   const showToast=(msg)=>{setToastMsg(msg);setTimeout(()=>setToastMsg(null),2500);};
 
   useEffect(()=>{
@@ -1581,6 +1582,7 @@ function Portal({session,onLogout}){
     setSaving(true);setSaved(false);
     const fields={
       grunddaten:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
+      hero:{firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet},
       kontakt:{adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,whatsapp:order.whatsapp||null},
       leistungen:{leistungen:order.leistungen,extra_leistung:order.extra_leistung,notdienst:order.notdienst,meisterbetrieb:order.meisterbetrieb,kostenvoranschlag:order.kostenvoranschlag,buchungslink:order.buchungslink||null,hausbesuche:order.hausbesuche,terminvereinbarung:order.terminvereinbarung,leistungen_beschreibungen:order.leistungen_beschreibungen||null,leistungen_preise:order.leistungen_preise||null,leistungen_fotos:order.leistungen_fotos||null},
       texte:{text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null},
@@ -1637,6 +1639,7 @@ function Portal({session,onLogout}){
 
   const userInitials=(session?.user?.email||"??").slice(0,2).toUpperCase();
   const comp=order?{
+    hero:!!(assetUrls.logo||assetUrls.hero),
     grunddaten:!!(order.firmenname&&order.kurzbeschreibung),
     leistungen:!!(order.leistungen?.length>0),
     kontakt:!!(order.adresse&&order.telefon),
@@ -1644,42 +1647,54 @@ function Portal({session,onLogout}){
     medien:!!(assetUrls.logo||assetUrls.hero),
     impressum:!!(order.unternehmensform||order.uid_nummer),
   }:{};
+  const wizardSteps=order?[
+    {label:"Logo hochladen",desc:"Laden Sie Ihr Firmenlogo hoch — es erscheint in der Navigation Ihrer Website.",done:!!assetUrls.logo,page:"hero"},
+    {label:"Titelbild hochladen",desc:"Ein Headerbild macht den ersten Eindruck — ideal ein Foto Ihres Betriebs oder Ihrer Arbeit.",done:!!(assetUrls.hero||assetUrls.foto1),page:"hero"},
+    {label:"Grunddaten prüfen",desc:"Prüfen Sie Firmenname und Beschreibung — der Text wurde automatisch erstellt.",done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
+    {label:"Merkmale auswählen",desc:"Wählen Sie aus was auf Sie zutrifft — Meisterbetrieb, Notdienst, Barrierefrei und mehr.",done:!!(order.notdienst||order.meisterbetrieb||order.barrierefrei||order.kostenvoranschlag||order.terminvereinbarung),page:"branchenfeatures"},
+    {label:"Leistungen prüfen",desc:"Wir haben Beschreibungen erstellt. Prüfen Sie ob alles stimmt — Sie können Texte, Preise und Fotos ergänzen.",done:!!(order.leistungen?.length>0),page:"leistungen"},
+    {label:"Über-uns prüfen",desc:"Ihr Vorstellungstext wurde automatisch erstellt. Passen Sie ihn an und ergänzen Sie Ihr Team.",done:!!order.text_ueber_uns,page:"ueberuns"},
+    {label:"Kontaktdaten prüfen",desc:"Stimmen Adresse, Telefon und Öffnungszeiten? Diese Daten erscheinen auf der Website und in Google.",done:!!(order.adresse&&order.telefon),page:"kontakt"},
+  ]:[];
+  const wizardOptional=order?[
+    {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),page:"medien"},
+    {label:"Social Media",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
+    {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
+    {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
+    {label:"Bewertungen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
+    {label:"WhatsApp-Button",done:!!order.whatsapp,page:"kontakt",isNew:true},
+  ]:[];
+  const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
+  const wizardTotal=wizardSteps.length;
+  const wizardAllDone=wizardDoneCount>=wizardTotal;
+  const wizardCurrentIdx=wizardSteps.findIndex(s=>!s.done);
+  /* legacy compat */
   const astItems=order?[
-    {label:"Logo hochladen",done:!!assetUrls.logo,pts:20,page:"medien"},
-    {label:"Grunddaten ausfüllen",done:!!(order.firmenname&&order.kurzbeschreibung),pts:15,page:"grunddaten"},
+    {label:"Logo hochladen",done:!!assetUrls.logo,pts:20,page:"hero"},
+    {label:"Grunddaten ausfüllen",done:!!(order.firmenname&&order.kurzbeschreibung),pts:15,page:"hero"},
     {label:"Leistungen hinzufügen",done:!!(order.leistungen?.length>0),pts:20,page:"leistungen"},
     {label:"Kontakt & Adresse",done:!!(order.adresse&&order.telefon),pts:15,page:"kontakt"},
-    {label:"Titelbild hochladen",done:!!(assetUrls.hero||assetUrls.foto1),pts:15,page:"medien"},
+    {label:"Titelbild hochladen",done:!!(assetUrls.hero||assetUrls.foto1),pts:15,page:"hero"},
     {label:"Über uns Text",done:!!order.text_ueber_uns,pts:10,page:"ueberuns"},
     {label:"Impressum ausfüllen",done:!!(order.unternehmensform||order.uid_nummer),pts:5,page:"impressum"},
-    {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),pts:0,page:"medien",optional:true},
-    {label:"Social Media",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),pts:0,page:"social",optional:true},
-    {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
-    {label:"Fotos zu Leistungen",done:!!(order.leistungen_fotos&&Object.values(order.leistungen_fotos||{}).some(v=>v)),pts:0,page:"leistungen",optional:true},
-    {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),pts:0,page:"ueberuns",optional:true},
-    {label:"Ablauf beschreiben",done:!!(order.ablauf_schritte?.some(s=>s.titel)),pts:0,page:"ueberuns",optional:true},
-    {label:"Kundenbewertungen",done:!!(order.bewertungen?.some(b=>b.text)),pts:0,page:"ueberuns",optional:true},
-    {label:"Aktuelles / Meldung",done:!!(order.announcements?.some(a=>a.active)),pts:0,page:"aktuelles",optional:true},
-    {label:"Google-Texte anpassen",done:!!(order.seo_title||order.seo_description),pts:0,page:"seo",optional:true},
-    {label:"Eigene Domain",done:false,pts:0,page:"domain",optional:true},
   ]:[];
   const astScore=astItems.filter(i=>!i.optional).reduce((s,i)=>s+(i.done?i.pts:0),0);
-  const astDone=astScore>=100;
+  const astDone=wizardAllDone;
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
+    hero:{title:"Header & Hero",sub:"Logo, Firmenname, Kurzbeschreibung und Titelbild — der erste Eindruck Ihrer Website"},
     grunddaten:{title:"Grunddaten",sub:"Firmenname, Kurzbeschreibung und Einsatzgebiet Ihres Unternehmens"},
     leistungen:{title:"Leistungen",sub:"Diese Leistungen erscheinen als Karten auf Ihrer Website – mit Beschreibung und Preis"},
     kontakt:{title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps"},
     ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
-    social:{title:"Social Media",sub:"Ihre Social-Media-Profile erscheinen als Icons im Footer Ihrer Website"},
+    social:{title:"Footer & Social Media",sub:"Social-Media-Links erscheinen im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
-    branchenfeatures:{title:"Merkmale",sub:"Alles was Kunden über Ihr Geschäft wissen sollten — wird auf Ihrer Website und in Google angezeigt"},
+    branchenfeatures:{title:"Merkmale & Vertrauen",sub:"Alles was Kunden über Ihr Geschäft wissen sollten — wird auf Ihrer Website und in Google angezeigt"},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
     medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
     teilen:{title:"Teilen & QR-Code",sub:"QR-Code, Visitenkarte und Firmen-Flyer für Ihre Website"},
-    seo:{title:"SEO & Google",sub:"Diese Angaben sieht Google – gut ausgefüllt verbessert das Ihre Auffindbarkeit nachweislich"},
-    domain:{title:"Eigene Domain",sub:"Verbinden Sie Ihre Domain z.B. www.ihre-firma.at statt der Standard-Subdomain"},
+    seo:{title:"SEO, Google & Domain",sub:"Suchmaschinenoptimierung und eigene Domain für Ihre Website"},
     rechnungen:{title:"Rechnungen",sub:"Ihre Zahlungsübersicht und Abonnement-Verwaltung"},
     account:{title:"Account",sub:"E-Mail-Adresse und Passwort Ihres Kundenkontos"},
     support:{title:"Support",sub:"Wir sind für Sie da – Antwort in der Regel innerhalb von 24 Stunden"},
@@ -1737,15 +1752,17 @@ function Portal({session,onLogout}){
 .pt-btn-w:hover{opacity:.88}
 .pt-btn-gw{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;background:#fff;color:#4A4F5A;border:1.5px solid #E0E0DB;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
 .pt-btn-gw:hover{background:#F5F5F2;border-color:#ccc}
-.pt-ast{width:272px;flex-shrink:0;border-left:1px solid #E0E0DB;background:#fff;display:flex;flex-direction:column;overflow:hidden}
-.pt-ast-h{padding:20px 20px 0;flex-shrink:0}
+.pt-ast{flex-shrink:0;border-left:1px solid #E0E0DB;background:#fff;display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease}
+.pt-ast.wiz-open{width:280px}
+.pt-ast.wiz-closed{width:52px}
+.pt-ast-h{padding:16px 16px 0;flex-shrink:0}
 .pt-ast-title{font-size:.8rem;font-weight:800;color:#111;letter-spacing:-.01em;margin-bottom:2px}
 .pt-ast-sub{font-size:.72rem;color:#6B7280;margin-bottom:14px}
 .pt-ast-bar-wrap{height:6px;background:#E0E0DB;border-radius:100px;overflow:hidden;margin-bottom:4px}
 .pt-ast-bar-fill{height:100%;border-radius:100px;background:#4ade80;transition:width .4s ease}
 .pt-ast-pts{font-size:.68rem;font-weight:700;color:#16a34a;margin-bottom:14px}
 .pt-ast-divider{height:1px;background:#E0E0DB;margin:0 0 8px}
-.pt-ast-scroll{flex:1;overflow-y:auto;padding:8px 12px 20px;scrollbar-width:none;display:flex;flex-direction:column;gap:3px}
+.pt-ast-scroll{flex:1;overflow-y:auto;padding:8px 12px 20px;scrollbar-width:none;display:flex;flex-direction:column;gap:0}
 .pt-ast-scroll::-webkit-scrollbar{display:none}
 .pt-ast-item{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;border:none;background:transparent;width:100%;font-family:inherit;transition:background .1s;text-align:left}
 .pt-ast-item:hover{background:#F5F5F2}
@@ -1753,10 +1770,29 @@ function Portal({session,onLogout}){
 .pt-ast-ck.done{background:#4ade80;border-color:#4ade80}
 .pt-ast-ck.done svg{display:block}
 .pt-ast-ck svg{display:none}
+.pt-ast-ck.current{border-color:#111;background:#111;color:#fff}
+.pt-ast-ck.current svg{display:none}
 .pt-ast-label{font-size:.82rem;font-weight:500;color:#374151;flex:1;line-height:1.3}
 .pt-ast-label.done{color:#9CA3AF;text-decoration:line-through}
 .pt-ast-pts-badge{font-size:.68rem;font-weight:700;color:#6B7280;flex-shrink:0;padding:2px 6px;background:#F3F4F6;border-radius:100px}
 .pt-ast-optional{font-size:.65rem;font-weight:600;color:#9CA3AF;flex-shrink:0;padding:2px 6px;background:#F9FAFB;border-radius:100px;border:1px solid #E5E7EB}
+.pt-wiz-step{position:relative;padding-left:28px}
+.pt-wiz-line{position:absolute;left:20px;top:28px;bottom:-4px;width:2px;border-radius:1px}
+.pt-wiz-line.done{background:#4ade80}
+.pt-wiz-line.current{background:#111}
+.pt-wiz-line.pending{background:#E0E0DB}
+.pt-wiz-num{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;line-height:1}
+.pt-wiz-num.done{background:#4ade80;color:#fff}
+.pt-wiz-num.current{background:#111;color:#fff}
+.pt-wiz-num.pending{background:#F3F4F6;color:#9CA3AF;border:1.5px solid #E0E0DB}
+.pt-wiz-curr{margin-top:6px;padding:10px 12px;background:#F9FAFB;border-radius:8px;border:1px solid #E0E0DB}
+.pt-wiz-curr-desc{font-size:.78rem;color:#6B7280;line-height:1.5;margin-bottom:8px}
+.pt-wiz-curr-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:#111;color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.pt-wiz-curr-btn:hover{opacity:.85}
+.pt-wiz-collapsed{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;cursor:pointer;padding:8px 0}
+.pt-wiz-collapsed:hover{background:#F5F5F2}
+.pt-wiz-cbadge{writing-mode:vertical-rl;text-orientation:mixed;font-size:.72rem;font-weight:700;color:#6B7280;letter-spacing:.02em}
+.pt-wiz-new{font-size:.6rem;font-weight:700;color:#7c3aed;background:#f5f3ff;padding:2px 6px;border-radius:4px;border:1px solid #ddd6fe;margin-left:auto;flex-shrink:0}
 `;
   return(<div className="pt-layout"><style>{css+pCss}</style>
     {/* Sidebar */}
@@ -1777,16 +1813,13 @@ function Portal({session,onLogout}){
           Übersicht
         </button>
         {[
-          ["grunddaten","Grunddaten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6H4z"/><circle cx="17" cy="17" r="3"/></svg>`,true],
+          ["hero","Header & Hero",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,true],
+          ["branchenfeatures","Merkmale & Vertrauen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
           ["leistungen","Leistungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,true],
-          ["kontakt","Kontakt & Zeiten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,true],
           ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,true],
-          ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
-          ["medien","Fotos & Medien",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,true],
-          ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,false],
-          ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,true],
+          ["kontakt","Kontakt",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,true],
+          ["social","Footer & Social",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
-          ["branchenfeatures","Merkmale",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
@@ -1795,18 +1828,24 @@ function Portal({session,onLogout}){
             {hasComp&&comp[p]===true&&<span className="pt-done"/>}
           </button>
         ))}
-        <div className="pt-sb-grp">Sichtbarkeit</div>
+        <div className="pt-sb-grp">Extras</div>
+        <button className={`pt-ni${page==="aktuelles"?" pactive":""}`} onClick={()=>nav("aktuelles")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          Aktuelles
+        </button>
         <button className={`pt-ni${page==="teilen"?" pactive":""}`} onClick={()=>nav("teilen")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Teilen & QR-Code
         </button>
+        <button className={`pt-ni${page==="impressum"?" pactive":""}`} onClick={()=>nav("impressum")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Impressum
+          {comp.impressum===false&&<span className="pt-comp"/>}
+          {comp.impressum===true&&<span className="pt-done"/>}
+        </button>
         <button className={`pt-ni${page==="seo"?" pactive":""}`} onClick={()=>nav("seo")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          SEO & Google
-        </button>
-        <button className={`pt-ni${page==="domain"?" pactive":""}`} onClick={()=>nav("domain")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          Domain
+          SEO & Domain
         </button>
         <div className="pt-sb-grp">Konto</div>
         <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
@@ -1908,12 +1947,12 @@ function Portal({session,onLogout}){
         {(()=>{
           const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
           const tips=[
-            {label:"Logo hochladen",done:!!assetUrls.logo,page:"medien",hint:"Wird in der Navigation Ihrer Website angezeigt"},
-            {label:"Titelbild hochladen",done:!!(assetUrls.hero),page:"medien",hint:"Das grosse Bild oben auf Ihrer Website"},
+            {label:"Logo hochladen",done:!!assetUrls.logo,page:"hero",hint:"Wird in der Navigation Ihrer Website angezeigt"},
+            {label:"Titelbild hochladen",done:!!(assetUrls.hero),page:"hero",hint:"Das grosse Bild oben auf Ihrer Website"},
             {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,page:"ueberuns",hint:"KI-generierten Text anpassen oder personalisieren"},
             {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),page:"leistungen",hint:"Preise direkt auf den Leistungskarten anzeigen"},
             ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,page:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
-            {label:"Eigene Domain verbinden",done:false,page:"domain",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
+            {label:"Eigene Domain verbinden",done:false,page:"seo",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
           ];
           const open=tips.filter(t=>!t.done&&!t.optional);
           if(open.length===0)return(<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"18px 24px",display:"flex",alignItems:"center",gap:12}}>
@@ -1951,8 +1990,8 @@ function Portal({session,onLogout}){
         </div>
       </>)}
 
-      {/* Tab: Website (Inhalte-Unterseiten) */}
-      {tab==="website"&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<>
+      {/* Tab: Website & Extras (Inhalte-Unterseiten) */}
+      {(tab==="website"||tab==="extras")&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<>
         {/* Aktuelles / News */}
         {page==="aktuelles"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <div style={{marginBottom:16,paddingBottom:14,borderBottom:`1px solid ${T.bg3}`}}>
@@ -2032,6 +2071,102 @@ function Portal({session,onLogout}){
             <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
           </>)}
         </div>}
+        {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
+        {page==="hero"&&<>
+          {/* Logo upload */}
+          {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
+              </div>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
+                </label>
+                {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"\u00d7"}</button>}
+              </div>
+            </div>
+            {url&&(<div style={{marginBottom:12}}>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div>
+                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
+                  <div style={{background:"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
+                    <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
+                  </div>
+                </div>
+                <div>
+                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Hell (Briefkopf etc.)</div>
+                  <div style={{background:"#fff",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center",border:`1px solid ${T.bg3}`}}>
+                    <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
+                  </div>
+                </div>
+              </div>
+            </div>)}
+            {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
+              <div style={{fontSize:"1.8rem",marginBottom:6}}>"—"</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Logo hochgeladen</div>
+            </div>)}
+            <div style={{fontSize:".8rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>
+              <strong style={{color:T.dark}}>Wichtig:</strong> Ihr Logo wird auf einem dunklen Hintergrund angezeigt. Am besten funktioniert ein PNG mit transparentem Hintergrund (mind. 400 {"\u00d7"} 150 px).
+              <br/>Hat Ihr Logo einen farbigen Hintergrund? Entfernen Sie ihn kostenlos: <a href="https://www.remove.bg/de" target="_blank" rel="noopener noreferrer" style={{color:T.accent,fontWeight:600}}>remove.bg</a>
+            </div>
+          </div>
+          );})()}
+          {/* Hero-Bild upload */}
+          {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];return(
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild für den oberen Bereich der Website</div>
+              </div>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
+                </label>
+                {url&&<button onClick={()=>deleteAsset("hero")} disabled={deleting["hero"]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"\u00d7"}</button>}
+              </div>
+            </div>
+            {url&&<>
+            <div style={{display:"flex",gap:8,marginBottom:12}}>
+              {[{v:"split",title:"Text + Bild"},{v:"full",title:"Vollbild"}].map(opt=>{const on=((order?.hero_layout)||"split")===opt.v;return(
+                <button key={opt.v} onClick={async()=>{if(!supabase||!order?.id)return;await supabase.from("orders").update({hero_layout:opt.v}).eq("id",order.id);setOrder(o=>({...o,hero_layout:opt.v}));showToast("Layout geändert");}} style={{flex:1,padding:"10px 8px",border:on?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:on?T.white:T.bg,cursor:"pointer",fontFamily:T.font,transition:"all .15s"}}>
+                  <div style={{height:40,borderRadius:4,background:T.dark,marginBottom:6,display:"flex",overflow:"hidden"}}>
+                    {opt.v==="split"?<><div style={{flex:1,padding:"6px 8px"}}><div style={{width:"60%",height:4,background:"rgba(255,255,255,.6)",borderRadius:2,marginBottom:3}}/><div style={{width:"40%",height:3,background:"rgba(255,255,255,.3)",borderRadius:2}}/></div><div style={{width:"40%",background:`url(${url}) center/cover`}}/></>
+                    :<div style={{flex:1,background:`linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.4)),url(${url}) center/cover`,padding:"6px 8px"}}><div style={{width:"50%",height:4,background:"rgba(255,255,255,.7)",borderRadius:2,marginBottom:3}}/><div style={{width:"35%",height:3,background:"rgba(255,255,255,.4)",borderRadius:2}}/></div>}
+                  </div>
+                  <div style={{fontSize:".72rem",fontWeight:on?700:500,color:on?T.dark:T.textMuted}}>{opt.title}</div>
+                </button>);})}
+            </div>
+            <div style={{borderRadius:T.rSm,overflow:"hidden",height:100,background:"#000",position:"relative"}}>
+              <img src={url} alt="Hero" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
+            </div>
+            </>}
+            {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Titelbild hochgeladen – Farbverlauf bleibt aktiv</div>
+            </div>}
+            <div style={{fontSize:".78rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>Empfohlen: JPG, mind. 1920 &times; 1080 px &middot; Querformat &middot; Ohne Textüberlagerungen (Bild wird automatisch mit Farbverlauf abgedunkelt)</div>
+          </div>
+          );})()}
+          {/* Grunddaten fields */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader id="hero" label="Grunddaten" badge="instant" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
+            {editSection==="hero"?(<>
+              <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
+              <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
+              <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
+            </>):(<>
+              <InfoRow label="Firmenname" value={order.firmenname}/>
+              <InfoRow label="Beschreibung" value={order.kurzbeschreibung}/>
+              <InfoRow label="Einsatzgebiet" value={order.einsatzgebiet}/>
+            </>)}
+          </div>
+        </>}
         {page==="impressum"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader id="impressum" label="Unternehmen & Impressum" badge="instant"
             desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Direkt bearbeitbar – eine Bestätigung stellt sicher, dass die Angaben korrekt sind."
@@ -2373,7 +2508,7 @@ function Portal({session,onLogout}){
       </>)}
 
       {/* Tab: Rechnungen */}
-      {tab==="rechnungen"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+      {(tab==="konto"&&page==="rechnungen")&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Ihre Rechnungen</div>
           {order?.stripe_customer_id&&<button onClick={async()=>{
@@ -2406,7 +2541,7 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Tab: Support */}
-      {tab==="support"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {(tab==="konto"&&page==="support")&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         <div style={{background:T.accentLight,borderRadius:T.r,padding:"24px 28px",border:`1px solid rgba(143,163,184,.15)`,display:"flex",gap:32,flexWrap:"wrap"}}>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>E-Mail Support</div>
@@ -2454,8 +2589,8 @@ function Portal({session,onLogout}){
             {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
             {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
             {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kündbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
-            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, unter 'Fotos & Medien' können Sie Ihr Logo sowie eigene Fotos hochladen – Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt."},
-            {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie im Tab 'Custom Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
+            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, Logo und Titelbild laden Sie unter 'Header & Hero' hoch. Weitere Fotos finden Sie unter 'Fotos & Medien' — Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt."},
+            {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie unter 'SEO & Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
           ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
             <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
               {f.q}<span style={{color:T.textMuted,fontSize:"1.1rem",marginLeft:12,flexShrink:0}}>+</span>
@@ -2466,7 +2601,7 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Tab: Account */}
-      {tab==="account"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {(tab==="konto"&&page==="account")&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:16}}>Account-Daten</div>
           <InfoRow label="E-Mail-Adresse" value={session?.user?.email}/>
@@ -2536,7 +2671,7 @@ function Portal({session,onLogout}){
 
       {/* Tab: Medien */}
       {/* Tab: Marketing */}
-      {tab==="marketing"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {(tab==="extras"&&page==="teilen")&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Digitale Visitenkarte */}
         {(()=>{const vcardUrl=`https://sitereadyprototype.pages.dev/s/${sub}/vcard`;const qrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&data=${encodeURIComponent(vcardUrl)}`;return(
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
@@ -2602,7 +2737,7 @@ function Portal({session,onLogout}){
         </div>
       </div>)}
 
-      {tab==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {page==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         {/* Logo */}
         {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2746,13 +2881,13 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Tab: Domain */}
-      {tab==="seo"&&order?.status==="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"40px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,textAlign:"center"}}>
+      {page==="seo"&&order?.status==="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"40px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,textAlign:"center"}}>
         <div style={{fontSize:"1.2rem",marginBottom:16,color:T.textMuted}}>⚿</div>
         <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>SEO & Google ab aktivem Abo</h2>
         <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:20,maxWidth:340,margin:"0 auto 20px"}}>Google-Indexierung und SEO-Einstellungen sind nach dem Abo-Abschluss aktiv.</p>
         <button onClick={()=>setShowPlanModal(true)} style={{padding:"11px 24px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".88rem",fontWeight:700,fontFamily:T.font}}>Jetzt abonnieren {"\u2192"}</button>
       </div>)}
-      {tab==="seo"&&order?.status!=="trial"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+      {page==="seo"&&order?.status!=="trial"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Google Indexierung</div>
           {order?.status==="live"
@@ -2782,12 +2917,12 @@ function Portal({session,onLogout}){
             {!assetUrls.logo&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+10</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Logo hochladen</span>
-              <button onClick={()=>nav("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("hero")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
             {!(assetUrls.foto1||assetUrls.foto2||assetUrls.foto3)&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+10</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Fotos hochladen</span>
-              <button onClick={()=>nav("medien")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("hero")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
             {!order.telefon&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+5</span>
@@ -2797,13 +2932,36 @@ function Portal({session,onLogout}){
             {!order.kurzbeschreibung&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
               <span style={{fontSize:".8rem",color:"#d97706",fontWeight:700,flexShrink:0}}>+5</span>
               <span style={{fontSize:".82rem",color:T.dark}}>Kurzbeschreibung hinzufügen</span>
-              <button onClick={()=>nav("grunddaten")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
+              <button onClick={()=>nav("hero")} style={{marginLeft:"auto",fontSize:".78rem",color:T.accent,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Jetzt {"\u2192"}</button>
             </div>}
           </div>}
         </div>}
+        {/* Eigene Domain */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Custom Domain & Google</div>
-          <p style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7,margin:0}}>Wenn Sie eine eigene Domain verbinden, kümmern wir uns auch um die Google-Indexierung für Ihre Domain. Schreiben Sie uns nach der DNS-Umstellung an <strong>support@siteready.at</strong>.</p>
+          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Eigene Domain verbinden</div>
+          <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.7,marginBottom:16}}>
+            Aktuell ist Ihre Website unter <strong>{sub}.siteready.at</strong> erreichbar. Mit einer eigenen Domain (z.B. <strong>www.{sub}.at</strong>) erscheint Ihre Website noch professioneller.
+          </p>
+          <div style={{marginBottom:16}}>
+            <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:10}}>DNS-Einträge bei Ihrem Domain-Anbieter setzen:</div>
+            <div style={{borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`}}>
+              <div style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",background:T.bg,padding:"10px 16px",fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".06em",gap:16}}>
+                <span>Typ</span><span>Name</span><span>Wert</span>
+              </div>
+              {[
+                {typ:"CNAME",name:"www",wert:"sitereadyprototype.pages.dev"},
+                {typ:"CNAME",name:"@",wert:"sitereadyprototype.pages.dev"},
+              ].map((r,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",padding:"12px 16px",fontSize:".84rem",gap:16,borderTop:`1px solid ${T.bg3}`,fontFamily:T.mono}}>
+                <span style={{color:T.accent,fontWeight:700}}>{r.typ}</span>
+                <span style={{color:T.dark}}>{r.name}</span>
+                <span style={{color:T.textSub}}>{r.wert}</span>
+              </div>)}
+            </div>
+          </div>
+          <div style={{padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}>
+            <div style={{fontSize:".82rem",fontWeight:700,color:T.accent,marginBottom:4}}>Nach der DNS-Aenderung</div>
+            <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>DNS-Änderungen dauern bis zu 48 Stunden. Sobald alles aktiv ist, schreiben Sie uns an <strong>support@siteready.at</strong> – wir schalten Ihre Domain frei.</div>
+          </div>
         </div>
         {/* Seitenaufrufe Coming Soon */}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2818,70 +2976,60 @@ function Portal({session,onLogout}){
           </div>
         </div>
       </div>)}
-      {tab==="domain"&&order?.status==="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"40px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,textAlign:"center"}}>
-        <div style={{fontSize:"1.2rem",marginBottom:16,color:T.textMuted}}>⚿</div>
-        <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>Custom Domain ab aktivem Abo</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.65,marginBottom:20,maxWidth:340,margin:"0 auto 20px"}}>Verbinden Sie Ihre eigene Domain nachdem Sie ein Abo abgeschlossen haben.</p>
-        <button onClick={()=>setShowPlanModal(true)} style={{padding:"11px 24px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".88rem",fontWeight:700,fontFamily:T.font}}>Jetzt abonnieren {"\u2192"}</button>
-      </div>)}
-      {tab==="domain"&&order?.status!=="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-        <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Custom Domain verbinden</div>
-        <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 8px"}}>Eigene Domain statt Subdomain</h2>
-        <p style={{fontSize:".88rem",color:T.textSub,lineHeight:1.7,marginBottom:24}}>
-          Aktuell ist Ihre Website unter <strong>{sub}.siteready.at</strong> erreichbar. Mit einer eigenen Domain (z.B. <strong>www.{sub}.at</strong>) erscheint Ihre Website noch professioneller.
-        </p>
-        <div style={{marginBottom:24}}>
-          <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:10}}>DNS-Einträge bei Ihrem Domain-Anbieter setzen:</div>
-          <div style={{borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`}}>
-            <div style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",background:T.bg,padding:"10px 16px",fontSize:".75rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".06em",gap:16}}>
-              <span>Typ</span><span>Name</span><span>Wert</span>
-            </div>
-            {[
-              {typ:"CNAME",name:"www",wert:"sitereadyprototype.pages.dev"},
-              {typ:"CNAME",name:"@",wert:"sitereadyprototype.pages.dev"},
-            ].map((r,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"80px 100px 1fr",padding:"12px 16px",fontSize:".84rem",gap:16,borderTop:`1px solid ${T.bg3}`,fontFamily:T.mono}}>
-              <span style={{color:T.accent,fontWeight:700}}>{r.typ}</span>
-              <span style={{color:T.dark}}>{r.name}</span>
-              <span style={{color:T.textSub}}>{r.wert}</span>
-            </div>)}
-          </div>
-        </div>
-        <div style={{padding:"16px 20px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`}}>
-          <div style={{fontSize:".82rem",fontWeight:700,color:T.accent,marginBottom:4}}>Nach der DNS-Aenderung</div>
-          <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.7}}>DNS-Änderungen dauern bis zu 48 Stunden. Sobald alles aktiv ist, schreiben Sie uns an <strong>support@siteready.at</strong> – wir schalten Ihre Domain frei.</div>
-        </div>
-      </div>)}
       </div>
     </main>
-    {!astDone&&order&&<aside className="pt-ast">
+    {!wizardAllDone&&order&&<aside className={`pt-ast ${wizardOpen?"wiz-open":"wiz-closed"}`}>
+      {wizardOpen?<>
       <div className="pt-ast-h">
-        <div className="pt-ast-title">Einrichtungsassistent</div>
-        <div className="pt-ast-sub">Vervollständigen Sie Ihre Website</div>
-        <div className="pt-ast-bar-wrap"><div className="pt-ast-bar-fill" style={{width:`${astScore}%`}}/></div>
-        <div className="pt-ast-pts">{astScore} / 100 Punkte</div>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div className="pt-ast-title">Einrichtungsassistent</div>
+          <button onClick={()=>setWizardOpen(false)} style={{background:"none",border:"none",cursor:"pointer",color:"#9CA3AF",padding:4,display:"flex"}} title="Einklappen">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <div className="pt-ast-sub">{wizardDoneCount} von {wizardTotal} erledigt</div>
+        <div className="pt-ast-bar-wrap"><div className="pt-ast-bar-fill" style={{width:`${Math.round(wizardDoneCount/wizardTotal*100)}%`}}/></div>
       </div>
       <div className="pt-ast-divider"/>
       <div className="pt-ast-scroll">
-        {astItems.filter(i=>!i.optional).map((item,idx)=>(
-          <button key={idx} className="pt-ast-item" onClick={()=>nav(item.page)}>
-            <div className={`pt-ast-ck${item.done?" done":""}`}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
-            {!item.done&&<span className="pt-ast-pts-badge">+{item.pts}</span>}
-          </button>
-        ))}
-        {astItems.some(i=>i.optional)&&<div style={{fontSize:".68rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"10px 8px 4px"}}>Optional</div>}
-        {astItems.filter(i=>i.optional).map((item,idx)=>(
-          <button key={idx} className="pt-ast-item" onClick={()=>nav(item.page)}>
-            <div className={`pt-ast-ck${item.done?" done":""}`}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
-            <span className="pt-ast-optional">Optional</span>
-          </button>
-        ))}
+        {wizardSteps.map((step,idx)=>{
+          const isCurrent=idx===wizardCurrentIdx;
+          const isPending=!step.done&&!isCurrent;
+          const isLast=idx===wizardSteps.length-1;
+          return(<div key={idx} className="pt-wiz-step">
+            {!isLast&&<div className={`pt-wiz-line ${step.done?"done":isCurrent?"current":"pending"}`}/>}
+            <button className="pt-ast-item" onClick={()=>nav(step.page)} style={{paddingLeft:0}}>
+              <div className={`pt-wiz-num ${step.done?"done":isCurrent?"current":"pending"}`}>
+                {step.done?<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>:<span>{idx+1}</span>}
+              </div>
+              <span style={{fontSize:".82rem",fontWeight:isCurrent?700:500,color:step.done?"#9CA3AF":isCurrent?"#111":"#6B7280"}}>{step.label}</span>
+            </button>
+            {isCurrent&&<div className="pt-wiz-curr">
+              <div className="pt-wiz-curr-desc">{step.desc}</div>
+              <button className="pt-wiz-curr-btn" onClick={()=>nav(step.page)}>Jetzt ausfüllen {"\u2192"}</button>
+            </div>}
+          </div>);
+        })}
+        {wizardOptional.length>0&&<>
+          <div style={{fontSize:".68rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"14px 0 6px"}}>Optional</div>
+          {wizardOptional.map((item,idx)=>(
+            <button key={idx} className="pt-ast-item" onClick={()=>nav(item.page)} style={{paddingLeft:0}}>
+              <div className={`pt-ast-ck${item.done?" done":""}`}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
+              {item.isNew&&<span className="pt-wiz-new">Neu</span>}
+            </button>
+          ))}
+        </>}
       </div>
+      </>:<div className="pt-wiz-collapsed" onClick={()=>setWizardOpen(true)} title="Assistent öffnen">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div style={{width:28,height:28,borderRadius:"50%",background:"#4ade80",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          <span style={{fontSize:".7rem",fontWeight:800,color:"#fff"}}>{wizardDoneCount}</span>
+        </div>
+        <div className="pt-wiz-cbadge">{wizardDoneCount} von {wizardTotal}</div>
+      </div>}
     </aside>}
   </div>);
 }

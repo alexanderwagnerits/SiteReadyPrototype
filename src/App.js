@@ -1951,7 +1951,7 @@ function Portal({session,onLogout}){
             {label:"Titelbild hochladen",done:!!(assetUrls.hero),page:"hero",hint:"Das grosse Bild oben auf Ihrer Website"},
             {label:"Unternehmensbeschreibung prüfen",done:!!order.text_ueber_uns,page:"ueberuns",hint:"KI-generierten Text anpassen oder personalisieren"},
             {label:"Preise zu Leistungen hinzufügen",done:!!(order.leistungen_preise&&Object.keys(order.leistungen_preise).length>0),page:"leistungen",hint:"Preise direkt auf den Leistungskarten anzeigen"},
-            ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,page:"medien",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
+            ...(hasPL?[{label:"Preisliste hochladen",done:!!assetUrls.preisliste,page:"leistungen",hint:"Als PDF – wird als Download auf der Website angeboten"}]:[]),
             {label:"Eigene Domain verbinden",done:false,page:"seo",hint:"z.B. www.ihre-firma.at statt der Subdomain",optional:true},
           ];
           const open=tips.filter(t=>!t.done&&!t.optional);
@@ -2480,7 +2480,7 @@ function Portal({session,onLogout}){
             <Toggle label="Ratenzahlung möglich" checked={!!order.ratenzahlung} onChange={upOrder("ratenzahlung")} desc="Zahlung in Raten anbieten"/>
             {ft.includes("foerderungsberatung")&&<Toggle label="Förderungsberatung" checked={!!order.foerderungsberatung} onChange={upOrder("foerderungsberatung")} desc="Beratung zu Förderungen (Sanierungsbonus etc.)"/>}
             <Toggle label="Gutscheine erhältlich" checked={!!order.gutscheine} onChange={upOrder("gutscheine")} desc="Geschenkgutscheine zum Kaufen"/>
-            <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Fotos & Medien</button> hochladen.</div>
+            <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter <button onClick={()=>nav("leistungen")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Leistungen</button> hochladen.</div>
           </>):(<>
             {(()=>{const sectionData=[
               {title:"Erreichbarkeit",items:[{l:"Buchungslink",v:order.buchungslink||null},{l:"Nur mit Termin",v:order.terminvereinbarung},{l:"Erstgespräch gratis",v:order.erstgespraech_gratis},{l:"Online-Beratung",v:order.online_beratung},{l:"Hausbesuche",v:order.hausbesuche}]},

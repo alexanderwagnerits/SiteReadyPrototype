@@ -1657,7 +1657,7 @@ function Portal({session,onLogout}){
     {label:"Kontaktdaten prüfen",desc:"Stimmen Adresse, Telefon und Öffnungszeiten? Diese Daten erscheinen auf der Website und in Google.",done:!!(order.adresse&&order.telefon),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
-    {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),page:"medien"},
+    {label:"Weitere Fotos",done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
     {label:"Social Media",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
     {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
@@ -2589,7 +2589,7 @@ function Portal({session,onLogout}){
             {q:"Wie lange dauert es bis meine Website online ist?",a:"Direkt nach dem Formular starten wir die Generierung – Ihre Website ist meist innerhalb weniger Minuten als Vorschau erreichbar. Sie erhalten eine E-Mail sobald alles live ist."},
             {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
             {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kündbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
-            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, Logo und Titelbild laden Sie unter 'Header & Hero' hoch. Weitere Fotos finden Sie unter 'Fotos & Medien' — Betriebsfotos, Team, Arbeitsproben, Atmosphäre. Sie entscheiden was passt."},
+            {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, Logo und Titelbild laden Sie unter 'Header & Hero' hoch. Weitere Fotos können Sie unter 'Über uns' hinzufügen — Betriebsfotos, Team, Arbeitsproben. Fotos zu einzelnen Leistungen direkt unter 'Leistungen'."},
             {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie unter 'SEO & Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
           ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
             <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>

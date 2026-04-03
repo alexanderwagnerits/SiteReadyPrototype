@@ -1,4 +1,5 @@
-export async function onRequestPost({request, env, ctx}) {
+export async function onRequestPost(context) {
+  const {request, env, waitUntil} = context;
   try {
     // Body parsen
     let body = {};
@@ -55,23 +56,35 @@ export async function onRequestPost({request, env, ctx}) {
 
     // Website-Generierung im Hintergrund (direkter Funktionsaufruf)
     const { generateWebsite } = await import("../_lib/generate.js");
-    ctx.waitUntil((async () => {
+    waitUntil((async () => {
       // 1. Versuch
       try {
         await generateWebsite(order.id, env);
         return;
-      } catch(_) {}
+      } catch(e1) {
+        console.error("Generate Versuch 1 fehlgeschlagen:", e1.message);
+      }
 
       // 2. Versuch nach 5 Minuten
       await new Promise(res => setTimeout(res, 5 * 60 * 1000));
       try {
         await generateWebsite(order.id, env);
-      } catch(_) {}
+      } catch(e2) {
+        console.error("Generate Versuch 2 fehlgeschlagen:", e2.message);
+        // Fehler in DB loggen damit Portal/BuildScreen ihn anzeigen kann
+        try {
+          await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order.id}`, {
+            method: "PATCH",
+            headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
+            body: JSON.stringify({last_error: "Generierung fehlgeschlagen nach 2 Versuchen: " + e2.message}),
+          });
+        } catch(_) {}
+      }
     })());
 
     // Auto-Resend Bestaetigungsmail nach 10 Min falls nicht bestaetigt
     if (body.order_id && env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
-      ctx.waitUntil((async () => {
+      waitUntil((async () => {
         await new Promise(res => setTimeout(res, 10 * 60 * 1000));
         // Pruefen ob User bestaetigt ist
         const email = (await (await fetch(

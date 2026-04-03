@@ -496,22 +496,23 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   html = html.replace("</body>", `<script>(function(){var ls=document.querySelectorAll('.nav-link[href^="#"]');var ss=[].map.call(ls,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);function u(){var y=window.scrollY+100;var c=ss.reduce(function(a,s){return s.offsetTop<=y?s:a},ss[0]);ls.forEach(function(l){var a=c&&'#'+c.id===l.getAttribute('href');l.style.opacity=a?'1':'';l.style.fontWeight=a?'700':'';});}window.addEventListener('scroll',u,{passive:true});u();})();</script>\n</body>`);
 
   /* ─── In Supabase speichern ─── */
+  // Kern-Felder (muessen existieren)
+  const savePayload = {
+    website_html: html, subdomain: sub, status: o.status === "live" ? "live" : "trial",
+    tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
+    ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
+    ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
+    ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
+    ...(!o.ablauf_schritte?.length && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
+    ...(!o.gut_zu_wissen && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
+  };
+
   const save = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
-      body: JSON.stringify({
-        website_html: html, subdomain: sub, status: o.status === "live" ? "live" : "trial",
-        tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
-        quality_score: 100, quality_issues: null,
-        ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
-        ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
-        ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
-        ...(!o.ablauf_schritte?.length && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
-        ...(!o.gut_zu_wissen && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
-        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[])],
-      }),
+      body: JSON.stringify(savePayload),
     }
   );
 
@@ -519,6 +520,19 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     const saveErr = await save.text().catch(() => "");
     throw new Error("Speichern fehlgeschlagen: " + (saveErr || `HTTP ${save.status}`));
   }
-  return {ok: true, subdomain: sub, status: "live", quality_score: 100};
+
+  // Optionale Felder separat speichern (Spalten existieren evtl. noch nicht)
+  try {
+    await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
+      body: JSON.stringify({
+        quality_score: 100, quality_issues: null,
+        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[])],
+      }),
+    });
+  } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }
+
+  return {ok: true, subdomain: sub, status: "live"};
 }
 

@@ -1,4 +1,5 @@
-export async function onRequestPost({request, env, ctx}) {
+export async function onRequestPost(context) {
+  const {request, env, waitUntil} = context;
   const sig = request.headers.get("stripe-signature");
   const body = await request.text();
 
@@ -85,7 +86,7 @@ export async function onRequestPost({request, env, ctx}) {
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({order_id: orderId}),
         }).catch(() => {});
-        if (ctx?.waitUntil) ctx.waitUntil(buildTask); else buildTask;
+        if (waitUntil) waitUntil(buildTask); else buildTask;
       }
     }
   }

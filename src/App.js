@@ -2869,11 +2869,15 @@ function BuildScreen({session,setOrder}){
     buildRef.current=setInterval(()=>setBuildElapsed(e=>e+1),1000);
     return()=>clearInterval(buildRef.current);
   },[]);
+  const[buildError,setBuildError]=useState(null);
   useEffect(()=>{
     if(buildElapsed>0&&buildElapsed%5===0){
       (async()=>{
         const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
-        if(data&&data[0]&&data[0].status!=="pending")setOrder(data[0]);
+        if(data&&data[0]){
+          if(data[0].status!=="pending"){setOrder(data[0]);return;}
+          if(data[0].last_error)setBuildError(data[0].last_error);
+        }
       })();
     }
   },[buildElapsed]);
@@ -2900,6 +2904,17 @@ function BuildScreen({session,setOrder}){
         </div>);
       })}
     </div>
+    {/* Fehler-Anzeige */}
+    {buildError&&<div style={{marginTop:24,padding:"16px 20px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:T.rSm,textAlign:"center"}}>
+      <div style={{fontWeight:700,color:"#dc2626",fontSize:".88rem",marginBottom:6}}>Fehler bei der Generierung</div>
+      <div style={{fontSize:".8rem",color:"#7f1d1d",lineHeight:1.5,marginBottom:12}}>{buildError}</div>
+      <button onClick={async()=>{setBuildError(null);setBuildElapsed(0);try{const{data}=await supabase.from("orders").select("id").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);if(data?.[0])await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:data[0].id})});}catch(_){}}} style={{padding:"10px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Erneut versuchen</button>
+    </div>}
+    {/* Timeout-Hinweis */}
+    {!buildError&&buildElapsed>180&&<div style={{marginTop:24,padding:"16px 20px",background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:T.rSm,textAlign:"center"}}>
+      <div style={{fontWeight:700,color:"#92400e",fontSize:".85rem",marginBottom:4}}>Das dauert länger als erwartet</div>
+      <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.5}}>Die Generierung läuft noch. Bitte lassen Sie diese Seite geöffnet oder kommen Sie später zurück.</div>
+    </div>}
     <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
   </div>);
 }

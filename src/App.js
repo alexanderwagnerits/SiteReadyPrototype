@@ -1845,7 +1845,7 @@ function Portal({session,onLogout}){
         </button>
         <button className={`pt-ni${page==="seo"?" pactive":""}`} onClick={()=>nav("seo")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          SEO & Domain
+          SEO, Google & Domain
         </button>
         <div className="pt-sb-grp">Konto</div>
         <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
@@ -2450,7 +2450,7 @@ function Portal({session,onLogout}){
           </>)}
         </div>}
         {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);const subH=t=><div style={{margin:"20px 0 10px",paddingTop:16,borderTop:`1px solid ${T.bg3}`,fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>{t}</div>;return<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader id="branchenfeatures" label="Merkmale" desc={`Alles was Kunden über ${order.firmenname||"Ihr Geschäft"} wissen sollten — wird auf Ihrer Website und in Google angezeigt.`}/>
+          <SectionHeader id="branchenfeatures" label="Merkmale & Vertrauen" badge="instant" desc={`Alles was Kunden über ${order.firmenname||"Ihr Geschäft"} wissen sollten — wird auf Ihrer Website und in Google angezeigt.`}/>
           {editSection==="branchenfeatures"?(<>
             {subH("Erreichbarkeit")}
             <Field label="Online-Buchungslink" value={order.buchungslink||""} onChange={upOrder("buchungslink")} placeholder="z.B. https://booksy.com/..." hint="Calendly, Booksy, Treatwell – erscheint als eigener Bereich auf der Website"/>
@@ -2590,7 +2590,7 @@ function Portal({session,onLogout}){
             {q:"Kann ich den Text auf meiner Website selbst ändern?",a:"Ja – im Portal können Sie jederzeit Adresse, Telefon, Leistungen und mehr anpassen."},
             {q:"Was passiert nach der Testphase?",a:"Nach 7 Tagen wird Ihre hinterlegte Karte belastet – beim Monatsabo monatlich kündbar, beim Jahresabo nach 12 Monaten. Sie erhalten vorher eine Erinnerung per E-Mail."},
             {q:"Kann ich mein Logo und Fotos hochladen?",a:"Ja, Logo und Titelbild laden Sie unter 'Header & Hero' hoch. Weitere Fotos können Sie unter 'Über uns' hinzufügen — Betriebsfotos, Team, Arbeitsproben. Fotos zu einzelnen Leistungen direkt unter 'Leistungen'."},
-            {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie unter 'SEO & Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
+            {q:"Wie verbinde ich meine eigene Domain?",a:"Die noetigen DNS-Eintraege finden Sie unter 'SEO, Google & Domain'. Danach einmal kurz Bescheid geben und wir schalten die Domain frei."},
           ].map((f,i)=><details key={i} style={{borderBottom:`1px solid ${T.bg3}`,padding:"14px 0"}}>
             <summary style={{cursor:"pointer",fontWeight:600,fontSize:".88rem",color:T.dark,listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",userSelect:"none"}}>
               {f.q}<span style={{color:T.textMuted,fontSize:"1.1rem",marginLeft:12,flexShrink:0}}>+</span>

@@ -541,7 +541,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
       headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
       body: JSON.stringify({
         quality_score: 100, quality_issues: null,
-        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[])],
+        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
       }),
     });
   } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }

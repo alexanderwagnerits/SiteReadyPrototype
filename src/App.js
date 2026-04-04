@@ -2598,36 +2598,91 @@ function Portal({session,onLogout}){
               {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{marginTop:16,padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}
           </div>
 
-          {/* ── Layout — Seitenaufbau ── */}
+          {/* ── Seitenaufbau ── */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <SectionHeader label="Layout \u2014 Wie Ihre Website aufgebaut ist" desc="Bestimmt welche Bereiche Ihre Website hat und wie Inhalte angeordnet sind. \u00c4nderungen sind sofort sichtbar."/>
+            <SectionHeader label="Seitenaufbau" desc="Wie viel soll Ihre Website zeigen? W\u00e4hlen Sie einen Aufbau \u2014 Sie k\u00f6nnen jederzeit wechseln."/>
             {(()=>{
               const LAYOUTS=[
-                {value:"standard",label:"\u00dcbersichtlich",desc:"Der bew\u00e4hrte Aufbau \u2014 alle wichtigen Infos klar strukturiert.",icon:"\u2630"},
-                {value:"kompakt",label:"Auf den Punkt",desc:"Weniger Text, mehr \u00dcberblick \u2014 ideal bei vielen Leistungen.",icon:"\u25a6"},
-                {value:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Erz\u00e4hlt mehr \u00fcber Sie \u2014 mit h\u00e4ufigen Fragen, Zahlen und Details.",icon:"\u2637"},
+                {value:"standard",label:"\u00dcbersichtlich",desc:"Alle wichtigen Infos auf einen Blick.",sections:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
+                {value:"kompakt",label:"Auf den Punkt",desc:"K\u00fcrzer und kompakter \u2014 gut bei vielen Leistungen.",sections:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
+                {value:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Zeigt mehr \u00fcber Sie und Ihren Betrieb.",sections:["Leistungen","Ablauf","FAQ","Zahlen","Bewertungen","Kontakt"]},
               ];
               const currentLayout=order.layout||"standard";
               return<>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
                   {LAYOUTS.map(lo=>{
                     const active=lo.value===currentLayout;
-                    return<button key={lo.value} onClick={()=>upOrder("layout")(lo.value)} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"center",fontFamily:T.font,transition:"border-color .15s"}}>
-                      <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.5}}>{lo.icon}</div>
+                    return<button key={lo.value} onClick={()=>upOrder("layout")(lo.value)} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s",position:"relative"}}>
                       <div style={{fontSize:".88rem",fontWeight:700,color:T.dark,marginBottom:4}}>{lo.label}</div>
-                      <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{lo.desc}</div>
+                      <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5,marginBottom:10}}>{lo.desc}</div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                        {lo.sections.map(s=><span key={s} style={{fontSize:".62rem",padding:"2px 7px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{s}</span>)}
+                      </div>
+                      {active&&<div style={{position:"absolute",top:10,right:10,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800}}>{"\u2713"}</div>}
                     </button>;
                   })}
                 </div>
 
-                {/* Zusaetzliche Bereiche */}
+                {/* Zusaetzliche Bereiche mit Inline-Editoren */}
                 <div style={{marginTop:8}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Zus\u00e4tzliche Bereiche</div>
-                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    <Toggle label="H\u00e4ufige Fragen (FAQ)" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.faq)&&order.faq.length>0?`${order.faq.length} Fragen angelegt`:"Automatisch generierte Fragen zu Ihrem Betrieb"}/>
-                    <Toggle label="Galerie" checked={!!(order.sections_visible&&order.sections_visible.galerie)} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.galerie)&&order.galerie.length>0?`${order.galerie.length} Fotos`:"Zeigen Sie Ihre Arbeit \u2014 Fotos unter Medien hochladen"}/>
-                    <Toggle label="Zahlen & Fakten" checked={!!(order.sections_visible&&order.sections_visible.fakten)} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.fakten)&&order.fakten.length>0?`${order.fakten.length} Fakten`:"z.B. \u201e15+ Jahre\u201c, \u201e2.000+ Kunden\u201c"}/>
-                    <Toggle label="Partner & Zertifikate" checked={!!(order.sections_visible&&order.sections_visible.partner)} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.partner)&&order.partner.length>0?`${order.partner.length} Partner`:"Logos von Partnern, Zertifizierungen, Verb\u00e4nden"}/>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zus\u00e4tzliche Bereiche auf Ihrer Website</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Aktivieren Sie einen Bereich und f\u00fcllen Sie die Inhalte direkt aus.</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:12}}>
+
+                    {/* FAQ */}
+                    <div style={{border:`1.5px solid ${order.sections_visible?.faq?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="H\u00e4ufige Fragen" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten die Ihre Kunden h\u00e4ufig stellen"/>
+                      {order.sections_visible?.faq&&<div style={{padding:"0 16px 16px",borderTop:`1px solid ${T.bg3}`}}>
+                        {(order.faq||[]).map((f,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:12}}>
+                          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                            <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
+                            <textarea value={f.antwort||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],antwort:e.target.value};upOrder("faq")(arr);}} placeholder="Antwort" rows={2} style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical"}}/>
+                          </div>
+                          <button onClick={()=>{const arr=[...(order.faq||[])];arr.splice(i,1);upOrder("faq")(arr);}} style={{marginTop:8,background:"none",border:"none",color:T.red,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,padding:"4px 8px"}}>Entfernen</button>
+                        </div>)}
+                        <button onClick={()=>{const arr=[...(order.faq||[]),{frage:"",antwort:""}];upOrder("faq")(arr);}} style={{marginTop:12,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Frage hinzuf\u00fcgen</button>
+                      </div>}
+                    </div>
+
+                    {/* Zahlen & Fakten */}
+                    <div style={{border:`1.5px solid ${order.sections_visible?.fakten?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Zahlen & Fakten" checked={!!(order.sections_visible&&order.sections_visible.fakten)} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc="z.B. \u201e15+ Jahre Erfahrung\u201c oder \u201e2.000+ Kunden\u201c"/>
+                      {order.sections_visible?.fakten&&<div style={{padding:"0 16px 16px",borderTop:`1px solid ${T.bg3}`}}>
+                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
+                          {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
+                            <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
+                            <input value={f.label||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],label:e.target.value};upOrder("fakten")(arr);}} placeholder="Jahre Erfahrung" style={{flex:1,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
+                            <button onClick={()=>{const arr=[...(order.fakten||[])];arr.splice(i,1);upOrder("fakten")(arr);}} style={{background:"none",border:"none",color:T.red,cursor:"pointer",fontSize:".82rem",padding:"2px"}}>x</button>
+                          </div>)}
+                        </div>
+                        {(order.fakten||[]).length<4&&<button onClick={()=>{const arr=[...(order.fakten||[]),{zahl:"",label:""}];upOrder("fakten")(arr);}} style={{marginTop:8,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Fakt hinzuf\u00fcgen {(order.fakten||[]).length>0?`(${(order.fakten||[]).length}/4)`:""}</button>}
+                      </div>}
+                    </div>
+
+                    {/* Partner */}
+                    <div style={{border:`1.5px solid ${order.sections_visible?.partner?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Partner & Zertifikate" checked={!!(order.sections_visible&&order.sections_visible.partner)} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc="Zeigen Sie Logos von Partnern oder Zertifizierungen"/>
+                      {order.sections_visible?.partner&&<div style={{padding:"0 16px 16px",borderTop:`1px solid ${T.bg3}`}}>
+                        {(order.partner||[]).map((p,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginTop:10}}>
+                          <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. WKO, T\u00dcV, KNX Partner" style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font}}/>
+                          <button onClick={()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);}} style={{background:"none",border:"none",color:T.red,cursor:"pointer",fontSize:".82rem",padding:"2px 6px"}}>x</button>
+                        </div>)}
+                        <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Partner hinzuf\u00fcgen</button>
+                      </div>}
+                    </div>
+
+                    {/* Galerie — Hinweis auf Medien-Tab */}
+                    <div style={{border:`1.5px solid ${order.sections_visible?.galerie?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Fotogalerie" checked={!!(order.sections_visible&&order.sections_visible.galerie)} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Zeigen Sie Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
+                      {order.sections_visible?.galerie&&<div style={{padding:"12px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                        <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.6}}>
+                          {Array.isArray(order.galerie)&&order.galerie.length>0
+                            ?<span style={{color:T.dark,fontWeight:600}}>{order.galerie.length} Fotos hochgeladen</span>
+                            :<span>Galerie-Fotos k\u00f6nnen Sie unter <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Medien</button> hochladen.</span>}
+                        </div>
+                      </div>}
+                    </div>
+
                   </div>
                 </div>
               </>;

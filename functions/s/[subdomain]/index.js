@@ -207,17 +207,40 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
   }
 
-  // Ablauf-Section — "So läuft es ab" zwischen Leistungen und Über uns
+  // ── Layout-Feld lesen (bestimmt Section-Varianten) ──
+  const layout = o.layout || "standard";
+
+  // Ablauf-Section — "So laeuft es ab" zwischen Leistungen und Ueber uns
   const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
-  if (ablaufSteps.length >= 2 && html.includes("<!-- ABLAUF -->")) {
-    const steps = ablaufSteps.slice(0, 5).map((s, i) =>
-      `<div style="flex:1;text-align:center;min-width:140px">` +
-      `<div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">${i + 1}</div>` +
-      `<div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">${s.titel}</div>` +
-      (s.text ? `<div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">${s.text}</div>` : "") +
-      `</div>`
-    ).join(`<div style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>`);
-    const section = `<section style="padding:80px 0;background:var(--bg,#f8fafc)"><div class="w"><div style="text-align:center;margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">So l\u00e4uft es ab</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Ihr Weg zu uns</h2></div><div style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap">${steps}</div></div></section>`;
+  const showAblauf = layout !== "kompakt" && ablaufSteps.length >= 2;
+  if (showAblauf && html.includes("<!-- ABLAUF -->")) {
+    const ablaufLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">So l\u00e4uft es ab</div>`;
+    const ablaufH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Ihr Weg zu uns</h2>`;
+    let ablaufContent;
+
+    if (layout === "ausfuehrlich") {
+      // Vertical Timeline
+      const vSteps = ablaufSteps.slice(0, 5).map((s, i) =>
+        `<div style="margin-bottom:28px;position:relative;padding-left:48px">` +
+        `<div style="position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;z-index:1">${i + 1}</div>` +
+        `<div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:4px">${s.titel}</div>` +
+        (s.text ? `<div style="font-size:.85rem;color:var(--textMuted,#64748b);line-height:1.7">${s.text}</div>` : "") +
+        `</div>`
+      ).join("");
+      ablaufContent = `<div style="position:relative;max-width:560px"><div style="position:absolute;left:15px;top:0;bottom:0;width:2px;background:var(--sep,#e2e8f0)"></div>${vSteps}</div>`;
+    } else {
+      // Standard: Horizontal
+      const hSteps = ablaufSteps.slice(0, 5).map((s, i) =>
+        `<div style="flex:1;text-align:center;min-width:140px">` +
+        `<div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">${i + 1}</div>` +
+        `<div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">${s.titel}</div>` +
+        (s.text ? `<div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">${s.text}</div>` : "") +
+        `</div>`
+      ).join(`<div style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>`);
+      ablaufContent = `<div style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap">${hSteps}</div>`;
+    }
+
+    const section = `<section style="padding:80px 0;background:var(--bg,#f8fafc)"><div class="w"><div style="text-align:center;margin-bottom:40px">${ablaufLabel}${ablaufH2}</div>${ablaufContent}</div></section>`;
     html = html.replace("<!-- ABLAUF -->", section);
   } else {
     html = html.replace("<!-- ABLAUF -->", "");
@@ -266,7 +289,79 @@ export async function onRequestGet({params, env}) {
 
   // Legacy: alte Platzhalter entfernen falls noch vorhanden
   html = html.replace(/<!-- FOTO_BAND -->/g, "");
-  html = html.replace(/<!-- GALERIE -->/g, "");
+
+  // ── Neue Sections serve-time (Layout-abhaengig) ──
+
+  // CTA-Zwischenblock — Auflockerer zwischen Leistungen und Ablauf
+  if (layout === "ausfuehrlich" && html.includes("<!-- CTA_BLOCK -->")) {
+    const ctaBlock = `<section class="sec-cta-block" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:8px;color:#fff">Bereit f\u00fcr Ihr Projekt?</h2><p style="font-size:.9rem;opacity:.7;margin-bottom:24px">Wir beraten Sie gerne \u2014 kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:var(--r);padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block">Jetzt Kontakt aufnehmen</a></div></section>`;
+    html = html.replace("<!-- CTA_BLOCK -->", ctaBlock);
+  } else {
+    html = html.replace("<!-- CTA_BLOCK -->", "");
+  }
+
+  // FAQ — Haeufig gestellte Fragen
+  const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage) : [];
+  const showFaq = (o.sections_visible && o.sections_visible.faq) || (layout === "ausfuehrlich" && faqItems.length > 0);
+  if (showFaq && faqItems.length > 0 && html.includes("<!-- FAQ -->")) {
+    const items = faqItems.slice(0, 8).map((f, i) =>
+      `<div style="border-bottom:1px solid var(--sep)">` +
+      `<button onclick="var a=this.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';this.querySelector('span:last-child').textContent=open?'+':'\\u2212'" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${f.frage}</span><span style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
+      `<div style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
+      `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${f.antwort || ""}</p>` +
+      `</div></div>`
+    ).join("");
+    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">FAQ</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">H\u00e4ufig gestellte Fragen</h2></div><div style="max-width:720px">${items}</div></div></section>`;
+    html = html.replace("<!-- FAQ -->", section);
+  } else {
+    html = html.replace("<!-- FAQ -->", "");
+  }
+
+  // Galerie — Foto-Grid mit Lightbox
+  const galerieItems = Array.isArray(o.galerie) ? o.galerie.filter(g => g && g.url) : [];
+  const showGalerie = (o.sections_visible && o.sections_visible.galerie) || galerieItems.length > 0;
+  if (showGalerie && galerieItems.length > 0 && html.includes("<!-- GALERIE -->")) {
+    const cols = galerieItems.length <= 2 ? "1fr 1fr" : galerieItems.length <= 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
+    const photos = galerieItems.slice(0, 12).map(g =>
+      `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
+      `<img class="sr-zoom" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+      `</div>`
+    ).join("");
+    const section = `<section class="sec-galerie sr-fade" style="padding:100px 0;background:var(--bg)"><div class="w"><div style="margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">Galerie</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Einblicke in unsere Arbeit</h2></div><div style="display:grid;grid-template-columns:${cols};gap:12px">${photos}</div></div></section>`;
+    html = html.replace("<!-- GALERIE -->", section);
+  } else {
+    html = html.replace("<!-- GALERIE -->", "");
+  }
+
+  // Zahlen & Fakten — Counter-Blocks
+  const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
+  const showFakten = (o.sections_visible && o.sections_visible.fakten) || (layout === "ausfuehrlich" && faktenItems.length > 0);
+  if (showFakten && faktenItems.length > 0 && html.includes("<!-- FAKTEN -->")) {
+    const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
+    const items = faktenItems.slice(0, 4).map(f =>
+      `<div style="text-align:center;padding:20px"><div style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:var(--accent);letter-spacing:-.03em;line-height:1">${f.zahl}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${f.label}</div></div>`
+    ).join("");
+    const section = `<section class="sec-fakten sr-fade" style="padding:80px 0;background:var(--bg)"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
+    html = html.replace("<!-- FAKTEN -->", section);
+  } else {
+    html = html.replace("<!-- FAKTEN -->", "");
+  }
+
+  // Partner & Zertifikate — Logo-Leiste
+  const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && (p.url_logo || p.name)) : [];
+  const showPartner = (o.sections_visible && o.sections_visible.partner) || partnerItems.length > 0;
+  if (showPartner && partnerItems.length > 0 && html.includes("<!-- PARTNER -->")) {
+    const logos = partnerItems.slice(0, 8).map(p => {
+      if (p.url_logo) {
+        return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${p.name || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" onmouseover="this.style.opacity='1';this.style.filter='none'" onmouseout="this.style.opacity='.7';this.style.filter='grayscale(30%)'"></div>`;
+      }
+      return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--r);font-size:.75rem;font-weight:600;color:var(--textMuted)">${p.name}</div>`;
+    }).join("");
+    const section = `<section class="sec-partner" style="padding:48px 0;background:#fff;border-top:1px solid var(--sep)"><div class="w"><div style="text-align:center;margin-bottom:16px;font-size:.72rem;font-weight:600;color:var(--textMuted);text-transform:uppercase;letter-spacing:.1em">Unsere Partner &amp; Zertifizierungen</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${logos}</div></div></section>`;
+    html = html.replace("<!-- PARTNER -->", section);
+  } else {
+    html = html.replace("<!-- PARTNER -->", "");
+  }
 
   // Kontaktformular in die Kontakt-Sektion injizieren (<!-- KONTAKT_FORM --> Platzhalter)
   if (html.includes("<!-- KONTAKT_FORM -->")) {
@@ -410,8 +505,42 @@ export async function onRequestGet({params, env}) {
         `</div></div>`;
     }).join("");
     const n = leistungenArr.length;
-    const gridCols = n === 1 ? "1fr" : n <= 3 ? `repeat(${n},1fr)` : n === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
-    const grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:${gridCols};gap:20px">${cards}</div>`;
+    const useCompact = layout === "kompakt" && n > 7;
+
+    let grid;
+    if (useCompact) {
+      // Kompakt: Nur Icon + Name, kein Text
+      const compactCards = leistungenArr.map((l, i) => {
+        const lCap = l.charAt(0).toUpperCase() + l.slice(1);
+        return `<div class="sr-fade" style="${cardStyle};text-align:center;padding:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">` +
+          `<div style="${iconStyle};margin:0 auto 8px">${checkIcon}</div>` +
+          `<div style="font-size:.85rem;font-weight:700;color:var(--primary)">${lCap}</div>` +
+          `</div>`;
+      }).join("");
+      grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">${compactCards}</div>`;
+    } else if (layout === "ausfuehrlich") {
+      // Ausfuehrlich: Liste mit voller Breite
+      const listCards = leistungenArr.map((l, i) => {
+        const lCap = l.charAt(0).toUpperCase() + l.slice(1);
+        const desc = findInMap(descMap, l) || findInMap(descMap, lCap);
+        const preis = findInMap(preisMap, l) || findInMap(preisMap, lCap);
+        const foto = findInMap(fotoMap, l) || findInMap(fotoMap, lCap);
+        return `<div class="sr-fade" style="${cardStyle};display:grid;grid-template-columns:${foto ? '160px ' : ''}auto 1fr;gap:0;align-items:stretch" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">` +
+          (foto ? `<div style="overflow:hidden"><img src="${foto}" alt="${lCap}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : "") +
+          `<div style="padding:20px 24px;display:flex;align-items:center">` +
+          `<div style="${iconStyle};margin:0 16px 0 0">${checkIcon}</div>` +
+          `<div style="flex:1">` +
+          `<h3 style="color:var(--primary);font-weight:800;margin:0 0 4px;font-size:1.05rem;letter-spacing:-.02em">${lCap}</h3>` +
+          (desc ? `<p style="color:var(--textMuted);margin:0;font-size:.88rem;line-height:1.7">${desc}</p>` : "") +
+          (preis ? `<div style="margin-top:8px;font-size:.88rem;font-weight:700;color:var(--accent)">${preis}</div>` : "") +
+          `</div></div></div>`;
+      }).join("");
+      grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:1fr;gap:14px">${listCards}</div>`;
+    } else {
+      // Standard: Grid
+      const gridCols = n === 1 ? "1fr" : n <= 3 ? `repeat(${n},1fr)` : n === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
+      grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:${gridCols};gap:20px">${cards}</div>`;
+    }
     html = html.replace("<!-- LEISTUNGEN -->", grid);
   }
 
@@ -498,6 +627,10 @@ export async function onRequestGet({params, env}) {
 }
 </style>`;
   html = html.replace("</head>", responsiveStyle + "</head>");
+
+  // ── Stil-Klasse serve-time aktualisieren (erlaubt Stilwechsel ohne Regenerierung) ──
+  const currentStil = o.stil || "klassisch";
+  html = html.replace(/class="stil-\w+"/, `class="stil-${currentStil}"`);
 
   // ── Custom Design serve-time ueberschreiben (Farben, Font, Radius) ──
   const customDesign = [

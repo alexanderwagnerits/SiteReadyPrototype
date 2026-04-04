@@ -28,15 +28,23 @@ Claude generiert NUR Texte (JSON), nicht HTML. Feste HTML/CSS-Templates werden b
 - **elegant**: Anthrazit #292524, Inter, 2px radius, thin-border Cards, font-weight 300
 - **custom**: User-Farbe + Font (20 Google Fonts), 8px radius
 
-### Template-Dispatch (generate-website.js)
+### Unified Template (template.js)
+Ein einziges Template fuer alle Stile. Der Stil wird per CSS-Klasse am `<body>` gesteuert:
 ```
-const builders = { klassisch, modern, elegant };
-const buildTemplate = builders[o.stil] || buildKlassischTemplate;
+<body class="stil-modern">
 ```
-Fuer `custom` wird das Klassisch-Template mit Custom CSS-Variablen verwendet.
+Stil-Wechsel ist serve-time (kein Re-Generate noetig).
+
+### 3 Layouts
+- **standard**: Bewaehrter Aufbau mit allen Basis-Sections
+- **kompakt**: Weniger Text, kompakte Leistungen, kein Ablauf
+- **ausfuehrlich**: FAQ, Zahlen & Fakten, CTA-Block, vertikaler Ablauf
+
+Layout wird per `o.layout` Feld gesteuert und serve-time angewendet.
 
 ### Placeholder-System
 - HTML-Kommentare: `<!-- NAV -->`, `<!-- FOOTER -->`, `<!-- LEISTUNGEN -->`, `<!-- MAPS -->` etc.
+- Neue Section-Placeholders: `<!-- FAQ -->`, `<!-- GALERIE -->`, `<!-- FAKTEN -->`, `<!-- CTA_BLOCK -->`, `<!-- PARTNER -->`
 - Doppel-Klammern: `{{FIRMENNAME}}`, `{{TEL_DISPLAY}}`, `{{UEBER_UNS_TEXT}}` etc.
 - Serve-time Ersetzung in index.js
 
@@ -53,10 +61,8 @@ Fuer `custom` wird das Klassisch-Template mit Custom CSS-Variablen verwendet.
 - public/logo.png - SiteReady Logo (Wortmarke)
 - public/icon.png - SiteReady Icon (SR Monogramm)
 
-### Templates (Kunden-Website)
-- functions/templates/klassisch.js - Klassisch-Template
-- functions/templates/modern.js - Modern-Template
-- functions/templates/elegant.js - Elegant-Template
+### Template (Kunden-Website)
+- functions/templates/template.js - Unified Template (alle 3 Stile per CSS-Klasse)
 
 ### Backend (Cloudflare Functions)
 - functions/api/generate-website.js - Text-Generierung + Template-Befuellung + Nav/Footer Builder

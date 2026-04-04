@@ -175,7 +175,7 @@ const STYLES_MAP={
   custom:{label:"Eigenes Branding",desc:"Ihre Farbe, Ihr Font",primary:"#111111",accent:"#2563eb",accentSoft:"rgba(37,99,235,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#111111",textMuted:"#6b7280",textLight:"#9ca3af",borderColor:"#e5e7eb",font:"'DM Sans',system-ui,sans-serif",radius:"8px",radiusLg:"12px",heroGradient:"linear-gradient(160deg,#111111 0%,#1f1f1f 50%,#333333 100%)",heroOverlay:"none",shadow:"0 1px 3px rgba(0,0,0,0.05)",badgeBg:"#f3f4f6",badgeText:"#374151",btnRadius:"8px",cardBorder:true,cardShadow:false,badgeRadius:"8px",sectionDivider:false,spacing:"normal"},
 };
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
-const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",customColor:"#2563eb",customFont:"dm_sans"};
+const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",layout:"standard",customColor:"#2563eb",customFont:"dm_sans"};
 
 /* ═══ TOKENS ═══ */
 const T={bg:"#F5F5F2",bg2:"#EEEEE9",bg3:"#E0E0DB",white:"#ffffff",dark:"#111111",dark2:"#2B2F36",text:"#2B2F36",textSub:"#4A4F5A",textMuted:"#505560",accent:"#8FA3B8",accentLight:"rgba(143,163,184,0.1)",accentGlow:"rgba(143,163,184,0.15)",cta:"#111111",ctaLight:"rgba(17,17,17,0.06)",green:"#16a34a",greenLight:"#f0fdf4",greenGlow:"rgba(22,163,74,0.1)",red:"#dc2626",orange:"#ea580c",r:"12px",rSm:"8px",rLg:"16px",rXl:"20px",font:"'DM Sans',-apple-system,sans-serif",mono:"'JetBrains Mono',monospace",sh1:"0 1px 2px rgba(0,0,0,0.04)",sh2:"0 4px 24px rgba(0,0,0,0.06)",sh3:"0 16px 48px rgba(0,0,0,0.08)",sh4:"0 24px 80px rgba(0,0,0,0.12)"};
@@ -765,7 +765,7 @@ function SuccessPage({data,onBack,onPortal}){
       zvr_zahl:data.zvr_zahl,vertretungsorgane:data.vertretungsorgane,gesellschafter:data.gesellschafter,
       unternehmensgegenstand:data.unternehmensgegenstand,liquidation:data.liquidation,
       kammer_berufsrecht:data.kammer_berufsrecht,aufsichtsbehoerde:data.aufsichtsbehoerde,
-      stil:data.stil,custom_color:data.customColor||null,custom_font:data.customFont||null,fotos:data.fotos,subdomain:sub,status:"pending",
+      stil:data.stil,layout:data.layout||null,custom_color:data.customColor||null,custom_font:data.customFont||null,fotos:data.fotos,subdomain:sub,status:"pending",
       facebook:data.facebook||null,instagram:data.instagram||null,linkedin:data.linkedin||null,tiktok:data.tiktok||null,
       oeffnungszeiten_custom:data.oeffnungszeitenCustom||null,
       ...(data.importExtras?.spezialisierung?{spezialisierung:data.importExtras.spezialisierung}:{}),
@@ -1271,33 +1271,92 @@ function Questionnaire({data,setData,onComplete,onBack}){
       </div>
       {ftr(true,()=>go(5),"Weiter",!sv4)}
     </div>
-    {/* 5: Design */}
+    {/* 5: Design — Branchen-Vorlagen */}
     <div id="q-sec-5" className={`q-section${step===5?" q-vis":""}`}>
-      {hdr("Design","Design",<>Basierend auf Ihrer Branche empfehlen wir: <strong style={{color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</strong></>)}
+      {hdr("Design","Welcher Typ Website passt zu Ihnen?","W\u00e4hlen Sie eine Vorlage \u2014 Sie k\u00f6nnen alles sp\u00e4ter im Portal anpassen.")}
       <div className="q-mb" style={{maxWidth:900}}>
-        <div className="q-split">
-          <div>
-            <StylePicker value={data.stil} onChange={up("stil")}/>
-            <div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Stil jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Im Self-Service-Portal können Sie Design, Farben und Schrift jederzeit anpassen.</div></div>
-          </div>
-          {data.stil==="custom"&&<div className="q-split-right">
-            <div className="q-split-title">Eigenes Branding</div>
-            <div style={{marginBottom:18}}>
-              <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Primärfarbe</label>
-              <div style={{background:T.white,border:`2px solid ${T.bg3}`,borderRadius:T.r,padding:18}}>
-                <div className="q-color-row">
-                  {["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} className={`q-color-dot${data.customColor===c?" q-sel":""}`} style={{background:c}} onClick={()=>{up("customColor")(c);setHexInput(c.toUpperCase())}}/>)}
-                </div>
-                <div className="q-color-custom">
-                  <input type="color" value={data.customColor} onChange={e=>{up("customColor")(e.target.value);setHexInput(e.target.value.toUpperCase())}} style={{width:40,height:40,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
-                  <input className="q-hex" value={hexInput} maxLength={7} onChange={e=>{const v=e.target.value;setHexInput(v);if(/^#[0-9A-Fa-f]{6}$/.test(v))up("customColor")(v)}} placeholder="#000000"/>
-                  <div style={{width:24,height:24,borderRadius:6,background:data.customColor,border:"1px solid rgba(0,0,0,.1)",marginLeft:"auto"}}/>
+        {(()=>{
+          const gruppe=(BRANCHEN.find(x=>x.value===data.branche)||{}).gruppe||"handwerk";
+          const VORLAGEN_MAP={
+            handwerk:[
+              {stil:"klassisch",layout:"standard",label:"Professionell",desc:"Seri\u00f6s und klar strukturiert. Klassisches Layout mit allen wichtigen Bereichen.",color:"#0f2b5b",accent:"#2563eb",tags:["Leistungen","Ablauf","Bewertungen"]},
+              {stil:"modern",layout:"kompakt",label:"Frisch & klar",desc:"Modern und \u00fcbersichtlich. Ideal wenn Sie viele Leistungen anbieten.",color:"#0f172a",accent:"#6366f1",tags:["Kompakte Leistungen","Slider"]},
+              {stil:"elegant",layout:"ausfuehrlich",label:"Premium",desc:"Hochwertig und ausf\u00fchrlich. Mit FAQ, Zahlen und mehr Details.",color:"#292524",accent:"#78716c",tags:["FAQ","Fakten","Details"]},
+            ],
+            kosmetik:[
+              {stil:"modern",layout:"standard",label:"Einladend",desc:"Frisch und modern. Perfekt f\u00fcr Salons und Praxen.",color:"#0f172a",accent:"#6366f1",tags:["Galerie","Bewertungen"]},
+              {stil:"klassisch",layout:"kompakt",label:"Auf den Punkt",desc:"\u00dcbersichtlich mit allen Leistungen auf einen Blick.",color:"#0f2b5b",accent:"#2563eb",tags:["Kompakte Leistungen"]},
+              {stil:"elegant",layout:"ausfuehrlich",label:"Exklusiv",desc:"Premium-Auftritt mit Geschichte und Details.",color:"#292524",accent:"#78716c",tags:["FAQ","Fakten","Story"]},
+            ],
+            gastro:[
+              {stil:"modern",layout:"standard",label:"Einladend",desc:"Warm und modern. Zeigt Ihr Angebot appetitlich.",color:"#0f172a",accent:"#6366f1",tags:["Galerie","Bewertungen"]},
+              {stil:"klassisch",layout:"kompakt",label:"Auf den Punkt",desc:"Kompakt mit Speisekarte und Reservierung.",color:"#0f2b5b",accent:"#2563eb",tags:["Kompakte Karte"]},
+              {stil:"elegant",layout:"ausfuehrlich",label:"Exklusiv",desc:"Fine Dining-Stil mit Geschichte und Ambiance.",color:"#292524",accent:"#78716c",tags:["Story","Galerie","FAQ"]},
+            ],
+            gesundheit:[
+              {stil:"klassisch",layout:"ausfuehrlich",label:"Vertrauensvoll",desc:"Seri\u00f6s mit FAQ, Team und allen Details.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Team","Fakten"]},
+              {stil:"modern",layout:"standard",label:"Freundlich",desc:"Modern und einladend. Baut Vertrauen auf.",color:"#0f172a",accent:"#6366f1",tags:["Bewertungen","Ablauf"]},
+              {stil:"elegant",layout:"kompakt",label:"Klar & ruhig",desc:"Minimalistisch und beruhigend. Auf das Wesentliche reduziert.",color:"#292524",accent:"#78716c",tags:["Kompakt","Ruhig"]},
+            ],
+            dienstleistung:[
+              {stil:"klassisch",layout:"ausfuehrlich",label:"Kompetent",desc:"Ausf\u00fchrlich und professionell. Ideal f\u00fcr Berater und Kanzleien.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Fakten","Details"]},
+              {stil:"modern",layout:"standard",label:"Dynamisch",desc:"Frisch und modern. F\u00fcr kreative und junge Unternehmen.",color:"#0f172a",accent:"#6366f1",tags:["Bewertungen","Ablauf"]},
+              {stil:"elegant",layout:"kompakt",label:"Premium",desc:"Hochwertig und kompakt. Weniger ist mehr.",color:"#292524",accent:"#78716c",tags:["Kompakt","Edel"]},
+            ],
+            bildung:[
+              {stil:"modern",layout:"standard",label:"Motivierend",desc:"Modern und einladend. Zeigt Ihr Angebot klar.",color:"#0f172a",accent:"#6366f1",tags:["Ablauf","Bewertungen"]},
+              {stil:"klassisch",layout:"ausfuehrlich",label:"Informativ",desc:"Ausf\u00fchrlich mit FAQ und allen Details.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Fakten","Ablauf"]},
+              {stil:"elegant",layout:"kompakt",label:"Klar",desc:"Reduziert und \u00fcbersichtlich.",color:"#292524",accent:"#78716c",tags:["Kompakt"]},
+            ],
+          };
+          const vorlagen=VORLAGEN_MAP[gruppe]||VORLAGEN_MAP.handwerk;
+          const isCustom=data.stil==="custom";
+          const activeIdx=isCustom?-1:vorlagen.findIndex(v=>v.stil===data.stil&&v.layout===(data.layout||"standard"));
+          return<div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+              {vorlagen.map((v,i)=>{
+                const active=i===activeIdx;
+                return<button key={i} onClick={()=>{up("stil")(v.stil);up("layout")(v.layout);}} style={{padding:"24px 20px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
+                  <div style={{display:"flex",gap:6,marginBottom:14}}>
+                    <div style={{width:32,height:32,borderRadius:6,background:`linear-gradient(135deg,${v.color},${v.accent})`}}/>
+                  </div>
+                  <div style={{fontSize:".95rem",fontWeight:800,color:T.dark,marginBottom:4}}>{v.label}</div>
+                  <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.55,marginBottom:12}}>{v.desc}</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                    {v.tags.map(t=><span key={t} style={{fontSize:".65rem",padding:"3px 8px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}
+                  </div>
+                  {active&&<div style={{position:"absolute",top:12,right:12,width:22,height:22,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800}}>{"\u2713"}</div>}
+                </button>;
+              })}
+            </div>
+            {/* Custom-Option */}
+            <button onClick={()=>up("stil")("custom")} style={{marginTop:12,display:"flex",alignItems:"center",gap:12,padding:"14px 18px",border:isCustom?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:isCustom?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,width:"100%",transition:"all .15s",boxShadow:isCustom?T.sh2:"none"}}>
+              <div style={{width:32,height:32,borderRadius:6,background:"conic-gradient(from 0deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)",flexShrink:0}}/>
+              <div style={{flex:1}}>
+                <div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Eigenes Branding</div>
+                <div style={{fontSize:".75rem",color:T.textMuted}}>W\u00e4hlen Sie Ihre eigene Farbe und Schrift</div>
+              </div>
+              {isCustom&&<div style={{width:22,height:22,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>{"\u2713"}</div>}
+            </button>
+            {isCustom&&<div style={{marginTop:14,padding:"20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
+              <div style={{marginBottom:18}}>
+                <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Prim\u00e4rfarbe</label>
+                <div style={{background:T.white,border:`2px solid ${T.bg3}`,borderRadius:T.r,padding:18}}>
+                  <div className="q-color-row">
+                    {["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} className={`q-color-dot${data.customColor===c?" q-sel":""}`} style={{background:c}} onClick={()=>{up("customColor")(c);setHexInput(c.toUpperCase())}}/>)}
+                  </div>
+                  <div className="q-color-custom">
+                    <input type="color" value={data.customColor} onChange={e=>{up("customColor")(e.target.value);setHexInput(e.target.value.toUpperCase())}} style={{width:40,height:40,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
+                    <input className="q-hex" value={hexInput} maxLength={7} onChange={e=>{const v=e.target.value;setHexInput(v);if(/^#[0-9A-Fa-f]{6}$/.test(v))up("customColor")(v)}} placeholder="#000000"/>
+                    <div style={{width:24,height:24,borderRadius:6,background:data.customColor,border:"1px solid rgba(0,0,0,.1)",marginLeft:"auto"}}/>
+                  </div>
                 </div>
               </div>
-            </div>
-            <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
-          </div>}
-        </div>
+              <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird f\u00fcr \u00dcberschriften und Text verwendet"/>
+            </div>}
+            <div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit \u00e4nderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Design, Layout, Farben und Schrift k\u00f6nnen Sie im Portal jederzeit anpassen.</div></div>
+          </div>;
+        })()}
       </div>
       {ftr(true,()=>go(6),"Weiter")}
     </div>
@@ -1313,7 +1372,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Leistungen</span><span style={{fontWeight:600,color:T.dark}}>{(data.leistungen?.length||0)+(data.extraLeistung?.split(",").filter(s=>s.trim()).length||0)} ausgewählt</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Kontakt</span><span style={{fontWeight:600,color:T.dark}}>{data.telefon||"–"}</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Impressum</span><span style={{fontWeight:600,color:T.dark}}>{uf?UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf:"–"}{legalOk&&impressumConfirm?" – vollständig":""}</span></div>
-            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}{data.layout&&data.layout!=="standard"?` \u2014 ${data.layout==="kompakt"?"Auf den Punkt":"Ausf\u00fchrlich"}`:""}</span></div>
           </div>
         </div>
         <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
@@ -1558,6 +1617,10 @@ function Portal({session,onLogout}){
       custom_bg:order.custom_bg||null,custom_text:order.custom_text||null,
       custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,
       custom_font:order.custom_font||null,custom_radius:order.custom_radius||null,
+      layout:order.layout||null,
+      faq:order.faq||null,galerie:order.galerie||null,
+      fakten:order.fakten||null,partner:order.partner||null,
+      sections_visible:order.sections_visible||null,
       spezialisierung:order.spezialisierung||null,berufsregister_nr:order.berufsregister_nr||null,
       zertifiziert:order.zertifiziert,ratenzahlung:order.ratenzahlung,gutscheine:order.gutscheine,
       unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,
@@ -1750,6 +1813,7 @@ function Portal({session,onLogout}){
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
     {label:"Kundenbewertungen hinzufügen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
     {label:"WhatsApp-Button aktivieren",done:!!order.whatsapp,page:"kontakt",isNew:true},
+    {label:"Layout & Design anpassen",done:!!(order.layout||order.custom_color||order.custom_font),page:"design",isNew:true},
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;
@@ -2532,6 +2596,42 @@ function Portal({session,onLogout}){
               </div>
 
               {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{marginTop:16,padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}
+          </div>
+
+          {/* ── Layout — Seitenaufbau ── */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Layout \u2014 Wie Ihre Website aufgebaut ist" desc="Bestimmt welche Bereiche Ihre Website hat und wie Inhalte angeordnet sind. \u00c4nderungen sind sofort sichtbar."/>
+            {(()=>{
+              const LAYOUTS=[
+                {value:"standard",label:"\u00dcbersichtlich",desc:"Der bew\u00e4hrte Aufbau \u2014 alle wichtigen Infos klar strukturiert.",icon:"\u2630"},
+                {value:"kompakt",label:"Auf den Punkt",desc:"Weniger Text, mehr \u00dcberblick \u2014 ideal bei vielen Leistungen.",icon:"\u25a6"},
+                {value:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Erz\u00e4hlt mehr \u00fcber Sie \u2014 mit h\u00e4ufigen Fragen, Zahlen und Details.",icon:"\u2637"},
+              ];
+              const currentLayout=order.layout||"standard";
+              return<>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
+                  {LAYOUTS.map(lo=>{
+                    const active=lo.value===currentLayout;
+                    return<button key={lo.value} onClick={()=>upOrder("layout")(lo.value)} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"center",fontFamily:T.font,transition:"border-color .15s"}}>
+                      <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.5}}>{lo.icon}</div>
+                      <div style={{fontSize:".88rem",fontWeight:700,color:T.dark,marginBottom:4}}>{lo.label}</div>
+                      <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{lo.desc}</div>
+                    </button>;
+                  })}
+                </div>
+
+                {/* Zusaetzliche Bereiche */}
+                <div style={{marginTop:8}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Zus\u00e4tzliche Bereiche</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    <Toggle label="H\u00e4ufige Fragen (FAQ)" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.faq)&&order.faq.length>0?`${order.faq.length} Fragen angelegt`:"Automatisch generierte Fragen zu Ihrem Betrieb"}/>
+                    <Toggle label="Galerie" checked={!!(order.sections_visible&&order.sections_visible.galerie)} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.galerie)&&order.galerie.length>0?`${order.galerie.length} Fotos`:"Zeigen Sie Ihre Arbeit \u2014 Fotos unter Medien hochladen"}/>
+                    <Toggle label="Zahlen & Fakten" checked={!!(order.sections_visible&&order.sections_visible.fakten)} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.fakten)&&order.fakten.length>0?`${order.fakten.length} Fakten`:"z.B. \u201e15+ Jahre\u201c, \u201e2.000+ Kunden\u201c"}/>
+                    <Toggle label="Partner & Zertifikate" checked={!!(order.sections_visible&&order.sections_visible.partner)} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc={Array.isArray(order.partner)&&order.partner.length>0?`${order.partner.length} Partner`:"Logos von Partnern, Zertifizierungen, Verb\u00e4nden"}/>
+                  </div>
+                </div>
+              </>;
+            })()}
           </div>
         </div>;})()}
         {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);return<>

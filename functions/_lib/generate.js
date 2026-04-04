@@ -376,9 +376,17 @@ JSON-FORMAT:
   "kontakt_cta_headline": "Kurze Headline fuer die Kontakt-CTA-Karte",
   "kontakt_cta_text": "1-2 Saetze Motivation zur Kontaktaufnahme",
   "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"},{"titel":"Schritt 2","text":"Kurze Beschreibung"},{"titel":"Schritt 3","text":"Kurze Beschreibung"}],
-  "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3"
+  "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3"${(o.layout === "ausfuehrlich") ? `,
+  "faq": [{"frage":"Haeufige Frage 1?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 2?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 3?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 4?","antwort":"Antwort in 1-2 Saetzen"}]` : ""}
 }
-
+${(o.layout === "ausfuehrlich") ? `
+ZUSAETZLICHE REGELN fuer faq:
+- 4-5 branchenspezifische Fragen die Kunden haeufig stellen
+- Antworten: 1-2 kurze, hilfreiche Saetze
+- Keine Floskeln, nur konkrete Informationen
+- Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
+- Beispiel Friseur: "Muss ich einen Termin vereinbaren?" - "Wir empfehlen eine Terminvereinbarung, nehmen aber nach Verfuegbarkeit auch Walk-ins an."
+` : ""}
 ZUSAETZLICHE REGELN fuer ablauf_schritte:
 - 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit ablaeuft
 - Titel: 2-4 Woerter. Text: 1 kurzer Satz, max 10 Woerter
@@ -433,11 +441,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   }
 
   /* ═══ TEMPLATE BEFUELLEN ═══ */
-  const { buildKlassischTemplate } = await import("../templates/klassisch.js");
-  const { buildModernTemplate }   = await import("../templates/modern.js");
-  const { buildElegantTemplate }  = await import("../templates/elegant.js");
-  const templateBuilders = { klassisch: buildKlassischTemplate, modern: buildModernTemplate, elegant: buildElegantTemplate };
-  const buildTemplate = templateBuilders[o.stil] || buildKlassischTemplate;
+  const { buildTemplate } = await import("../templates/template.js");
 
   let html = buildTemplate({
     firmenname: o.firmenname,
@@ -472,6 +476,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     kontaktCtaText: texts.kontakt_cta_text || "Wir freuen uns auf Ihre Anfrage.",
     borderRadius: stil.r || null,
     borderRadiusLg: stil.rLg || null,
+    stil: o.stil || "klassisch",
   });
 
   /* ─── Nav + Footer injizieren ─── */
@@ -511,6 +516,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
     ...(!o.ablauf_schritte?.length && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
     ...(!o.gut_zu_wissen && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
+    ...(!o.faq?.length && texts.faq?.length ? {faq: texts.faq} : {}),
   };
 
   const save = await fetch(

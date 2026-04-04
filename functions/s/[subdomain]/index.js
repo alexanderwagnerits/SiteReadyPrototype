@@ -301,7 +301,7 @@ export async function onRequestGet({params, env}) {
   }
 
   // FAQ — Haeufig gestellte Fragen
-  const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage) : [];
+  const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage && f.antwort) : [];
   const showFaq = (o.sections_visible && o.sections_visible.faq) || (layout === "ausfuehrlich" && faqItems.length > 0);
   if (showFaq && faqItems.length > 0 && html.includes("<!-- FAQ -->")) {
     const items = faqItems.slice(0, 8).map((f, i) =>

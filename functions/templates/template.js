@@ -305,6 +305,17 @@ a{color:inherit}
 .sec-partner{padding:60px 0;background:#fff;border-top:1px solid var(--sep)}
 .sec-cta-block{padding:80px 0;text-align:center}
 @media(min-width:900px){.sec-faq{padding:140px 0}.sec-galerie{padding:140px 0}}
+
+/* New Sections — Modern */
+.stil-modern .sec-cta-block .btn{border-radius:100px;box-shadow:0 4px 16px rgba(99,102,241,.3)}
+.stil-modern .sec-cta-block .btn:hover{transform:translateY(-1px)}
+.stil-modern .sec-partner{border-top:none}
+
+/* New Sections — Elegant */
+.stil-elegant .sec-faq{padding:100px 0}
+.stil-elegant .sec-fakten{padding:80px 0}
+.stil-elegant .sec-cta-block{padding:80px 0}
+.stil-elegant .sec-partner{border-top:1px solid var(--sep)}
 </style>
 </head>
 <body class="${stilClass}">

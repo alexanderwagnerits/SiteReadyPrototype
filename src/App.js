@@ -2612,7 +2612,7 @@ function Portal({session,onLogout}){
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
                   {LAYOUTS.map(lo=>{
                     const active=lo.value===currentLayout;
-                    return<button key={lo.value} onClick={()=>upOrder("layout")(lo.value)} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s",position:"relative"}}>
+                    return<button key={lo.value} onClick={()=>{upOrder("layout")(lo.value);if(lo.value==="ausfuehrlich"){const sv={...(order.sections_visible||{}),faq:true,fakten:true};upOrder("sections_visible")(sv);}}} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s",position:"relative"}}>
                       <div style={{fontSize:".88rem",fontWeight:700,color:T.dark,marginBottom:4}}>{lo.label}</div>
                       <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5,marginBottom:10}}>{lo.desc}</div>
                       <div style={{display:"flex",flexWrap:"wrap",gap:4}}>

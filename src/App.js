@@ -1817,7 +1817,7 @@ function Portal({session,onLogout}){
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;
-  const wizardAllDone=wizardDoneCount>=wizardTotal;
+  const wizardAllDone=wizardDoneCount>=wizardTotal&&wizardOptional.every(s=>s.done);
   const wizardCurrentIdx=wizardSteps.findIndex(s=>!s.done);
   /* legacy compat */
   const astItems=order?[

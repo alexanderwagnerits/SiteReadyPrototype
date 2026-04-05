@@ -248,7 +248,7 @@ const CUSTOM_FONT_FAMILIES = {
 };
 
 function buildCustomStil(o) {
-  const p = o.custom_color || "#2563eb";
+  const p = o.custom_color || "#094067";
   const a = o.custom_accent || p; // Accent = eigene Farbe oder Primary als Fallback
   const bg = o.custom_bg || "#fafafa";
   const s = o.custom_sep || "#e5e7eb";

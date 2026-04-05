@@ -892,8 +892,9 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
   }
 
+  // Style-Override am Ende des body (damit es ALLE vorherigen :root ueberschreibt)
   const overrideStyle = `<style>${fontImport}:root{${customDesign.join(";")}}</style>`;
-  html = html.replace("</head>", overrideStyle + "</head>");
+  html = html.replace("</body>", overrideStyle + "\n</body>");
 
   // ── WhatsApp Floating Button ──
   if (o.whatsapp) {

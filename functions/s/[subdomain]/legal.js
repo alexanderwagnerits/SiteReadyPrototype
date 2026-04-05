@@ -1,10 +1,10 @@
 const STIL_CONFIG = {
-  klassisch:    {p:"#0f2b5b",a:"#2563eb",bg:"#f8fafc",s:"#e2e8f0",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
-  modern:       {p:"#0f172a",a:"#6366f1",bg:"#fafafa",s:"#f0f0f0",font:"Plus Jakarta Sans",url:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",r:"12px"},
-  elegant:      {p:"#292524",a:"#78716c",bg:"#fafaf9",s:"#e7e5e4",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"2px"},
-  custom:       {p:"#111111",a:"#2563eb",bg:"#fafafa",s:"#e5e7eb",font:"DM Sans",url:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",r:"8px"},
-  professional: {p:"#0f2b5b",a:"#2563eb",bg:"#f8fafc",s:"#e2e8f0",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
-  traditional:  {p:"#292524",a:"#78716c",bg:"#fafaf9",s:"#e7e5e4",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"2px"},
+  klassisch:    {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
+  modern:       {p:"#18181b",a:"#4f46e5",bg:"#fafafa",s:"#e4e4e7",font:"Plus Jakarta Sans",url:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",r:"12px"},
+  elegant:      {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"2px"},
+  custom:       {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",font:"DM Sans",url:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",r:"8px"},
+  professional: {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
+  traditional:  {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"2px"},
 };
 
 function buildImpressumRows(o) {

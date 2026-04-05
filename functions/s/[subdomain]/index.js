@@ -802,7 +802,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   return new Response(html, {
     status: 200,
-    headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60"},
+    headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache, no-store, must-revalidate"},
   });
 }
 

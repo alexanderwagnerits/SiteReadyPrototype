@@ -1870,11 +1870,11 @@ function Portal({session,onLogout}){
     return <div style={{display:"flex",gap:10,marginBottom:24}}>{opts.map(v=>{
       const active=current===v.value;
       return <button key={v.value} onClick={()=>setOrder(o=>({...o,[field]:v.value}))} style={{
-        flex:1,padding:"14px 12px",border:active?"2px solid "+T.accent:"1.5px solid "+T.sep,borderRadius:T.rSm,
-        background:active?"rgba(99,102,241,.06)":"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",
+        flex:1,padding:"14px 12px",border:active?"2px solid "+T.accent:"1.5px solid "+T.bg3,borderRadius:T.rSm,
+        background:active?"rgba(143,163,184,.08)":"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",
       }}>
-        <div style={{fontSize:".82rem",fontWeight:700,color:active?T.accent:T.fg,marginBottom:2}}>{v.label}</div>
-        <div style={{fontSize:".72rem",color:T.fgMuted,lineHeight:1.4}}>{v.desc}</div>
+        <div style={{fontSize:".82rem",fontWeight:700,color:active?T.accent:T.dark,marginBottom:2}}>{v.label}</div>
+        <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>{v.desc}</div>
       </button>;
     })}</div>;
   };
@@ -2301,7 +2301,7 @@ function Portal({session,onLogout}){
         {page==="hero"&&<>
           {/* Hero-Variante */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Hero-Layout</div>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Hero-Layout</div>
             <VariantPicker section="hero" field="hero_variante"/>
           </div>
           {/* Logo upload */}
@@ -2433,7 +2433,7 @@ function Portal({session,onLogout}){
         {page==="kontakt"&&<>
           {/* Kontakt-Variante */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Kontakt-Layout</div>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Kontakt-Layout</div>
             <VariantPicker section="kontakt" field="kontakt_variante"/>
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2532,7 +2532,7 @@ function Portal({session,onLogout}){
             </div>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Über-uns-Layout</div>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Über-uns-Layout</div>
             <VariantPicker section="ueber" field="ueber_variante"/>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2579,7 +2579,7 @@ function Portal({session,onLogout}){
           {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Bewertungen-Layout</div>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Bewertungen-Layout</div>
           <VariantPicker section="bewertungen" field="bewertungen_variante"/>
           <SectionHeader label="Kundenbewertungen" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
           {!(order.bewertungen||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Bewertungen hinzugefügt.</div>}
@@ -2612,7 +2612,7 @@ function Portal({session,onLogout}){
             <button disabled={faqGenerating} onClick={async()=>{
               setFaqGenerating(true);
               try{
-                const res=await fetch("/api/generate-faq",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:order.id})});
+                const res=await fetch("/api/generate-faq",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${session?.access_token||""}`},body:JSON.stringify({order_id:order.id})});
                 const data=await res.json();
                 if(data.faq){upOrder("faq")(data.faq);showToast("FAQ generiert");}
                 else{showToast("Fehler: "+(data.error||"Unbekannt"));}

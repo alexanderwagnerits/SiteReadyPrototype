@@ -56,6 +56,12 @@ export async function onRequestGet({params, env}) {
   let html = rows[0].website_html;
   const o = rows[0];
 
+  // ── Section-Varianten lesen (frueh, damit alle Abschnitte darauf zugreifen koennen) ──
+  const heroVariante = o.hero_variante || "standard";
+  const bewertungenVariante = o.bewertungen_variante || "karten";
+  const ueberVariante = o.ueber_variante || "standard";
+  const kontaktVariante = o.kontakt_variante || "standard";
+
   // Trust-Leiste serve-time (live updates bei Feature-Aenderungen)
   if (html.includes("<!-- TRUST -->")) {
     const tIcon = (svg) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg>`;
@@ -230,6 +236,7 @@ export async function onRequestGet({params, env}) {
 </style>`;
     html = html.replace("</head>", storyStyle + "</head>");
   } else if (ueberVariante === "team-fokus" && teamMembers.length > 0) {
+    // Nur wenn Team-Members vorhanden, sonst bleibt Standard
     // Team-Fokus: Team prominent oben, Text kompakt zentriert
     const teamGrid = teamMembers.slice(0, 6).map(m => {
       const hasImg = !!m.foto;
@@ -254,12 +261,6 @@ export async function onRequestGet({params, env}) {
 
   // ── Layout-Feld lesen (bestimmt Section-Varianten) ──
   const layout = o.layout || "standard";
-
-  // ── Section-Varianten lesen ──
-  const heroVariante = o.hero_variante || "standard";
-  const bewertungenVariante = o.bewertungen_variante || "karten";
-  const ueberVariante = o.ueber_variante || "standard";
-  const kontaktVariante = o.kontakt_variante || "standard";
 
   // Ablauf-Section — "So laeuft es ab" zwischen Leistungen und Ueber uns
   const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
@@ -388,13 +389,11 @@ export async function onRequestGet({params, env}) {
 
   // ── Kontakt-Variante serve-time anwenden ──
   if (kontaktVariante === "karte-gross") {
-    // Karte-Gross: Karte oben, Info als Icon-Leiste darunter
+    // Karte-Gross: Karte oben volle Breite, dann Info + Formular
     const kgStyle = `<style>
-.kontakt-grid{display:block!important}
-.kontakt .kontakt-grid>div:first-child{margin-bottom:24px}
-.kontakt .kontakt-grid>div:last-child{margin-bottom:24px}
-.kontakt-grid>div:last-child{order:-1}
-.kontakt-grid>div:last-child iframe{height:240px!important}
+.kontakt-grid{display:flex!important;flex-direction:column-reverse;gap:24px}
+.kontakt-grid>div:last-child iframe{height:240px!important;border-radius:var(--rLg,8px)}
+@media(min-width:900px){.kontakt-grid{gap:32px}}
 </style>`;
     html = html.replace("</head>", kgStyle + "</head>");
   } else if (kontaktVariante === "kompakt") {

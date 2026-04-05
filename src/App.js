@@ -161,7 +161,7 @@ const BRANCHEN = [
   { value:"reitschule",      label:"Reitschule / Reitstall",            gruppe:"bildung",leistungen:["Reitunterricht","Longierstunden","Ausritte","Ferienkurse","Pferdeeinstellung","Beritt"],stil:"elegant" },
   { value:"schwimmschule",   label:"Schwimmschule",                     gruppe:"bildung",leistungen:["Babyschwimmen","Kinderschwimmkurse","Erwachsenenkurse","Techniktraining","Aquafitness","Einzelunterricht"],stil:"modern" },
   // Sonstige
-  { value:"sonstige",        label:"Anderer Beruf (nicht in der Liste)",gruppe:"",leistungen:[],stil:"klassisch" },
+  { value:"sonstige",        label:"Anderer Beruf (nicht in der Liste)",gruppe:"sonstige",leistungen:[],stil:"klassisch" },
 ];
 const getBrancheFeatures=b=>{const br=BRANCHEN.find(x=>x.value===b);if(!br)return[];const g=BRANCHEN_GRUPPEN[br.gruppe];return[...FT_ALLGEMEIN,...(g?.features||[])]};
 const getBrancheGruppe=b=>{const br=BRANCHEN.find(x=>x.value===b);return br?.gruppe?BRANCHEN_GRUPPEN[br.gruppe]:null};
@@ -1308,8 +1308,13 @@ function Questionnaire({data,setData,onComplete,onBack}){
               {stil:"klassisch",layout:"ausfuehrlich",label:"Informativ",desc:"Ausf\u00fchrlich mit FAQ und allen Details.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Fakten","Ablauf"]},
               {stil:"elegant",layout:"kompakt",label:"Klar",desc:"Reduziert und \u00fcbersichtlich.",color:"#292524",accent:"#78716c",tags:["Kompakt"]},
             ],
+            sonstige:[
+              {stil:"klassisch",layout:"standard",label:"Klassisch",desc:"Zeitlos und seri\u00f6s. Passt zu jedem Betrieb.",color:"#0f2b5b",accent:"#2563eb",tags:["Leistungen","Ablauf","Bewertungen"]},
+              {stil:"modern",layout:"standard",label:"Modern",desc:"Frisch und einladend. F\u00fcr einen modernen Auftritt.",color:"#0f172a",accent:"#6366f1",tags:["Bewertungen","Ablauf"]},
+              {stil:"elegant",layout:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Hochwertig mit allen Details. FAQ, Zahlen und mehr.",color:"#292524",accent:"#78716c",tags:["FAQ","Fakten","Details"]},
+            ],
           };
-          const vorlagen=VORLAGEN_MAP[gruppe]||VORLAGEN_MAP.handwerk;
+          const vorlagen=VORLAGEN_MAP[gruppe]||VORLAGEN_MAP.sonstige;
           const isCustom=data.stil==="custom";
           const activeIdx=isCustom?-1:vorlagen.findIndex(v=>v.stil===data.stil&&v.layout===(data.layout||"standard"));
           return<div>
@@ -1515,13 +1520,14 @@ function CropModal({file,aspectKey,onConfirm,onCancel}){
 /* ═══ PORTAL DASHBOARD ═══ */
 function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
-  const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",branchenfeatures:"website",medien:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
+  const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",branchenfeatures:"website",medien:"website",faq:"website",fakten:"website",partner:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
   const tab=PAGE_TAB[page]||"website";
   const nav=p=>{setPage(p==="domain"?"seo":p);setPtSbOpen(false);};
   const[order,setOrder]=useState(null);
   const originalOrderRef=useRef(null);
   const[saving,setSaving]=useState(false);
   const[uploading,setUploading]=useState({});
+  const[faqGenerating,setFaqGenerating]=useState(false);
   const[assetUrls,setAssetUrls]=useState({});
   const[invoices,setInvoices]=useState(null);
   const[supportSubject,setSupportSubject]=useState("");
@@ -1618,6 +1624,10 @@ function Portal({session,onLogout}){
       custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,
       custom_font:order.custom_font||null,custom_radius:order.custom_radius||null,
       layout:order.layout||null,
+      hero_variante:order.hero_variante||null,
+      bewertungen_variante:order.bewertungen_variante||null,
+      ueber_variante:order.ueber_variante||null,
+      kontakt_variante:order.kontakt_variante||null,
       faq:order.faq||null,galerie:order.galerie||null,
       fakten:order.fakten||null,partner:order.partner||null,
       sections_visible:order.sections_visible||null,
@@ -1831,6 +1841,44 @@ function Portal({session,onLogout}){
   ]:[];
   const astScore=astItems.filter(i=>!i.optional).reduce((s,i)=>s+(i.done?i.pts:0),0);
   const astDone=wizardAllDone;
+  // ── Varianten-Auswahl Komponente ──
+  const VARIANTEN={
+    hero:[
+      {value:"standard",label:"Standard",desc:"Vollflächig, Text links"},
+      {value:"split",label:"Split",desc:"Text links, Bild rechts"},
+      {value:"minimal",label:"Minimal",desc:"Kein Bild, zentriert"},
+    ],
+    bewertungen:[
+      {value:"karten",label:"Karten",desc:"Nebeneinander als Cards"},
+      {value:"highlight",label:"Highlight",desc:"Eine Bewertung groß, Rest klein"},
+      {value:"liste",label:"Liste",desc:"Kompakt untereinander"},
+    ],
+    ueber:[
+      {value:"standard",label:"Standard",desc:"Text + Vorteile"},
+      {value:"story",label:"Geschichte",desc:"Gründergeschichte mit Foto"},
+      {value:"team-fokus",label:"Team-Fokus",desc:"Team prominent, Text kompakt"},
+    ],
+    kontakt:[
+      {value:"standard",label:"Standard",desc:"Info links, Karte rechts"},
+      {value:"karte-gross",label:"Große Karte",desc:"Karte oben, alles darunter"},
+      {value:"kompakt",label:"Kompakt",desc:"Alles auf einen Blick"},
+    ],
+  };
+  const VariantPicker=({section,field})=>{
+    const opts=VARIANTEN[section]||[];
+    const current=order?.[field]||opts[0]?.value;
+    return <div style={{display:"flex",gap:10,marginBottom:24}}>{opts.map(v=>{
+      const active=current===v.value;
+      return <button key={v.value} onClick={()=>setOrder(o=>({...o,[field]:v.value}))} style={{
+        flex:1,padding:"14px 12px",border:active?"2px solid "+T.accent:"1.5px solid "+T.sep,borderRadius:T.rSm,
+        background:active?"rgba(99,102,241,.06)":"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",
+      }}>
+        <div style={{fontSize:".82rem",fontWeight:700,color:active?T.accent:T.fg,marginBottom:2}}>{v.label}</div>
+        <div style={{fontSize:".72rem",color:T.fgMuted,lineHeight:1.4}}>{v.desc}</div>
+      </button>;
+    })}</div>;
+  };
+
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
     hero:{title:"Header & Hero",sub:"Logo, Firmenname, Kurzbeschreibung und Titelbild — der erste Eindruck Ihrer Website"},
@@ -1840,6 +1888,9 @@ function Portal({session,onLogout}){
     ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
     social:{title:"Social Media",sub:"Ihre Profile erscheinen als Icons auf Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
+    faq:{title:"Häufige Fragen",sub:"Fragen und Antworten, die auf Ihrer Website als aufklappbarer FAQ-Bereich erscheinen"},
+    fakten:{title:"Zahlen & Fakten",sub:"Beeindruckende Zahlen über Ihren Betrieb – z.B. Jahre Erfahrung oder Kundenzahl"},
+    partner:{title:"Partner & Zertifikate",sub:"Logos und Namen von Partnern, Verbänden oder Zertifizierungen"},
     branchenfeatures:{title:"Merkmale",sub:"Was zeichnet Ihren Betrieb aus? Diese Angaben erscheinen als Badges auf Ihrer Website."},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
@@ -1996,6 +2047,9 @@ function Portal({session,onLogout}){
           ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,true],
           ["kontakt","Kontakt",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,true],
           ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
+          ["faq","FAQ",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,false],
+          ["fakten","Zahlen & Fakten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,false],
+          ["partner","Partner",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,false],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
@@ -2245,6 +2299,11 @@ function Portal({session,onLogout}){
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
         {page==="hero"&&<>
+          {/* Hero-Variante */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Hero-Layout</div>
+            <VariantPicker section="hero" field="hero_variante"/>
+          </div>
           {/* Logo upload */}
           {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2372,6 +2431,11 @@ function Portal({session,onLogout}){
           </div>}
         </div>}
         {page==="kontakt"&&<>
+          {/* Kontakt-Variante */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Kontakt-Layout</div>
+            <VariantPicker section="kontakt" field="kontakt_variante"/>
+          </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Adresse & Kontakt" desc="Ihre Adresse und Telefonnummer werden auf der Website angezeigt und sind über Google Maps auffindbar."/>
             <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1" hint="Wird auf der Website und für Google Maps verwendet"/>
@@ -2467,6 +2531,10 @@ function Portal({session,onLogout}){
               <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzufügen"}</button>
             </div>
         </div>}
+        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Über-uns-Layout</div>
+            <VariantPicker section="ueber" field="ueber_variante"/>
+        </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Über uns & Vorteile" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
           <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
@@ -2511,6 +2579,8 @@ function Portal({session,onLogout}){
           {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.fg,marginBottom:10}}>Bewertungen-Layout</div>
+          <VariantPicker section="bewertungen" field="bewertungen_variante"/>
           <SectionHeader label="Kundenbewertungen" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
           {!(order.bewertungen||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Bewertungen hinzugefügt.</div>}
           {(order.bewertungen||[]).map((b,i)=>(
@@ -2525,6 +2595,60 @@ function Portal({session,onLogout}){
           ))}
           {(order.bewertungen||[]).length<6&&<button onClick={()=>{const a=[...(order.bewertungen||[]),{name:"",text:"",sterne:5}];upOrder("bewertungen")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Bewertung hinzufügen"}</button>}
         </div>}
+        {/* ── FAQ Seite ── */}
+        {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website."/>
+          {!(order.sections_visible?.faq)&&<div style={{padding:"12px 16px",background:"#fef3c7",borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:"#92400e"}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {(order.faq||[]).map((f,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
+              <textarea value={f.antwort||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],antwort:e.target.value};upOrder("faq")(arr);}} placeholder="Antwort" rows={2} style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical"}}/>
+            </div>
+            <button onClick={()=>askDelete("Frage",()=>{const arr=[...(order.faq||[])];arr.splice(i,1);upOrder("faq")(arr);})} style={{marginTop:8,width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u00d7"}</button>
+          </div>)}
+          {!(order.faq||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Fragen hinzugefügt.</div>}
+          <div style={{display:"flex",gap:8,marginTop:12}}>
+            <button onClick={()=>{const arr=[...(order.faq||[]),{frage:"",antwort:""}];upOrder("faq")(arr);}} style={{flex:1,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Frage hinzufügen</button>
+            <button disabled={faqGenerating} onClick={async()=>{
+              setFaqGenerating(true);
+              try{
+                const res=await fetch("/api/generate-faq",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:order.id})});
+                const data=await res.json();
+                if(data.faq){upOrder("faq")(data.faq);showToast("FAQ generiert");}
+                else{showToast("Fehler: "+(data.error||"Unbekannt"));}
+              }catch{showToast("Fehler bei der Generierung");}
+              setFaqGenerating(false);
+            }} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:faqGenerating?T.bg3:T.dark,color:"#fff",cursor:faqGenerating?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>{faqGenerating?"Generiert...":"Automatisch generieren"}</button>
+          </div>
+        </div>}
+
+        {/* ── Zahlen & Fakten Seite ── */}
+        {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Maximal 4 Einträge."/>
+          {!(order.sections_visible?.fakten)&&<div style={{padding:"12px 16px",background:"#fef3c7",borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:"#92400e"}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
+              <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
+              <input value={f.label||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],label:e.target.value};upOrder("fakten")(arr);}} placeholder="Jahre Erfahrung" style={{flex:1,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
+              <button onClick={()=>askDelete("Fakt",()=>{const arr=[...(order.fakten||[])];arr.splice(i,1);upOrder("fakten")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u00d7"}</button>
+            </div>)}
+          </div>
+          {!(order.fakten||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Fakten hinzugefügt.</div>}
+          {(order.fakten||[]).length<4&&<button onClick={()=>{const arr=[...(order.fakten||[]),{zahl:"",label:""}];upOrder("fakten")(arr);}} style={{marginTop:8,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Fakt hinzufügen {(order.fakten||[]).length>0?`(${(order.fakten||[]).length}/4)`:""}</button>}
+        </div>}
+
+        {/* ── Partner & Zertifikate Seite ── */}
+        {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <SectionHeader label="Partner & Zertifikate" desc="Zeigen Sie Logos und Namen von Partnern, Zertifizierungen oder Verbänden."/>
+          {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:"#fef3c7",borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:"#92400e"}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {(order.partner||[]).map((p,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginTop:i?10:0}}>
+            <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. WKO, TÜV, KNX Partner" style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font}}/>
+            <button onClick={()=>askDelete("Partner",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u00d7"}</button>
+          </div>)}
+          {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Partner hinzugefügt.</div>}
+          <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Partner hinzufügen</button>
+        </div>}
+
         {page==="design"&&(()=>{
           const s=STYLES_MAP[order.stil||"klassisch"]||STYLES_MAP.klassisch;
           const dv=(k,fallback)=>order[k]||fallback;
@@ -2623,66 +2747,35 @@ function Portal({session,onLogout}){
                   })}
                 </div>
 
-                {/* Zusaetzliche Bereiche mit Inline-Editoren */}
+                {/* Zusaetzliche Bereiche — nur Toggles, Inhalte auf eigenen Seiten */}
                 <div style={{marginTop:8}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zus\u00e4tzliche Bereiche auf Ihrer Website</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Aktivieren Sie einen Bereich und f\u00fcllen Sie die Inhalte direkt aus.</div>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zus\u00e4tzliche Bereiche</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Schalten Sie Bereiche ein oder aus. Inhalte bearbeiten Sie auf der jeweiligen Seite.</div>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>
-
-                    {/* FAQ */}
                     <div style={{border:`1.5px solid ${order.sections_visible?.faq?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="H\u00e4ufige Fragen" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten die Ihre Kunden h\u00e4ufig stellen"/>
-                      {order.sections_visible?.faq&&<div style={{padding:"0 16px 16px",borderTop:`1px solid ${T.bg3}`}}>
-                        {(order.faq||[]).map((f,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:12}}>
-                          <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                            <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
-                            <textarea value={f.antwort||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],antwort:e.target.value};upOrder("faq")(arr);}} placeholder="Antwort" rows={2} style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical"}}/>
-                          </div>
-                          <button onClick={()=>{const arr=[...(order.faq||[])];arr.splice(i,1);upOrder("faq")(arr);}} style={{marginTop:8,background:"none",border:"none",color:T.red,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font,padding:"4px 8px"}}>Entfernen</button>
-                        </div>)}
-                        <button onClick={()=>{const arr=[...(order.faq||[]),{frage:"",antwort:""}];upOrder("faq")(arr);}} style={{marginTop:12,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Frage hinzuf\u00fcgen</button>
+                      <Toggle label="H\u00e4ufige Fragen (FAQ)" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten"/>
+                      {order.sections_visible?.faq&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                        <button onClick={()=>nav("faq")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
                     </div>
-
-                    {/* Zahlen & Fakten */}
                     <div style={{border:`1.5px solid ${order.sections_visible?.fakten?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Zahlen & Fakten" checked={!!(order.sections_visible&&order.sections_visible.fakten)} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc="z.B. \u201e15+ Jahre Erfahrung\u201c oder \u201e2.000+ Kunden\u201c"/>
-                      {order.sections_visible?.fakten&&<div style={{padding:"0 16px 16px",borderTop:`1px solid ${T.bg3}`}}>
-                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
-                          {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
-                            <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
-                            <input value={f.label||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],label:e.target.value};upOrder("fakten")(arr);}} placeholder="Jahre Erfahrung" style={{flex:1,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
-                            <button onClick={()=>{const arr=[...(order.fakten||[])];arr.splice(i,1);upOrder("fakten")(arr);}} style={{background:"none",border:"none",color:T.red,cursor:"pointer",fontSize:".82rem",padding:"2px"}}>x</button>
-                          </div>)}
-                        </div>
-                        {(order.fakten||[]).length<4&&<button onClick={()=>{const arr=[...(order.fakten||[]),{zahl:"",label:""}];upOrder("fakten")(arr);}} style={{marginTop:8,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Fakt hinzuf\u00fcgen {(order.fakten||[]).length>0?`(${(order.fakten||[]).length}/4)`:""}</button>}
+                      <Toggle label="Zahlen & Fakten" checked={!!(order.sections_visible&&order.sections_visible.fakten)} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc="z.B. \u201e15+ Jahre Erfahrung\u201c"/>
+                      {order.sections_visible?.fakten&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                        <button onClick={()=>nav("fakten")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
                     </div>
-
-                    {/* Partner */}
                     <div style={{border:`1.5px solid ${order.sections_visible?.partner?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Partner & Zertifikate" checked={!!(order.sections_visible&&order.sections_visible.partner)} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc="Zeigen Sie Logos von Partnern oder Zertifizierungen"/>
-                      {order.sections_visible?.partner&&<div style={{padding:"0 16px 16px",borderTop:`1px solid ${T.bg3}`}}>
-                        {(order.partner||[]).map((p,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginTop:10}}>
-                          <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. WKO, T\u00dcV, KNX Partner" style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font}}/>
-                          <button onClick={()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);}} style={{background:"none",border:"none",color:T.red,cursor:"pointer",fontSize:".82rem",padding:"2px 6px"}}>x</button>
-                        </div>)}
-                        <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Partner hinzuf\u00fcgen</button>
+                      <Toggle label="Partner & Zertifikate" checked={!!(order.sections_visible&&order.sections_visible.partner)} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc="Logos von Partnern oder Zertifizierungen"/>
+                      {order.sections_visible?.partner&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                        <button onClick={()=>nav("partner")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
                     </div>
-
-                    {/* Galerie — Hinweis auf Medien-Tab */}
                     <div style={{border:`1.5px solid ${order.sections_visible?.galerie?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Fotogalerie" checked={!!(order.sections_visible&&order.sections_visible.galerie)} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Zeigen Sie Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
-                      {order.sections_visible?.galerie&&<div style={{padding:"12px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
-                        <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.6}}>
-                          {Array.isArray(order.galerie)&&order.galerie.length>0
-                            ?<span style={{color:T.dark,fontWeight:600}}>{order.galerie.length} Fotos hochgeladen</span>
-                            :<span>Galerie-Fotos k\u00f6nnen Sie unter <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Medien</button> hochladen.</span>}
-                        </div>
+                      <Toggle label="Fotogalerie" checked={!!(order.sections_visible&&order.sections_visible.galerie)} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
+                      {order.sections_visible?.galerie&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                        <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Fotos verwalten &rarr;</button>
                       </div>}
                     </div>
-
                   </div>
                 </div>
               </>;

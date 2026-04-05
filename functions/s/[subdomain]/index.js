@@ -118,29 +118,42 @@ export async function onRequestGet({params, env}) {
     }
   }
 
-  // Hero-Bild: Layout "full" (Hintergrund) oder "split" (Bild rechts)
+  // Hero-Bild + Variante: standard (full/split je nach hero_layout), split (immer Bild rechts), minimal (kein Bild)
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
   const heroLayout = o.hero_layout || "split";
-  if (o.url_hero) {
-    if (heroLayout === "full") {
-      const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.50)),url('${o.url_hero}') center/cover no-repeat!important}` +
-        `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
-        `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
-        `#sr-hero .hero-btns .btn{text-shadow:none}</style>`;
-      html = html.replace('</head>', heroStyle + '</head>');
-    } else {
-      // Split: Bild rechts neben dem Text
+
+  if (heroVariante === "minimal") {
+    // Minimal: Kein Bild, zentriert, reduziert
+    const minimalStyle = `<style>
+.hero{min-height:70vh!important;min-height:70svh!important;justify-content:center;text-align:center}
+.hero-inner{display:flex!important;flex-direction:column;align-items:center}
+.hero h1{font-size:clamp(2.5rem,6vw,4rem)!important;max-width:100%}
+.hero-desc{text-align:center;max-width:480px}
+.hero-btns{justify-content:center}
+.hero-sub{margin-bottom:16px}
+.hero-accent-line{display:block!important;width:48px;height:2px;background:var(--accent);margin:16px auto 24px;opacity:.6}
+</style>`;
+    html = html.replace("</head>", minimalStyle + "</head>");
+  } else if (heroVariante === "split" || (heroVariante === "standard" && heroLayout !== "full")) {
+    // Split: Bild rechts neben dem Text
+    if (o.url_hero) {
       const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;border-radius:var(--rLg,8px)"/></div>`;
       const heroStyle = `<style>` +
         `@media(min-width:900px){` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:start}` +
-        `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns{grid-column:1}` +
+        `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-accent-line{grid-column:1}` +
         `.hero-img{display:block!important;grid-column:2;grid-row:2/span 9;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px)}` +
         `}</style>`;
-      // Inject image at end of hero-inner
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
       html = html.replace('</head>', heroStyle + '</head>');
     }
+  } else if (o.url_hero) {
+    // Standard + full: Hintergrundbild
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.50)),url('${o.url_hero}') center/cover no-repeat!important}` +
+      `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
+      `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
+      `#sr-hero .hero-btns .btn{text-shadow:none}</style>`;
+    html = html.replace('</head>', heroStyle + '</head>');
   }
 
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
@@ -207,8 +220,46 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
   }
 
+  // ── Ueber-uns-Variante serve-time anwenden ──
+  if (ueberVariante === "story") {
+    // Story: Gruendergeschichte mit Zitat-Stil, Foto rechts
+    const storyStyle = `<style>
+.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!important;align-items:center}
+.ueber .ueber-vorteile{display:none}
+.ueber-text{font-size:1.05rem!important;opacity:.8!important;line-height:1.85!important}
+</style>`;
+    html = html.replace("</head>", storyStyle + "</head>");
+  } else if (ueberVariante === "team-fokus" && teamMembers.length > 0) {
+    // Team-Fokus: Team prominent oben, Text kompakt zentriert
+    const teamGrid = teamMembers.slice(0, 6).map(m => {
+      const hasImg = !!m.foto;
+      const avatar = hasImg
+        ? `<img src="${m.foto}" alt="${m.name}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.12)">`
+        : `<div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.08)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+      return `<div style="text-align:center"><div style="margin:0 auto 8px">${avatar}</div><div style="font-size:.85rem;font-weight:700;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.75rem;opacity:.5">${m.rolle}</div>` : ""}</div>`;
+    }).join("");
+    const teamCols = Math.min(teamMembers.length, 4);
+    const teamFokusStyle = `<style>
+.ueber{text-align:center}
+.ueber-grid{display:block!important}
+.ueber-text{max-width:520px;margin:0 auto 32px!important;font-size:1rem!important}
+.ueber .ueber-vorteile{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+</style>`;
+    html = html.replace("</head>", teamFokusStyle + "</head>");
+    // Team-Grid vor den Vorteilen einfuegen
+    const teamGridHtml = `<div style="display:grid;grid-template-columns:repeat(${teamCols},1fr);gap:20px;max-width:480px;margin:0 auto 32px">${teamGrid}</div>`;
+    html = html.replace("{{VORTEILE}}", teamGridHtml + "{{VORTEILE}}");
+  }
+  // Standard: keine Aenderung noetig
+
   // ── Layout-Feld lesen (bestimmt Section-Varianten) ──
   const layout = o.layout || "standard";
+
+  // ── Section-Varianten lesen ──
+  const heroVariante = o.hero_variante || "standard";
+  const bewertungenVariante = o.bewertungen_variante || "karten";
+  const ueberVariante = o.ueber_variante || "standard";
+  const kontaktVariante = o.kontakt_variante || "standard";
 
   // Ablauf-Section — "So laeuft es ab" zwischen Leistungen und Ueber uns
   const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
@@ -246,21 +297,69 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- ABLAUF -->", "");
   }
 
-  // Kundenbewertungen — zwischen Über uns und Kontakt
+  // Kundenbewertungen — zwischen Ueber uns und Kontakt (3 Varianten)
   const bewertungen = Array.isArray(o.bewertungen) ? o.bewertungen.filter(b => b && b.text) : [];
   if (bewertungen.length > 0 && html.includes("<!-- BEWERTUNGEN -->")) {
     const starSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     const emptyStar = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--sep)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-    const cards = bewertungen.slice(0, 6).map(b => {
-      const stars = b.sterne ? Array.from({length:5}, (_,i) => i < b.sterne ? starSvg : emptyStar).join("") : "";
-      return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:24px;display:flex;flex-direction:column;gap:12px">` +
-        (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
-        `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${b.text}\u201c</p>` +
-        `<div style="font-size:.82rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</div>` +
+    const makeStars = (b) => b.sterne ? Array.from({length:5}, (_,i) => i < b.sterne ? starSvg : emptyStar).join("") : "";
+    const bewLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">Kundenstimmen</div>`;
+    const bewH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2>`;
+    let bewContent;
+
+    if (bewertungenVariante === "highlight") {
+      // Highlight: Erste Bewertung gross, Rest als kleine Karten
+      const main = bewertungen[0];
+      const rest = bewertungen.slice(1, 5);
+      const mainStars = makeStars(main);
+      const highlight = `<div style="background:var(--primary);color:#fff;border-radius:var(--rLg,8px);padding:36px;margin-bottom:20px;text-align:center">` +
+        `<div style="font-size:2rem;margin-bottom:12px;opacity:.3">\u201c</div>` +
+        `<div style="font-size:1rem;font-weight:500;line-height:1.8;max-width:520px;margin:0 auto;opacity:.9">${main.text}</div>` +
+        `<div style="margin-top:16px;font-size:.82rem;font-weight:700;opacity:.7">${main.name || "Kunde"}</div>` +
+        (mainStars ? `<div style="margin-top:8px;display:flex;justify-content:center;gap:2px">${mainStars}</div>` : "") +
         `</div>`;
-    }).join("");
-    const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
-    const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px"><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2></div><div style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div></div></section>`;
+      const restCards = rest.map(b => {
+        const stars = makeStars(b);
+        return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:20px;display:flex;flex-direction:column;gap:8px">` +
+          (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
+          `<p style="font-size:.88rem;color:var(--text);line-height:1.7;margin:0;flex:1;font-style:italic">\u201e${b.text}\u201c</p>` +
+          `<div style="font-size:.78rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</div></div>`;
+      }).join("");
+      const restCols = rest.length <= 2 ? `repeat(${rest.length},1fr)` : "repeat(3,1fr)";
+      bewContent = highlight + (rest.length > 0 ? `<div style="display:grid;grid-template-columns:${restCols};gap:16px">${restCards}</div>` : "");
+
+    } else if (bewertungenVariante === "liste") {
+      // Liste: Kompakt untereinander mit Avatar-Initialen
+      const listItems = bewertungen.slice(0, 6).map(b => {
+        const initials = (b.name || "K").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+        const stars = makeStars(b);
+        return `<div style="display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--sep);align-items:start">` +
+          `<div style="width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">${initials}</div>` +
+          `<div>` +
+          `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">` +
+          `<span style="font-size:.85rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</span>` +
+          (stars ? `<span style="display:flex;gap:1px">${stars}</span>` : "") +
+          `</div>` +
+          `<div style="font-size:.88rem;color:var(--textMuted);line-height:1.7;font-style:italic">\u201e${b.text}\u201c</div>` +
+          `</div></div>`;
+      }).join("");
+      bewContent = `<div style="max-width:640px">${listItems}</div>`;
+
+    } else {
+      // Karten (Standard): Grid nebeneinander
+      const cards = bewertungen.slice(0, 6).map(b => {
+        const stars = makeStars(b);
+        return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:24px;display:flex;flex-direction:column;gap:12px">` +
+          (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
+          `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${b.text}\u201c</p>` +
+          `<div style="font-size:.82rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</div>` +
+          `</div>`;
+      }).join("");
+      const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
+      bewContent = `<div style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div>`;
+    }
+
+    const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px">${bewLabel}${bewH2}</div>${bewContent}</div></section>`;
     html = html.replace("<!-- BEWERTUNGEN -->", section);
   } else {
     html = html.replace("<!-- BEWERTUNGEN -->", "");
@@ -286,6 +385,31 @@ export async function onRequestGet({params, env}) {
   } else {
     html = html.replace("<!-- KONTAKT_INFOS -->", "");
   }
+
+  // ── Kontakt-Variante serve-time anwenden ──
+  if (kontaktVariante === "karte-gross") {
+    // Karte-Gross: Karte oben, Info als Icon-Leiste darunter
+    const kgStyle = `<style>
+.kontakt-grid{display:block!important}
+.kontakt .kontakt-grid>div:first-child{margin-bottom:24px}
+.kontakt .kontakt-grid>div:last-child{margin-bottom:24px}
+.kontakt-grid>div:last-child{order:-1}
+.kontakt-grid>div:last-child iframe{height:240px!important}
+</style>`;
+    html = html.replace("</head>", kgStyle + "</head>");
+  } else if (kontaktVariante === "kompakt") {
+    // Kompakt: Alles als Cards, kein Formular
+    const kompaktStyle = `<style>
+.kontakt-grid{display:block!important}
+.kontakt .kontakt-grid>div:first-child{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kontakt .kontakt-grid>div:first-child>.kontakt-item{background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:20px;text-align:center}
+.kontakt .kontakt-grid>div:first-child>.kontakt-item .kontakt-item-label{margin-bottom:6px}
+.kontakt .kontakt-form-wrap{display:none}
+.kontakt h2{text-align:center;margin-bottom:24px}
+</style>`;
+    html = html.replace("</head>", kompaktStyle + "</head>");
+  }
+  // Standard: keine Aenderung noetig
 
   // Legacy: alte Platzhalter entfernen falls noch vorhanden
   html = html.replace(/<!-- FOTO_BAND -->/g, "");

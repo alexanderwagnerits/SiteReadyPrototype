@@ -80,7 +80,7 @@ a{color:inherit}
 /* ══════════════════════════════════════════════════════
    HERO
    ══════════════════════════════════════════════════════ */
-.hero{background:linear-gradient(160deg,${primary} 0%,color-mix(in srgb,${primary} 72%,#000) 55%,color-mix(in srgb,${primary} 85%,${accent}) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:100vh;overflow:hidden}
+.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:100vh;overflow:hidden}
 .hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:56px 28px 40px}
 .hero h1{font-size:clamp(2.8rem,6.5vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:14px;max-width:700px}
 .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.7);font-weight:500;margin-bottom:12px}
@@ -90,13 +90,13 @@ a{color:inherit}
 
 /* Hero — Modern: Grain deaktivieren (Blobs stattdessen) */
 .stil-modern .hero.sr-grain::after{display:none}
-.stil-modern .hero{background:${primary};overflow:hidden}
-.stil-modern .hero::before{content:'';position:absolute;width:520px;height:520px;border-radius:60% 40% 55% 45%;background:${accent};opacity:.1;top:-100px;right:-100px;filter:blur(80px);pointer-events:none;animation:sr-float 20s ease-in-out infinite}
+.stil-modern .hero{background:var(--primary);overflow:hidden}
+.stil-modern .hero::before{content:'';position:absolute;width:520px;height:520px;border-radius:60% 40% 55% 45%;background:var(--accent);opacity:.1;top:-100px;right:-100px;filter:blur(80px);pointer-events:none;animation:sr-float 20s ease-in-out infinite}
 @keyframes sr-float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-20px) scale(1.05)}}
 .stil-modern .hero-inner{padding:64px 28px 48px}
 
 /* Hero — Elegant */
-.stil-elegant .hero{background:linear-gradient(135deg,${primary} 0%,color-mix(in srgb,${primary} 70%,#000) 100%)}
+.stil-elegant .hero{background:linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,#000) 100%)}
 .stil-elegant .hero-inner{padding:72px 28px 56px}
 .stil-elegant .hero h1{font-weight:300;margin-bottom:0}
 .stil-elegant .hero-accent-line{display:block;width:72px;height:2px;background:var(--accent);margin:22px 0 28px;opacity:.6}

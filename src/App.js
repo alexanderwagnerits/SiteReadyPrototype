@@ -175,6 +175,7 @@ const STYLES_MAP={
   custom:{label:"Eigenes Branding",desc:"Ihre Farbe, Ihr Font",primary:"#111111",accent:"#2563eb",accentSoft:"rgba(37,99,235,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#111111",textMuted:"#6b7280",textLight:"#9ca3af",borderColor:"#e5e7eb",font:"'DM Sans',system-ui,sans-serif",radius:"8px",radiusLg:"12px",heroGradient:"linear-gradient(160deg,#111111 0%,#1f1f1f 50%,#333333 100%)",heroOverlay:"none",shadow:"0 1px 3px rgba(0,0,0,0.05)",badgeBg:"#f3f4f6",badgeText:"#374151",btnRadius:"8px",cardBorder:true,cardShadow:false,badgeRadius:"8px",sectionDivider:false,spacing:"normal"},
 };
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
+let _orderInProgress=false;
 const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",layout:"standard",customColor:"#2563eb",customFont:"dm_sans"};
 
 /* ═══ TOKENS ═══ */
@@ -749,39 +750,43 @@ function SuccessPage({data,onBack,onPortal}){
     if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausfüllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
-    const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:data.firmenname,vorname,nachname}}});
-    if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);return;}
+    // Snapshot der Daten BEVOR signUp den Auth-State aendert und die Seite wechselt
+    const snap=JSON.parse(JSON.stringify(data));
+    _orderInProgress=true;
+    const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:snap.firmenname,vorname,nachname}}});
+    if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);_orderInProgress=false;return;}
     const userId=authData?.user?.id||null;
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
       id:orderId,user_id:userId,vorname,nachname,
-      firmenname:data.firmenname,branche:data.branche,branche_label:data.brancheLabel,
-      kurzbeschreibung:data.kurzbeschreibung,bundesland:data.bundesland,
-      leistungen:data.leistungen,extra_leistung:data.extraLeistung,notdienst:data.notdienst,meisterbetrieb:data.meisterbetrieb,kostenvoranschlag:data.kostenvoranschlag,buchungslink:data.buchungslink||null,hausbesuche:data.hausbesuche,terminvereinbarung:data.terminvereinbarung,foerderungsberatung:data.foerderungsberatung,lieferservice:data.lieferservice,barrierefrei:data.barrierefrei,parkplaetze:data.parkplaetze,kassenvertrag:data.kassenvertrag||null,erstgespraech_gratis:data.erstgespraech_gratis,online_beratung:data.online_beratung,ratenzahlung:data.ratenzahlung,
-      adresse:data.adresse,plz:data.plz,ort:data.ort,telefon:data.telefon,email:data.email,
-      uid_nummer:data.uid,oeffnungszeiten:data.oeffnungszeiten,einsatzgebiet:data.einsatzgebiet,
-      unternehmensform:data.unternehmensform,firmenbuchnummer:data.firmenbuchnummer,gisazahl:data.gisazahl,firmenbuchgericht:data.firmenbuchgericht,
-      geschaeftsfuehrer:data.geschaeftsfuehrer,vorstand:data.vorstand,aufsichtsrat:data.aufsichtsrat,
-      zvr_zahl:data.zvr_zahl,vertretungsorgane:data.vertretungsorgane,gesellschafter:data.gesellschafter,
-      unternehmensgegenstand:data.unternehmensgegenstand,liquidation:data.liquidation,
-      kammer_berufsrecht:data.kammer_berufsrecht,aufsichtsbehoerde:data.aufsichtsbehoerde,
-      stil:data.stil,layout:data.layout||null,custom_color:data.customColor||null,custom_font:data.customFont||null,fotos:data.fotos,subdomain:sub,status:"pending",
-      facebook:data.facebook||null,instagram:data.instagram||null,linkedin:data.linkedin||null,tiktok:data.tiktok||null,
-      oeffnungszeiten_custom:data.oeffnungszeitenCustom||null,
-      ...(data.importExtras?.spezialisierung?{spezialisierung:data.importExtras.spezialisierung}:{}),
-      ...(data.importExtras?.gut_zu_wissen?{gut_zu_wissen:data.importExtras.gut_zu_wissen}:{}),
-      ...(data.importExtras?.bewertungen?.length?{bewertungen:data.importExtras.bewertungen,ai_generated:[...(data.importExtras.bewertungen.length?["bewertungen"]:[])]}:{}),
-      ...(data.importExtras?.faq?.length?{faq:data.importExtras.faq}:{}),
-      ...(data.importExtras?.fakten?.length?{fakten:data.importExtras.fakten}:{}),
-      ...(data.importExtras?.partner?.length?{partner:data.importExtras.partner}:{}),
-      ...(data.importExtras?.team?.length?{team_members:data.importExtras.team}:{}),
-      ...(data.importExtras?.sections_visible?{sections_visible:data.importExtras.sections_visible}:{}),
+      firmenname:snap.firmenname,branche:snap.branche,branche_label:snap.brancheLabel,
+      kurzbeschreibung:snap.kurzbeschreibung,bundesland:snap.bundesland,
+      leistungen:snap.leistungen,extra_leistung:snap.extraLeistung,notdienst:snap.notdienst,meisterbetrieb:snap.meisterbetrieb,kostenvoranschlag:snap.kostenvoranschlag,buchungslink:snap.buchungslink||null,hausbesuche:snap.hausbesuche,terminvereinbarung:snap.terminvereinbarung,foerderungsberatung:snap.foerderungsberatung,lieferservice:snap.lieferservice,barrierefrei:snap.barrierefrei,parkplaetze:snap.parkplaetze,kassenvertrag:snap.kassenvertrag||null,erstgespraech_gratis:snap.erstgespraech_gratis,online_beratung:snap.online_beratung,ratenzahlung:snap.ratenzahlung,
+      adresse:snap.adresse,plz:snap.plz,ort:snap.ort,telefon:snap.telefon,email:snap.email,
+      uid_nummer:snap.uid,oeffnungszeiten:snap.oeffnungszeiten,einsatzgebiet:snap.einsatzgebiet,
+      unternehmensform:snap.unternehmensform,firmenbuchnummer:snap.firmenbuchnummer,gisazahl:snap.gisazahl,firmenbuchgericht:snap.firmenbuchgericht,
+      geschaeftsfuehrer:snap.geschaeftsfuehrer,vorstand:snap.vorstand,aufsichtsrat:snap.aufsichtsrat,
+      zvr_zahl:snap.zvr_zahl,vertretungsorgane:snap.vertretungsorgane,gesellschafter:snap.gesellschafter,
+      unternehmensgegenstand:snap.unternehmensgegenstand,liquidation:snap.liquidation,
+      kammer_berufsrecht:snap.kammer_berufsrecht,aufsichtsbehoerde:snap.aufsichtsbehoerde,
+      stil:snap.stil,layout:snap.layout||null,custom_color:snap.customColor||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:sub,status:"pending",
+      facebook:snap.facebook||null,instagram:snap.instagram||null,linkedin:snap.linkedin||null,tiktok:snap.tiktok||null,
+      oeffnungszeiten_custom:snap.oeffnungszeitenCustom||null,
+      ...(snap.importExtras?.spezialisierung?{spezialisierung:snap.importExtras.spezialisierung}:{}),
+      ...(snap.importExtras?.gut_zu_wissen?{gut_zu_wissen:snap.importExtras.gut_zu_wissen}:{}),
+      ...(snap.importExtras?.bewertungen?.length?{bewertungen:snap.importExtras.bewertungen,ai_generated:[...(snap.importExtras.bewertungen.length?["bewertungen"]:[])]}:{}),
+      ...(snap.importExtras?.faq?.length?{faq:snap.importExtras.faq}:{}),
+      ...(snap.importExtras?.fakten?.length?{fakten:snap.importExtras.fakten}:{}),
+      ...(snap.importExtras?.partner?.length?{partner:snap.importExtras.partner}:{}),
+      ...(snap.importExtras?.team?.length?{team_members:snap.importExtras.team}:{}),
+      ...(snap.importExtras?.sections_visible?{sections_visible:snap.importExtras.sections_visible}:{}),
       website_ziel:null
     });
-    if(error){setSaveErr("Fehler: "+error.message);setSaving(false);return;}
+    if(error){setSaveErr("Fehler: "+error.message);setSaving(false);_orderInProgress=false;return;}
     try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(_){}
     /* Auto-Login nach signUp (kein E-Mail-Bestätigung nötig) */
     try{await supabase.auth.signInWithPassword({email:loginEmail,password:pw});}catch(_){}
+    _orderInProgress=false;
     setSaving(false);
     localStorage.setItem("sr_pending_email",loginEmail);
     setConfirmed(true);
@@ -5089,7 +5094,12 @@ export default function App(){
     });
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
       setSession(session);
-      if(session){setPageRaw("portal");navigate("portal");}
+      if(session&&!_orderInProgress){setPageRaw("portal");navigate("portal");}
+      else if(session&&_orderInProgress){
+        // Warte bis Order-Insert fertig, dann wechseln
+        const wait=setInterval(()=>{if(!_orderInProgress){clearInterval(wait);setPageRaw("portal");navigate("portal");}},200);
+        setTimeout(()=>clearInterval(wait),15000);
+      }
     });
     return()=>{subscription.unsubscribe();window.removeEventListener("popstate",onPop);};
   },[]);

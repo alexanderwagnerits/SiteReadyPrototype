@@ -1388,7 +1388,8 @@ function Questionnaire({data,setData,onComplete,onBack}){
                     <div style={{width:32,height:32,borderRadius:6,background:`linear-gradient(135deg,${v.color},${v.accent})`}}/>
                   </div>
                   <div style={{fontSize:".95rem",fontWeight:800,color:T.dark,marginBottom:4}}>{v.label}</div>
-                  <div style={{fontSize:".68rem",fontWeight:600,color:T.accent,marginBottom:6}}>{v.layout==="kompakt"?"Kompaktes Layout":v.layout==="ausfuehrlich"?"Ausf\u00fchrliches Layout":"Standard-Layout"}</div>
+                  <div style={{fontSize:".68rem",fontWeight:600,color:T.accent,marginBottom:2}}>{v.layout==="kompakt"?"Kompaktes Layout":v.layout==="ausfuehrlich"?"Ausf\u00fchrliches Layout":"Standard-Layout"}</div>
+                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:6}}>{v.layout==="kompakt"?"Weniger Sections, kompakte Darstellung":v.layout==="ausfuehrlich"?"Alle Sections inkl. FAQ & Fakten":"Alle wichtigen Bereiche"}</div>
                   <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.55,marginBottom:12}}>{v.desc}</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
                     {v.tags.map(t=><span key={t} style={{fontSize:".65rem",padding:"3px 8px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}

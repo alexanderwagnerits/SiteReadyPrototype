@@ -106,7 +106,7 @@ export async function onRequestPost({request, env}) {
       try {
         const r = await fetch("https://r.jina.ai/" + pageUrl, {
           headers: {"Accept":"text/plain","X-Return-Format":"text"},
-          signal: AbortSignal.timeout(15000),
+          signal: AbortSignal.timeout(10000),
         });
         if (r.ok) {
           const text = await r.text();
@@ -207,16 +207,14 @@ export async function onRequestPost({request, env}) {
       if (![...allInternalLinks].some(l => l.toLowerCase().includes(p.slice(1)))) addLink(base + p);
     }
 
-    /* ═══ 3. UNTERSEITEN IN BATCHES LADEN ═══ */
-    const urlsToFetch = [...allInternalLinks].slice(0, 20);
+    /* ═══ 3. UNTERSEITEN LADEN (parallel, max 10) ═══ */
+    const urlsToFetch = [...allInternalLinks].slice(0, 10);
     const pageContents = [];
 
-    // Batches von 5 Seiten (Jina Rate-Limit freundlich)
-    const batchSize = 5;
-    for (let i = 0; i < urlsToFetch.length; i += batchSize) {
-      const batch = urlsToFetch.slice(i, i + batchSize);
-      await Promise.all(batch.map(async (pageUrl) => {
-        const html = await fetchHtml(pageUrl, 6000);
+    // Alle parallel (max 10, Jina hat 15s Timeout als Safety)
+    await Promise.all(urlsToFetch.map(async (pageUrl) => {
+      try {
+        const html = await fetchHtml(pageUrl, 5000);
         if (html) {
           extractFromHtml(html);
           collectLinks(html, null);
@@ -240,8 +238,8 @@ export async function onRequestPost({request, env}) {
         else if (/galerie|gallery|portfolio|fotos|bilder/.test(path)) category = "galerie";
 
         pageContents.push({url: pageUrl, path, category, text: text.slice(0, 4000)});
-      }));
-    }
+      } catch(_) {}
+    }));
 
     /* ═══ 4. CONTENT-DEDUP (Header/Footer/Nav entfernen) ═══ */
     // Absaetze zaehlen: Wenn ein Absatz auf 3+ Seiten vorkommt = Navigation/Footer

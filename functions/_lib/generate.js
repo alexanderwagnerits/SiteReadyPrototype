@@ -506,6 +506,60 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   /* ─── Scroll-Spy ─── */
   html = html.replace("</body>", `<script>(function(){var ls=document.querySelectorAll('.nav-link[href^="#"]');var ss=[].map.call(ls,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);function u(){var y=window.scrollY+100;var c=ss.reduce(function(a,s){return s.offsetTop<=y?s:a},ss[0]);ls.forEach(function(l){var a=c&&'#'+c.id===l.getAttribute('href');l.style.opacity=a?'1':'';l.style.fontWeight=a?'700':'';});}window.addEventListener('scroll',u,{passive:true});u();})();</script>\n</body>`);
 
+  /* ─── Qualitaets-Check + Auto-Fix ─── */
+  const qIssues = [];
+  let qFixed = 0;
+
+  // 1. Uebrig gebliebene Placeholder ersetzen
+  const placeholders = html.match(/\{\{[A-Z_]+\}\}/g) || [];
+  if (placeholders.length > 0) {
+    for (const ph of placeholders) {
+      html = html.split(ph).join("");
+      qFixed++;
+    }
+    qIssues.push({type:"placeholder_removed", count:placeholders.length, items:[...new Set(placeholders)]});
+  }
+
+  // 2. Uebrig gebliebene HTML-Kommentar-Placeholder entfernen
+  const commentPlaceholders = html.match(/<!-- (LEISTUNGEN|TRUST|ABLAUF|BEWERTUNGEN|FAQ|GALERIE|FAKTEN|PARTNER|KONTAKT_FORM|KONTAKT_INFOS|TEAM|ABOUT_FOTOS|MAPS|FOTO_BAND|CTA_BLOCK|NAV|FOOTER) -->/g) || [];
+  if (commentPlaceholders.length > 0) {
+    for (const cp of commentPlaceholders) {
+      html = html.replace(cp, "");
+      qFixed++;
+    }
+    qIssues.push({type:"comment_placeholder_removed", count:commentPlaceholders.length, items:commentPlaceholders});
+  }
+
+  // 3. Leere Sections entfernen (Section ohne sichtbaren Inhalt)
+  html = html.replace(/<section[^>]*>\s*<div class="w">\s*<\/div>\s*<\/section>/gi, () => { qFixed++; qIssues.push({type:"empty_section_removed"}); return ""; });
+
+  // 4. Leere href/src Attribute fixen
+  const emptyHrefs = (html.match(/href=""/g) || []).length;
+  if (emptyHrefs > 0) {
+    html = html.replace(/href=""/g, 'href="#"');
+    qFixed += emptyHrefs;
+    qIssues.push({type:"empty_href_fixed", count:emptyHrefs});
+  }
+
+  // 5. Doppelte Leerzeichen/Zeilenumbrueche in sichtbarem Text bereinigen
+  html = html.replace(/(<[^>]+>)\s{3,}/g, "$1 ");
+
+  // 6. Pruefen ob kritische Sections vorhanden sind
+  const hasHero = html.includes('class="hero"');
+  const hasLeist = html.includes('id="leistungen"');
+  const hasKontakt = html.includes('id="kontakt"');
+  const hasNav = html.includes('id="sitenav"');
+  const hasFooter = html.includes('class="sr-footer"') || html.includes('class="footer"');
+  if (!hasHero) qIssues.push({type:"missing_section", section:"hero"});
+  if (!hasLeist) qIssues.push({type:"missing_section", section:"leistungen"});
+  if (!hasKontakt) qIssues.push({type:"missing_section", section:"kontakt"});
+  if (!hasNav) qIssues.push({type:"missing_section", section:"nav"});
+  if (!hasFooter) qIssues.push({type:"missing_section", section:"footer"});
+
+  // 7. Score berechnen (100 - Abzuege)
+  const criticalMissing = qIssues.filter(i => i.type === "missing_section").length;
+  const qualityScore = Math.max(0, 100 - (criticalMissing * 20) - (placeholders.length * 5) - (commentPlaceholders.length * 2));
+
   /* ─── In Supabase speichern ─── */
   // Kern-Felder (muessen existieren)
   const savePayload = {
@@ -540,7 +594,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
       method: "PATCH",
       headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
       body: JSON.stringify({
-        quality_score: 100, quality_issues: null,
+        quality_score: qualityScore, quality_issues: qIssues.length > 0 ? qIssues : null, quality_fixed: qFixed || null,
         ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
       }),
     });

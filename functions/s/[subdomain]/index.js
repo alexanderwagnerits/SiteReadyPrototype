@@ -796,6 +796,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     html = html.replace("</body>", waBtn + "\n</body>");
   }
 
+  // Serve-time Cleanup: Uebrig gebliebene Placeholder entfernen
+  html = html.replace(/\{\{[A-Z_]+\}\}/g, "");
+  html = html.replace(/<!-- (LEISTUNGEN|TRUST|ABLAUF|BEWERTUNGEN|FAQ|GALERIE|FAKTEN|PARTNER|KONTAKT_FORM|KONTAKT_INFOS|TEAM|ABOUT_FOTOS|MAPS|FOTO_BAND|CTA_BLOCK) -->/g, "");
+
   return new Response(html, {
     status: 200,
     headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60"},

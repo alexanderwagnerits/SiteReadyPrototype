@@ -745,13 +745,14 @@ function SuccessPage({data,onBack,onPortal}){
   const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
   const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail);
   const regOk=vorname.trim().length>0&&nachname.trim().length>0&&emailValid&&pw.length>=8&&pw===pw2;
+  const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
   const handleOrder=async()=>{
     if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausfüllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // Snapshot der Daten BEVOR signUp den Auth-State aendert und die Seite wechselt
     const snap=JSON.parse(JSON.stringify(data));
-    const sub=snap.firmenname?snap.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
+    const snapSub=snap.firmenname?snap.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
     _orderInProgress=true;
     const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:snap.firmenname,vorname,nachname}}});
     if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);_orderInProgress=false;return;}
@@ -769,7 +770,7 @@ function SuccessPage({data,onBack,onPortal}){
       zvr_zahl:snap.zvr_zahl,vertretungsorgane:snap.vertretungsorgane,gesellschafter:snap.gesellschafter,
       unternehmensgegenstand:snap.unternehmensgegenstand,liquidation:snap.liquidation,
       kammer_berufsrecht:snap.kammer_berufsrecht,aufsichtsbehoerde:snap.aufsichtsbehoerde,
-      stil:snap.stil,layout:snap.layout||null,custom_color:snap.customColor||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:sub,status:"pending",
+      stil:snap.stil,layout:snap.layout||null,custom_color:snap.customColor||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:snapSub,status:"pending",
       facebook:snap.facebook||null,instagram:snap.instagram||null,linkedin:snap.linkedin||null,tiktok:snap.tiktok||null,
       oeffnungszeiten_custom:snap.oeffnungszeitenCustom||null,
       ...(snap.importExtras?.spezialisierung?{spezialisierung:snap.importExtras.spezialisierung}:{}),
@@ -1387,6 +1388,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
                     <div style={{width:32,height:32,borderRadius:6,background:`linear-gradient(135deg,${v.color},${v.accent})`}}/>
                   </div>
                   <div style={{fontSize:".95rem",fontWeight:800,color:T.dark,marginBottom:4}}>{v.label}</div>
+                  <div style={{fontSize:".68rem",fontWeight:600,color:T.accent,marginBottom:6}}>{v.layout==="kompakt"?"Kompaktes Layout":v.layout==="ausfuehrlich"?"Ausf\u00fchrliches Layout":"Standard-Layout"}</div>
                   <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.55,marginBottom:12}}>{v.desc}</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
                     {v.tags.map(t=><span key={t} style={{fontSize:".65rem",padding:"3px 8px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}

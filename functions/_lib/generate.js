@@ -189,7 +189,7 @@ function buildImpressum(o, pal, year) {
 /* ═══ Design-Templates (synchron mit STYLES_MAP in App.js) ═══ */
 const STIL = {
   klassisch: {
-    p:"#0f2b5b", a:"#2563eb", bg:"#f8fafc", s:"#e2e8f0",
+    p:"#0f2b5b", a:"#0d9488", bg:"#f8fafc", s:"#e2e8f0",
     font: "Inter",
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
     r: "4px", rLg: "6px", btnR: "4px",

@@ -745,13 +745,13 @@ function SuccessPage({data,onBack,onPortal}){
   const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
   const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail);
   const regOk=vorname.trim().length>0&&nachname.trim().length>0&&emailValid&&pw.length>=8&&pw===pw2;
-  const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
   const handleOrder=async()=>{
     if(!regOk){setSaveErr("Bitte alle Pflichtfelder ausfüllen.");return;}
     setSaving(true);setSaveErr("");
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // Snapshot der Daten BEVOR signUp den Auth-State aendert und die Seite wechselt
     const snap=JSON.parse(JSON.stringify(data));
+    const sub=snap.firmenname?snap.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
     _orderInProgress=true;
     const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:snap.firmenname,vorname,nachname}}});
     if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);_orderInProgress=false;return;}

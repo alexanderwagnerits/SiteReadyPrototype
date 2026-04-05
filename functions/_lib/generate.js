@@ -574,14 +574,15 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     qIssues.push({type:"placeholder_removed", count:placeholders.length, items:[...new Set(placeholders)]});
   }
 
-  // 2. Uebrig gebliebene HTML-Kommentar-Placeholder entfernen
-  const commentPlaceholders = html.match(/<!-- (LEISTUNGEN|TRUST|ABLAUF|BEWERTUNGEN|FAQ|GALERIE|FAKTEN|PARTNER|KONTAKT_FORM|KONTAKT_INFOS|TEAM|ABOUT_FOTOS|MAPS|FOTO_BAND|CTA_BLOCK|NAV|FOOTER) -->/g) || [];
-  if (commentPlaceholders.length > 0) {
-    for (const cp of commentPlaceholders) {
+  // 2. Uebrig gebliebene HTML-Kommentar-Placeholder entfernen (NUR die, die NICHT serve-time gebraucht werden)
+  // Serve-time Placeholders MUESSEN bleiben: LEISTUNGEN, BEWERTUNGEN, FAQ, GALERIE, FAKTEN, PARTNER, KONTAKT_FORM, KONTAKT_INFOS, TEAM, ABOUT_FOTOS, MAPS, TRUST, ABLAUF, CTA_BLOCK, LEIST_FOTOS
+  const safeToRemove = html.match(/<!-- (FOTO_BAND) -->/g) || [];
+  if (safeToRemove.length > 0) {
+    for (const cp of safeToRemove) {
       html = html.replace(cp, "");
       qFixed++;
     }
-    qIssues.push({type:"comment_placeholder_removed", count:commentPlaceholders.length, items:commentPlaceholders});
+    qIssues.push({type:"legacy_placeholder_removed", count:safeToRemove.length});
   }
 
   // 3. Leere Sections entfernen (Section ohne sichtbaren Inhalt)

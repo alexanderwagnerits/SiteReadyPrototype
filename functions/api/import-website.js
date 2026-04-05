@@ -550,7 +550,7 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
       linkedin: socialLinks.linkedin || "",
       tiktok: socialLinks.tiktok || "",
       merkmale,
-      _meta: {pages_read: pageContents.length+1, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size, duration_ms: duration},
+      _meta: {pages_read: pageContents.length+1, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size},
     });
 
   } catch(e) {

@@ -1859,24 +1859,62 @@ function Portal({session,onLogout}){
     medien:!!(assetUrls.logo||assetUrls.hero),
     impressum:!!(order.unternehmensform||order.uid_nummer),
   }:{};
+  // Wizard: Labels passen sich an Datenquelle an (AI/Import/manuell/leer)
+  const aiTag="\u2728 ";
   const wizardSteps=order?[
-    {label:"Logo hochladen",desc:"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",done:!!assetUrls.logo,page:"hero"},
-    {label:"Titelbild wählen",desc:"Das große Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb, Ihrer Arbeit oder Ihrem Team.",done:!!(assetUrls.hero||assetUrls.foto1),page:"hero"},
-    {label:"Firmenname & Beschreibung prüfen",desc:"Diese Texte stehen ganz oben auf Ihrer Website. Wir haben sie für Sie erstellt — bitte prüfen und bei Bedarf anpassen.",done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
-    {label:"Merkmale angeben",desc:"Sind Sie Meisterbetrieb? Bieten Sie Notdienst oder kostenlosen Kostenvoranschlag? Diese Angaben erscheinen als Badges auf Ihrer Website.",done:!!(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag),page:"branchenfeatures"},
-    {label:"Leistungen prüfen",desc:"Ihre Leistungen werden als Karten auf der Website angezeigt. Wir haben Beschreibungen erstellt — Sie können Texte anpassen und Preise oder Fotos ergänzen.",done:!!(order.leistungen?.length>0),page:"leistungen"},
-    {label:"Über-uns Text prüfen",desc:"Der Vorstellungstext wurde automatisch erstellt. Lesen Sie ihn durch und passen Sie ihn an. Hier können Sie auch Ihr Team und Fotos hinzufügen.",done:!!order.text_ueber_uns,page:"ueberuns"},
-    {label:"Kontaktdaten prüfen",desc:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps. Hier können Sie auch angeben ob Sie z.B. barrierefrei oder per Kartenzahlung erreichbar sind.",done:!!(order.adresse&&order.telefon),page:"kontakt"},
+    {label:assetUrls.logo?"Logo pr\u00fcfen":"Logo hochladen",
+     desc:assetUrls.logo?"Ihr Logo wurde \u00fcbernommen. Pr\u00fcfen Sie ob es korrekt angezeigt wird.":"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",
+     done:!!assetUrls.logo,page:"hero"},
+    {label:assetUrls.hero?"Titelbild pr\u00fcfen":"Titelbild hochladen",
+     desc:assetUrls.hero?"Ihr Titelbild wurde \u00fcbernommen. Pr\u00fcfen Sie ob es gut aussieht.":"Das gro\u00dfe Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb oder Ihrer Arbeit.",
+     done:!!(assetUrls.hero||assetUrls.foto1),page:"hero"},
+    {label:"Firmenname & Beschreibung pr\u00fcfen",
+     desc:"Diese Texte stehen ganz oben auf Ihrer Website. Bitte pr\u00fcfen und bei Bedarf anpassen.",
+     done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
+    {label:(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag)?"Merkmale pr\u00fcfen":"Merkmale angeben",
+     desc:(order.notdienst||order.meisterbetrieb)?"Ihre Merkmale wurden \u00fcbernommen. Pr\u00fcfen Sie ob alles stimmt.":"Sind Sie Meisterbetrieb? Bieten Sie Notdienst oder kostenlosen Kostenvoranschlag? Diese Angaben erscheinen als Badges.",
+     done:!!(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag),page:"branchenfeatures"},
+    {label:isAiGen("leistungen_beschreibungen")?aiTag+"Leistungstexte pr\u00fcfen":"Leistungen pr\u00fcfen",
+     desc:isAiGen("leistungen_beschreibungen")?"Wir haben Beschreibungen f\u00fcr Ihre Leistungen erstellt. Bitte lesen Sie diese durch und passen Sie sie an. Sie k\u00f6nnen auch Preise und Fotos erg\u00e4nzen.":"Ihre Leistungen werden als Karten auf der Website angezeigt. Pr\u00fcfen Sie die Texte und erg\u00e4nzen Sie Preise oder Fotos.",
+     done:!!(order.leistungen?.length>0),page:"leistungen"},
+    {label:isAiGen("text_ueber_uns")?aiTag+"\u00dcber-uns Text pr\u00fcfen":"\u00dcber-uns Text pr\u00fcfen",
+     desc:isAiGen("text_ueber_uns")?"Der Vorstellungstext wurde automatisch erstellt. Lesen Sie ihn durch und machen Sie ihn pers\u00f6nlicher. Hier k\u00f6nnen Sie auch Ihr Team und Fotos hinzuf\u00fcgen.":"\u00dcber-uns Text und Vorteile pr\u00fcfen. Hier k\u00f6nnen Sie auch Ihr Team und Fotos hinzuf\u00fcgen.",
+     done:!!order.text_ueber_uns,page:"ueberuns"},
+    {label:"Kontaktdaten pr\u00fcfen",
+     desc:"Adresse, Telefon und \u00d6ffnungszeiten erscheinen im Kontaktbereich und in Google Maps.",
+     done:!!(order.adresse&&order.telefon),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
-    {label:"Betriebsfotos hochladen",done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
-    {label:"Social Media Profile angeben",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
-    {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
-    {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
-    {label:order.bewertungen?.length?"Kundenbewertungen pr\u00fcfen":"Kundenbewertungen hinzuf\u00fcgen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
-    {label:order.faq?.length?"FAQ pr\u00fcfen":"FAQ hinzuf\u00fcgen",done:!!(order.faq?.some(f=>f.frage)),page:"faq"},
-    {label:"WhatsApp-Button aktivieren",done:!!order.whatsapp,page:"kontakt"},
-    {label:"Layout & Design anpassen",done:!!(order.layout||order.custom_color||order.custom_font),page:"design"},
+    {label:"Betriebsfotos hochladen",
+     desc:"Professionelle Fotos sind der gr\u00f6\u00dfte Hebel f\u00fcr mehr Anfragen.",
+     done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
+    {label:order.team_members?.some(m=>m.name)?"Team pr\u00fcfen":"Team vorstellen",
+     desc:order.team_members?.some(m=>m.name)?"Teammitglieder wurden \u00fcbernommen. Pr\u00fcfen Sie Namen und Rollen.":"Zeigen Sie Ihr Team — das schafft Vertrauen.",
+     done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
+    {label:order.bewertungen?.some(b=>b.text)?(isAiGen("bewertungen")?aiTag+"Bewertungen pr\u00fcfen":"Bewertungen pr\u00fcfen"):"Kundenbewertungen hinzuf\u00fcgen",
+     desc:order.bewertungen?.some(b=>b.text)?"Pr\u00fcfen Sie die \u00fcbernommenen Bewertungen.":"Echte Kundenstimmen steigern das Vertrauen.",
+     done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
+    {label:order.faq?.some(f=>f.frage)?(isAiGen("faq")?aiTag+"FAQ pr\u00fcfen":"FAQ pr\u00fcfen"):"FAQ hinzuf\u00fcgen",
+     desc:order.faq?.some(f=>f.frage)?"Pr\u00fcfen Sie die h\u00e4ufig gestellten Fragen.":"Beantworten Sie h\u00e4ufige Kundenfragen direkt auf Ihrer Website.",
+     done:!!(order.faq?.some(f=>f.frage)),page:"faq"},
+    {label:order.fakten?.some(f=>f.zahl)?"Zahlen & Fakten pr\u00fcfen":"Zahlen & Fakten hinzuf\u00fcgen",
+     desc:order.fakten?.some(f=>f.zahl)?"Pr\u00fcfen Sie die \u00fcbernommenen Zahlen.":"z.B. \u201e15+ Jahre Erfahrung\u201c — beeindruckt Besucher.",
+     done:!!(order.fakten?.some(f=>f.zahl)),page:"fakten"},
+    {label:order.partner?.some(p=>p.name)?"Partner pr\u00fcfen":"Partner & Zertifikate hinzuf\u00fcgen",
+     desc:order.partner?.some(p=>p.name)?"Pr\u00fcfen Sie die \u00fcbernommenen Partner.":"WKO, T\u00dcV, ISO — zeigen Sie Ihre Mitgliedschaften.",
+     done:!!(order.partner?.some(p=>p.name)),page:"partner"},
+    {label:(order.facebook||order.instagram||order.linkedin||order.tiktok)?"Social Media pr\u00fcfen":"Social Media Profile angeben",
+     desc:"Ihre Profile erscheinen als Icons auf der Website.",
+     done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
+    {label:"Preise zu Leistungen erg\u00e4nzen",
+     desc:"Preisangaben helfen Kunden bei der Entscheidung.",
+     done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
+    {label:"WhatsApp-Button aktivieren",
+     desc:"Kunden k\u00f6nnen Sie direkt \u00fcber WhatsApp kontaktieren.",
+     done:!!order.whatsapp,page:"kontakt"},
+    {label:"Layout & Design anpassen",
+     desc:"Farben, Schriftart und Seitenaufbau individualisieren.",
+     done:!!(order.layout||order.custom_color||order.custom_font),page:"design"},
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;
@@ -3369,15 +3407,19 @@ function Portal({session,onLogout}){
         })}
         {wizardOptional.length>0&&<>
           <div style={{fontSize:".68rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"14px 0 6px"}}>Optional</div>
-          {wizardOptional.map((item,idx)=>(
-            <button key={idx} className="pt-ast-item" onClick={()=>nav(item.page)} style={{paddingLeft:0}}>
-              <div className={`pt-ast-ck${item.done?" done":""}`}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
-              {item.isNew&&<span className="pt-wiz-new">Neu</span>}
-            </button>
-          ))}
+          {wizardOptional.map((item,idx)=>{
+            const needsReview=!item.done&&item.label.includes("pr\u00fcfen");
+            return <div key={idx}>
+              <button className="pt-ast-item" onClick={()=>nav(item.page)} style={{paddingLeft:0}}>
+                <div className={`pt-ast-ck${item.done?" done":""}`}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
+                {needsReview&&<span style={{fontSize:".6rem",padding:"1px 6px",borderRadius:100,background:"#fef3c7",color:"#92400e",fontWeight:600,marginLeft:4,flexShrink:0}}>pr\u00fcfen</span>}
+              </button>
+              {needsReview&&item.desc&&<div style={{paddingLeft:28,marginTop:-4,marginBottom:8,fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{item.desc}</div>}
+            </div>;
+          })}
         </>}
       </div>
       </>:<div className="pt-wiz-collapsed" onClick={()=>setWizardOpen(true)} title="Assistent öffnen">

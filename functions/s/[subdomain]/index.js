@@ -153,7 +153,7 @@ export async function onRequestGet({params, env}) {
         `@media(min-width:900px){` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:start}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-accent-line{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:2/span 9;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px)}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px);align-self:center}` +
         `}</style>`;
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
       html = html.replace('</head>', heroStyle + '</head>');
@@ -187,12 +187,15 @@ export async function onRequestGet({params, env}) {
   const berufsregNr = o.berufsregister_nr ? `<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:.75rem;opacity:.4"><span style="text-transform:uppercase;letter-spacing:.1em;font-weight:600">Berufsregister-Nr.</span><br><span style="font-weight:500;opacity:1">${o.berufsregister_nr}</span></div>` : "";
   if (teamMembers.length > 0 && html.includes("<!-- TEAM -->")) {
     const personIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-    const cards = teamMembers.map(m => {
+    const avatarColors = ["#2563eb","#6366f1","#0891b2","#059669","#d97706","#dc2626","#7c3aed","#db2777"];
+    const cards = teamMembers.map((m, idx) => {
       const hasImg = !!m.foto;
+      const initials = esc(m.name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
+      const color = avatarColors[idx % avatarColors.length];
       const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${m.name}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
-        : `<div style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:3px solid rgba(255,255,255,.08)"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
-      return `<div style="display:flex;align-items:center;gap:18px;padding:18px 0">${avatar}<div><div style="font-weight:700;font-size:1.15rem;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.9rem;opacity:.55;margin-top:4px">${m.rolle}</div>` : ""}</div></div>`;
+        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
+        : `<div style="width:72px;height:72px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:.02em">${initials}</div>`;
+      return `<div style="display:flex;align-items:center;gap:18px;padding:14px 0">${avatar}<div><div style="font-weight:700;font-size:1.05rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.85rem;opacity:.55;margin-top:3px">${esc(m.rolle)}</div>` : ""}</div></div>`;
     }).join("");
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
   } else if (berufsregNr) {

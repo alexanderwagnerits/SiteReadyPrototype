@@ -152,10 +152,10 @@ export async function onRequestGet({params, env}) {
       const heroStyle = `<style>` +
         `.hero-img{display:none}` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center}` +
-        `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-accent-line{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/-1;border-radius:var(--rLg,8px);overflow:hidden}` +
-        `.hero-img img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3}` +
+        `.hero-inner{display:flex!important;align-items:center;gap:48px;justify-content:space-between}` +
+        `.hero-inner>*:not(.hero-img){flex:1;min-width:0}` +
+        `.hero-img{display:block!important;flex:0 0 45%;border-radius:var(--rLg,8px);overflow:hidden}` +
+        `.hero-img img{width:100%;display:block;border-radius:var(--rLg,8px)}` +
         `}</style>`;
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
       html = html.replace('</head>', heroStyle + '</head>');

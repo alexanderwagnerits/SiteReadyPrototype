@@ -522,7 +522,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   // Zahlen & Fakten — Counter-Blocks
   const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
   const showFakten = (o.sections_visible && o.sections_visible.fakten) || (layout === "ausfuehrlich" && faktenItems.length > 0);
-  if (showFakten && faktenItems.length > 0 && html.includes("<!-- FAKTEN -->")) {
+  if (showFakten && faktenItems.length >= 2 && html.includes("<!-- FAKTEN -->")) {
     const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
     const faktenFontWeight = isElegant ? "300" : "800";
     const faktenFontSize = isElegant ? "clamp(1.4rem,3.5vw,2rem)" : "clamp(1.6rem,4vw,2.4rem)";
@@ -819,7 +819,8 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 /* Galerie: 3col → 2col */
 .sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
 /* Ablauf horizontal: Arrows verstecken, vertikal stapeln */
-.sr-ablauf-h{flex-direction:column!important;gap:24px!important}
+.sr-ablauf-h{flex-direction:column!important;gap:24px!important;align-items:center!important}
+.sr-ablauf-h>div:not(.sr-ablauf-arrow){width:100%!important;max-width:320px}
 .sr-ablauf-h .sr-ablauf-arrow{display:none!important}
 /* Ausfuehrliche Leistungen: Foto-Grid → Stack */
 .sr-leist-grid [style*="grid-template-columns:160px"]{grid-template-columns:1fr!important}

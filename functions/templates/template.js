@@ -339,19 +339,7 @@ a{color:inherit}
 .stil-elegant .sec-cta-block{padding:80px 0}
 .stil-elegant .sec-partner{border-top:1px solid var(--sep)}
 
-/* ══════════════════════════════════════════════════════
-   STICKY MOBILE CTA
-   ══════════════════════════════════════════════════════ */
-.sr-sticky-cta{display:none}
-@media(max-width:768px){
-body{padding-bottom:72px}
-.sr-sticky-cta{display:block;position:fixed;bottom:0;left:0;right:0;z-index:998;padding:12px 16px;background:var(--primary);box-shadow:0 -4px 20px rgba(0,0,0,.15)}
-.sr-sticky-cta a{display:block;background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:var(--r);font-weight:700;font-size:.95rem;text-decoration:none;font-family:var(--font)}
-.sr-sticky-cta a:active{opacity:.85}
-.stil-modern .sr-sticky-cta a{border-radius:100px;box-shadow:0 4px 16px color-mix(in srgb,var(--accent) 30%,transparent)}
-.stil-elegant .sr-sticky-cta a{font-weight:500;letter-spacing:.02em}
-.stil-elegant .sr-sticky-cta{box-shadow:0 -2px 12px rgba(0,0,0,.1)}
-}
+/* Sticky CTA entfernt — zu aufdringlich auf Mobile */
 
 /* ══════════════════════════════════════════════════════
    CUSTOM STIL (erbt Basis, nutzt CSS-Variablen)
@@ -475,8 +463,6 @@ ${socialHtml}
 <!-- PARTNER -->
 
 ${buchungslinkHtml}
-
-${stickyCtaHtml ? `<div class="sr-sticky-cta">${stickyCtaHtml}</div>` : ""}
 
 <!-- FOOTER -->
 

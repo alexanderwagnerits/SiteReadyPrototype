@@ -510,25 +510,29 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   let heroIsPlaceholder = false;
   if (!o.url_hero) {
     try {
-      // Branchenspezifische Suchbegriffe (ohne Personen)
-      const searchTerms = {
-        elektro:"electrical wiring workshop",installateur:"plumbing pipes tools",maler:"house painting wall",
-        tischler:"woodworking workshop",friseur:"hair salon interior empty",kosmetik:"beauty salon interior",
-        restaurant:"restaurant interior empty",cafe:"coffee shop interior",baeckerei:"bakery bread display",
-        arzt:"medical office clean",zahnarzt:"dental office clean",physiotherapie:"physiotherapy room",
-        gaertner:"garden landscaping",reinigung:"cleaning service",kfz:"auto repair garage",
-        fotograf:"photography studio",immobilien:"real estate building",steuerberater:"modern office desk",
-        rechtsanwalt:"law office bookshelf",fahrschule:"driving school car",yoga:"yoga studio empty",
-        massage:"massage therapy room",apotheke:"pharmacy interior",optiker:"optician glasses display",
+      // Kuratierte Unsplash-Bild-IDs pro Branche (dauerhaft verfügbar, kein API-Key nötig)
+      // Format: https://images.unsplash.com/photo-{ID}?w=1200&h=630&fit=crop&q=80
+      const stockPhotos = {
+        elektro:"photo-1621905252507-b35492cc74b4",installateur:"photo-1585704032915-c3400ca199e7",
+        maler:"photo-1562259949-e8e7689d7828",tischler:"photo-1504148455328-c376907d081c",
+        friseur:"photo-1560066984-138dadb4c035",kosmetik:"photo-1570172619644-dfd03ed5d881",
+        restaurant:"photo-1517248135467-4c7edcad34c4",cafe:"photo-1554118811-1e0d58224f24",
+        baeckerei:"photo-1509440159596-0249088772ff",arzt:"photo-1631217868264-e5b90bb7e133",
+        zahnarzt:"photo-1629909613654-28e377c37b09",physiotherapie:"photo-1576091160550-2173dba999ef",
+        gaertner:"photo-1585320806297-9794b3e4eeae",reinigung:"photo-1581578731548-c64695cc6952",
+        kfz:"photo-1487754180451-c456f719a1fc",fotograf:"photo-1554048612-b6a482bc67e5",
+        immobilien:"photo-1560518883-ce09059eeffa",steuerberater:"photo-1497366216548-37526070297c",
+        rechtsanwalt:"photo-1589829545856-d10d557cf95f",fahrschule:"photo-1449965408869-eaa3f722e40d",
+        yoga:"photo-1545205597-3d9d02c29597",massage:"photo-1544161515-4ab6ce6db874",
+        apotheke:"photo-1585435557343-3985ac245e7a",optiker:"photo-1574258495973-f010dfbb5371",
+        trainer:"photo-1534438327276-14e5300c3a48",versicherung:"photo-1450101499163-c8848e968838",
       };
       const branche = (o.branche || "").toLowerCase();
-      const query = searchTerms[branche] || "small business storefront";
-      // Unsplash Source (kein API-Key noetig, liefert direktes Bild)
-      const unsplashUrl = `https://source.unsplash.com/1200x630/?${encodeURIComponent(query)}`;
-      const imgRes = await fetch(unsplashUrl, {signal: AbortSignal.timeout(8000), redirect: "follow"});
+      const photoId = stockPhotos[branche] || "photo-1497366216548-37526070297c"; // Fallback: modernes Büro
+      const imgUrl = `https://images.unsplash.com/${photoId}?w=1200&h=630&fit=crop&q=80`;
+      const imgRes = await fetch(imgUrl, {signal: AbortSignal.timeout(8000)});
       if (imgRes.ok && imgRes.headers.get("content-type")?.startsWith("image/")) {
         const imgBlob = await imgRes.arrayBuffer();
-        // In Supabase Storage speichern
         const storagePath = `placeholders/${o.id}/hero.jpg`;
         const uploadRes = await fetch(
           `${env.SUPABASE_URL}/storage/v1/object/customer-assets/${storagePath}`,
@@ -545,7 +549,6 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
         );
         if (uploadRes.ok) {
           const publicUrl = `${env.SUPABASE_URL}/storage/v1/object/public/customer-assets/${storagePath}`;
-          // url_hero setzen + placeholder flag
           await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
             method: "PATCH",
             headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
@@ -556,7 +559,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
         }
       }
     } catch(e) {
-      // Stockfoto ist optional — kein Blocker wenn es fehlschlaegt
+      // Stockfoto ist optional — kein Blocker wenn es fehlschlägt
     }
   }
 

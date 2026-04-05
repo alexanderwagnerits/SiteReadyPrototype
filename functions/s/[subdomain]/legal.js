@@ -28,7 +28,7 @@ function buildImpressumRows(o) {
   } else if (uf === "gmbh") {
     add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
     add("Firmenbuchgericht", o.firmenbuchgericht);
-    add("Gesch\u00e4ftsf\u00fchrer", o.geschaeftsfuehrer);
+    add("Geschäftsführer", o.geschaeftsfuehrer);
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "og" || uf === "kg") {
     add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
@@ -57,18 +57,18 @@ function buildImpressumRows(o) {
   // Berufsbezeichnung + Verleihungsstaat (§ 5 ECG Abs. 1 Z 9)
   if (o.berufsbezeichnung) {
     add("Berufsbezeichnung", o.berufsbezeichnung);
-    add("Verleihungsstaat", o.verleihungsstaat || "\u00d6sterreich");
+    add("Verleihungsstaat", o.verleihungsstaat || "Österreich");
   }
 
   if (o.aufsichtsbehoerde) {
-    add("Aufsichtsbeh\u00f6rde", o.aufsichtsbehoerde);
+    add("Aufsichtsbehörde", o.aufsichtsbehoerde);
   } else if (uf !== "verein" && uf !== "gesnbr") {
-    add("Aufsichtsbeh\u00f6rde", "Zust\u00e4ndige Bezirksverwaltungsbeh\u00f6rde");
+    add("Aufsichtsbehörde", "Zuständige Bezirksverwaltungsbehörde");
   }
   if (o.kammer_berufsrecht) {
     add("Kammer / Berufsrecht", o.kammer_berufsrecht);
   } else if (uf !== "verein" && uf !== "gesnbr" && uf !== "einzelunternehmen") {
-    add("Mitglied der", "Wirtschaftskammer \u00d6sterreich");
+    add("Mitglied der", "Wirtschaftskammer Österreich");
     add("Berufsrecht", "Gewerbeordnung (www.ris.bka.gv.at)");
   }
   return {rows, firmaVoll, adresse};
@@ -108,7 +108,7 @@ function buildLegalNav(o, stil, subdomain) {
 <a href="/s/${subdomain}" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">${logoHtml}</a>
 <div class="nav-links">
 <a href="/s/${subdomain}#leistungen" class="nav-link">Leistungen</a>
-<a href="/s/${subdomain}#ueber-uns" class="nav-link">\u00dcber uns</a>
+<a href="/s/${subdomain}#ueber-uns" class="nav-link">Über uns</a>
 <a href="/s/${subdomain}#kontakt" class="nav-link">Kontakt</a>
 ${tel ? `<a href="${telHref}" class="nav-link nav-cta">${telDisplay}</a>` : ""}
 </div>
@@ -118,7 +118,7 @@ ${tel ? `<a href="${telHref}" class="nav-link nav-cta">${telDisplay}</a>` : ""}
 </div>
 <div class="mob-menu" id="mob-menu">
 <a href="/s/${subdomain}#leistungen" class="mob-link">Leistungen</a>
-<a href="/s/${subdomain}#ueber-uns" class="mob-link">\u00dcber uns</a>
+<a href="/s/${subdomain}#ueber-uns" class="mob-link">Über uns</a>
 <a href="/s/${subdomain}#kontakt" class="mob-link">Kontakt</a>
 ${tel ? `<a href="${telHref}" class="mob-cta">${telDisplay} \u2014 Jetzt anrufen</a>` : ""}
 </div>
@@ -164,7 +164,7 @@ ${socialIconsHtml}
 <div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Navigation</div>
 <div style="display:flex;flex-direction:column;gap:10px">
 <a href="/s/${subdomain}#leistungen" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Leistungen</a>
-<a href="/s/${subdomain}#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">\u00dcber uns</a>
+<a href="/s/${subdomain}#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Über uns</a>
 <a href="/s/${subdomain}#kontakt" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Kontakt</a>
 <a href="/s/${subdomain}/impressum" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Impressum</a>
 <a href="/s/${subdomain}/datenschutz" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Datenschutz</a>
@@ -248,11 +248,20 @@ export async function buildLegalPage(subdomain, page, env) {
   if (!rows.length) return new Response("Nicht gefunden", {status: 404});
 
   const o = rows[0];
-  const stil = STIL_CONFIG[o.stil] || STIL_CONFIG.klassisch;
-  // Fuer custom: Farbe/Font aus Order uebernehmen
-  if (o.stil === "custom") {
-    if (o.custom_color) { stil.p = o.custom_color; stil.a = o.custom_color; }
+  const baseStil = STIL_CONFIG[o.stil] || STIL_CONFIG.klassisch;
+  const stil = {...baseStil};
+  // Custom-Overrides anwenden (gleiche Logik wie index.js)
+  if (o.custom_color) stil.p = o.custom_color;
+  if (o.custom_accent) stil.a = o.custom_accent;
+  if (o.custom_bg) stil.bg = o.custom_bg;
+  if (o.custom_sep) stil.s = o.custom_sep;
+  if (o.custom_font) {
+    const FONTS={dm_sans:"DM Sans",inter:"Inter",outfit:"Outfit",poppins:"Poppins",montserrat:"Montserrat",raleway:"Raleway",open_sans:"Open Sans",lato:"Lato",roboto:"Roboto",nunito:"Nunito",work_sans:"Work Sans",manrope:"Manrope",space_grotesk:"Space Grotesk",plus_jakarta:"Plus Jakarta Sans",rubik:"Rubik",source_serif:"Source Serif 4",playfair:"Playfair Display",lora:"Lora",merriweather:"Merriweather",dm_serif:"DM Serif Display"};
+    const FURLS={dm_sans:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",inter:"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",outfit:"https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap",poppins:"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap",montserrat:"https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",raleway:"https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap",open_sans:"https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap",lato:"https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap",roboto:"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap",nunito:"https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap",work_sans:"https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap",manrope:"https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",space_grotesk:"https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",plus_jakarta:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",rubik:"https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",source_serif:"https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap",playfair:"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap",lora:"https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",merriweather:"https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap",dm_serif:"https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap"};
+    if (FONTS[o.custom_font]) stil.font = FONTS[o.custom_font];
+    if (FURLS[o.custom_font]) stil.url = FURLS[o.custom_font];
   }
+  if (o.custom_radius) stil.r = o.custom_radius;
 
   let content, title;
 
@@ -261,30 +270,30 @@ export async function buildLegalPage(subdomain, page, env) {
     const {rows: irows, firmaVoll, adresse} = buildImpressumRows(o);
     const tRows = irows.map(([l,v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join("");
     content = `<h1>Impressum</h1>
-<p class="h1-sub">Angaben gem\u00e4\u00df \u00a7 5 ECG und \u00a7 25 MedienG</p>
+<p class="h1-sub">Angaben gemäß § 5 ECG und § 25 MedienG</p>
 
 <table>${tRows}</table>
 
 <h2>Online-Streitbeilegung</h2>
-<p>Die Europ\u00e4ische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a></p>
+<p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a></p>
 <p>Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 
-<h2>Haftung f\u00fcr Links</h2>
-<p>Diese Website enth\u00e4lt Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. F\u00fcr die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf m\u00f6gliche Rechtsverst\u00f6\u00dfe \u00fcberpr\u00fcft. Rechtswidrige Inhalte waren nicht erkennbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+<h2>Haftung für Links</h2>
+<p>Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren nicht erkennbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
 
 <h2>Urheberrecht</h2>
-<p>Die Inhalte dieser Website unterliegen dem \u00f6sterreichischen Urheberrecht. Die Vervielf\u00e4ltigung, Bearbeitung, Verbreitung und jede Art der Verwertung au\u00dferhalb der Grenzen des Urheberrechtes bed\u00fcrfen der schriftlichen Zustimmung des Betreibers.</p>
+<p>Die Inhalte dieser Website unterliegen dem österreichischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Betreibers.</p>
 
-<p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte pr\u00fcfen Sie die Richtigkeit aller Informationen.</p>`;
+<p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;
   } else {
-    title = "Datenschutzerkl\u00e4rung";
+    title = "Datenschutzerklärung";
     const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
     const uf = o.unternehmensform || "";
     const firmaVoll = o.firmenname + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
     const adresse = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
 
-    content = `<h1>Datenschutzerkl\u00e4rung</h1>
-<p class="h1-sub">Gem\u00e4\u00df DSGVO (EU 2016/679) und TKG 2021</p>
+    content = `<h1>Datenschutzerklärung</h1>
+<p class="h1-sub">Gemäß DSGVO (EU 2016/679) und TKG 2021</p>
 
 <h2>Verantwortlicher</h2>
 <p><strong>${firmaVoll}</strong><br>
@@ -293,47 +302,47 @@ ${adresse}${o.email ? `<br>${o.email}` : ""}${o.telefon ? `<br>${o.telefon}` : "
 <h2>Auftragsverarbeiter</h2>
 
 <h3>Website-Erstellung und Betrieb</h3>
-<p>Wagner IT-Solutions e.U. (SiteReady), Operngasse 17/23, 1040 Wien. SiteReady erstellt und betreibt diese Website im Auftrag des Verantwortlichen auf Grundlage eines Auftragsverarbeitungsvertrags gem\u00e4\u00df Art. 28 DSGVO.</p>
+<p>Wagner IT-Solutions e.U. (SiteReady), Operngasse 17/23, 1040 Wien. SiteReady erstellt und betreibt diese Website im Auftrag des Verantwortlichen auf Grundlage eines Auftragsverarbeitungsvertrags gemäß Art. 28 DSGVO.</p>
 
 <h3>Hosting und Auslieferung</h3>
-<p>Cloudflare Inc., 101 Townsend St, San Francisco, CA 94107, USA. Diese Website wird \u00fcber das Cloudflare-CDN ausgeliefert. Dabei werden Zugriffsdaten (IP-Adresse, Zeitstempel, aufgerufene Seite, Browser) verarbeitet. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Speicherdauer: bis 30 Tage. Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></p>
+<p>Cloudflare Inc., 101 Townsend St, San Francisco, CA 94107, USA. Diese Website wird über das Cloudflare-CDN ausgeliefert. Dabei werden Zugriffsdaten (IP-Adresse, Zeitstempel, aufgerufene Seite, Browser) verarbeitet. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Speicherdauer: bis 30 Tage. Weitere Informationen: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></p>
 
 <h3>Datenbank und Speicherung</h3>
-<p>Supabase Inc. Website-Inhalte, Kontaktanfragen und Betriebsdaten werden in einer PostgreSQL-Datenbank bei Supabase gespeichert (Serverstandort: AWS eu-central-1, Frankfurt). Supabase verarbeitet Daten als Sub-Auftragsverarbeiter im Auftrag von Wagner IT-Solutions e.U. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und f DSGVO. Speicherdauer: Vertragsdauer zuz\u00fcglich gesetzlicher Aufbewahrungsfrist. Weitere Informationen: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></p>
+<p>Supabase Inc. Website-Inhalte, Kontaktanfragen und Betriebsdaten werden in einer PostgreSQL-Datenbank bei Supabase gespeichert (Serverstandort: AWS eu-central-1, Frankfurt). Supabase verarbeitet Daten als Sub-Auftragsverarbeiter im Auftrag von Wagner IT-Solutions e.U. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und f DSGVO. Speicherdauer: Vertragsdauer zuzüglich gesetzlicher Aufbewahrungsfrist. Weitere Informationen: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></p>
 
 <h2>Datenverarbeitungen</h2>
 
 <h3>Webschriften (Google Fonts)</h3>
-<p>Diese Website l\u00e4dt Schriftarten von Google Fonts. Dabei wird Ihre IP-Adresse an Server von Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA \u00fcbertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
+<p>Diese Website lädt Schriftarten von Google Fonts. Dabei wird Ihre IP-Adresse an Server von Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA übertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
 
 <h3>Karteneinbettung (Google Maps)</h3>
-<p>Diese Website bindet Google Maps zur Standortanzeige ein. Beim Laden der Karte wird Ihre IP-Adresse an Server von Google LLC \u00fcbertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
+<p>Diese Website bindet Google Maps zur Standortanzeige ein. Beim Laden der Karte wird Ihre IP-Adresse an Server von Google LLC übertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Drittlandtransfer USA auf Basis von Standardvertragsklauseln. Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
 
 <h3>Kontaktformular</h3>
-<p>Bei Nutzung des Kontaktformulars werden Name, E-Mail-Adresse, Telefonnummer (optional) und Ihre Nachricht verarbeitet. Die Daten werden in einer Datenbank bei Supabase (AWS eu-central-1, Frankfurt) gespeichert und ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage verwendet. Eine Weitergabe an Dritte findet nicht statt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherdauer: bis zur Erledigung der Anfrage, danach gesetzliche Aufbewahrungsfrist von 7 Jahren.</p>
+<p>Bei Nutzung des Kontaktformulars werden Name, E-Mail-Adresse, Telefonnummer (optional) und Ihre Nachricht verarbeitet. Die Daten werden in einer Datenbank bei Supabase (AWS eu-central-1, Frankfurt) gespeichert und ausschließlich zur Bearbeitung Ihrer Anfrage verwendet. Eine Weitergabe an Dritte findet nicht statt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherdauer: bis zur Erledigung der Anfrage, danach gesetzliche Aufbewahrungsfrist von 7 Jahren.</p>
 
 <h3>Kontakt per Telefon und E-Mail</h3>
-<p>Bei Kontaktaufnahme per Telefon oder E-Mail verarbeiten wir Ihre Kontaktdaten und Ihr Anliegen ausschlie\u00dflich zur Bearbeitung Ihrer Anfrage. Eine Weitergabe an Dritte findet nicht statt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherdauer: bis zur Erledigung der Anfrage, danach gesetzliche Aufbewahrungsfrist von 7 Jahren.</p>
+<p>Bei Kontaktaufnahme per Telefon oder E-Mail verarbeiten wir Ihre Kontaktdaten und Ihr Anliegen ausschließlich zur Bearbeitung Ihrer Anfrage. Eine Weitergabe an Dritte findet nicht statt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Speicherdauer: bis zur Erledigung der Anfrage, danach gesetzliche Aufbewahrungsfrist von 7 Jahren.</p>
 
 <h3>Cookies und Tracking</h3>
 <p>Diese Website verwendet keine Cookies und keine Analyse- oder Werbe-Tools. Es werden keine Nutzerprofile erstellt.</p>
 
 <h2>Ihre Rechte</h2>
-<p>Sie haben gegen\u00fcber dem Verantwortlichen folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
+<p>Sie haben gegenüber dem Verantwortlichen folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
 <ul>
-<li>Auskunft \u00fcber Ihre gespeicherten Daten (Art. 15 DSGVO)</li>
+<li>Auskunft über Ihre gespeicherten Daten (Art. 15 DSGVO)</li>
 <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
-<li>L\u00f6schung Ihrer Daten (Art. 17 DSGVO)</li>
-<li>Einschr\u00e4nkung der Verarbeitung (Art. 18 DSGVO)</li>
-<li>Daten\u00fcbertragbarkeit (Art. 20 DSGVO)</li>
+<li>Löschung Ihrer Daten (Art. 17 DSGVO)</li>
+<li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+<li>Datenübertragbarkeit (Art. 20 DSGVO)</li>
 <li>Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li>
 </ul>
-<p>Beschwerden k\u00f6nnen Sie bei der \u00f6sterreichischen Datenschutzbeh\u00f6rde einreichen: Barichgasse 40\u201342, 1030 Wien \u2014 <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a></p>
+<p>Beschwerden können Sie bei der österreichischen Datenschutzbehörde einreichen: Barichgasse 40\u201342, 1030 Wien \u2014 <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a></p>
 
 <h2>Kontakt bei Datenschutzfragen</h2>
 <p>Bei Fragen zum Datenschutz wenden Sie sich direkt an den Verantwortlichen: ${o.email ? `<a href="mailto:${o.email}">${o.email}</a>` : firmaVoll}${o.telefon ? ` \u2014 ${o.telefon}` : ""}</p>
 
-<p class="note">Diese Datenschutzerkl\u00e4rung wurde auf Basis der eingesetzten Dienste und technischen Parameter erstellt. F\u00fcr eine rechtsverbindliche Pr\u00fcfung empfehlen wir die Kontrolle durch einen Datenschutzexperten.</p>`;
+<p class="note">Diese Datenschutzerklärung wurde auf Basis der eingesetzten Dienste und technischen Parameter erstellt. Für eine rechtsverbindliche Prüfung empfehlen wir die Kontrolle durch einen Datenschutzexperten.</p>`;
   }
 
   const html = legalShell(o, stil, subdomain, title, content);

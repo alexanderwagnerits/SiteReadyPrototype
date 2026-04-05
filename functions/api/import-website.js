@@ -70,13 +70,11 @@ export async function onRequestPost({request, env}) {
     const subpagePatterns = [
       /kontakt|contact/i, /impressum|imprint|legal/i, /leistungen|services|angebot/i,
       /ueber-uns|about|team/i, /preise|pricing/i, /galerie|gallery|portfolio/i,
-      /schwerpunkt/i, /angebot/i, /behandlung/i, /therapie/i,
+      /schwerpunkt/i, /angebot/i, /behandlung/i, /therapie/i, /faq|haeufige/i, /partner|referenz|zertifik/i,
     ];
-    // Link-Text Patterns (fuer Wix/JS-Seiten wo URLs nicht sprechend sind)
-    const linkTextPatterns = /kontakt|impressum|leistung|service|angebot|\u00fcber\s*(uns|mich)|about|team|preis|schwerpunkt|behandlung|therapie|galerie|portfolio/i;
+    const linkTextPatterns = /kontakt|impressum|leistung|service|angebot|\u00fcber\s*(uns|mich)|about|team|preis|schwerpunkt|behandlung|therapie|galerie|portfolio|faq|h\u00e4ufig|partner|referenz|zertifik/i;
     const foundLinks = new Set();
     if (mainHtml) {
-      // URL-basierte Erkennung
       for (const m of mainHtml.matchAll(/href=["']([^"'#]+)["']/gi)) {
         let href = m[1];
         if (href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("javascript:")) continue;
@@ -88,7 +86,6 @@ export async function onRequestPost({request, env}) {
           if (subpagePatterns.some(p => p.test(path))) foundLinks.add(href);
         } catch(_) {}
       }
-      // Link-Text-basierte Erkennung (wichtig fuer Wix/JS-Seiten)
       for (const m of mainHtml.matchAll(/<a[^>]+href=["']([^"'#]+)["'][^>]*>([^<]{2,40})<\/a>/gi)) {
         const href = m[1];
         const text = m[2].trim();
@@ -108,14 +105,19 @@ export async function onRequestPost({request, env}) {
       try {
         const r = await fetch("https://r.jina.ai/" + pageUrl, {
           headers: {"Accept": "text/plain", "X-Return-Format": "text"},
-          signal: AbortSignal.timeout(12000),
+          signal: AbortSignal.timeout(15000),
         });
-        if (r.ok) return await r.text();
+        if (r.ok) {
+          const text = await r.text();
+          // Jina gibt manchmal Fehlermeldungen statt Inhalt zurueck
+          if (text.includes("Unable to") || text.includes("Error:") || text.length < 30) return "";
+          return text;
+        }
       } catch(e) {}
       return "";
     };
 
-    // Hauptseite via Jina (rendert JS, besser als HTML-Strip)
+    // Hauptseite via Jina
     let mainText = await fetchJina(cleanUrl);
 
     // Fallback: HTML-Strip wenn Jina fehlschlaegt
@@ -132,7 +134,7 @@ export async function onRequestPost({request, env}) {
 
     if (!mainText || mainText.length < 50) {
       await log.error("import", {message: "Website nicht lesbar", url: cleanUrl});
-      return Response.json({error: "Die Website konnte nicht gelesen werden. Mögliche Gründe: Die Seite ist passwortgeschützt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar. Sie können die Daten manuell eingeben oder das Problem unter support@siteready.at melden — wir schauen uns an, woran es liegt."}, {status: 400});
+      return Response.json({error: "Die Website konnte nicht gelesen werden. M\u00f6gliche Gr\u00fcnde: Die Seite ist passwortgesch\u00fctzt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar. Sie k\u00f6nnen die Daten manuell eingeben oder das Problem unter support@siteready.at melden \u2014 wir schauen uns an, woran es liegt."}, {status: 400});
     }
 
     // Links aus Jina-Haupttext extrahieren (fuer JS-Seiten mit Wix-Routing)
@@ -156,23 +158,23 @@ export async function onRequestPost({request, env}) {
       if (phone.length >= 8) allPhones.add(phone);
     }
 
-    /* ═══ 5. UNTERSEITEN LADEN (parallel, max 5) ═══ */
+    /* ═══ 5. UNTERSEITEN LADEN (parallel, max 8) ═══ */
     const subpageTexts = {};
     const subpageUrls = [...foundLinks].slice(0, 5);
 
-    // Auch Standard-Pfade versuchen falls nicht in Links gefunden
     const standardPaths = {
       kontakt: ["/kontakt", "/contact", "/kontakt.html"],
       impressum: ["/impressum", "/impressum.html", "/de/impressum"],
       leistungen: ["/leistungen", "/services", "/angebot", "/leistungen.html", "/schwerpunkte", "/behandlungen", "/preise"],
       ueberuns: ["/ueber-uns", "/about", "/about-us", "/team", "/ueber-mich"],
+      faq: ["/faq", "/haeufige-fragen", "/fragen"],
     };
 
     for (const [key, paths] of Object.entries(standardPaths)) {
       if (!subpageUrls.some(u => paths.some(p => u.toLowerCase().includes(p.replace("/", ""))))) {
         for (const p of paths) {
           subpageUrls.push(base + p);
-          break; // nur ersten Pfad pro Kategorie
+          break;
         }
       }
     }
@@ -180,7 +182,6 @@ export async function onRequestPost({request, env}) {
     const uniqueUrls = [...new Set(subpageUrls)].slice(0, 8);
 
     await Promise.all(uniqueUrls.map(async (pageUrl) => {
-      // HTML fetch fuer Emails/Phones
       try {
         const r = await fetch(pageUrl, {
           headers: {"User-Agent": "Mozilla/5.0 (compatible; SiteReady/1.0)", "Accept": "text/html"},
@@ -192,10 +193,8 @@ export async function onRequestPost({request, env}) {
         }
       } catch(e) {}
 
-      // Jina fuer Text + Emails/Phones
       const text = await fetchJina(pageUrl);
       if (text && text.length > 50) {
-        // Emails + Phones aus Jina-Text sammeln (wichtig fuer JS-Seiten!)
         for (const m of text.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
         for (const m of text.matchAll(phoneRegex)) {
           const phone = m[0].replace(/[\s\-/]/g, "");
@@ -206,6 +205,8 @@ export async function onRequestPost({request, env}) {
         else if (/impressum|imprint|legal/.test(path)) subpageTexts.impressum = text.slice(0, 4000);
         else if (/leistungen|services|angebot|preise|schwerpunkt|behandlung|therapie/.test(path)) subpageTexts.leistungen = (subpageTexts.leistungen || "") + "\n" + text.slice(0, 3000);
         else if (/ueber|about|team/.test(path)) subpageTexts.ueberuns = text.slice(0, 3000);
+        else if (/faq|haeufig|fragen/.test(path)) subpageTexts.faq = text.slice(0, 3000);
+        else if (/partner|referenz|zertifik/.test(path)) subpageTexts.partner = text.slice(0, 2000);
         else subpageTexts.sonstige = (subpageTexts.sonstige || "") + "\n" + text.slice(0, 1500);
       }
     }));
@@ -225,10 +226,12 @@ export async function onRequestPost({request, env}) {
     if (subpageTexts.ueberuns) fullText += "\n\n=== UEBER UNS ===\n" + subpageTexts.ueberuns;
     if (subpageTexts.kontakt) fullText += "\n\n=== KONTAKT ===\n" + subpageTexts.kontakt;
     if (subpageTexts.impressum) fullText += "\n\n=== IMPRESSUM ===\n" + subpageTexts.impressum;
+    if (subpageTexts.faq) fullText += "\n\n=== FAQ-SEITE ===\n" + subpageTexts.faq;
+    if (subpageTexts.partner) fullText += "\n\n=== PARTNER/REFERENZEN ===\n" + subpageTexts.partner;
     if (subpageTexts.sonstige) fullText += "\n\n=== WEITERE SEITEN ===\n" + subpageTexts.sonstige.slice(0, 2000);
 
-    // Auf max ~12000 Zeichen begrenzen (Haiku Token-Limit)
-    fullText = fullText.slice(0, 12000);
+    // Sonnet fuer bessere Extraktion (zuverlaessiger als Haiku bei komplexen Strukturen)
+    fullText = fullText.slice(0, 16000);
 
     const emailHint = filteredEmails.length > 0
       ? `\n\nGefundene E-Mail-Adressen: ${filteredEmails.join(", ")}\nWaehle die primaere Kontakt-E-Mail (nicht no-reply, nicht Drittanbieter).`
@@ -237,55 +240,85 @@ export async function onRequestPost({request, env}) {
       ? `\nGefundene Telefonnummern: ${filteredPhones.join(", ")}\nWaehle die primaere Kontakt-Telefonnummer.`
       : "";
 
-    /* ═══ 8. CLAUDE HAIKU EXTRAKTION ═══ */
+    /* ═══ 8. CLAUDE SONNET EXTRAKTION ═══ */
     const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {"Content-Type": "application/json", "x-api-key": anthropicKey, "anthropic-version": "2023-06-01"},
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 2048,
+        model: "claude-sonnet-4-6",
+        max_tokens: 4096,
         messages: [{
           role: "user",
           content: `Extrahiere aus folgendem Website-Text die Daten eines oesterreichischen Unternehmens.
 Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum).
 
-WICHTIG:
-- Nur Informationen extrahieren die TATSAECHLICH im Text stehen
-- NICHTS erfinden oder vermuten
-- Leere Strings "" fuer nicht gefundene Felder
-- Oesterreichisches Format fuer Telefon, PLZ etc.
+OBERSTE REGEL: Nur Informationen extrahieren die TATSAECHLICH im Text stehen. NICHTS erfinden, vermuten oder halluzinieren. Leere Strings "" und leere Arrays [] fuer nicht gefundene Felder. Im Zweifel lieber leer lassen als etwas Falsches angeben.
+
+Oesterreichisches Format fuer Telefon (+43...), PLZ (4-stellig), etc.
 
 JSON-Felder:
+
+=== FIRMA & KONTAKT ===
 - firmenname: Offizieller Name (max 60 Zeichen)
 - telefon: Telefonnummer im Format +43... (leer wenn nicht gefunden)
 - email: Primaere Kontakt-E-Mail (leer wenn nicht gefunden)
 - plz: 4-stellige Postleitzahl (leer wenn nicht gefunden)
 - ort: Ortsname (leer wenn nicht gefunden)
 - adresse: Strasse mit Hausnummer (leer wenn nicht gefunden)
-- kurzbeschreibung: Was das Unternehmen macht, 1-2 Saetze (max 200 Zeichen)
+- kurzbeschreibung: Was das Unternehmen macht, 1-2 Saetze (max 200 Zeichen). Nur aus echtem Text ableiten, nicht erfinden.
 - bundesland: NUR einer dieser Werte: wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld (leer wenn nicht erkennbar)
+
+=== RECHTLICHES (aus Impressum) ===
 - unternehmensform: NUR einer dieser Werte: eu/einzelunternehmen/gmbh/og/kg/ag/verein/gesnbr (leer wenn nicht erkennbar)
 - uid: UID-Nummer ATU... (leer wenn nicht gefunden)
 - firmenbuchnummer: FN... (leer wenn nicht gefunden)
 - firmenbuchgericht: z.B. HG Wien (leer wenn nicht gefunden)
 - gisazahl: Nur Ziffern (leer wenn nicht gefunden)
+
+=== BRANCHE & LEISTUNGEN ===
 - branche: NUR einer dieser Werte (waehle den passendsten):
   Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/baumeister
   Kosmetik: friseur/kosmetik/nagel/massage/tattoo/fusspflege/permanent_makeup
   Gastro: restaurant/cafe/baeckerei/catering
-  Gesundheit: arzt (auch Allgemeinmedizin, Facharzt, Ordination)/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker
+  Gesundheit: arzt/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker
   Dienstleistung: steuerberater/rechtsanwalt/fotograf/versicherung/immobilien/hausverwaltung/umzug/eventplanung
   Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga
-  Sonstige: sonstige (nur wenn KEINE der obigen Branchen passt)
-  WICHTIG: Arzt-Ordinationen (Allgemeinmedizin, Facharzt, etc.) = "arzt". Immer eine Branche zuordnen wenn moeglich!
-- leistungen: Array mit max 8 konkreten Leistungen/Angeboten. Suche in allen Abschnitten. NUR sinnvolle Dienstleistungen die ein Kunde buchen wuerde — keine Navigationspunkte, keine internen Begriffe, keine Wiederholungen. Formuliere klar und professionell (z.B. "Hundetraining" nicht "Hunde Training"). Wenn etwas unklar ist, lieber weglassen. Leeres Array wenn keine konkreten Leistungen erkennbar.
-- spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik"). Leer wenn nicht erkennbar oder gleich wie Branche.
+  Sonstige: sonstige (nur wenn KEINE der obigen passt)
+  WICHTIG: Arzt-Ordinationen = "arzt". Immer eine Branche zuordnen wenn moeglich!
+- leistungen: Array mit max 8 konkreten Leistungen/Angeboten. NUR sinnvolle Dienstleistungen die ein Kunde buchen wuerde. Keine Navigationspunkte, keine internen Begriffe. Formuliere klar und professionell. Leeres Array wenn keine erkennbar.
+- spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik"). Leer wenn nicht erkennbar.
+
+=== OEFFNUNGSZEITEN & HINWEISE ===
 - oeffnungszeiten: Oeffnungszeiten als Freitext. Leer wenn nicht gefunden.
 - gut_zu_wissen: Permanente Kundenhinweise von der Website, getrennt durch \\n. Max 5. Leer wenn nichts Relevantes.
-- bewertungen: Array mit max 5 Kundenbewertungen/Testimonials die auf der Website stehen. Format: [{"name":"Kundenname","text":"Bewertungstext","sterne":5}]. Sterne 1-5 (0 wenn nicht erkennbar). NUR echte Bewertungen von der Website, NICHTS erfinden. Leeres Array wenn keine gefunden.
-- merkmale: Objekt mit erkannten Merkmalen/Features. NUR auf true setzen wenn KLAR im Text erwaehnt. Alle anderen weglassen.
-  Moegliche Keys: kassenvertrag (Wert: "alle_kassen"/"wahlarzt"/"privat"/"oegk"/"bvaeb"/"svs"), barrierefrei (true/false), parkplaetze (true/false), notdienst (true/false), meisterbetrieb (true/false), terminvereinbarung (true/false), erstgespraech_gratis (true/false), online_beratung (true/false), hausbesuche (true/false), kartenzahlung (true/false), ratenzahlung (true/false), gutscheine (true/false), zertifiziert (true/false), kostenvoranschlag (true/false), foerderungsberatung (true/false), gastgarten (true/false), takeaway (true/false), lieferservice (true/false)
-  Beispiele: "Alle Kassen" oder "Kassenvertrag" = kassenvertrag:"alle_kassen". "Wahlarzt" = kassenvertrag:"wahlarzt". "Barrierefrei" oder "behindertengerecht" = barrierefrei:true. "Meisterbetrieb" = meisterbetrieb:true. "Online-Terminbuchung" = terminvereinbarung:true.
+
+=== BEWERTUNGEN (nur echte von der Website!) ===
+- bewertungen: Array mit max 5 Kundenbewertungen/Testimonials die WOERTLICH auf der Website stehen.
+  Format: [{"name":"Kundenname","text":"Bewertungstext","sterne":5}]
+  Sterne 1-5, 0 wenn nicht erkennbar. NUR echte Bewertungen, NICHTS erfinden. Leeres Array wenn keine gefunden.
+
+=== FAQ (nur echte von der Website!) ===
+- faq: Array mit FAQ-Eintraegen die TATSAECHLICH auf der Website stehen.
+  Format: [{"frage":"Die Frage?","antwort":"Die Antwort."}]
+  NUR Fragen+Antworten die woertlich auf der Website stehen. NICHTS erfinden.
+  Leeres Array wenn keine FAQ-Sektion auf der Website existiert.
+
+=== ZAHLEN & FAKTEN (nur echte!) ===
+- fakten: Array mit beeindruckenden Zahlen die TATSAECHLICH auf der Website stehen.
+  Format: [{"zahl":"15+","label":"Jahre Erfahrung"}]
+  Beispiele: "Über 15 Jahre Erfahrung" -> {"zahl":"15+","label":"Jahre Erfahrung"}
+  "2.000 zufriedene Kunden" -> {"zahl":"2.000+","label":"Zufriedene Kunden"}
+  Max 4 Eintraege. NUR was wirklich auf der Website steht. Leeres Array wenn keine solchen Zahlen gefunden.
+
+=== PARTNER & ZERTIFIKATE (nur echte!) ===
+- partner: Array mit Partnern, Zertifizierungen oder Verbaenden die auf der Website erwaehnt werden.
+  Format: [{"name":"WKO"},{"name":"TÜV Austria"}]
+  Beispiele: WKO, TÜV, ISO-Zertifizierungen, Partnerlogos, Innungsmitgliedschaften.
+  NUR was tatsaechlich auf der Website steht. Leeres Array wenn keine gefunden.
+
+=== MERKMALE (Features) ===
+- merkmale: Objekt mit erkannten Merkmalen. NUR auf true setzen wenn KLAR im Text erwaehnt.
+  Keys: kassenvertrag ("alle_kassen"/"wahlarzt"/"privat"/"oegk"/"bvaeb"/"svs"), barrierefrei, parkplaetze, notdienst, meisterbetrieb, terminvereinbarung, erstgespraech_gratis, online_beratung, hausbesuche, kartenzahlung, ratenzahlung, gutscheine, zertifiziert, kostenvoranschlag, foerderungsberatung, gastgarten, takeaway, lieferservice
 
 Website-Text:
 ${fullText}${emailHint}${phoneHint}`,
@@ -307,7 +340,14 @@ ${fullText}${emailHint}${phoneHint}`,
       const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
       extracted = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
     } catch(e) {
-      extracted = {};
+      // Zweiter Versuch: Code-Block entfernen
+      try {
+        const codeBlock = rawContent.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (codeBlock) extracted = JSON.parse(codeBlock[1]);
+        else extracted = {};
+      } catch(e2) {
+        extracted = {};
+      }
     }
 
     /* ═══ 9. DATEN NORMALISIEREN UND VALIDIEREN ═══ */
@@ -330,7 +370,7 @@ ${fullText}${emailHint}${phoneHint}`,
     const claudePhone = (extracted.telefon || "").replace(/[\s\-/]/g, "");
     const finalPhone = filteredPhones[0] || claudePhone || "";
 
-    // PLZ validieren (4-stellig, oesterreichisch)
+    // PLZ validieren
     const plzRaw = (extracted.plz || "").replace(/\D/g, "");
     const plz = plzRaw.length === 4 ? plzRaw : "";
 
@@ -343,8 +383,52 @@ ${fullText}${emailHint}${phoneHint}`,
       ? [...new Set(extracted.leistungen.map(l => l?.trim()).filter(Boolean))].slice(0, 8)
       : [];
 
+    // Bewertungen validieren
+    const bewertungen = Array.isArray(extracted.bewertungen)
+      ? extracted.bewertungen.filter(b => b && typeof b.text === "string" && b.text.trim())
+        .map(b => ({name: (b.name || "").slice(0, 60), text: b.text.trim().slice(0, 500), sterne: Math.min(Math.max(parseInt(b.sterne) || 0, 0), 5)}))
+        .slice(0, 5)
+      : [];
+
+    // FAQ validieren
+    const faq = Array.isArray(extracted.faq)
+      ? extracted.faq.filter(f => f && typeof f.frage === "string" && typeof f.antwort === "string" && f.frage.trim() && f.antwort.trim())
+        .map(f => ({frage: f.frage.trim().slice(0, 200), antwort: f.antwort.trim().slice(0, 500)}))
+        .slice(0, 8)
+      : [];
+
+    // Fakten validieren
+    const fakten = Array.isArray(extracted.fakten)
+      ? extracted.fakten.filter(f => f && typeof f.zahl === "string" && typeof f.label === "string" && f.zahl.trim() && f.label.trim())
+        .map(f => ({zahl: f.zahl.trim().slice(0, 20), label: f.label.trim().slice(0, 60)}))
+        .slice(0, 4)
+      : [];
+
+    // Partner validieren
+    const partner = Array.isArray(extracted.partner)
+      ? extracted.partner.filter(p => p && typeof p.name === "string" && p.name.trim())
+        .map(p => ({name: p.name.trim().slice(0, 60)}))
+        .slice(0, 8)
+      : [];
+
     // Merkmale extrahieren
     const merkmale = extracted.merkmale || {};
+
+    // Layout-Empfehlung basierend auf Inhaltsmenge
+    let layoutSuggestion = "standard";
+    const hasRichContent = faq.length >= 2 || fakten.length >= 2 || partner.length >= 2;
+    const hasMinimalContent = leistungen.length <= 3 && !bewertungen.length;
+    if (hasRichContent) layoutSuggestion = "ausfuehrlich";
+    else if (hasMinimalContent) layoutSuggestion = "kompakt";
+
+    // Sections-Visible basierend auf extrahierten Daten
+    const sectionsVisible = {};
+    if (faq.length > 0) sectionsVisible.faq = true;
+    if (fakten.length > 0) sectionsVisible.fakten = true;
+    if (partner.length > 0) sectionsVisible.partner = true;
+
+    const duration = log.timeEnd("import");
+    await log.activity(null, "import_success", {url: cleanUrl, duration, fields: Object.keys(extracted).length});
 
     return Response.json({
       firmenname: (extracted.firmenname || "").slice(0, 60),
@@ -365,7 +449,12 @@ ${fullText}${emailHint}${phoneHint}`,
       spezialisierung: extracted.spezialisierung || "",
       oeffnungszeiten_import: extracted.oeffnungszeiten || "",
       gut_zu_wissen: extracted.gut_zu_wissen || "",
-      bewertungen: Array.isArray(extracted.bewertungen) ? extracted.bewertungen.filter(b => b && b.text).slice(0, 5) : [],
+      bewertungen,
+      faq,
+      fakten,
+      partner,
+      layout_suggestion: layoutSuggestion,
+      sections_visible: sectionsVisible,
       facebook:  socialLinks.facebook  || "",
       instagram: socialLinks.instagram || "",
       linkedin:  socialLinks.linkedin  || "",
@@ -375,6 +464,6 @@ ${fullText}${emailHint}${phoneHint}`,
 
   } catch(e) {
     await log.error("import", {message: e.message, stack: e.stack});
-    return Response.json({error: "Der Import ist fehlgeschlagen. Bitte prüfen Sie die URL und versuchen Sie es erneut. Bei wiederholtem Fehler melden Sie sich unter support@siteready.at"}, {status: 500});
+    return Response.json({error: "Der Import ist fehlgeschlagen. Bitte pr\u00fcfen Sie die URL und versuchen Sie es erneut. Bei wiederholtem Fehler melden Sie sich unter support@siteready.at"}, {status: 500});
   }
 }

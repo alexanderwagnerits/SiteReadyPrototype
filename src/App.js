@@ -1333,81 +1333,46 @@ function Questionnaire({data,setData,onComplete,onBack}){
       </div>
       {ftr(true,()=>go(5),"Weiter",!sv4)}
     </div>
-    {/* 5: Design — Branchen-Vorlagen */}
+    {/* 5: Design — Stil + Layout getrennt */}
     <div id="q-sec-5" className={`q-section${step===5?" q-vis":""}`}>
-      {hdr("Design","Welcher Typ Website passt zu Ihnen?","W\u00e4hlen Sie eine Vorlage \u2014 Sie k\u00f6nnen alles sp\u00e4ter im Portal anpassen.")}
+      {hdr("Design","Design & Seitenaufbau","W\u00e4hlen Sie Stil und Layout getrennt \u2014 beides ist im Portal jederzeit \u00e4nderbar.")}
       <div className="q-mb" style={{maxWidth:900}}>
         {(()=>{
-          const gruppe=(BRANCHEN.find(x=>x.value===data.branche)||{}).gruppe||"handwerk";
-          const VORLAGEN_MAP={
-            handwerk:[
-              {stil:"klassisch",layout:"standard",label:"Professionell",desc:"Seri\u00f6s und klar strukturiert. Klassisches Layout mit allen wichtigen Bereichen.",color:"#0f2b5b",accent:"#2563eb",tags:["Leistungen","Ablauf","Bewertungen"]},
-              {stil:"modern",layout:"kompakt",label:"Frisch & klar",desc:"Modern und \u00fcbersichtlich. Ideal wenn Sie viele Leistungen anbieten.",color:"#0f172a",accent:"#6366f1",tags:["Kompakte Leistungen","Slider"]},
-              {stil:"elegant",layout:"ausfuehrlich",label:"Premium",desc:"Hochwertig und ausf\u00fchrlich. Mit FAQ, Zahlen und mehr Details.",color:"#292524",accent:"#78716c",tags:["FAQ","Fakten","Details"]},
-            ],
-            kosmetik:[
-              {stil:"modern",layout:"standard",label:"Einladend",desc:"Frisch und modern. Perfekt f\u00fcr Salons und Praxen.",color:"#0f172a",accent:"#6366f1",tags:["Galerie","Bewertungen"]},
-              {stil:"klassisch",layout:"kompakt",label:"Auf den Punkt",desc:"\u00dcbersichtlich mit allen Leistungen auf einen Blick.",color:"#0f2b5b",accent:"#2563eb",tags:["Kompakte Leistungen"]},
-              {stil:"elegant",layout:"ausfuehrlich",label:"Exklusiv",desc:"Premium-Auftritt mit Geschichte und Details.",color:"#292524",accent:"#78716c",tags:["FAQ","Fakten","Story"]},
-            ],
-            gastro:[
-              {stil:"modern",layout:"standard",label:"Einladend",desc:"Warm und modern. Zeigt Ihr Angebot appetitlich.",color:"#0f172a",accent:"#6366f1",tags:["Galerie","Bewertungen"]},
-              {stil:"klassisch",layout:"kompakt",label:"Auf den Punkt",desc:"Kompakt mit Speisekarte und Reservierung.",color:"#0f2b5b",accent:"#2563eb",tags:["Kompakte Karte"]},
-              {stil:"elegant",layout:"ausfuehrlich",label:"Exklusiv",desc:"Fine Dining-Stil mit Geschichte und Ambiance.",color:"#292524",accent:"#78716c",tags:["Story","Galerie","FAQ"]},
-            ],
-            gesundheit:[
-              {stil:"klassisch",layout:"ausfuehrlich",label:"Vertrauensvoll",desc:"Seri\u00f6s mit FAQ, Team und allen Details.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Team","Fakten"]},
-              {stil:"modern",layout:"standard",label:"Freundlich",desc:"Modern und einladend. Baut Vertrauen auf.",color:"#0f172a",accent:"#6366f1",tags:["Bewertungen","Ablauf"]},
-              {stil:"elegant",layout:"kompakt",label:"Klar & ruhig",desc:"Minimalistisch und beruhigend. Auf das Wesentliche reduziert.",color:"#292524",accent:"#78716c",tags:["Kompakt","Ruhig"]},
-            ],
-            dienstleistung:[
-              {stil:"klassisch",layout:"ausfuehrlich",label:"Kompetent",desc:"Ausf\u00fchrlich und professionell. Ideal f\u00fcr Berater und Kanzleien.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Fakten","Details"]},
-              {stil:"modern",layout:"standard",label:"Dynamisch",desc:"Frisch und modern. F\u00fcr kreative und junge Unternehmen.",color:"#0f172a",accent:"#6366f1",tags:["Bewertungen","Ablauf"]},
-              {stil:"elegant",layout:"kompakt",label:"Premium",desc:"Hochwertig und kompakt. Weniger ist mehr.",color:"#292524",accent:"#78716c",tags:["Kompakt","Edel"]},
-            ],
-            bildung:[
-              {stil:"modern",layout:"standard",label:"Motivierend",desc:"Modern und einladend. Zeigt Ihr Angebot klar.",color:"#0f172a",accent:"#6366f1",tags:["Ablauf","Bewertungen"]},
-              {stil:"klassisch",layout:"ausfuehrlich",label:"Informativ",desc:"Ausf\u00fchrlich mit FAQ und allen Details.",color:"#0f2b5b",accent:"#2563eb",tags:["FAQ","Fakten","Ablauf"]},
-              {stil:"elegant",layout:"kompakt",label:"Klar",desc:"Reduziert und \u00fcbersichtlich.",color:"#292524",accent:"#78716c",tags:["Kompakt"]},
-            ],
-            sonstige:[
-              {stil:"klassisch",layout:"standard",label:"Klassisch",desc:"Zeitlos und seri\u00f6s. Passt zu jedem Betrieb.",color:"#0f2b5b",accent:"#2563eb",tags:["Leistungen","Ablauf","Bewertungen"]},
-              {stil:"modern",layout:"standard",label:"Modern",desc:"Frisch und einladend. F\u00fcr einen modernen Auftritt.",color:"#0f172a",accent:"#6366f1",tags:["Bewertungen","Ablauf"]},
-              {stil:"elegant",layout:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Hochwertig mit allen Details. FAQ, Zahlen und mehr.",color:"#292524",accent:"#78716c",tags:["FAQ","Fakten","Details"]},
-            ],
-          };
-          const vorlagen=VORLAGEN_MAP[gruppe]||VORLAGEN_MAP.sonstige;
+          const STILE=[
+            {value:"klassisch",label:"Klassisch",desc:"Seri\u00f6s, klar strukturiert. Navy-Blau, dezente Schatten.",color:"#0f2b5b",accent:"#2563eb"},
+            {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Indigo-Akzent, Pill-Buttons.",color:"#0f172a",accent:"#6366f1"},
+            {value:"elegant",label:"Elegant",desc:"Minimalistisch, d\u00fcnne Linien. Anthrazit, leichte Typografie.",color:"#292524",accent:"#78716c"},
+          ];
+          const LAYOUTS=[
+            {value:"standard",label:"\u00dcbersichtlich",desc:"Alle wichtigen Bereiche: Leistungen, Ablauf, Bewertungen, Kontakt.",tags:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
+            {value:"kompakt",label:"Auf den Punkt",desc:"K\u00fcrzer und kompakter \u2014 ideal bei vielen Leistungen.",tags:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
+            {value:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Alle Details: FAQ, Zahlen & Fakten, CTA-Block und mehr.",tags:["Leistungen","Ablauf","FAQ","Fakten","Bewertungen","Kontakt"]},
+          ];
           const isCustom=data.stil==="custom";
-          const activeIdx=isCustom?-1:vorlagen.findIndex(v=>v.stil===data.stil&&v.layout===(data.layout||"standard"));
           return<div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
-              {vorlagen.map((v,i)=>{
-                const active=i===activeIdx;
-                return<button key={i} onClick={()=>{up("stil")(v.stil);up("layout")(v.layout);}} style={{padding:"24px 20px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
-                  <div style={{display:"flex",gap:6,marginBottom:14}}>
-                    <div style={{width:32,height:32,borderRadius:6,background:`linear-gradient(135deg,${v.color},${v.accent})`}}/>
-                  </div>
-                  <div style={{fontSize:".95rem",fontWeight:800,color:T.dark,marginBottom:4}}>{v.label}</div>
-                  <div style={{fontSize:".68rem",fontWeight:600,color:T.accent,marginBottom:2}}>{v.layout==="kompakt"?"Kompaktes Layout":v.layout==="ausfuehrlich"?"Ausf\u00fchrliches Layout":"Standard-Layout"}</div>
-                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:6}}>{v.layout==="kompakt"?"Weniger Sections, kompakte Darstellung":v.layout==="ausfuehrlich"?"Alle Sections inkl. FAQ & Fakten":"Alle wichtigen Bereiche"}</div>
-                  <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.55,marginBottom:12}}>{v.desc}</div>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                    {v.tags.map(t=><span key={t} style={{fontSize:".65rem",padding:"3px 8px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}
-                  </div>
-                  {active&&<div style={{position:"absolute",top:12,right:12,width:22,height:22,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800}}>{"\u2713"}</div>}
+            {/* Stil-Auswahl */}
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:24}}>
+              {STILE.map(s=>{
+                const active=data.stil===s.value;
+                return<button key={s.value} onClick={()=>up("stil")(s.value)} style={{padding:"20px 18px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:`linear-gradient(135deg,${s.color},${s.accent})`,marginBottom:12}}/>
+                  <div style={{fontSize:".92rem",fontWeight:800,color:T.dark,marginBottom:4}}>{s.label}</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.55}}>{s.desc}</div>
+                  {active&&<div style={{position:"absolute",top:10,right:10,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800}}>{"\u2713"}</div>}
                 </button>;
               })}
             </div>
             {/* Custom-Option */}
-            <button onClick={()=>up("stil")("custom")} style={{marginTop:12,display:"flex",alignItems:"center",gap:12,padding:"14px 18px",border:isCustom?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:isCustom?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,width:"100%",transition:"all .15s",boxShadow:isCustom?T.sh2:"none"}}>
+            <button onClick={()=>up("stil")("custom")} style={{marginBottom:24,display:"flex",alignItems:"center",gap:12,padding:"14px 18px",border:isCustom?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:isCustom?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,width:"100%",transition:"all .15s",boxShadow:isCustom?T.sh2:"none"}}>
               <div style={{width:32,height:32,borderRadius:6,background:"conic-gradient(from 0deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)",flexShrink:0}}/>
               <div style={{flex:1}}>
                 <div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Eigenes Branding</div>
-                <div style={{fontSize:".75rem",color:T.textMuted}}>W\u00e4hlen Sie Ihre eigene Farbe und Schrift</div>
+                <div style={{fontSize:".75rem",color:T.textMuted}}>Eigene Farbe und Schrift w\u00e4hlen</div>
               </div>
-              {isCustom&&<div style={{width:22,height:22,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,flexShrink:0}}>{"\u2713"}</div>}
+              {isCustom&&<div style={{width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>{"\u2713"}</div>}
             </button>
-            {isCustom&&<div style={{marginTop:14,padding:"20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
+            {isCustom&&<div style={{marginTop:-12,marginBottom:24,padding:"20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
               <div style={{marginBottom:18}}>
                 <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Prim\u00e4rfarbe</label>
                 <div style={{background:T.white,border:`2px solid ${T.bg3}`,borderRadius:T.r,padding:18}}>
@@ -1423,7 +1388,22 @@ function Questionnaire({data,setData,onComplete,onBack}){
               </div>
               <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird f\u00fcr \u00dcberschriften und Text verwendet"/>
             </div>}
-            <div style={{marginTop:16,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit \u00e4nderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Design, Layout, Farben und Schrift k\u00f6nnen Sie im Portal jederzeit anpassen.</div></div>
+            {/* Layout-Auswahl */}
+            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Seitenaufbau</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:16}}>
+              {LAYOUTS.map(lo=>{
+                const active=(data.layout||"standard")===lo.value;
+                return<button key={lo.value} onClick={()=>up("layout")(lo.value)} style={{padding:"20px 18px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
+                  <div style={{fontSize:".92rem",fontWeight:800,color:T.dark,marginBottom:4}}>{lo.label}</div>
+                  <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.55,marginBottom:10}}>{lo.desc}</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                    {lo.tags.map(t=><span key={t} style={{fontSize:".62rem",padding:"2px 7px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}
+                  </div>
+                  {active&&<div style={{position:"absolute",top:10,right:10,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800}}>{"\u2713"}</div>}
+                </button>;
+              })}
+            </div>
+            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit \u00e4nderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil, Layout, Farben und Schrift k\u00f6nnen Sie im Portal jederzeit anpassen.</div></div>
           </div>;
         })()}
       </div>
@@ -5143,7 +5123,7 @@ export default function App(){
   );
 
   if(page==="landing")return<LandingPage onStart={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;
-  if(page==="success")return<SuccessPage data={data} onBack={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;
+  if(page==="success"){if(!data.firmenname){setPage("form");return null;}return<SuccessPage data={data} onBack={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;};
   if(page==="notfound")return(
     <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"0 24px"}}><style>{css}</style>
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:48}}>

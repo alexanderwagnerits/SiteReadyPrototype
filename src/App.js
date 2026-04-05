@@ -1167,7 +1167,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"36px 20px",overflowY:"auto"}}>
         {importResult ? (()=>{
           const j=importResult;
-          const checks=[
+          const formChecks=[
             j.firmenname&&["Firmenname",j.firmenname],
             j.branche&&["Branche",BRANCHEN.find(b=>b.value===j.branche)?.label||j.branche],
             j.leistungen?.length&&["Leistungen",j.leistungen.length+" erkannt"],
@@ -1175,36 +1175,41 @@ function Questionnaire({data,setData,onComplete,onBack}){
             j.telefon&&["Telefon",j.telefon],
             j.email&&["E-Mail",j.email],
             j.oeffnungszeiten_import&&["\u00d6ffnungszeiten","erkannt"],
+            (j.facebook||j.instagram||j.linkedin||j.tiktok)&&["Social Media",[j.facebook&&"Facebook",j.instagram&&"Instagram",j.linkedin&&"LinkedIn",j.tiktok&&"TikTok"].filter(Boolean).join(", ")],
+            j.unternehmensform&&["Impressum-Daten","erkannt"],
+          ].filter(Boolean);
+          const portalChecks=[
             j.bewertungen?.length&&["Kundenbewertungen",j.bewertungen.length+" \u00fcbernommen"],
-            j.faq?.length&&["FAQ",j.faq.length+" Fragen \u00fcbernommen"],
+            j.faq?.length&&["FAQ",j.faq.length+" Fragen"],
             j.fakten?.length&&["Zahlen & Fakten",j.fakten.length+" erkannt"],
             j.partner?.length&&["Partner & Zertifikate",j.partner.length+" erkannt"],
             j.team?.length&&["Team-Mitglieder",j.team.length+" erkannt"],
-            (j.facebook||j.instagram||j.linkedin||j.tiktok)&&["Social Media",[j.facebook&&"Facebook",j.instagram&&"Instagram",j.linkedin&&"LinkedIn",j.tiktok&&"TikTok"].filter(Boolean).join(", ")],
             j.whatsapp&&["WhatsApp",j.whatsapp],
             j.buchungslink&&["Online-Buchung","erkannt"],
-            j.unternehmensform&&["Impressum-Daten","erkannt"],
           ].filter(Boolean);
           const meta=j._meta||{};
+          const CheckRow=({items,color})=>items.map(([label,value],i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,fontSize:".85rem"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
+            <span style={{fontWeight:600,color:T.dark,minWidth:120}}>{label}</span>
+            <span style={{color:T.textMuted,fontSize:".82rem"}}>{value}</span>
+          </div>);
           return <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
             <div style={{width:56,height:56,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <div style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,letterSpacing:"-.02em",marginBottom:6}}>Website erfolgreich importiert</div>
             <div style={{fontSize:".85rem",color:T.textMuted,marginBottom:24}}>{meta.pages_read||"Mehrere"} Seiten gelesen{meta.duration_ms?` in ${Math.round(meta.duration_ms/1000)}s`:""}</div>
-            <div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"16px 20px",marginBottom:20}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Das haben wir gefunden</div>
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {checks.map(([label,value],i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,fontSize:".85rem"}}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-                  <span style={{fontWeight:600,color:T.dark,minWidth:120}}>{label}</span>
-                  <span style={{color:T.textMuted,fontSize:".82rem"}}>{value}</span>
-                </div>)}
-              </div>
-              {checks.length===0&&<div style={{fontSize:".85rem",color:T.textMuted,textAlign:"center",padding:"8px 0"}}>Keine Daten erkannt. Bitte geben Sie die Daten manuell ein.</div>}
-            </div>
-            <div style={{fontSize:".82rem",color:T.textMuted,marginBottom:20,lineHeight:1.5}}>Bitte pr\u00fcfen Sie die Angaben in den n\u00e4chsten Schritten.</div>
-            <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>Angaben pr\u00fcfen {chevron}</button>
+            {formChecks.length>0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"16px 20px",marginBottom:12}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Jetzt pr\u00fcfen</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}><CheckRow items={formChecks} color={T.green}/></div>
+            </div>}
+            {portalChecks.length>0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"16px 20px",marginBottom:12}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Zus\u00e4tzlich \u00fcbernommen <span style={{fontWeight:400,textTransform:"none",letterSpacing:0}}>\u2014 im Portal bearbeitbar</span></div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}><CheckRow items={portalChecks} color={T.accent}/></div>
+            </div>}
+            {formChecks.length===0&&portalChecks.length===0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px",marginBottom:12,fontSize:".85rem",color:T.textMuted,textAlign:"center"}}>Keine Daten erkannt. Bitte geben Sie die Daten manuell ein.</div>}
+            <div style={{fontSize:".82rem",color:T.textMuted,marginBottom:20,lineHeight:1.5}}>{formChecks.length>0?"Bitte pr\u00fcfen Sie die Angaben in den n\u00e4chsten Schritten.":"Bitte geben Sie Ihre Daten in den n\u00e4chsten Schritten ein."}</div>
+            <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>{formChecks.length>0?"Angaben pr\u00fcfen":"Weiter"} {chevron}</button>
           </div>;
         })()
         : <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>

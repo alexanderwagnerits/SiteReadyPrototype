@@ -189,7 +189,7 @@ function buildImpressum(o, pal, year) {
 /* ═══ Design-Templates (synchron mit STYLES_MAP in App.js) ═══ */
 const STIL = {
   klassisch: {
-    p:"#0f2b5b", a:"#0f766e", bg:"#f8fafc", s:"#e2e8f0",
+    p:"#094067", a:"#0369a1", bg:"#fffffe", s:"#d8eefe",
     font: "Inter",
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
     r: "4px", rLg: "6px", btnR: "4px",
@@ -199,7 +199,7 @@ const STIL = {
     ueberStyle: "Checkmark-Liste: Listenpunkte mit einem einfachen Haken (vor dem Text, Farbe var(--accent), font-weight:700). Sachlicher, direkter Ton.",
   },
   modern: {
-    p:"#0f172a", a:"#7c3aed", bg:"#fafafa", s:"#f0f0f0",
+    p:"#18181b", a:"#4f46e5", bg:"#fafafa", s:"#e4e4e7",
     font: "Plus Jakarta Sans",
     url: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
     r: "12px", rLg: "16px", btnR: "100px",
@@ -209,7 +209,7 @@ const STIL = {
     ueberStyle: "Kleine runde Icons (36px, background:var(--accent)22, color:var(--accent), border-radius:50%, display:inline-flex, align-items:center, justify-content:center) vor jedem Vorteilspunkt. Freundlicher, einladender Ton.",
   },
   elegant: {
-    p:"#292524", a:"#57534e", bg:"#fafaf9", s:"#e7e5e4",
+    p:"#020826", a:"#7a6844", bg:"#f9f4ef", s:"#eaddcf",
     font: "Inter",
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
     r: "2px", rLg: "4px", btnR: "2px",

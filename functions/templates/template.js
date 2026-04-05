@@ -52,7 +52,7 @@ export function buildTemplate(data) {
 --font:${fontFamily||"'Inter',system-ui,-apple-system,sans-serif"};
 --maxW:1060px;
 }
-.stil-elegant{--textMuted:#78716c}
+.stil-elegant{--textMuted:#716040}
 html{scroll-behavior:smooth}
 body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1.05rem;-webkit-font-smoothing:antialiased;background:var(--white)}
 .stil-elegant{line-height:1.75;letter-spacing:-.01em}

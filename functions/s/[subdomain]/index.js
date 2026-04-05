@@ -893,7 +893,12 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   }
 
   // Style-Override am Ende des body (damit es ALLE vorherigen :root ueberschreibt)
-  const overrideStyle = `<style>${fontImport}:root{${customDesign.join(";")}}</style>`;
+  // Hero-Background muss auch ueberschrieben werden (alte Generierungen haben hardcoded Hex-Werte)
+  const heroOverride = `.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%)!important}` +
+    `.stil-modern .hero{background:var(--primary)!important}` +
+    `.stil-elegant .hero{background:linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,#000) 100%)!important}` +
+    `#sitenav{background:var(--primary)!important}`;
+  const overrideStyle = `<style>${fontImport}:root{${customDesign.join(";")}}${heroOverride}</style>`;
   html = html.replace("</body>", overrideStyle + "\n</body>");
 
   // ── WhatsApp Floating Button ──

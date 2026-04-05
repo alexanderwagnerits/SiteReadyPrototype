@@ -376,23 +376,31 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     html = html.replace("<!-- BEWERTUNGEN -->", "");
   }
 
-  // Kontakt-Infos — Features + Gut zu wissen zusammengeführt als einheitliches Grid
-  const kontaktInfoItems = [];
+  // Kontakt-Infos — Features (Badges) getrennt von Hinweistexten (Gut zu wissen)
+  const featureBadges = [];
   const kIcon = (svg) => `<div class="kontakt-info-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></div>`;
-  if (o.terminvereinbarung) kontaktInfoItems.push(kIcon(`<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`) + `<span>Nur mit Termin</span>`);
-  if (o.barrierefrei) kontaktInfoItems.push(kIcon(`<circle cx="12" cy="4" r="2"/><path d="M12 6v6l4 4"/><path d="M8 12l-2 6h12"/>`) + `<span>Barrierefrei</span>`);
-  if (o.hausbesuche) kontaktInfoItems.push(kIcon(`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`) + `<span>Hausbesuche</span>`);
-  if (o.online_beratung) kontaktInfoItems.push(kIcon(`<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`) + `<span>Online-Beratung</span>`);
-  if (o.parkplaetze) kontaktInfoItems.push(kIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`) + `<span>Parkpl\u00e4tze</span>`);
-  if (o.kartenzahlung) kontaktInfoItems.push(kIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`) + `<span>Kartenzahlung</span>`);
-  if (o.gastgarten) kontaktInfoItems.push(kIcon(`<circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>`) + `<span>Gastgarten / Terrasse</span>`);
-  if (o.takeaway) kontaktInfoItems.push(kIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`) + `<span>Take-away</span>`);
-  if (o.lieferservice) kontaktInfoItems.push(kIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`) + `<span>Lieferservice</span>`);
+  if (o.terminvereinbarung) featureBadges.push(kIcon(`<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`) + `<span>Nur mit Termin</span>`);
+  if (o.barrierefrei) featureBadges.push(kIcon(`<circle cx="12" cy="4" r="2"/><path d="M12 6v6l4 4"/><path d="M8 12l-2 6h12"/>`) + `<span>Barrierefrei</span>`);
+  if (o.hausbesuche) featureBadges.push(kIcon(`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`) + `<span>Hausbesuche</span>`);
+  if (o.online_beratung) featureBadges.push(kIcon(`<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`) + `<span>Online-Beratung</span>`);
+  if (o.parkplaetze) featureBadges.push(kIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`) + `<span>Parkplätze</span>`);
+  if (o.kartenzahlung) featureBadges.push(kIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`) + `<span>Kartenzahlung</span>`);
+  if (o.gastgarten) featureBadges.push(kIcon(`<circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>`) + `<span>Gastgarten / Terrasse</span>`);
+  if (o.takeaway) featureBadges.push(kIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`) + `<span>Take-away</span>`);
+  if (o.lieferservice) featureBadges.push(kIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`) + `<span>Lieferservice</span>`);
   const gzwLines = (o.gut_zu_wissen || "").split("\n").map(s => s.trim()).filter(Boolean).slice(0, 5);
-  gzwLines.forEach(l => kontaktInfoItems.push(kIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`) + `<span>${esc(l)}</span>`));
-  if (kontaktInfoItems.length > 0 && html.includes("<!-- KONTAKT_INFOS -->")) {
-    const items = kontaktInfoItems.map(i => `<div class="kontakt-info-item">${i}</div>`).join("");
-    html = html.replace("<!-- KONTAKT_INFOS -->", `<div class="kontakt-infos">${items}</div>`);
+
+  if ((featureBadges.length > 0 || gzwLines.length > 0) && html.includes("<!-- KONTAKT_INFOS -->")) {
+    let infoHtml = "";
+    if (featureBadges.length > 0) {
+      infoHtml += `<div class="kontakt-infos" style="display:flex;flex-wrap:wrap;gap:10px">${featureBadges.map(b => `<div class="kontakt-info-item" style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--rLg,8px);font-size:.82rem;font-weight:500;white-space:nowrap">${b}</div>`).join("")}</div>`;
+    }
+    if (gzwLines.length > 0) {
+      infoHtml += `<div style="margin-top:${featureBadges.length > 0 ? "16px" : "0"};padding-top:${featureBadges.length > 0 ? "16px;border-top:1px solid var(--sep)" : "0"}">` +
+        `<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:10px">Gut zu wissen</div>` +
+        `<div style="display:flex;flex-direction:column;gap:8px">${gzwLines.map(l => `<div style="display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text);line-height:1.55">${kIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`)}<span>${esc(l)}</span></div>`).join("")}</div></div>`;
+    }
+    html = html.replace("<!-- KONTAKT_INFOS -->", `<div style="margin-top:32px;padding-top:28px;border-top:1px solid var(--sep)">${infoHtml}</div>`);
   } else {
     html = html.replace("<!-- KONTAKT_INFOS -->", "");
   }

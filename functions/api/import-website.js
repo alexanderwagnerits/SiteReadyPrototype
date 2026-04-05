@@ -524,8 +524,8 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
     if (fakten.length > 0) sectionsVisible.fakten = true;
     if (partner.length > 0) sectionsVisible.partner = true;
 
-    const duration = log.timeEnd("import");
-    await log.activity(null, "import_success", {url:cleanUrl, duration, pages:pageContents.length+1, sitemap:sitemapFound, deduped:duplicateParas.size});
+    await log.timeEnd("import", null, "import_success");
+    await log.info(null, "import_result", {url:cleanUrl, pages:pageContents.length+1, sitemap:sitemapFound, deduped:duplicateParas.size});
 
     return Response.json({
       firmenname: (extracted.firmenname || structuredData.name || "").slice(0,60),

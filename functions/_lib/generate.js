@@ -506,6 +506,60 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   /* ─── Scroll-Spy ─── */
   html = html.replace("</body>", `<script>(function(){var ls=document.querySelectorAll('.nav-link[href^="#"]');var ss=[].map.call(ls,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);function u(){var y=window.scrollY+100;var c=ss.reduce(function(a,s){return s.offsetTop<=y?s:a},ss[0]);ls.forEach(function(l){var a=c&&'#'+c.id===l.getAttribute('href');l.style.opacity=a?'1':'';l.style.fontWeight=a?'700':'';});}window.addEventListener('scroll',u,{passive:true});u();})();</script>\n</body>`);
 
+  /* ─── Stockfoto als Platzhalter (wenn kein Hero-Bild vorhanden) ─── */
+  let heroIsPlaceholder = false;
+  if (!o.url_hero) {
+    try {
+      // Branchenspezifische Suchbegriffe (ohne Personen)
+      const searchTerms = {
+        elektro:"electrical wiring workshop",installateur:"plumbing pipes tools",maler:"house painting wall",
+        tischler:"woodworking workshop",friseur:"hair salon interior empty",kosmetik:"beauty salon interior",
+        restaurant:"restaurant interior empty",cafe:"coffee shop interior",baeckerei:"bakery bread display",
+        arzt:"medical office clean",zahnarzt:"dental office clean",physiotherapie:"physiotherapy room",
+        gaertner:"garden landscaping",reinigung:"cleaning service",kfz:"auto repair garage",
+        fotograf:"photography studio",immobilien:"real estate building",steuerberater:"modern office desk",
+        rechtsanwalt:"law office bookshelf",fahrschule:"driving school car",yoga:"yoga studio empty",
+        massage:"massage therapy room",apotheke:"pharmacy interior",optiker:"optician glasses display",
+      };
+      const branche = (o.branche || "").toLowerCase();
+      const query = searchTerms[branche] || "small business storefront";
+      // Unsplash Source (kein API-Key noetig, liefert direktes Bild)
+      const unsplashUrl = `https://source.unsplash.com/1200x630/?${encodeURIComponent(query)}`;
+      const imgRes = await fetch(unsplashUrl, {signal: AbortSignal.timeout(8000), redirect: "follow"});
+      if (imgRes.ok && imgRes.headers.get("content-type")?.startsWith("image/")) {
+        const imgBlob = await imgRes.arrayBuffer();
+        // In Supabase Storage speichern
+        const storagePath = `placeholders/${o.id}/hero.jpg`;
+        const uploadRes = await fetch(
+          `${env.SUPABASE_URL}/storage/v1/object/customer-assets/${storagePath}`,
+          {
+            method: "POST",
+            headers: {
+              "apikey": env.SUPABASE_SERVICE_KEY,
+              "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+              "Content-Type": "image/jpeg",
+              "x-upsert": "true",
+            },
+            body: imgBlob,
+          }
+        );
+        if (uploadRes.ok) {
+          const publicUrl = `${env.SUPABASE_URL}/storage/v1/object/public/customer-assets/${storagePath}`;
+          // url_hero setzen + placeholder flag
+          await fetch(`${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}`, {
+            method: "PATCH",
+            headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
+            body: JSON.stringify({url_hero: publicUrl, hero_is_placeholder: true}),
+          });
+          o.url_hero = publicUrl;
+          heroIsPlaceholder = true;
+        }
+      }
+    } catch(e) {
+      // Stockfoto ist optional — kein Blocker wenn es fehlschlaegt
+    }
+  }
+
   /* ─── Qualitaets-Check + Auto-Fix ─── */
   const qIssues = [];
   let qFixed = 0;

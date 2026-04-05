@@ -1714,7 +1714,13 @@ function Portal({session,onLogout}){
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",about5:"url_about5",about6:"url_about6",about7:"url_about7",about8:"url_about8",preisliste:"url_preisliste"};
       const col=colMap[key];
-      if(col&&order?.id){const{error:upErr}=await supabase.from("orders").update({[col]:data.publicUrl}).eq("id",order.id);if(upErr)console.error("URL-Update:",upErr.message);}
+      if(col&&order?.id){
+        const updatePayload={[col]:data.publicUrl};
+        if(key==="hero"&&order.hero_is_placeholder) updatePayload.hero_is_placeholder=false;
+        const{error:upErr}=await supabase.from("orders").update(updatePayload).eq("id",order.id);
+        if(upErr)console.error("URL-Update:",upErr.message);
+        if(key==="hero"&&order.hero_is_placeholder) setOrder(o=>({...o,hero_is_placeholder:false}));
+      }
       showToast(key==="logo"?"Logo hochgeladen!":key==="preisliste"?"Preisliste hochgeladen!":"Foto hochgeladen!");
     }catch(e){showToast("Fehler: "+e.message);}
     setUploading(u=>({...u,[key]:false}));
@@ -1740,7 +1746,13 @@ function Portal({session,onLogout}){
       }
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",about5:"url_about5",about6:"url_about6",about7:"url_about7",about8:"url_about8",preisliste:"url_preisliste"};
       const col=colMap[key];
-      if(col){const{error}=await supabase.from("orders").update({[col]:null}).eq("id",order.id);if(error)console.error("Delete URL-Update:",error.message);}
+      if(col){
+        const delPayload={[col]:null};
+        if(key==="hero") delPayload.hero_is_placeholder=false;
+        const{error}=await supabase.from("orders").update(delPayload).eq("id",order.id);
+        if(error)console.error("Delete URL-Update:",error.message);
+        if(key==="hero") setOrder(o=>({...o,hero_is_placeholder:false}));
+      }
       setAssetUrls(u=>{const n={...u};delete n[key];return n;});
       showToast("Bild gelöscht");
     }catch(e){showToast("Fehler beim Löschen: "+e.message);}
@@ -1865,9 +1877,9 @@ function Portal({session,onLogout}){
     {label:assetUrls.logo?"Logo pr\u00fcfen":"Logo hochladen",
      desc:assetUrls.logo?"Ihr Logo wurde \u00fcbernommen. Pr\u00fcfen Sie ob es korrekt angezeigt wird.":"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",
      done:!!assetUrls.logo,page:"hero"},
-    {label:assetUrls.hero?"Titelbild pr\u00fcfen":"Titelbild hochladen",
-     desc:assetUrls.hero?"Ihr Titelbild wurde \u00fcbernommen. Pr\u00fcfen Sie ob es gut aussieht.":"Das gro\u00dfe Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb oder Ihrer Arbeit.",
-     done:!!(assetUrls.hero||assetUrls.foto1),page:"hero"},
+    {label:order?.hero_is_placeholder?"Eigenes Titelbild hochladen":assetUrls.hero?"Titelbild pr\u00fcfen":"Titelbild hochladen",
+     desc:order?.hero_is_placeholder?"Wir haben ein Beispielfoto eingesetzt. Laden Sie ein eigenes Bild hoch f\u00fcr einen pers\u00f6nlicheren Auftritt.":assetUrls.hero?"Ihr Titelbild wurde \u00fcbernommen. Pr\u00fcfen Sie ob es gut aussieht.":"Das gro\u00dfe Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb oder Ihrer Arbeit.",
+     done:!!(assetUrls.hero&&!order?.hero_is_placeholder),page:"hero"},
     {label:"Firmenname & Beschreibung pr\u00fcfen",
      desc:"Diese Texte stehen ganz oben auf Ihrer Website. Bitte pr\u00fcfen und bei Bedarf anpassen.",
      done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
@@ -2439,12 +2451,12 @@ function Portal({session,onLogout}){
           </div>
           );})()}
           {/* Hero-Bild upload */}
-          {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];return(
+          {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];const isPlaceholder=!!order?.hero_is_placeholder;return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild für den oberen Bereich der Website</div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:"#fef3c7",color:"#92400e",marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch f\u00fcr einen pers\u00f6nlicheren Auftritt":"Hintergrundbild f\u00fcr den oberen Bereich der Website"}</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>

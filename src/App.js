@@ -752,6 +752,7 @@ function SuccessPage({data,onBack,onPortal}){
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // Snapshot der Daten BEVOR signUp den Auth-State aendert und die Seite wechselt
     const snap=JSON.parse(JSON.stringify(data));
+    console.log("[SiteReady] Order snapshot:", {firmenname:snap.firmenname,telefon:snap.telefon,email:snap.email,adresse:snap.adresse,plz:snap.plz,ort:snap.ort,leistungen:snap.leistungen?.length,branche:snap.branche,stil:snap.stil,layout:snap.layout,hasImportExtras:!!snap.importExtras});
     const snapSub=snap.firmenname?snap.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
     _orderInProgress=true;
     const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:snap.firmenname,vorname,nachname}}});
@@ -783,7 +784,8 @@ function SuccessPage({data,onBack,onPortal}){
       ...(snap.importExtras?.sections_visible?{sections_visible:snap.importExtras.sections_visible}:{}),
       website_ziel:null
     });
-    if(error){setSaveErr("Fehler: "+error.message);setSaving(false);_orderInProgress=false;return;}
+    if(error){console.error("[SiteReady] INSERT error:",error.message);setSaveErr("Fehler: "+error.message);setSaving(false);_orderInProgress=false;return;}
+    console.log("[SiteReady] Order created:",orderId,"subdomain:",snapSub);
     try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(_){}
     /* Auto-Login nach signUp (kein E-Mail-Bestätigung nötig) */
     try{await supabase.auth.signInWithPassword({email:loginEmail,password:pw});}catch(_){}

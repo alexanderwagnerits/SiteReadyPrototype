@@ -153,7 +153,7 @@ export async function onRequestGet({params, env}) {
         `@media(min-width:900px){` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-accent-line{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;overflow:hidden;border-radius:var(--rLg,8px);max-height:420px}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 99;overflow:hidden;border-radius:var(--rLg,8px);aspect-ratio:4/3;min-height:320px;max-height:520px;align-self:center}` +
         `.hero-img img{width:100%;height:100%;object-fit:cover;display:block}` +
         `}</style>`;
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');

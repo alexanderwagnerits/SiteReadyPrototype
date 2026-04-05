@@ -564,14 +564,16 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   const qIssues = [];
   let qFixed = 0;
 
-  // 1. Uebrig gebliebene Placeholder ersetzen
-  const placeholders = html.match(/\{\{[A-Z_]+\}\}/g) || [];
-  if (placeholders.length > 0) {
-    for (const ph of placeholders) {
+  // 1. Serve-time Placeholders zaehlen (NICHT entfernen — werden von index.js gebraucht)
+  const serveTimePlaceholders = new Set(["{{FIRMENNAME}}","{{TEL_HREF}}","{{TEL_DISPLAY}}","{{EMAIL}}","{{ADRESSE_VOLL}}","{{PLZ_ORT}}","{{KURZBESCHREIBUNG}}","{{OEFFNUNGSZEITEN}}","{{EINSATZGEBIET}}","{{SOCIAL_ICONS}}","{{UEBER_UNS_TEXT}}","{{VORTEILE}}"]);
+  const allPlaceholders = html.match(/\{\{[A-Z_]+\}\}/g) || [];
+  const unknownPlaceholders = allPlaceholders.filter(p => !serveTimePlaceholders.has(p));
+  if (unknownPlaceholders.length > 0) {
+    for (const ph of unknownPlaceholders) {
       html = html.split(ph).join("");
       qFixed++;
     }
-    qIssues.push({type:"placeholder_removed", count:placeholders.length, items:[...new Set(placeholders)]});
+    qIssues.push({type:"unknown_placeholder_removed", count:unknownPlaceholders.length, items:[...new Set(unknownPlaceholders)]});
   }
 
   // 2. Uebrig gebliebene HTML-Kommentar-Placeholder entfernen (NUR die, die NICHT serve-time gebraucht werden)

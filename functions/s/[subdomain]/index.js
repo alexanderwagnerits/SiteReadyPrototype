@@ -148,18 +148,21 @@ export async function onRequestGet({params, env}) {
   } else if (heroVariante === "split" || (heroVariante === "standard" && heroLayout !== "full")) {
     // Split: Bild rechts neben dem Text
     if (o.url_hero) {
-      const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;border-radius:var(--rLg,8px)"/></div>`;
+      // Text-Elemente in einen Wrapper packen, Bild daneben
       const heroStyle = `<style>` +
-        `.hero-img{display:none}` +
+        `.hero-split-img{display:none}` +
         `@media(min-width:900px){` +
-        `.hero{min-height:auto!important}` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding-top:80px!important;padding-bottom:80px!important}` +
-        `.hero h1{font-size:clamp(2rem,4vw,3.2rem)!important;grid-column:1}` +
-        `.hero-sub,.hero-desc,.hero-btns,.hero-accent-line,.hero-badges{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;align-self:center;border-radius:var(--rLg,8px);overflow:hidden}` +
-        `.hero-img img{width:100%;display:block}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-top:80px!important;padding-bottom:80px!important}` +
+        `.hero-split-text{grid-column:1}` +
+        `.hero-split-img{display:block!important;grid-column:2;border-radius:var(--rLg,8px);overflow:hidden}` +
+        `.hero-split-img img{width:100%;display:block;border-radius:var(--rLg,8px)}` +
+        `.hero h1{font-size:clamp(2.2rem,4vw,3.2rem)!important}` +
         `}</style>`;
-      html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
+      // Alle Text-Kinder von hero-inner in einen Wrapper wrappen
+      html = html.replace(
+        /(<div class="hero-inner">)([\s\S]*?)(<\/div>\s*<\/section>)/,
+        `$1<div class="hero-split-text">$2</div><div class="hero-split-img"><img src="${o.url_hero}" alt="" style="width:100%;display:block"/></div>$3`
+      );
       html = html.replace('</head>', heroStyle + '</head>');
     }
   } else if (o.url_hero) {

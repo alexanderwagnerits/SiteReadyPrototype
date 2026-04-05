@@ -61,7 +61,10 @@ export async function onRequestGet({params, env}) {
   let html = rows[0].website_html;
   const o = rows[0];
 
-  // ── Section-Varianten lesen (frueh, damit alle Abschnitte darauf zugreifen koennen) ──
+  // ── Stil + Section-Varianten lesen (frueh, damit alle Abschnitte darauf zugreifen koennen) ──
+  const stilName = o.stil || "klassisch";
+  const isModern = stilName === "modern";
+  const isElegant = stilName === "elegant";
   const heroVariante = o.hero_variante || "standard";
   const bewertungenVariante = o.bewertungen_variante || "karten";
   const ueberVariante = o.ueber_variante || "standard";
@@ -192,11 +195,6 @@ export async function onRequestGet({params, env}) {
   // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
   html = html.replace("<!-- LEIST_FOTOS -->", "");
 
-  // ── Stil-Variablen (fuer alle serve-time Sections) ──
-  const stilName = o.stil || "klassisch";
-  const isModern = stilName === "modern";
-  const isElegant = stilName === "elegant";
-
   // Team-Members + Berufsregister-Nr. — rechte Spalte in Über-uns
   const teamMembers = Array.isArray(o.team_members) ? o.team_members.filter(m => m && m.name) : [];
   const berufsregNr = o.berufsregister_nr ? `<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:.75rem;opacity:.4"><span style="text-transform:uppercase;letter-spacing:.1em;font-weight:600">Berufsregister-Nr.</span><br><span style="font-weight:500;opacity:1">${o.berufsregister_nr}</span></div>` : "";
@@ -223,7 +221,7 @@ export async function onRequestGet({params, env}) {
     if (aboutFotosForTeamSlot.length > 0) {
       const items = aboutFotosForTeamSlot.map(url =>
         `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-        `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" class="sr-img-hover">` +
+        `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s">` +
         `</div>`
       ).join("");
       const n = aboutFotosForTeamSlot.length;
@@ -241,7 +239,7 @@ export async function onRequestGet({params, env}) {
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" class="sr-img-hover">` +
+      `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s">` +
       `</div>`
     ).join("");
     const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${Math.min(aboutFotos.length, 4)},1fr)` : "repeat(4,1fr)";
@@ -511,7 +509,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const cols = galerieItems.length <= 2 ? "1fr 1fr" : galerieItems.length <= 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
       `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
-      `<img class="sr-zoom" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s" class="sr-img-hover">` +
+      `<img class="sr-zoom sr-img-hover" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s">` +
       `</div>`
     ).join("");
     const galerieRadius = isModern ? "16px" : isElegant ? "2px" : "var(--rLg)";

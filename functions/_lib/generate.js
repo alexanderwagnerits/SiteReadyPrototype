@@ -665,7 +665,7 @@ REGELN fuer gut_zu_wissen:
   let qFixed = 0;
 
   // 1. Serve-time Placeholders zaehlen (NICHT entfernen — werden von index.js gebraucht)
-  const serveTimePlaceholders = new Set(["{{FIRMENNAME}}","{{TEL_HREF}}","{{TEL_DISPLAY}}","{{EMAIL}}","{{ADRESSE_VOLL}}","{{PLZ_ORT}}","{{KURZBESCHREIBUNG}}","{{OEFFNUNGSZEITEN}}","{{EINSATZGEBIET}}","{{SOCIAL_ICONS}}","{{UEBER_UNS_TEXT}}","{{VORTEILE}}"]);
+  const serveTimePlaceholders = new Set(["{{FIRMENNAME}}","{{TEL_HREF}}","{{TEL_DISPLAY}}","{{EMAIL}}","{{ADRESSE_VOLL}}","{{PLZ_ORT}}","{{KURZBESCHREIBUNG}}","{{OEFFNUNGSZEITEN}}","{{EINSATZGEBIET}}","{{SOCIAL_ICONS}}","{{UEBER_UNS_TEXT}}","{{VORTEILE}}","{{OG_IMAGE}}"]);
   const allPlaceholders = html.match(/\{\{[A-Z_]+\}\}/g) || [];
   const unknownPlaceholders = allPlaceholders.filter(p => !serveTimePlaceholders.has(p));
   if (unknownPlaceholders.length > 0) {

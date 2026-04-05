@@ -152,8 +152,10 @@ export async function onRequestGet({params, env}) {
       const heroStyle = `<style>` +
         `.hero-img{display:none}` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center}` +
-        `.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-accent-line,.hero-badges{grid-column:1}` +
+        `.hero{min-height:auto!important}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding-top:80px!important;padding-bottom:80px!important}` +
+        `.hero h1{font-size:clamp(2rem,4vw,3.2rem)!important;grid-column:1}` +
+        `.hero-sub,.hero-desc,.hero-btns,.hero-accent-line,.hero-badges{grid-column:1}` +
         `.hero-img{display:block!important;grid-column:2;grid-row:1/span 20;align-self:center;border-radius:var(--rLg,8px);overflow:hidden}` +
         `.hero-img img{width:100%;display:block}` +
         `}</style>`;

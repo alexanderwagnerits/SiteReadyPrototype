@@ -1,3 +1,8 @@
+function esc(text) {
+  if (!text) return "";
+  return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
 function normSocial(v) {
   if (!v) return "";
   v = v.trim().replace(/\/+$/, "");
@@ -228,9 +233,10 @@ export async function onRequestGet({params, env}) {
 
   // ── Ueber-uns-Variante serve-time anwenden ──
   if (ueberVariante === "story") {
-    // Story: Gruendergeschichte mit Zitat-Stil, Foto rechts
+    // Story: Gruendergeschichte mit Zitat-Stil
+    const hasRightCol = teamMembers.length > 0 || [o.url_about1,o.url_about2,o.url_about3,o.url_about4].some(Boolean);
     const storyStyle = `<style>
-.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!important;align-items:center}
+${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!important;align-items:center}` : `.ueber-grid{display:block!important}`}
 .ueber .ueber-vorteile{display:none}
 .ueber-text{font-size:1.05rem!important;opacity:.8!important;line-height:1.85!important}
 </style>`;
@@ -315,16 +321,16 @@ export async function onRequestGet({params, env}) {
       const mainStars = makeStars(main);
       const highlight = `<div style="background:var(--primary);color:#fff;border-radius:var(--rLg,8px);padding:36px;margin-bottom:20px;text-align:center">` +
         `<div style="font-size:2rem;margin-bottom:12px;opacity:.3">\u201c</div>` +
-        `<div style="font-size:1rem;font-weight:500;line-height:1.8;max-width:520px;margin:0 auto;opacity:.9">${main.text}</div>` +
-        `<div style="margin-top:16px;font-size:.82rem;font-weight:700;opacity:.7">${main.name || "Kunde"}</div>` +
+        `<div style="font-size:1rem;font-weight:500;line-height:1.8;max-width:520px;margin:0 auto;opacity:.9">${esc(main.text)}</div>` +
+        `<div style="margin-top:16px;font-size:.82rem;font-weight:700;opacity:.7">${esc(main.name) || "Kunde"}</div>` +
         (mainStars ? `<div style="margin-top:8px;display:flex;justify-content:center;gap:2px">${mainStars}</div>` : "") +
         `</div>`;
       const restCards = rest.map(b => {
         const stars = makeStars(b);
         return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:20px;display:flex;flex-direction:column;gap:8px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
-          `<p style="font-size:.88rem;color:var(--text);line-height:1.7;margin:0;flex:1;font-style:italic">\u201e${b.text}\u201c</p>` +
-          `<div style="font-size:.78rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</div></div>`;
+          `<p style="font-size:.88rem;color:var(--text);line-height:1.7;margin:0;flex:1;font-style:italic">\u201e${esc(b.text)}\u201c</p>` +
+          `<div style="font-size:.78rem;font-weight:700;color:var(--primary)">${esc(b.name) || "Kunde"}</div></div>`;
       }).join("");
       const restCols = rest.length <= 2 ? `repeat(${rest.length},1fr)` : "repeat(3,1fr)";
       bewContent = highlight + (rest.length > 0 ? `<div style="display:grid;grid-template-columns:${restCols};gap:16px">${restCards}</div>` : "");
@@ -332,16 +338,16 @@ export async function onRequestGet({params, env}) {
     } else if (bewertungenVariante === "liste") {
       // Liste: Kompakt untereinander mit Avatar-Initialen
       const listItems = bewertungen.slice(0, 6).map(b => {
-        const initials = (b.name || "K").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+        const initials = esc((b.name || "K").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
         const stars = makeStars(b);
         return `<div style="display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--sep);align-items:start">` +
           `<div style="width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">${initials}</div>` +
           `<div>` +
           `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">` +
-          `<span style="font-size:.85rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</span>` +
+          `<span style="font-size:.85rem;font-weight:700;color:var(--primary)">${esc(b.name) || "Kunde"}</span>` +
           (stars ? `<span style="display:flex;gap:1px">${stars}</span>` : "") +
           `</div>` +
-          `<div style="font-size:.88rem;color:var(--textMuted);line-height:1.7;font-style:italic">\u201e${b.text}\u201c</div>` +
+          `<div style="font-size:.88rem;color:var(--textMuted);line-height:1.7;font-style:italic">\u201e${esc(b.text)}\u201c</div>` +
           `</div></div>`;
       }).join("");
       bewContent = `<div style="max-width:640px">${listItems}</div>`;
@@ -352,8 +358,8 @@ export async function onRequestGet({params, env}) {
         const stars = makeStars(b);
         return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:24px;display:flex;flex-direction:column;gap:12px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
-          `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${b.text}\u201c</p>` +
-          `<div style="font-size:.82rem;font-weight:700;color:var(--primary)">${b.name || "Kunde"}</div>` +
+          `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${esc(b.text)}\u201c</p>` +
+          `<div style="font-size:.82rem;font-weight:700;color:var(--primary)">${esc(b.name) || "Kunde"}</div>` +
           `</div>`;
       }).join("");
       const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
@@ -379,7 +385,7 @@ export async function onRequestGet({params, env}) {
   if (o.takeaway) kontaktInfoItems.push(kIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`) + `<span>Take-away</span>`);
   if (o.lieferservice) kontaktInfoItems.push(kIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`) + `<span>Lieferservice</span>`);
   const gzwLines = (o.gut_zu_wissen || "").split("\n").map(s => s.trim()).filter(Boolean).slice(0, 5);
-  gzwLines.forEach(l => kontaktInfoItems.push(kIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`) + `<span>${l}</span>`));
+  gzwLines.forEach(l => kontaktInfoItems.push(kIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`) + `<span>${esc(l)}</span>`));
   if (kontaktInfoItems.length > 0 && html.includes("<!-- KONTAKT_INFOS -->")) {
     const items = kontaktInfoItems.map(i => `<div class="kontakt-info-item">${i}</div>`).join("");
     html = html.replace("<!-- KONTAKT_INFOS -->", `<div class="kontakt-infos">${items}</div>`);
@@ -611,10 +617,10 @@ export async function onRequestGet({params, env}) {
       return "";
     };
     const cards = leistungenArr.map((l, i) => {
-      const lCapitalized = l.charAt(0).toUpperCase() + l.slice(1);
-      const desc = findInMap(descMap, l) || findInMap(descMap, lCapitalized);
-      const preis = findInMap(preisMap, l) || findInMap(preisMap, lCapitalized);
-      const foto = findInMap(fotoMap, l) || findInMap(fotoMap, lCapitalized);
+      const lCapitalized = esc(l.charAt(0).toUpperCase() + l.slice(1));
+      const desc = esc(findInMap(descMap, l) || findInMap(descMap, l.charAt(0).toUpperCase() + l.slice(1)));
+      const preis = esc(findInMap(preisMap, l) || findInMap(preisMap, l.charAt(0).toUpperCase() + l.slice(1)));
+      const foto = findInMap(fotoMap, l) || findInMap(fotoMap, l.charAt(0).toUpperCase() + l.slice(1));
       const imgArea = foto
         ? `<div style="height:160px;overflow:hidden"><img src="${foto}" alt="${lCapitalized}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
         : "";
@@ -634,7 +640,7 @@ export async function onRequestGet({params, env}) {
     if (useCompact) {
       // Kompakt: Nur Icon + Name, kein Text
       const compactCards = leistungenArr.map((l, i) => {
-        const lCap = l.charAt(0).toUpperCase() + l.slice(1);
+        const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));
         return `<div class="sr-fade" style="${cardStyle};text-align:center;padding:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">` +
           `<div style="${iconStyle};margin:0 auto 8px">${checkIcon}</div>` +
           `<div style="font-size:.85rem;font-weight:700;color:var(--primary)">${lCap}</div>` +
@@ -644,10 +650,10 @@ export async function onRequestGet({params, env}) {
     } else if (layout === "ausfuehrlich") {
       // Ausfuehrlich: Liste mit voller Breite
       const listCards = leistungenArr.map((l, i) => {
-        const lCap = l.charAt(0).toUpperCase() + l.slice(1);
-        const desc = findInMap(descMap, l) || findInMap(descMap, lCap);
-        const preis = findInMap(preisMap, l) || findInMap(preisMap, lCap);
-        const foto = findInMap(fotoMap, l) || findInMap(fotoMap, lCap);
+        const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));
+        const desc = esc(findInMap(descMap, l) || findInMap(descMap, l.charAt(0).toUpperCase() + l.slice(1)));
+        const preis = esc(findInMap(preisMap, l) || findInMap(preisMap, l.charAt(0).toUpperCase() + l.slice(1)));
+        const foto = findInMap(fotoMap, l) || findInMap(fotoMap, l.charAt(0).toUpperCase() + l.slice(1));
         return `<div class="sr-fade" style="${cardStyle};display:grid;grid-template-columns:${foto ? '160px ' : ''}auto 1fr;gap:0;align-items:stretch" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">` +
           (foto ? `<div style="overflow:hidden"><img src="${foto}" alt="${lCap}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : "") +
           `<div style="padding:20px 24px;display:flex;align-items:center">` +
@@ -695,33 +701,33 @@ export async function onRequestGet({params, env}) {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">` +
         `<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div>` +
-        `<span style="padding-top:8px">${v}</span></div>`
+        `<span style="padding-top:8px">${esc(v)}</span></div>`
       ).join("");
     } else if (stil === "elegant") {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)">` +
-        `<span style="color:rgba(255,255,255,.5);font-weight:300;margin-right:8px">&#8211;</span>${v}</div>`
+        `<span style="color:rgba(255,255,255,.5);font-weight:300;margin-right:8px">&#8211;</span>${esc(v)}</div>`
       ).join("");
     } else {
       vorteileHtml = o.text_vorteile.map(v =>
         `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">` +
-        `<span style="color:rgba(255,255,255,.8);font-weight:700;flex-shrink:0">&#10003;</span><span>${v}</span></div>`
+        `<span style="color:rgba(255,255,255,.8);font-weight:700;flex-shrink:0">&#10003;</span><span>${esc(v)}</span></div>`
       ).join("");
     }
   }
 
   const vars = {
-    "{{FIRMENNAME}}":       o.firmenname || "",
+    "{{FIRMENNAME}}":       esc(o.firmenname || ""),
     "{{TEL_HREF}}":         telHref,
-    "{{TEL_DISPLAY}}":      tel,
-    "{{EMAIL}}":            o.email || "",
-    "{{ADRESSE_VOLL}}":     adresseVoll,
-    "{{PLZ_ORT}}":          [o.plz, o.ort].filter(Boolean).join(" "),
-    "{{KURZBESCHREIBUNG}}": o.kurzbeschreibung || "",
+    "{{TEL_DISPLAY}}":      esc(tel),
+    "{{EMAIL}}":            esc(o.email || ""),
+    "{{ADRESSE_VOLL}}":     esc(adresseVoll),
+    "{{PLZ_ORT}}":          esc([o.plz, o.ort].filter(Boolean).join(" ")),
+    "{{KURZBESCHREIBUNG}}": esc(o.kurzbeschreibung || ""),
     "{{OEFFNUNGSZEITEN}}":  oezLabel,
-    "{{EINSATZGEBIET}}":    o.einsatzgebiet || "",
+    "{{EINSATZGEBIET}}":    esc(o.einsatzgebiet || ""),
     "{{SOCIAL_ICONS}}":     buildSocialIcons(o),
-    "{{UEBER_UNS_TEXT}}":   o.text_ueber_uns || "",
+    "{{UEBER_UNS_TEXT}}":   esc(o.text_ueber_uns || ""),
     "{{VORTEILE}}":         vorteileHtml,
   };
   for (const [key, val] of Object.entries(vars)) {

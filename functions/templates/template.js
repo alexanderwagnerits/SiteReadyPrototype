@@ -344,6 +344,7 @@ a{color:inherit}
    ══════════════════════════════════════════════════════ */
 .sr-sticky-cta{display:none}
 @media(max-width:768px){
+body{padding-bottom:72px}
 .sr-sticky-cta{display:block;position:fixed;bottom:0;left:0;right:0;z-index:998;padding:12px 16px;background:var(--primary);box-shadow:0 -4px 20px rgba(0,0,0,.15)}
 .sr-sticky-cta a{display:block;background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:var(--r);font-weight:700;font-size:.95rem;text-decoration:none;font-family:var(--font)}
 .sr-sticky-cta a:active{opacity:.85}

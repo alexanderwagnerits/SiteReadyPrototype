@@ -1116,13 +1116,13 @@ const qCss=`
 function Questionnaire({data,setData,onComplete,onBack}){
   const SECS=[{id:"start",label:"Start",icon:<><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></>},{id:"grunddaten",label:"Grunddaten",icon:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>},{id:"leistungen",label:"Leistungen",icon:<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>},{id:"kontakt",label:"Kontakt",icon:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>},{id:"impressum",label:"Impressum",icon:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>},{id:"design",label:"Design",icon:<><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>},{id:"fertig",label:"Fertig",icon:<polyline points="20 6 9 17 4 12"/>}];
   const[step,setStep]=useState(0);
-  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");const[importPhase,setImportPhase]=useState("");
+  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[importResult,setImportResult]=useState(null);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");const[importPhase,setImportPhase]=useState("");
   const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");setImportPhase("Website wird gelesen...");
     const phases=["Unterseiten werden durchsucht...","Daten werden analysiert...","Fast fertig..."];
     const timers=phases.map((p,i)=>setTimeout(()=>setImportPhase(p),(i+1)*6000));
     try{const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),90000);
     const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl}),signal:ctrl.signal});clearTimeout(timeout);
-    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),layout:j.layout_suggestion||d.layout}));const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],sections_visible:j.sections_visible||{}};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);go(1);
+    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),layout:j.layout_suggestion||d.layout}));const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],sections_visible:j.sections_visible||{}};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);
     }catch(e){timers.forEach(clearTimeout);setImportPhase("");setImportLoading(false);if(e.name==="AbortError")setImportErr("Der Import hat zu lange gedauert. Die Website ist möglicherweise nicht erreichbar oder zu komplex. Sie können die Daten manuell eingeben oder uns unter support@siteready.at melden — wir schauen uns das Problem an.");else setImportErr("Verbindungsfehler — bitte versuchen Sie es erneut oder melden Sie das Problem unter support@siteready.at");}};
   const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
@@ -1137,7 +1137,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const allValid=sv1&&sv2&&sv3&&sv4;
   const svArr=[true,sv1,sv2,sv3,sv4,true,allValid];
   const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
-  const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>›</span> <b>{bc}</b></div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
+  const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>{"\u203a"}</span> <b>{bc}</b>{importResult&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,verticalAlign:"middle"}}>importiert — bitte pr\u00fcfen</span>}</div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
   const ftr=(back,next,label,disabled,style)=><div className="q-footer">{back&&<button className="q-btn-back" onClick={()=>go(step-1)}>Zurück</button>}<button className="q-btn-next" onClick={next} disabled={disabled} style={style}>{label} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button></div>;
   const chevron=<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 
@@ -1165,14 +1165,56 @@ function Questionnaire({data,setData,onComplete,onBack}){
     {/* 0: Start */}
     <div id="q-sec-0" className={`q-section${step===0?" q-vis":""}`}>
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"36px 20px",overflowY:"auto"}}>
-        <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
+        {importResult ? (()=>{
+          const j=importResult;
+          const checks=[
+            j.firmenname&&["Firmenname",j.firmenname],
+            j.branche&&["Branche",BRANCHEN.find(b=>b.value===j.branche)?.label||j.branche],
+            j.leistungen?.length&&["Leistungen",j.leistungen.length+" erkannt"],
+            (j.adresse||j.ort)&&["Adresse",[j.adresse,j.plz,j.ort].filter(Boolean).join(", ")],
+            j.telefon&&["Telefon",j.telefon],
+            j.email&&["E-Mail",j.email],
+            j.oeffnungszeiten_import&&["\u00d6ffnungszeiten","erkannt"],
+            j.bewertungen?.length&&["Kundenbewertungen",j.bewertungen.length+" \u00fcbernommen"],
+            j.faq?.length&&["FAQ",j.faq.length+" Fragen \u00fcbernommen"],
+            j.fakten?.length&&["Zahlen & Fakten",j.fakten.length+" erkannt"],
+            j.partner?.length&&["Partner & Zertifikate",j.partner.length+" erkannt"],
+            j.team?.length&&["Team-Mitglieder",j.team.length+" erkannt"],
+            (j.facebook||j.instagram||j.linkedin||j.tiktok)&&["Social Media",[j.facebook&&"Facebook",j.instagram&&"Instagram",j.linkedin&&"LinkedIn",j.tiktok&&"TikTok"].filter(Boolean).join(", ")],
+            j.whatsapp&&["WhatsApp",j.whatsapp],
+            j.buchungslink&&["Online-Buchung","erkannt"],
+            j.unternehmensform&&["Impressum-Daten","erkannt"],
+          ].filter(Boolean);
+          const meta=j._meta||{};
+          return <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
+            <div style={{width:56,height:56,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,letterSpacing:"-.02em",marginBottom:6}}>Website erfolgreich importiert</div>
+            <div style={{fontSize:".85rem",color:T.textMuted,marginBottom:24}}>{meta.pages_read||"Mehrere"} Seiten gelesen{meta.duration_ms?` in ${Math.round(meta.duration_ms/1000)}s`:""}</div>
+            <div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"16px 20px",marginBottom:20}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Das haben wir gefunden</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {checks.map(([label,value],i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,fontSize:".85rem"}}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
+                  <span style={{fontWeight:600,color:T.dark,minWidth:120}}>{label}</span>
+                  <span style={{color:T.textMuted,fontSize:".82rem"}}>{value}</span>
+                </div>)}
+              </div>
+              {checks.length===0&&<div style={{fontSize:".85rem",color:T.textMuted,textAlign:"center",padding:"8px 0"}}>Keine Daten erkannt. Bitte geben Sie die Daten manuell ein.</div>}
+            </div>
+            <div style={{fontSize:".82rem",color:T.textMuted,marginBottom:20,lineHeight:1.5}}>Bitte pr\u00fcfen Sie die Angaben in den n\u00e4chsten Schritten.</div>
+            <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>Angaben pr\u00fcfen {chevron}</button>
+          </div>;
+        })()
+        : <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
           <img src="/logo.png" alt="SiteReady" style={{height:32,marginBottom:24}} onError={e=>{e.currentTarget.style.display="none"}}/>
           <div style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,letterSpacing:"-.03em",lineHeight:1.2,marginBottom:8}}>Ihre professionelle Website<br/>in wenigen Minuten.</div>
           <div style={{fontSize:".9rem",color:T.textMuted,marginBottom:40,lineHeight:1.5}}>Impressum nach ECG, DSGVO und Google-Indexierung inklusive.</div>
           <div className="q-content-card" style={{textAlign:"left",marginBottom:24}}>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
               <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
-              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Website importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Wir übernehmen Ihre Daten automatisch</div></div>
+              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Website importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Wir \u00fcbernehmen Ihre Daten automatisch</div></div>
             </div>
             <div className="q-import-row">
               <input className="q-import-input" type="url" value={importUrl} onChange={e=>setImportUrl(e.target.value)} placeholder="https://www.ihre-website.at" onKeyDown={e=>{if(e.key==="Enter")e.preventDefault()}}/>
@@ -1185,7 +1227,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             {importErr&&<div style={{marginTop:8,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".85rem",color:T.red,lineHeight:1.5}}>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>}
             <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${importConfirm?T.accent+"44":T.bg3}`,marginTop:12}}>
               <input type="checkbox" checked={importConfirm} onChange={e=>setImportConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
-              <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
+              <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich best\u00e4tige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
             </label>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:24,color:"#b5b8c0",fontSize:".82rem",fontWeight:500}}><div style={{flex:1,height:1,background:T.bg3}}/> oder <div style={{flex:1,height:1,background:T.bg3}}/></div>
@@ -1195,7 +1237,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> 7 Tage kostenlos</span>
             <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> DSGVO-konform</span>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
     {/* 1: Grunddaten */}
@@ -1826,9 +1868,10 @@ function Portal({session,onLogout}){
     {label:"Social Media Profile angeben",done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
     {label:"Preise zu Leistungen",done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
     {label:"Team vorstellen",done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
-    {label:"Kundenbewertungen hinzufügen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
-    {label:"WhatsApp-Button aktivieren",done:!!order.whatsapp,page:"kontakt",isNew:true},
-    {label:"Layout & Design anpassen",done:!!(order.layout||order.custom_color||order.custom_font),page:"design",isNew:true},
+    {label:order.bewertungen?.length?"Kundenbewertungen pr\u00fcfen":"Kundenbewertungen hinzuf\u00fcgen",done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
+    {label:order.faq?.length?"FAQ pr\u00fcfen":"FAQ hinzuf\u00fcgen",done:!!(order.faq?.some(f=>f.frage)),page:"faq"},
+    {label:"WhatsApp-Button aktivieren",done:!!order.whatsapp,page:"kontakt"},
+    {label:"Layout & Design anpassen",done:!!(order.layout||order.custom_color||order.custom_font),page:"design"},
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;

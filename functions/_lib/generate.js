@@ -613,7 +613,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
 
   // 7. Score berechnen (100 - Abzuege)
   const criticalMissing = qIssues.filter(i => i.type === "missing_section").length;
-  const qualityScore = Math.max(0, 100 - (criticalMissing * 20) - (placeholders.length * 5) - (commentPlaceholders.length * 2));
+  const qualityScore = Math.max(0, 100 - (criticalMissing * 20) - (placeholders.length * 5) - (safeToRemove.length * 2));
 
   /* ─── In Supabase speichern ─── */
   // Kern-Felder (muessen existieren)

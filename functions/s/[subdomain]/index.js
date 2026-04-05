@@ -151,9 +151,10 @@ export async function onRequestGet({params, env}) {
       const heroImg = `<div class="hero-img" style="display:none"><img src="${o.url_hero}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;border-radius:var(--rLg,8px)"/></div>`;
       const heroStyle = `<style>` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:start}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:40px;align-items:center}` +
         `.hero-badges,.hero h1,.hero-sub,.hero-desc,.hero-btns,.hero-accent-line{grid-column:1}` +
-        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;aspect-ratio:4/3;overflow:hidden;border-radius:var(--rLg,8px);align-self:center}` +
+        `.hero-img{display:block!important;grid-column:2;grid-row:1/span 10;overflow:hidden;border-radius:var(--rLg,8px);max-height:420px}` +
+        `.hero-img img{width:100%;height:100%;object-fit:cover;display:block}` +
         `}</style>`;
       html = html.replace('</div>\n</section>', heroImg + '</div>\n</section>');
       html = html.replace('</head>', heroStyle + '</head>');

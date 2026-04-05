@@ -184,9 +184,9 @@ a{color:inherit}
 /* ══════════════════════════════════════════════════════
    KONTAKT INFOS (Features-Grid)
    ══════════════════════════════════════════════════════ */
-.kontakt-infos{margin-top:32px;padding-top:28px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.kontakt-info-item{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text)}
-.kontakt-info-icon{width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kontakt-infos{margin-top:32px;padding-top:28px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(3,1fr);gap:14px 20px}
+.kontakt-info-item{display:flex;align-items:flex-start;gap:10px;font-size:.85rem;color:var(--text);line-height:1.5}
+.kontakt-info-icon{width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
 .kontakt-info-icon svg{color:var(--accent)}
 @media(max-width:768px){.kontakt-infos{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.kontakt-infos{grid-template-columns:1fr}}

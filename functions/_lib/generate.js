@@ -518,7 +518,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
         friseur:"photo-1560066984-138dadb4c035",kosmetik:"photo-1570172619644-dfd03ed5d881",
         restaurant:"photo-1517248135467-4c7edcad34c4",cafe:"photo-1554118811-1e0d58224f24",
         baeckerei:"photo-1509440159596-0249088772ff",arzt:"photo-1631217868264-e5b90bb7e133",
-        zahnarzt:"photo-1629909613654-28e377c37b09",physiotherapie:"photo-1576091160550-2173dba999ef",
+        zahnarzt:"photo-1629909613654-28e377c37b09",physiotherapie:"photo-1571019613454-1cb2f99b2d8b",
         gaertner:"photo-1585320806297-9794b3e4eeae",reinigung:"photo-1581578731548-c64695cc6952",
         kfz:"photo-1487754180451-c456f719a1fc",fotograf:"photo-1554048612-b6a482bc67e5",
         immobilien:"photo-1560518883-ce09059eeffa",steuerberater:"photo-1497366216548-37526070297c",

@@ -587,21 +587,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     qIssues.push({type:"legacy_placeholder_removed", count:safeToRemove.length});
   }
 
-  // 3. Leere Sections entfernen (Section ohne sichtbaren Inhalt)
-  html = html.replace(/<section[^>]*>\s*<div class="w">\s*<\/div>\s*<\/section>/gi, () => { qFixed++; qIssues.push({type:"empty_section_removed"}); return ""; });
-
-  // 4. Leere href/src Attribute fixen
-  const emptyHrefs = (html.match(/href=""/g) || []).length;
-  if (emptyHrefs > 0) {
-    html = html.replace(/href=""/g, 'href="#"');
-    qFixed += emptyHrefs;
-    qIssues.push({type:"empty_href_fixed", count:emptyHrefs});
-  }
-
-  // 5. Doppelte Leerzeichen/Zeilenumbrueche in sichtbarem Text bereinigen
-  html = html.replace(/(<[^>]+>)\s{3,}/g, "$1 ");
-
-  // 6. Pruefen ob kritische Sections vorhanden sind
+  // 3. Pruefen ob kritische Sections vorhanden sind
   const hasHero = html.includes('class="hero"');
   const hasLeist = html.includes('id="leistungen"');
   const hasKontakt = html.includes('id="kontakt"');
@@ -613,9 +599,9 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
   if (!hasNav) qIssues.push({type:"missing_section", section:"nav"});
   if (!hasFooter) qIssues.push({type:"missing_section", section:"footer"});
 
-  // 7. Score berechnen (100 - Abzuege)
+  // 4. Score berechnen
   const criticalMissing = qIssues.filter(i => i.type === "missing_section").length;
-  const qualityScore = Math.max(0, 100 - (criticalMissing * 20) - (placeholders.length * 5) - (safeToRemove.length * 2));
+  const qualityScore = Math.max(0, 100 - (criticalMissing * 20) - (unknownPlaceholders.length * 5));
 
   /* ─── In Supabase speichern ─── */
   // Kern-Felder (muessen existieren)

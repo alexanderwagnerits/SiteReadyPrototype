@@ -862,14 +862,22 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   const currentStil = o.stil || "klassisch";
   html = html.replace(/class="stil-\w+"/, `class="stil-${currentStil}"`);
 
-  // ── Custom Design serve-time ueberschreiben (Farben, Font, Radius) ──
+  // ── Stil-Farben serve-time IMMER anwenden (damit Änderungen sofort greifen) ──
+  const STIL_COLORS = {
+    klassisch: {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",t:"#094067",tm:"#5f6c7b"},
+    modern:    {p:"#18181b",a:"#4f46e5",bg:"#fafafa",s:"#e4e4e7",t:"#18181b",tm:"#71717a"},
+    elegant:   {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",t:"#020826",tm:"#716040"},
+  };
+  const stilColors = STIL_COLORS[currentStil] || STIL_COLORS.klassisch;
+
+  // Custom-Felder ueberschreiben Stil-Defaults (User hat Vorrang)
   const customDesign = [
-    o.custom_color && `--primary:${o.custom_color}`,
-    o.custom_accent && `--accent:${o.custom_accent}`,
-    o.custom_bg && `--bg:${o.custom_bg}`,
-    o.custom_text && `--text:${o.custom_text}`,
-    o.custom_text_muted && `--textMuted:${o.custom_text_muted}`,
-    o.custom_sep && `--sep:${o.custom_sep}`,
+    `--primary:${o.custom_color || stilColors.p}`,
+    `--accent:${o.custom_accent || stilColors.a}`,
+    `--bg:${o.custom_bg || stilColors.bg}`,
+    `--sep:${o.custom_sep || stilColors.s}`,
+    `--text:${o.custom_text || stilColors.t}`,
+    `--textMuted:${o.custom_text_muted || stilColors.tm}`,
     o.custom_radius && `--r:${o.custom_radius}`,
     o.custom_radius && `--rLg:${parseInt(o.custom_radius)+4}px`,
   ].filter(Boolean);
@@ -884,10 +892,8 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
   }
 
-  if (customDesign.length || fontImport) {
-    const overrideStyle = `<style>${fontImport}${customDesign.length ? `:root{${customDesign.join(";")}}` : ""}</style>`;
-    html = html.replace("</head>", overrideStyle + "</head>");
-  }
+  const overrideStyle = `<style>${fontImport}:root{${customDesign.join(";")}}</style>`;
+  html = html.replace("</head>", overrideStyle + "</head>");
 
   // ── WhatsApp Floating Button ──
   if (o.whatsapp) {

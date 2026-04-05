@@ -207,8 +207,13 @@ export async function onRequestPost({request, env}) {
       if (![...allInternalLinks].some(l => l.toLowerCase().includes(p.slice(1)))) addLink(base + p);
     }
 
-    /* ═══ 3. UNTERSEITEN LADEN (parallel, max 10) ═══ */
-    const urlsToFetch = [...allInternalLinks].slice(0, 10);
+    /* ═══ 3. UNTERSEITEN LADEN (parallel, max 12) ═══ */
+    // Wichtige Seiten priorisieren (Kontakt, Impressum, Leistungen, Ueber-uns zuerst)
+    const priorityPatterns = [/kontakt|contact/i, /impressum|imprint/i, /leistung|service|angebot/i, /ueber|about|team/i, /faq|haeufig/i];
+    const allLinks = [...allInternalLinks];
+    const priority = allLinks.filter(u => { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); });
+    const rest = allLinks.filter(u => !priority.includes(u));
+    const urlsToFetch = [...new Set([...priority, ...rest])].slice(0, 12);
     const pageContents = [];
 
     // Alle parallel (max 10, Jina hat 15s Timeout als Safety)

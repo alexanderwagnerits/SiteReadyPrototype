@@ -1147,7 +1147,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const allValid=sv1&&sv2&&sv3&&sv4;
   const svArr=[true,sv1,sv2,sv3,sv4,true,allValid];
   const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
-  const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>{"\u203a"}</span> <b>{bc}</b>{importResult&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,verticalAlign:"middle"}}>importiert — bitte pr\u00fcfen</span>}</div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
+  const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>{"›"}</span> <b>{bc}</b>{importResult&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,verticalAlign:"middle"}}>importiert — bitte prüfen</span>}</div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
   const ftr=(back,next,label,disabled,style)=><div className="q-footer">{back&&<button className="q-btn-back" onClick={()=>go(step-1)}>Zurück</button>}<button className="q-btn-next" onClick={next} disabled={disabled} style={style}>{label} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button></div>;
   const chevron=<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 
@@ -1184,12 +1184,12 @@ function Questionnaire({data,setData,onComplete,onBack}){
             (j.adresse||j.ort)&&["Adresse",[j.adresse,j.plz,j.ort].filter(Boolean).join(", ")],
             j.telefon&&["Telefon",j.telefon],
             j.email&&["E-Mail",j.email],
-            j.oeffnungszeiten_import&&["\u00d6ffnungszeiten","erkannt"],
+            j.oeffnungszeiten_import&&["Öffnungszeiten","erkannt"],
             (j.facebook||j.instagram||j.linkedin||j.tiktok)&&["Social Media",[j.facebook&&"Facebook",j.instagram&&"Instagram",j.linkedin&&"LinkedIn",j.tiktok&&"TikTok"].filter(Boolean).join(", ")],
             j.unternehmensform&&["Impressum-Daten","erkannt"],
           ].filter(Boolean);
           const portalChecks=[
-            j.bewertungen?.length&&["Kundenbewertungen",j.bewertungen.length+" \u00fcbernommen"],
+            j.bewertungen?.length&&["Kundenbewertungen",j.bewertungen.length+" übernommen"],
             j.faq?.length&&["FAQ",j.faq.length+" Fragen"],
             j.fakten?.length&&["Zahlen & Fakten",j.fakten.length+" erkannt"],
             j.partner?.length&&["Partner & Zertifikate",j.partner.length+" erkannt"],
@@ -1210,16 +1210,16 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <div style={{fontSize:"1.3rem",fontWeight:800,color:T.dark,letterSpacing:"-.02em",marginBottom:6}}>Website erfolgreich importiert</div>
             <div style={{fontSize:".85rem",color:T.textMuted,marginBottom:24}}>{meta.pages_read||"Mehrere"} Seiten gelesen{meta.duration_ms?` in ${Math.round(meta.duration_ms/1000)}s`:""}</div>
             {formChecks.length>0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"16px 20px",marginBottom:12}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Jetzt pr\u00fcfen</div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Jetzt prüfen</div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}><CheckRow items={formChecks} color={T.green}/></div>
             </div>}
             {portalChecks.length>0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"16px 20px",marginBottom:12}}>
-              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Zus\u00e4tzlich \u00fcbernommen <span style={{fontWeight:400,textTransform:"none",letterSpacing:0}}>\u2014 im Portal bearbeitbar</span></div>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Zusätzlich übernommen <span style={{fontWeight:400,textTransform:"none",letterSpacing:0}}>— im Portal bearbeitbar</span></div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}><CheckRow items={portalChecks} color={T.accent}/></div>
             </div>}
             {formChecks.length===0&&portalChecks.length===0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px",marginBottom:12,fontSize:".85rem",color:T.textMuted,textAlign:"center"}}>Keine Daten erkannt. Bitte geben Sie die Daten manuell ein.</div>}
-            <div style={{fontSize:".82rem",color:T.textMuted,marginBottom:20,lineHeight:1.5}}>{formChecks.length>0?"Bitte pr\u00fcfen Sie die Angaben in den n\u00e4chsten Schritten.":"Bitte geben Sie Ihre Daten in den n\u00e4chsten Schritten ein."}</div>
-            <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>{formChecks.length>0?"Angaben pr\u00fcfen":"Weiter"} {chevron}</button>
+            <div style={{fontSize:".82rem",color:T.textMuted,marginBottom:20,lineHeight:1.5}}>{formChecks.length>0?"Bitte prüfen Sie die Angaben in den nächsten Schritten.":"Bitte geben Sie Ihre Daten in den nächsten Schritten ein."}</div>
+            <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>{formChecks.length>0?"Angaben prüfen":"Weiter"} {chevron}</button>
           </div>;
         })()
         : <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
@@ -1229,7 +1229,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
           <div className="q-content-card" style={{textAlign:"left",marginBottom:24}}>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
               <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
-              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Website importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Wir \u00fcbernehmen Ihre Daten automatisch</div></div>
+              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Website importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Wir übernehmen Ihre Daten automatisch</div></div>
             </div>
             <div className="q-import-row">
               <input className="q-import-input" type="url" value={importUrl} onChange={e=>setImportUrl(e.target.value)} placeholder="https://www.ihre-website.at" onKeyDown={e=>{if(e.key==="Enter")e.preventDefault()}}/>
@@ -1242,7 +1242,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             {importErr&&<div style={{marginTop:8,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".85rem",color:T.red,lineHeight:1.5}}>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>}
             <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${importConfirm?T.accent+"44":T.bg3}`,marginTop:12}}>
               <input type="checkbox" checked={importConfirm} onChange={e=>setImportConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
-              <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich best\u00e4tige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
+              <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
             </label>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:24,color:"#b5b8c0",fontSize:".82rem",fontWeight:500}}><div style={{flex:1,height:1,background:T.bg3}}/> oder <div style={{flex:1,height:1,background:T.bg3}}/></div>
@@ -1335,18 +1335,18 @@ function Questionnaire({data,setData,onComplete,onBack}){
     </div>
     {/* 5: Design — Stil + Layout getrennt */}
     <div id="q-sec-5" className={`q-section${step===5?" q-vis":""}`}>
-      {hdr("Design","Design & Seitenaufbau","W\u00e4hlen Sie Stil und Layout getrennt \u2014 beides ist im Portal jederzeit \u00e4nderbar.")}
+      {hdr("Design","Design & Seitenaufbau","Wählen Sie Stil und Layout getrennt — beides ist im Portal jederzeit änderbar.")}
       <div className="q-mb" style={{maxWidth:900}}>
         {(()=>{
           const STILE=[
-            {value:"klassisch",label:"Klassisch",desc:"Seri\u00f6s, klar strukturiert. Navy-Blau, dezente Schatten.",color:"#0f2b5b",accent:"#2563eb"},
+            {value:"klassisch",label:"Klassisch",desc:"Seriös, klar strukturiert. Navy-Blau, dezente Schatten.",color:"#0f2b5b",accent:"#2563eb"},
             {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Indigo-Akzent, Pill-Buttons.",color:"#0f172a",accent:"#6366f1"},
-            {value:"elegant",label:"Elegant",desc:"Minimalistisch, d\u00fcnne Linien. Anthrazit, leichte Typografie.",color:"#292524",accent:"#78716c"},
+            {value:"elegant",label:"Elegant",desc:"Minimalistisch, dünne Linien. Anthrazit, leichte Typografie.",color:"#292524",accent:"#78716c"},
           ];
           const LAYOUTS=[
-            {value:"standard",label:"\u00dcbersichtlich",desc:"Alle wichtigen Bereiche: Leistungen, Ablauf, Bewertungen, Kontakt.",tags:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
-            {value:"kompakt",label:"Auf den Punkt",desc:"K\u00fcrzer und kompakter \u2014 ideal bei vielen Leistungen.",tags:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
-            {value:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Alle Details: FAQ, Zahlen & Fakten, CTA-Block und mehr.",tags:["Leistungen","Ablauf","FAQ","Fakten","Bewertungen","Kontakt"]},
+            {value:"standard",label:"Übersichtlich",desc:"Alle wichtigen Bereiche: Leistungen, Ablauf, Bewertungen, Kontakt.",tags:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
+            {value:"kompakt",label:"Auf den Punkt",desc:"Kürzer und kompakter — ideal bei vielen Leistungen.",tags:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
+            {value:"ausfuehrlich",label:"Ausführlich",desc:"Alle Details: FAQ, Zahlen & Fakten, CTA-Block und mehr.",tags:["Leistungen","Ablauf","FAQ","Fakten","Bewertungen","Kontakt"]},
           ];
           const isCustom=data.stil==="custom";
           return<div>
@@ -1368,13 +1368,13 @@ function Questionnaire({data,setData,onComplete,onBack}){
               <div style={{width:32,height:32,borderRadius:6,background:"conic-gradient(from 0deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)",flexShrink:0}}/>
               <div style={{flex:1}}>
                 <div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Eigenes Branding</div>
-                <div style={{fontSize:".75rem",color:T.textMuted}}>Eigene Farbe und Schrift w\u00e4hlen</div>
+                <div style={{fontSize:".75rem",color:T.textMuted}}>Eigene Farbe und Schrift wählen</div>
               </div>
               {isCustom&&<div style={{width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>{"\u2713"}</div>}
             </button>
             {isCustom&&<div style={{marginTop:-12,marginBottom:24,padding:"20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
               <div style={{marginBottom:18}}>
-                <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Prim\u00e4rfarbe</label>
+                <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Primärfarbe</label>
                 <div style={{background:T.white,border:`2px solid ${T.bg3}`,borderRadius:T.r,padding:18}}>
                   <div className="q-color-row">
                     {["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} className={`q-color-dot${data.customColor===c?" q-sel":""}`} style={{background:c}} onClick={()=>{up("customColor")(c);setHexInput(c.toUpperCase())}}/>)}
@@ -1386,7 +1386,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
                   </div>
                 </div>
               </div>
-              <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird f\u00fcr \u00dcberschriften und Text verwendet"/>
+              <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
             </div>}
             {/* Layout-Auswahl */}
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Seitenaufbau</div>
@@ -1403,7 +1403,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
                 </button>;
               })}
             </div>
-            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit \u00e4nderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil, Layout, Farben und Schrift k\u00f6nnen Sie im Portal jederzeit anpassen.</div></div>
+            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil, Layout, Farben und Schrift können Sie im Portal jederzeit anpassen.</div></div>
           </div>;
         })()}
       </div>
@@ -1421,7 +1421,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Leistungen</span><span style={{fontWeight:600,color:T.dark}}>{(data.leistungen?.length||0)+(data.extraLeistung?.split(",").filter(s=>s.trim()).length||0)} ausgewählt</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Kontakt</span><span style={{fontWeight:600,color:T.dark}}>{data.telefon||"–"}</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Impressum</span><span style={{fontWeight:600,color:T.dark}}>{uf?UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf:"–"}{legalOk&&impressumConfirm?" – vollständig":""}</span></div>
-            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}{data.layout&&data.layout!=="standard"?` \u2014 ${data.layout==="kompakt"?"Auf den Punkt":"Ausf\u00fchrlich"}`:""}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}{data.layout&&data.layout!=="standard"?` — ${data.layout==="kompakt"?"Auf den Punkt":"Ausführlich"}`:""}</span></div>
           </div>
         </div>
         <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
@@ -1841,7 +1841,7 @@ function Portal({session,onLogout}){
   const InfoRow=({label,value})=>(
     <div className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"11px 0",borderBottom:`1px solid ${T.bg3}`}}>
       <span style={{fontSize:".88rem",color:T.textMuted,fontWeight:500}}>{label}</span>
-      <span style={{fontSize:".92rem",color:value?T.dark:T.textMuted,fontWeight:value?500:400}}>{value||"\u2014"}</span>
+      <span style={{fontSize:".92rem",color:value?T.dark:T.textMuted,fontWeight:value?500:400}}>{value||"—"}</span>
     </div>
   );
   const ASSETS=[
@@ -1866,55 +1866,55 @@ function Portal({session,onLogout}){
   // Wizard: Labels passen sich an Datenquelle an (AI/Import/manuell/leer)
   const aiTag="\u2728 ";
   const wizardSteps=order?[
-    {label:assetUrls.logo?"Logo pr\u00fcfen":"Logo hochladen",
-     desc:assetUrls.logo?"Ihr Logo wurde \u00fcbernommen. Pr\u00fcfen Sie ob es korrekt angezeigt wird.":"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",
+    {label:assetUrls.logo?"Logo prüfen":"Logo hochladen",
+     desc:assetUrls.logo?"Ihr Logo wurde übernommen. Prüfen Sie ob es korrekt angezeigt wird.":"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",
      done:!!assetUrls.logo,page:"hero"},
-    {label:order?.hero_is_placeholder?"Eigenes Titelbild hochladen":assetUrls.hero?"Titelbild pr\u00fcfen":"Titelbild hochladen",
-     desc:order?.hero_is_placeholder?"Wir haben ein Beispielfoto eingesetzt. Laden Sie ein eigenes Bild hoch f\u00fcr einen pers\u00f6nlicheren Auftritt.":assetUrls.hero?"Ihr Titelbild wurde \u00fcbernommen. Pr\u00fcfen Sie ob es gut aussieht.":"Das gro\u00dfe Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb oder Ihrer Arbeit.",
+    {label:order?.hero_is_placeholder?"Eigenes Titelbild hochladen":assetUrls.hero?"Titelbild prüfen":"Titelbild hochladen",
+     desc:order?.hero_is_placeholder?"Wir haben ein Beispielfoto eingesetzt. Laden Sie ein eigenes Bild hoch für einen persönlicheren Auftritt.":assetUrls.hero?"Ihr Titelbild wurde übernommen. Prüfen Sie ob es gut aussieht.":"Das große Bild im Kopfbereich Ihrer Website. Am besten ein Foto von Ihrem Betrieb oder Ihrer Arbeit.",
      done:!!(assetUrls.hero&&!order?.hero_is_placeholder),page:"hero"},
-    {label:"Firmenname & Beschreibung pr\u00fcfen",
-     desc:"Diese Texte stehen ganz oben auf Ihrer Website. Bitte pr\u00fcfen und bei Bedarf anpassen.",
+    {label:"Firmenname & Beschreibung prüfen",
+     desc:"Diese Texte stehen ganz oben auf Ihrer Website. Bitte prüfen und bei Bedarf anpassen.",
      done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
-    {label:(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag)?"Merkmale pr\u00fcfen":"Merkmale angeben",
-     desc:(order.notdienst||order.meisterbetrieb)?"Ihre Merkmale wurden \u00fcbernommen. Pr\u00fcfen Sie ob alles stimmt.":"Sind Sie Meisterbetrieb? Bieten Sie Notdienst oder kostenlosen Kostenvoranschlag? Diese Angaben erscheinen als Badges.",
+    {label:(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag)?"Merkmale prüfen":"Merkmale angeben",
+     desc:(order.notdienst||order.meisterbetrieb)?"Ihre Merkmale wurden übernommen. Prüfen Sie ob alles stimmt.":"Sind Sie Meisterbetrieb? Bieten Sie Notdienst oder kostenlosen Kostenvoranschlag? Diese Angaben erscheinen als Badges.",
      done:!!(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag),page:"branchenfeatures"},
-    {label:isAiGen("leistungen_beschreibungen")?aiTag+"Leistungstexte pr\u00fcfen":"Leistungen pr\u00fcfen",
-     desc:isAiGen("leistungen_beschreibungen")?"Wir haben Beschreibungen f\u00fcr Ihre Leistungen erstellt. Bitte lesen Sie diese durch und passen Sie sie an. Sie k\u00f6nnen auch Preise und Fotos erg\u00e4nzen.":"Ihre Leistungen werden als Karten auf der Website angezeigt. Pr\u00fcfen Sie die Texte und erg\u00e4nzen Sie Preise oder Fotos.",
+    {label:isAiGen("leistungen_beschreibungen")?aiTag+"Leistungstexte prüfen":"Leistungen prüfen",
+     desc:isAiGen("leistungen_beschreibungen")?"Wir haben Beschreibungen für Ihre Leistungen erstellt. Bitte lesen Sie diese durch und passen Sie sie an. Sie können auch Preise und Fotos ergänzen.":"Ihre Leistungen werden als Karten auf der Website angezeigt. Prüfen Sie die Texte und ergänzen Sie Preise oder Fotos.",
      done:!!(order.leistungen?.length>0),page:"leistungen"},
-    {label:isAiGen("text_ueber_uns")?aiTag+"\u00dcber-uns Text pr\u00fcfen":"\u00dcber-uns Text pr\u00fcfen",
-     desc:isAiGen("text_ueber_uns")?"Der Vorstellungstext wurde automatisch erstellt. Lesen Sie ihn durch und machen Sie ihn pers\u00f6nlicher. Hier k\u00f6nnen Sie auch Ihr Team und Fotos hinzuf\u00fcgen.":"\u00dcber-uns Text und Vorteile pr\u00fcfen. Hier k\u00f6nnen Sie auch Ihr Team und Fotos hinzuf\u00fcgen.",
+    {label:isAiGen("text_ueber_uns")?aiTag+"Über-uns Text prüfen":"Über-uns Text prüfen",
+     desc:isAiGen("text_ueber_uns")?"Der Vorstellungstext wurde automatisch erstellt. Lesen Sie ihn durch und machen Sie ihn persönlicher. Hier können Sie auch Ihr Team und Fotos hinzufügen.":"Über-uns Text und Vorteile prüfen. Hier können Sie auch Ihr Team und Fotos hinzufügen.",
      done:!!order.text_ueber_uns,page:"ueberuns"},
-    {label:"Kontaktdaten pr\u00fcfen",
-     desc:"Adresse, Telefon und \u00d6ffnungszeiten erscheinen im Kontaktbereich und in Google Maps.",
+    {label:"Kontaktdaten prüfen",
+     desc:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps.",
      done:!!(order.adresse&&order.telefon),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
     {label:"Betriebsfotos hochladen",
-     desc:"Professionelle Fotos sind der gr\u00f6\u00dfte Hebel f\u00fcr mehr Anfragen.",
+     desc:"Professionelle Fotos sind der größte Hebel für mehr Anfragen.",
      done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
-    {label:order.team_members?.some(m=>m.name)?"Team pr\u00fcfen":"Team vorstellen",
-     desc:order.team_members?.some(m=>m.name)?"Teammitglieder wurden \u00fcbernommen. Pr\u00fcfen Sie Namen und Rollen.":"Zeigen Sie Ihr Team — das schafft Vertrauen.",
+    {label:order.team_members?.some(m=>m.name)?"Team prüfen":"Team vorstellen",
+     desc:order.team_members?.some(m=>m.name)?"Teammitglieder wurden übernommen. Prüfen Sie Namen und Rollen.":"Zeigen Sie Ihr Team — das schafft Vertrauen.",
      done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
-    {label:order.bewertungen?.some(b=>b.text)?(isAiGen("bewertungen")?aiTag+"Bewertungen pr\u00fcfen":"Bewertungen pr\u00fcfen"):"Kundenbewertungen hinzuf\u00fcgen",
-     desc:order.bewertungen?.some(b=>b.text)?"Pr\u00fcfen Sie die \u00fcbernommenen Bewertungen.":"Echte Kundenstimmen steigern das Vertrauen.",
+    {label:order.bewertungen?.some(b=>b.text)?(isAiGen("bewertungen")?aiTag+"Bewertungen prüfen":"Bewertungen prüfen"):"Kundenbewertungen hinzufügen",
+     desc:order.bewertungen?.some(b=>b.text)?"Prüfen Sie die übernommenen Bewertungen.":"Echte Kundenstimmen steigern das Vertrauen.",
      done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
-    {label:order.faq?.some(f=>f.frage)?(isAiGen("faq")?aiTag+"FAQ pr\u00fcfen":"FAQ pr\u00fcfen"):"FAQ hinzuf\u00fcgen",
-     desc:order.faq?.some(f=>f.frage)?"Pr\u00fcfen Sie die h\u00e4ufig gestellten Fragen.":"Beantworten Sie h\u00e4ufige Kundenfragen direkt auf Ihrer Website.",
+    {label:order.faq?.some(f=>f.frage)?(isAiGen("faq")?aiTag+"FAQ prüfen":"FAQ prüfen"):"FAQ hinzufügen",
+     desc:order.faq?.some(f=>f.frage)?"Prüfen Sie die häufig gestellten Fragen.":"Beantworten Sie häufige Kundenfragen direkt auf Ihrer Website.",
      done:!!(order.faq?.some(f=>f.frage)),page:"faq"},
-    {label:order.fakten?.some(f=>f.zahl)?"Zahlen & Fakten pr\u00fcfen":"Zahlen & Fakten hinzuf\u00fcgen",
-     desc:order.fakten?.some(f=>f.zahl)?"Pr\u00fcfen Sie die \u00fcbernommenen Zahlen.":"z.B. \u201e15+ Jahre Erfahrung\u201c — beeindruckt Besucher.",
+    {label:order.fakten?.some(f=>f.zahl)?"Zahlen & Fakten prüfen":"Zahlen & Fakten hinzufügen",
+     desc:order.fakten?.some(f=>f.zahl)?"Prüfen Sie die übernommenen Zahlen.":"z.B. \u201e15+ Jahre Erfahrung\u201c — beeindruckt Besucher.",
      done:!!(order.fakten?.some(f=>f.zahl)),page:"fakten"},
-    {label:order.partner?.some(p=>p.name)?"Partner pr\u00fcfen":"Partner & Zertifikate hinzuf\u00fcgen",
-     desc:order.partner?.some(p=>p.name)?"Pr\u00fcfen Sie die \u00fcbernommenen Partner.":"WKO, T\u00dcV, ISO — zeigen Sie Ihre Mitgliedschaften.",
+    {label:order.partner?.some(p=>p.name)?"Partner prüfen":"Partner & Zertifikate hinzufügen",
+     desc:order.partner?.some(p=>p.name)?"Prüfen Sie die übernommenen Partner.":"WKO, TÜV, ISO — zeigen Sie Ihre Mitgliedschaften.",
      done:!!(order.partner?.some(p=>p.name)),page:"partner"},
-    {label:(order.facebook||order.instagram||order.linkedin||order.tiktok)?"Social Media pr\u00fcfen":"Social Media Profile angeben",
+    {label:(order.facebook||order.instagram||order.linkedin||order.tiktok)?"Social Media prüfen":"Social Media Profile angeben",
      desc:"Ihre Profile erscheinen als Icons auf der Website.",
      done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
-    {label:"Preise zu Leistungen erg\u00e4nzen",
+    {label:"Preise zu Leistungen ergänzen",
      desc:"Preisangaben helfen Kunden bei der Entscheidung.",
      done:!!(order.leistungen_preise&&Object.values(order.leistungen_preise||{}).some(v=>v)),page:"leistungen"},
     {label:"WhatsApp-Button aktivieren",
-     desc:"Kunden k\u00f6nnen Sie direkt \u00fcber WhatsApp kontaktieren.",
+     desc:"Kunden können Sie direkt über WhatsApp kontaktieren.",
      done:!!order.whatsapp,page:"kontakt"},
     {label:"Layout & Design anpassen",
      desc:"Farben, Schriftart und Seitenaufbau individualisieren.",
@@ -2448,7 +2448,7 @@ function Portal({session,onLogout}){
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:"#fef3c7",color:"#92400e",marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch f\u00fcr einen pers\u00f6nlicheren Auftritt":"Hintergrundbild f\u00fcr den oberen Bereich der Website"}</div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch für einen persönlicheren Auftritt":"Hintergrundbild für den oberen Bereich der Website"}</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
@@ -2819,12 +2819,12 @@ function Portal({session,onLogout}){
 
           {/* ── Seitenaufbau ── */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <SectionHeader label="Seitenaufbau" desc="Wie viel soll Ihre Website zeigen? W\u00e4hlen Sie einen Aufbau \u2014 Sie k\u00f6nnen jederzeit wechseln."/>
+            <SectionHeader label="Seitenaufbau" desc="Wie viel soll Ihre Website zeigen? Wählen Sie einen Aufbau — Sie können jederzeit wechseln."/>
             {(()=>{
               const LAYOUTS=[
-                {value:"standard",label:"\u00dcbersichtlich",desc:"Alle wichtigen Infos auf einen Blick.",sections:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
-                {value:"kompakt",label:"Auf den Punkt",desc:"K\u00fcrzer und kompakter \u2014 gut bei vielen Leistungen.",sections:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
-                {value:"ausfuehrlich",label:"Ausf\u00fchrlich",desc:"Zeigt mehr \u00fcber Sie und Ihren Betrieb.",sections:["Leistungen","Ablauf","FAQ","Zahlen","Bewertungen","Kontakt"]},
+                {value:"standard",label:"Übersichtlich",desc:"Alle wichtigen Infos auf einen Blick.",sections:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
+                {value:"kompakt",label:"Auf den Punkt",desc:"Kürzer und kompakter — gut bei vielen Leistungen.",sections:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
+                {value:"ausfuehrlich",label:"Ausführlich",desc:"Zeigt mehr über Sie und Ihren Betrieb.",sections:["Leistungen","Ablauf","FAQ","Zahlen","Bewertungen","Kontakt"]},
               ];
               const currentLayout=order.layout||"standard";
               return<>
@@ -2844,11 +2844,11 @@ function Portal({session,onLogout}){
 
                 {/* Zusaetzliche Bereiche — nur Toggles, Inhalte auf eigenen Seiten */}
                 <div style={{marginTop:8}}>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zus\u00e4tzliche Bereiche</div>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zusätzliche Bereiche</div>
                   <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Schalten Sie Bereiche ein oder aus. Inhalte bearbeiten Sie auf der jeweiligen Seite.</div>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>
                     <div style={{border:`1.5px solid ${order.sections_visible?.faq?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="H\u00e4ufige Fragen (FAQ)" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten"/>
+                      <Toggle label="Häufige Fragen (FAQ)" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten"/>
                       {order.sections_visible?.faq&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
                         <button onClick={()=>nav("faq")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
@@ -3412,14 +3412,14 @@ function Portal({session,onLogout}){
         {wizardOptional.length>0&&<>
           <div style={{fontSize:".68rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"14px 0 6px"}}>Optional</div>
           {wizardOptional.map((item,idx)=>{
-            const needsReview=!item.done&&item.label.includes("pr\u00fcfen");
+            const needsReview=!item.done&&item.label.includes("prüfen");
             return <div key={idx}>
               <button className="pt-ast-item" onClick={()=>nav(item.page)} style={{paddingLeft:0}}>
                 <div className={`pt-ast-ck${item.done?" done":""}`}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
-                {needsReview&&<span style={{fontSize:".6rem",padding:"1px 6px",borderRadius:100,background:"#fef3c7",color:"#92400e",fontWeight:600,marginLeft:4,flexShrink:0}}>pr\u00fcfen</span>}
+                {needsReview&&<span style={{fontSize:".6rem",padding:"1px 6px",borderRadius:100,background:"#fef3c7",color:"#92400e",fontWeight:600,marginLeft:4,flexShrink:0}}>prüfen</span>}
               </button>
               {needsReview&&item.desc&&<div style={{paddingLeft:28,marginTop:-4,marginBottom:8,fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{item.desc}</div>}
             </div>;
@@ -3467,11 +3467,11 @@ function renderMd(md){
 function BuildScreen({session,setOrder}){
   const BUILD_PHASES=[
     {icon:"\uD83D\uDCCB",label:"Daten werden analysiert",sub:"Branche, Leistungen & Kontaktdaten",dur:6},
-    {icon:"\u270D\uFE0F",label:"Texte werden geschrieben",sub:"\u00DCber uns, Leistungsbeschreibungen & SEO",dur:18},
+    {icon:"\u270D\uFE0F",label:"Texte werden geschrieben",sub:"Über uns, Leistungsbeschreibungen & SEO",dur:18},
     {icon:"\uD83C\uDFA8",label:"Design wird angewendet",sub:"Farben, Schriften & Layout",dur:12},
     {icon:"\uD83D\uDDBC\uFE0F",label:"Medien werden eingebaut",sub:"Logo, Fotos & Icons",dur:8},
-    {icon:"\uD83D\uDD0D",label:"Qualit\u00E4tspr\u00FCfung",sub:"Performance, SEO & Rechtliches",dur:10},
-    {icon:"\u2705",label:"Website wird ver\u00F6ffentlicht",sub:"DNS & SSL-Zertifikat",dur:6}
+    {icon:"\uD83D\uDD0D",label:"Qualitätsprüfung",sub:"Performance, SEO & Rechtliches",dur:10},
+    {icon:"\u2705",label:"Website wird veröffentlicht",sub:"DNS & SSL-Zertifikat",dur:6}
   ];
   const totalDur=BUILD_PHASES.reduce((s,p)=>s+p.dur,0);
   const [buildElapsed,setBuildElapsed]=useState(0);
@@ -4050,7 +4050,7 @@ function Admin({adminKey}){
                   :<div style={{display:"flex",flexDirection:"column",gap:0}}>
                     {expiringTrials.map((o,i)=>{const tc=o.tl<=2?"#dc2626":o.tl<=4?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"\u2014"}</div>
+                        <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"—"}</div>
                         <div style={{fontSize:".75rem",color:T.textMuted}}>{o.email}</div>
                       </div>
                       <span style={{padding:"2px 8px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".75rem",flexShrink:0}}>{o.tl>0?`${o.tl}d`:"Abgelaufen"}</span>
@@ -4178,11 +4178,11 @@ function Admin({adminKey}){
                   const procLabel=STATUS_LABELS[procStatus]||procStatus;
                   // Health
                   const healthState=o.status==="offline"?"deakt":hasFailed?"fehler":["pending","in_arbeit"].includes(o.status)?"aufbau":h==="checking"?"checking":h==="ok"?"ok":h==="error"?"err":"unbekannt";
-                  const healthMap={aufbau:{label:"\u23f3 Wird aufgebaut",c:T.bg3},checking:{label:"...",c:T.textMuted},ok:{label:"\u2713 Erreichbar",c:T.green},err:{label:"\u2717 Nicht erreichbar",c:"#dc2626"},fehler:{label:"\u26a0 Fehler",c:"#d97706"},deakt:{label:"\u25cb Deaktiviert",c:"#64748b"},unbekannt:{label:"\u2014",c:T.textMuted}};
+                  const healthMap={aufbau:{label:"\u23f3 Wird aufgebaut",c:T.bg3},checking:{label:"...",c:T.textMuted},ok:{label:"\u2713 Erreichbar",c:T.green},err:{label:"\u2717 Nicht erreichbar",c:"#dc2626"},fehler:{label:"\u26a0 Fehler",c:"#d97706"},deakt:{label:"\u25cb Deaktiviert",c:"#64748b"},unbekannt:{label:"—",c:T.textMuted}};
                   const hv=healthMap[healthState];
                   const rowBg=healthState==="err"||healthState==="fehler"?"#fef2f2":isStuckPending||isStuckGen?"#fffbeb":i%2===0?"#fff":"#fafbfc";
                   return(<tr key={o.id} style={{borderBottom:`1px solid ${T.bg3}`,background:rowBg}}>
-                    <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.accent,cursor:"pointer",whiteSpace:"nowrap",textDecoration:"underline",textDecorationColor:T.accent+"55"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</td>
+                    <td style={{padding:"11px 14px",fontWeight:700,fontSize:".85rem",color:T.accent,cursor:"pointer",whiteSpace:"nowrap",textDecoration:"underline",textDecorationColor:T.accent+"55"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</td>
                     <td style={{padding:"11px 14px",whiteSpace:"nowrap"}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <span style={{padding:"3px 8px",borderRadius:4,background:procColor+"18",color:procColor,fontWeight:700,fontSize:".75rem",border:`1px solid ${procColor}33`}}>{procLabel}</span>
@@ -4291,7 +4291,7 @@ function Admin({adminKey}){
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh2,display:"flex",alignItems:"center",gap:14}}>
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"\u2014"}</div>
+                  <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</div>
                   <div style={{fontSize:".75rem",color:"#92400e",marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} – Website noch nicht generiert</div>
                 </div>
                 <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?T.bg3:T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
@@ -4366,7 +4366,7 @@ function Admin({adminKey}){
               <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>{"Letzte Generierungsfehler"}</div>
               <div style={{display:"flex",flexDirection:"column",gap:6}}>
                 {errOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"10px 14px",display:"flex",gap:12,alignItems:"flex-start",cursor:"pointer"}} onClick={()=>setSel(o)}>
-                  <span style={{fontSize:".8rem",fontWeight:700,color:T.dark,flexShrink:0}}>{o.firmenname||"\u2014"}</span>
+                  <span style={{fontSize:".8rem",fontWeight:700,color:T.dark,flexShrink:0}}>{o.firmenname||"—"}</span>
                   <span style={{fontSize:".75rem",color:T.red,flex:1,fontFamily:T.mono,lineHeight:1.4}}>{o.last_error}</span>
                   <span style={{fontSize:".75rem",color:T.textMuted,flexShrink:0}}>{fmtDate(o.created_at)}</span>
                 </div>)}
@@ -4861,7 +4861,7 @@ function Admin({adminKey}){
                     </div>
                     {!editing
                       ?<div style={{display:"flex",flexDirection:"column",gap:4}}>
-                          <div style={{fontSize:".8rem"}}><span style={{color:T.textMuted}}>Subdomain: </span><span style={{fontFamily:T.mono,color:T.dark}}>{sel.subdomain||"\u2014"}</span></div>
+                          <div style={{fontSize:".8rem"}}><span style={{color:T.textMuted}}>Subdomain: </span><span style={{fontFamily:T.mono,color:T.dark}}>{sel.subdomain||"—"}</span></div>
                           <div style={{fontSize:".8rem"}}><span style={{color:T.textMuted}}>Stil: </span><span style={{color:T.dark}}>{STYLES_MAP[sel.stil||"klassisch"]?.label||sel.stil||"Professional"}</span></div>
                         </div>
                       :<div style={{display:"flex",flexDirection:"column",gap:6}}>

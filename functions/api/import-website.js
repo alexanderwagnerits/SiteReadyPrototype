@@ -6,6 +6,9 @@ export async function onRequestPost({request, env}) {
     const {url} = await request.json();
     if (!url) return Response.json({error: "URL fehlt"}, {status: 400});
     log.time("import");
+    const startTime = Date.now();
+    const elapsed = () => Date.now() - startTime;
+    const BUDGET_MS = 80000; // 80s Budget (Frontend hat 120s Timeout)
 
     let cleanUrl = url.trim();
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
@@ -20,16 +23,47 @@ export async function onRequestPost({request, env}) {
     let whatsappLink = "";
     let buchungsLink = "";
 
+    // Meta-Tags extrahieren (title, description, OpenGraph)
+    const metaInfo = {title:"", description:"", ogTitle:"", ogDescription:"", ogImage:""};
+    const extractMeta = (html) => {
+      if (!html) return;
+      if (!metaInfo.title) { const m = html.match(/<title[^>]*>([^<]+)<\/title>/i); if (m) metaInfo.title = m[1].trim(); }
+      if (!metaInfo.description) { const m = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i) || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i); if (m) metaInfo.description = m[1].trim(); }
+      if (!metaInfo.ogTitle) { const m = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i); if (m) metaInfo.ogTitle = m[1].trim(); }
+      if (!metaInfo.ogDescription) { const m = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i) || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i); if (m) metaInfo.ogDescription = m[1].trim(); }
+    };
+
+    // Headings extrahieren (h1-h3) fuer bessere Kategorisierung und Kontext
+    const extractHeadings = (html) => {
+      if (!html) return [];
+      const headings = [];
+      for (const m of html.matchAll(/<h[123][^>]*>([\s\S]*?)<\/h[123]>/gi)) {
+        const text = m[1].replace(/<[^>]+>/g,"").trim();
+        if (text.length > 2 && text.length < 200) headings.push(text);
+      }
+      return headings;
+    };
+
     const extractFromHtml = (html) => {
       if (!html) return;
+      extractMeta(html);
+      extractColors(html);
       for (const m of html.matchAll(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/gi)) allEmails.add(m[1].toLowerCase());
       for (const m of html.matchAll(/href=["']tel:([^"']+)["']/gi)) { const p=m[1].replace(/\s/g,"").replace(/%20/g,""); if(p.length>=8) allPhones.add(p); }
-      // JSON-LD Structured Data (vollstaendig auswerten)
+      // JSON-LD Structured Data (vollstaendig auswerten, inkl. @graph)
       for (const m of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
         try {
           const ld = JSON.parse(m[1]);
-          const items = Array.isArray(ld) ? ld : [ld];
+          // @graph Support (Yoast, WordPress, etc.)
+          let items = Array.isArray(ld) ? ld : [ld];
+          const withGraph = [];
           for (const item of items) {
+            withGraph.push(item);
+            if (item["@graph"] && Array.isArray(item["@graph"])) {
+              withGraph.push(...item["@graph"]);
+            }
+          }
+          for (const item of withGraph) {
             if (item.telephone) allPhones.add(String(item.telephone).replace(/\s/g,""));
             if (item.email) allEmails.add(String(item.email).toLowerCase());
             // Oeffnungszeiten aus Schema.org
@@ -90,6 +124,35 @@ export async function onRequestPost({request, env}) {
 
     // Structured data Sammler
     const structuredData = {openingHours:"", adresse:"", plz:"", ort:"", name:"", rating:null, reviews:[]};
+    const brandColors = []; // Kandidaten fuer Primaerfarbe
+
+    // Farb-Extraktion aus HTML (theme-color, CSS, Nav-Hintergrund)
+    const extractColors = (html) => {
+      if (!html) return;
+      // 1. <meta name="theme-color"> — zuverlaessigste Quelle
+      const tc = html.match(/<meta[^>]+name=["']theme-color["'][^>]+content=["']([^"']+)["']/i)
+        || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']theme-color["']/i);
+      if (tc) brandColors.push({source:"theme-color", color:tc[1].trim(), priority:10});
+      // 2. msapplication-TileColor
+      const ms = html.match(/<meta[^>]+name=["']msapplication-TileColor["'][^>]+content=["']([^"']+)["']/i);
+      if (ms) brandColors.push({source:"tile-color", color:ms[1].trim(), priority:8});
+      // 3. CSS Custom Properties (--primary, --brand-color, --color-primary, --main-color)
+      for (const m of html.matchAll(/--(?:primary|brand-?color|color-primary|main-?color|accent)\s*:\s*(#[0-9a-fA-F]{3,8})/g)) {
+        brandColors.push({source:"css-var", color:m[1].trim(), priority:7});
+      }
+      // 4. Nav/Header background-color
+      for (const m of html.matchAll(/<(?:nav|header)[^>]+style=["'][^"']*background(?:-color)?:\s*(#[0-9a-fA-F]{3,8})/gi)) {
+        brandColors.push({source:"nav-bg", color:m[1].trim(), priority:6});
+      }
+      // 5. Haeufigste Nicht-Standard-Farbe in inline styles
+      for (const m of html.matchAll(/(?:color|background-color|background|border-color)\s*:\s*(#[0-9a-fA-F]{6})/gi)) {
+        const c = m[1].toLowerCase();
+        // Standard-Farben ignorieren (schwarz, weiss, grau, fast-weiss)
+        if (!/^#(000|fff|0{6}|f{6}|[ef][0-9a-f][ef][0-9a-f][ef][0-9a-f]|[0-3][0-9a-f][0-3][0-9a-f][0-3][0-9a-f])$/i.test(c)) {
+          brandColors.push({source:"inline", color:c, priority:3});
+        }
+      }
+    };
 
     const fetchHtml = async (pageUrl, timeout=8000) => {
       try {
@@ -202,77 +265,165 @@ export async function onRequestPost({request, env}) {
 
     // Standard-Pfade als Fallback
     const standardPaths = ["/kontakt","/contact","/impressum","/leistungen","/services","/angebot",
-      "/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen"];
+      "/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen",
+      "/schwerpunkte","/behandlungen","/ordination","/praxis","/jobs","/karriere","/philosophie",
+      "/unternehmen","/firma","/history","/geschichte"];
     for (const p of standardPaths) {
       if (![...allInternalLinks].some(l => l.toLowerCase().includes(p.slice(1)))) addLink(base + p);
     }
 
-    /* ═══ 3. UNTERSEITEN LADEN (parallel, max 12) ═══ */
-    // Wichtige Seiten priorisieren (Kontakt, Impressum, Leistungen, Ueber-uns zuerst)
-    const priorityPatterns = [/kontakt|contact/i, /impressum|imprint/i, /leistung|service|angebot/i, /ueber|about|team/i, /faq|haeufig/i];
-    const allLinks = [...allInternalLinks];
-    const priority = allLinks.filter(u => { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); });
-    const rest = allLinks.filter(u => !priority.includes(u));
-    const urlsToFetch = [...new Set([...priority, ...rest])].slice(0, 12);
+    /* ═══ 3. UNTERSEITEN LADEN (parallel, max 20, 2 Runden) ═══ */
+    const priorityPatterns = [/kontakt|contact/i, /impressum|imprint/i, /leistung|service|angebot|schwerpunkt|behandlung/i, /ueber|about|team|praxis|ordination/i, /faq|haeufig|fragen/i, /partner|referenz|zertifik/i];
+    const fetchedUrls = new Set();
     const pageContents = [];
 
-    // Alle parallel (max 10, Jina hat 15s Timeout als Safety)
-    await Promise.all(urlsToFetch.map(async (pageUrl) => {
-      try {
-        const html = await fetchHtml(pageUrl, 5000);
+    const categorizePage = (path, headings) => {
+      // Erst URL-basiert
+      if (/kontakt|contact/.test(path)) return "kontakt";
+      if (/impressum|imprint|legal/.test(path)) return "impressum";
+      if (/leistung|service|angebot|preis|schwerpunkt|behandlung|therapie/.test(path)) return "leistungen";
+      if (/ueber|about|team|praxis|ordination|unternehmen|firma|philosophie/.test(path)) return "ueberuns";
+      if (/faq|haeufig|fragen/.test(path)) return "faq";
+      if (/partner|referenz|zertifik/.test(path)) return "partner";
+      if (/galerie|gallery|portfolio|fotos|bilder/.test(path)) return "galerie";
+      if (/job|karriere|career|stelle/.test(path)) return "sonstige";
+      // Content-basiert (Headings)
+      if (headings && headings.length > 0) {
+        const ht = headings.join(" ").toLowerCase();
+        if (/leistung|service|angebot|schwerpunkt|behandlung|therapie|was wir|unsere /.test(ht)) return "leistungen";
+        if (/\u00fcber uns|team|wer wir|unser team|philosophie|leitbild/.test(ht)) return "ueberuns";
+        if (/kontakt|erreich|anfahrt|standort/.test(ht)) return "kontakt";
+        if (/faq|h\u00e4ufig|fragen/.test(ht)) return "faq";
+        if (/partner|referenz|zertifik|auszeichnung/.test(ht)) return "partner";
+      }
+      return "sonstige";
+    };
+
+    // Schluesselseiten: Bei Fehler 1x wiederholen
+    const keyPagePatterns = [/kontakt|contact/i, /impressum|imprint/i, /leistung|service|angebot/i];
+    const isKeyPage = (pageUrl) => {
+      const p = new URL(pageUrl).pathname.toLowerCase();
+      return keyPagePatterns.some(rx => rx.test(p));
+    };
+
+    const fetchPage = async (pageUrl) => {
+      if (fetchedUrls.has(pageUrl)) return;
+      fetchedUrls.add(pageUrl);
+
+      const doFetch = async () => {
+        const [html, jinaText] = await Promise.all([
+          fetchHtml(pageUrl, 6000),
+          fetchJina(pageUrl),
+        ]);
         if (html) {
           extractFromHtml(html);
           collectLinks(html, null);
         }
 
-        let text = await fetchJina(pageUrl);
-        if (!text || text.length < 50) text = stripHtml(html);
+        let text = (jinaText && jinaText.length >= 50) ? jinaText : stripHtml(html);
         if (!text || text.length < 30) return;
+
+        const headings = extractHeadings(html);
 
         for (const m of text.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
         for (const m of text.matchAll(phoneRegex)) { const p=m[0].replace(/[\s\-/]/g,""); if(p.length>=8) allPhones.add(p); }
 
         const path = new URL(pageUrl).pathname.toLowerCase();
-        let category = "sonstige";
-        if (/kontakt|contact/.test(path)) category = "kontakt";
-        else if (/impressum|imprint|legal/.test(path)) category = "impressum";
-        else if (/leistung|service|angebot|preis|schwerpunkt|behandlung|therapie/.test(path)) category = "leistungen";
-        else if (/ueber|about|team/.test(path)) category = "ueberuns";
-        else if (/faq|haeufig|fragen/.test(path)) category = "faq";
-        else if (/partner|referenz|zertifik/.test(path)) category = "partner";
-        else if (/galerie|gallery|portfolio|fotos|bilder/.test(path)) category = "galerie";
+        const category = categorizePage(path, headings);
+        const headingPrefix = headings.length > 0 ? "Seitenüberschriften: " + headings.slice(0, 5).join(" | ") + "\n" : "";
+        pageContents.push({url: pageUrl, path, category, text: (headingPrefix + text).slice(0, 6000)});
+      };
 
-        pageContents.push({url: pageUrl, path, category, text: text.slice(0, 4000)});
-      } catch(_) {}
-    }));
+      try {
+        await doFetch();
+      } catch(e) {
+        // Retry einmal fuer Schluesselseiten
+        if (isKeyPage(pageUrl) && elapsed() < BUDGET_MS - 15000) {
+          try { await doFetch(); } catch(_) {}
+        }
+      }
+    };
+
+    // Runde 1: Erste 15 Seiten (priorisiert)
+    const allLinks = [...allInternalLinks];
+    const priority = allLinks.filter(u => { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); });
+    const rest = allLinks.filter(u => !priority.includes(u));
+    const round1 = [...new Set([...priority, ...rest])].slice(0, 15);
+
+    await Promise.all(round1.map(fetchPage));
+
+    // Runde 2: Neu entdeckte Links von Unterseiten (z.B. /leistungen/photovoltaik)
+    // Nur wenn noch genug Zeit-Budget vorhanden
+    const newLinks = [...allInternalLinks].filter(u => !fetchedUrls.has(u));
+    const newPriority = newLinks.filter(u => {
+      const p = new URL(u).pathname.toLowerCase();
+      return priorityPatterns.some(rx => rx.test(p));
+    });
+    const round2 = elapsed() < BUDGET_MS - 30000 ? newPriority.slice(0, 8) : [];
+    if (round2.length > 0) {
+      await Promise.all(round2.map(fetchPage));
+    }
 
     /* ═══ 4. CONTENT-DEDUP (Header/Footer/Nav entfernen) ═══ */
     // Absaetze zaehlen: Wenn ein Absatz auf 3+ Seiten vorkommt = Navigation/Footer
     const paragraphCount = {};
     const allTexts = [mainText, ...pageContents.map(p => p.text)];
     for (const t of allTexts) {
-      const paras = t.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 20 && p.length < 300);
+      const paras = t.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 20 && p.length < 500);
       const seen = new Set();
       for (const para of paras) {
-        const key = para.slice(0, 80).toLowerCase();
+        // Laengerer Key (150 Zeichen) + normalisiert, um Kollisionen zu vermeiden
+        const key = para.replace(/\s+/g," ").slice(0, 150).toLowerCase();
         if (!seen.has(key)) { seen.add(key); paragraphCount[key] = (paragraphCount[key] || 0) + 1; }
       }
     }
-    const duplicateParas = new Set(Object.entries(paragraphCount).filter(([,c]) => c >= 3).map(([k]) => k));
+    // Nur entfernen wenn auf 3+ Seiten UND kurz genug um Nav/Footer zu sein (max 300 Zeichen)
+    const duplicateParas = new Set(Object.entries(paragraphCount)
+      .filter(([k,c]) => c >= 3 && k.length < 200)
+      .map(([k]) => k));
 
     const dedup = (text) => {
       if (duplicateParas.size === 0) return text;
       return text.split(/\n{2,}/).filter(p => {
-        const key = p.trim().slice(0, 80).toLowerCase();
+        const key = p.trim().replace(/\s+/g," ").slice(0, 150).toLowerCase();
         return !duplicateParas.has(key);
       }).join("\n\n");
     };
 
-    /* ═══ 5. SPAM FILTERN ═══ */
+    /* ═══ 5. E-MAIL-OBFUSKIERUNG + SPAM FILTERN ═══ */
+    // Obfuskierte E-Mails erkennen: info [at] firma.at, info(at)firma.at, info [ät] firma.at
+    for (const t of allTexts) {
+      for (const m of t.matchAll(/([a-zA-Z0-9._%+\-]+)\s*[\[\(]\s*(?:at|ät|AT)\s*[\]\)]\s*([a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g)) {
+        allEmails.add((m[1] + "@" + m[2]).toLowerCase());
+      }
+    }
+
     const filteredEmails = [...allEmails].filter(e =>
       !/noreply|no-reply|donotreply|support@stripe|mailer|bounce|postmaster|webmaster|siteready|wix\.com|squarespace|wordpress|@sentry/i.test(e)
     );
-    const filteredPhones = [...allPhones].filter(p => p.length >= 8 && p.length <= 16);
+
+    // Telefonnummern normalisieren und deduplizieren
+    // +431234567 und 01234567 sind dieselbe Nummer
+    const normalizePhone = (p) => {
+      let n = p.replace(/[\s\-/()\+]/g,"");
+      // 0043... -> 43...
+      if (n.startsWith("0043")) n = n.slice(2);
+      // 0... -> 43... (oesterreichische Vorwahl)
+      else if (n.startsWith("0")) n = "43" + n.slice(1);
+      return n;
+    };
+    const phoneMap = new Map(); // normalized -> original format
+    for (const p of allPhones) {
+      const norm = normalizePhone(p);
+      if (norm.length >= 8 && norm.length <= 16) {
+        // Bevorzuge +43-Format
+        if (!phoneMap.has(norm) || p.startsWith("+")) phoneMap.set(norm, p);
+      }
+    }
+    const filteredPhones = [...phoneMap.values()].filter(p => {
+      const clean = p.replace(/[\s\-/]/g,"");
+      return clean.length >= 8 && clean.length <= 16;
+    });
 
     // WhatsApp-Nummer aus Link extrahieren
     let whatsappNumber = "";
@@ -291,24 +442,27 @@ export async function onRequestPost({request, env}) {
       grouped[p.category] += "\n--- " + p.path + " ---\n" + dedup(p.text);
     }
 
-    let fullText = "=== HAUPTSEITE ===\n" + dedup(mainText).slice(0, 5000);
+    let fullText = "=== HAUPTSEITE ===\n" + dedup(mainText).slice(0, 8000);
     const sectionOrder = ["leistungen","ueberuns","kontakt","impressum","faq","partner","galerie","sonstige"];
     const sectionLabels = {leistungen:"LEISTUNGEN/ANGEBOT",ueberuns:"\u00dcBER UNS/TEAM",kontakt:"KONTAKT",impressum:"IMPRESSUM",faq:"FAQ",partner:"PARTNER/REFERENZEN",galerie:"GALERIE",sonstige:"WEITERE SEITEN"};
 
     for (const key of sectionOrder) {
       if (grouped[key]) {
-        const maxLen = key === "sonstige" ? 2000 : 4000;
+        // Leistungen und Ueberuns bekommen mehr Platz (oft die wichtigsten Inhalte)
+        const maxLen = key === "sonstige" ? 3000 : (key === "leistungen" || key === "ueberuns") ? 6000 : 4000;
         fullText += `\n\n=== ${sectionLabels[key]} ===\n` + grouped[key].slice(0, maxLen);
       }
     }
 
-    fullText = fullText.slice(0, 24000);
+    fullText = fullText.slice(0, 40000);
 
-    // Structured-Data Hints
+    // Structured-Data + Meta Hints
     let structuredHint = "";
+    if (metaInfo.title) structuredHint += `\nSeitentitel: ${metaInfo.title}`;
+    if (metaInfo.description || metaInfo.ogDescription) structuredHint += `\nMeta-Beschreibung: ${metaInfo.description || metaInfo.ogDescription}`;
     if (structuredData.openingHours) structuredHint += `\nStrukturierte Oeffnungszeiten (Schema.org): ${structuredData.openingHours}`;
     if (structuredData.adresse) structuredHint += `\nStrukturierte Adresse: ${structuredData.adresse}, ${structuredData.plz} ${structuredData.ort}`;
-    if (structuredData.reviews.length) structuredHint += `\nStrukturierte Bewertungen (${structuredData.reviews.length}): ${JSON.stringify(structuredData.reviews.slice(0,3))}`;
+    if (structuredData.reviews.length) structuredHint += `\nStrukturierte Bewertungen (${structuredData.reviews.length}): ${JSON.stringify(structuredData.reviews.slice(0,6))}`;
 
     const emailHint = filteredEmails.length > 0
       ? `\n\nGefundene E-Mail-Adressen: ${filteredEmails.join(", ")}\nWaehle die primaere Kontakt-E-Mail (nicht no-reply, nicht Drittanbieter).`
@@ -323,11 +477,14 @@ export async function onRequestPost({request, env}) {
       headers: {"Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01"},
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 4096,
+        max_tokens: 8192,
         messages: [{
           role: "user",
           content: `Extrahiere aus folgendem Website-Text ALLE Daten eines oesterreichischen Unternehmens.
-Du bekommst den vollstaendigen Inhalt von ${pageContents.length + 1} Unterseiten${sitemapFound ? " (via Sitemap gefunden)" : ""}. Lies ALLES gruendlich durch.
+Du bekommst den vollstaendigen Inhalt von ${pageContents.length + 1} Unterseiten${sitemapFound ? " (via Sitemap gefunden)" : ""}.
+
+WICHTIG: Lies den GESAMTEN Text SEHR GRUENDLICH durch — jede Seite, jede Unterseite, jedes Detail.
+Informationen koennen auf verschiedenen Seiten verstreut sein (z.B. Leistungen auf eigenen Unterseiten, Kontaktdaten im Impressum, Team auf der Ueber-uns-Seite).
 Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum).
 
 OBERSTE REGEL: Nur Informationen die TATSAECHLICH im Text stehen. NICHTS erfinden.
@@ -337,14 +494,14 @@ Im Zweifel lieber leer lassen als etwas Falsches schreiben.
 JSON-Felder:
 
 === FIRMA & KONTAKT ===
-- firmenname: Offizieller Name (max 60 Zeichen)
-- telefon: Format +43... (leer wenn nicht gefunden)
-- email: Primaere Kontakt-E-Mail
+- firmenname: Offizieller Name (max 60 Zeichen). Priorisiere: Impressum > Seitentitel > Logo-Text
+- telefon: Format +43... (leer wenn nicht gefunden). Suche auf: Kontaktseite, Impressum, Footer, Header
+- email: Primaere Kontakt-E-Mail (nicht no-reply, nicht Drittanbieter). Suche auf: Kontaktseite, Impressum, Footer
 - plz: 4-stellige oesterreichische Postleitzahl
 - ort: Ortsname
 - adresse: Strasse mit Hausnummer
 - kurzbeschreibung: Was das Unternehmen macht, 1-2 Saetze, max 200 Zeichen. Aus echtem Text ableiten.
-- bundesland: NUR: wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld
+- bundesland: NUR: wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld (aus PLZ oder Adresse ableiten falls nicht explizit)
 - whatsapp: WhatsApp-Nummer falls auf der Website erwaehnt (Format: +43...)
 - buchungslink: URL zum Online-Terminbuchungssystem falls vorhanden
 
@@ -357,45 +514,51 @@ JSON-Felder:
 
 === BRANCHE & LEISTUNGEN ===
 - branche: NUR einer dieser Werte:
-  Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/baumeister/kfz/hafner/raumausstatter
+  Handwerk: elektro/installateur/maler/tischler/fliesenleger/schlosser/dachdecker/zimmerei/maurer/bodenleger/glaser/gaertner/klima/reinigung/baumeister/kfz/aufsperrdienst/hafner/raumausstatter/goldschmied/schneider/rauchfangkehrer/schaedlingsbekaempfung
   Kosmetik: friseur/kosmetik/nagel/massage/tattoo/fusspflege/permanent_makeup/hundesalon
-  Gastro: restaurant/cafe/baeckerei/catering/bar/heuriger/fleischerei
-  Gesundheit: arzt/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker/ergotherapie/logopaedie/hebamme/diaetologe/hoerakustiker
-  Dienstleistung: steuerberater/rechtsanwalt/fotograf/versicherung/immobilien/hausverwaltung/umzug/eventplanung
-  Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga
+  Gastro: restaurant/cafe/baeckerei/catering/bar/heuriger/imbiss/fleischerei
+  Gesundheit: arzt/zahnarzt/physiotherapie/psychotherapie/tierarzt/apotheke/optiker/heilpraktiker/ergotherapie/logopaedie/energetiker/hebamme/diaetologe/hoerakustiker/zahntechnik/heilmasseur
+  Dienstleistung: steuerberater/rechtsanwalt/fotograf/versicherung/immobilien/hausverwaltung/umzug/eventplanung/florist/architekt/it_service/werbeagentur/bestattung/notar/finanzberater/reisebuero/innenarchitekt/textilreinigung
+  Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga/hundeschule/tanzschule/reitschule/schwimmschule
   Sonstige: sonstige
   Arzt-Ordinationen = "arzt". Immer eine Branche zuordnen!
-- leistungen: Array mit ALLEN konkreten Leistungen/Angeboten (max 12). Suche gruendlich auf ALLEN Seiten, auch auf einzelnen Leistungs-Unterseiten. NUR buchbare Dienstleistungen, keine Navigationspunkte.
+- leistungen: Array mit ALLEN konkreten Leistungen/Angeboten (max 12).
+  WICHTIG: Durchsuche ALLE Seiten gruendlich! Leistungen stehen oft auf:
+  - Eigenen Unterseiten (z.B. /leistungen/photovoltaik)
+  - Der Hauptseite unter "Unsere Leistungen"
+  - In Aufzaehlungslisten oder Cards
+  NUR buchbare Dienstleistungen/Produkte, keine Navigationspunkte oder Slogans.
 - spezialisierung: Fachgebiet (z.B. "Allgemeinmedizin", "Photovoltaik")
 
 === OEFFNUNGSZEITEN & HINWEISE ===
-- oeffnungszeiten: Oeffnungszeiten als Freitext (Format: "Mo-Fr 08:00-17:00, Sa 09:00-12:00")
-- gut_zu_wissen: Permanente Kundenhinweise, getrennt durch \\n. Max 5.
+- oeffnungszeiten: Oeffnungszeiten als Freitext (Format: "Mo-Fr 08:00-17:00, Sa 09:00-12:00"). Suche auf Kontaktseite, Hauptseite, Google-Info.
+- gut_zu_wissen: Permanente Kundenhinweise (z.B. "Termine nur nach Vereinbarung", "Parkplaetze vorhanden"), getrennt durch \\n. Max 5.
 
 === BEWERTUNGEN (nur echte!) ===
 - bewertungen: Array mit Kundenbewertungen die WOERTLICH auf der Website stehen.
   Format: [{"name":"Name","text":"Bewertungstext","sterne":5}]
-  Max 6. NUR echte, NICHTS erfinden.
+  Max 6. NUR echte, NICHTS erfinden. Suche auch auf Unterseiten wie /bewertungen, /referenzen.
 
 === FAQ (nur echte!) ===
 - faq: Array mit FAQ die TATSAECHLICH auf der Website stehen.
   Format: [{"frage":"Die Frage?","antwort":"Die Antwort."}]
-  Max 8. NUR echte Fragen+Antworten.
+  Max 8. NUR echte Fragen+Antworten. Suche auf /faq, aber auch Accordion-Elemente auf anderen Seiten.
 
 === ZAHLEN & FAKTEN (nur echte!) ===
 - fakten: Array mit konkreten Zahlen die auf der Website stehen.
   Format: [{"zahl":"15+","label":"Jahre Erfahrung"}]
-  Max 4. NUR was wirklich auf der Website steht.
+  Max 4. NUR was wirklich auf der Website steht. Typische Quellen: "Ueber uns", Hauptseite.
 
 === PARTNER & ZERTIFIKATE (nur echte!) ===
-- partner: Array mit Partnern/Zertifizierungen/Verbaenden.
+- partner: Array mit Partnern/Zertifizierungen/Verbaenden/Marken.
   Format: [{"name":"WKO"}]
-  Max 8. NUR was tatsaechlich auf der Website steht.
+  Max 8. NUR was tatsaechlich auf der Website steht. Suche auch Logo-Leisten, Footer, "Unsere Partner"-Bereiche.
 
 === TEAM ===
 - team: Array mit Teammitgliedern.
-  Format: [{"name":"Martin Berger","rolle":"Gesch\u00e4ftsf\u00fchrer"}]
+  Format: [{"name":"Martin Berger","rolle":"Geschäftsführer"}]
   NUR wenn Name UND Rolle/Position auf der Website stehen. Max 8.
+  Suche auf: /team, /ueber-uns, Hauptseite, Impressum (Geschaeftsfuehrer).
 
 === MERKMALE ===
 - merkmale: Objekt. NUR auf true wenn KLAR im Text erwaehnt.
@@ -454,9 +617,45 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
     // Adresse: Claude > Structured Data
     const adresse = extracted.adresse || structuredData.adresse || "";
 
-    // Bundesland
+    // Bundesland: PLZ-basiert (zuverlaessig) > Claude > leer
     const validBL = ["wien","noe","ooe","stmk","sbg","tirol","ktn","vbg","bgld"];
-    const bundesland = validBL.includes(extracted.bundesland) ? extracted.bundesland : "";
+    const plzToBundesland = (p) => {
+      if (!p || p.length !== 4) return "";
+      const n = parseInt(p);
+      if (n >= 1000 && n <= 1239) return "wien";
+      if (n >= 1300 && n <= 1400) return "noe"; // Wien-Umgebung
+      if ((n >= 2000 && n <= 2999) || (n >= 3000 && n <= 3999)) return "noe";
+      if (n >= 4000 && n <= 4999) return "ooe";
+      if (n >= 5000 && n <= 5999) return "sbg";
+      if (n >= 6000 && n <= 6599) return "tirol";
+      if (n >= 6600 && n <= 6999) return "vbg";
+      if (n >= 7000 && n <= 7999) return "bgld";
+      if (n >= 8000 && n <= 8999) return "stmk";
+      if (n >= 9000 && n <= 9999) return "ktn";
+      return "";
+    };
+    const blFromPlz = plzToBundesland(plz);
+    const bundesland = blFromPlz || (validBL.includes(extracted.bundesland) ? extracted.bundesland : "");
+
+    // Branche validieren
+    const validBranchen = [
+      // Handwerk
+      "elektro","installateur","maler","tischler","fliesenleger","schlosser","dachdecker","zimmerei","maurer","bodenleger","glaser","gaertner","klima","reinigung","baumeister","kfz","aufsperrdienst","hafner","raumausstatter","goldschmied","schneider","rauchfangkehrer","schaedlingsbekaempfung",
+      // Kosmetik
+      "friseur","kosmetik","nagel","massage","tattoo","fusspflege","permanent_makeup","hundesalon",
+      // Gastro
+      "restaurant","cafe","baeckerei","catering","bar","heuriger","imbiss","fleischerei",
+      // Gesundheit
+      "arzt","zahnarzt","physiotherapie","psychotherapie","tierarzt","apotheke","optiker","heilpraktiker","ergotherapie","logopaedie","energetiker","hebamme","diaetologe","hoerakustiker","zahntechnik","heilmasseur",
+      // Dienstleistung
+      "steuerberater","rechtsanwalt","fotograf","versicherung","immobilien","hausverwaltung","umzug","eventplanung","florist","architekt","it_service","werbeagentur","bestattung","notar","finanzberater","reisebuero","innenarchitekt","textilreinigung",
+      // Bildung
+      "fahrschule","nachhilfe","musikschule","trainer","yoga","hundeschule","tanzschule","reitschule","schwimmschule",
+      // Sonstige
+      "sonstige",
+    ];
+    const brancheRaw = (extracted.branche || "").toLowerCase().replace(/[\s\-]/g,"_");
+    const branche = validBranchen.includes(brancheRaw) ? brancheRaw : (validBranchen.find(b => brancheRaw.includes(b)) || "sonstige");
 
     // Leistungen
     const leistungen = Array.isArray(extracted.leistungen)
@@ -527,6 +726,25 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
     if (fakten.length > 0) sectionsVisible.fakten = true;
     if (partner.length > 0) sectionsVisible.partner = true;
 
+    // Brand-Farbe ermitteln (beste Kandidatin nach Prioritaet)
+    const normalizeHex = (c) => {
+      if (!c) return "";
+      c = c.trim().toLowerCase();
+      if (/^#[0-9a-f]{3}$/.test(c)) c = "#" + c[1]+c[1] + c[2]+c[2] + c[3]+c[3];
+      if (/^#[0-9a-f]{6}$/.test(c)) return c;
+      return "";
+    };
+    let brandColor = "";
+    if (brandColors.length > 0) {
+      // Nach Prioritaet sortieren, dann haeufigste inline-Farbe als Tiebreaker
+      const sorted = brandColors
+        .map(b => ({...b, color: normalizeHex(b.color)}))
+        .filter(b => b.color);
+      // Hoechste Prioritaet gewinnt
+      sorted.sort((a,b) => b.priority - a.priority);
+      if (sorted.length > 0) brandColor = sorted[0].color;
+    }
+
     await log.timeEnd("import", null, "import_success");
     await log.info(null, "import_result", {url:cleanUrl, pages:pageContents.length+1, sitemap:sitemapFound, deduped:duplicateParas.size});
 
@@ -541,7 +759,7 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
       firmenbuchnummer: extracted.firmenbuchnummer || "",
       firmenbuchgericht: extracted.firmenbuchgericht || "",
       gisazahl: extracted.gisazahl || "",
-      branche: extracted.branche || "",
+      branche,
       leistungen, spezialisierung: extracted.spezialisierung || "",
       oeffnungszeiten_import: oeffnungszeiten,
       gut_zu_wissen: extracted.gut_zu_wissen || "",
@@ -555,7 +773,8 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
       linkedin: socialLinks.linkedin || "",
       tiktok: socialLinks.tiktok || "",
       merkmale,
-      _meta: {pages_read: pageContents.length+1, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size},
+      brand_color: brandColor,
+      _meta: {pages_read: pageContents.length+1, pages_round2: round2.length, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size},
     });
 
   } catch(e) {

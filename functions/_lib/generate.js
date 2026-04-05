@@ -9,13 +9,16 @@ function buildNav(o, pal, stil) {
 .nav-links{display:flex;align-items:center;gap:28px}
 .nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
 .nav-link:hover{opacity:.7}
-.nav-cta{background:var(--accent);color:#fff!important;padding:9px 18px;border-radius:${stil.r};font-weight:700;font-size:.85rem;white-space:nowrap}
+.nav-cta{background:var(--accent);color:#fff!important;padding:9px 18px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:.85rem;white-space:nowrap;transition:all .25s}
 .nav-cta:hover{opacity:.85!important}
 .hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
-.hbg-bar{width:24px;height:2px;background:rgba(255,255,255,.9);border-radius:2px;transition:background .3s}
+.hbg-bar{width:24px;height:2px;background:rgba(255,255,255,.9);border-radius:2px;transition:transform .3s ease,opacity .3s ease}
+.hbg.open .hbg-bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hbg.open .hbg-bar:nth-child(2){opacity:0}
+.hbg.open .hbg-bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .mob-menu{display:none;position:fixed;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:16px 24px 24px;z-index:999}
 .mob-link{display:block;padding:12px 0;font-size:1rem;font-weight:600;color:var(--primary);text-decoration:none;border-bottom:1px solid #f1f5f9}
-.mob-cta{display:block;margin-top:16px;background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:${stil.r};font-weight:700;font-size:1rem;text-decoration:none}
+.mob-cta{display:block;margin-top:16px;background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:1rem;text-decoration:none}
 @media(max-width:768px){.nav-links{display:none}.hbg{display:flex}}
 </style>
 <nav id="sitenav">
@@ -44,8 +47,8 @@ var nav=document.getElementById('sitenav');
 var btn=document.getElementById('hbg');
 var mob=document.getElementById('mob-menu');
 var open=false;
-btn.addEventListener('click',function(){open=!open;mob.style.display=open?'block':'none';});
-document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){open=false;mob.style.display='none';});});
+btn.addEventListener('click',function(){open=!open;mob.style.display=open?'block':'none';if(open)btn.classList.add('open');else btn.classList.remove('open');});
+document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){open=false;mob.style.display='none';btn.classList.remove('open');});});
 var sc=false;window.addEventListener('scroll',function(){var s=window.scrollY>60;if(s!==sc){sc=s;if(s)nav.classList.add('scrolled');else nav.classList.remove('scrolled');}},{passive:true});
 })();
 </script>`;
@@ -101,7 +104,7 @@ ${email   ? `<a href="mailto:{{EMAIL}}" style="color:rgba(255,255,255,.7);text-d
 </div>
 </div>
 </footer>
-<style>@media(max-width:768px){.ft-grid{grid-template-columns:1fr!important}}</style>`;
+<style>@media(max-width:900px){.ft-grid{grid-template-columns:1fr 1fr!important}}@media(max-width:540px){.ft-grid{grid-template-columns:1fr!important}}</style>`;
 }
 
 /* ═══ Impressum-Builder (ECG-konform, rechtsformspezifisch) ═══ */
@@ -206,7 +209,7 @@ const STIL = {
     ueberStyle: "Kleine runde Icons (36px, background:var(--accent)22, color:var(--accent), border-radius:50%, display:inline-flex, align-items:center, justify-content:center) vor jedem Vorteilspunkt. Freundlicher, einladender Ton.",
   },
   elegant: {
-    p:"#292524", a:"#78716c", bg:"#fafaf9", s:"#e7e5e4",
+    p:"#292524", a:"#57534e", bg:"#fafaf9", s:"#e7e5e4",
     font: "Inter",
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
     r: "2px", rLg: "4px", btnR: "2px",
@@ -245,18 +248,26 @@ const CUSTOM_FONT_FAMILIES = {
 };
 
 function buildCustomStil(o) {
-  const c = o.custom_color || "#2563eb";
+  const p = o.custom_color || "#2563eb";
+  const a = o.custom_accent || p; // Accent = eigene Farbe oder Primary als Fallback
+  const bg = o.custom_bg || "#fafafa";
+  const s = o.custom_sep || "#e5e7eb";
   const fk = o.custom_font || "dm_sans";
   const fontFamily = CUSTOM_FONT_FAMILIES[fk] || CUSTOM_FONT_FAMILIES.dm_sans;
   const fontName = fontFamily.split(",")[0].replace(/'/g,"");
+  // Radius aus Portal-Einstellung oder Standard
+  const radiusMap = {"0":"0px","2":"2px","4":"4px","8":"8px","12":"12px","16":"16px"};
+  const r = radiusMap[o.custom_radius] || "8px";
+  const rLg = parseInt(r) >= 8 ? (parseInt(r) + 4) + "px" : r;
+  const btnR = parseInt(r) >= 12 ? "100px" : r; // Ab 12px Pill-Buttons
   return {
-    p: c, a: c, bg: "#fafafa", s: "#e5e7eb",
+    p, a, bg, s,
     font: fontName,
     url: CUSTOM_FONT_URLS[fk] || CUSTOM_FONT_URLS.dm_sans,
-    r: "8px", rLg: "12px", btnR: "8px",
+    r, rLg, btnR,
     feel: "individuell, passend zum eigenen Branding, professionell",
     heroDecor: "Dezenter Gradient-Overlay mit der Primaerfarbe.",
-    cardStyle: "border:1px solid var(--sep); border-radius:8px; padding:28px 24px; box-shadow:0 1px 3px rgba(0,0,0,.05). Hover: transform:translateY(-3px), box-shadow:0 8px 24px rgba(0,0,0,.08).",
+    cardStyle: `border:1px solid var(--sep); border-radius:${rLg}; padding:28px 24px; box-shadow:0 1px 3px rgba(0,0,0,.05). Hover: transform:translateY(-3px), box-shadow:0 8px 24px rgba(0,0,0,.08).`,
     ueberStyle: "Checkmark-Liste mit Haken in Akzentfarbe. Professioneller, klarer Ton.",
   };
 }
@@ -323,7 +334,7 @@ export async function generateWebsite(order_id, env) {
 
   /* ─── CTA-Texte ─── */
   const ctaPrimary = o.buchungslink ? "Termin buchen" : o.notdienst ? "Notdienst anrufen" : o.kostenvoranschlag ? "Kostenlosen KV anfordern" : o.erstgespraech_gratis ? "Gratis Erstgespräch" : "Jetzt kontaktieren";
-  const ctaPrimaryHref = o.buchungslink || "{{TEL_HREF}}";
+  const ctaPrimaryHref = o.buchungslink || (o.telefon ? "{{TEL_HREF}}" : "#kontakt");
   const ctaSecondary = "Leistungen ansehen";
 
   /* ─── Meta ─── */
@@ -353,6 +364,46 @@ export async function generateWebsite(order_id, env) {
   const stickyCtaHtml = o.telefon ? `<a href="${o.buchungslink || "{{TEL_HREF}}"}">${o.buchungslink ? "Termin buchen" : "Jetzt anrufen \u2013 {{TEL_DISPLAY}}"}</a>` : "";
 
   /* ═══ TEXT-GENERIERUNG via Claude (NUR Texte, kein HTML) ═══ */
+
+  // Importierte Daten als Kontext sammeln
+  const importContext = [];
+  if (o.spezialisierung) importContext.push(`SPEZIALISIERUNG: ${o.spezialisierung}`);
+  if (o.text_ueber_uns) importContext.push(`BESTEHENDER UEBER-UNS-TEXT (als Grundlage verwenden, Stil anpassen):\n${o.text_ueber_uns}`);
+  if (o.gut_zu_wissen) importContext.push(`BESTEHENDE KUNDENHINWEISE (uebernehmen wenn sinnvoll): ${o.gut_zu_wissen}`);
+  if (o.leistungen_beschreibungen && Object.keys(o.leistungen_beschreibungen).length > 0) {
+    importContext.push(`BESTEHENDE LEISTUNGSBESCHREIBUNGEN (als Basis verwenden):\n${Object.entries(o.leistungen_beschreibungen).map(([k,v])=>`- ${k}: ${v}`).join("\n")}`);
+  }
+
+  // Merkmale als Kontext
+  const merkmaleText = [];
+  if (o.meisterbetrieb) merkmaleText.push("Meisterbetrieb");
+  if (o.barrierefrei) merkmaleText.push("Barrierefreier Zugang");
+  if (o.parkplaetze) merkmaleText.push("Kundenparkplätze");
+  if (o.notdienst) merkmaleText.push("24/7 Notdienst");
+  if (o.erstgespraech_gratis) merkmaleText.push("Gratis Erstgespräch");
+  if (o.online_beratung) merkmaleText.push("Online-Beratung möglich");
+  if (o.hausbesuche) merkmaleText.push("Hausbesuche möglich");
+  if (o.kostenvoranschlag) merkmaleText.push("Kostenloser Kostenvoranschlag");
+  if (o.foerderungsberatung) merkmaleText.push("Förderungsberatung");
+  if (o.kartenzahlung) merkmaleText.push("Kartenzahlung");
+  if (o.kassenvertrag) merkmaleText.push(`Kassenvertrag: ${o.kassenvertrag}`);
+  if (o.gastgarten) merkmaleText.push("Gastgarten");
+  if (o.takeaway) merkmaleText.push("Take-away");
+  if (o.lieferservice) merkmaleText.push("Lieferservice");
+  if (merkmaleText.length > 0) importContext.push(`BESONDERHEITEN: ${merkmaleText.join(", ")}`);
+
+  // Team als Kontext
+  const teamArr = Array.isArray(o.team) ? o.team : [];
+  if (teamArr.length > 0) importContext.push(`TEAM: ${teamArr.map(t => `${t.name} (${t.rolle||""})`).join(", ")}`);
+
+  // Stil-Anweisung fuer den Textstil
+  const stilAnweisung = {
+    klassisch: "Serioes, vertrauenswuerdig, bodenstaendig. Klare Sprache ohne Schnörkel. Betone Zuverlaessigkeit und Tradition.",
+    modern: "Dynamisch, frisch, auf Augenhoehe. Kurze, praegnante Saetze. Betone Innovation und Kundenerlebnis.",
+    elegant: "Zurueckhaltend, exklusiv, weniger ist mehr. Schlanke Formulierungen, gehobener Ton. Betone Qualitaet und Anspruch.",
+    custom: "Professionell und authentisch. Passe den Ton an die Branche an.",
+  }[o.stil] || stilAnweisung.custom;
+
   const textPrompt = `Generiere Website-Texte fuer einen oesterreichischen Betrieb. Antworte NUR mit validem JSON, keine Erklaerungen.
 
 BETRIEB: ${o.firmenname}
@@ -360,42 +411,51 @@ BRANCHE: ${o.branche_label || o.branche}
 ORT: ${o.ort || o.bundesland || "Oesterreich"}
 BESCHREIBUNG: ${o.kurzbeschreibung || ""}
 LEISTUNGEN: ${leistungen.join(", ")}
+DESIGN-STIL: ${o.stil || "klassisch"}
+${importContext.length > 0 ? "\n" + importContext.join("\n") + "\n" : ""}
+TONALITAET: ${stilAnweisung}
 
 REGELN:
 - Oesterreichisches Deutsch, formelle Ansprache ("Sie")
-- Warm, professionell, keine Superlative, keine erfundenen Zahlen/Jahre
-- Leistungsbeschreibungen: MAXIMAL 15 Woerter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
-- Vorteile kurz (3-6 Woerter pro Punkt)
+- Warm, professionell, KEINE Superlative ("beste", "fuehrend"), KEINE erfundenen Zahlen/Jahre
+- Wenn ein bestehender Ueber-uns-Text vorhanden ist: Nutze ihn als inhaltliche Grundlage, passe ihn stilistisch an und kuerze ihn. NICHTS dazuerfinden.
+- Wenn bestehende Leistungsbeschreibungen vorhanden sind: Kuerze und optimiere sie fuer die Website.
+- Leistungsbeschreibungen: MAXIMAL 15 Woerter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive ("Sie erhalten...", "Wir kuemmern uns um...").
+- Vorteile: Nutze echte Besonderheiten des Betriebs (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Woerter pro Punkt.
+- Vorteile MUESSEN sich voneinander unterscheiden. Keine Wiederholungen, keine Synonyme.
+- kontakt_cta: Branchenspezifisch, nicht generisch. Ein Arzt sagt "Vereinbaren Sie Ihren Termin", ein Installateur "Schildern Sie uns Ihr Anliegen".
 
 JSON-FORMAT:
 {
   "leistungen_beschreibungen": {"${leistungen.join('":"[2 kurze Saetze, max 25 Woerter]","')}":"[2 kurze Saetze, max 25 Woerter]"},
-  "text_ueber_uns": "4-5 Saetze ueber den Betrieb",
+  "text_ueber_uns": "4-5 Saetze ueber den Betrieb. Konkret, authentisch, nicht austauschbar.",
   "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
   "leistungen_intro": "1 kurzer Einleitungssatz fuer die Leistungen-Sektion",
-  "kontakt_cta_headline": "Kurze Headline fuer die Kontakt-CTA-Karte",
-  "kontakt_cta_text": "1-2 Saetze Motivation zur Kontaktaufnahme",
+  "kontakt_cta_headline": "Kurze, branchenspezifische Headline",
+  "kontakt_cta_text": "1-2 Saetze, konkrete Motivation zur Kontaktaufnahme",
   "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"},{"titel":"Schritt 2","text":"Kurze Beschreibung"},{"titel":"Schritt 3","text":"Kurze Beschreibung"}],
   "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3"${(o.layout === "ausfuehrlich") ? `,
   "faq": [{"frage":"Haeufige Frage 1?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 2?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 3?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 4?","antwort":"Antwort in 1-2 Saetzen"}]` : ""}
 }
 ${(o.layout === "ausfuehrlich") ? `
-ZUSAETZLICHE REGELN fuer faq:
-- 4-5 branchenspezifische Fragen die Kunden haeufig stellen
-- Antworten: 1-2 kurze, hilfreiche Saetze
-- Keine Floskeln, nur konkrete Informationen
+REGELN fuer faq:
+- 4-5 branchenspezifische Fragen die Kunden TATSAECHLICH stellen
+- Antworten: 1-2 kurze, hilfreiche Saetze. Konkret, nicht ausweichend.
+- Wenn bestehende FAQ importiert wurden, verwende diese als Grundlage.
 - Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
-- Beispiel Friseur: "Muss ich einen Termin vereinbaren?" - "Wir empfehlen eine Terminvereinbarung, nehmen aber nach Verfuegbarkeit auch Walk-ins an."
+- Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Vertraege mit allen oesterreichischen Sozialversicherungstraegern."
 ` : ""}
-ZUSAETZLICHE REGELN fuer ablauf_schritte:
+REGELN fuer ablauf_schritte:
 - 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit ablaeuft
 - Titel: 2-4 Woerter. Text: 1 kurzer Satz, max 10 Woerter
-- Beispiel Arzt: Termin vereinbaren, Erstgespraech, Untersuchung, Befund
-- Beispiel Handwerker: Anfrage, Besichtigung & KV, Terminvereinbarung, Umsetzung
+- Muessen zum konkreten Betrieb passen, nicht generisch
+- Beispiel Arzt: Termin vereinbaren → Erstgespraech → Untersuchung → Befund & Therapie
+- Beispiel Handwerker: Anfrage schildern → Besichtigung & KV → Terminvereinbarung → Umsetzung
 
-ZUSAETZLICHE REGELN fuer gut_zu_wissen:
+REGELN fuer gut_zu_wissen:
 - 2-3 branchentypische permanente Hinweise fuer Kunden, getrennt durch Zeilenumbruch
-- Nur relevante, konkrete Infos. Keine Floskeln.
+- Wenn bestehende Hinweise importiert wurden, uebernimm diese.
+- Nur relevante, konkrete Infos. Keine Marketing-Floskeln.
 - Beispiel Arzt: Bitte e-Card mitbringen\nAnnahmeschluss 30 Min vor Ordinationsende
 - Beispiel Friseur: Termine koennen bis 24h vorher kostenlos storniert werden`;
 
@@ -408,7 +468,7 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 2000,
+      max_tokens: 4096,
       messages: [{role: "user", content: textPrompt}],
     }),
   });
@@ -499,6 +559,9 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
     "address": { "@type": "PostalAddress", ...(o.adresse ? {"streetAddress": o.adresse} : {}), ...(o.plz ? {"postalCode": o.plz} : {}), ...(o.ort ? {"addressLocality": o.ort} : {}), "addressCountry": "AT" },
     ...(o.telefon ? {"telephone": o.telefon} : {}),
     ...(o.email ? {"email": o.email} : {}),
+    ...(o.url_hero ? {"image": o.url_hero} : {}),
+    ...(o.einsatzgebiet || o.ort ? {"areaServed": o.einsatzgebiet || o.ort} : {}),
+    ...(oez && oez !== "Nach Vereinbarung" ? {"openingHours": oez} : {}),
     ...(sameAs.length ? {"sameAs": sameAs} : {}),
   };
   html = html.replace("</head>", `<script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
@@ -513,19 +576,53 @@ ZUSAETZLICHE REGELN fuer gut_zu_wissen:
       // Kuratierte Unsplash-Bild-IDs pro Branche (dauerhaft verfügbar, kein API-Key nötig)
       // Format: https://images.unsplash.com/photo-{ID}?w=1200&h=630&fit=crop&q=80
       const stockPhotos = {
+        // Handwerk
         elektro:"photo-1621905252507-b35492cc74b4",installateur:"photo-1585704032915-c3400ca199e7",
         maler:"photo-1562259949-e8e7689d7828",tischler:"photo-1504148455328-c376907d081c",
+        fliesenleger:"photo-1584622650111-993a426fbf0a",schlosser:"photo-1504328345606-18bbc8c9d7d1",
+        dachdecker:"photo-1632759145351-1d5922f1063e",zimmerei:"photo-1516475429286-ed1b0a53e43e",
+        maurer:"photo-1504307651254-35680f356dfd",bodenleger:"photo-1558618666-fcd25c85f82e",
+        glaser:"photo-1596394723269-e15e948b3dfa",gaertner:"photo-1585320806297-9794b3e4eeae",
+        klima:"photo-1631545806609-22dbc23f7307",reinigung:"photo-1581578731548-c64695cc6952",
+        kfz:"photo-1487754180451-c456f719a1fc",aufsperrdienst:"photo-1558618666-fcd25c85f82e",
+        hafner:"photo-1567767292278-a4f21aa2d36e",raumausstatter:"photo-1618221195710-dd6b41faaea6",
+        goldschmied:"photo-1515562141589-9d879cb26e05",schneider:"photo-1558171813-4c088753af8f",
+        rauchfangkehrer:"photo-1513694203232-719a280e022f",schaedlingsbekaempfung:"photo-1585435557343-3985ac245e7a",
+        // Kosmetik
         friseur:"photo-1560066984-138dadb4c035",kosmetik:"photo-1570172619644-dfd03ed5d881",
+        nagel:"photo-1604654894610-df63bc536371",tattoo:"photo-1598371839696-5c5bb1c12015",
+        fusspflege:"photo-1519823551278-64ac92734fb1",permanent_makeup:"photo-1522337360788-8b13dee7a37e",
+        hundesalon:"photo-1516734212186-a967f81ad0d7",massage:"photo-1544161515-4ab6ce6db874",
+        // Gastro
         restaurant:"photo-1517248135467-4c7edcad34c4",cafe:"photo-1554118811-1e0d58224f24",
-        baeckerei:"photo-1509440159596-0249088772ff",arzt:"photo-1631217868264-e5b90bb7e133",
-        zahnarzt:"photo-1629909613654-28e377c37b09",physiotherapie:"photo-1571019613454-1cb2f99b2d8b",
-        gaertner:"photo-1585320806297-9794b3e4eeae",reinigung:"photo-1581578731548-c64695cc6952",
-        kfz:"photo-1487754180451-c456f719a1fc",fotograf:"photo-1554048612-b6a482bc67e5",
-        immobilien:"photo-1560518883-ce09059eeffa",steuerberater:"photo-1497366216548-37526070297c",
-        rechtsanwalt:"photo-1589829545856-d10d557cf95f",fahrschule:"photo-1449965408869-eaa3f722e40d",
-        yoga:"photo-1545205597-3d9d02c29597",massage:"photo-1544161515-4ab6ce6db874",
+        baeckerei:"photo-1509440159596-0249088772ff",bar:"photo-1572116469696-31de0f17cc34",
+        heuriger:"photo-1506377247377-2a5b3b417ebb",imbiss:"photo-1565299624946-b28f40a0ae38",
+        catering:"photo-1555244162-803834f70033",fleischerei:"photo-1551028150-64b9f398f678",
+        // Gesundheit
+        arzt:"photo-1631217868264-e5b90bb7e133",zahnarzt:"photo-1629909613654-28e377c37b09",
+        physiotherapie:"photo-1571019613454-1cb2f99b2d8b",tierarzt:"photo-1628009368231-7bb7cfcb0def",
         apotheke:"photo-1585435557343-3985ac245e7a",optiker:"photo-1574258495973-f010dfbb5371",
-        trainer:"photo-1534438327276-14e5300c3a48",versicherung:"photo-1450101499163-c8848e968838",
+        psychotherapie:"photo-1573497620053-ea5300f94f21",ergotherapie:"photo-1576091160550-2173dba999ef",
+        logopaedie:"photo-1576091160399-112ba8d25d1d",energetiker:"photo-1545205597-3d9d02c29597",
+        hebamme:"photo-1493894473891-10fc1e5dbd22",diaetologe:"photo-1490645935967-10de6ba17061",
+        hoerakustiker:"photo-1559757175-5700dde675bc",zahntechnik:"photo-1606811841689-23dfddce3e95",
+        heilmasseur:"photo-1519823551278-64ac92734fb1",
+        // Dienstleistung
+        steuerberater:"photo-1497366216548-37526070297c",rechtsanwalt:"photo-1589829545856-d10d557cf95f",
+        versicherung:"photo-1450101499163-c8848e968838",immobilien:"photo-1560518883-ce09059eeffa",
+        hausverwaltung:"photo-1486406146926-c627a92ad1ab",umzug:"photo-1600518464441-9154a4dea21b",
+        eventplanung:"photo-1492684223066-81342ee5ff30",fotograf:"photo-1554048612-b6a482bc67e5",
+        florist:"photo-1487530811176-3780de880c2d",architekt:"photo-1503387762-592deb58ef4e",
+        it_service:"photo-1518770660439-4636190af475",werbeagentur:"photo-1542744094-3a31f272c490",
+        bestattung:"photo-1501621667575-af81f1f0bacc",notar:"photo-1507679799987-c73b1c7e2b48",
+        finanzberater:"photo-1554224155-6726b3ff858f",reisebuero:"photo-1488646953014-85cb44e25828",
+        innenarchitekt:"photo-1618221195710-dd6b41faaea6",textilreinigung:"photo-1545173168-9f1947eebb7f",
+        // Bildung
+        fahrschule:"photo-1449965408869-eaa3f722e40d",nachhilfe:"photo-1427504494785-3a9ca7044f45",
+        musikschule:"photo-1511379938547-c1f69419868d",trainer:"photo-1534438327276-14e5300c3a48",
+        yoga:"photo-1545205597-3d9d02c29597",hundeschule:"photo-1587300003388-59208cc962cb",
+        tanzschule:"photo-1504609813442-a8924e83f76e",reitschule:"photo-1553284965-83fd3e82fa5a",
+        schwimmschule:"photo-1519315901367-f34ff9154487",
       };
       const branche = (o.branche || "").toLowerCase();
       const photoId = stockPhotos[branche] || "photo-1497366216548-37526070297c"; // Fallback: modernes Büro

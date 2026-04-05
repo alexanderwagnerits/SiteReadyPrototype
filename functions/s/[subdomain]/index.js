@@ -17,7 +17,7 @@ function buildSocialIcons(o) {
     {url: normSocial(o.tiktok),    label:"TikTok",    icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>`},
   ].filter(s => s.url);
   if (!socials.length) return "";
-  return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">${s.icon}</a>`).join("")}</div>`;
+  return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s">${s.icon}</a>`).join("")}</div>`;
 }
 
 const OEZ_LABELS = {
@@ -133,29 +133,32 @@ export async function onRequestGet({params, env}) {
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
   const heroLayout = o.hero_layout || "split";
 
+  // Stil-spezifische Werte fuer Hero-Varianten
+  const heroImgR = isModern ? "16px" : isElegant ? "2px" : "var(--rLg,8px)";
+  const heroMinH1Weight = isElegant ? "300" : "800";
+
   if (heroVariante === "minimal") {
     // Minimal: Kein Bild, zentriert, reduziert
     const minimalStyle = `<style>
 .hero{min-height:70vh!important;min-height:70svh!important;justify-content:center;text-align:center}
 .hero-inner{display:flex!important;flex-direction:column;align-items:center}
-.hero h1{font-size:clamp(2.5rem,6vw,4rem)!important;max-width:100%}
+.hero h1{font-size:clamp(2.5rem,6vw,4rem)!important;max-width:100%;font-weight:${heroMinH1Weight}!important}
 .hero-desc{text-align:center;max-width:480px}
 .hero-btns{justify-content:center}
 .hero-sub{margin-bottom:16px}
-.hero-accent-line{display:block!important;width:48px;height:2px;background:var(--accent);margin:16px auto 24px;opacity:.6}
+.hero-accent-line{display:block!important;width:48px;height:${isElegant ? "1px" : "2px"};background:var(--accent);margin:16px auto 24px;opacity:.6}
 </style>`;
     html = html.replace("</head>", minimalStyle + "</head>");
   } else if (heroVariante === "split" || (heroVariante === "standard" && heroLayout !== "full")) {
     // Split: Bild rechts neben dem Text
     if (o.url_hero) {
-      // Text-Elemente in einen Wrapper packen, Bild daneben
       const heroStyle = `<style>` +
         `.hero-split-img{display:none}` +
         `@media(min-width:900px){` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-top:80px!important;padding-bottom:80px!important}` +
         `.hero-split-text{grid-column:1}` +
-        `.hero-split-img{display:block!important;grid-column:2;border-radius:var(--rLg,8px);overflow:hidden}` +
-        `.hero-split-img img{width:100%;display:block;border-radius:var(--rLg,8px)}` +
+        `.hero-split-img{display:block!important;grid-column:2;border-radius:${heroImgR};overflow:hidden}` +
+        `.hero-split-img img{width:100%;display:block;border-radius:${heroImgR}}` +
         `.hero h1{font-size:clamp(2.2rem,4vw,3.2rem)!important}` +
         `}</style>`;
       // Alle Text-Kinder von hero-inner in einen Wrapper wrappen
@@ -189,20 +192,27 @@ export async function onRequestGet({params, env}) {
   // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
   html = html.replace("<!-- LEIST_FOTOS -->", "");
 
+  // ── Stil-Variablen (fuer alle serve-time Sections) ──
+  const stilName = o.stil || "klassisch";
+  const isModern = stilName === "modern";
+  const isElegant = stilName === "elegant";
+
   // Team-Members + Berufsregister-Nr. — rechte Spalte in Über-uns
   const teamMembers = Array.isArray(o.team_members) ? o.team_members.filter(m => m && m.name) : [];
   const berufsregNr = o.berufsregister_nr ? `<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:.75rem;opacity:.4"><span style="text-transform:uppercase;letter-spacing:.1em;font-weight:600">Berufsregister-Nr.</span><br><span style="font-weight:500;opacity:1">${o.berufsregister_nr}</span></div>` : "";
   if (teamMembers.length > 0 && html.includes("<!-- TEAM -->")) {
-    const personIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
     const avatarColors = ["#2563eb","#6366f1","#0891b2","#059669","#d97706","#dc2626","#7c3aed","#db2777"];
+    const avatarR = isModern ? "50%" : isElegant ? "4px" : "50%";
+    const nameWeight = isElegant ? "600" : "700";
+    const nameSize = isElegant ? "1rem" : "1.05rem";
     const cards = teamMembers.map((m, idx) => {
       const hasImg = !!m.foto;
       const initials = esc(m.name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
       const color = avatarColors[idx % avatarColors.length];
       const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
-        : `<div style="width:72px;height:72px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:.02em">${initials}</div>`;
-      return `<div style="display:flex;align-items:center;gap:18px;padding:14px 0">${avatar}<div><div style="font-weight:700;font-size:1.05rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.85rem;opacity:.55;margin-top:3px">${esc(m.rolle)}</div>` : ""}</div></div>`;
+        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:72px;height:72px;border-radius:${avatarR};object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
+        : `<div style="width:72px;height:72px;border-radius:${avatarR};background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:.02em">${initials}</div>`;
+      return `<div style="display:flex;align-items:center;gap:18px;padding:14px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:${nameSize};color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.85rem;opacity:.55;margin-top:3px">${esc(m.rolle)}</div>` : ""}</div></div>`;
     }).join("");
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
   } else if (berufsregNr) {
@@ -213,7 +223,7 @@ export async function onRequestGet({params, env}) {
     if (aboutFotosForTeamSlot.length > 0) {
       const items = aboutFotosForTeamSlot.map(url =>
         `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-        `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+        `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" class="sr-img-hover">` +
         `</div>`
       ).join("");
       const n = aboutFotosForTeamSlot.length;
@@ -231,7 +241,7 @@ export async function onRequestGet({params, env}) {
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const items = aboutFotos.map(url =>
       `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+      `<img class="sr-zoom" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s" class="sr-img-hover">` +
       `</div>`
     ).join("");
     const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${Math.min(aboutFotos.length, 4)},1fr)` : "repeat(4,1fr)";
@@ -254,12 +264,14 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   } else if (ueberVariante === "team-fokus" && teamMembers.length > 0) {
     // Nur wenn Team-Members vorhanden, sonst bleibt Standard
     // Team-Fokus: Team prominent oben, Text kompakt zentriert
+    const teamFokusAvatarR = isModern ? "50%" : isElegant ? "4px" : "50%";
+    const teamFokusNameW = isElegant ? "600" : "700";
     const teamGrid = teamMembers.slice(0, 6).map(m => {
       const hasImg = !!m.foto;
       const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${m.name}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.12)">`
-        : `<div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.08)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
-      return `<div style="text-align:center"><div style="margin:0 auto 8px">${avatar}</div><div style="font-size:.85rem;font-weight:700;color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.75rem;opacity:.5">${m.rolle}</div>` : ""}</div>`;
+        ? `<img src="${m.foto}" alt="${m.name}" style="width:72px;height:72px;border-radius:${teamFokusAvatarR};object-fit:cover;border:3px solid rgba(255,255,255,.12)">`
+        : `<div style="width:72px;height:72px;border-radius:${teamFokusAvatarR};background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.08)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+      return `<div style="text-align:center"><div style="margin:0 auto 8px">${avatar}</div><div style="font-size:.85rem;font-weight:${teamFokusNameW};color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.75rem;opacity:.5">${m.rolle}</div>` : ""}</div>`;
     }).join("");
     const teamCols = Math.min(teamMembers.length, 4);
     const teamFokusStyle = `<style>
@@ -270,7 +282,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 </style>`;
     html = html.replace("</head>", teamFokusStyle + "</head>");
     // Team-Grid vor den Vorteilen einfuegen
-    const teamGridHtml = `<div style="display:grid;grid-template-columns:repeat(${teamCols},1fr);gap:20px;max-width:480px;margin:0 auto 32px">${teamGrid}</div>`;
+    const teamGridHtml = `<div class="sr-team-fokus" style="display:grid;grid-template-columns:repeat(${teamCols},1fr);gap:20px;max-width:480px;margin:0 auto 32px">${teamGrid}</div>`;
     html = html.replace("{{VORTEILE}}", teamGridHtml + "{{VORTEILE}}");
   }
   // Standard: keine Aenderung noetig
@@ -278,37 +290,52 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   // ── Layout-Feld lesen (bestimmt Section-Varianten) ──
   const layout = o.layout || "standard";
 
+  // Stil-spezifische Label-Variante
+  const sectionLabel = (text) => {
+    if (isElegant) return `<div style="font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">${text}</div>`;
+    if (isModern) return `<div style="display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 8%,transparent);padding:6px 14px;border-radius:100px">${text}</div>`;
+    return `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">${text}</div>`;
+  };
+  const sectionH2 = (text) => {
+    if (isElegant) return `<h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:300;color:var(--primary);letter-spacing:-.02em">${text}</h2>`;
+    return `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">${text}</h2>`;
+  };
+
   // Ablauf-Section — "So laeuft es ab" zwischen Leistungen und Ueber uns
   const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
   const showAblauf = layout !== "kompakt" && ablaufSteps.length >= 2;
   if (showAblauf && html.includes("<!-- ABLAUF -->")) {
-    const ablaufLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">So l\u00e4uft es ab</div>`;
-    const ablaufH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Ihr Weg zu uns</h2>`;
     let ablaufContent;
+    // Stil-spezifische Varianten
+    const circleR = isModern ? "50%" : isElegant ? "2px" : "50%";
+    const circleSize = isElegant ? "28px" : "40px";
+    const circleFontSize = isElegant ? ".72rem" : ".92rem";
+    const circleFontWeight = isElegant ? "500" : "800";
+    const titleWeight = isElegant ? "600" : "700";
 
     if (layout === "ausfuehrlich") {
       // Vertical Timeline
       const vSteps = ablaufSteps.slice(0, 5).map((s, i) =>
         `<div style="margin-bottom:28px;position:relative;padding-left:48px">` +
-        `<div style="position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;z-index:1">${i + 1}</div>` +
-        `<div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:4px">${s.titel}</div>` +
+        `<div style="position:absolute;left:0;top:0;width:32px;height:32px;border-radius:${circleR};background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:${circleFontWeight};font-size:.82rem;z-index:1">${i + 1}</div>` +
+        `<div style="font-weight:${titleWeight};font-size:.95rem;color:var(--primary);margin-bottom:4px">${s.titel}</div>` +
         (s.text ? `<div style="font-size:.85rem;color:var(--textMuted,#64748b);line-height:1.7">${s.text}</div>` : "") +
         `</div>`
       ).join("");
-      ablaufContent = `<div style="position:relative;max-width:560px"><div style="position:absolute;left:15px;top:0;bottom:0;width:2px;background:var(--sep,#e2e8f0)"></div>${vSteps}</div>`;
+      ablaufContent = `<div style="position:relative;max-width:560px"><div style="position:absolute;left:15px;top:0;bottom:0;width:${isElegant ? "1px" : "2px"};background:var(--sep,#e2e8f0)"></div>${vSteps}</div>`;
     } else {
       // Standard: Horizontal
       const hSteps = ablaufSteps.slice(0, 5).map((s, i) =>
         `<div style="flex:1;text-align:center;min-width:140px">` +
-        `<div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">${i + 1}</div>` +
-        `<div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">${s.titel}</div>` +
+        `<div style="width:${circleSize};height:${circleSize};border-radius:${circleR};background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:${circleFontWeight};font-size:${circleFontSize};margin:0 auto 12px">${i + 1}</div>` +
+        `<div style="font-weight:${titleWeight};font-size:.95rem;color:var(--primary);margin-bottom:6px">${s.titel}</div>` +
         (s.text ? `<div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">${s.text}</div>` : "") +
         `</div>`
-      ).join(`<div style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>`);
-      ablaufContent = `<div style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap">${hSteps}</div>`;
+      ).join(`<div class="sr-ablauf-arrow" style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${isElegant ? "1.5" : "2"}"><polyline points="9 18 15 12 9 6"/></svg></div>`);
+      ablaufContent = `<div class="sr-ablauf-h" style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap">${hSteps}</div>`;
     }
 
-    const section = `<section style="padding:80px 0;background:var(--bg,#f8fafc)"><div class="w"><div style="text-align:center;margin-bottom:40px">${ablaufLabel}${ablaufH2}</div>${ablaufContent}</div></section>`;
+    const section = `<section class="sr-fade" style="padding:80px 0;background:var(--bg,#f8fafc)"><div class="w"><div style="text-align:center;margin-bottom:40px">${sectionLabel("So läuft es ab")}${sectionH2("Ihr Weg zu uns")}</div>${ablaufContent}</div></section>`;
     html = html.replace("<!-- ABLAUF -->", section);
   } else {
     html = html.replace("<!-- ABLAUF -->", "");
@@ -320,30 +347,35 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const starSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     const emptyStar = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--sep)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
     const makeStars = (b) => b.sterne ? Array.from({length:5}, (_,i) => i < b.sterne ? starSvg : emptyStar).join("") : "";
-    const bewLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">Kundenstimmen</div>`;
-    const bewH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Was unsere Kunden sagen</h2>`;
+    const bewLabel = sectionLabel("Kundenstimmen");
+    const bewH2 = sectionH2("Was unsere Kunden sagen");
     let bewContent;
+
+    // Stil-spezifische Card-Variablen fuer Bewertungen
+    const bewCardR = isModern ? "16px" : isElegant ? "2px" : "var(--rLg,8px)";
+    const bewCardBorder = isModern ? "border:none;box-shadow:0 4px 20px rgba(0,0,0,.06)" : "border:1px solid var(--sep)";
+    const bewNameWeight = isElegant ? "600" : "700";
 
     if (bewertungenVariante === "highlight") {
       // Highlight: Erste Bewertung gross, Rest als kleine Karten
       const main = bewertungen[0];
       const rest = bewertungen.slice(1, 5);
       const mainStars = makeStars(main);
-      const highlight = `<div style="background:var(--primary);color:#fff;border-radius:var(--rLg,8px);padding:36px;margin-bottom:20px;text-align:center">` +
+      const highlight = `<div style="background:var(--primary);color:#fff;border-radius:${bewCardR};padding:36px;margin-bottom:20px;text-align:center">` +
         `<div style="font-size:2rem;margin-bottom:12px;opacity:.3">\u201c</div>` +
-        `<div style="font-size:1rem;font-weight:500;line-height:1.8;max-width:520px;margin:0 auto;opacity:.9">${esc(main.text)}</div>` +
-        `<div style="margin-top:16px;font-size:.82rem;font-weight:700;opacity:.7">${esc(main.name) || "Kunde"}</div>` +
+        `<div style="font-size:1rem;font-weight:${isElegant ? "400" : "500"};line-height:1.8;max-width:520px;margin:0 auto;opacity:.9">${esc(main.text)}</div>` +
+        `<div style="margin-top:16px;font-size:.82rem;font-weight:${bewNameWeight};opacity:.7">${esc(main.name) || "Kunde"}</div>` +
         (mainStars ? `<div style="margin-top:8px;display:flex;justify-content:center;gap:2px">${mainStars}</div>` : "") +
         `</div>`;
       const restCards = rest.map(b => {
         const stars = makeStars(b);
-        return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:20px;display:flex;flex-direction:column;gap:8px">` +
+        return `<div style="background:#fff;${bewCardBorder};border-radius:${bewCardR};padding:20px;display:flex;flex-direction:column;gap:8px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
           `<p style="font-size:.88rem;color:var(--text);line-height:1.7;margin:0;flex:1;font-style:italic">\u201e${esc(b.text)}\u201c</p>` +
-          `<div style="font-size:.78rem;font-weight:700;color:var(--primary)">${esc(b.name) || "Kunde"}</div></div>`;
+          `<div style="font-size:.78rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</div></div>`;
       }).join("");
       const restCols = rest.length <= 2 ? `repeat(${rest.length},1fr)` : "repeat(3,1fr)";
-      bewContent = highlight + (rest.length > 0 ? `<div style="display:grid;grid-template-columns:${restCols};gap:16px">${restCards}</div>` : "");
+      bewContent = highlight + (rest.length > 0 ? `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${restCols};gap:16px">${restCards}</div>` : "");
 
     } else if (bewertungenVariante === "liste") {
       // Liste: Kompakt untereinander mit Avatar-Initialen
@@ -351,10 +383,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
         const initials = esc((b.name || "K").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
         const stars = makeStars(b);
         return `<div style="display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--sep);align-items:start">` +
-          `<div style="width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">${initials}</div>` +
+          `<div style="width:42px;height:42px;border-radius:${isElegant ? "2px" : "50%"};background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:${bewNameWeight};flex-shrink:0">${initials}</div>` +
           `<div>` +
           `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">` +
-          `<span style="font-size:.85rem;font-weight:700;color:var(--primary)">${esc(b.name) || "Kunde"}</span>` +
+          `<span style="font-size:.85rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</span>` +
           (stars ? `<span style="display:flex;gap:1px">${stars}</span>` : "") +
           `</div>` +
           `<div style="font-size:.88rem;color:var(--textMuted);line-height:1.7;font-style:italic">\u201e${esc(b.text)}\u201c</div>` +
@@ -366,14 +398,14 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       // Karten (Standard): Grid nebeneinander
       const cards = bewertungen.slice(0, 6).map(b => {
         const stars = makeStars(b);
-        return `<div style="background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:24px;display:flex;flex-direction:column;gap:12px">` +
+        return `<div style="background:#fff;${bewCardBorder};border-radius:${bewCardR};padding:24px;display:flex;flex-direction:column;gap:12px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
           `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${esc(b.text)}\u201c</p>` +
-          `<div style="font-size:.82rem;font-weight:700;color:var(--primary)">${esc(b.name) || "Kunde"}</div>` +
+          `<div style="font-size:.82rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</div>` +
           `</div>`;
       }).join("");
       const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
-      bewContent = `<div style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div>`;
+      bewContent = `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div>`;
     }
 
     const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px">${bewLabel}${bewH2}</div>${bewContent}</div></section>`;
@@ -412,11 +444,13 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   }
 
   // ── Kontakt-Variante serve-time anwenden ──
+  const kontaktCardR = isModern ? "16px" : isElegant ? "2px" : "var(--rLg,8px)";
+  const kontaktCardBorder = isModern ? "border:none;box-shadow:0 2px 12px rgba(0,0,0,.06)" : "border:1px solid var(--sep)";
   if (kontaktVariante === "karte-gross") {
     // Karte-Gross: Karte oben volle Breite, dann Info + Formular
     const kgStyle = `<style>
 .kontakt-grid{display:flex!important;flex-direction:column-reverse;gap:24px}
-.kontakt-grid>div:last-child iframe{height:240px!important;border-radius:var(--rLg,8px)}
+.kontakt-grid>div:last-child iframe{height:240px!important;border-radius:${kontaktCardR}}
 @media(min-width:900px){.kontakt-grid{gap:32px}}
 </style>`;
     html = html.replace("</head>", kgStyle + "</head>");
@@ -425,7 +459,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const kompaktStyle = `<style>
 .kontakt-grid{display:block!important}
 .kontakt .kontakt-grid>div:first-child{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.kontakt .kontakt-grid>div:first-child>.kontakt-item{background:#fff;border:1px solid var(--sep);border-radius:var(--rLg,8px);padding:20px;text-align:center}
+.kontakt .kontakt-grid>div:first-child>.kontakt-item{background:#fff;${kontaktCardBorder};border-radius:${kontaktCardR};padding:20px;text-align:center}
 .kontakt .kontakt-grid>div:first-child>.kontakt-item .kontakt-item-label{margin-bottom:6px}
 .kontakt .kontakt-form-wrap{display:none}
 .kontakt h2{text-align:center;margin-bottom:24px}
@@ -441,7 +475,11 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   // CTA-Zwischenblock — Auflockerer zwischen Leistungen und Ablauf
   if (layout === "ausfuehrlich" && html.includes("<!-- CTA_BLOCK -->")) {
-    const ctaBlock = `<section class="sec-cta-block" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:8px;color:#fff">Bereit f\u00fcr Ihr Projekt?</h2><p style="font-size:.9rem;opacity:.7;margin-bottom:24px">Wir beraten Sie gerne \u2014 kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:var(--r);padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block">Jetzt Kontakt aufnehmen</a></div></section>`;
+    const ctaBtnR = isModern ? "100px" : "var(--r)";
+    const ctaBtnShadow = isModern ? ";box-shadow:0 4px 16px rgba(0,0,0,.15)" : "";
+    const ctaH2Weight = isElegant ? "300" : "800";
+    const ctaPOpacity = isElegant ? ".5" : ".7";
+    const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">Bereit für Ihr Projekt?</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">Wir beraten Sie gerne \u2014 kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
     html = html.replace("<!-- CTA_BLOCK -->", ctaBlock);
   } else {
     html = html.replace("<!-- CTA_BLOCK -->", "");
@@ -458,7 +496,9 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${f.antwort || ""}</p>` +
       `</div></div>`
     ).join("");
-    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">FAQ</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">H\u00e4ufig gestellte Fragen</h2></div><div style="max-width:720px">${items}</div></div></section>`;
+    const faqToggleWeight = isElegant ? "600" : "700";
+    const faqToggleSize = isElegant ? ".9rem" : ".95rem";
+    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div><div style="max-width:720px">${items.replace(/font-weight:700;/g, `font-weight:${faqToggleWeight};`).replace(/font-size:\.95rem;/g, `font-size:${faqToggleSize};`)}</div></div></section>`;
     html = html.replace("<!-- FAQ -->", section);
   } else {
     html = html.replace("<!-- FAQ -->", "");
@@ -471,10 +511,11 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const cols = galerieItems.length <= 2 ? "1fr 1fr" : galerieItems.length <= 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
       `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
-      `<img class="sr-zoom" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">` +
+      `<img class="sr-zoom" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s" class="sr-img-hover">` +
       `</div>`
     ).join("");
-    const section = `<section class="sec-galerie sr-fade" style="padding:100px 0;background:var(--bg)"><div class="w"><div style="margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">Galerie</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Einblicke in unsere Arbeit</h2></div><div style="display:grid;grid-template-columns:${cols};gap:12px">${photos}</div></div></section>`;
+    const galerieRadius = isModern ? "16px" : isElegant ? "2px" : "var(--rLg)";
+    const section = `<section class="sec-galerie sr-fade" style="padding:100px 0;background:var(--bg)"><div class="w"><div style="margin-bottom:40px">${sectionLabel("Galerie")}${sectionH2("Einblicke in unsere Arbeit")}</div><div style="display:grid;grid-template-columns:${cols};gap:${isElegant ? "8px" : "12px"}">${photos.replace(/border-radius:var\(--rLg\)/g, `border-radius:${galerieRadius}`)}</div></div></section>`;
     html = html.replace("<!-- GALERIE -->", section);
   } else {
     html = html.replace("<!-- GALERIE -->", "");
@@ -485,8 +526,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   const showFakten = (o.sections_visible && o.sections_visible.fakten) || (layout === "ausfuehrlich" && faktenItems.length > 0);
   if (showFakten && faktenItems.length > 0 && html.includes("<!-- FAKTEN -->")) {
     const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
+    const faktenFontWeight = isElegant ? "300" : "800";
+    const faktenFontSize = isElegant ? "clamp(1.4rem,3.5vw,2rem)" : "clamp(1.6rem,4vw,2.4rem)";
     const items = faktenItems.slice(0, 4).map(f =>
-      `<div style="text-align:center;padding:20px"><div style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:var(--accent);letter-spacing:-.03em;line-height:1">${f.zahl}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${f.label}</div></div>`
+      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${f.zahl}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${f.label}</div></div>`
     ).join("");
     const section = `<section class="sec-fakten sr-fade" style="padding:80px 0;background:var(--bg)"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
     html = html.replace("<!-- FAKTEN -->", section);
@@ -500,7 +543,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   if (showPartner && partnerItems.length > 0 && html.includes("<!-- PARTNER -->")) {
     const logos = partnerItems.slice(0, 8).map(p => {
       if (p.url_logo) {
-        return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${p.name || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" onmouseover="this.style.opacity='1';this.style.filter='none'" onmouseout="this.style.opacity='.7';this.style.filter='grayscale(30%)'"></div>`;
+        return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${p.name || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;
       }
       return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--r);font-size:.75rem;font-weight:600;color:var(--textMuted)">${p.name}</div>`;
     }).join("");
@@ -578,12 +621,12 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       `<div id="sr-form-wrap">` +
       `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
       `<div class="k-form-row">` +
-      `<div><label>Name *</label><input required type="text" placeholder="Ihr Name"></div>` +
-      `<div><label>E-Mail *</label><input required type="email" placeholder="ihre@email.at"></div>` +
+      `<div><label>Name *</label><input required aria-required="true" type="text" placeholder="Ihr Name"></div>` +
+      `<div><label>E-Mail *</label><input required aria-required="true" type="email" placeholder="ihre@email.at"></div>` +
       `<div><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
       `</div>` +
       extraFields +
-      `<div class="k-form-field"><label>${msgLabel} *</label><textarea required rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +
+      `<div class="k-form-field"><label>${msgLabel} *</label><textarea required aria-required="true" rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +
       `<button type="submit">${btnText}</button>` +
       `</form></div>` +
       `<div id="sr-form-ok" class="k-form-ok">` +
@@ -602,7 +645,6 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       leistungenArr.push(...o.extra_leistung.split(/[,\n]+/).map(s => s.trim()).filter(Boolean));
     }
     const descMap = o.leistungen_beschreibungen || {};
-    const stilName = o.stil || "klassisch";
     const checkIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     const cardStyleMap = {
       klassisch:  "border:1px solid var(--sep,#e2e8f0);background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
@@ -642,7 +684,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       const imgArea = foto
         ? `<div style="height:160px;overflow:hidden"><img src="${foto}" alt="${lCapitalized}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
         : "";
-      return `<div class="sr-fade" style="${cardStyle}" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.10)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">` +
+      return `<div class="sr-fade sr-card-hover" style="${cardStyle}">` +
         imgArea +
         `<div style="padding:24px 26px">` +
         `<div style="${iconStyle}">${checkIcon}</div>` +
@@ -659,7 +701,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       // Kompakt: Nur Icon + Name, kein Text
       const compactCards = leistungenArr.map((l, i) => {
         const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));
-        return `<div class="sr-fade" style="${cardStyle};text-align:center;padding:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">` +
+        return `<div class="sr-fade sr-card-hover" style="${cardStyle};text-align:center;padding:16px">` +
           `<div style="${iconStyle};margin:0 auto 8px">${checkIcon}</div>` +
           `<div style="font-size:.85rem;font-weight:700;color:var(--primary)">${lCap}</div>` +
           `</div>`;
@@ -672,7 +714,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
         const desc = esc(findInMap(descMap, l) || findInMap(descMap, l.charAt(0).toUpperCase() + l.slice(1)));
         const preis = esc(findInMap(preisMap, l) || findInMap(preisMap, l.charAt(0).toUpperCase() + l.slice(1)));
         const foto = findInMap(fotoMap, l) || findInMap(fotoMap, l.charAt(0).toUpperCase() + l.slice(1));
-        return `<div class="sr-fade" style="${cardStyle};display:grid;grid-template-columns:${foto ? '160px ' : ''}auto 1fr;gap:0;align-items:stretch" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">` +
+        return `<div class="sr-fade sr-card-hover" style="${cardStyle};display:grid;grid-template-columns:${foto ? '160px ' : ''}auto 1fr;gap:0;align-items:stretch">` +
           (foto ? `<div style="overflow:hidden"><img src="${foto}" alt="${lCap}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : "") +
           `<div style="padding:20px 24px;display:flex;align-items:center">` +
           `<div style="${iconStyle};margin:0 16px 0 0">${checkIcon}</div>` +
@@ -760,9 +802,39 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   //   );
   // }
 
-  // ── Serve-time Style Fixes ──
+  // ── Serve-time Style Fixes (Hover + Responsive) ──
   const responsiveStyle = `<style>
+/* CSS Hover-Effekte (statt inline JS — funktioniert auch auf Touch/Keyboard) */
+.sr-card-hover{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s cubic-bezier(.22,1,.36,1)}
+.sr-card-hover:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.10)}
+.sr-img-hover{transition:transform .3s}
+.sr-img-hover:hover{transform:scale(1.03)}
+.sr-partner-hover{transition:opacity .2s,filter .2s}
+.sr-partner-hover:hover{opacity:1!important;filter:none!important}
+.sr-social-icon:hover{background:rgba(255,255,255,.25)!important}
 .hero{min-height:100vh;min-height:100svh}
+@media(max-width:768px){
+/* Bewertungen: 3col → 1col */
+.sec-bew-grid{grid-template-columns:1fr!important}
+/* Fakten: bis zu 4col → 2col */
+.sec-fakten [style*="grid-template-columns"]{grid-template-columns:repeat(2,1fr)!important}
+/* Galerie: 3col → 2col */
+.sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
+/* Ablauf horizontal: Arrows verstecken, vertikal stapeln */
+.sr-ablauf-h{flex-direction:column!important;gap:24px!important}
+.sr-ablauf-h .sr-ablauf-arrow{display:none!important}
+/* Ausfuehrliche Leistungen: Foto-Grid → Stack */
+.sr-leist-grid [style*="grid-template-columns:160px"]{grid-template-columns:1fr!important}
+/* Kompakt Leistungen: 4col → 2col */
+.sr-leist-grid[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}
+/* Kontakt kompakt Cards: 2col → 1col */
+.kontakt .kontakt-grid>div:first-child{grid-template-columns:1fr!important}
+/* Team-Fokus: bis zu 4col → 2col */
+.sr-team-fokus{grid-template-columns:repeat(2,1fr)!important}
+/* Section-Padding verkleinern */
+.sec-faq,.sec-galerie{padding:64px 0!important}
+.sec-fakten,.sec-cta-block{padding:48px 0!important}
+}
 @media(max-width:640px){
 .hero{justify-content:center}
 .hero-inner{padding-top:24px!important;padding-bottom:24px!important}
@@ -771,9 +843,21 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 .sr-leist-grid div p{font-size:.85rem!important;line-height:1.65!important}
 .sr-leist-grid div h3{font-size:.92rem!important}
 .kontakt-form-wrap{margin-bottom:24px}
+/* Fakten: 2col → 1col bei ganz schmal */
+.sec-fakten [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
+/* Galerie: 2col → 1col bei ganz schmal */
+.sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+}
+@media(max-width:480px){
+/* Fakten ganz klein: 2col bleibt (zahlen sind kurz) */
+.sr-team-fokus{grid-template-columns:1fr 1fr!important}
 }
 </style>`;
   html = html.replace("</head>", responsiveStyle + "</head>");
+
+  // ── OG-Image serve-time (Hero-Bild oder Fallback) ──
+  const ogImage = o.url_hero || o.url_logo || "";
+  html = html.replace("{{OG_IMAGE}}", ogImage);
 
   // ── Stil-Klasse serve-time aktualisieren (erlaubt Stilwechsel ohne Regenerierung) ──
   const currentStil = o.stil || "klassisch";

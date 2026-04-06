@@ -218,14 +218,9 @@
             <input type="text" id="f-name" placeholder="Max Mustermann"/>
           </div>
           <div class="field">
-            <label>E-Mail <span style="font-weight:400;color:#9ca3af">(optional)</span></label>
-            <input type="email" id="f-email" placeholder="max@beispiel.at"/>
+            <label>Welchen Beruf hast du getestet?</label>
+            <input type="text" id="f-beruf" placeholder="z.B. Elektriker, Friseur ..."/>
           </div>
-        </div>
-
-        <div class="field">
-          <label>Welchen Beruf hast du getestet?</label>
-          <input type="text" id="f-beruf" placeholder="z.B. Elektriker, Friseur, Physiotherapeutin ..."/>
         </div>
 
         <div class="stars-wrap">
@@ -241,22 +236,42 @@
 
         <div class="field">
           <label>Wie war der Fragebogen? (Verstaendlichkeit, Laenge, Ablauf)</label>
-          <textarea id="f-gut" placeholder="z.B. War alles klar? Hat etwas gefehlt? War es zu lang?"></textarea>
+          <textarea id="f-gut" placeholder="War alles klar? Hat etwas gefehlt? War es zu lang?"></textarea>
         </div>
 
         <div class="field">
           <label>Wie findest du das Design der generierten Website?</label>
-          <textarea id="f-design" placeholder="z.B. Sieht professionell aus, Farben passen, wirkt wie eine echte Website ..."></textarea>
+          <textarea id="f-design" placeholder="Sieht es professionell aus? Wuerdest du glauben, dass das eine echte Firma ist?"></textarea>
         </div>
 
         <div class="field">
           <label>Sind dir Fehler aufgefallen oder hat etwas nicht funktioniert?</label>
-          <textarea id="f-schlecht" placeholder="z.B. Button hat nicht reagiert, Foto-Upload war unklar, Text war falsch ..."></textarea>
+          <textarea id="f-schlecht" placeholder="Buttons, Ladezeiten, Texte, Fotos — alles was nicht passt"></textarea>
+        </div>
+
+        <!-- Preis-Frage als Buttons -->
+        <div class="field">
+          <label>Wuerdest du als Selbststaendiger 16 EUR/Monat dafuer zahlen? *</label>
+          <div id="price-btns" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="price-opt" data-val="nein" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Nein, zu teuer</button>
+            <button type="button" class="price-opt" data-val="ja" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Ja, fairer Preis</button>
+            <button type="button" class="price-opt" data-val="mehr" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Wuerde sogar mehr zahlen</button>
+          </div>
+        </div>
+
+        <!-- Differenzierung als Buttons -->
+        <div class="field">
+          <label>Unterscheidet sich SiteReady von anderen Anbietern (Wix, Jimdo, ChatGPT)? *</label>
+          <div id="diff-btns" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="diff-opt" data-val="gleich" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Kaum ein Unterschied</button>
+            <button type="button" class="diff-opt" data-val="etwas" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Etwas besser/anders</button>
+            <button type="button" class="diff-opt" data-val="klar" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Klar unterschiedlich</button>
+          </div>
         </div>
 
         <div class="field">
-          <label>Wuerde ein Handwerker/Kleinbetrieb dafuer bezahlen? Warum (nicht)?</label>
-          <textarea id="f-empfehlung" placeholder="Stell dir vor, du bist selbststaendig und siehst dieses Angebot. Wuerdest du zuschlagen?"></textarea>
+          <label>Sonstige Anmerkungen</label>
+          <textarea id="f-sonstiges" placeholder="Alles was dir noch einfaellt ..."></textarea>
           <div class="hint">Alle Antworten sind freiwillig — aber jedes Detail hilft.</div>
         </div>
 
@@ -285,6 +300,26 @@
   const SUPABASE_KEY = "sb_publishable_u1yaQuqOp0qNhJHdiOU7Tw_hzTr0-MG";
 
   let rating = 0;
+  let priceAnswer = "";
+  let diffAnswer = "";
+
+  function selectPrice(btn) {
+    priceAnswer = btn.dataset.val;
+    document.querySelectorAll(".price-opt").forEach(b => {
+      b.style.borderColor = b === btn ? "#111" : "#e5e7eb";
+      b.style.background = b === btn ? "#111" : "#fff";
+      b.style.color = b === btn ? "#fff" : "#555";
+    });
+  }
+
+  function selectDiff(btn) {
+    diffAnswer = btn.dataset.val;
+    document.querySelectorAll(".diff-opt").forEach(b => {
+      b.style.borderColor = b === btn ? "#111" : "#e5e7eb";
+      b.style.background = b === btn ? "#111" : "#fff";
+      b.style.color = b === btn ? "#fff" : "#555";
+    });
+  }
 
   const stars = document.querySelectorAll(".star");
   stars.forEach(star => {
@@ -312,13 +347,14 @@
 
     const payload = {
       name,
-      email: document.getElementById("f-email").value.trim() || null,
       beruf: document.getElementById("f-beruf").value.trim() || null,
       rating,
       was_gut: document.getElementById("f-gut").value.trim() || null,
       design_feedback: document.getElementById("f-design").value.trim() || null,
       was_schlecht: document.getElementById("f-schlecht").value.trim() || null,
-      empfehlung: document.getElementById("f-empfehlung").value.trim() || null,
+      preis_bewertung: priceAnswer || null,
+      differenzierung: diffAnswer || null,
+      sonstiges: document.getElementById("f-sonstiges").value.trim() || null,
       created_at: new Date().toISOString()
     };
 

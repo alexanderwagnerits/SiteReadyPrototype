@@ -562,7 +562,7 @@ function LandingPage({onStart,onPortal}){
           <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:8,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
           {[["monthly","Monatlich"],["yearly","Jaehrlich"]].map(([val,lbl])=>(
             <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:8,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
-              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
+              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>Spare mehr</span>}
             </button>
           ))}
         </div>
@@ -574,11 +574,11 @@ function LandingPage({onStart,onPortal}){
           <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Starter</div>
           <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Alles was Sie brauchen</div>
           <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC12.75":"\u20AC15"}</span>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC13":"\u20AC16"}</span>
             <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
           </div>
           {pricingYearly
-            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}153 / Jahr &middot; statt {"\u20AC"}180</div>
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}156 / Jahr &middot; statt {"\u20AC"}192</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
             {["Professionelle Website","Impressum + DSGVO","SEO & Google-Indexierung","Website-Import","Self-Service-Portal","Logo & Fotos hochladen","Subdomain inklusive"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.text}}><IconCheck/>{f}</div>)}
@@ -591,45 +591,50 @@ function LandingPage({onStart,onPortal}){
           <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Professional</div>
           <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Fuer etablierte Betriebe</div>
           <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC18.70":"\u20AC22"}</span>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC20":"\u20AC24"}</span>
             <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
           </div>
           {pricingYearly
-            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}224.40 / Jahr &middot; statt {"\u20AC"}264</div>
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}240 / Jahr &middot; statt {"\u20AC"}288</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-            {["Alles aus Starter","Eigene Domain (www.firma.at)","Analytics Dashboard","Monatlicher SEO-Report","Kein SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
+            {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","Besucher-Statistiken im Portal","Monatlicher SEO-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
           </div>
           <div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`,marginBottom:16,fontSize:".78rem",color:T.amberText,fontWeight:600,textAlign:"center"}}>Bald verfuegbar</div>
           <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"none",background:T.bg3,color:T.textMuted,minHeight:48,opacity:.7}}>Bald verfuegbar</button>
         </div>
-        {/* Premium Coming Soon */}
-        <div style={{background:T.bg,borderRadius:16,padding:"36px 28px",position:"relative",border:`1.5px dashed ${T.bg3}`,opacity:.75}}>
-          <span style={{position:"absolute",top:-13,left:28,background:T.accent,color:"#fff",fontSize:".72rem",fontWeight:700,padding:"5px 14px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
-          <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Premium</div>
-          <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Individuell & betreut</div>
-          <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(5px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".85rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
-          <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>In Planung</div>
-          <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-            {["Alles aus Professional","Social Media Integration","Google Business Setup","Persoenliche Betreuung"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.textMuted}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>{f}</div>)}
+        {/* Dritte Spalte: 3 kleine Karten gestapelt */}
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {/* Business */}
+          <div style={{background:T.bg,borderRadius:12,padding:"20px 22px",border:`1.5px dashed ${T.bg3}`,flex:1,position:"relative"}}>
+            <span style={{position:"absolute",top:-10,left:18,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,padding:"3px 10px",borderRadius:100,letterSpacing:".04em"}}>Coming Soon</span>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:36,height:36,borderRadius:9,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+              <div>
+                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Business</div>
+                <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>Alles aus Professional + Social Media, Google Business Setup</div>
+              </div>
+            </div>
           </div>
-          <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:`1.5px solid ${T.bg3}`,background:"transparent",color:T.textMuted,minHeight:48,opacity:.7}}>Kommt bald</button>
-        </div>
-      </div>
-      {/* Individuell + Agentur */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,maxWidth:680,margin:"24px auto 0"}}>
-        <div style={{background:T.bg,borderRadius:12,padding:"20px 24px",border:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:16}}>
-          <div style={{width:40,height:40,borderRadius:10,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
-          <div>
-            <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Individuell</div>
-            <div style={{fontSize:".75rem",color:T.textMuted}}>Massgeschneiderte Website &middot; Auf Anfrage</div>
+          {/* Individuell */}
+          <div style={{background:"#fff",borderRadius:12,padding:"20px 22px",border:`1px solid ${T.bg3}`,flex:1}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:36,height:36,borderRadius:9,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+              <div>
+                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Individuell</div>
+                <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>Massgeschneiderte Website &middot; <span style={{fontWeight:600,color:T.accent}}>Auf Anfrage</span></div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div style={{background:T.bg,borderRadius:12,padding:"20px 24px",border:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:16}}>
-          <div style={{width:40,height:40,borderRadius:10,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <div>
-            <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Agentur</div>
-            <div style={{fontSize:".75rem",color:T.textMuted}}>Whitelabel fuer Agenturen &middot; Auf Anfrage</div>
+          {/* Agentur */}
+          <div style={{background:"#fff",borderRadius:12,padding:"20px 22px",border:`1px solid ${T.bg3}`,flex:1}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:36,height:36,borderRadius:9,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div>
+                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Agentur</div>
+                <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>Whitelabel fuer Agenturen &middot; <span style={{fontWeight:600,color:T.accent}}>Auf Anfrage</span></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -645,7 +650,7 @@ function LandingPage({onStart,onPortal}){
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark}}>SiteReady vs. der Rest.</h2>
       </div>
       <div className="lp-compare" style={{borderRadius:T.r,overflow:"hidden",background:"#fff",boxShadow:T.sh2}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Baukasten","KI-Assistent","Agentur"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.08)":"#fff",borderBottom:"1px solid rgba(0,0,0,.06)"}}>{h}</th>)}</tr></thead><tbody>{[["Aufwand für Sie","Fragebogen ausfüllen","Selbst zusammenbauen","Prompts schreiben","Briefing & Feedback"],["Zeit bis fertig","Minuten","Stunden bis Tage","Minuten","4–8 Wochen"],["Texte & Inhalte","KI-generiert, branchenspezifisch","Selbst schreiben","KI-generiert, generisch","Texter nötig"],["Impressum & DSGVO","Automatisch (ECG-konform)","Selbst einbauen","Nein","Extra buchbar"],["Branchenspezifisch","50+ Berufe mit Leistungen","Nein","Teilweise","Je nach Agentur"],["Laufende Betreuung","Inklusive","Self-Service","Self-Service","Extra Kosten"],["Preis","ab 15 \u20AC / Monat","ab 15 \u20AC / Monat","ab 20 \u20AC / Monat","ab 1.500 \u20AC einmalig"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(0,0,0,.015)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(0,0,0,.05)",color:j===0?T.dark:j===1?T.accent:T.textMuted,fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.04)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Baukasten","KI-Assistent","Agentur"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.08)":"#fff",borderBottom:"1px solid rgba(0,0,0,.06)"}}>{h}</th>)}</tr></thead><tbody>{[["Aufwand für Sie","Fragebogen ausfüllen","Selbst zusammenbauen","Prompts schreiben","Briefing & Feedback"],["Zeit bis fertig","Minuten","Stunden bis Tage","Minuten","4–8 Wochen"],["Texte & Inhalte","KI-generiert, branchenspezifisch","Selbst schreiben","KI-generiert, generisch","Texter nötig"],["Impressum & DSGVO","Automatisch (ECG-konform)","Selbst einbauen","Nein","Extra buchbar"],["Branchenspezifisch","50+ Berufe mit Leistungen","Nein","Teilweise","Je nach Agentur"],["Laufende Betreuung","Inklusive","Self-Service","Self-Service","Extra Kosten"],["Preis","ab 16 \u20AC / Monat","ab 15 \u20AC / Monat","ab 20 \u20AC / Monat","ab 1.500 \u20AC einmalig"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(0,0,0,.015)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(0,0,0,.05)",color:j===0?T.dark:j===1?T.accent:T.textMuted,fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.04)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
         <div style={{padding:"10px 22px",borderTop:"1px solid rgba(0,0,0,.05)",fontSize:".7rem",color:T.textMuted}}>Agentur: Einmalkosten, zzgl. optionalem Wartungsvertrag. Baukasten: z.B. Wix, Jimdo. KI-Assistent: z.B. ChatGPT, Mixo.</div>
       </div>
     </W>

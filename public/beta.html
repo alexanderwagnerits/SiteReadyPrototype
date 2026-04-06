@@ -128,6 +128,17 @@
 <div class="content">
   <div class="wrap">
 
+    <!-- Prototyp-Hinweis -->
+    <div style="background:#111;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px 22px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start">
+      <div style="width:36px;height:36px;border-radius:9px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div>
+        <strong style="font-size:.88rem;font-weight:800;color:#fff;display:block;margin-bottom:3px">Das ist ein fruehes Prototyp.</strong>
+        <span style="font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.6">Fehler, langsame Ladezeiten und unfertige Bereiche sind zu erwarten. Genau deshalb testen wir — dein Feedback hilft uns, das Produkt besser zu machen.</span>
+      </div>
+    </div>
+
     <!-- Info banner -->
     <div class="info-banner">
       <div class="info-icon">
@@ -198,20 +209,9 @@
     <!-- Feedback form -->
     <div class="fb-card">
       <h2>Dein Feedback</h2>
-      <p class="fb-sub">Beantworte kurz ein paar Fragen — jede Antwort hilft uns enorm.</p>
+      <p class="fb-sub">Sei ehrlich — Kritik hilft uns mehr als Lob. Jede Antwort zaehlt.</p>
 
       <div id="form-content">
-        <div class="stars-wrap">
-          <span class="stars-label">Wie zufrieden bist du insgesamt? *</span>
-          <div class="stars" id="stars">
-            <button class="star" data-val="1" type="button">&#9733;</button>
-            <button class="star" data-val="2" type="button">&#9733;</button>
-            <button class="star" data-val="3" type="button">&#9733;</button>
-            <button class="star" data-val="4" type="button">&#9733;</button>
-            <button class="star" data-val="5" type="button">&#9733;</button>
-          </div>
-        </div>
-
         <div class="field-row">
           <div class="field">
             <label>Dein Name *</label>
@@ -228,19 +228,35 @@
           <input type="text" id="f-beruf" placeholder="z.B. Elektriker, Friseur, Physiotherapeutin ..."/>
         </div>
 
-        <div class="field">
-          <label>Was hat gut funktioniert?</label>
-          <textarea id="f-gut" placeholder="z.B. Der Fragebogen war einfach, das Design sieht professionell aus ..."></textarea>
+        <div class="stars-wrap">
+          <span class="stars-label">Gesamteindruck der fertigen Website? *</span>
+          <div class="stars" id="stars">
+            <button class="star" data-val="1" type="button">&#9733;</button>
+            <button class="star" data-val="2" type="button">&#9733;</button>
+            <button class="star" data-val="3" type="button">&#9733;</button>
+            <button class="star" data-val="4" type="button">&#9733;</button>
+            <button class="star" data-val="5" type="button">&#9733;</button>
+          </div>
         </div>
 
         <div class="field">
-          <label>Was hat nicht funktioniert oder dich gestoert?</label>
-          <textarea id="f-schlecht" placeholder="z.B. Die Ladezeit war lang, ein Feld war unklar ..."></textarea>
+          <label>Wie war der Fragebogen? (Verstaendlichkeit, Laenge, Ablauf)</label>
+          <textarea id="f-gut" placeholder="z.B. War alles klar? Hat etwas gefehlt? War es zu lang?"></textarea>
         </div>
 
         <div class="field">
-          <label>Wuerdest du SiteReady weiterempfehlen? Warum?</label>
-          <textarea id="f-empfehlung" placeholder="Deine ehrliche Meinung ..."></textarea>
+          <label>Wie findest du das Design der generierten Website?</label>
+          <textarea id="f-design" placeholder="z.B. Sieht professionell aus, Farben passen, wirkt wie eine echte Website ..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Sind dir Fehler aufgefallen oder hat etwas nicht funktioniert?</label>
+          <textarea id="f-schlecht" placeholder="z.B. Button hat nicht reagiert, Foto-Upload war unklar, Text war falsch ..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Wuerde ein Handwerker/Kleinbetrieb dafuer bezahlen? Warum (nicht)?</label>
+          <textarea id="f-empfehlung" placeholder="Stell dir vor, du bist selbststaendig und siehst dieses Angebot. Wuerdest du zuschlagen?"></textarea>
           <div class="hint">Alle Antworten sind freiwillig — aber jedes Detail hilft.</div>
         </div>
 
@@ -300,6 +316,7 @@
       beruf: document.getElementById("f-beruf").value.trim() || null,
       rating,
       was_gut: document.getElementById("f-gut").value.trim() || null,
+      design_feedback: document.getElementById("f-design").value.trim() || null,
       was_schlecht: document.getElementById("f-schlecht").value.trim() || null,
       empfehlung: document.getElementById("f-empfehlung").value.trim() || null,
       created_at: new Date().toISOString()

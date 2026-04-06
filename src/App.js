@@ -556,7 +556,7 @@ function LandingPage({onStart,onPortal}){
           <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:8,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
           {[["monthly","Monatlich"],["yearly","Jaehrlich"]].map(([val,lbl])=>(
             <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:8,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
-              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>Spare mehr</span>}
+              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-12%</span>}
             </button>
           ))}
         </div>
@@ -568,11 +568,11 @@ function LandingPage({onStart,onPortal}){
           <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Starter</div>
           <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Alles was Sie brauchen</div>
           <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC13":"\u20AC16"}</span>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC14":"\u20AC16"}</span>
             <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
           </div>
           {pricingYearly
-            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}156 / Jahr &middot; statt {"\u20AC"}192</div>
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}168 / Jahr &middot; statt {"\u20AC"}192</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
             {["Professionelle Website","Impressum + DSGVO","SEO & Google-Indexierung","Website-Import","Self-Service-Portal","Logo & Fotos hochladen","Subdomain inklusive"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.text}}><IconCheck/>{f}</div>)}
@@ -585,11 +585,11 @@ function LandingPage({onStart,onPortal}){
           <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Professional</div>
           <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Fuer etablierte Betriebe</div>
           <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC20":"\u20AC24"}</span>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC21":"\u20AC24"}</span>
             <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
           </div>
           {pricingYearly
-            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}240 / Jahr &middot; statt {"\u20AC"}288</div>
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}252 / Jahr &middot; statt {"\u20AC"}288</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
             {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","Besucher-Statistiken im Portal","Monatlicher SEO-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
@@ -716,7 +716,7 @@ function LandingPage({onStart,onPortal}){
             {q:"Was ist mit Impressum und DSGVO?",a:"Beides wird automatisch generiert — rechtlich konform nach oesterreichischem ECG und DSGVO. Sie muessen sich um nichts kuemmern."},
             {q:"Kann ich meine bestehende Website importieren?",a:"Ja. Geben Sie einfach die URL Ihrer aktuellen Website ein. SiteReady uebernimmt Texte, Kontaktdaten und Leistungen automatisch."},
             {q:"Kann ich meine Website spaeter aendern?",a:"Ja. Im Self-Service-Portal koennen Sie Logo, Fotos, Texte, Farben und Kontaktdaten jederzeit selbst aendern — ohne Techniker."},
-            {q:"Was kostet SiteReady?",a:"Starter ab 16 Euro pro Monat (oder 13 Euro bei Jahreszahlung). Die ersten 7 Tage sind komplett kostenlos — keine Kreditkarte noetig."},
+            {q:"Was kostet SiteReady?",a:"Starter ab 16 Euro pro Monat (oder 14 Euro bei Jahreszahlung). Die ersten 7 Tage sind komplett kostenlos — keine Kreditkarte noetig."},
             {q:"Was passiert nach den 7 Tagen?",a:"Wenn Sie zufrieden sind, waehlen Sie einen Plan. Wenn nicht, wird die Website automatisch offline genommen. Keine Kosten, kein Risiko."},
             {q:"Kann ich eine eigene Domain verwenden?",a:"Ja, im Professional-Plan. Sie erhalten zusaetzlich eine kostenlose siteready.at-Subdomain die sofort funktioniert."},
             {q:"Was passiert, wenn ich kuendige?",a:"Sie koennen monatlich kuendigen. Nach der Kuendigung wird Ihre Website am Ende des Abrechnungszeitraums offline genommen. Ihre Daten werden geloescht."}

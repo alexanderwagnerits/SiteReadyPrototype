@@ -274,6 +274,11 @@
           <textarea id="f-sonstiges" placeholder="Ideen, Wuensche, Anmerkungen ..."></textarea>
         </div>
 
+        <div class="field">
+          <label>Welche Funktion wuerde SiteReady noch besser machen?</label>
+          <textarea id="f-feature" placeholder="z.B. Online-Terminbuchung, Google Bewertungen einbinden, Newsletter ..."></textarea>
+        </div>
+
         <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Feedback absenden</button>
         <div class="msg error" id="msg-error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</div>
       </div>
@@ -348,6 +353,7 @@
       differenzierung: diffAnswer || null,
       was_schlecht: document.getElementById("f-schlecht").value.trim() || null,
       sonstiges: document.getElementById("f-sonstiges").value.trim() || null,
+      feature_wunsch: document.getElementById("f-feature").value.trim() || null,
       created_at: new Date().toISOString()
     };
 

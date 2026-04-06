@@ -62,17 +62,29 @@ export async function onRequestGet({params, env}) {
     {url: normSocial(o.tiktok),    label: "TikTok",    svg: `<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>`},
   ].filter(s => s.url);
 
-  // Semantic color tokens per style
-  const palettes = {
+  // Semantic color tokens — prefer custom_* from DB (set via Branchengruppe or user override), fallback to style defaults
+  const stilPalettes = {
     klassisch:    {accent: "#0369a1", accentLight: "#e0f2fe", accentHover: "#075985", primary: "#094067", textSecondary: "#5f6c7b", textMuted: "#5f6c7b", bg: "#fffffe", card: "#ffffff", border: "#d8eefe", borderSubtle: "#e0f2fe", heroBg: "linear-gradient(135deg,#094067 0%,#062b44 50%,#0a1f42 100%)", focusRing: "rgba(3,105,161,.4)"},
     modern:       {accent: "#4f46e5", accentLight: "#eef2ff", accentHover: "#4338ca", primary: "#18181b", textSecondary: "#52525b", textMuted: "#71717a", bg: "#fafafa", card: "#ffffff", border: "#e4e4e7", borderSubtle: "#f4f4f5", heroBg: "linear-gradient(135deg,#18181b 0%,#1e1b4b 50%,#4f46e5 100%)", focusRing: "rgba(79,70,229,.4)"},
     elegant:      {accent: "#7a6844", accentLight: "#f5f0e8", accentHover: "#6b5b3b", primary: "#020826", textSecondary: "#716040", textMuted: "#716040", bg: "#f9f4ef", card: "#ffffff", border: "#eaddcf", borderSubtle: "#f0e6d8", heroBg: "linear-gradient(135deg,#020826 0%,#0a1628 50%,#1a1510 100%)", focusRing: "rgba(122,104,68,.4)"},
-    custom:       {accent: "#0369a1", accentLight: "#e0f2fe", accentHover: "#075985", primary: "#094067", textSecondary: "#5f6c7b", textMuted: "#5f6c7b", bg: "#fffffe", card: "#ffffff", border: "#d8eefe", borderSubtle: "#e0f2fe", heroBg: "linear-gradient(135deg,#094067 0%,#062b44 50%,#0a1f42 100%)", focusRing: "rgba(3,105,161,.4)"},
-    // Legacy fallbacks
     professional: {accent: "#0369a1", accentLight: "#e0f2fe", accentHover: "#075985", primary: "#094067", textSecondary: "#5f6c7b", textMuted: "#5f6c7b", bg: "#fffffe", card: "#ffffff", border: "#d8eefe", borderSubtle: "#e0f2fe", heroBg: "linear-gradient(135deg,#094067 0%,#062b44 50%,#0a1f42 100%)", focusRing: "rgba(3,105,161,.4)"},
     traditional:  {accent: "#7a6844", accentLight: "#f5f0e8", accentHover: "#6b5b3b", primary: "#020826", textSecondary: "#716040", textMuted: "#716040", bg: "#f9f4ef", card: "#ffffff", border: "#eaddcf", borderSubtle: "#f0e6d8", heroBg: "linear-gradient(135deg,#020826 0%,#0a1628 50%,#1a1510 100%)", focusRing: "rgba(122,104,68,.4)"},
   };
-  const p = palettes[o.stil] || palettes.klassisch;
+  const base = stilPalettes[o.stil] || stilPalettes.klassisch;
+  // Override with custom_* fields from DB if present
+  const cAcc = o.custom_accent || base.accent;
+  const cPri = o.custom_color || base.primary;
+  const cBg  = o.custom_bg || base.bg;
+  const cSep = o.custom_sep || base.border;
+  const cMut = o.custom_text_muted || base.textMuted;
+  const p = {
+    ...base,
+    accent: cAcc, primary: cPri, bg: cBg, border: cSep, borderSubtle: cSep,
+    textSecondary: cMut, textMuted: cMut,
+    accentLight: cAcc + "18", accentHover: cAcc,
+    heroBg: `linear-gradient(135deg,${cPri} 0%,${cPri}ee 50%,${cPri}cc 100%)`,
+    focusRing: cAcc + "66",
+  };
 
   // Build action buttons dynamically
   const actions = [];

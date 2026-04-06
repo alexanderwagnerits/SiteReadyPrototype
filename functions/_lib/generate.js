@@ -169,17 +169,17 @@ function buildImpressum(o, pal, year) {
   }
 
   const tRows = rows.map(([l,v]) =>
-    `<tr><td style="padding:7px 20px 7px 0;font-weight:600;white-space:nowrap;vertical-align:top;color:${pal.p};font-size:.85rem">${l}</td><td style="padding:7px 0;color:#374151;font-size:.85rem">${v}</td></tr>`
+    `<tr><td style="padding:7px 20px 7px 0;font-weight:600;white-space:nowrap;vertical-align:top;color:var(--primary);font-size:.85rem">${l}</td><td style="padding:7px 0;color:#374151;font-size:.85rem">${v}</td></tr>`
   ).join("");
 
   const dsgvo = `Diese Website verwendet keine Cookies au\u00dfer technisch notwendigen. Es findet kein Tracking statt. Ihre personenbezogenen Daten werden ausschlie\u00dflich zur Bearbeitung Ihrer Anfragen genutzt und nicht an Dritte weitergegeben. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Verantwortlicher: ${firmaVoll}, ${adresse}.`;
 
-  return `<section id="impressum" style="background:#f8fafc;padding:64px 0;border-top:2px solid ${pal.s}">
+  return `<section id="impressum" style="background:#f8fafc;padding:64px 0;border-top:2px solid var(--sep)">
 <div style="max-width:960px;margin:0 auto;padding:0 24px">
-<h2 style="font-size:1.3rem;font-weight:800;color:${pal.p};margin-bottom:24px;letter-spacing:-.01em">Impressum</h2>
+<h2 style="font-size:1.3rem;font-weight:800;color:var(--primary);margin-bottom:24px;letter-spacing:-.01em">Impressum</h2>
 <table style="border-collapse:collapse;width:100%">${tRows}</table>
-<div id="datenschutz" style="margin-top:48px;padding-top:40px;border-top:1px solid ${pal.s}">
-<h3 style="font-size:1rem;font-weight:700;color:${pal.p};margin-bottom:12px">Datenschutzerkl\u00e4rung</h3>
+<div id="datenschutz" style="margin-top:48px;padding-top:40px;border-top:1px solid var(--sep)">
+<h3 style="font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:12px">Datenschutzerkl\u00e4rung</h3>
 <p style="font-size:.85rem;line-height:1.8;color:#4b5563;max-width:720px">${dsgvo}</p>
 </div>
 <p style="margin-top:32px;font-size:.78rem;color:#9ca3af">&copy; ${year} ${o.firmenname}</p>
@@ -288,8 +288,10 @@ export async function generateWebsite(order_id, env) {
   const o = rows[0];
   await log.info(order_id, "generate_start", {firmenname: o.firmenname, stil: o.stil, branche: o.branche});
 
-  /* Konfiguration */
-  const stil = o.stil === "custom" ? buildCustomStil(o) : (STIL[o.stil] || STIL.klassisch);
+  /* Konfiguration — Farben kommen immer aus custom_* Feldern (gesetzt via Branchengruppe oder User-Override) */
+  const hasCustomColors = o.custom_color || o.custom_accent;
+  const basStil = STIL[o.stil] || STIL.klassisch;
+  const stil = hasCustomColors ? { ...basStil, ...buildCustomStil(o) } : (o.stil === "custom" ? buildCustomStil(o) : basStil);
   const pal  = { p: stil.p, a: stil.a, bg: stil.bg, s: stil.s };
   const sub  = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
   const betriebstyp = o.branche_label || "Betrieb";

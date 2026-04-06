@@ -73,6 +73,15 @@ const BRANCHEN_GRUPPEN={
   dienstleistung:{label:"Dienstleistungen",features:FT_DIENSTLEISTUNG},
   bildung:{label:"Bildung & Training",features:[]},
 };
+// Farbpaletten pro Branchengruppe (Ref: echte Premium-Websites + Stilkategorien)
+const GRUPPEN_PALETTEN={
+  handwerk:     {custom_color:"#1a1a1a",custom_accent:"#b08d57",custom_bg:"#f4f4f2",custom_text:"#1a1a1a",custom_text_muted:"#6b6b6b",custom_sep:"#e5e5e3"},
+  kosmetik:     {custom_color:"#2d3b2d",custom_accent:"#c4917a",custom_bg:"#f5f0ea",custom_text:"#1c1917",custom_text_muted:"#8a8278",custom_sep:"#e6e0d6"},
+  gastro:       {custom_color:"#2d1215",custom_accent:"#a0522d",custom_bg:"#f9f5ee",custom_text:"#2c1810",custom_text_muted:"#7a7068",custom_sep:"#ece5d8"},
+  gesundheit:   {custom_color:"#0f2b3c",custom_accent:"#15779b",custom_bg:"#ffffff",custom_text:"#1e1e1e",custom_text_muted:"#757575",custom_sep:"#e8e8e8"},
+  dienstleistung:{custom_color:"#2f3529",custom_accent:"#8a7e5a",custom_bg:"#f2f2ef",custom_text:"#2f3529",custom_text_muted:"#7a7a72",custom_sep:"#e0e0db"},
+  bildung:      {custom_color:"#1a1a2e",custom_accent:"#5642e8",custom_bg:"#f8f8fa",custom_text:"#1a1a2e",custom_text_muted:"#6b6b80",custom_sep:"#e2e2ea"},
+};
 const BRANCHEN = [
   // Handwerk
   { value:"elektro",         label:"Elektroinstallationen",            gruppe:"handwerk",leistungen:["Elektroinstallationen","Störungsbehebung & Reparatur","Smart Home Systeme","Photovoltaik & Speicher","Beleuchtungstechnik","Notdienst 24/7"],stil:"klassisch" },
@@ -179,7 +188,7 @@ let _orderInProgress=false;
 const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",layout:"standard",customColor:"#2563eb",customFont:"dm_sans"};
 
 /* ═══ TOKENS ═══ */
-const T={bg:"#F5F5F2",bg2:"#EEEEE9",bg3:"#E0E0DB",white:"#ffffff",dark:"#111111",dark2:"#2B2F36",text:"#2B2F36",textSub:"#4A4F5A",textMuted:"#505560",accent:"#8FA3B8",accentLight:"rgba(143,163,184,0.1)",accentGlow:"rgba(143,163,184,0.15)",cta:"#111111",ctaLight:"rgba(17,17,17,0.06)",green:"#16a34a",greenLight:"#f0fdf4",greenGlow:"rgba(22,163,74,0.1)",red:"#dc2626",orange:"#ea580c",r:"12px",rSm:"8px",rLg:"16px",rXl:"20px",font:"'DM Sans',-apple-system,sans-serif",mono:"'JetBrains Mono',monospace",sh1:"0 1px 2px rgba(0,0,0,0.04)",sh2:"0 4px 24px rgba(0,0,0,0.06)",sh3:"0 16px 48px rgba(0,0,0,0.08)",sh4:"0 24px 80px rgba(0,0,0,0.12)"};
+const T={bg:"#F5F5F2",bg2:"#EEEEE9",bg3:"#E0E0DB",white:"#ffffff",dark:"#111111",dark2:"#2B2F36",text:"#2B2F36",textSub:"#4A4F5A",textMuted:"#505560",accent:"#8FA3B8",accentLight:"rgba(143,163,184,0.1)",accentGlow:"rgba(143,163,184,0.15)",cta:"#111111",ctaLight:"rgba(17,17,17,0.06)",green:"#16a34a",greenLight:"#f0fdf4",greenGlow:"rgba(22,163,74,0.1)",greenBright:"#4ade80",greenBorder:"#bbf7d0",red:"#dc2626",redLight:"#fef2f2",redBorder:"#fecaca",orange:"#ea580c",amber:"#f59e0b",amberLight:"#fef3c7",amberBorder:"#fde68a",amberText:"#92400e",r:"12px",rSm:"8px",rLg:"16px",rXl:"20px",font:"'DM Sans',-apple-system,sans-serif",mono:"'JetBrains Mono',monospace",sh1:"0 1px 2px rgba(0,0,0,0.04)",sh2:"0 4px 24px rgba(0,0,0,0.06)",sh3:"0 16px 48px rgba(0,0,0,0.08)",sh4:"0 24px 80px rgba(0,0,0,0.12)"};
 
 const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:${T.font};color:${T.text};-webkit-font-smoothing:antialiased;background:${T.bg}}::selection{background:${T.dark};color:#fff}
 @keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
@@ -291,7 +300,7 @@ const pCss=`
 .pt-sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
 .pt-sb-logo{height:24px;filter:brightness(0) invert(1);opacity:.88}
 .pt-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
-.pt-sb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-sb-dot{width:7px;height:7px;border-radius:50%;background:${T.greenBright};flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
 @keyframes sb-blink{0%,100%{opacity:1}50%{opacity:.45}}
 .pt-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}
@@ -328,8 +337,8 @@ const pCss=`
 .pt-mb{padding:20px 36px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .pt-hero{background:#111111;border-radius:12px;padding:24px 28px;position:relative;overflow:hidden}
 .pt-hero::after{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(143,163,184,.14) 0%,transparent 65%);pointer-events:none}
-.pt-hero-live{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.03em;color:#4ade80;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.14);border-radius:100px;padding:4px 11px;margin-bottom:12px}
-.pt-hero-live-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-hero-live{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.03em;color:${T.greenBright};background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.14);border-radius:100px;padding:4px 11px;margin-bottom:12px}
+.pt-hero-live-dot{width:5px;height:5px;border-radius:50%;background:${T.greenBright};animation:sb-blink 2.5s ease-in-out infinite}
 .pt-hero-url{font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin-bottom:2px}
 .pt-hero-url em{color:rgba(255,255,255,.22);font-style:normal}
 .pt-hero-hint{font-size:.78rem;color:rgba(255,255,255,.32);margin-bottom:18px}
@@ -406,8 +415,8 @@ function LandingPage({onStart,onPortal}){
     <div style={{padding:"16px 24px",display:"flex",flexDirection:"column",gap:2}}>
       {[["#problem","Problem"],["#how","So funktionierts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} onClick={closeMenu} style={{fontSize:".95rem",fontWeight:500,color:T.dark,textDecoration:"none",padding:"12px 8px",borderBottom:"1px solid rgba(0,0,0,.05)",minHeight:44,display:"flex",alignItems:"center"}}>{l}</a>)}
       <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:12}}>
-        <button onClick={()=>{closeMenu();onPortal();}} style={{padding:"12px",borderRadius:8,fontWeight:600,fontSize:".92rem",border:`1.5px solid ${T.bg3}`,background:"#fff",color:T.dark,cursor:"pointer",fontFamily:T.font,minHeight:44}}>Kunden-Portal</button>
-        <button onClick={()=>{closeMenu();onStart();}} style={{padding:"12px",borderRadius:8,fontWeight:700,fontSize:".92rem",border:"none",background:"#fff",color:T.dark,cursor:"pointer",fontFamily:T.font,minHeight:44}}>Jetzt starten</button>
+        <button onClick={()=>{closeMenu();onPortal();}} style={{padding:"12px",borderRadius:8,fontWeight:600,fontSize:".92rem",border:`1.5px solid ${T.bg3}`,background:"#fff",color:T.textSub,cursor:"pointer",fontFamily:T.font,minHeight:44}}>Kunden-Portal</button>
+        <button onClick={()=>{closeMenu();onStart();}} style={{padding:"12px",borderRadius:8,fontWeight:700,fontSize:".92rem",border:"none",background:T.dark,color:"#fff",cursor:"pointer",fontFamily:T.font,minHeight:44}}>Jetzt starten</button>
       </div>
     </div>
   </div>}
@@ -418,7 +427,7 @@ function LandingPage({onStart,onPortal}){
     <W s={{position:"relative",zIndex:1,width:"100%"}}>
       <div className="lp-hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"center",padding:"80px 0 0"}}>
         <div>
-          <h1 style={{fontSize:"clamp(3.5rem,5.5vw,5.5rem)",fontWeight:800,lineHeight:.95,letterSpacing:"-.05em",color:"#fff",marginBottom:24}}>Deine Website.<br/>In Minuten.</h1>
+          <h1 style={{fontSize:"clamp(2.8rem,4.5vw,4.2rem)",fontWeight:800,lineHeight:.95,letterSpacing:"-.05em",color:"#fff",marginBottom:24}}>Deine Website.<br/>In Minuten.</h1>
           <p style={{fontSize:"1.1rem",color:"rgba(255,255,255,.55)",lineHeight:1.7,maxWidth:440,marginBottom:40}}>Impressum nach ECG, DSGVO und Google-Indexierung inklusive. Bestehende Website importieren oder in 10 Minuten ausfüllen. Fertig.</p>
           <div className="lp-hero-btns" style={{display:"flex",gap:12,marginBottom:28}}>
             <button onClick={onStart} className="lp-btn-primary" style={{padding:"18px 40px",borderRadius:10,fontSize:"1.08rem",fontWeight:700,border:"none",cursor:"pointer",background:"#fff",color:T.dark,fontFamily:T.font,letterSpacing:"-.01em",minHeight:52,boxShadow:"0 4px 20px rgba(0,0,0,.15)"}}>Jetzt Website erstellen</button>
@@ -544,48 +553,87 @@ function LandingPage({onStart,onPortal}){
     <W>
       <div style={{marginBottom:48}}>
         <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,letterSpacing:".14em",textTransform:"uppercase",marginBottom:14}}>Preise</div>
-        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Ein Paket. Alles drin.</h2>
-        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:440}}>Kein Tarifwirrwarr. 7 Tage kostenlos testen.</p>
+        <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark,marginBottom:16}}>Transparent. Ohne Ueberraschungen.</h2>
+        <p style={{fontSize:"1.05rem",color:T.textSub,lineHeight:1.75,maxWidth:480}}>7 Tage kostenlos testen. Jederzeit kuendbar.</p>
       </div>
-      <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:24,maxWidth:900}}>
-        {/* Standard */}
-        <div onMouseEnter={()=>setHovCard("pr")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"40px 32px",position:"relative",border:`2.5px solid ${T.dark}`,boxShadow:hovCard==="pr"?T.sh4:"0 8px 32px rgba(0,0,0,0.10)",transform:hovCard==="pr"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
-          <span style={{position:"absolute",top:-13,left:32,background:T.dark,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap"}}>Aktuelles Angebot</span>
-          <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,marginBottom:28,maxWidth:280,position:"relative"}}>
-            <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:8,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
-            {[["monthly","Monatlich"],["yearly","Jährlich"]].map(([val,lbl])=>(
-              <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:8,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
-                {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
-              </button>
-            ))}
-          </div>
+      {/* Monatlich/Jaehrlich Toggle */}
+      <div style={{display:"flex",justifyContent:"center",marginBottom:32}}>
+        <div style={{display:"flex",background:T.bg2,borderRadius:10,padding:4,position:"relative",maxWidth:280,width:"100%"}}>
+          <div style={{position:"absolute",top:4,bottom:4,left:pricingYearly?"calc(50% + 2px)":"4px",width:"calc(50% - 6px)",background:"#fff",borderRadius:8,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"left .25s cubic-bezier(.4,0,.2,1)",pointerEvents:"none"}}/>
+          {[["monthly","Monatlich"],["yearly","Jaehrlich"]].map(([val,lbl])=>(
+            <button key={val} onClick={()=>setPricingYearly(val==="yearly")} style={{flex:1,padding:"9px 0",border:"none",borderRadius:8,background:"transparent",fontFamily:T.font,fontWeight:700,fontSize:".82rem",color:pricingYearly===(val==="yearly")?T.dark:T.textMuted,cursor:"pointer",transition:"color .25s",position:"relative",zIndex:1,minHeight:44}}>
+              {lbl}{val==="yearly"&&<span style={{marginLeft:6,fontSize:".75rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 7px",borderRadius:4}}>-15%</span>}
+            </button>
+          ))}
+        </div>
+      </div>
+      {/* 3 Pricing Cards */}
+      <div className="lp-pricing-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:20,maxWidth:1000}}>
+        {/* Starter */}
+        <div onMouseEnter={()=>setHovCard("st")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"36px 28px",position:"relative",border:`1.5px solid ${T.bg3}`,boxShadow:hovCard==="st"?T.sh3:T.sh1,transform:hovCard==="st"?"translateY(-3px)":"none",transition:"transform .3s,box-shadow .3s"}}>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Starter</div>
+          <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Alles was Sie brauchen</div>
           <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-            <span style={{fontSize:"3.2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC15.30":"\u20AC18"}</span>
-            <span style={{fontSize:".9rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC12.75":"\u20AC15"}</span>
+            <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
           </div>
           {pricingYearly
-            ?<><div style={{fontSize:".78rem",color:T.textMuted,marginBottom:6}}>{"\u20AC"}183.60 / Jahr &middot; statt {"\u20AC"}216</div>
-              <div style={{display:"inline-flex",alignItems:"center",background:T.accentLight,borderRadius:6,padding:"3px 10px",marginBottom:24}}><span style={{fontSize:".75rem",fontWeight:700,color:T.accent}}>Sie sparen {"\u20AC"}32.40 / Jahr</span></div></>
-            :<div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Monatlich kündbar &middot; keine Bindung</div>}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:28}}>
-            {["7 Tage kostenlos testen","Subdomain sofort live","Kein Branding","Impressum (ECG) inklusive","DSGVO inklusive","SEO & Google-Indexierung","Logo & Fotos hochladen","Self-Service-Portal"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".84rem",color:T.text}}><IconCheck/>{f}</div>)}
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}153 / Jahr &middot; statt {"\u20AC"}180</div>
+            :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar</div>}
+          <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+            {["Professionelle Website","Impressum + DSGVO","SEO & Google-Indexierung","Website-Import","Self-Service-Portal","Logo & Fotos hochladen","Subdomain inklusive"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.text}}><IconCheck/>{f}</div>)}
           </div>
-          <button onClick={onStart} style={{width:"100%",padding:16,borderRadius:10,fontSize:"1rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:"none",background:T.dark,color:"#fff",minHeight:48}}>Kostenlos testen</button>
+          <button onClick={onStart} style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"pointer",fontFamily:T.font,border:`2px solid ${T.dark}`,background:"#fff",color:T.dark,minHeight:48,transition:"all .2s"}}>Kostenlos testen</button>
+        </div>
+        {/* Professional */}
+        <div onMouseEnter={()=>setHovCard("pr")} onMouseLeave={()=>setHovCard(null)} style={{background:"#fff",borderRadius:16,padding:"36px 28px",position:"relative",border:`2.5px solid ${T.dark}`,boxShadow:hovCard==="pr"?T.sh4:"0 8px 32px rgba(0,0,0,0.10)",transform:hovCard==="pr"?"translateY(-3px)":"translateY(-4px)",transition:"transform .3s,box-shadow .3s"}}>
+          <span style={{position:"absolute",top:-13,left:28,background:T.dark,color:"#fff",fontSize:".72rem",fontWeight:700,padding:"5px 14px",borderRadius:100,whiteSpace:"nowrap"}}>Empfohlen</span>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Professional</div>
+          <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Fuer etablierte Betriebe</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"\u20AC18.70":"\u20AC22"}</span>
+            <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
+          </div>
+          {pricingYearly
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"\u20AC"}224.40 / Jahr &middot; statt {"\u20AC"}264</div>
+            :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kuendbar</div>}
+          <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+            {["Alles aus Starter","Eigene Domain (www.firma.at)","Analytics Dashboard","Monatlicher SEO-Report","Kein SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
+          </div>
+          <div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`,marginBottom:16,fontSize:".78rem",color:T.amberText,fontWeight:600,textAlign:"center"}}>Bald verfuegbar</div>
+          <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"none",background:T.bg3,color:T.textMuted,minHeight:48,opacity:.7}}>Bald verfuegbar</button>
         </div>
         {/* Premium Coming Soon */}
-        <div style={{background:T.bg,borderRadius:16,padding:"40px 28px",position:"relative",border:`1.5px dashed ${T.bg3}`}}>
-          <span style={{position:"absolute",top:-13,left:28,background:T.accent,color:"#fff",fontSize:".75rem",fontWeight:700,padding:"5px 16px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
-          <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:2}}>SiteReady Premium</div>
-          <div style={{fontSize:".8rem",color:T.textMuted,marginBottom:20}}>Alles aus Standard + mehr</div>
-          <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(6px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".95rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
-          <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:24}}>Kommt 2026 &middot; Jetzt vormerken</div>
+        <div style={{background:T.bg,borderRadius:16,padding:"36px 28px",position:"relative",border:`1.5px dashed ${T.bg3}`,opacity:.75}}>
+          <span style={{position:"absolute",top:-13,left:28,background:T.accent,color:"#fff",fontSize:".72rem",fontWeight:700,padding:"5px 14px",borderRadius:100,whiteSpace:"nowrap",letterSpacing:".04em"}}>Coming Soon</span>
+          <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Premium</div>
+          <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Individuell & betreut</div>
+          <div style={{fontSize:"2.8rem",fontWeight:800,color:T.textMuted,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em",marginBottom:4,filter:"blur(5px)",userSelect:"none"}}>{"\u20AC"}?<span style={{fontSize:".85rem",fontWeight:500,fontFamily:T.font}}>/Mo</span></div>
+          <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>In Planung</div>
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-            {["Alle Features aus Standard","Mehrsprachige Website (DE/EN)","Social Media Paket","Kalender & Buchungssystem","Erweiterte Analytics"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:10,fontSize:".84rem",color:T.textMuted}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>{f}</div>)}
+            {["Alles aus Professional","Social Media Integration","Google Business Setup","Persoenliche Betreuung"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.textMuted}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>{f}</div>)}
           </div>
-          <button disabled style={{width:"100%",padding:14,borderRadius:8,fontSize:".9rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:`1.5px solid ${T.bg3}`,background:T.bg,color:T.textMuted,opacity:.8,minHeight:44}}>Vormerken</button>
+          <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:`1.5px solid ${T.bg3}`,background:"transparent",color:T.textMuted,minHeight:48,opacity:.7}}>Kommt bald</button>
         </div>
       </div>
-      <p style={{fontSize:".82rem",color:T.textMuted,maxWidth:500,margin:"24px 0 0",lineHeight:1.7}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Preise inkl. MwSt.</p>
+      {/* Individuell + Agentur */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,maxWidth:680,margin:"24px auto 0"}}>
+        <div style={{background:T.bg,borderRadius:12,padding:"20px 24px",border:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:16}}>
+          <div style={{width:40,height:40,borderRadius:10,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+          <div>
+            <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Individuell</div>
+            <div style={{fontSize:".75rem",color:T.textMuted}}>Massgeschneiderte Website &middot; Auf Anfrage</div>
+          </div>
+        </div>
+        <div style={{background:T.bg,borderRadius:12,padding:"20px 24px",border:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:16}}>
+          <div style={{width:40,height:40,borderRadius:10,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div>
+            <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Agentur</div>
+            <div style={{fontSize:".75rem",color:T.textMuted}}>Whitelabel fuer Agenturen &middot; Auf Anfrage</div>
+          </div>
+        </div>
+      </div>
+      <p style={{fontSize:".78rem",color:T.textMuted,maxWidth:500,margin:"20px 0 0",lineHeight:1.7,textAlign:"center",marginLeft:"auto",marginRight:"auto"}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Alle Preise inkl. MwSt.</p>
     </W>
   </section>
 
@@ -597,7 +645,7 @@ function LandingPage({onStart,onPortal}){
         <h2 style={{fontSize:"clamp(2rem,3.5vw,2.8rem)",fontWeight:800,lineHeight:1.2,letterSpacing:"-.04em",color:T.dark}}>SiteReady vs. der Rest.</h2>
       </div>
       <div className="lp-compare" style={{borderRadius:T.r,overflow:"hidden",background:"#fff",boxShadow:T.sh2}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Baukasten","KI-Assistent","Agentur"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.08)":"#fff",borderBottom:"1px solid rgba(0,0,0,.06)"}}>{h}</th>)}</tr></thead><tbody>{[["Aufwand für Sie","Fragebogen ausfüllen","Selbst zusammenbauen","Prompts schreiben","Briefing & Feedback"],["Zeit bis fertig","Minuten","Stunden bis Tage","Minuten","4–8 Wochen"],["Texte & Inhalte","KI-generiert, branchenspezifisch","Selbst schreiben","KI-generiert, generisch","Texter nötig"],["Impressum & DSGVO","Automatisch (ECG-konform)","Selbst einbauen","Nein","Extra buchbar"],["Branchenspezifisch","50+ Berufe mit Leistungen","Nein","Teilweise","Je nach Agentur"],["Laufende Betreuung","Inklusive","Self-Service","Self-Service","Extra Kosten"],["Preis","ab 18 \u20AC / Monat","ab 15 \u20AC / Monat","ab 20 \u20AC / Monat","ab 1.500 \u20AC einmalig"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(0,0,0,.015)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(0,0,0,.05)",color:j===0?T.dark:j===1?T.accent:T.textMuted,fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.04)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:".85rem"}}><thead><tr>{["Feature","SiteReady.at","Baukasten","KI-Assistent","Agentur"].map((h,j)=><th key={h} style={{textAlign:"left",padding:"16px 22px",fontWeight:700,fontSize:".75rem",color:j===1?T.accent:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",background:j===1?"rgba(143,163,184,.08)":"#fff",borderBottom:"1px solid rgba(0,0,0,.06)"}}>{h}</th>)}</tr></thead><tbody>{[["Aufwand für Sie","Fragebogen ausfüllen","Selbst zusammenbauen","Prompts schreiben","Briefing & Feedback"],["Zeit bis fertig","Minuten","Stunden bis Tage","Minuten","4–8 Wochen"],["Texte & Inhalte","KI-generiert, branchenspezifisch","Selbst schreiben","KI-generiert, generisch","Texter nötig"],["Impressum & DSGVO","Automatisch (ECG-konform)","Selbst einbauen","Nein","Extra buchbar"],["Branchenspezifisch","50+ Berufe mit Leistungen","Nein","Teilweise","Je nach Agentur"],["Laufende Betreuung","Inklusive","Self-Service","Self-Service","Extra Kosten"],["Preis","ab 15 \u20AC / Monat","ab 15 \u20AC / Monat","ab 20 \u20AC / Monat","ab 1.500 \u20AC einmalig"]].map((row,i)=><tr key={i} style={{background:i%2===0?"transparent":"rgba(0,0,0,.015)"}}>{row.map((c,j)=><td key={j} style={{padding:"13px 22px",borderBottom:"1px solid rgba(0,0,0,.05)",color:j===0?T.dark:j===1?T.accent:T.textMuted,fontWeight:j<=1?600:400,background:j===1?"rgba(143,163,184,.04)":"transparent"}}>{j===1&&i<6?<span style={{display:"inline-flex",alignItems:"center",gap:6}}><IconCheck/>{c}</span>:c}</td>)}</tr>)}</tbody></table>
         <div style={{padding:"10px 22px",borderTop:"1px solid rgba(0,0,0,.05)",fontSize:".7rem",color:T.textMuted}}>Agentur: Einmalkosten, zzgl. optionalem Wartungsvertrag. Baukasten: z.B. Wix, Jimdo. KI-Assistent: z.B. ChatGPT, Mixo.</div>
       </div>
     </W>
@@ -881,9 +929,9 @@ function SuccessPage({data,onBack,onPortal}){
             {/* Success card */}
             <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1,marginBottom:16}}>
               <div style={{display:"flex",alignItems:"flex-start",gap:14,marginBottom:16}}>
-                <div style={{width:40,height:40,borderRadius:10,background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div style={{width:48,height:48,borderRadius:12,background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"1px solid rgba(22,163,74,.15)",boxShadow:`0 4px 16px ${T.greenGlow}`,animation:"fadeUp .5s cubic-bezier(.22,1,.36,1)"}}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
                 <div>
-                  <div style={{fontSize:".95rem",fontWeight:800,color:T.dark,marginBottom:4}}>Ihre Website ist bereit!</div>
+                  <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:4}}>Ihre Website ist bereit!</div>
                   <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Wir haben eine Bestätigungs-E-Mail an <strong style={{color:T.dark}}>{loginEmail}</strong> gesendet. Bitte bestätigen Sie diese, um sich einloggen zu können.</div>
                 </div>
               </div>
@@ -952,7 +1000,7 @@ function SuccessPage({data,onBack,onPortal}){
               <span style={{fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>Ich akzeptiere die <span style={{color:T.accent,textDecoration:"underline",cursor:"pointer"}}>AGB und Nutzungsbedingungen</span></span>
             </label>
             <div style={{padding:"10px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)",fontSize:".75rem",color:T.accent,lineHeight:1.6}}>Nach der Registrierung erhalten Sie eine Bestätigungs-E-Mail. Bitte bestätigen Sie diese, um sich einloggen zu können.</div>
-            {saveErr&&<div style={{marginTop:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".78rem",color:T.red}}>{saveErr}</div>}
+            {saveErr&&<div style={{marginTop:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,fontSize:".78rem",color:T.red}}>{saveErr}</div>}
           </div>
           {/* Right: Features */}
           <div className="q-split-right">
@@ -1058,7 +1106,7 @@ const qCss=`
 .q-sb-top{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
 .q-sb-logo{height:24px;filter:brightness(0) invert(1);opacity:.88;display:block;margin-bottom:18px}
 .q-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
-.q-sb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
+.q-sb-dot{width:7px;height:7px;border-radius:50%;background:${T.greenBright};flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
 .q-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .q-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}.q-sb-nav::-webkit-scrollbar{display:none}
 .q-sb-grp{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 8px 5px}
@@ -1070,12 +1118,12 @@ const qCss=`
 .q-sb-ni.q-future:hover{background:transparent;color:rgba(255,255,255,.45)}
 .q-sb-ni svg{flex-shrink:0;opacity:.5;transition:opacity .12s}
 .q-sb-ni.q-active svg,.q-sb-ni:hover svg{opacity:.85}
-.q-sb-comp{width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:auto;flex-shrink:0}
-.q-sb-done{width:6px;height:6px;border-radius:50%;background:#4ade80;margin-left:auto;flex-shrink:0;opacity:.7}
+.q-sb-comp{width:6px;height:6px;border-radius:50%;background:${T.amber};margin-left:auto;flex-shrink:0}
+.q-sb-done{width:6px;height:6px;border-radius:50%;background:${T.greenBright};margin-left:auto;flex-shrink:0;opacity:.7}
 .q-sb-progress{padding:14px 18px;border-top:1px solid rgba(255,255,255,.07)}
 .q-sb-bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden}
-.q-sb-bar-fill{height:100%;background:#4ade80;border-radius:100px;transition:width .4s ease}
-.q-sb-pct{font-size:.68rem;font-weight:700;color:#4ade80;margin-top:5px}
+.q-sb-bar-fill{height:100%;background:${T.greenBright};border-radius:100px;transition:width .4s ease}
+.q-sb-pct{font-size:.68rem;font-weight:700;color:${T.greenBright};margin-top:5px}
 .q-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:${T.bg}}
 .q-mh{padding:28px 36px 0;flex-shrink:0}
 .q-mh-bc{font-size:.76rem;color:${T.textMuted};margin-bottom:7px;display:flex;align-items:center;gap:5px}
@@ -1083,10 +1131,10 @@ const qCss=`
 .q-mh-title{font-size:1.35rem;font-weight:800;color:${T.dark};letter-spacing:-.025em;line-height:1.2}
 .q-mh-sub{font-size:.87rem;color:${T.textMuted};margin-top:3px}
 .q-mh-line{height:1px;background:${T.bg3};margin:20px 36px 0;flex-shrink:0}
-.q-mb{padding:24px 36px 32px;flex:1;overflow-y:auto;max-width:720px}
+.q-mb{padding:24px 36px 32px;flex:1;overflow-y:auto;max-width:840px}
 .q-section{display:none;flex-direction:column;flex:1;overflow:hidden}
-.q-section.q-vis{display:flex;animation:q-in .3s ease}
-@keyframes q-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.q-section.q-vis{display:flex;animation:q-in .35s cubic-bezier(.22,1,.36,1)}
+@keyframes q-in{from{opacity:0;transform:translateY(16px);filter:blur(2px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
 .q-footer{padding:16px 36px;border-top:1px solid ${T.bg3};background:${T.bg};flex-shrink:0;display:flex;align-items:center;gap:12px}
 .q-split{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;align-items:start}
 .q-split-right{padding-left:24px;border-left:1px solid ${T.bg3}}
@@ -1141,8 +1189,10 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const selectedBranche=BRANCHEN.find(b=>b.value===data.branche);const brancheLeistungen=selectedBranche?selectedBranche.leistungen:[];
   const onBrancheChange=val=>{const b=BRANCHEN.find(x=>x.value===val);setData(d=>{
     const sameB=d.branche===val;
+    const gPal=b?GRUPPEN_PALETTEN[b.gruppe]||{}:{};
     return{...d,branche:val,brancheLabel:b?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,
-      leistungen:sameB?d.leistungen:[],extraLeistung:sameB?d.extraLeistung:""};
+      leistungen:sameB?d.leistungen:[],extraLeistung:sameB?d.extraLeistung:"",
+      ...(!sameB?gPal:{})};
   })};
   const legalOk=(()=>{const u=data.unternehmensform;if(!u)return false;if(u==="einzelunternehmen"&&(!data.vorname?.trim()||!data.nachname?.trim()))return false;const needsFB=["eu","gmbh","og","kg","ag"].includes(u);if(needsFB&&(!data.firmenbuchnummer?.trim()||!data.firmenbuchgericht?.trim()))return false;if(u==="gmbh"&&!data.geschaeftsfuehrer?.trim())return false;if(u==="ag"&&!data.vorstand?.trim())return false;if(u==="verein"&&!data.zvr_zahl?.trim())return false;return true})();
   const sv1=!!(data.firmenname?.trim()&&data.branche&&data.bundesland&&data.kurzbeschreibung?.trim());
@@ -1254,7 +1304,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
                 <span style={{fontSize:".72rem",color:T.textMuted}}>Ihre Daten werden gründlich ausgelesen</span>
               </div>
             </div>}
-            {importErr&&<div style={{marginTop:8,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,border:"1px solid #fecaca",fontSize:".85rem",color:T.red,lineHeight:1.5}}>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>}
+            {importErr&&<div style={{marginTop:8,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,fontSize:".85rem",color:T.red,lineHeight:1.5}}>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>}
             <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${importConfirm?T.accent+"44":T.bg3}`,marginTop:12}}>
               <input type="checkbox" checked={importConfirm} onChange={e=>setImportConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
               <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
@@ -1485,32 +1535,36 @@ function PortalLogin({onBack}){
     setLoading(false);
   };
 
-  return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}><style>{css}</style>
-    <div style={{maxWidth:400,width:"100%",padding:"0 24px"}}>
+  return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}><style>{css}</style>
+    {/* Dezentes Brand-Element: Gradient-Kreis oben rechts */}
+    <div style={{position:"absolute",top:-120,right:-120,width:400,height:400,borderRadius:"50%",background:`radial-gradient(circle,${T.accentGlow} 0%,transparent 70%)`,pointerEvents:"none"}}/>
+    <div style={{position:"absolute",bottom:-80,left:-80,width:240,height:240,borderRadius:"50%",background:`radial-gradient(circle,${T.accentGlow} 0%,transparent 70%)`,pointerEvents:"none"}}/>
+    <div style={{maxWidth:400,width:"100%",padding:"0 24px",position:"relative",zIndex:1}}>
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:40}}>
         <img src="/logo.png" alt="SiteReady" style={{height:36}}/>
       </div>
-      {forgotDone?(<div><div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} E-Mail gesendet</div><p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Prüfen Sie Ihren Posteingang – Sie erhalten in Kürze einen Link zum Zurücksetzen Ihres Passworts.</p><button onClick={()=>{setForgotDone(false);setForgotPw(false);}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button></div>):forgotPw?(<div><div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:8}}>Passwort zurücksetzen</div><p style={{color:T.textSub,fontSize:".85rem",marginBottom:20}}>Geben Sie Ihre E-Mail-Adresse ein – wir senden Ihnen einen Link.</p><Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>{err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{err}</div>}<button onClick={submitForgot} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?T.bg3:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12}}>{loading?"...":"Link senden \u2192"}</button><button onClick={()=>{setForgotPw(false);setErr("");}} style={{width:"100%",padding:"12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"transparent",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>Abbrechen</button></div>):(<div>
+      {forgotDone?(<div><div style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,marginBottom:12}}>{"\u2713"} E-Mail gesendet</div><p style={{color:T.textSub,fontSize:".9rem",lineHeight:1.6}}>Prüfen Sie Ihren Posteingang – Sie erhalten in Kürze einen Link zum Zurücksetzen Ihres Passworts.</p><button onClick={()=>{setForgotDone(false);setForgotPw(false);}} style={{marginTop:20,padding:"12px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Zur Anmeldung</button></div>):forgotPw?(<div><div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:8}}>Passwort zurücksetzen</div><p style={{color:T.textSub,fontSize:".85rem",marginBottom:20}}>Geben Sie Ihre E-Mail-Adresse ein – wir senden Ihnen einen Link.</p><Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>{err&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{err}</div>}<button onClick={submitForgot} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?T.bg3:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12}}>{loading?"...":"Link senden \u2192"}</button><button onClick={()=>{setForgotPw(false);setErr("");}} style={{width:"100%",padding:"12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"transparent",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>Abbrechen</button></div>):(<div>
         <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Self-Service-Portal</div>
         <h2 style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,margin:"0 0 24px",letterSpacing:"-.03em"}}>Anmelden</h2>
         <Field label="E-Mail-Adresse" value={email} onChange={setEmail} placeholder="ihre@email.at" type="email"/>
         <Field label="Passwort" value={pw} onChange={setPw} placeholder="Ihr Passwort" type="password"/>
         <div style={{textAlign:"right",marginTop:-14,marginBottom:16}}><button onClick={()=>{setForgotPw(true);setErr("");}} style={{background:"none",border:"none",color:T.accent,fontSize:".8rem",cursor:"pointer",fontFamily:T.font,fontWeight:600}}>Passwort vergessen?</button></div>
-        {err&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>
+        {err&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>
           {err}
           {emailNotConfirmed&&<div style={{marginTop:8}}>
-            <span style={{color:"#92400e",fontSize:".75rem"}}>Prüfen Sie Ihren Posteingang und Spam-Ordner. </span>
+            <span style={{color:T.amberText,fontSize:".75rem"}}>Prüfen Sie Ihren Posteingang und Spam-Ordner. </span>
             <button onClick={resendConfirmation} disabled={resendingConfirm} style={{background:"none",border:"none",color:T.accent,fontSize:".75rem",cursor:"pointer",fontFamily:T.font,fontWeight:700,padding:0,textDecoration:"underline"}}>
               {resentConfirm?"Gesendet!":resendingConfirm?"...":"Bestätigungsmail erneut senden"}
             </button>
           </div>}
         </div>}
-        <button onClick={submit} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?T.bg3:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s"}}>
+        <button onClick={submit} disabled={loading} style={{width:"100%",padding:"14px",border:"none",borderRadius:T.rSm,background:loading?T.bg3:T.dark,color:"#fff",fontSize:".92rem",fontWeight:700,fontFamily:T.font,cursor:loading?"wait":"pointer",marginBottom:12,transition:"background .2s",boxShadow:loading?"none":T.sh2}}>
           {loading?"...":"Anmelden \u2192"}
         </button>
-        <button onClick={onBack} style={{width:"100%",padding:"12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"transparent",color:T.textSub,fontSize:".85rem",fontWeight:600,fontFamily:T.font,cursor:"pointer"}}>
+        <button onClick={onBack} style={{width:"100%",padding:"12px",border:"none",borderRadius:T.rSm,background:"transparent",color:T.textMuted,fontSize:".82rem",fontWeight:500,fontFamily:T.font,cursor:"pointer"}}>
           {"\u2190"} Zur Startseite
         </button>
+        <div style={{marginTop:24,textAlign:"center",fontSize:".82rem",color:T.textMuted}}>Noch kein Account? <a href="/start" style={{color:T.dark,fontWeight:700,textDecoration:"none"}}>Jetzt Website erstellen</a></div>
       </div>)}
     </div>
   </div>);
@@ -1841,9 +1895,9 @@ function Portal({session,onLogout}){
   const isAiGen=(field)=>Array.isArray(order?.ai_generated)&&order.ai_generated.includes(field);
   const SectionHeader=({label,desc,aiField,onRemove})=>(
     <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
-      {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>Automatisch erstellt — bitte prüfen und bei Bedarf anpassen</span>
+      {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.amberText}" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen und bei Bedarf anpassen</span>
         {onRemove&&<button onClick={onRemove} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>}
       </div>}
       <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -2019,7 +2073,7 @@ function Portal({session,onLogout}){
 .pt-sb-brand{margin-bottom:18px}
 .pt-sb-logo{height:24px;filter:brightness(0) invert(1);opacity:.88;display:block}
 .pt-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
-.pt-sb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-sb-dot{width:7px;height:7px;border-radius:50%;background:${T.greenBright};flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
 @keyframes sb-blink{0%,100%{opacity:1}50%{opacity:.45}}
 .pt-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}
@@ -2034,8 +2088,8 @@ function Portal({session,onLogout}){
 .pt-ni.popen .pt-ni-ch{transform:rotate(90deg)}
 .pt-sub{overflow:hidden;max-height:0;transition:max-height .25s ease}
 .pt-sub.popen{max-height:400px}
-.pt-comp{width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:auto;flex-shrink:0}
-.pt-done{width:6px;height:6px;border-radius:50%;background:#4ade80;margin-left:auto;flex-shrink:0;opacity:.7}
+.pt-comp{width:6px;height:6px;border-radius:50%;background:${T.amber};margin-left:auto;flex-shrink:0}
+.pt-done{width:6px;height:6px;border-radius:50%;background:${T.greenBright};margin-left:auto;flex-shrink:0;opacity:.7}
 .pt-sb-foot{padding:12px 10px 14px;border-top:1px solid rgba(255,255,255,.07)}
 .pt-sb-user{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .12s;background:transparent;border:none;width:100%;font-family:inherit}
 .pt-sb-user:hover{background:rgba(255,255,255,.05)}
@@ -2052,10 +2106,10 @@ function Portal({session,onLogout}){
 .pt-mh-line{height:1px;background:#E0E0DB;margin:20px 36px 0;flex-shrink:0}
 .pt-mb{padding:20px 36px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .pt-hero-card{background:#fff;border-radius:12px;padding:24px 28px;border:1px solid #E0E0DB;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.pt-hlive{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:100px;padding:4px 11px;margin-bottom:12px}
+.pt-hlive{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:${T.green};background:${T.greenLight};border:1px solid ${T.greenBorder};border-radius:100px;padding:4px 11px;margin-bottom:12px}
 .pt-hlive-trial{color:#7c3aed;background:#f5f3ff;border-color:#ddd6fe}
 .pt-hlive-trial .pt-hlive-dot{background:#7c3aed}
-.pt-hlive-dot{width:5px;height:5px;border-radius:50%;background:#16a34a;animation:sb-blink 2.5s ease-in-out infinite}
+.pt-hlive-dot{width:5px;height:5px;border-radius:50%;background:${T.green};animation:sb-blink 2.5s ease-in-out infinite}
 .pt-hurl{font-size:1.05rem;font-weight:700;color:#111111;letter-spacing:-.01em;margin-bottom:2px}
 .pt-hurl em{color:#9ca3af;font-style:normal}
 .pt-hhint{font-size:.85rem;color:#505560;margin-bottom:18px}
@@ -2071,7 +2125,7 @@ function Portal({session,onLogout}){
 .pt-ast-title{font-size:.8rem;font-weight:800;color:#111;letter-spacing:-.01em;margin-bottom:2px}
 .pt-ast-sub{font-size:.72rem;color:#6B7280;margin-bottom:14px}
 .pt-ast-bar-wrap{height:6px;background:#E0E0DB;border-radius:100px;overflow:hidden;margin-bottom:4px}
-.pt-ast-bar-fill{height:100%;border-radius:100px;background:#4ade80;transition:width .4s ease}
+.pt-ast-bar-fill{height:100%;border-radius:100px;background:${T.greenBright};transition:width .4s ease}
 .pt-ast-pts{font-size:.68rem;font-weight:700;color:#16a34a;margin-bottom:14px}
 .pt-ast-divider{height:1px;background:#E0E0DB;margin:0 0 8px}
 .pt-ast-scroll{flex:1;overflow-y:auto;padding:8px 12px 20px;scrollbar-width:none;display:flex;flex-direction:column;gap:0}
@@ -2079,7 +2133,7 @@ function Portal({session,onLogout}){
 .pt-ast-item{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;border:none;background:transparent;width:100%;font-family:inherit;transition:background .1s;text-align:left}
 .pt-ast-item:hover{background:#F5F5F2}
 .pt-ast-ck{width:18px;height:18px;border-radius:50%;border:1.5px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.pt-ast-ck.done{background:#4ade80;border-color:#4ade80}
+.pt-ast-ck.done{background:${T.greenBright};border-color:${T.greenBright}}
 .pt-ast-ck.done svg{display:block}
 .pt-ast-ck svg{display:none}
 .pt-ast-ck.current{border-color:#111;background:#111;color:#fff}
@@ -2090,11 +2144,11 @@ function Portal({session,onLogout}){
 .pt-ast-optional{font-size:.65rem;font-weight:600;color:#9CA3AF;flex-shrink:0;padding:2px 6px;background:#F9FAFB;border-radius:100px;border:1px solid #E5E7EB}
 .pt-wiz-step{position:relative;padding-left:28px}
 .pt-wiz-line{position:absolute;left:20px;top:28px;bottom:-4px;width:2px;border-radius:1px}
-.pt-wiz-line.done{background:#4ade80}
+.pt-wiz-line.done{background:${T.greenBright}}
 .pt-wiz-line.current{background:#111}
 .pt-wiz-line.pending{background:#E0E0DB}
 .pt-wiz-num{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;line-height:1}
-.pt-wiz-num.done{background:#4ade80;color:#fff}
+.pt-wiz-num.done{background:${T.greenBright};color:#fff}
 .pt-wiz-num.current{background:#111;color:#fff}
 .pt-wiz-num.pending{background:#F3F4F6;color:#9CA3AF;border:1.5px solid #E0E0DB}
 .pt-wiz-curr{margin-top:6px;padding:10px 12px;background:#F9FAFB;border-radius:8px;border:1px solid #E0E0DB}
@@ -2114,8 +2168,11 @@ function Portal({session,onLogout}){
   .pt-sb{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
   .pt-sb.pt-sb-open{transform:translateX(0)}
   .pt-mob-topbar{display:flex}
-  .pt-mh{padding:20px 16px 0}
-  .pt-mh-line{margin:16px 16px 0}
+  .pt-mh{padding:16px 16px 0}
+  .pt-mh-title{font-size:1.15rem}
+  .pt-mh-sub{font-size:.82rem;margin-top:2px}
+  .pt-bc{font-size:.76rem;margin-bottom:4px}
+  .pt-mh-line{margin:12px 16px 0}
   .pt-mb{padding:16px 16px 24px}
   .pt-hero-card{padding:18px 16px}
   .pt-hbtns{flex-direction:column}
@@ -2162,7 +2219,7 @@ function Portal({session,onLogout}){
           ["partner","Partner",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,false],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
-          <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
+          <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)} style={!hasComp?{opacity:page===p?1:.65}:undefined}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
             {label}
             {hasComp&&comp[p]===false&&<span className="pt-comp"/>}
@@ -2227,7 +2284,7 @@ function Portal({session,onLogout}){
         <div style={{position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between",
           padding:"12px 20px",background:"#111",borderRadius:T.rSm,boxShadow:"0 4px 16px rgba(0,0,0,.15)",marginBottom:12}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:6,height:6,borderRadius:"50%",background:"#f59e0b"}}/>
+            <div style={{width:6,height:6,borderRadius:"50%",background:T.amber}}/>
             <span style={{fontSize:".88rem",fontWeight:600,color:"#fff"}}>Ungespeicherte Änderungen</span>
           </div>
           <div style={{display:"flex",gap:8}}>
@@ -2272,7 +2329,7 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Toast */}
-      {toastMsg&&<div style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:"#4ade80"}}>&#10003;</span>{toastMsg}</div>}
+      {toastMsg&&<div style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:T.greenBright}}>&#10003;</span>{toastMsg}</div>}
       {/* Bild-Crop */}
       {cropData&&<CropModal file={cropData.file} aspectKey={cropData.key}
         onCancel={()=>setCropData(null)}
@@ -2462,7 +2519,7 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:"#fef3c7",color:"#92400e",marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:T.amberLight,color:T.amberText,marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch für einen persönlicheren Auftritt":"Hintergrundbild für den oberen Bereich der Website"}</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -2560,9 +2617,9 @@ function Portal({session,onLogout}){
             <SectionHeader label="Öffnungszeiten & Formular" desc="Öffnungszeiten, Hinweise und Kontaktformular-Einstellungen."/>
             <Dropdown label="Öffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen"/>
             {order.oeffnungszeiten==="custom"&&<Field label="Eigene Öffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
-            {isAiGen("gut_zu_wissen")&&order.gut_zu_wissen&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,marginBottom:4,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:"#92400e"}}>Automatisch erstellt — bitte prüfen</span>
+            {isAiGen("gut_zu_wissen")&&order.gut_zu_wissen&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,marginBottom:4,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.amberText}" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen</span>
               <button onClick={async()=>{await supabase.from("orders").update({gut_zu_wissen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}).eq("id",order.id);setOrder(o=>({...o,gut_zu_wissen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}));showToast("Hinweise entfernt");}} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
             </div>}
             <Field label="Gut zu wissen" value={order.gut_zu_wissen||""} onChange={upOrder("gut_zu_wissen")} placeholder="z.B. Annahmeschluss 30 Min vor Ende" rows={3} hint="Jede Zeile wird als eigener Hinweis auf Ihrer Website angezeigt (max. 5). Für permanente Infos wie Hygienehinweise, Anfahrt etc."/>
@@ -2649,7 +2706,7 @@ function Portal({session,onLogout}){
           <SectionHeader label="Über uns & Vorteile" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
           <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
           <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
-          {isAiGen("text_vorteile")&&(order.text_vorteile||[]).some(v=>v)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"8px 12px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fde68a"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style={{fontSize:".78rem",fontWeight:600,color:"#92400e"}}>Automatisch erstellt — bitte prüfen</span></div>}
+          {isAiGen("text_vorteile")&&(order.text_vorteile||[]).some(v=>v)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.amberText}" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style={{fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen</span></div>}
           {[0,1,2,3].map(i=>{const ph=["z.B. Über 10 Jahre Erfahrung","z.B. Persönliche Beratung","z.B. Faire Preise","z.B. Flexible Termine"][i];return<Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}} placeholder={ph}/>})}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
@@ -2708,7 +2765,7 @@ function Portal({session,onLogout}){
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website."/>
-          {!(order.sections_visible?.faq)&&<div style={{padding:"12px 16px",background:"#fef3c7",borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:"#92400e"}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {!(order.sections_visible?.faq)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           {(order.faq||[]).map((f,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
             <div style={{display:"flex",flexDirection:"column",gap:6}}>
               <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
@@ -2735,7 +2792,7 @@ function Portal({session,onLogout}){
         {/* ── Zahlen & Fakten Seite ── */}
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Maximal 4 Einträge."/>
-          {!(order.sections_visible?.fakten)&&<div style={{padding:"12px 16px",background:"#fef3c7",borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:"#92400e"}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {!(order.sections_visible?.fakten)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
               <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
@@ -2750,7 +2807,7 @@ function Portal({session,onLogout}){
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Partner & Zertifikate" desc="Zeigen Sie Logos und Namen von Partnern, Zertifizierungen oder Verbänden."/>
-          {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:"#fef3c7",borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:"#92400e"}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           {(order.partner||[]).map((p,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginTop:i?10:0}}>
             <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. WKO, TÜV, KNX Partner" style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font}}/>
             <button onClick={()=>askDelete("Partner",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u00d7"}</button>
@@ -2766,14 +2823,15 @@ function Portal({session,onLogout}){
             {value:"",label:"Standard (vom Stil)"},{value:"dm_sans",label:"DM Sans"},{value:"inter",label:"Inter"},{value:"outfit",label:"Outfit"},{value:"poppins",label:"Poppins"},{value:"montserrat",label:"Montserrat"},{value:"raleway",label:"Raleway"},{value:"open_sans",label:"Open Sans"},{value:"lato",label:"Lato"},{value:"roboto",label:"Roboto"},{value:"nunito",label:"Nunito"},{value:"work_sans",label:"Work Sans"},{value:"manrope",label:"Manrope"},{value:"space_grotesk",label:"Space Grotesk"},{value:"plus_jakarta",label:"Plus Jakarta Sans"},{value:"rubik",label:"Rubik"},{value:"source_serif",label:"Source Serif (Serif)"},{value:"playfair",label:"Playfair Display (Serif)"},{value:"lora",label:"Lora (Serif)"},{value:"merriweather",label:"Merriweather (Serif)"},{value:"dm_serif",label:"DM Serif Display (Serif)"},
           ];
           const RADIUS_OPTIONS=[{value:"",label:"Standard (vom Stil)"},{value:"0px",label:"Eckig (0px)"},{value:"4px",label:"Leicht gerundet (4px)"},{value:"8px",label:"Gerundet (8px)"},{value:"12px",label:"Stark gerundet (12px)"},{value:"16px",label:"Sehr rund (16px)"}];
+          const brGruppe=(()=>{const br=BRANCHEN.find(x=>x.value===order.branche);return br?br.gruppe:null})();
           const PALETTES=[
-            {name:"Standard",desc:"Originalfarben des gewählten Stils",colors:{custom_color:null,custom_accent:null,custom_bg:null,custom_text:null,custom_text_muted:null,custom_sep:null}},
-            {name:"Corporate Blau",desc:"Petrol + Blau",colors:{custom_color:"#094067",custom_accent:"#0369a1",custom_bg:"#fffffe",custom_text:"#094067",custom_text_muted:"#5f6c7b",custom_sep:"#d8eefe"}},
-            {name:"Nachtblau & Gold",desc:"Dunkel + Bernstein",colors:{custom_color:"#020826",custom_accent:"#b45309",custom_bg:"#f8fafc",custom_text:"#1e293b",custom_text_muted:"#64748b",custom_sep:"#e2e8f0"}},
-            {name:"Erde & Messing",desc:"Warmbraun + Gold",colors:{custom_color:"#020826",custom_accent:"#7a6844",custom_bg:"#f9f4ef",custom_text:"#020826",custom_text_muted:"#716040",custom_sep:"#eaddcf"}},
-            {name:"Wald & Natur",desc:"Dunkelgrün + Gold",colors:{custom_color:"#00473e",custom_accent:"#b45309",custom_bg:"#f2f7f5",custom_text:"#00473e",custom_text_muted:"#475d5b",custom_sep:"#d1e8e0"}},
-            {name:"Arzt & Praxis",desc:"Teal + Warmweiß",colors:{custom_color:"#232323",custom_accent:"#078080",custom_bg:"#f8f5f2",custom_text:"#222525",custom_text_muted:"#5f6c7b",custom_sep:"#e7e5e4"}},
-            {name:"Tech & Agentur",desc:"Schwarz + Indigo",colors:{custom_color:"#18181b",custom_accent:"#4f46e5",custom_bg:"#fafafa",custom_text:"#18181b",custom_text_muted:"#71717a",custom_sep:"#e4e4e7"}},
+            {name:"Standard",desc:"Branchenfarben",colors:brGruppe&&GRUPPEN_PALETTEN[brGruppe]?GRUPPEN_PALETTEN[brGruppe]:{custom_color:null,custom_accent:null,custom_bg:null,custom_text:null,custom_text_muted:null,custom_sep:null}},
+            {name:"Werkstatt",desc:"Gold auf Hellgrau",colors:GRUPPEN_PALETTEN.handwerk},
+            {name:"Atelier",desc:"Peach + Waldgrün",colors:GRUPPEN_PALETTEN.kosmetik},
+            {name:"Tafel",desc:"Sienna + Bordeaux",colors:GRUPPEN_PALETTEN.gastro},
+            {name:"Praxis",desc:"Teal + Petrol",colors:GRUPPEN_PALETTEN.gesundheit},
+            {name:"Kanzlei",desc:"Olive-Gold + Dunkelgrün",colors:GRUPPEN_PALETTEN.dienstleistung},
+            {name:"Campus",desc:"Indigo + Nachtblau",colors:GRUPPEN_PALETTEN.bildung},
           ];
           const applyPalette=(p)=>{Object.entries(p.colors).forEach(([k,v])=>upOrder(k)(v));};
           const hasCustom=order.custom_color||order.custom_accent||order.custom_bg||order.custom_text||order.custom_text_muted||order.custom_sep||order.custom_font||order.custom_radius;
@@ -2939,7 +2997,7 @@ function Portal({session,onLogout}){
           {invoices.map(c=>{
             const date=new Date(c.created*1000).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"});
             const amount=(c.amount/100).toFixed(2).replace(".",",");
-            const statusColor=c.status==="succeeded"?T.green:"#f59e0b";
+            const statusColor=c.status==="succeeded"?T.green:T.amber;
             const statusLabel=c.status==="succeeded"?"Bezahlt":"Ausstehend";
             return(<div key={c.id} style={{display:"flex",alignItems:"center",gap:16,padding:"14px 16px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
               <div style={{flex:1}}>
@@ -2984,7 +3042,7 @@ function Portal({session,onLogout}){
               {value:"Sonstiges",label:"Sonstiges"},
             ]} placeholder="Betreff waehlen"/>
             <Field label="Ihre Nachricht" value={supportMsg} onChange={setSupportMsg} placeholder="Beschreiben Sie Ihr Anliegen..." rows={4}/>
-            {supportErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{supportErr}</div>}
+            {supportErr&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{supportErr}</div>}
             <button onClick={async()=>{
               if(!supportMsg.trim()||!supabase)return;
               setSupportSending(true);setSupportErr("");
@@ -3034,7 +3092,7 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Passwort ändern"}</div>
             <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
             <Field label="Passwort bestätigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
-            {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{pwErr}</div>}
+            {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{pwErr}</div>}
             <div style={{display:"flex",alignItems:"center",gap:12}}>
               <button onClick={async()=>{
                 if(!newPw||newPw!==newPw2){setPwErr("Passwörter stimmen nicht überein.");return;}
@@ -3060,7 +3118,7 @@ function Portal({session,onLogout}){
               </div>
               :<>
                 <Field label="Neue E-Mail-Adresse" value={newEmail} onChange={setNewEmail} placeholder="neue@email.at" type="email"/>
-                {emailErr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#fef2f2",borderRadius:T.rSm,fontSize:".78rem",color:"#dc2626"}}>{emailErr}</div>}
+                {emailErr&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{emailErr}</div>}
                 <div style={{display:"flex",alignItems:"center",gap:12}}>
                   <button onClick={async()=>{
                     if(!newEmail||!newEmail.includes("@")){setEmailErr("Bitte gültige E-Mail eingeben.");return;}
@@ -3309,9 +3367,9 @@ function Portal({session,onLogout}){
               <span style={{fontSize:"1rem",color:T.green,fontWeight:800}}>✓</span>
               <div><div style={{fontWeight:700,color:T.green,fontSize:".9rem"}}>Ihre Website ist für Google sichtbar</div><div style={{fontSize:".82rem",color:T.textSub,marginTop:3}}>Google kann Ihre Website unter <strong>{sub}.siteready.at</strong> indexieren und in den Suchergebnissen anzeigen.</div></div>
             </div>
-            :<div style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:"#fef3c7",borderRadius:T.rSm,border:"1px solid #fcd34d"}}>
-              <span style={{fontSize:"1rem",color:"#92400e",fontWeight:800}}>⏳</span>
-              <div><div style={{fontWeight:700,color:"#92400e",fontSize:".9rem"}}>Indexierung aktiv nach Livegang</div><div style={{fontSize:".82rem",color:"#78350f",marginTop:3}}>Sobald Ihre Website live geschaltet wird, entfernen wir die noindex-Markierung und Google kann Ihre Website finden.</div></div>
+            :<div style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:T.amberLight,borderRadius:T.rSm,border:"1px solid #fcd34d"}}>
+              <span style={{fontSize:"1rem",color:T.amberText,fontWeight:800}}>⏳</span>
+              <div><div style={{fontWeight:700,color:T.amberText,fontSize:".9rem"}}>Indexierung aktiv nach Livegang</div><div style={{fontSize:".82rem",color:"#78350f",marginTop:3}}>Sobald Ihre Website live geschaltet wird, entfernen wir die noindex-Markierung und Google kann Ihre Website finden.</div></div>
             </div>
           }
         </div>
@@ -3434,7 +3492,7 @@ function Portal({session,onLogout}){
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
-                {needsReview&&<span style={{fontSize:".6rem",padding:"1px 6px",borderRadius:100,background:"#fef3c7",color:"#92400e",fontWeight:600,marginLeft:4,flexShrink:0}}>prüfen</span>}
+                {needsReview&&<span style={{fontSize:".6rem",padding:"1px 6px",borderRadius:100,background:T.amberLight,color:T.amberText,fontWeight:600,marginLeft:4,flexShrink:0}}>prüfen</span>}
               </button>
               {needsReview&&item.desc&&<div style={{paddingLeft:28,marginTop:-4,marginBottom:8,fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{item.desc}</div>}
             </div>;
@@ -3443,7 +3501,7 @@ function Portal({session,onLogout}){
       </div>
       </>:<div className="pt-wiz-collapsed" onClick={()=>setWizardOpen(true)} title="Assistent öffnen">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-        <div style={{width:28,height:28,borderRadius:"50%",background:"#4ade80",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+        <div style={{width:28,height:28,borderRadius:"50%",background:T.greenBright,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
           <span style={{fontSize:".7rem",fontWeight:800,color:"#fff"}}>{wizardDoneCount}</span>
         </div>
         <div className="pt-wiz-cbadge">{wizardDoneCount} von {wizardTotal}</div>
@@ -3531,14 +3589,14 @@ function BuildScreen({session,setOrder}){
       })}
     </div>
     {/* Fehler-Anzeige */}
-    {buildError&&<div style={{marginTop:24,padding:"16px 20px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:T.rSm,textAlign:"center"}}>
-      <div style={{fontWeight:700,color:"#dc2626",fontSize:".88rem",marginBottom:6}}>Fehler bei der Generierung</div>
+    {buildError&&<div style={{marginTop:24,padding:"16px 20px",background:T.redLight,border:"1px solid #fca5a5",borderRadius:T.rSm,textAlign:"center"}}>
+      <div style={{fontWeight:700,color:T.red,fontSize:".88rem",marginBottom:6}}>Fehler bei der Generierung</div>
       <div style={{fontSize:".8rem",color:"#7f1d1d",lineHeight:1.5,marginBottom:12}}>{buildError}</div>
       <button onClick={async()=>{setBuildError(null);setBuildElapsed(0);try{const{data}=await supabase.from("orders").select("id").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);if(data?.[0])await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:data[0].id})});}catch(_){}}} style={{padding:"10px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Erneut versuchen</button>
     </div>}
     {/* Timeout-Hinweis */}
     {!buildError&&buildElapsed>180&&<div style={{marginTop:24,padding:"16px 20px",background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:T.rSm,textAlign:"center"}}>
-      <div style={{fontWeight:700,color:"#92400e",fontSize:".85rem",marginBottom:4}}>Das dauert länger als erwartet</div>
+      <div style={{fontWeight:700,color:T.amberText,fontSize:".85rem",marginBottom:4}}>Das dauert länger als erwartet</div>
       <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.5}}>Die Generierung läuft noch. Bitte lassen Sie diese Seite geöffnet oder kommen Sie später zurück.</div>
     </div>}
     <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
@@ -3547,7 +3605,7 @@ function BuildScreen({session,setOrder}){
 
 /* ═══ ADMIN DASHBOARD ═══ */
 const STATUS_LABELS={pending:"Eingang",in_arbeit:"In Generierung",trial:"Testphase",live:"Live",offline:"Offline"};
-const STATUS_COLORS={pending:"#f59e0b",in_arbeit:"#3b82f6",trial:"#8b5cf6",live:"#16a34a",offline:"#64748b"};
+const STATUS_COLORS={pending:T.amber,in_arbeit:"#3b82f6",trial:"#8b5cf6",live:T.green,offline:"#64748b"};
 const STATUS_FLOW=["pending","in_arbeit","trial","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
@@ -4304,10 +4362,10 @@ function Admin({adminKey}){
           {stuckOrders.length>0&&<div style={{marginBottom:24}}>
             <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Aktionen erforderlich</div>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
-              {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:"1px solid #fde68a",boxShadow:T.sh2,display:"flex",alignItems:"center",gap:14}}>
+              {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"14px 18px",border:`1px solid ${T.amberBorder}`,boxShadow:T.sh2,display:"flex",alignItems:"center",gap:14}}>
                 <div style={{flex:1}}>
                   <div style={{fontWeight:700,fontSize:".88rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</div>
-                  <div style={{fontSize:".75rem",color:"#92400e",marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} – Website noch nicht generiert</div>
+                  <div style={{fontSize:".75rem",color:T.amberText,marginTop:2}}>Bezahlt seit {fmtDate(o.created_at)} – Website noch nicht generiert</div>
                 </div>
                 <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?T.bg3:T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>
                   {genLoading[o.id]?"Generiert...":"Website generieren"}
@@ -4380,7 +4438,7 @@ function Admin({adminKey}){
             return(<div style={{marginBottom:24}}>
               <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>{"Letzte Generierungsfehler"}</div>
               <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {errOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"10px 14px",display:"flex",gap:12,alignItems:"flex-start",cursor:"pointer"}} onClick={()=>setSel(o)}>
+                {errOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,padding:"10px 14px",display:"flex",gap:12,alignItems:"flex-start",cursor:"pointer"}} onClick={()=>setSel(o)}>
                   <span style={{fontSize:".8rem",fontWeight:700,color:T.dark,flexShrink:0}}>{o.firmenname||"—"}</span>
                   <span style={{fontSize:".75rem",color:T.red,flex:1,fontFamily:T.mono,lineHeight:1.4}}>{o.last_error}</span>
                   <span style={{fontSize:".75rem",color:T.textMuted,flexShrink:0}}>{fmtDate(o.created_at)}</span>
@@ -4414,7 +4472,7 @@ function Admin({adminKey}){
               <div style={{fontSize:".85rem",color:T.green,fontWeight:600}}>{"\u2713"} Keine Fehler</div>
               <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Keine Frontend- oder Backend-Fehler</div>
             </div>):(<div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:400,overflowY:"auto"}}>
-              {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:"1px solid #fecaca",padding:"12px 14px"}}>
+              {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,padding:"12px 14px"}}>
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10,marginBottom:6}}>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
                     <span style={{background:["generate","start-build","import","serve"].includes(e.source)?"#eff6ff":e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:["generate","start-build","import","serve"].includes(e.source)?"#1e40af":e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4,textTransform:"uppercase"}}>{({"unhandledrejection":"Promise","window.onerror":"JS","generate":"Generate","start-build":"Build","import":"Import","serve":"Serve"})[e.source]||e.source||"Error"}</span>
@@ -4463,7 +4521,7 @@ function Admin({adminKey}){
               </div>
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
                 <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Ausgaben / Mo</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{ausgaben.toFixed(2)}</div>
+                <div style={{fontSize:"2rem",fontWeight:800,color:T.red,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"\u20AC"}{ausgaben.toFixed(2)}</div>
                 <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
                   {[["Stripe",`\u20AC${stripeFee.toFixed(2)}`],["Claude API",`\u20AC${claudeCostMo.toFixed(3)}`],["Cloudflare / Supabase","\u20AC0"]].map(([l,v])=>(
                     <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".75rem",color:T.textMuted}}>
@@ -4565,7 +4623,7 @@ function Admin({adminKey}){
               {fphase("Phase 5b – Production Go-Live (geplant)","#0f766e",<>{fnode("🏠","Domain eingeben","im Kunden-Portal","#0f766e",true)}{farrow}{fnode("☁️","Cloudflare","Custom Domain API","#0f766e",true)}{farrow}{fnode("🔧","DNS setzen","CNAME beim Registrar","#0f766e",true)}{farrow}{fnode("🔒","SSL auto","Cloudflare Zertifikat","#0f766e",true)}{farrow}{fnode("🔓","noindex → index","Subdomain freigeben","#0f766e",true)}{farrow}{fnode("📈","GSC","Google Search Console","#0f766e",true)}</>)}
               {fphase("Phase 6 – Betrieb & Support","#f59e0b",<>{fnode("🔄","Leistungen aendern","Self-Service im Portal","#f59e0b")}{farrow}{fnode("⚡","Rate-Limit","2x pro 30 Tage","#f59e0b")}{farrow}{fnode("🤖","Sektion neu","Sonnet · direkt live","#f59e0b")}{farrow}{fnode("🎫","Support","Ticket-Formular","#f59e0b")}{farrow}{fnode("📸","Fotos updaten","serve-time · kein Rebuild","#f59e0b")}</>)}
               {fphase("Phase 7 – Ende des Abos",T.bg3,<>{fnode("❌","Kuendigung","Monatsabo: jederzeit · Jahresabo: nach 12 Mo",T.bg3)}{farrow}{fnode("🚫","Offline","subscription.deleted → status: offline",T.bg3)}{farrow}{fnode("🗑️","Daten loeschen","auf Wunsch",T.bg3,true)}</>)}
-              <div style={{padding:"7px 10px",background:"#fef3c7",border:"1px solid #fde68a",borderRadius:T.rSm,fontSize:".75rem",color:"#92400e"}}>Phase 1 optional (nur wenn Bestandswebsite vorhanden) · Phase 5 noindex bis Production · Phase 7 erst nach Go-Live relevant.</div>
+              <div style={{padding:"7px 10px",background:T.amberLight,border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,fontSize:".75rem",color:T.amberText}}>Phase 1 optional (nur wenn Bestandswebsite vorhanden) · Phase 5 noindex bis Production · Phase 7 erst nach Go-Live relevant.</div>
             </div>
             <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Technische Flows</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -4676,17 +4734,17 @@ function Admin({adminKey}){
               <h3 style={{margin:0,fontSize:"1.1rem",fontWeight:800,color:T.dark}}>{sel.firmenname||"—"}</h3>
               <StatusBadge status={sel.status}/>
               {selHInfo&&<span style={{padding:"2px 8px",borderRadius:20,background:selHInfo.c+"18",color:selHInfo.c,fontSize:".75rem",fontWeight:700}}>{selHInfo.label}</span>}
-              {(selStuckPending||selStuckGen)&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fff7ed",color:"#92400e",fontSize:".75rem",fontWeight:700}}>&#9888; {selStuckPending?"Eingang >2h":"Generierung >15min"}</span>}
-              {selHasFailed&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fef2f2",color:"#991b1b",fontSize:".75rem",fontWeight:700}}>&#9888; Fehler</span>}
+              {(selStuckPending||selStuckGen)&&<span style={{padding:"2px 8px",borderRadius:20,background:"#fff7ed",color:T.amberText,fontSize:".75rem",fontWeight:700}}>&#9888; {selStuckPending?"Eingang >2h":"Generierung >15min"}</span>}
+              {selHasFailed&&<span style={{padding:"2px 8px",borderRadius:20,background:T.redLight,color:"#991b1b",fontSize:".75rem",fontWeight:700}}>&#9888; Fehler</span>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               {(selStuckPending||selStuckGen||selHasFailed)&&<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?T.bg3:selHasFailed?"#dc2626":"#f59e0b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"...":selHasFailed?"Retry":"Neu starten"}</button>}
               <button onClick={()=>setSel(null)} style={{background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",color:T.textMuted,padding:"4px 8px",lineHeight:1}}>&times;</button>
             </div>
           </div>
-          {selHasFailed&&<div style={{margin:"0 24px",marginTop:12,padding:"10px 14px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".78rem",color:"#991b1b",lineHeight:1.5,wordBreak:"break-word",display:"flex",alignItems:"flex-start",gap:12,justifyContent:"space-between"}}>
+          {selHasFailed&&<div style={{margin:"0 24px",marginTop:12,padding:"10px 14px",background:T.redLight,border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,fontSize:".78rem",color:"#991b1b",lineHeight:1.5,wordBreak:"break-word",display:"flex",alignItems:"flex-start",gap:12,justifyContent:"space-between"}}>
             <span style={{fontFamily:T.mono}}><strong style={{fontFamily:T.font}}>Letzter Fehler: </strong>{sel.last_error}</span>
-            <button onClick={()=>updateOrder(sel.id,{last_error:null}).then(()=>setSel(s=>({...s,last_error:null})))} style={{flexShrink:0,padding:"3px 10px",border:"1px solid #fecaca",borderRadius:T.rSm,background:"#fff",color:"#991b1b",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>&#10003; Abgehakt</button>
+            <button onClick={()=>updateOrder(sel.id,{last_error:null}).then(()=>setSel(s=>({...s,last_error:null})))} style={{flexShrink:0,padding:"3px 10px",border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,background:"#fff",color:"#991b1b",cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>&#10003; Abgehakt</button>
           </div>}
           {/* Diagnose-Panel */}
           {diagReport&&<div style={{margin:"12px 24px 0",padding:"18px 24px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
@@ -4822,7 +4880,7 @@ function Admin({adminKey}){
                       :<button onClick={()=>generateWebsite(sel.id)} disabled={genLoading[sel.id]} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:genLoading[sel.id]?T.bg3:T.dark,color:"#fff",cursor:genLoading[sel.id]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{genLoading[sel.id]?"Generiert (ca. 30s)...":`\u2728 Website generieren`}</button>}
                   </div>
                   {regenConfirm===sel.id&&<div style={{background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:T.rSm,padding:"12px 14px"}}>
-                    <div style={{fontSize:".78rem",fontWeight:700,color:"#92400e",marginBottom:8}}>Bestehende Website wird ueberschrieben.</div>
+                    <div style={{fontSize:".78rem",fontWeight:700,color:T.amberText,marginBottom:8}}>Bestehende Website wird ueberschrieben.</div>
                     <button onClick={()=>{setRegenConfirm(null);generateWebsite(sel.id);}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Neu generieren</button>
                   </div>}
                   {genMsg[sel.id]&&<div style={{fontSize:".78rem",color:genMsg[sel.id].startsWith("Fehler")||genMsg[sel.id].startsWith("Netzwerk")?T.red:T.green,fontWeight:600}}>{genMsg[sel.id]}</div>}
@@ -4846,7 +4904,7 @@ function Admin({adminKey}){
                   <div style={{fontSize:".78rem",color:"#475569",marginBottom:8}}>Website wird fuer Besucher nicht mehr erreichbar sein.</div>
                   <button onClick={()=>{updateOrder(sel.id,{status:"offline"});setOfflineConfirm(null);logActivity(sel.id,"offline");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:"#64748b",color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Bestaetigen: Offline nehmen</button>
                 </div>}
-                {deleteConfirm===sel.id&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,padding:"12px 14px"}}>
+                {deleteConfirm===sel.id&&<div style={{background:T.redLight,border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,padding:"12px 14px"}}>
                   <div style={{fontSize:".75rem",color:"#991b1b",marginBottom:8,lineHeight:1.6}}><strong>Achtung – unwiderruflich:</strong> Es werden geloescht: Bestellung, Auth-Account, alle hochgeladenen Fotos und Support-Anfragen des Kunden.</div>
                   <div style={{fontSize:".78rem",fontWeight:700,color:"#991b1b",marginBottom:8}}>Zur Bestaetigung "LOESCHEN" eintippen:</div>
                   <div style={{display:"flex",gap:6}}>
@@ -4888,7 +4946,7 @@ function Admin({adminKey}){
                             <button onClick={cancel} style={{flex:1,padding:"6px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Abbrechen</button>
                             <button onClick={save} disabled={!dirty} style={{flex:1,padding:"6px",border:"none",borderRadius:T.rSm,background:dirty?T.dark:"#e2e8f0",color:dirty?"#fff":T.bg3,cursor:dirty?"pointer":"default",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
                           </div>
-                          <div style={{fontSize:".75rem",color:"#92400e"}}>Danach Website neu generieren</div>
+                          <div style={{fontSize:".75rem",color:T.amberText}}>Danach Website neu generieren</div>
                         </div>
                     }
                   </div>);
@@ -5015,10 +5073,10 @@ function Admin({adminKey}){
                     <div style={{flex:1,paddingTop:4}}>
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                         <span style={{fontSize:".88rem",fontWeight:700,color:pending?T.textMuted:T.dark}}>{step.icon} {step.label}</span>
-                        {current&&<span style={{background:"#fef3c7",color:"#92400e",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Aktuell</span>}
+                        {current&&<span style={{background:T.amberLight,color:T.amberText,fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Aktuell</span>}
                       </div>
                       <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:step.error?6:8,lineHeight:1.5}}>{step.detail}</div>
-                      {step.error&&<div style={{marginBottom:8,padding:"8px 12px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.rSm,fontSize:".75rem",color:"#991b1b",fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}>{step.error}</div>}
+                      {step.error&&<div style={{marginBottom:8,padding:"8px 12px",background:T.redLight,border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,fontSize:".75rem",color:"#991b1b",fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}>{step.error}</div>}
                       {(!pending||current)&&<div style={{background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"8px 12px",display:"flex",flexDirection:"column",gap:4}}>
                         {step.meta.map(([l,v])=><div key={l} style={{display:"flex",gap:12,fontSize:".75rem"}}>
                           <span style={{color:T.textMuted,fontWeight:600,minWidth:120,flexShrink:0}}>{l}</span>
@@ -5038,7 +5096,7 @@ function Admin({adminKey}){
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                         <span style={{fontSize:".88rem",fontWeight:700,color:T.textMuted}}>{step.icon} {step.label}</span>
                         {step.optional&&<span style={{background:T.bg3,color:T.textMuted,fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Optional</span>}
-                        <span style={{background:"#fef3c7",color:"#92400e",fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Prototyp</span>
+                        <span style={{background:T.amberLight,color:T.amberText,fontSize:".75rem",fontWeight:700,padding:"2px 6px",borderRadius:4}}>Prototyp</span>
                       </div>
                       <div style={{fontSize:".78rem",color:T.textMuted,lineHeight:1.5}}>{step.detail}</div>
                     </div>
@@ -5117,9 +5175,9 @@ export default function App(){
       <div style={{width:72,height:72,borderRadius:"50%",background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"2rem",marginBottom:24,border:"2px solid rgba(22,163,74,.2)"}}>{"\u2713"}</div>
       <h1 style={{fontSize:"2rem",fontWeight:800,color:T.dark,margin:"0 0 12px",letterSpacing:"-.03em"}}>Zahlung erfolgreich!</h1>
       <p style={{color:T.textSub,fontSize:".95rem",lineHeight:1.7,maxWidth:440,margin:"0 0 20px"}}>Vielen Dank für Ihre Bestellung. Wir erstellen Ihre Website und melden uns in Kürze.</p>
-      {pendingEmail&&<div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#fefce8",border:"1px solid #fde68a",borderRadius:T.rSm,padding:"12px 16px",marginBottom:24,maxWidth:400,textAlign:"left"}}>
+      {pendingEmail&&<div style={{display:"flex",alignItems:"flex-start",gap:10,background:"#fefce8",border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,padding:"12px 16px",marginBottom:24,maxWidth:400,textAlign:"left"}}>
         <span style={{fontSize:"1rem",flexShrink:0}}>✉️</span>
-        <span style={{fontSize:".82rem",color:"#92400e",lineHeight:1.6}}>Bitte bestätigen Sie Ihre E-Mail-Adresse (<strong>{pendingEmail}</strong>) – wir haben Ihnen einen Bestätigungslink gesendet. Erst danach ist der Portal-Login möglich.</span>
+        <span style={{fontSize:".82rem",color:T.amberText,lineHeight:1.6}}>Bitte bestätigen Sie Ihre E-Mail-Adresse (<strong>{pendingEmail}</strong>) – wir haben Ihnen einen Bestätigungslink gesendet. Erst danach ist der Portal-Login möglich.</span>
       </div>}
       <div style={{display:"flex",flexDirection:"column",gap:10,width:"100%",maxWidth:320}}>
         <button onClick={()=>{localStorage.removeItem("sr_pending_email");setPage("portal-login");}} style={{padding:"14px 32px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".95rem",fontWeight:700,fontFamily:T.font,cursor:"pointer",boxShadow:"0 2px 16px rgba(0,0,0,.12)"}}>

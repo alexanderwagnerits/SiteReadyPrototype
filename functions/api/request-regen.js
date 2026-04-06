@@ -1,20 +1,5 @@
-const PALETTES = {
-  elektro:      {p:"#0c1d3d", a:"#f59e0b"},
-  installateur: {p:"#1a3050", a:"#dc2626"},
-  maler:        {p:"#2c3e50", a:"#e67e22"},
-  tischler:     {p:"#4a2c0a", a:"#d97706"},
-  fliesenleger: {p:"#0f3460", a:"#0891b2"},
-  schlosser:    {p:"#1c1c2e", a:"#64748b"},
-  dachdecker:   {p:"#3b1f0a", a:"#b45309"},
-  zimmerei:     {p:"#1a3c28", a:"#a16207"},
-  maurer:       {p:"#2d2d2d", a:"#ea580c"},
-  bodenleger:   {p:"#2d1b69", a:"#b45309"},
-  glaser:       {p:"#0c4a6e", a:"#0891b2"},
-  gaertner:     {p:"#14532d", a:"#15803d"},
-  klima:        {p:"#0c2340", a:"#0284c7"},
-  reinigung:    {p:"#0f2942", a:"#0ea5e9"},
-  sonstige:     {p:"#1e293b", a:"#3b82f6"},
-};
+// Farben kommen aus custom_* DB-Feldern (gesetzt via Branchengruppe oder User-Override)
+const DEFAULT_PAL = {p:"#1a1a1a", a:"#b08d57"};
 
 const STIL_R = {professional:"6px", modern:"14px", traditional:"4px"};
 const STIL_FONT = {professional:"Inter", modern:"DM Sans", traditional:"Source Serif 4"};
@@ -60,7 +45,7 @@ export async function onRequestPost({request, env}) {
     }
 
     // 5. Neue Leistungen-Sektion mit Sonnet generieren (Partial Regen)
-    const pal  = PALETTES[order.branche] || PALETTES.sonstige;
+    const pal  = {p: order.custom_color || DEFAULT_PAL.p, a: order.custom_accent || DEFAULT_PAL.a};
     const r    = STIL_R[order.stil]    || "6px";
     const font = STIL_FONT[order.stil] || "Inter";
 

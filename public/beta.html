@@ -208,23 +208,22 @@
 
     <!-- Feedback form -->
     <div class="fb-card">
-      <h2>Dein Feedback</h2>
-      <p class="fb-sub">Sei ehrlich — Kritik hilft uns mehr als Lob. Jede Antwort zaehlt.</p>
+      <h2>Kurzes Feedback</h2>
+      <p class="fb-sub">Dauert 2 Minuten. Sei ehrlich — Kritik hilft uns mehr als Lob.</p>
 
       <div id="form-content">
-        <div class="field-row">
-          <div class="field">
-            <label>Dein Name *</label>
-            <input type="text" id="f-name" placeholder="Max Mustermann"/>
-          </div>
-          <div class="field">
-            <label>Welchen Beruf hast du getestet?</label>
-            <input type="text" id="f-beruf" placeholder="z.B. Elektriker, Friseur ..."/>
-          </div>
+        <div class="field">
+          <label>Dein Name *</label>
+          <input type="text" id="f-name" placeholder="Vorname reicht"/>
+        </div>
+
+        <div class="field">
+          <label>Welchen Beruf hast du getestet?</label>
+          <input type="text" id="f-beruf" placeholder="z.B. Elektriker, Friseur ..."/>
         </div>
 
         <div class="stars-wrap">
-          <span class="stars-label">Gesamteindruck der fertigen Website? *</span>
+          <span class="stars-label">Wie sieht die fertige Website aus? *</span>
           <div class="stars" id="stars">
             <button class="star" data-val="1" type="button">&#9733;</button>
             <button class="star" data-val="2" type="button">&#9733;</button>
@@ -234,45 +233,45 @@
           </div>
         </div>
 
+        <!-- Fragebogen-Erlebnis als Buttons -->
         <div class="field">
-          <label>Wie war der Fragebogen? (Verstaendlichkeit, Laenge, Ablauf)</label>
-          <textarea id="f-gut" placeholder="War alles klar? Hat etwas gefehlt? War es zu lang?"></textarea>
+          <label>Wie war das Ausfuellen?</label>
+          <div id="flow-btns" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="flow-opt" data-val="einfach" onclick="selectFlow(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Einfach und schnell</button>
+            <button type="button" class="flow-opt" data-val="ok" onclick="selectFlow(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Ging so</button>
+            <button type="button" class="flow-opt" data-val="umstaendlich" onclick="selectFlow(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Zu umstaendlich</button>
+          </div>
         </div>
 
+        <!-- Preis -->
         <div class="field">
-          <label>Wie findest du das Design der generierten Website?</label>
-          <textarea id="f-design" placeholder="Sieht es professionell aus? Wuerdest du glauben, dass das eine echte Firma ist?"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Sind dir Fehler aufgefallen oder hat etwas nicht funktioniert?</label>
-          <textarea id="f-schlecht" placeholder="Buttons, Ladezeiten, Texte, Fotos — alles was nicht passt"></textarea>
-        </div>
-
-        <!-- Preis-Frage als Buttons -->
-        <div class="field">
-          <label>Wuerdest du als Selbststaendiger 16 EUR/Monat dafuer zahlen? *</label>
+          <label>Wuerdest du als Selbststaendiger 20 EUR/Monat dafuer zahlen?</label>
           <div id="price-btns" style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" class="price-opt" data-val="nein" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Nein, zu teuer</button>
             <button type="button" class="price-opt" data-val="ja" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Ja, fairer Preis</button>
-            <button type="button" class="price-opt" data-val="mehr" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Wuerde sogar mehr zahlen</button>
+            <button type="button" class="price-opt" data-val="mehr" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Wuerde mehr zahlen</button>
           </div>
         </div>
 
-        <!-- Differenzierung als Buttons -->
+        <!-- Differenzierung -->
         <div class="field">
-          <label>Unterscheidet sich SiteReady von anderen Anbietern (Wix, Jimdo, ChatGPT)? *</label>
+          <label>Hebt sich SiteReady von Wix, Jimdo oder ChatGPT ab?</label>
           <div id="diff-btns" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="button" class="diff-opt" data-val="gleich" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Kaum ein Unterschied</button>
-            <button type="button" class="diff-opt" data-val="etwas" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Etwas besser/anders</button>
-            <button type="button" class="diff-opt" data-val="klar" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Klar unterschiedlich</button>
+            <button type="button" class="diff-opt" data-val="gleich" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Sieht gleich aus</button>
+            <button type="button" class="diff-opt" data-val="etwas" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Etwas anders</button>
+            <button type="button" class="diff-opt" data-val="klar" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Klar besser</button>
           </div>
         </div>
 
+        <!-- Offene Felder am Ende -->
         <div class="field">
-          <label>Sonstige Anmerkungen</label>
-          <textarea id="f-sonstiges" placeholder="Alles was dir noch einfaellt ..."></textarea>
-          <div class="hint">Alle Antworten sind freiwillig — aber jedes Detail hilft.</div>
+          <label>Was hat dich gestoert oder nicht funktioniert?</label>
+          <textarea id="f-schlecht" placeholder="Fehler, unklare Stellen, langsame Ladezeiten ..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Was wuerdest du aendern oder vermisst du etwas?</label>
+          <textarea id="f-sonstiges" placeholder="Ideen, Wuensche, Anmerkungen ..."></textarea>
         </div>
 
         <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Feedback absenden</button>
@@ -300,26 +299,21 @@
   const SUPABASE_KEY = "sb_publishable_u1yaQuqOp0qNhJHdiOU7Tw_hzTr0-MG";
 
   let rating = 0;
+  let flowAnswer = "";
   let priceAnswer = "";
   let diffAnswer = "";
 
-  function selectPrice(btn) {
-    priceAnswer = btn.dataset.val;
-    document.querySelectorAll(".price-opt").forEach(b => {
+  function selectOpt(btn, cls, setter) {
+    setter(btn.dataset.val);
+    document.querySelectorAll("." + cls).forEach(b => {
       b.style.borderColor = b === btn ? "#111" : "#e5e7eb";
       b.style.background = b === btn ? "#111" : "#fff";
       b.style.color = b === btn ? "#fff" : "#555";
     });
   }
-
-  function selectDiff(btn) {
-    diffAnswer = btn.dataset.val;
-    document.querySelectorAll(".diff-opt").forEach(b => {
-      b.style.borderColor = b === btn ? "#111" : "#e5e7eb";
-      b.style.background = b === btn ? "#111" : "#fff";
-      b.style.color = b === btn ? "#fff" : "#555";
-    });
-  }
+  function selectFlow(btn) { selectOpt(btn, "flow-opt", v => flowAnswer = v); }
+  function selectPrice(btn) { selectOpt(btn, "price-opt", v => priceAnswer = v); }
+  function selectDiff(btn) { selectOpt(btn, "diff-opt", v => diffAnswer = v); }
 
   const stars = document.querySelectorAll(".star");
   stars.forEach(star => {
@@ -349,11 +343,10 @@
       name,
       beruf: document.getElementById("f-beruf").value.trim() || null,
       rating,
-      was_gut: document.getElementById("f-gut").value.trim() || null,
-      design_feedback: document.getElementById("f-design").value.trim() || null,
-      was_schlecht: document.getElementById("f-schlecht").value.trim() || null,
+      fragebogen_erlebnis: flowAnswer || null,
       preis_bewertung: priceAnswer || null,
       differenzierung: diffAnswer || null,
+      was_schlecht: document.getElementById("f-schlecht").value.trim() || null,
       sonstiges: document.getElementById("f-sonstiges").value.trim() || null,
       created_at: new Date().toISOString()
     };

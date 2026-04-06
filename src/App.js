@@ -224,7 +224,6 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .lp-faq-sticky{position:static!important}
   .lp-cta-inner{grid-template-columns:1fr!important;text-align:center}
   .lp-cta-stats{flex-direction:row!important;justify-content:center!important;gap:32px!important}
-  .lp-branchen-card{grid-template-columns:1fr!important}
   .lp-footer-cols{gap:32px!important}
   .lp-hamburger{display:flex!important;align-items:center;justify-content:center;width:44px;height:44px;border:none;background:transparent;cursor:pointer;border-radius:8px;padding:0;flex-shrink:0}
   .lp-mob-menu{display:block!important}
@@ -256,7 +255,6 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .lp-compare table{font-size:.8rem!important}
   .lp-compare table th,.lp-compare table td{padding:10px 12px!important}
   .lp-compare{position:relative}
-  .lp-branchen-card{grid-template-columns:1fr!important}
   footer{padding:48px 0 32px!important}
   .pt-topbar{padding:0 16px!important}
   .pt-email{display:none!important}

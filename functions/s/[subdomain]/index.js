@@ -181,7 +181,7 @@ export async function onRequestGet({params, env}) {
     }
   } else if (o.url_hero) {
     // Standard + full: Hintergrundbild
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.50)),url('${o.url_hero}') center/cover no-repeat!important}` +
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url('${o.url_hero}') center/cover no-repeat!important}` +
       `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
       `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
       `#sr-hero .hero-btns .btn{text-shadow:none}` +

@@ -95,7 +95,7 @@ export async function onRequestGet({params, env}) {
       const items = trustItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
       // Trust-Items direkt nach den Hero-Buttons einfuegen (innerhalb hero-inner)
       const trustInHero = `<div class="hero-trust">${items}</div>`;
-      const trustStyle = `<style>.hero-trust{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,.12)}.hero-trust .trust-item{color:rgba(255,255,255,.7);font-size:.8rem;font-weight:500}.hero-trust .trust-item svg{color:rgba(255,255,255,.45);width:14px;height:14px}@media(max-width:768px){.hero-trust{gap:8px 16px;margin-top:28px;padding-top:20px}.hero-trust .trust-item{font-size:.75rem}}</style>`;
+      const trustStyle = `<style>.hero-trust{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,.12)}.hero-trust .trust-item{color:rgba(255,255,255,.7);font-size:.8rem;font-weight:500}.hero-trust .trust-item svg{color:rgba(255,255,255,.45);width:14px;height:14px}.hero.text-center .hero-trust{justify-content:center}@media(max-width:768px){.hero-trust{gap:8px 16px;margin-top:28px;padding-top:20px}.hero-trust .trust-item{font-size:.75rem}}</style>`;
       html = html.replace(/(<div class="hero-btns">[\s\S]*?<\/div>)/, '$1\n' + trustInHero);
       html = html.replace("<!-- TRUST -->", "");
       html = html.replace('</head>', trustStyle + '</head>');
@@ -153,6 +153,7 @@ export async function onRequestGet({params, env}) {
 .hero h1{font-size:clamp(2.5rem,6vw,4rem)!important;max-width:100%;font-weight:${heroMinH1Weight}!important}
 .hero-desc{text-align:center;max-width:480px}
 .hero-btns{justify-content:center}
+.hero-trust{justify-content:center}
 .hero-sub{margin-bottom:16px}
 .hero-accent-line{display:block!important;width:48px;height:${isElegant ? "1px" : "2px"};background:var(--accent);margin:16px auto 24px;opacity:.6}
 </style>`;
@@ -183,7 +184,8 @@ export async function onRequestGet({params, env}) {
     const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.50)),url('${o.url_hero}') center/cover no-repeat!important}` +
       `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
       `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
-      `#sr-hero .hero-btns .btn{text-shadow:none}</style>`;
+      `#sr-hero .hero-btns .btn{text-shadow:none}` +
+      `#sr-hero .hero-trust .trust-item{text-shadow:0 1px 8px rgba(0,0,0,.4)}</style>`;
     html = html.replace('</head>', heroStyle + '</head>');
   }
 

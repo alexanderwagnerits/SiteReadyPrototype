@@ -156,12 +156,15 @@ export async function onRequestGet({params, env}) {
     // Split: Bild rechts neben dem Text
     if (o.url_hero) {
       const heroStyle = `<style>` +
-        `.hero-split-img{display:none}` +
+        `.hero{min-height:auto!important}` +
+        `.hero-split-img{margin-top:28px;border-radius:${heroImgR};overflow:hidden;max-width:480px}` +
+        `.hero-split-img img{width:100%;height:auto;display:block;border-radius:${heroImgR};aspect-ratio:16/10;object-fit:cover}` +
         `@media(min-width:900px){` +
+        `.hero{min-height:85vh!important;min-height:85svh!important}` +
         `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-top:80px!important;padding-bottom:80px!important}` +
         `.hero-split-text{grid-column:1}` +
-        `.hero-split-img{display:block!important;grid-column:2;border-radius:${heroImgR};overflow:hidden}` +
-        `.hero-split-img img{width:100%;display:block;border-radius:${heroImgR}}` +
+        `.hero-split-img{grid-column:2;margin-top:0;max-width:none}` +
+        `.hero-split-img img{aspect-ratio:4/3}` +
         `.hero h1{font-size:clamp(2.2rem,4vw,3.2rem)!important}` +
         `}</style>`;
       // Alle Text-Kinder von hero-inner in einen Wrapper wrappen

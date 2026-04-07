@@ -80,7 +80,7 @@ a{color:inherit}
 /* ══════════════════════════════════════════════════════
    HERO
    ══════════════════════════════════════════════════════ */
-.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:100vh;overflow:hidden}
+.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:100vh;min-height:100svh;overflow:hidden}
 .hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:56px 28px 40px}
 .hero h1{font-size:clamp(2.8rem,6.5vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:14px;max-width:700px}
 .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.7);font-weight:500;margin-bottom:12px}

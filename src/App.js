@@ -317,7 +317,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 }`;
 
 const pCss=`
-.pt-layout{display:flex;height:100vh;overflow:hidden}
+.pt-layout{display:flex;height:100vh;height:100dvh;overflow:hidden}
 .pt-sb{width:236px;background:#111111;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
 .pt-sb-top{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
 .pt-sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}

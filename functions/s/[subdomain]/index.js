@@ -157,15 +157,14 @@ export async function onRequestGet({params, env}) {
     if (o.url_hero) {
       const heroStyle = `<style>` +
         `.hero-split-img{margin-top:32px;border-radius:${heroImgR};overflow:hidden}` +
-        `.hero-split-img img{width:100%;height:auto;display:block;border-radius:${heroImgR};aspect-ratio:16/10;object-fit:cover}` +
+        `.hero-split-img img{width:100%;display:block;border-radius:${heroImgR};aspect-ratio:16/10;object-fit:cover}` +
         `@media(min-width:900px){` +
-        `.hero{position:relative;overflow:hidden}` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:0;align-items:center;padding-right:0!important}` +
-        `.hero-split-text{grid-column:1;padding-right:48px}` +
-        `.hero-split-img{grid-column:2;margin-top:0;position:absolute;right:0;top:0;bottom:0;width:45%;border-radius:0}` +
-        `.hero-split-img img{width:100%;height:100%;object-fit:cover;border-radius:0;aspect-ratio:auto}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center}` +
+        `.hero-split-text{grid-column:1}` +
+        `.hero-split-img{grid-column:2;margin-top:0;border-radius:${heroImgR};overflow:hidden;align-self:stretch;display:flex}` +
+        `.hero-split-img img{height:100%;min-height:420px;max-height:70vh;aspect-ratio:auto;object-fit:cover;border-radius:${heroImgR}}` +
         `.hero h1{font-size:clamp(2.4rem,4.5vw,3.5rem)!important}` +
-        `.hero-desc{font-size:1.05rem!important;max-width:440px}` +
+        `.hero-desc{font-size:1.05rem!important}` +
         `}</style>`;
       // Alle Text-Kinder von hero-inner in einen Wrapper wrappen
       html = html.replace(

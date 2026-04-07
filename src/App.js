@@ -283,12 +283,37 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
   .sp-incl-grid{grid-template-columns:1fr!important}
   .sp-name-grid{grid-template-columns:1fr!important}
 }
+@media(max-width:767px){
+  .pt-info-row{grid-template-columns:120px 1fr!important}
+  .pt-about-grid{grid-template-columns:repeat(3,1fr)!important}
+  .pt-upload-hdr{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .pt-upload-hdr>div:last-child{justify-content:flex-start!important}
+  .pt-card{padding:18px 16px!important}
+  .pt-color-grid{grid-template-columns:1fr 1fr!important}
+  .pt-layout-grid{grid-template-columns:1fr!important}
+  .pt-font-grid{grid-template-columns:1fr!important}
+  .pt-impres-grid{grid-template-columns:1fr!important}
+  .pt-save-bar{flex-direction:column!important;gap:10px!important;text-align:center!important}
+  .pt-save-bar>div:last-child{width:100%!important;justify-content:center!important}
+  .pt-rechnung-item{flex-wrap:wrap!important;gap:10px!important}
+  .pt-rechnung-item>div:first-child{width:100%!important}
+}
 @media(max-width:560px){
   .pt-info-row{grid-template-columns:1fr!important}
   .pt-field-grid{grid-template-columns:1fr!important}
   .pt-tab-nav{width:100%!important;overflow-x:auto!important}
   .pt-addr-grid{grid-template-columns:1fr!important}
   .pt-photo-grid{grid-template-columns:repeat(3,1fr)!important}
+  .pt-variant-row{flex-direction:column!important}
+  .pt-variant-row>button{width:100%!important}
+  .pt-about-grid{grid-template-columns:repeat(2,1fr)!important}
+  .pt-fakten-grid{grid-template-columns:1fr!important}
+  .pt-color-grid{grid-template-columns:1fr!important}
+  .pt-logo-preview{grid-template-columns:1fr!important}
+  .pt-toast{left:16px!important;right:16px!important;bottom:16px!important;justify-content:center!important}
+  .pt-faq-row{grid-template-columns:1fr!important}
+  .pt-faq-row>button{position:absolute!important;top:8px!important;right:8px!important}
+  .pt-faq-row{position:relative!important}
 }`;
 
 const pCss=`
@@ -2042,7 +2067,7 @@ function Portal({session,onLogout}){
   const VariantPicker=({section,field})=>{
     const opts=VARIANTEN[section]||[];
     const current=order?.[field]||opts[0]?.value;
-    return <div style={{display:"flex",gap:10,marginBottom:24}}>{opts.map(v=>{
+    return <div className="pt-variant-row" style={{display:"flex",gap:10,marginBottom:24}}>{opts.map(v=>{
       const active=current===v.value;
       return <button key={v.value} onClick={()=>setOrder(o=>({...o,[field]:v.value}))} style={{
         flex:1,padding:"14px 12px",border:active?"2px solid "+T.accent:"1.5px solid "+T.bg3,borderRadius:T.rSm,
@@ -2189,6 +2214,7 @@ function Portal({session,onLogout}){
   .pt-hbtns{flex-direction:column}
   .pt-hbtns a,.pt-hbtns button{width:100%;justify-content:center}
   .pt-ast{display:none}
+  .pt-mb>div[class]{border-radius:10px}
 }
 `;
   return(<div className="pt-layout"><style>{css+pCss}</style>
@@ -2197,7 +2223,12 @@ function Portal({session,onLogout}){
       <button className="pt-mob-hamburger" onClick={()=>setPtSbOpen(true)} aria-label="Menü">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-      <img src="/logo.png" alt="SiteReady" onError={e=>e.currentTarget.style.display="none"}/>
+      <img src="/logo.png" alt="SiteReady" style={{flex:"0 0 auto"}} onError={e=>e.currentTarget.style.display="none"}/>
+      <div style={{flex:1}}/>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <div style={{width:6,height:6,borderRadius:"50%",background:T.greenBright,animation:"sb-blink 2.5s ease-in-out infinite"}}/>
+        <span style={{fontSize:".72rem",fontWeight:600,color:"rgba(255,255,255,.45)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:140}}>{sub}.siteready.at</span>
+      </div>
     </div>
     {/* Mobile Overlay */}
     <div className={`pt-mob-overlay${ptSbOpen?" open":""}`} onClick={()=>setPtSbOpen(false)}/>
@@ -2292,7 +2323,7 @@ function Portal({session,onLogout}){
       </>}
       <div className="pt-mb">
       {isDirty&&page!=="impressum"&&(
-        <div style={{position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between",
+        <div className="pt-save-bar" style={{position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between",
           padding:"12px 20px",background:"#111",borderRadius:T.rSm,boxShadow:"0 4px 16px rgba(0,0,0,.15)",marginBottom:12}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:T.amber}}/>
@@ -2340,7 +2371,7 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Toast */}
-      {toastMsg&&<div style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:T.greenBright}}>&#10003;</span>{toastMsg}</div>}
+      {toastMsg&&<div className="pt-toast" style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:T.greenBright}}>&#10003;</span>{toastMsg}</div>}
       {/* Bild-Crop */}
       {cropData&&<CropModal file={cropData.file} aspectKey={cropData.key}
         onCancel={()=>setCropData(null)}
@@ -2485,7 +2516,7 @@ function Portal({session,onLogout}){
           {/* Logo upload */}
           {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
@@ -2500,7 +2531,7 @@ function Portal({session,onLogout}){
             </div>
             {url&&(<div style={{marginBottom:12}}>
               <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <div className="pt-logo-preview" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 <div>
                   <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
                   <div style={{background:"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
@@ -2528,7 +2559,7 @@ function Portal({session,onLogout}){
           {/* Hero-Bild upload */}
           {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];const isPlaceholder=!!order?.hero_is_placeholder;return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
+            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:T.amberLight,color:T.amberText,marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch für einen persönlicheren Auftritt":"Hintergrundbild für den oberen Bereich der Website"}</div>
@@ -2575,12 +2606,12 @@ function Portal({session,onLogout}){
           {(()=>{const uf=order.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
           return<>
             <Dropdown label="Unternehmensform" value={uf||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
-            {uf==="einzelunternehmen"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            {uf==="einzelunternehmen"&&<div className="pt-impres-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <Field label="Vorname Inhaber" value={order.vorname||""} onChange={upOrder("vorname")} placeholder="Maria"/>
               <Field label="Nachname Inhaber" value={order.nachname||""} onChange={upOrder("nachname")} placeholder="Muster"/>
             </div>}
             {uf==="gesnbr"&&<Field label="Gesellschafter" value={order.gesellschafter||""} onChange={upOrder("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
-            {hasFB&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            {hasFB&&<div className="pt-impres-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a"/>
               <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="HG Wien"/>
             </div>}
@@ -2777,7 +2808,7 @@ function Portal({session,onLogout}){
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website."/>
           {!(order.sections_visible?.faq)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
-          {(order.faq||[]).map((f,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
+          {(order.faq||[]).map((f,i)=><div key={i} className="pt-faq-row" style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
             <div style={{display:"flex",flexDirection:"column",gap:6}}>
               <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
               <textarea value={f.antwort||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],antwort:e.target.value};upOrder("faq")(arr);}} placeholder="Antwort" rows={2} style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical"}}/>
@@ -2804,7 +2835,7 @@ function Portal({session,onLogout}){
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Maximal 4 Einträge."/>
           {!(order.sections_visible?.fakten)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          <div className="pt-fakten-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
               <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
               <input value={f.label||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],label:e.target.value};upOrder("fakten")(arr);}} placeholder="Jahre Erfahrung" style={{flex:1,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
@@ -2882,7 +2913,7 @@ function Portal({session,onLogout}){
               {/* Farben einzeln */}
               <div style={{marginTop:20,marginBottom:8}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Farben einzeln anpassen</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+                <div className="pt-color-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
                   <ColorPicker label="Primärfarbe" hint="Navigation, Überschriften, Über-uns" field="custom_color" fallback={s.primary}/>
                   <ColorPicker label="Akzentfarbe" hint="Buttons, Links, Highlights" field="custom_accent" fallback={s.accent}/>
                   <ColorPicker label="Hintergrund" hint="Seitenhintergrund" field="custom_bg" fallback={s.bg}/>
@@ -2893,7 +2924,7 @@ function Portal({session,onLogout}){
               </div>
 
               {/* Schriftart + Ecken als Dropdowns */}
-              <div style={{marginTop:20,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <div className="pt-font-grid" style={{marginTop:20,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
                 <Dropdown label="Schriftart" value={order.custom_font||""} onChange={upOrder("custom_font")} options={FONT_OPTIONS} placeholder="Standard (vom Stil)"/>
                 <Dropdown label="Ecken" value={order.custom_radius||""} onChange={upOrder("custom_radius")} options={RADIUS_OPTIONS} placeholder="Standard (vom Stil)"/>
               </div>
@@ -2912,7 +2943,7 @@ function Portal({session,onLogout}){
               ];
               const currentLayout=order.layout||"standard";
               return<>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
+                <div className="pt-layout-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
                   {LAYOUTS.map(lo=>{
                     const active=lo.value===currentLayout;
                     return<button key={lo.value} onClick={()=>{upOrder("layout")(lo.value);if(lo.value==="ausfuehrlich"){const sv={...(order.sections_visible||{}),faq:true,fakten:true};upOrder("sections_visible")(sv);}}} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s",position:"relative"}}>
@@ -3010,7 +3041,7 @@ function Portal({session,onLogout}){
             const amount=(c.amount/100).toFixed(2).replace(".",",");
             const statusColor=c.status==="succeeded"?T.green:T.amber;
             const statusLabel=c.status==="succeeded"?"Bezahlt":"Ausstehend";
-            return(<div key={c.id} style={{display:"flex",alignItems:"center",gap:16,padding:"14px 16px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
+            return(<div key={c.id} className="pt-rechnung-item" style={{display:"flex",alignItems:"center",gap:16,padding:"14px 16px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
               <div style={{flex:1}}>
                 <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{c.description||"SiteReady Standard"}</div>
                 <div style={{fontSize:".8rem",color:T.textMuted,marginTop:2}}>{date}</div>
@@ -3224,7 +3255,7 @@ function Portal({session,onLogout}){
         {/* Logo */}
         {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
@@ -3239,7 +3270,7 @@ function Portal({session,onLogout}){
             </div>
             {url&&(<div style={{marginBottom:12}}>
               <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <div className="pt-logo-preview" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 <div>
                   <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
                   <div style={{background:"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
@@ -3267,7 +3298,7 @@ function Portal({session,onLogout}){
         {/* Hero-Bild */}
         {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
+            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild für den oberen Bereich der Website</div>
@@ -3311,7 +3342,7 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Über-uns-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
           <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Zeigen Sie Ihren Betrieb — Team, Werkstatt, Atmosphäre, Referenzen. Bis zu 8 Fotos.</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+          <div className="pt-about-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
             {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
               <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
                 <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -3334,7 +3365,7 @@ function Portal({session,onLogout}){
         {/* Preisliste */}
         {getBrancheFeatures(order?.branche).includes("preisliste")&&(()=>{const url=assetUrls.preisliste;const busy=uploading.preisliste;return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
+            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Preisliste <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>PDF oder Bild Ihrer Preisliste — wird auf der Website als Download angeboten</div>

@@ -2103,7 +2103,7 @@ function Portal({session,onLogout}){
   };
   const pm=pageMeta[page]||{title:page};
   const pCss=`
-.pt-layout{display:flex;height:100vh;overflow:hidden;font-family:'DM Sans',system-ui,sans-serif}
+.pt-layout{display:flex;height:100vh;height:100dvh;overflow:hidden;font-family:'DM Sans',system-ui,sans-serif}
 .pt-sb{width:236px;background:#111111;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
 .pt-sb-top{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
 .pt-sb-brand{margin-bottom:18px}
@@ -2206,13 +2206,12 @@ function Portal({session,onLogout}){
   .pt-sb{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
   .pt-sb.pt-sb-open{transform:translateX(0)}
   .pt-mob-topbar{display:flex}
-  .pt-main{overflow-y:auto}
   .pt-mh{padding:16px 16px 0}
   .pt-mh-title{font-size:1.15rem}
   .pt-mh-sub{font-size:.82rem;margin-top:2px;line-height:1.5}
   .pt-bc{font-size:.76rem;margin-bottom:4px}
   .pt-mh-line{margin:12px 16px 0}
-  .pt-mb{padding:14px 14px 24px;gap:12px}
+  .pt-mb{padding:14px 14px 40px;gap:12px;-webkit-overflow-scrolling:touch}
   .pt-mb>div{border-radius:10px!important;padding-left:16px!important;padding-right:16px!important}
   .pt-hero-card{padding:16px!important}
   .pt-hbtns{flex-direction:column}

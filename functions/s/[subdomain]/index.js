@@ -93,13 +93,10 @@ export async function onRequestGet({params, env}) {
     if (o.lieferservice) trustItems.push({l:"Lieferservice",i:tIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`)});
     if (trustItems.length > 0) {
       const items = trustItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
-      const trustHtml = `<div class="trust trust-in-hero"><div class="w"><div class="trust-items">${items}</div></div></div>`;
-      const trustStyle = `<style>.trust-in-hero{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.08);padding:14px 0!important;z-index:3}.trust-in-hero .trust-item{color:rgba(255,255,255,.85)}.trust-in-hero .trust-item svg{color:rgba(255,255,255,.6)}@media(max-width:768px){.trust-in-hero .trust-items{justify-content:flex-start;gap:8px 16px}.trust-in-hero .trust-item{font-size:.75rem}}</style>`;
-      // Hero braucht position:relative und Platz unten fuer die Trust-Leiste
-      html = html.replace(/<section([^>]*id="sr-hero")/i, '<section style="position:relative;padding-bottom:56px"$1');
-      // Trust-Leiste innerhalb der Hero-Section einfuegen (vor </section> das vor <!-- TRUST --> steht)
-      html = html.replace(/(<\/section>\s*\n*\s*<!-- TRUST -->)/, trustHtml + '\n</section>\n');
-      // Alten Trust-Placeholder entfernen
+      // Trust-Items direkt nach den Hero-Buttons einfuegen (innerhalb hero-inner)
+      const trustInHero = `<div class="hero-trust">${items}</div>`;
+      const trustStyle = `<style>.hero-trust{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,.12)}.hero-trust .trust-item{color:rgba(255,255,255,.7);font-size:.8rem;font-weight:500}.hero-trust .trust-item svg{color:rgba(255,255,255,.45);width:14px;height:14px}@media(max-width:768px){.hero-trust{gap:8px 16px;margin-top:28px;padding-top:20px}.hero-trust .trust-item{font-size:.75rem}}</style>`;
+      html = html.replace(/(<div class="hero-btns">[\s\S]*?<\/div>)/, '$1\n' + trustInHero);
       html = html.replace("<!-- TRUST -->", "");
       html = html.replace('</head>', trustStyle + '</head>');
     } else {
@@ -164,13 +161,13 @@ export async function onRequestGet({params, env}) {
     // Split: Bild rechts neben dem Text
     if (o.url_hero) {
       const heroStyle = `<style>` +
-        `.hero-split-img{margin-top:32px;border-radius:${heroImgR};overflow:hidden}` +
+        `.hero-split-img{margin-top:28px;border-radius:${heroImgR};overflow:hidden}` +
         `.hero-split-img img{width:100%;display:block;border-radius:${heroImgR};aspect-ratio:16/10;object-fit:cover}` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1fr 1fr;gap:48px;align-items:center}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center}` +
         `.hero-split-text{grid-column:1}` +
-        `.hero-split-img{grid-column:2;margin-top:0;border-radius:${heroImgR};overflow:hidden}` +
-        `.hero-split-img img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:${heroImgR}}` +
+        `.hero-split-img{grid-column:2;margin-top:0;border-radius:${heroImgR};overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)}` +
+        `.hero-split-img img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:${heroImgR}}` +
         `.hero h1{font-size:clamp(2.4rem,4.5vw,3.5rem)!important}` +
         `.hero-desc{font-size:1.05rem!important}` +
         `}</style>`;

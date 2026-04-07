@@ -2201,9 +2201,11 @@ function Portal({session,onLogout}){
 .pt-mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
 .pt-mob-overlay.open{display:block}
 @media(max-width:767px){
+  .pt-layout{flex-direction:column}
   .pt-sb{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
   .pt-sb.pt-sb-open{transform:translateX(0)}
   .pt-mob-topbar{display:flex}
+  .pt-main{overflow-y:auto}
   .pt-mh{padding:16px 16px 0}
   .pt-mh-title{font-size:1.15rem}
   .pt-mh-sub{font-size:.82rem;margin-top:2px}
@@ -2214,7 +2216,6 @@ function Portal({session,onLogout}){
   .pt-hbtns{flex-direction:column}
   .pt-hbtns a,.pt-hbtns button{width:100%;justify-content:center}
   .pt-ast{display:none}
-  .pt-mb>div[class]{border-radius:10px}
 }
 `;
   return(<div className="pt-layout"><style>{css+pCss}</style>

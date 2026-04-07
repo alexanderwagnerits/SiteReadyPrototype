@@ -2195,9 +2195,10 @@ function Portal({session,onLogout}){
 .pt-wiz-collapsed:hover{background:#F5F5F2}
 .pt-wiz-cbadge{writing-mode:vertical-rl;text-orientation:mixed;font-size:.72rem;font-weight:700;color:#6B7280;letter-spacing:.02em}
 .pt-wiz-new{font-size:.6rem;font-weight:700;color:#7c3aed;background:#f5f3ff;padding:2px 6px;border-radius:4px;border:1px solid #ddd6fe;margin-left:auto;flex-shrink:0}
-.pt-mob-topbar{display:none;align-items:center;gap:10px;padding:12px 16px;background:#111;flex-shrink:0}
-.pt-mob-topbar img{height:20px;filter:brightness(0) invert(1);opacity:.88}
-.pt-mob-hamburger{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7)}
+.pt-mob-topbar{display:none;align-items:center;gap:12px;padding:14px 16px;background:#111;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.pt-mob-topbar img{height:22px;filter:brightness(0) invert(1);opacity:.9}
+.pt-mob-hamburger{background:none;border:none;cursor:pointer;padding:8px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8);border-radius:8px;min-width:44px;min-height:44px;margin:-4px;transition:background .12s}
+.pt-mob-hamburger:active{background:rgba(255,255,255,.1)}
 .pt-mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
 .pt-mob-overlay.open{display:block}
 @media(max-width:767px){
@@ -2208,27 +2209,34 @@ function Portal({session,onLogout}){
   .pt-main{overflow-y:auto}
   .pt-mh{padding:16px 16px 0}
   .pt-mh-title{font-size:1.15rem}
-  .pt-mh-sub{font-size:.82rem;margin-top:2px}
+  .pt-mh-sub{font-size:.82rem;margin-top:2px;line-height:1.5}
   .pt-bc{font-size:.76rem;margin-bottom:4px}
   .pt-mh-line{margin:12px 16px 0}
-  .pt-mb{padding:16px 16px 24px}
-  .pt-hero-card{padding:18px 16px}
+  .pt-mb{padding:14px 14px 24px;gap:12px}
+  .pt-mb>div{border-radius:10px!important;padding-left:16px!important;padding-right:16px!important}
+  .pt-hero-card{padding:16px!important}
   .pt-hbtns{flex-direction:column}
   .pt-hbtns a,.pt-hbtns button{width:100%;justify-content:center}
   .pt-ast{display:none}
+  .pt-hurl{font-size:.92rem!important;word-break:break-all}
+  .pt-hhint{font-size:.78rem!important;line-height:1.5}
+  .pt-trial-banner{flex-direction:column!important;padding:18px 16px!important;gap:12px!important;text-align:center}
+  .pt-trial-banner button{width:100%}
+  .pt-plan-modal>div{padding:24px 20px!important}
+  .pt-support-info{flex-direction:column!important;gap:16px!important}
 }
 `;
   return(<div className="pt-layout"><style>{css+pCss}</style>
     {/* Mobile Topbar */}
     <div className="pt-mob-topbar">
-      <button className="pt-mob-hamburger" onClick={()=>setPtSbOpen(true)} aria-label="Menü">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <button className="pt-mob-hamburger" onClick={()=>setPtSbOpen(true)} aria-label="Menü öffnen">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <img src="/logo.png" alt="SiteReady" style={{flex:"0 0 auto"}} onError={e=>e.currentTarget.style.display="none"}/>
       <div style={{flex:1}}/>
-      <div style={{display:"flex",alignItems:"center",gap:6}}>
-        <div style={{width:6,height:6,borderRadius:"50%",background:T.greenBright,animation:"sb-blink 2.5s ease-in-out infinite"}}/>
-        <span style={{fontSize:".72rem",fontWeight:600,color:"rgba(255,255,255,.45)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:140}}>{sub}.siteready.at</span>
+      <div style={{display:"flex",alignItems:"center",gap:7,background:"rgba(255,255,255,.06)",padding:"5px 10px",borderRadius:100,border:"1px solid rgba(255,255,255,.08)"}}>
+        <div style={{width:6,height:6,borderRadius:"50%",background:T.greenBright,animation:"sb-blink 2.5s ease-in-out infinite",flexShrink:0}}/>
+        <span style={{fontSize:".72rem",fontWeight:600,color:"rgba(255,255,255,.5)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:150}}>{sub}.siteready.at</span>
       </div>
     </div>
     {/* Mobile Overlay */}
@@ -2337,7 +2345,7 @@ function Portal({session,onLogout}){
         </div>
       )}
       {/* Trial-Banner */}
-      {order?.status==="trial"&&(<div style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+      {order?.status==="trial"&&(<div className="pt-trial-banner" style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
         <div>
           <div style={{fontWeight:800,fontSize:"1rem",color:"#fff",marginBottom:4}}>
             {trialDaysLeft>0?`Testphase: noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:"Testphase abgelaufen"}
@@ -2350,7 +2358,7 @@ function Portal({session,onLogout}){
       </div>)}
 
       {/* Plan-Modal */}
-      {showPlanModal&&(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>setShowPlanModal(false)}>
+      {showPlanModal&&(<div className="pt-plan-modal" style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:16}} onClick={()=>setShowPlanModal(false)}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"36px 32px",maxWidth:480,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
           <div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:6}}>Plan waehlen</div>
           <div style={{fontSize:".85rem",color:T.textSub,marginBottom:28}}>Karte wird erst nach der Testphase belastet. Jederzeit kündbar.</div>
@@ -3057,7 +3065,7 @@ function Portal({session,onLogout}){
 
       {/* Tab: Support */}
       {(tab==="konto"&&page==="support")&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
-        <div style={{background:T.accentLight,borderRadius:T.r,padding:"24px 28px",border:`1px solid rgba(143,163,184,.15)`,display:"flex",gap:32,flexWrap:"wrap"}}>
+        <div className="pt-support-info" style={{background:T.accentLight,borderRadius:T.r,padding:"24px 28px",border:`1px solid rgba(143,163,184,.15)`,display:"flex",gap:32,flexWrap:"wrap"}}>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>E-Mail Support</div>
             <a href="mailto:support@siteready.at" style={{fontSize:".95rem",fontWeight:700,color:T.dark,textDecoration:"none"}}>support@siteready.at</a>

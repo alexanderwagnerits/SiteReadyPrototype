@@ -162,15 +162,18 @@ export async function onRequestGet({params, env}) {
     // Split: Bild rechts neben dem Text
     if (o.url_hero) {
       const heroStyle = `<style>` +
-        `.hero-split-img{margin-top:28px;border-radius:${heroImgR};overflow:hidden}` +
-        `.hero-split-img img{width:100%;display:block;border-radius:${heroImgR};aspect-ratio:16/10;object-fit:cover}` +
+        `.hero{align-items:center!important}` +
+        `.hero-split-img{margin-top:24px;border-radius:${heroImgR};overflow:hidden}` +
+        `.hero-split-img img{width:100%;display:block;border-radius:${heroImgR};aspect-ratio:16/9;object-fit:cover}` +
         `@media(min-width:900px){` +
-        `.hero-inner{display:grid!important;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center}` +
+        `.hero-inner{display:grid!important;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;padding-top:100px!important;padding-bottom:64px!important}` +
         `.hero-split-text{grid-column:1}` +
-        `.hero-split-img{grid-column:2;margin-top:0;border-radius:${heroImgR};overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)}` +
-        `.hero-split-img img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:${heroImgR}}` +
-        `.hero h1{font-size:clamp(2.4rem,4.5vw,3.5rem)!important}` +
-        `.hero-desc{font-size:1.05rem!important}` +
+        `.hero-split-img{grid-column:2;margin-top:0;border-radius:${heroImgR};overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.25)}` +
+        `.hero-split-img img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:${heroImgR}}` +
+        `.hero h1{font-size:clamp(2.2rem,4vw,3.2rem)!important}` +
+        `}` +
+        `@media(min-width:1200px){` +
+        `.hero-split-img img{aspect-ratio:3/2}` +
         `}</style>`;
       // Alle Text-Kinder von hero-inner in einen Wrapper wrappen
       html = html.replace(
@@ -181,11 +184,11 @@ export async function onRequestGet({params, env}) {
     }
   } else if (o.url_hero) {
     // Standard + full: Hintergrundbild
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url('${o.url_hero}') center/cover no-repeat!important}` +
-      `#sr-hero h1,#hero h1{text-shadow:0 3px 24px rgba(0,0,0,.6)}` +
-      `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 10px rgba(0,0,0,.5)}` +
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.2) 40%,rgba(0,0,0,.5) 100%),url('${o.url_hero}') center/cover no-repeat!important}` +
+      `#sr-hero h1,#hero h1{text-shadow:0 2px 16px rgba(0,0,0,.5)}` +
+      `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 8px rgba(0,0,0,.4)}` +
       `#sr-hero .hero-btns .btn{text-shadow:none}` +
-      `#sr-hero .hero-trust .trust-item{text-shadow:0 1px 8px rgba(0,0,0,.4)}</style>`;
+      `#sr-hero .hero-trust .trust-item{text-shadow:0 1px 6px rgba(0,0,0,.3)}</style>`;
     html = html.replace('</head>', heroStyle + '</head>');
   }
 
@@ -654,10 +657,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const descMap = o.leistungen_beschreibungen || {};
     const checkIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     const cardStyleMap = {
-      klassisch:  "border:1px solid var(--sep,#e2e8f0);background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
-      modern:     "border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.07);background:#fff;transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
-      elegant:    "border:1px solid var(--sep,#e7e5e4);background:#fff;border-radius:2px;transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
-      custom:     "border:1px solid var(--sep,#e5e7eb);background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden",
+      klassisch:  "border:1px solid var(--sep,#e2e8f0);background:#fff;border-radius:var(--rLg,8px);box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.06);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden",
+      modern:     "border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden",
+      elegant:    "border:1px solid var(--sep,#e7e5e4);background:#fff;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.03);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden",
+      custom:     "border:1px solid var(--sep,#e5e7eb);background:#fff;border-radius:var(--rLg,8px);box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.06);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden",
     };
     const iconStyleMap = {
       klassisch: "width:42px;height:42px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0",
@@ -812,14 +815,14 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   // ── Serve-time Style Fixes (Hover + Responsive) ──
   const responsiveStyle = `<style>
 /* CSS Hover-Effekte (statt inline JS — funktioniert auch auf Touch/Keyboard) */
-.sr-card-hover{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s cubic-bezier(.22,1,.36,1)}
-.sr-card-hover:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.10)}
+.sr-card-hover{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease}
+.sr-card-hover:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06)}
 .sr-img-hover{transition:transform .3s}
 .sr-img-hover:hover{transform:scale(1.03)}
 .sr-partner-hover{transition:opacity .2s,filter .2s}
 .sr-partner-hover:hover{opacity:1!important;filter:none!important}
 .sr-social-icon:hover{background:rgba(255,255,255,.25)!important}
-.hero{min-height:100vh;min-height:100svh}
+.hero{min-height:92vh;min-height:92svh}
 @media(max-width:768px){
 /* Bewertungen: 3col → 1col */
 .sec-bew-grid{grid-template-columns:1fr!important}
@@ -840,18 +843,18 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 /* Team-Fokus: bis zu 4col → 2col */
 .sr-team-fokus{grid-template-columns:repeat(2,1fr)!important}
 /* Section-Padding verkleinern */
-.sec-faq,.sec-galerie{padding:64px 0!important}
-.sec-fakten,.sec-cta-block{padding:48px 0!important}
+.sec-faq,.sec-galerie{padding:56px 0!important}
+.sec-fakten,.sec-cta-block{padding:44px 0!important}
+/* Leistungen + Ueber + Kontakt */
+.leist,.ueber,.kontakt{padding:56px 0!important}
 }
 @media(max-width:640px){
-.hero{justify-content:center}
-.hero-inner{padding-top:24px!important;padding-bottom:24px!important}
 .sr-foto-grid{grid-template-columns:1fr 1fr!important}
 .sr-leist-grid{grid-template-columns:1fr!important}
-.sr-leist-grid div p{font-size:.85rem!important;line-height:1.65!important}
+.sr-leist-grid div p{font-size:.88rem!important;line-height:1.65!important}
 .sr-leist-grid div h3{font-size:.92rem!important}
 .kontakt-form-wrap{margin-bottom:24px}
-/* Fakten: 2col → 1col bei ganz schmal */
+/* Fakten: 2col bleibt */
 .sec-fakten [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
 /* Galerie: 2col → 1col bei ganz schmal */
 .sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr!important}

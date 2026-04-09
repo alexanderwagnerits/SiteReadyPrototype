@@ -1,10 +1,10 @@
 const STIL_CONFIG = {
-  klassisch:    {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
-  modern:       {p:"#18181b",a:"#4f46e5",bg:"#fafafa",s:"#e4e4e7",font:"Plus Jakarta Sans",url:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",r:"12px"},
-  elegant:      {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"2px"},
-  custom:       {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",font:"DM Sans",url:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",r:"8px"},
-  professional: {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
-  traditional:  {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"2px"},
+  klassisch:    {p:"#094067",a:"#0369a1",bg:"#f4f7fa",s:"#d8eefe",t:"#1e293b",tm:"#475569",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
+  modern:       {p:"#18181b",a:"#4f46e5",bg:"#fafafa",s:"#e4e4e7",t:"#18181b",tm:"#71717a",font:"Plus Jakarta Sans",url:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",r:"12px"},
+  elegant:      {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",t:"#2c2620",tm:"#6b6058",font:"Inter",fontHeading:"Cormorant Garamond",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap",r:"2px"},
+  custom:       {p:"#094067",a:"#0369a1",bg:"#f4f7fa",s:"#d8eefe",t:"#1e293b",tm:"#475569",font:"DM Sans",url:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",r:"8px"},
+  professional: {p:"#094067",a:"#0369a1",bg:"#f4f7fa",s:"#d8eefe",t:"#1e293b",tm:"#475569",font:"Inter",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",r:"4px"},
+  traditional:  {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",t:"#2c2620",tm:"#6b6058",font:"Inter",fontHeading:"Cormorant Garamond",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap",r:"2px"},
 };
 
 function buildImpressumRows(o) {
@@ -195,6 +195,11 @@ function legalShell(o, stil, subdomain, title, content) {
   const navHtml = buildLegalNav(o, stil, subdomain);
   const footerHtml = buildLegalFooter(o, stil, subdomain);
   const fontFamily = `'${stil.font}',system-ui,-apple-system,sans-serif`;
+  const headingFont = stil.fontHeading ? `'${stil.fontHeading}',Georgia,serif` : fontFamily;
+  const headingWeight = stil.fontHeading ? "500" : "700";
+  const textColor = stil.t || "#374151";
+  const textMuted = stil.tm || "#4b5563";
+  const isElegant = !!(stil.fontHeading);
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -205,14 +210,14 @@ function legalShell(o, stil, subdomain, title, content) {
 <style>
 @import url('${stil.url}');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:${fontFamily};background:#fff;color:#374151;line-height:1.75;-webkit-font-smoothing:antialiased}
+body{font-family:${fontFamily};background:#fff;color:${textColor};line-height:1.75;-webkit-font-smoothing:antialiased${isElegant ? ";letter-spacing:-.01em" : ""}}
 .wrap{max-width:680px;margin:0 auto;padding:64px 28px 96px}
-h1{font-size:1.6rem;font-weight:700;color:${stil.p};margin-bottom:4px;letter-spacing:-.02em}
-.h1-sub{font-size:.82rem;color:#9ca3af;margin-bottom:48px;font-weight:400}
-h2{font-size:.95rem;font-weight:700;color:${stil.p};margin:48px 0 16px;padding-top:32px;border-top:1px solid ${stil.s}}
+h1{font-family:${headingFont};font-size:${isElegant ? "1.8rem" : "1.6rem"};font-weight:${headingWeight};color:${stil.p};margin-bottom:4px;letter-spacing:-.02em}
+.h1-sub{font-size:.82rem;color:${textMuted};margin-bottom:48px;font-weight:400}
+h2{font-family:${headingFont};font-size:${isElegant ? "1.05rem" : ".95rem"};font-weight:${isElegant ? "500" : "700"};color:${stil.p};margin:48px 0 16px;padding-top:32px;border-top:1px solid ${stil.s}}
 h2:first-of-type{border-top:none;margin-top:0;padding-top:0}
-h3{font-size:.88rem;font-weight:600;color:#374151;margin:24px 0 8px}
-p,li{font-size:.88rem;color:#4b5563}
+h3{font-size:.88rem;font-weight:600;color:${textColor};margin:24px 0 8px}
+p,li{font-size:.88rem;color:${textMuted}}
 a{color:${stil.p};text-decoration:underline;text-decoration-color:${stil.s};text-underline-offset:2px;transition:text-decoration-color .2s}
 a:hover{text-decoration-color:${stil.p}}
 table{width:100%;border-collapse:collapse;margin:16px 0}
@@ -220,9 +225,9 @@ td{padding:10px 16px 10px 0;font-size:.88rem;vertical-align:top;border-bottom:1p
 td:first-child{font-weight:600;color:${stil.p};width:200px;white-space:nowrap}
 ul{list-style:none;padding:0}
 ul li{padding:4px 0;position:relative;padding-left:16px}
-ul li::before{content:'\\2013';position:absolute;left:0;color:#9ca3af}
-.meta{font-size:.78rem;color:#9ca3af;margin-top:6px;line-height:1.6}
-.note{margin-top:56px;padding-top:24px;border-top:1px solid ${stil.s};font-size:.8rem;color:#9ca3af;line-height:1.7}
+ul li::before{content:'\\2013';position:absolute;left:0;color:${textMuted}}
+.meta{font-size:.78rem;color:${textMuted};margin-top:6px;line-height:1.6}
+.note{margin-top:56px;padding-top:24px;border-top:1px solid ${stil.s};font-size:.8rem;color:${textMuted};line-height:1.7}
 @media(max-width:640px){td:first-child{width:auto;white-space:normal}td{display:block;padding:4px 0}td:first-child{padding-top:12px;border-bottom:none}}
 </style>
 </head>

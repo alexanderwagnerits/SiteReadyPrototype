@@ -12,7 +12,31 @@ export async function onRequestPost({request, env}) {
 
     let cleanUrl = url.trim();
     if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
+
+    // ── URL Auto-Detect: Typ erkennen ──
+    const urlHost = new URL(cleanUrl).hostname.toLowerCase();
+    const urlPath = new URL(cleanUrl).pathname.toLowerCase();
+    let importType = "website"; // default
+    if (/linktr\.ee|lnk\.bio|koji\.to|campsite\.bio|linkin\.bio/.test(urlHost)) importType = "linktree";
+    else if (/instagram\.com/.test(urlHost)) importType = "instagram";
+    else if (/google\.(com|at|de|ch)/.test(urlHost) && /\/(maps|place)/.test(urlPath)) importType = "google";
+    else if (/goo\.gl/.test(urlHost)) importType = "google";
+    else if (/facebook\.com|fb\.com/.test(urlHost)) importType = "facebook";
+
+    // Fuer nicht-Website-Typen: Jina als Proxy verwenden (extrahiert readable text)
+    const useJina = importType !== "website";
+    if (useJina) {
+      // Jina-URL: r.jina.ai/<url> liefert Markdown-Text
+      cleanUrl = cleanUrl; // URL bleibt gleich, Jina-Fetch weiter unten
+    }
+
     const base = new URL(cleanUrl).origin;
+    await log.info(null, "import_type", {type: importType, url: cleanUrl});
+
+    // Spezial-Quellen: Hinweis fuer spaetere Implementierung
+    if (importType === "google") {
+      return Response.json({error: "Google Maps Import wird bald verfügbar. Bitte geben Sie stattdessen die Website-URL Ihres Unternehmens ein."}, {status: 400});
+    }
 
     /* ═══ HELPER ═══ */
     const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
@@ -344,25 +368,29 @@ export async function onRequestPost({request, env}) {
       }
     };
 
-    // Runde 1: Erste 15 Seiten (priorisiert)
-    const allLinks = [...allInternalLinks];
-    const priority = allLinks.filter(u => { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); });
-    const rest = allLinks.filter(u => !priority.includes(u));
-    const round1 = [...new Set([...priority, ...rest])].slice(0, 15);
+    // Multi-Page-Crawl: Nur fuer normale Websites (nicht Instagram/Linktree/Facebook)
+    let round2 = [];
+    if (importType === "website") {
+      // Runde 1: Erste 15 Seiten (priorisiert)
+      const allLinks = [...allInternalLinks];
+      const priority = allLinks.filter(u => { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); });
+      const rest = allLinks.filter(u => !priority.includes(u));
+      const round1 = [...new Set([...priority, ...rest])].slice(0, 15);
 
-    await Promise.all(round1.map(fetchPage));
+      await Promise.all(round1.map(fetchPage));
 
-    // Runde 2: Neu entdeckte Links von Unterseiten (z.B. /leistungen/photovoltaik)
-    // Nur wenn noch genug Zeit-Budget vorhanden
-    const newLinks = [...allInternalLinks].filter(u => !fetchedUrls.has(u));
-    const newPriority = newLinks.filter(u => {
-      const p = new URL(u).pathname.toLowerCase();
-      return priorityPatterns.some(rx => rx.test(p));
-    });
-    const round2 = elapsed() < BUDGET_MS - 30000 ? newPriority.slice(0, 8) : [];
-    if (round2.length > 0) {
-      await Promise.all(round2.map(fetchPage));
+      // Runde 2: Neu entdeckte Links von Unterseiten
+      const newLinks = [...allInternalLinks].filter(u => !fetchedUrls.has(u));
+      const newPriority = newLinks.filter(u => {
+        const p = new URL(u).pathname.toLowerCase();
+        return priorityPatterns.some(rx => rx.test(p));
+      });
+      round2 = elapsed() < BUDGET_MS - 30000 ? newPriority.slice(0, 8) : [];
+      if (round2.length > 0) {
+        await Promise.all(round2.map(fetchPage));
+      }
     }
+    // Instagram/Linktree/Facebook: Nur Hauptseite (schon oben gefetched)
 
     /* ═══ 4. CONTENT-DEDUP (Header/Footer/Nav entfernen) ═══ */
     // Absaetze zaehlen: Wenn ein Absatz auf 3+ Seiten vorkommt = Navigation/Footer
@@ -560,6 +588,18 @@ JSON-Felder:
   NUR wenn Name UND Rolle/Position auf der Website stehen. Max 8.
   Suche auf: /team, /ueber-uns, Hauptseite, Impressum (Geschaeftsfuehrer).
 
+=== ABLAUF ===
+- ablauf_schritte: Array mit Arbeits-/Ablauf-Schritten falls auf der Website beschrieben.
+  Format: [{"titel":"Erstgespräch","text":"Wir besprechen Ihre Wünsche"}]
+  Max 5. NUR wenn eine "So funktioniert's"/"Ablauf"/"Ihre Vorteile"-Sektion existiert.
+  Suche auf: Hauptseite, /ablauf, /so-funktionierts. NICHTS erfinden.
+
+=== LEISTUNGS-BESCHREIBUNGEN ===
+- leistungen_beschreibungen: Objekt mit Kurzbeschreibungen zu den Leistungen.
+  Format: {"Leistungsname":"Kurzbeschreibung in 1 Satz"}
+  NUR wenn auf der Website echte Beschreibungstexte zu den Leistungen stehen.
+  Uebernimm den Originaltext (gekuerzt auf max 20 Woerter).
+
 === MERKMALE ===
 - merkmale: Objekt. NUR auf true wenn KLAR im Text erwaehnt.
   Keys: kassenvertrag ("alle_kassen"/"wahlarzt"/"privat"/"oegk"/"bvaeb"/"svs"), barrierefrei, parkplaetze, notdienst, meisterbetrieb, terminvereinbarung, erstgespraech_gratis, online_beratung, hausbesuche, kartenzahlung, ratenzahlung, gutscheine, zertifiziert, kostenvoranschlag, foerderungsberatung, gastgarten, takeaway, lieferservice
@@ -703,6 +743,18 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
         .slice(0,8)
       : [];
 
+    // Ablauf-Schritte
+    const ablaufSchritte = Array.isArray(extracted.ablauf_schritte)
+      ? extracted.ablauf_schritte.filter(s=>s&&typeof s.titel==="string"&&s.titel.trim())
+        .map(s=>({titel:s.titel.trim().slice(0,60),text:(s.text||"").trim().slice(0,150)}))
+        .slice(0,5)
+      : [];
+
+    // Leistungs-Beschreibungen
+    const leistBeschreibungen = (typeof extracted.leistungen_beschreibungen === "object" && extracted.leistungen_beschreibungen && !Array.isArray(extracted.leistungen_beschreibungen))
+      ? Object.fromEntries(Object.entries(extracted.leistungen_beschreibungen).map(([k,v])=>[k.slice(0,60),String(v||"").slice(0,200)]).filter(([k,v])=>k&&v))
+      : {};
+
     // Merkmale
     const merkmale = extracted.merkmale || {};
 
@@ -715,16 +767,27 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
     // Buchungslink: Link-Extraktion > Claude
     const finalBuchungslink = buchungsLink || extracted.buchungslink || "";
 
-    // Layout-Empfehlung
-    let layoutSuggestion = "standard";
-    if (faq.length >= 2 || fakten.length >= 2 || partner.length >= 2) layoutSuggestion = "ausfuehrlich";
-    else if (leistungen.length <= 3 && !bewertungen.length) layoutSuggestion = "kompakt";
-
-    // Sections-Visible
+    // Sections-Visible (zeige Section wenn Daten vorhanden)
     const sectionsVisible = {};
     if (faq.length > 0) sectionsVisible.faq = true;
     if (fakten.length > 0) sectionsVisible.fakten = true;
     if (partner.length > 0) sectionsVisible.partner = true;
+    if (bewertungen.length > 0) sectionsVisible.bewertungen = true;
+    if (team.length > 0) sectionsVisible.team = true;
+    if (ablaufSchritte.length >= 2) sectionsVisible.ablauf = true;
+
+    // Varianten-Cache berechnen
+    const { berechneVarianten } = await import("../_lib/varianten.js");
+    const variantenCache = berechneVarianten({
+      hero_image: null,
+      leistungen: leistungen.map(() => ({foto: false})),
+      ablauf: ablaufSchritte,
+      bewertungen,
+      team,
+      faq,
+      galerie: [],
+      adresse, plz,
+    });
 
     // Brand-Farbe ermitteln (beste Kandidatin nach Prioritaet)
     const normalizeHex = (c) => {
@@ -763,10 +826,11 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
       leistungen, spezialisierung: extracted.spezialisierung || "",
       oeffnungszeiten_import: oeffnungszeiten,
       gut_zu_wissen: extracted.gut_zu_wissen || "",
-      bewertungen, faq, fakten, partner, team,
+      bewertungen, faq, fakten, partner, team, ablauf_schritte: ablaufSchritte,
+      leistungen_beschreibungen: Object.keys(leistBeschreibungen).length > 0 ? leistBeschreibungen : undefined,
       whatsapp: finalWhatsapp,
       buchungslink: finalBuchungslink,
-      layout_suggestion: layoutSuggestion,
+      varianten_cache: variantenCache,
       sections_visible: sectionsVisible,
       facebook: socialLinks.facebook || "",
       instagram: socialLinks.instagram || "",

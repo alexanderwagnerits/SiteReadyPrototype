@@ -189,7 +189,7 @@ function buildImpressum(o, pal, year) {
 /* ═══ Design-Templates (synchron mit STYLES_MAP in App.js) ═══ */
 const STIL = {
   klassisch: {
-    p:"#094067", a:"#0369a1", bg:"#fffffe", s:"#d8eefe",
+    p:"#094067", a:"#0369a1", bg:"#f4f7fa", s:"#d8eefe",
     font: "Inter",
     url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
     r: "4px", rLg: "6px", btnR: "4px",
@@ -211,12 +211,13 @@ const STIL = {
   elegant: {
     p:"#020826", a:"#7a6844", bg:"#f9f4ef", s:"#eaddcf",
     font: "Inter",
-    url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+    fontHeading: "Cormorant Garamond",
+    url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap",
     r: "2px", rLg: "4px", btnR: "2px",
-    feel: "hochwertig, ruhig, minimalistisch, Premium, zurueckhaltend elegant",
+    feel: "hochwertig, ruhig, minimalistisch, Premium, zurueckhaltend elegant, Serif-Headings",
     heroDecor: "Klassischer Akzent-Unterstrich direkt unter H1: display:block, width:80px, height:3px, background:var(--accent), margin:16px 0 24px.",
     cardStyle: "border:1px solid var(--sep); padding:28px 24px; box-shadow:none. Hover: background:#fafaf8, box-shadow:0 4px 16px rgba(0,0,0,.06).",
-    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (–) in Akzentfarbe als Marker. Ruhiger, Premium-Ton mit viel Whitespace.",
+    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (\u2013) in Akzentfarbe als Marker. Ruhiger, Premium-Ton mit viel Whitespace.",
   },
 };
 
@@ -436,17 +437,15 @@ JSON-FORMAT:
   "kontakt_cta_headline": "Kurze, branchenspezifische Headline",
   "kontakt_cta_text": "1-2 Saetze, konkrete Motivation zur Kontaktaufnahme",
   "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"},{"titel":"Schritt 2","text":"Kurze Beschreibung"},{"titel":"Schritt 3","text":"Kurze Beschreibung"}],
-  "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3"${(o.layout === "ausfuehrlich") ? `,
-  "faq": [{"frage":"Haeufige Frage 1?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 2?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 3?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 4?","antwort":"Antwort in 1-2 Saetzen"}]` : ""}
+  "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3",
+  "faq": [{"frage":"Haeufige Frage 1?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 2?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 3?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 4?","antwort":"Antwort in 1-2 Saetzen"}]
 }
-${(o.layout === "ausfuehrlich") ? `
 REGELN fuer faq:
 - 4-5 branchenspezifische Fragen die Kunden TATSAECHLICH stellen
 - Antworten: 1-2 kurze, hilfreiche Saetze. Konkret, nicht ausweichend.
 - Wenn bestehende FAQ importiert wurden, verwende diese als Grundlage.
 - Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
 - Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Vertraege mit allen oesterreichischen Sozialversicherungstraegern."
-` : ""}
 REGELN fuer ablauf_schritte:
 - 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit ablaeuft
 - Titel: 2-4 Woerter. Text: 1 kurzer Satz, max 10 Woerter
@@ -705,6 +704,25 @@ REGELN fuer gut_zu_wissen:
   const criticalMissing = qIssues.filter(i => i.type === "missing_section").length;
   const qualityScore = Math.max(0, 100 - (criticalMissing * 20) - (unknownPlaceholders.length * 5));
 
+  /* ─── Varianten-Cache berechnen ─── */
+  const { berechneVarianten } = await import("./varianten.js");
+  const fotoMap = o.leistungen_fotos || {};
+  const leistMitFoto = leistungen.map(l => ({foto: !!(fotoMap[l] || fotoMap[l.charAt(0).toUpperCase() + l.slice(1)])}));
+  const ablaufFinal = texts.ablauf_schritte?.length ? texts.ablauf_schritte : (o.ablauf_schritte || []);
+  const faqFinal = texts.faq?.length ? texts.faq : (o.faq || []);
+  const variantenCache = berechneVarianten({
+    hero_image: o.url_hero || null,
+    hero_image_ratio: 0, // Ratio unbekannt bei Generierung — default "split"
+    leistungen: leistMitFoto,
+    ablauf: ablaufFinal,
+    bewertungen: o.bewertungen || [],
+    team: o.team_members || [],
+    faq: faqFinal,
+    galerie: o.galerie || [],
+    adresse: o.adresse,
+    plz: o.plz,
+  });
+
   /* ─── In Supabase speichern ─── */
   // Kern-Felder (muessen existieren)
   const savePayload = {
@@ -740,7 +758,8 @@ REGELN fuer gut_zu_wissen:
       headers: { "Content-Type": "application/json", "apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`, "Prefer": "return=minimal" },
       body: JSON.stringify({
         quality_score: qualityScore, quality_issues: qIssues.length > 0 ? qIssues : null, quality_fixed: qFixed || null,
-        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
+        varianten_cache: variantenCache,
+        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen","kontakt_cta",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
       }),
     });
   } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }

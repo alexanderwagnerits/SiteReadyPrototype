@@ -1,8 +1,8 @@
 // Farben kommen aus custom_* DB-Feldern (gesetzt via Branchengruppe oder User-Override)
 const DEFAULT_PAL = {p:"#1a1a1a", a:"#b08d57"};
 
-const STIL_R = {professional:"6px", modern:"14px", traditional:"4px"};
-const STIL_FONT = {professional:"Inter", modern:"DM Sans", traditional:"Source Serif 4"};
+const STIL_R = {klassisch:"4px", modern:"12px", elegant:"2px", professional:"4px", traditional:"2px"};
+const STIL_FONT = {klassisch:"Inter", modern:"Plus Jakarta Sans", elegant:"Inter", professional:"Inter", traditional:"Inter"};
 
 export async function onRequestPost({request, env}) {
   try {

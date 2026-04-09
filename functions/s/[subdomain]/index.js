@@ -61,14 +61,38 @@ export async function onRequestGet({params, env}) {
   let html = rows[0].website_html;
   const o = rows[0];
 
-  // ── Stil + Section-Varianten lesen (frueh, damit alle Abschnitte darauf zugreifen koennen) ──
+  // ── Stil lesen ──
   const stilName = o.stil || "klassisch";
   const isModern = stilName === "modern";
   const isElegant = stilName === "elegant";
-  const heroVariante = o.hero_variante || "standard";
-  const bewertungenVariante = o.bewertungen_variante || "karten";
-  const ueberVariante = o.ueber_variante || "standard";
-  const kontaktVariante = o.kontakt_variante || "standard";
+
+  // ── Section-Varianten: varianten_cache (neu) oder Legacy-Felder (alt) ──
+  const vc = (typeof o.varianten_cache === "object" && o.varianten_cache) || {};
+  const tmCount = (Array.isArray(o.team_members) ? o.team_members.filter(t => t && t.name) : []).length;
+  const v = {
+    hero: vc.hero || (
+      (o.hero_variante === "minimal") ? "minimal" :
+      (o.hero_variante === "split" || (o.hero_layout || "split") === "split") ? "split" :
+      "fullscreen"
+    ),
+    leistungen: vc.leistungen || "grid",
+    ablauf: vc.ablauf || "horizontal",
+    bewertungen: vc.bewertungen || (
+      o.bewertungen_variante === "highlight" ? "blockquote" :
+      o.bewertungen_variante === "liste" ? "cards" :
+      "cards"
+    ),
+    team: vc.team || (
+      tmCount === 1 ? "single" : tmCount <= 3 ? "grid-3" : "grid-4"
+    ),
+    faq: vc.faq || "einspaltig",
+    galerie: vc.galerie || "grid-2x2",
+    kontakt: vc.kontakt || (
+      (o.kontakt_variante === "kompakt") ? "ohne-map" :
+      (o.adresse || o.plz) ? "mit-map" : "ohne-map"
+    ),
+  };
+  const sv = o.sections_visible || {};
 
   // Trust-Leiste serve-time (live updates bei Feature-Aenderungen)
   if (html.includes("<!-- TRUST -->")) {
@@ -137,15 +161,14 @@ export async function onRequestGet({params, env}) {
     }
   }
 
-  // Hero-Bild + Variante: standard (full/split je nach hero_layout), split (immer Bild rechts), minimal (kein Bild)
+  // Hero-Bild + Variante: fullscreen (Hintergrundbild), split (Bild rechts), minimal (kein Bild)
   html = html.replace(/<section(?![^>]*id=)/i, '<section id="sr-hero"');
-  const heroLayout = o.hero_layout || "split";
 
   // Stil-spezifische Werte fuer Hero-Varianten
   const heroImgR = isModern ? "16px" : isElegant ? "2px" : "var(--rLg,8px)";
-  const heroMinH1Weight = isElegant ? "300" : "800";
+  const heroMinH1Weight = isElegant ? "500" : "800";
 
-  if (heroVariante === "minimal") {
+  if (v.hero === "minimal") {
     // Minimal: Kein Bild, zentriert, reduziert
     const minimalStyle = `<style>
 .hero{min-height:70vh!important;min-height:70svh!important;justify-content:center;text-align:center}
@@ -158,7 +181,7 @@ export async function onRequestGet({params, env}) {
 .hero-accent-line{display:block!important;width:48px;height:${isElegant ? "1px" : "2px"};background:var(--accent);margin:16px auto 24px;opacity:.6}
 </style>`;
     html = html.replace("</head>", minimalStyle + "</head>");
-  } else if (heroVariante === "split" || (heroVariante === "standard" && heroLayout !== "full")) {
+  } else if (v.hero === "split") {
     // Split: Bild rechts neben dem Text
     if (o.url_hero) {
       const heroStyle = `<style>` +
@@ -261,44 +284,9 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
   }
 
-  // ── Ueber-uns-Variante serve-time anwenden ──
-  if (ueberVariante === "story") {
-    // Story: Gruendergeschichte mit Zitat-Stil
-    const hasRightCol = teamMembers.length > 0 || [o.url_about1,o.url_about2,o.url_about3,o.url_about4].some(Boolean);
-    const storyStyle = `<style>
-${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!important;align-items:center}` : `.ueber-grid{display:block!important}`}
-.ueber .ueber-vorteile{display:none}
-.ueber-text{font-size:1.05rem!important;opacity:.8!important;line-height:1.85!important}
-</style>`;
-    html = html.replace("</head>", storyStyle + "</head>");
-  } else if (ueberVariante === "team-fokus" && teamMembers.length > 0) {
-    // Nur wenn Team-Members vorhanden, sonst bleibt Standard
-    // Team-Fokus: Team prominent oben, Text kompakt zentriert
-    const teamFokusAvatarR = isModern ? "50%" : isElegant ? "4px" : "50%";
-    const teamFokusNameW = isElegant ? "600" : "700";
-    const teamGrid = teamMembers.slice(0, 6).map(m => {
-      const hasImg = !!m.foto;
-      const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${m.name}" style="width:72px;height:72px;border-radius:${teamFokusAvatarR};object-fit:cover;border:3px solid rgba(255,255,255,.12)">`
-        : `<div style="width:72px;height:72px;border-radius:${teamFokusAvatarR};background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.08)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
-      return `<div style="text-align:center"><div style="margin:0 auto 8px">${avatar}</div><div style="font-size:.85rem;font-weight:${teamFokusNameW};color:#fff">${m.name}</div>${m.rolle ? `<div style="font-size:.75rem;opacity:.5">${m.rolle}</div>` : ""}</div>`;
-    }).join("");
-    const teamCols = Math.min(teamMembers.length, 4);
-    const teamFokusStyle = `<style>
-.ueber{text-align:center}
-.ueber-grid{display:block!important}
-.ueber-text{max-width:520px;margin:0 auto 32px!important;font-size:1rem!important}
-.ueber .ueber-vorteile{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
-</style>`;
-    html = html.replace("</head>", teamFokusStyle + "</head>");
-    // Team-Grid vor den Vorteilen einfuegen
-    const teamGridHtml = `<div class="sr-team-fokus" style="display:grid;grid-template-columns:repeat(${teamCols},1fr);gap:20px;max-width:480px;margin:0 auto 32px">${teamGrid}</div>`;
-    html = html.replace("{{VORTEILE}}", teamGridHtml + "{{VORTEILE}}");
-  }
-  // Standard: keine Aenderung noetig
+  // Ueber-uns: immer Standard-Layout (Story/Team-Fokus Varianten entfernt)
 
-  // ── Layout-Feld lesen (bestimmt Section-Varianten) ──
-  const layout = o.layout || "standard";
+  // Layout-Feld entfernt — Sections per sections_visible + Auto-Varianten gesteuert
 
   // Stil-spezifische Label-Variante
   const sectionLabel = (text) => {
@@ -307,13 +295,13 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     return `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:5px 14px;border-radius:100px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent)">${text}</div>`;
   };
   const sectionH2 = (text) => {
-    if (isElegant) return `<h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:300;color:var(--primary);letter-spacing:-.02em">${text}</h2>`;
+    if (isElegant) return `<h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:500;color:var(--primary);letter-spacing:-.02em">${text}</h2>`;
     return `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">${text}</h2>`;
   };
 
   // Ablauf-Section — "So laeuft es ab" zwischen Leistungen und Ueber uns
   const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
-  const showAblauf = layout !== "kompakt" && ablaufSteps.length >= 2;
+  const showAblauf = sv.ablauf !== false && ablaufSteps.length >= 2;
   if (showAblauf && html.includes("<!-- ABLAUF -->")) {
     let ablaufContent;
     // Stil-spezifische Varianten
@@ -323,7 +311,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const circleFontWeight = isElegant ? "500" : "800";
     const titleWeight = isElegant ? "600" : "700";
 
-    if (layout === "ausfuehrlich") {
+    if (v.ablauf === "vertikal") {
       // Vertical Timeline
       const vSteps = ablaufSteps.slice(0, 5).map((s, i) =>
         `<div style="margin-bottom:28px;position:relative;padding-left:48px">` +
@@ -366,8 +354,8 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     const bewCardBorder = isModern ? "border:none;box-shadow:0 4px 20px rgba(0,0,0,.06)" : "border:1px solid var(--sep)";
     const bewNameWeight = isElegant ? "600" : "700";
 
-    if (bewertungenVariante === "highlight") {
-      // Highlight: Erste Bewertung gross, Rest als kleine Karten
+    if (v.bewertungen === "blockquote") {
+      // Blockquote: Erste Bewertung gross, Rest als kleine Karten
       const main = bewertungen[0];
       const rest = bewertungen.slice(1, 5);
       const mainStars = makeStars(main);
@@ -387,25 +375,8 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
       const restCols = rest.length <= 2 ? `repeat(${rest.length},1fr)` : "repeat(3,1fr)";
       bewContent = highlight + (rest.length > 0 ? `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${restCols};gap:16px">${restCards}</div>` : "");
 
-    } else if (bewertungenVariante === "liste") {
-      // Liste: Kompakt untereinander mit Avatar-Initialen
-      const listItems = bewertungen.slice(0, 6).map(b => {
-        const initials = esc((b.name || "K").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
-        const stars = makeStars(b);
-        return `<div style="display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--sep);align-items:start">` +
-          `<div style="width:42px;height:42px;border-radius:${isElegant ? "2px" : "50%"};background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:${bewNameWeight};flex-shrink:0">${initials}</div>` +
-          `<div>` +
-          `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">` +
-          `<span style="font-size:.85rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</span>` +
-          (stars ? `<span style="display:flex;gap:1px">${stars}</span>` : "") +
-          `</div>` +
-          `<div style="font-size:.88rem;color:var(--textMuted);line-height:1.7;font-style:italic">\u201e${esc(b.text)}\u201c</div>` +
-          `</div></div>`;
-      }).join("");
-      bewContent = `<div style="max-width:640px">${listItems}</div>`;
-
     } else {
-      // Karten (Standard): Grid nebeneinander
+      // Cards (Standard): Grid nebeneinander
       const cards = bewertungen.slice(0, 6).map(b => {
         const stars = makeStars(b);
         return `<div style="background:#fff;${bewCardBorder};border-radius:${bewCardR};padding:24px;display:flex;flex-direction:column;gap:12px">` +
@@ -453,30 +424,9 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     html = html.replace("<!-- KONTAKT_INFOS -->", "");
   }
 
-  // ── Kontakt-Variante serve-time anwenden ──
-  const kontaktCardR = isModern ? "16px" : isElegant ? "2px" : "var(--rLg,8px)";
-  const kontaktCardBorder = isModern ? "border:none;box-shadow:0 2px 12px rgba(0,0,0,.06)" : "border:1px solid var(--sep)";
-  if (kontaktVariante === "karte-gross") {
-    // Karte-Gross: Karte oben volle Breite, dann Info + Formular
-    const kgStyle = `<style>
-.kontakt-grid{display:flex!important;flex-direction:column-reverse;gap:24px}
-.kontakt-grid>div:last-child iframe{height:240px!important;border-radius:${kontaktCardR}}
-@media(min-width:900px){.kontakt-grid{gap:32px}}
-</style>`;
-    html = html.replace("</head>", kgStyle + "</head>");
-  } else if (kontaktVariante === "kompakt") {
-    // Kompakt: Alles als Cards, kein Formular
-    const kompaktStyle = `<style>
-.kontakt-grid{display:block!important}
-.kontakt .kontakt-grid>div:first-child{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.kontakt .kontakt-grid>div:first-child>.kontakt-item{background:#fff;${kontaktCardBorder};border-radius:${kontaktCardR};padding:20px;text-align:center}
-.kontakt .kontakt-grid>div:first-child>.kontakt-item .kontakt-item-label{margin-bottom:6px}
-.kontakt .kontakt-form-wrap{display:none}
-.kontakt h2{text-align:center;margin-bottom:24px}
-</style>`;
-    html = html.replace("</head>", kompaktStyle + "</head>");
-  }
-  // Standard: keine Aenderung noetig
+  // ── Kontakt-Variante: mit-map/ohne-map (Map-Injection erfolgt ueber MAPS-Placeholder oben) ──
+  // "ohne-map": Map-Placeholder wurde bereits entfernt wenn keine Adresse vorhanden
+  // Keine zusaetzlichen Style-Overrides noetig — Layout kommt aus dem Template
 
   // Legacy: alte Platzhalter entfernen falls noch vorhanden
   html = html.replace(/<!-- FOTO_BAND -->/g, "");
@@ -484,10 +434,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   // ── Neue Sections serve-time (Layout-abhaengig) ──
 
   // CTA-Zwischenblock — Auflockerer zwischen Leistungen und Ablauf
-  if (layout === "ausfuehrlich" && html.includes("<!-- CTA_BLOCK -->")) {
+  if (sv.cta_block && html.includes("<!-- CTA_BLOCK -->")) {
     const ctaBtnR = isModern ? "100px" : "var(--r)";
     const ctaBtnShadow = isModern ? ";box-shadow:0 4px 16px rgba(0,0,0,.15)" : "";
-    const ctaH2Weight = isElegant ? "300" : "800";
+    const ctaH2Weight = isElegant ? "500" : "800";
     const ctaPOpacity = isElegant ? ".5" : ".7";
     const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">Bereit für Ihr Projekt?</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">Wir beraten Sie gerne \u2014 kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
     html = html.replace("<!-- CTA_BLOCK -->", ctaBlock);
@@ -497,7 +447,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   // FAQ — Haeufig gestellte Fragen
   const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage && f.antwort) : [];
-  const showFaq = (o.sections_visible && o.sections_visible.faq) || (layout === "ausfuehrlich" && faqItems.length > 0);
+  const showFaq = sv.faq !== false && faqItems.length > 0;
   if (showFaq && faqItems.length > 0 && html.includes("<!-- FAQ -->")) {
     const items = faqItems.slice(0, 8).map((f, i) =>
       `<div style="border-bottom:1px solid var(--sep)">` +
@@ -508,7 +458,13 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
     ).join("");
     const faqToggleWeight = isElegant ? "600" : "700";
     const faqToggleSize = isElegant ? ".9rem" : ".95rem";
-    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div><div style="max-width:720px">${items.replace(/font-weight:700;/g, `font-weight:${faqToggleWeight};`).replace(/font-size:\.95rem;/g, `font-size:${faqToggleSize};`)}</div></div></section>`;
+    const styledItems = items.replace(/font-weight:700;/g, `font-weight:${faqToggleWeight};`).replace(/font-size:\.95rem;/g, `font-size:${faqToggleSize};`);
+    const faqLayout = v.faq === "zweispaltig"
+      ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">${styledItems}</div>`
+      : `<div style="max-width:720px">${styledItems}</div>`;
+    const faqTwoColStyle = v.faq === "zweispaltig" ? `<style>@media(max-width:768px){.sec-faq [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}</style>` : "";
+    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
+    if (faqTwoColStyle) html = html.replace("</head>", faqTwoColStyle + "</head>");
     html = html.replace("<!-- FAQ -->", section);
   } else {
     html = html.replace("<!-- FAQ -->", "");
@@ -516,9 +472,9 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   // Galerie — Foto-Grid mit Lightbox
   const galerieItems = Array.isArray(o.galerie) ? o.galerie.filter(g => g && g.url) : [];
-  const showGalerie = (o.sections_visible && o.sections_visible.galerie) || galerieItems.length > 0;
+  const showGalerie = sv.galerie !== false && galerieItems.length > 0;
   if (showGalerie && galerieItems.length > 0 && html.includes("<!-- GALERIE -->")) {
-    const cols = galerieItems.length <= 2 ? "1fr 1fr" : galerieItems.length <= 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
+    const cols = v.galerie === "grid-3x2" ? "repeat(3,1fr)" : "repeat(2,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
       `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
       `<img class="sr-zoom sr-img-hover" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s">` +
@@ -533,10 +489,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   // Zahlen & Fakten — Counter-Blocks
   const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
-  const showFakten = (o.sections_visible && o.sections_visible.fakten) || (layout === "ausfuehrlich" && faktenItems.length > 0);
+  const showFakten = sv.fakten !== false && faktenItems.length >= 2;
   if (showFakten && faktenItems.length >= 2 && html.includes("<!-- FAKTEN -->")) {
     const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
-    const faktenFontWeight = isElegant ? "300" : "800";
+    const faktenFontWeight = isElegant ? "500" : "800";
     const faktenFontSize = isElegant ? "clamp(1.4rem,3.5vw,2rem)" : "clamp(1.6rem,4vw,2.4rem)";
     const items = faktenItems.slice(0, 4).map(f =>
       `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${f.zahl}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${f.label}</div></div>`
@@ -549,7 +505,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   // Partner & Zertifikate — Logo-Leiste
   const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && (p.url_logo || p.name)) : [];
-  const showPartner = (o.sections_visible && o.sections_visible.partner) || partnerItems.length > 0;
+  const showPartner = sv.partner !== false && partnerItems.length > 0;
   if (showPartner && partnerItems.length > 0 && html.includes("<!-- PARTNER -->")) {
     const logos = partnerItems.slice(0, 8).map(p => {
       if (p.url_logo) {
@@ -704,7 +660,7 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
         `</div></div>`;
     }).join("");
     const n = leistungenArr.length;
-    const useCompact = layout === "kompakt" && n > 7;
+    const useCompact = false; // Kompakt-Layout entfernt — Grid oder Editorial per Variante
 
     let grid;
     if (useCompact) {
@@ -717,8 +673,8 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
           `</div>`;
       }).join("");
       grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">${compactCards}</div>`;
-    } else if (layout === "ausfuehrlich") {
-      // Ausfuehrlich: Liste mit voller Breite
+    } else if (v.leistungen === "editorial") {
+      // Editorial: Liste mit Foto + Beschreibung nebeneinander
       const listCards = leistungenArr.map((l, i) => {
         const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));
         const desc = esc(findInMap(descMap, l) || findInMap(descMap, l.charAt(0).toUpperCase() + l.slice(1)));
@@ -876,9 +832,9 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
 
   // ── Stil-Farben serve-time IMMER anwenden (damit Änderungen sofort greifen) ──
   const STIL_COLORS = {
-    klassisch: {p:"#094067",a:"#0369a1",bg:"#fffffe",s:"#d8eefe",t:"#094067",tm:"#5f6c7b"},
+    klassisch: {p:"#094067",a:"#0369a1",bg:"#f4f7fa",s:"#d8eefe",t:"#1e293b",tm:"#475569"},
     modern:    {p:"#18181b",a:"#4f46e5",bg:"#fafafa",s:"#e4e4e7",t:"#18181b",tm:"#71717a"},
-    elegant:   {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",t:"#020826",tm:"#716040"},
+    elegant:   {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",t:"#2c2620",tm:"#6b6058"},
   };
   const stilColors = STIL_COLORS[currentStil] || STIL_COLORS.klassisch;
 
@@ -902,6 +858,10 @@ ${hasRightCol ? `.ueber-grid{grid-template-columns:1fr 1fr!important;gap:48px!im
   if (o.custom_font && FONT_URLS[o.custom_font]) {
     fontImport = `@import url('${FONT_URLS[o.custom_font]}');`;
     customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
+  }
+  // Cormorant Garamond fuer Elegant/Traditional — nur laden wenn nicht bereits im Template-Import
+  if (currentStil === "elegant" || currentStil === "traditional") {
+    fontImport += `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');`;
   }
 
   // Style-Override am Ende des body (damit es ALLE vorherigen :root ueberschreibt)

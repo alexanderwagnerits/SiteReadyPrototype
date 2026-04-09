@@ -178,9 +178,9 @@ const BUNDESLAENDER=[{value:"wien",label:"Wien"},{value:"noe",label:"Niederöste
 const OEFFNUNGSZEITEN=[{value:"mo-fr-8-17",label:"Mo-Fr: 08:00-17:00"},{value:"mo-fr-7-16",label:"Mo-Fr: 07:00-16:00"},{value:"mo-fr-8-18",label:"Mo-Fr: 08:00-18:00"},{value:"mo-sa-8-17",label:"Mo-Sa: 08:00-17:00"},{value:"mo-sa-8-12",label:"Mo-Fr: 08:00-17:00, Sa: 08:00-12:00"},{value:"vereinbarung",label:"Nach Vereinbarung"},{value:"custom",label:"Eigene Zeiten eingeben"}];
 const UNTERNEHMENSFORMEN=[{value:"eu",label:"Einzelunternehmen (e.U.)"},{value:"einzelunternehmen",label:"Einzelunternehmen (nicht eingetragen)"},{value:"gmbh",label:"GmbH"},{value:"og",label:"OG"},{value:"kg",label:"KG"},{value:"ag",label:"AG"},{value:"verein",label:"Verein"},{value:"gesnbr",label:"GesbR"}];
 const STYLES_MAP={
-  klassisch:{label:"Klassisch",desc:"Seriös, vertrauenswürdig, zeitlos",primary:"#094067",accent:"#0369a1",accentSoft:"rgba(3,105,161,0.07)",bg:"#fffffe",cardBg:"#fff",text:"#094067",textMuted:"#5f6c7b",textLight:"#90b4ce",borderColor:"#d8eefe",font:"'Inter',system-ui,sans-serif",radius:"4px",radiusLg:"6px",heroGradient:"linear-gradient(160deg,#094067 0%,#062b44 50%,#0a1f42 100%)",heroOverlay:"radial-gradient(circle at 70% 20%,rgba(3,105,161,0.08) 0%,transparent 60%)",shadow:"none",badgeBg:"#d8eefe",badgeText:"#094067",btnRadius:"4px",cardBorder:true,cardShadow:false,badgeRadius:"4px",sectionDivider:true,spacing:"compact"},
+  klassisch:{label:"Klassisch",desc:"Seriös, vertrauenswürdig, zeitlos",primary:"#094067",accent:"#0369a1",accentSoft:"rgba(3,105,161,0.07)",bg:"#f4f7fa",cardBg:"#fff",text:"#1e293b",textMuted:"#475569",textLight:"#90b4ce",borderColor:"#d8eefe",font:"'Inter',system-ui,sans-serif",radius:"4px",radiusLg:"6px",heroGradient:"linear-gradient(160deg,#094067 0%,#062b44 50%,#0a1f42 100%)",heroOverlay:"radial-gradient(circle at 70% 20%,rgba(3,105,161,0.08) 0%,transparent 60%)",shadow:"none",badgeBg:"#d8eefe",badgeText:"#094067",btnRadius:"4px",cardBorder:true,cardShadow:false,badgeRadius:"4px",sectionDivider:true,spacing:"compact"},
   modern:{label:"Modern",desc:"Dynamisch, frisch, mit Akzenten",primary:"#18181b",accent:"#4f46e5",accentSoft:"rgba(79,70,229,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#18181b",textMuted:"#71717a",textLight:"#a1a1aa",borderColor:"#e4e4e7",font:"'Plus Jakarta Sans',system-ui,sans-serif",radius:"12px",radiusLg:"16px",heroGradient:"linear-gradient(135deg,#18181b 0%,#1e1b4b 50%,#4f46e5 100%)",heroOverlay:"radial-gradient(ellipse at 80% 30%,rgba(79,70,229,0.15) 0%,transparent 50%)",shadow:"0 2px 8px rgba(0,0,0,0.06)",badgeBg:"#eef2ff",badgeText:"#4338ca",btnRadius:"100px",cardBorder:false,cardShadow:true,badgeRadius:"100px",sectionDivider:false,spacing:"airy"},
-  elegant:{label:"Elegant",desc:"Hochwertig, ruhig, Premium",primary:"#020826",accent:"#7a6844",accentSoft:"rgba(122,104,68,0.06)",bg:"#f9f4ef",cardBg:"#fff",text:"#020826",textMuted:"#716040",textLight:"#a89a84",borderColor:"#eaddcf",font:"'Inter',system-ui,sans-serif",radius:"2px",radiusLg:"4px",heroGradient:"linear-gradient(160deg,#020826 0%,#0a1628 50%,#1a1510 100%)",heroOverlay:"none",shadow:"none",badgeBg:"#eaddcf",badgeText:"#020826",btnRadius:"2px",cardBorder:true,cardShadow:false,badgeRadius:"2px",sectionDivider:true,spacing:"airy"},
+  elegant:{label:"Elegant",desc:"Hochwertig, ruhig, Premium",primary:"#020826",accent:"#7a6844",accentSoft:"rgba(122,104,68,0.06)",bg:"#f9f4ef",cardBg:"#fff",text:"#2c2620",textMuted:"#6b6058",textLight:"#a89a84",borderColor:"#eaddcf",font:"'Inter',system-ui,sans-serif",fontHeading:"'Cormorant Garamond',Georgia,serif",radius:"2px",radiusLg:"4px",heroGradient:"linear-gradient(160deg,#020826 0%,#0a1628 50%,#1a1510 100%)",heroOverlay:"none",shadow:"none",badgeBg:"#eaddcf",badgeText:"#020826",btnRadius:"2px",cardBorder:true,cardShadow:false,badgeRadius:"2px",sectionDivider:true,spacing:"airy"},
   custom:{label:"Eigenes Branding",desc:"Ihre Farbe, Ihr Font",primary:"#111111",accent:"#2563eb",accentSoft:"rgba(37,99,235,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#111111",textMuted:"#6b7280",textLight:"#9ca3af",borderColor:"#e5e7eb",font:"'DM Sans',system-ui,sans-serif",radius:"8px",radiusLg:"12px",heroGradient:"linear-gradient(160deg,#111111 0%,#1f1f1f 50%,#333333 100%)",heroOverlay:"none",shadow:"0 1px 3px rgba(0,0,0,0.05)",badgeBg:"#f3f4f6",badgeText:"#374151",btnRadius:"8px",cardBorder:true,cardShadow:false,badgeRadius:"8px",sectionDivider:false,spacing:"normal"},
 };
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
@@ -837,7 +837,7 @@ function SuccessPage({data,onBack,onPortal}){
     // Snapshot der Daten BEVOR signUp den Auth-State aendert und die Seite wechselt
     const snap=JSON.parse(JSON.stringify(data));
     // Debug: Snapshot in error_logs speichern damit wir sehen was gesendet wird
-    try{await supabase.from("error_logs").insert({source:"order_debug",message:JSON.stringify({firmenname:snap.firmenname,telefon:snap.telefon,email:snap.email,adresse:snap.adresse,plz:snap.plz,ort:snap.ort,leistungen_count:snap.leistungen?.length,branche:snap.branche,stil:snap.stil,layout:snap.layout,hasImportExtras:!!snap.importExtras,oeffnungszeiten:snap.oeffnungszeiten})});}catch(_){}
+    try{await supabase.from("error_logs").insert({source:"order_debug",message:JSON.stringify({firmenname:snap.firmenname,telefon:snap.telefon,email:snap.email,adresse:snap.adresse,plz:snap.plz,ort:snap.ort,leistungen_count:snap.leistungen?.length,branche:snap.branche,stil:snap.stil,hasImportExtras:!!snap.importExtras,oeffnungszeiten:snap.oeffnungszeiten})});}catch(_){}
     const snapSub=snap.firmenname?snap.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
     _orderInProgress=true;
     const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:snap.firmenname,vorname,nachname}}});
@@ -856,7 +856,7 @@ function SuccessPage({data,onBack,onPortal}){
       zvr_zahl:snap.zvr_zahl,vertretungsorgane:snap.vertretungsorgane,gesellschafter:snap.gesellschafter,
       unternehmensgegenstand:snap.unternehmensgegenstand,liquidation:snap.liquidation,
       kammer_berufsrecht:snap.kammer_berufsrecht,aufsichtsbehoerde:snap.aufsichtsbehoerde,
-      stil:snap.stil,layout:snap.layout||null,custom_color:snap.customColor||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:snapSub,status:"pending",
+      stil:snap.stil,custom_color:snap.customColor||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:snapSub,status:"pending",
       facebook:snap.facebook||null,instagram:snap.instagram||null,linkedin:snap.linkedin||null,tiktok:snap.tiktok||null,
       oeffnungszeiten_custom:snap.oeffnungszeitenCustom||null,
       ...(snap.importExtras?.spezialisierung?{spezialisierung:snap.importExtras.spezialisierung}:{}),
@@ -866,7 +866,10 @@ function SuccessPage({data,onBack,onPortal}){
       ...(snap.importExtras?.fakten?.length?{fakten:snap.importExtras.fakten}:{}),
       ...(snap.importExtras?.partner?.length?{partner:snap.importExtras.partner}:{}),
       ...(snap.importExtras?.team?.length?{team_members:snap.importExtras.team}:{}),
+      ...(snap.importExtras?.ablauf_schritte?.length?{ablauf_schritte:snap.importExtras.ablauf_schritte}:{}),
+      ...(snap.importExtras?.leistungen_beschreibungen&&Object.keys(snap.importExtras.leistungen_beschreibungen).length?{leistungen_beschreibungen:snap.importExtras.leistungen_beschreibungen}:{}),
       ...(snap.importExtras?.sections_visible?{sections_visible:snap.importExtras.sections_visible}:{}),
+      ...(snap.importExtras?.varianten_cache?{varianten_cache:snap.importExtras.varianten_cache}:{}),
       website_ziel:null
     });
     if(error){try{await supabase.from("error_logs").insert({source:"order_insert_error",message:error.message});}catch(_){}setSaveErr("Fehler: "+error.message);setSaving(false);_orderInProgress=false;return;}
@@ -1217,7 +1220,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
     const tick=setInterval(()=>setImportSeconds(s=>s+1),1000);
     try{const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),120000);
     const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl}),signal:ctrl.signal});clearTimeout(timeout);
-    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:hasBrandColor?"custom":b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),layout:j.layout_suggestion||d.layout,...(hasBrandColor?{stil:"custom",customColor:j.brand_color,hexInput:j.brand_color.toUpperCase()}:{})}));const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],sections_visible:j.sections_visible||{}};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
+    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:hasBrandColor?"custom":b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{stil:"custom",customColor:j.brand_color,hexInput:j.brand_color.toUpperCase()}:{})}));const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{}};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
     }catch(e){timers.forEach(clearTimeout);clearInterval(tick);setImportPhase("");setImportLoading(false);if(e.name==="AbortError")setImportErr("Der Import hat zu lange gedauert. Die Website ist möglicherweise nicht erreichbar oder zu komplex. Sie können die Daten manuell eingeben oder uns unter support@siteready.at melden — wir schauen uns das Problem an.");else setImportErr("Verbindungsfehler — bitte versuchen Sie es erneut oder melden Sie das Problem unter support@siteready.at");}};
   const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
@@ -1444,11 +1447,6 @@ function Questionnaire({data,setData,onComplete,onBack}){
             {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Indigo-Akzent, Pill-Buttons.",color:"#0f172a",accent:"#6366f1"},
             {value:"elegant",label:"Elegant",desc:"Minimalistisch, dünne Linien. Anthrazit, leichte Typografie.",color:"#292524",accent:"#78716c"},
           ];
-          const LAYOUTS=[
-            {value:"standard",label:"Übersichtlich",desc:"Alle wichtigen Bereiche: Leistungen, Ablauf, Bewertungen, Kontakt.",tags:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
-            {value:"kompakt",label:"Auf den Punkt",desc:"Kürzer und kompakter — ideal bei vielen Leistungen.",tags:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
-            {value:"ausfuehrlich",label:"Ausführlich",desc:"Alle Details: FAQ, Zahlen & Fakten, CTA-Block und mehr.",tags:["Leistungen","Ablauf","FAQ","Fakten","Bewertungen","Kontakt"]},
-          ];
           const isCustom=data.stil==="custom";
           return<div>
             {/* Stil-Auswahl */}
@@ -1489,22 +1487,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
               </div>
               <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
             </div>}
-            {/* Layout-Auswahl */}
-            <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Seitenaufbau</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:16}}>
-              {LAYOUTS.map(lo=>{
-                const active=(data.layout||"standard")===lo.value;
-                return<button key={lo.value} onClick={()=>up("layout")(lo.value)} style={{padding:"20px 18px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
-                  <div style={{fontSize:".92rem",fontWeight:800,color:T.dark,marginBottom:4}}>{lo.label}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.55,marginBottom:10}}>{lo.desc}</div>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                    {lo.tags.map(t=><span key={t} style={{fontSize:".62rem",padding:"2px 7px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{t}</span>)}
-                  </div>
-                  {active&&<div style={{position:"absolute",top:10,right:10,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800}}>{"\u2713"}</div>}
-                </button>;
-              })}
-            </div>
-            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil, Layout, Farben und Schrift können Sie im Portal jederzeit anpassen.</div></div>
+            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil, Farben und Schrift können Sie im Portal jederzeit anpassen. Das Layout passt sich automatisch an Ihre Inhalte an.</div></div>
           </div>;
         })()}
       </div>
@@ -1522,7 +1505,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Leistungen</span><span style={{fontWeight:600,color:T.dark}}>{(data.leistungen?.length||0)+(data.extraLeistung?.split(",").filter(s=>s.trim()).length||0)} ausgewählt</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Kontakt</span><span style={{fontWeight:600,color:T.dark}}>{data.telefon||"–"}</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Impressum</span><span style={{fontWeight:600,color:T.dark}}>{uf?UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf:"–"}{legalOk&&impressumConfirm?" – vollständig":""}</span></div>
-            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}{data.layout&&data.layout!=="standard"?` — ${data.layout==="kompakt"?"Auf den Punkt":"Ausführlich"}`:""}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</span></div>
           </div>
         </div>
         <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
@@ -1772,11 +1755,7 @@ function Portal({session,onLogout}){
       custom_bg:order.custom_bg||null,custom_text:order.custom_text||null,
       custom_text_muted:order.custom_text_muted||null,custom_sep:order.custom_sep||null,
       custom_font:order.custom_font||null,custom_radius:order.custom_radius||null,
-      layout:order.layout||null,
-      hero_variante:order.hero_variante||null,
-      bewertungen_variante:order.bewertungen_variante||null,
-      ueber_variante:order.ueber_variante||null,
-      kontakt_variante:order.kontakt_variante||null,
+      varianten_cache:order.varianten_cache||null,
       faq:order.faq||null,galerie:order.galerie||null,
       fakten:order.fakten||null,partner:order.partner||null,
       sections_visible:order.sections_visible||null,
@@ -2023,7 +2002,7 @@ function Portal({session,onLogout}){
      done:!!order.whatsapp,page:"kontakt"},
     {label:"Layout & Design anpassen",
      desc:"Farben, Schriftart und Seitenaufbau individualisieren.",
-     done:!!(order.layout||order.custom_color||order.custom_font),page:"design"},
+     done:!!(order.custom_color||order.custom_font||order.stil),page:"design"},
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;
@@ -2042,42 +2021,23 @@ function Portal({session,onLogout}){
   const astScore=astItems.filter(i=>!i.optional).reduce((s,i)=>s+(i.done?i.pts:0),0);
   const astDone=wizardAllDone;
   // ── Varianten-Auswahl Komponente ──
-  const VARIANTEN={
-    hero:[
-      {value:"standard",label:"Standard",desc:"Vollflächig, Text links"},
-      {value:"split",label:"Split",desc:"Text links, Bild rechts"},
-      {value:"minimal",label:"Minimal",desc:"Kein Bild, zentriert"},
-    ],
-    bewertungen:[
-      {value:"karten",label:"Karten",desc:"Nebeneinander als Cards"},
-      {value:"highlight",label:"Highlight",desc:"Eine Bewertung groß, Rest klein"},
-      {value:"liste",label:"Liste",desc:"Kompakt untereinander"},
-    ],
-    ueber:[
-      {value:"standard",label:"Standard",desc:"Text + Vorteile"},
-      {value:"story",label:"Geschichte",desc:"Gründergeschichte mit Foto"},
-      {value:"team-fokus",label:"Team-Fokus",desc:"Team prominent, Text kompakt"},
-    ],
-    kontakt:[
-      {value:"standard",label:"Standard",desc:"Info links, Karte rechts"},
-      {value:"karte-gross",label:"Große Karte",desc:"Karte oben, alles darunter"},
-      {value:"kompakt",label:"Kompakt",desc:"Alles auf einen Blick"},
-    ],
-  };
-  const VariantPicker=({section,field})=>{
-    const opts=VARIANTEN[section]||[];
-    const current=order?.[field]||opts[0]?.value;
-    return <div className="pt-variant-row" style={{display:"flex",gap:10,marginBottom:24}}>{opts.map(v=>{
-      const active=current===v.value;
-      return <button key={v.value} onClick={()=>setOrder(o=>({...o,[field]:v.value}))} style={{
-        flex:1,padding:"14px 12px",border:active?"2px solid "+T.accent:"1.5px solid "+T.bg3,borderRadius:T.rSm,
-        background:active?"rgba(143,163,184,.08)":"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",
-      }}>
-        <div style={{fontSize:".82rem",fontWeight:700,color:active?T.accent:T.dark,marginBottom:2}}>{v.label}</div>
-        <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>{v.desc}</div>
-      </button>;
-    })}</div>;
-  };
+  // Varianten-Hint: zeigt die automatisch berechnete Variante an
+  const VariantenHint=({label,value})=>value?<div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",background:T.bg2,borderRadius:T.rSm,fontSize:".72rem",color:T.textMuted,marginBottom:16}}>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <span>{label}: <strong style={{color:T.dark,fontWeight:600}}>{value}</strong></span>
+  </div>:null;
+
+  // AI-Badge: markiert AI-generierte Inhalte
+  const AiBadge=()=><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",background:"rgba(139,92,246,.08)",border:"1px solid rgba(139,92,246,.15)",borderRadius:T.rSm,fontSize:".65rem",fontWeight:600,color:"#7c3aed",letterSpacing:".02em",whiteSpace:"nowrap"}}>
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    AI-generiert
+  </span>;
+
+  // Stockfoto-Badge: markiert Platzhalter-Bilder
+  const StockBadge=()=><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",background:"rgba(234,88,12,.06)",border:"1px solid rgba(234,88,12,.15)",borderRadius:T.rSm,fontSize:".65rem",fontWeight:600,color:"#c2410c",letterSpacing:".02em",whiteSpace:"nowrap"}}>
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    Stockfoto — Eigenes hochladen
+  </span>;
 
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
@@ -2518,8 +2478,7 @@ function Portal({session,onLogout}){
         {page==="hero"&&<>
           {/* Hero-Variante */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Hero-Layout</div>
-            <VariantPicker section="hero" field="hero_variante"/>
+            <VariantenHint label="Hero-Variante" value={order?.varianten_cache?.hero}/>
           </div>
           {/* Logo upload */}
           {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
@@ -2650,8 +2609,7 @@ function Portal({session,onLogout}){
         {page==="kontakt"&&<>
           {/* Kontakt-Variante */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Kontakt-Layout</div>
-            <VariantPicker section="kontakt" field="kontakt_variante"/>
+            <VariantenHint label="Kontakt-Variante" value={order?.varianten_cache?.kontakt}/>
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Adresse & Kontakt" desc="Ihre Adresse und Telefonnummer werden auf der Website angezeigt und sind über Google Maps auffindbar."/>
@@ -2749,8 +2707,7 @@ function Portal({session,onLogout}){
             </div>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Über-uns-Layout</div>
-            <VariantPicker section="ueber" field="ueber_variante"/>
+            <VariantenHint label="Team-Variante" value={order?.varianten_cache?.team}/>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Über uns & Vorteile" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
@@ -2796,8 +2753,7 @@ function Portal({session,onLogout}){
           {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:10}}>Bewertungen-Layout</div>
-          <VariantPicker section="bewertungen" field="bewertungen_variante"/>
+          <VariantenHint label="Bewertungen-Variante" value={order?.varianten_cache?.bewertungen}/>
           <SectionHeader label="Kundenbewertungen" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
           {!(order.bewertungen||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Bewertungen hinzugefügt.</div>}
           {(order.bewertungen||[]).map((b,i)=>(
@@ -2944,29 +2900,9 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Seitenaufbau" desc="Wie viel soll Ihre Website zeigen? Wählen Sie einen Aufbau — Sie können jederzeit wechseln."/>
             {(()=>{
-              const LAYOUTS=[
-                {value:"standard",label:"Übersichtlich",desc:"Alle wichtigen Infos auf einen Blick.",sections:["Leistungen","Ablauf","Bewertungen","Kontakt"]},
-                {value:"kompakt",label:"Auf den Punkt",desc:"Kürzer und kompakter — gut bei vielen Leistungen.",sections:["Leistungen (kompakt)","Bewertungen","Kontakt"]},
-                {value:"ausfuehrlich",label:"Ausführlich",desc:"Zeigt mehr über Sie und Ihren Betrieb.",sections:["Leistungen","Ablauf","FAQ","Zahlen","Bewertungen","Kontakt"]},
-              ];
-              const currentLayout=order.layout||"standard";
               return<>
-                <div className="pt-layout-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
-                  {LAYOUTS.map(lo=>{
-                    const active=lo.value===currentLayout;
-                    return<button key={lo.value} onClick={()=>{upOrder("layout")(lo.value);if(lo.value==="ausfuehrlich"){const sv={...(order.sections_visible||{}),faq:true,fakten:true};upOrder("sections_visible")(sv);}}} style={{padding:"20px 16px",border:`2px solid ${active?T.dark:T.bg3}`,borderRadius:T.rSm,background:active?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s",position:"relative"}}>
-                      <div style={{fontSize:".88rem",fontWeight:700,color:T.dark,marginBottom:4}}>{lo.label}</div>
-                      <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.5,marginBottom:10}}>{lo.desc}</div>
-                      <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                        {lo.sections.map(s=><span key={s} style={{fontSize:".62rem",padding:"2px 7px",background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:100,color:T.textSub,fontWeight:500}}>{s}</span>)}
-                      </div>
-                      {active&&<div style={{position:"absolute",top:10,right:10,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800}}>{"\u2713"}</div>}
-                    </button>;
-                  })}
-                </div>
-
-                {/* Zusaetzliche Bereiche — nur Toggles, Inhalte auf eigenen Seiten */}
-                <div style={{marginTop:8}}>
+                {/* Bereiche ein-/ausschalten */}
+                <div>
                   <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zusätzliche Bereiche</div>
                   <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Schalten Sie Bereiche ein oder aus. Inhalte bearbeiten Sie auf der jeweiligen Seite.</div>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>

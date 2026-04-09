@@ -201,7 +201,7 @@ export async function onRequestGet({params, env}) {
       // Alle Text-Kinder von hero-inner in einen Wrapper wrappen
       html = html.replace(
         /(<div class="hero-inner">)([\s\S]*?)(<\/div>\s*<\/section>)/,
-        `$1<div class="hero-split-text">$2</div><div class="hero-split-img"><img src="${o.url_hero}" alt="" style="width:100%;display:block"/></div>$3`
+        `$1<div class="hero-split-text">$2</div><div class="hero-split-img"><img src="${o.url_hero}" alt="" style="width:100%;display:block" fetchpriority="high"/></div>$3`
       );
       html = html.replace('</head>', heroStyle + '</head>');
     }
@@ -451,8 +451,8 @@ export async function onRequestGet({params, env}) {
   if (showFaq && faqItems.length > 0 && html.includes("<!-- FAQ -->")) {
     const items = faqItems.slice(0, 8).map((f, i) =>
       `<div style="border-bottom:1px solid var(--sep)">` +
-      `<button onclick="var a=this.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';this.querySelector('span:last-child').textContent=open?'+':'\\u2212'" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${f.frage}</span><span style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
-      `<div style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
+      `<button class="sr-faq-btn" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${f.frage}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
+      `<div class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
       `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${f.antwort || ""}</p>` +
       `</div></div>`
     ).join("");
@@ -467,6 +467,9 @@ export async function onRequestGet({params, env}) {
     const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
     if (faqGridStyle) html = html.replace("</head>", faqGridStyle + "</head>");
     html = html.replace("<!-- FAQ -->", section);
+    // FAQ-Accordion Script (Event-Listener statt inline onclick)
+    const faqScript = `<script>(function(){document.querySelectorAll('.sr-faq-btn').forEach(function(btn){btn.addEventListener('click',function(){var a=btn.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';btn.querySelector('.sr-faq-icon').textContent=open?'+':'\\u2212';});});})();</script>`;
+    html = html.replace("</body>", faqScript + "\n</body>");
   } else {
     html = html.replace("<!-- FAQ -->", "");
   }
@@ -551,9 +554,9 @@ export async function onRequestGet({params, env}) {
       headline = "Reservierung anfragen";
       extraFields =
         `<div class="k-form-row">` +
-        `<div><label>Datum</label><input type="date"></div>` +
-        `<div><label>Uhrzeit</label><input type="time"></div>` +
-        `<div><label>Personen</label><input type="number" min="1" max="50" placeholder="2"></div>` +
+        `<div><label>Datum</label><input type="date" autocomplete="off"></div>` +
+        `<div><label>Uhrzeit</label><input type="time" autocomplete="off"></div>` +
+        `<div><label>Personen</label><input type="number" min="1" max="50" placeholder="2" inputmode="numeric" autocomplete="off"></div>` +
         `</div>`;
       msgLabel = "Anmerkungen";
       msgPlaceholder = "z.B. Allergien, Kinderhochstuhl, besondere Wünsche...";
@@ -563,8 +566,8 @@ export async function onRequestGet({params, env}) {
       headline = "Termin anfragen";
       extraFields =
         `<div class="k-form-row k-form-row-2">` +
-        `<div><label>Wunschtermin</label><input type="date"></div>` +
-        `<div><label>Bevorzugte Uhrzeit</label><select style="width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);box-sizing:border-box;min-height:44px">` +
+        `<div><label>Wunschtermin</label><input type="date" autocomplete="off"></div>` +
+        `<div><label>Bevorzugte Uhrzeit</label><select aria-label="Bevorzugte Uhrzeit" style="width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);box-sizing:border-box;min-height:44px">` +
         `<option value="">Egal</option><option>Vormittag</option><option>Nachmittag</option><option>Abend</option>` +
         `</select></div>` +
         `</div>`;
@@ -575,7 +578,7 @@ export async function onRequestGet({params, env}) {
     } else if (angebot) {
       headline = "Anfrage senden";
       extraFields =
-        `<div class="k-form-field"><label>Adresse / Einsatzort</label><input type="text" placeholder="Straße, PLZ Ort"></div>`;
+        `<div class="k-form-field"><label>Adresse / Einsatzort</label><input type="text" placeholder="Straße, PLZ Ort" autocomplete="street-address"></div>`;
       msgLabel = "Beschreibung des Anliegens";
       msgPlaceholder = "Was soll gemacht werden? Bitte beschreiben Sie Ihr Anliegen möglichst genau.";
       msgRows = 6;
@@ -588,9 +591,9 @@ export async function onRequestGet({params, env}) {
       `<div id="sr-form-wrap">` +
       `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
       `<div class="k-form-row">` +
-      `<div><label>Name *</label><input required aria-required="true" type="text" placeholder="Ihr Name"></div>` +
-      `<div><label>E-Mail *</label><input required aria-required="true" type="email" placeholder="ihre@email.at"></div>` +
-      `<div><label>Telefon</label><input type="tel" placeholder="+43 ..."></div>` +
+      `<div><label>Name *</label><input required aria-required="true" type="text" placeholder="Ihr Name" autocomplete="name"></div>` +
+      `<div><label>E-Mail *</label><input required aria-required="true" type="email" placeholder="ihre@email.at" autocomplete="email" inputmode="email"></div>` +
+      `<div><label>Telefon</label><input type="tel" placeholder="+43 ..." autocomplete="tel" inputmode="tel"></div>` +
       `</div>` +
       extraFields +
       `<div class="k-form-field"><label>${msgLabel} *</label><textarea required aria-required="true" rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +

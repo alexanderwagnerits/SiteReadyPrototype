@@ -36,6 +36,8 @@ export function buildTemplate(data) {
 <meta property="og:image" content="{{OG_IMAGE}}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="${siteUrl}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>${metaTitle}</title>
 <style>
 @import url('${fontUrl}');
@@ -44,6 +46,7 @@ export function buildTemplate(data) {
    RESET & BASE
    ═══════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box}
+a,button,input,select,textarea{touch-action:manipulation}
 :root{
 --primary:${primary};
 --accent:${accent};
@@ -91,7 +94,7 @@ a{color:inherit}
 .fade-up,.sr-fade{opacity:0;transform:translateY(16px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
 .fade-up.visible,.sr-fade.sr-vis{opacity:1;transform:translateY(0)}
 .stil-elegant .fade-up,.stil-elegant .sr-fade{transform:translateY(12px);transition-duration:.8s}
-@media(prefers-reduced-motion:reduce){.fade-up,.sr-fade{opacity:1;transform:none;transition:none}}
+@media(prefers-reduced-motion:reduce){.fade-up,.sr-fade{opacity:1;transform:none;transition:none}.sr-grain::after{animation:none}}
 
 /* Grain-Overlay fuer Tiefe (Hero, About) */
 .sr-grain::after{content:'';position:absolute;inset:-50%;width:200%;height:200%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");background-repeat:repeat;pointer-events:none;z-index:0;opacity:.5;animation:sr-grain 8s steps(8) infinite}
@@ -524,7 +527,7 @@ a{color:inherit}
 .kontakt-form-wrap{margin-top:48px;padding-top:48px;border-top:1px solid var(--sep)}
 .k-form h3{font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:20px}
 .k-form label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:6px}
-.k-form input,.k-form textarea,.k-form select{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.9rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
+.k-form input,.k-form textarea,.k-form select{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.9rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box;min-height:44px}
 .k-form input:focus,.k-form textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
 .k-form input:user-invalid,.k-form textarea:user-invalid{border-color:#dc2626;background:#fef2f2}
 .k-form textarea{resize:vertical;min-height:120px}

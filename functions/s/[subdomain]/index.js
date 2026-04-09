@@ -660,20 +660,9 @@ export async function onRequestGet({params, env}) {
         `</div></div>`;
     }).join("");
     const n = leistungenArr.length;
-    const useCompact = false; // Kompakt-Layout entfernt — Grid oder Editorial per Variante
 
     let grid;
-    if (useCompact) {
-      // Kompakt: Nur Icon + Name, kein Text
-      const compactCards = leistungenArr.map((l, i) => {
-        const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));
-        return `<div class="sr-fade sr-card-hover" style="${cardStyle};text-align:center;padding:16px">` +
-          `<div style="${iconStyle};margin:0 auto 8px">${checkIcon}</div>` +
-          `<div style="font-size:.85rem;font-weight:700;color:var(--primary)">${lCap}</div>` +
-          `</div>`;
-      }).join("");
-      grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">${compactCards}</div>`;
-    } else if (v.leistungen === "editorial") {
+    if (v.leistungen === "editorial") {
       // Editorial: Liste mit Foto + Beschreibung nebeneinander
       const listCards = leistungenArr.map((l, i) => {
         const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));

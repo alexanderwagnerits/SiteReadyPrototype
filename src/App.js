@@ -2541,16 +2541,6 @@ function Portal({session,onLogout}){
               </div>
             </div>
             {url&&<>
-            <div style={{display:"flex",gap:8,marginBottom:12}}>
-              {[{v:"split",title:"Text + Bild"},{v:"full",title:"Vollbild"}].map(opt=>{const on=((order?.hero_layout)||"split")===opt.v;return(
-                <button key={opt.v} onClick={async()=>{if(!supabase||!order?.id)return;await supabase.from("orders").update({hero_layout:opt.v}).eq("id",order.id);setOrder(o=>({...o,hero_layout:opt.v}));showToast("Layout geändert");}} style={{flex:1,padding:"10px 8px",border:on?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:on?T.white:T.bg,cursor:"pointer",fontFamily:T.font,transition:"all .15s"}}>
-                  <div style={{height:40,borderRadius:4,background:T.dark,marginBottom:6,display:"flex",overflow:"hidden"}}>
-                    {opt.v==="split"?<><div style={{flex:1,padding:"6px 8px"}}><div style={{width:"60%",height:4,background:"rgba(255,255,255,.6)",borderRadius:2,marginBottom:3}}/><div style={{width:"40%",height:3,background:"rgba(255,255,255,.3)",borderRadius:2}}/></div><div style={{width:"40%",background:`url(${url}) center/cover`}}/></>
-                    :<div style={{flex:1,background:`linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.4)),url(${url}) center/cover`,padding:"6px 8px"}}><div style={{width:"50%",height:4,background:"rgba(255,255,255,.7)",borderRadius:2,marginBottom:3}}/><div style={{width:"35%",height:3,background:"rgba(255,255,255,.4)",borderRadius:2}}/></div>}
-                  </div>
-                  <div style={{fontSize:".72rem",fontWeight:on?700:500,color:on?T.dark:T.textMuted}}>{opt.title}</div>
-                </button>);})}
-            </div>
             <div style={{borderRadius:T.rSm,overflow:"hidden",height:100,background:"#000",position:"relative"}}>
               <img src={url} alt="Hero" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
             </div>
@@ -3257,16 +3247,6 @@ function Portal({session,onLogout}){
               </div>
             </div>
             {url&&<>
-            <div style={{display:"flex",gap:8,marginBottom:12}}>
-              {[{v:"split",title:"Text + Bild"},{v:"full",title:"Vollbild"}].map(opt=>{const on=((order?.hero_layout)||"split")===opt.v;return(
-                <button key={opt.v} onClick={async()=>{if(!supabase||!order?.id)return;await supabase.from("orders").update({hero_layout:opt.v}).eq("id",order.id);setOrder(o=>({...o,hero_layout:opt.v}));showToast("Layout geändert");}} style={{flex:1,padding:"10px 8px",border:on?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:on?T.white:T.bg,cursor:"pointer",fontFamily:T.font,transition:"all .15s"}}>
-                  <div style={{height:40,borderRadius:4,background:T.dark,marginBottom:6,display:"flex",overflow:"hidden"}}>
-                    {opt.v==="split"?<><div style={{flex:1,padding:"6px 8px"}}><div style={{width:"60%",height:4,background:"rgba(255,255,255,.6)",borderRadius:2,marginBottom:3}}/><div style={{width:"40%",height:3,background:"rgba(255,255,255,.3)",borderRadius:2}}/></div><div style={{width:"40%",background:`url(${url}) center/cover`}}/></>
-                    :<div style={{flex:1,background:`linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.4)),url(${url}) center/cover`,padding:"6px 8px"}}><div style={{width:"50%",height:4,background:"rgba(255,255,255,.7)",borderRadius:2,marginBottom:3}}/><div style={{width:"35%",height:3,background:"rgba(255,255,255,.4)",borderRadius:2}}/></div>}
-                  </div>
-                  <div style={{fontSize:".72rem",fontWeight:on?700:500,color:on?T.dark:T.textMuted}}>{opt.title}</div>
-                </button>);})}
-            </div>
             <div style={{borderRadius:T.rSm,overflow:"hidden",height:100,background:"#000",position:"relative"}}>
               <img src={url} alt="Hero" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
             </div>

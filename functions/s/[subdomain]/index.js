@@ -459,12 +459,13 @@ export async function onRequestGet({params, env}) {
     const faqToggleWeight = isElegant ? "600" : "700";
     const faqToggleSize = isElegant ? ".9rem" : ".95rem";
     const styledItems = items.replace(/font-weight:700;/g, `font-weight:${faqToggleWeight};`).replace(/font-size:\.95rem;/g, `font-size:${faqToggleSize};`);
-    const faqLayout = v.faq === "zweispaltig"
-      ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">${styledItems}</div>`
+    const isTwoCol = v.faq === "zweispaltig";
+    const faqLayout = isTwoCol
+      ? `<div class="sr-faq-grid">${styledItems}</div>`
       : `<div style="max-width:720px">${styledItems}</div>`;
-    const faqTwoColStyle = v.faq === "zweispaltig" ? `<style>@media(max-width:768px){.sec-faq [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}</style>` : "";
+    const faqGridStyle = isTwoCol ? `<style>.sr-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}@media(max-width:768px){.sr-faq-grid{grid-template-columns:1fr}}</style>` : "";
     const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
-    if (faqTwoColStyle) html = html.replace("</head>", faqTwoColStyle + "</head>");
+    if (faqGridStyle) html = html.replace("</head>", faqGridStyle + "</head>");
     html = html.replace("<!-- FAQ -->", section);
   } else {
     html = html.replace("<!-- FAQ -->", "");
@@ -843,23 +844,25 @@ export async function onRequestGet({params, env}) {
   const FONT_URLS = {dm_sans:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",inter:"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",outfit:"https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap",poppins:"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap",montserrat:"https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",raleway:"https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap",open_sans:"https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap",lato:"https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap",roboto:"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap",nunito:"https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap",work_sans:"https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap",manrope:"https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",space_grotesk:"https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",plus_jakarta:"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",rubik:"https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",source_serif:"https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap",playfair:"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap",lora:"https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",merriweather:"https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap",dm_serif:"https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap"};
   const FONT_FAMILIES = {dm_sans:"'DM Sans',sans-serif",inter:"'Inter',sans-serif",outfit:"'Outfit',sans-serif",poppins:"'Poppins',sans-serif",montserrat:"'Montserrat',sans-serif",raleway:"'Raleway',sans-serif",open_sans:"'Open Sans',sans-serif",lato:"'Lato',sans-serif",roboto:"'Roboto',sans-serif",nunito:"'Nunito',sans-serif",work_sans:"'Work Sans',sans-serif",manrope:"'Manrope',sans-serif",space_grotesk:"'Space Grotesk',sans-serif",plus_jakarta:"'Plus Jakarta Sans',sans-serif",rubik:"'Rubik',sans-serif",source_serif:"'Source Serif 4',Georgia,serif",playfair:"'Playfair Display',Georgia,serif",lora:"'Lora',Georgia,serif",merriweather:"'Merriweather',Georgia,serif",dm_serif:"'DM Serif Display',Georgia,serif"};
 
-  let fontImport = "";
+  // Font-Links: <link> im <head> statt @import (parallel, non-blocking)
+  const fontLinks = [];
   if (o.custom_font && FONT_URLS[o.custom_font]) {
-    fontImport = `@import url('${FONT_URLS[o.custom_font]}');`;
+    fontLinks.push(`<link rel="stylesheet" href="${FONT_URLS[o.custom_font]}">`);
     customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
   }
-  // Cormorant Garamond fuer Elegant/Traditional — nur laden wenn nicht bereits im Template-Import
   if (currentStil === "elegant" || currentStil === "traditional") {
-    fontImport += `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');`;
+    fontLinks.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap">`);
+  }
+  if (fontLinks.length > 0) {
+    html = html.replace("</head>", fontLinks.join("\n") + "\n</head>");
   }
 
   // Style-Override am Ende des body (damit es ALLE vorherigen :root ueberschreibt)
-  // Hero-Background muss auch ueberschrieben werden (alte Generierungen haben hardcoded Hex-Werte)
   const heroOverride = `.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%)!important}` +
     `.stil-modern .hero{background:var(--primary)!important}` +
     `.stil-elegant .hero{background:linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,#000) 100%)!important}` +
     `#sitenav{background:var(--primary)!important}`;
-  const overrideStyle = `<style>${fontImport}:root{${customDesign.join(";")}}${heroOverride}</style>`;
+  const overrideStyle = `<style>:root{${customDesign.join(";")}}${heroOverride}</style>`;
   html = html.replace("</body>", overrideStyle + "\n</body>");
 
   // ── WhatsApp Floating Button ──

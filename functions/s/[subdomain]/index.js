@@ -442,7 +442,27 @@ export async function onRequestGet({params, env}) {
     const ctaBtnShadow = isModern ? ";box-shadow:0 4px 16px rgba(0,0,0,.15)" : "";
     const ctaH2Weight = isElegant ? "500" : "800";
     const ctaPOpacity = isElegant ? ".5" : ".7";
-    const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">Bereit für Ihr Projekt?</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">Wir beraten Sie gerne — kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
+    // Branchenspezifische CTA-Texte (Kunde kann im Portal überschreiben)
+    const brGruppe = {
+      elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",baumeister:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",
+      friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",
+      restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",
+      arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",heilpraktiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",
+      steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",
+      fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",
+    }[o.branche] || "";
+    const ctaDefaults = {
+      handwerk:       {h:"Bereit für Ihr Projekt?",            t:"Wir beraten Sie gerne — kostenlos und unverbindlich."},
+      kosmetik:       {h:"Bereit für Ihren Termin?",           t:"Wir freuen uns auf Ihren Besuch."},
+      gastro:         {h:"Lust auf guten Geschmack?",          t:"Reservieren Sie jetzt Ihren Tisch."},
+      gesundheit:     {h:"Ihre Gesundheit liegt uns am Herzen",t:"Vereinbaren Sie jetzt einen Termin."},
+      dienstleistung: {h:"Lassen Sie uns starten",             t:"Wir freuen uns auf Ihre Anfrage."},
+      bildung:        {h:"Bereit für den nächsten Schritt?",   t:"Melden Sie sich jetzt an."},
+    };
+    const ctaDef = ctaDefaults[brGruppe] || {h:"Wir freuen uns auf Sie", t:"Kontaktieren Sie uns — wir sind für Sie da."};
+    const ctaH = esc(o.cta_headline || ctaDef.h);
+    const ctaT = esc(o.cta_text || ctaDef.t);
+    const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">${ctaH}</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">${ctaT}</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
     html = html.replace("<!-- CTA_BLOCK -->", ctaBlock);
   } else {
     html = html.replace("<!-- CTA_BLOCK -->", "");

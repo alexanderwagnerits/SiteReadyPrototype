@@ -2935,6 +2935,14 @@ function Portal({session,onLogout}){
                         <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Fotos verwalten &rarr;</button>
                       </div>}
                     </div>
+                    <div style={{border:`1.5px solid ${order.sections_visible?.cta_block!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="CTA-Block" checked={order.sections_visible?.cta_block!==false} onChange={v=>{const sv={...(order.sections_visible||{}),cta_block:v};upOrder("sections_visible")(sv);}} desc="Aufruf zum Handeln zwischen Leistungen und Über uns"/>
+                      {order.sections_visible?.cta_block!==false&&<div style={{padding:"12px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg,display:"flex",flexDirection:"column",gap:8}}>
+                        <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder="z.B. Bereit für Ihren Termin?"/>
+                        <Field label="Text" value={order.cta_text||""} onChange={upOrder("cta_text")} placeholder="z.B. Wir freuen uns auf Ihren Besuch."/>
+                        <div style={{fontSize:".72rem",color:T.textMuted}}>Leer lassen für branchenspezifischen Standard-Text</div>
+                      </div>}
+                    </div>
                   </div>
                 </div>
               </>;

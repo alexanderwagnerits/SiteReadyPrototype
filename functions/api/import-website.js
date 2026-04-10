@@ -50,9 +50,11 @@ export async function onRequestPost({request, env}) {
       if (googleWebsiteUrl) {
         cleanUrl = googleWebsiteUrl;
         base = new URL(cleanUrl).origin;
-        importType = "google+website"; // Beide Quellen nutzen
+        importType = "website"; // Normaler Crawl-Pfad (Sitemap, Multi-Page etc.)
       }
     }
+    // Ursprüngliche Quelle merken (für Logging/Meta)
+    const importSource = googleMapText ? (googleWebsiteUrl ? "google+website" : "google") : importType;
 
     /* ═══ HELPER ═══ */
     const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
@@ -246,6 +248,8 @@ export async function onRequestPost({request, env}) {
     }
 
     /* ═══ 2. SITEMAP PRUEFEN + INTERNE LINKS SAMMELN ═══ */
+    // Google-only (kein Website-Link): Kein Crawl — nur Google Maps Text verwenden
+    const skipCrawl = importSource === "google";
     const allInternalLinks = new Set();
     const skipExt = /\.(pdf|jpg|jpeg|png|gif|svg|webp|css|js|ico|woff|woff2|ttf|eot|mp4|mp3|zip|xml|txt|json)$/i;
     const skipPath = /\/(wp-admin|wp-content|wp-includes|cdn-cgi|assets|static|_next|\.well-known|feed|rss|search|login|register|cart|checkout|warenkorb|kasse|tag|category|author|page\/\d)\b/i;
@@ -265,7 +269,7 @@ export async function onRequestPost({request, env}) {
 
     // Sitemap checken (zuverlaessigste Quelle fuer alle Seiten)
     let sitemapFound = false;
-    try {
+    if (!skipCrawl) try {
       const smRes = await fetch(base + "/sitemap.xml", {signal: AbortSignal.timeout(5000), headers:{"User-Agent":"Mozilla/5.0 (compatible; SiteReady/1.0)"}});
       if (smRes.ok) {
         const smText = await smRes.text();
@@ -303,19 +307,21 @@ export async function onRequestPost({request, env}) {
       }
     };
 
-    collectLinks(mainHtml, mainText);
+    if (!skipCrawl) collectLinks(mainHtml, mainText);
 
     // Emails/Phones aus Jina-Haupttext
     for (const m of mainText.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
     for (const m of mainText.matchAll(phoneRegex)) { const p=m[0].replace(/[\s\-/]/g,""); if(p.length>=8) allPhones.add(p); }
 
     // Standard-Pfade als Fallback
-    const standardPaths = ["/kontakt","/contact","/impressum","/leistungen","/services","/angebot",
-      "/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen",
-      "/schwerpunkte","/behandlungen","/ordination","/praxis","/jobs","/karriere","/philosophie",
-      "/unternehmen","/firma","/history","/geschichte"];
-    for (const p of standardPaths) {
-      if (![...allInternalLinks].some(l => l.toLowerCase().includes(p.slice(1)))) addLink(base + p);
+    if (!skipCrawl) {
+      const standardPaths = ["/kontakt","/contact","/impressum","/leistungen","/services","/angebot",
+        "/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen",
+        "/schwerpunkte","/behandlungen","/ordination","/praxis","/jobs","/karriere","/philosophie",
+        "/unternehmen","/firma","/history","/geschichte"];
+      for (const p of standardPaths) {
+        if (![...allInternalLinks].some(l => l.toLowerCase().includes(p.slice(1)))) addLink(base + p);
+      }
     }
 
     /* ═══ 3. UNTERSEITEN LADEN (parallel, max 20, 2 Runden) ═══ */
@@ -871,7 +877,7 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
       tiktok: socialLinks.tiktok || "",
       merkmale,
       brand_color: brandColor,
-      _meta: {pages_read: pageContents.length+1, pages_round2: round2.length, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size, import_tokens_in: importTokIn, import_tokens_out: importTokOut, import_cost_eur: importCostEur, import_type: importType, google_website: googleWebsiteUrl||undefined},
+      _meta: {pages_read: pageContents.length+1, pages_round2: round2.length, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size, import_tokens_in: importTokIn, import_tokens_out: importTokOut, import_cost_eur: importCostEur, import_type: importSource, google_website: googleWebsiteUrl||undefined},
     });
 
   } catch(e) {

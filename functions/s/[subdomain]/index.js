@@ -115,6 +115,8 @@ export async function onRequestGet({params, env}) {
     if (o.gastgarten) trustItems.push({l:"Gastgarten",i:tIcon(`<circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>`)});
     if (o.takeaway) trustItems.push({l:"Take-away",i:tIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`)});
     if (o.lieferservice) trustItems.push({l:"Lieferservice",i:tIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`)});
+    if (o.online_beratung) trustItems.push({l:"Online-Beratung",i:tIcon(`<path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>`)});
+    if (o.hausbesuche) trustItems.push({l:"Hausbesuche",i:tIcon(`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`)});
     if (trustItems.length > 0) {
       const items = trustItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
       // Trust-Items direkt nach den Hero-Buttons einfuegen (innerhalb hero-inner)
@@ -434,7 +436,8 @@ export async function onRequestGet({params, env}) {
   // ── Neue Sections serve-time (Layout-abhaengig) ──
 
   // CTA-Zwischenblock — Auflockerer zwischen Leistungen und Ablauf
-  if (sv.cta_block && html.includes("<!-- CTA_BLOCK -->")) {
+  // Default: immer anzeigen, außer explizit deaktiviert (sv.cta_block === false)
+  if (sv.cta_block !== false && html.includes("<!-- CTA_BLOCK -->")) {
     const ctaBtnR = isModern ? "100px" : "var(--r)";
     const ctaBtnShadow = isModern ? ";box-shadow:0 4px 16px rgba(0,0,0,.15)" : "";
     const ctaH2Weight = isElegant ? "500" : "800";

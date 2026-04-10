@@ -115,7 +115,7 @@ export async function onRequestPost(context) {
       if (order) {
         await patchOrder(order.id, {subscription_status: "past_due"});
         await logEvent(order.id, "payment_failed");
-        try{await fetch(`${sb}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":sbKey,"Authorization":`Bearer ${sbKey}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Zahlung fehlgeschlagen",message:`Kunde: ${customerId}\nOrder: ${order.id}\nFirma: ${order.firmenname||"unbekannt"}`,status:"offen"})});}catch(_){}
+        try{await fetch(`${sb}/rest/v1/support_requests`,{method:"POST",headers:{"Content-Type":"application/json","apikey":sbKey,"Authorization":`Bearer ${sbKey}`},body:JSON.stringify({email:"system@siteready.at",subject:"[Auto] Zahlung fehlgeschlagen",message:`Kunde: ${customerId}\nOrder: ${order.id}\nFirma: ${order.firmenname||"unbekannt"}`,status:"offen"})});}catch(e){console.error("stripe-webhook: Ticket erstellen fehlgeschlagen",e.message);}
       }
     }
   }

@@ -41,7 +41,7 @@ export async function onRequestGet({request, env}) {
             })
           });
           results.tickets++;
-        } catch(_) {}
+        } catch(e) { console.error("health-monitor: Ticket erstellen fehlgeschlagen", e.message); }
       }
     } catch(e) {
       results.websites.push({subdomain: o.subdomain, error: e.message});
@@ -56,7 +56,7 @@ export async function onRequestGet({request, env}) {
           })
         });
         results.tickets++;
-      } catch(_) {}
+      } catch(e) { console.error("health-monitor: Ticket erstellen fehlgeschlagen", e.message); }
     }
   }
 
@@ -91,7 +91,7 @@ export async function onRequestGet({request, env}) {
             })
           });
           results.tickets++;
-        } catch(_) {}
+        } catch(e) { console.error("health-monitor: Ticket erstellen fehlgeschlagen", e.message); }
       } else {
         results.apis.push({name: api.name, ok: true});
       }
@@ -108,7 +108,7 @@ export async function onRequestGet({request, env}) {
           })
         });
         results.tickets++;
-      } catch(_) {}
+      } catch(e) { console.error("health-monitor: Ticket erstellen fehlgeschlagen", e.message); }
     }
   }
 

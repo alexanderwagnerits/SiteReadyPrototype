@@ -86,7 +86,7 @@ export async function onRequestPost(context) {
             headers: {"Content-Type":"application/json","apikey":env.SUPABASE_SERVICE_KEY,"Authorization":`Bearer ${env.SUPABASE_SERVICE_KEY}`,"Prefer":"return=minimal"},
             body: JSON.stringify({last_error: "Generierung fehlgeschlagen nach 2 Versuchen: " + e2.message}),
           });
-        } catch(_) {}
+        } catch(e3) { console.error("start-build: DB-Patch last_error fehlgeschlagen", e3.message); }
       }
     })());
 

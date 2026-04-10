@@ -145,7 +145,7 @@ export async function onRequestPost({request, env}) {
               }
             }
           }
-        } catch(_) {}
+        } catch(e) { console.error("import: Structured data extraction", e.message); }
       }
       // Plain-text Emails + Phones
       const vis = html.replace(/<script[\s\S]*?<\/script>/gi," ").replace(/<style[\s\S]*?<\/style>/gi," ").replace(/<[^>]+>/g," ");
@@ -203,7 +203,7 @@ export async function onRequestPost({request, env}) {
           redirect:"follow", signal: AbortSignal.timeout(timeout),
         });
         if (r.ok) return await r.text();
-      } catch(_) {}
+      } catch(e) { console.error("import: fetchHtml fehlgeschlagen", pageUrl, e.message); }
       return "";
     };
 
@@ -218,7 +218,7 @@ export async function onRequestPost({request, env}) {
           if (text.length < 30 || /^(Unable to|Error:|404|Page not found)/i.test(text.trim())) return "";
           return text;
         }
-      } catch(_) {}
+      } catch(e) { console.error("import: fetchJina fehlgeschlagen", pageUrl, e.message); }
       return "";
     };
 
@@ -287,11 +287,11 @@ export async function onRequestPost({request, env}) {
                 const subText = await subRes.text();
                 for (const m2 of subText.matchAll(/<loc>\s*(https?:\/\/[^<]+)\s*<\/loc>/gi)) addLink(m2[1]);
               }
-            } catch(_) {}
+            } catch(e) { console.error("import: Sub-Sitemap fehlgeschlagen", sm[1], e.message); }
           }
         }
       }
-    } catch(_) {}
+    } catch(e) { console.error("import: Sitemap-Abruf fehlgeschlagen", e.message); }
 
     // Links aus HTML + Jina-Markdown sammeln
     const collectLinks = (html, text) => {
@@ -391,7 +391,7 @@ export async function onRequestPost({request, env}) {
       } catch(e) {
         // Retry einmal fuer Schluesselseiten
         if (isKeyPage(pageUrl) && elapsed() < BUDGET_MS - 15000) {
-          try { await doFetch(); } catch(_) {}
+          try { await doFetch(); } catch(e2) { console.error("import: Retry fehlgeschlagen", pageUrl, e2.message); }
         }
       }
     };

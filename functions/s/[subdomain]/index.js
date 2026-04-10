@@ -43,7 +43,7 @@ export async function onRequestGet({params, env}) {
       const { createLogger } = await import("../../_lib/log.js");
       const log = createLogger(env);
       await log.error("serve", {message: `DB-Fehler ${r.status} fuer /${subdomain}`, url: `/s/${subdomain}`});
-    } catch(_) {}
+    } catch(e) { console.error("serve: Logger-Init fehlgeschlagen", e.message); }
     return new Response("Fehler beim Laden", {status: 502});
   }
 

@@ -39,7 +39,9 @@ export async function onRequestPost({request, env}) {
           {method: "DELETE", headers, body: JSON.stringify({prefixes: paths})}
         );
       }
-    } catch(_) {}
+    } catch(e) {
+      console.error("admin-delete: Storage-Dateien loeschen fehlgeschlagen", e.message);
+    }
   }
 
   // 3. Auth-User loeschen
@@ -49,7 +51,9 @@ export async function onRequestPost({request, env}) {
         `${env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
         {method: "DELETE", headers}
       );
-    } catch(_) {}
+    } catch(e) {
+      console.error("admin-delete: Auth-User loeschen fehlgeschlagen", e.message);
+    }
   }
 
   // 4. Support-Anfragen loeschen
@@ -59,7 +63,9 @@ export async function onRequestPost({request, env}) {
         `${env.SUPABASE_URL}/rest/v1/support_requests?email=eq.${encodeURIComponent(email)}`,
         {method: "DELETE", headers: {...headers, "Prefer": "return=minimal"}}
       );
-    } catch(_) {}
+    } catch(e) {
+      console.error("admin-delete: Support-Anfragen loeschen fehlgeschlagen", e.message);
+    }
   }
 
   // 5. Order loeschen

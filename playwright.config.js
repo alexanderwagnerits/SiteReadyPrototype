@@ -6,7 +6,7 @@ module.exports = defineConfig({
   timeout: 30000,
   retries: 0,
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
     headless: true,
     screenshot: "only-on-failure",
     video: "off",
@@ -17,7 +17,7 @@ module.exports = defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
+  webServer: process.env.TEST_BASE_URL ? undefined : {
     command: "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: true,

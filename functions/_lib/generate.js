@@ -712,7 +712,8 @@ REGELN fuer gut_zu_wissen:
   const faqFinal = texts.faq?.length ? texts.faq : (o.faq || []);
   const variantenCache = berechneVarianten({
     hero_image: o.url_hero || null,
-    hero_image_ratio: 0, // Ratio unbekannt bei Generierung — default "split"
+    // Stockfotos sind 1200x630 (Ratio 1.9) → fullscreen; eigene Fotos default split
+    hero_image_ratio: heroIsPlaceholder ? 1.9 : (o.url_hero ? 1.5 : 0),
     leistungen: leistMitFoto,
     ablauf: ablaufFinal,
     bewertungen: o.bewertungen || [],

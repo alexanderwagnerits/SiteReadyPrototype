@@ -819,6 +819,8 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
     const { berechneVarianten } = await import("../_lib/varianten.js");
     const variantenCache = berechneVarianten({
       hero_image: null,
+      stil: "klassisch", // Stil wird erst in Schritt 5 gewählt, Generierung überschreibt
+      branche: branche,
       leistungen: leistungen.map(() => ({foto: false})),
       ablauf: ablaufSchritte,
       bewertungen,

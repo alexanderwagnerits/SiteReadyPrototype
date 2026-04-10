@@ -2480,9 +2480,20 @@ function Portal({session,onLogout}){
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
         {page==="hero"&&<>
-          {/* Hero-Variante */}
+          {/* Hero-Layout Auswahl */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
-            <VariantenHint label="Hero-Variante" value={order?.varianten_cache?.hero}/>
+            <div style={{fontWeight:700,fontSize:".82rem",color:T.dark,marginBottom:4}}>Hero-Layout</div>
+            <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:14}}>Bestimmt wie der Kopfbereich Ihrer Website aussieht</div>
+            <div style={{display:"flex",gap:10}}>
+              {[
+                {v:"fullscreen",l:"Vollbild",d:"Bild als Hintergrund mit Text-Overlay"},
+                {v:"split",l:"Geteilt",d:"Text links, Bild rechts"},
+                {v:"minimal",l:"Ohne Bild",d:"Nur Text, zentriert"},
+              ].map(o=>{const active=(order?.varianten_cache?.hero||"fullscreen")===o.v;return<button key={o.v} onClick={()=>{const vc={...(order.varianten_cache||{}),hero:o.v};upOrder("varianten_cache")(vc);}} style={{flex:1,padding:"14px 12px",border:active?`2px solid ${T.accent}`:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.accentLight:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s"}}>
+                <div style={{fontWeight:700,fontSize:".82rem",color:active?T.accent:T.dark,marginBottom:2}}>{o.l}</div>
+                <div style={{fontSize:".7rem",color:T.textMuted,lineHeight:1.4}}>{o.d}</div>
+              </button>})}
+            </div>
           </div>
           {/* Logo upload */}
           {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(

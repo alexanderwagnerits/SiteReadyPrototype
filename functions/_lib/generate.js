@@ -710,10 +710,13 @@ REGELN fuer gut_zu_wissen:
   const leistMitFoto = leistungen.map(l => ({foto: !!(fotoMap[l] || fotoMap[l.charAt(0).toUpperCase() + l.slice(1)])}));
   const ablaufFinal = texts.ablauf_schritte?.length ? texts.ablauf_schritte : (o.ablauf_schritte || []);
   const faqFinal = texts.faq?.length ? texts.faq : (o.faq || []);
+  // Bestehende Hero-Wahl des Kunden beibehalten (Portal-Override)
+  const existingHero = o.varianten_cache?.hero;
   const variantenCache = berechneVarianten({
     hero_image: o.url_hero || null,
-    // Stockfotos sind 1200x630 (Ratio 1.9) → fullscreen; eigene Fotos default split
-    hero_image_ratio: heroIsPlaceholder ? 1.9 : (o.url_hero ? 1.5 : 0),
+    hero_override: existingHero || null,
+    stil: o.stil || "klassisch",
+    branche: o.branche || "",
     leistungen: leistMitFoto,
     ablauf: ablaufFinal,
     bewertungen: o.bewertungen || [],

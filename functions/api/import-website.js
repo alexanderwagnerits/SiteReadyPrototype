@@ -24,18 +24,36 @@ export async function onRequestPost({request, env}) {
     else if (/facebook\.com|fb\.com/.test(urlHost)) importType = "facebook";
 
     // Fuer nicht-Website-Typen: Jina als Proxy verwenden (extrahiert readable text)
-    const useJina = importType !== "website";
-    if (useJina) {
-      // Jina-URL: r.jina.ai/<url> liefert Markdown-Text
-      cleanUrl = cleanUrl; // URL bleibt gleich, Jina-Fetch weiter unten
-    }
+    // google+website nutzt den normalen Website-Crawl (cleanUrl wurde auf Website umgesetzt)
+    const useJina = importType !== "website" && importType !== "google+website" && importType !== "google";
 
-    const base = new URL(cleanUrl).origin;
+    let base = new URL(cleanUrl).origin;
     await log.info(null, "import_type", {type: importType, url: cleanUrl});
 
-    // Spezial-Quellen: Hinweis fuer spaetere Implementierung
+    // ── Google Maps: Jina-Fallback (TODO LIVE: Google Places API statt Jina verwenden) ──
+    let googleMapText = "";
+    let googleWebsiteUrl = "";
     if (importType === "google") {
-      return Response.json({error: "Google Maps Import wird bald verfügbar. Bitte geben Sie stattdessen die Website-URL Ihres Unternehmens ein."}, {status: 400});
+      const gText = await fetchJina(cleanUrl);
+      if (gText && gText.length > 50) {
+        googleMapText = gText;
+        // Website-URL aus Google Maps Profil extrahieren
+        const urlMatch = gText.match(/(?:Website|Webseite|Homepage)[:\s]*\n?\s*(https?:\/\/[^\s\n]+)/i)
+          || gText.match(/(?:Besuchen Sie|Visit)[:\s]*\n?\s*(https?:\/\/[^\s\n]+)/i)
+          || gText.match(/(https?:\/\/(?:www\.)?(?!google\.|goo\.gl|maps\.)[a-z0-9][a-z0-9\-]*\.[a-z]{2,}[^\s\n]*)/i);
+        if (urlMatch) {
+          googleWebsiteUrl = urlMatch[1].replace(/[.,;)}\]]+$/, "");
+          await log.info(null, "google_website_found", {url: googleWebsiteUrl});
+        }
+      } else {
+        return Response.json({error: "Das Google-Profil konnte nicht gelesen werden. Bitte geben Sie stattdessen die Website-URL Ihres Unternehmens ein."}, {status: 400});
+      }
+      // Wenn Website gefunden: auf normalen Website-Crawl umschalten
+      if (googleWebsiteUrl) {
+        cleanUrl = googleWebsiteUrl;
+        base = new URL(cleanUrl).origin;
+        importType = "google+website"; // Beide Quellen nutzen
+      }
     }
 
     /* ═══ HELPER ═══ */
@@ -219,8 +237,14 @@ export async function onRequestPost({request, env}) {
     if (!mainText || mainText.length < 100) mainText = stripHtml(mainHtml);
 
     if (!mainText || mainText.length < 50) {
-      await log.error("import", {message:"Website nicht lesbar", url:cleanUrl});
-      return Response.json({error:"Die Website konnte nicht gelesen werden. M\u00f6gliche Gr\u00fcnde: Die Seite ist passwortgesch\u00fctzt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar."}, {status:400});
+      // Google-only: Kein Website-Crawl moeglich, aber Google Maps Text vorhanden
+      if (googleMapText && googleMapText.length > 50) {
+        mainText = googleMapText;
+        await log.info(null, "google_only_import", {url: cleanUrl, reason: "Website nicht lesbar, nur Google Maps Daten"});
+      } else {
+        await log.error("import", {message:"Website nicht lesbar", url:cleanUrl});
+        return Response.json({error:"Die Website konnte nicht gelesen werden. M\u00f6gliche Gr\u00fcnde: Die Seite ist passwortgesch\u00fctzt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar."}, {status:400});
+      }
     }
 
     /* ═══ 2. SITEMAP PRUEFEN + INTERNE LINKS SAMMELN ═══ */
@@ -470,7 +494,12 @@ export async function onRequestPost({request, env}) {
       grouped[p.category] += "\n--- " + p.path + " ---\n" + dedup(p.text);
     }
 
-    let fullText = "=== HAUPTSEITE ===\n" + dedup(mainText).slice(0, 8000);
+    let fullText = "";
+    // Google Maps Text als eigene Sektion einfuegen (falls vorhanden)
+    if (googleMapText) {
+      fullText += "=== GOOGLE MAPS PROFIL ===\n" + googleMapText.slice(0, 6000) + "\n\n";
+    }
+    fullText += "=== HAUPTSEITE ===\n" + dedup(mainText).slice(0, 8000);
     const sectionOrder = ["leistungen","ueberuns","kontakt","impressum","faq","partner","galerie","sonstige"];
     const sectionLabels = {leistungen:"LEISTUNGEN/ANGEBOT",ueberuns:"\u00dcBER UNS/TEAM",kontakt:"KONTAKT",impressum:"IMPRESSUM",faq:"FAQ",partner:"PARTNER/REFERENZEN",galerie:"GALERIE",sonstige:"WEITERE SEITEN"};
 
@@ -618,6 +647,12 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
 
     const claudeData = await claudeResp.json();
     const rawContent = claudeData.content?.[0]?.text || "{}";
+
+    // Import-Kosten berechnen
+    const usage = claudeData.usage || {};
+    const importTokIn = usage.input_tokens || 0;
+    const importTokOut = usage.output_tokens || 0;
+    const importCostEur = Math.round(((importTokIn * 3 + importTokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
 
     let extracted;
     try {
@@ -838,7 +873,7 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
       tiktok: socialLinks.tiktok || "",
       merkmale,
       brand_color: brandColor,
-      _meta: {pages_read: pageContents.length+1, pages_round2: round2.length, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size},
+      _meta: {pages_read: pageContents.length+1, pages_round2: round2.length, sitemap: sitemapFound, deduped_paragraphs: duplicateParas.size, import_tokens_in: importTokIn, import_tokens_out: importTokOut, import_cost_eur: importCostEur, import_type: importType, google_website: googleWebsiteUrl||undefined},
     });
 
   } catch(e) {

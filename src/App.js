@@ -870,6 +870,7 @@ function SuccessPage({data,onBack,onPortal}){
       ...(snap.importExtras?.leistungen_beschreibungen&&Object.keys(snap.importExtras.leistungen_beschreibungen).length?{leistungen_beschreibungen:snap.importExtras.leistungen_beschreibungen}:{}),
       ...(snap.importExtras?.sections_visible?{sections_visible:snap.importExtras.sections_visible}:{}),
       ...(snap.importExtras?.varianten_cache?{varianten_cache:snap.importExtras.varianten_cache}:{}),
+      ...(snap.importExtras?.import_cost_eur?{import_cost_eur:snap.importExtras.import_cost_eur,import_tokens_in:snap.importExtras.import_tokens_in,import_tokens_out:snap.importExtras.import_tokens_out}:{}),
       website_ziel:null
     });
     if(error){try{await supabase.from("error_logs").insert({source:"order_insert_error",message:error.message});}catch(_){}setSaveErr("Fehler: "+error.message);setSaving(false);_orderInProgress=false;return;}
@@ -1214,13 +1215,15 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const[step,setStep]=useState(0);
   const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[importResult,setImportResult]=useState(null);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");const[importPhase,setImportPhase]=useState("");
   const[importSeconds,setImportSeconds]=useState(0);
-  const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");setImportSeconds(0);setImportPhase("Website wird gelesen...");
-    const phases=[["Unterseiten werden durchsucht...",8],["Inhalte werden analysiert...",20],["Daten werden extrahiert...",40],["Fast fertig...",65]];
+  const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");setImportSeconds(0);
+    const isGoogle=/google\.(com|at|de|ch)\/(maps|place)|goo\.gl/i.test(importUrl);
+    setImportPhase(isGoogle?"Google-Profil wird gelesen...":"Website wird gelesen...");
+    const phases=isGoogle?[["Website wird gesucht...",8],["Inhalte werden analysiert...",20],["Daten werden extrahiert...",40],["Fast fertig...",65]]:[["Unterseiten werden durchsucht...",8],["Inhalte werden analysiert...",20],["Daten werden extrahiert...",40],["Fast fertig...",65]];
     const timers=phases.map(([p,s])=>setTimeout(()=>setImportPhase(p),s*1000));
     const tick=setInterval(()=>setImportSeconds(s=>s+1),1000);
     try{const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),120000);
     const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl}),signal:ctrl.signal});clearTimeout(timeout);
-    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:hasBrandColor?"custom":b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{stil:"custom",customColor:j.brand_color,hexInput:j.brand_color.toUpperCase()}:{})}));const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{}};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
+    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:hasBrandColor?"custom":b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{stil:"custom",customColor:j.brand_color,hexInput:j.brand_color.toUpperCase()}:{})}));const meta=j._meta||{};const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{},import_tokens_in:meta.import_tokens_in||0,import_tokens_out:meta.import_tokens_out||0,import_cost_eur:meta.import_cost_eur||0};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
     }catch(e){timers.forEach(clearTimeout);clearInterval(tick);setImportPhase("");setImportLoading(false);if(e.name==="AbortError")setImportErr("Der Import hat zu lange gedauert. Die Website ist möglicherweise nicht erreichbar oder zu komplex. Sie können die Daten manuell eingeben oder uns unter support@siteready.at melden — wir schauen uns das Problem an.");else setImportErr("Verbindungsfehler — bitte versuchen Sie es erneut oder melden Sie das Problem unter support@siteready.at");}};
   const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
@@ -1324,7 +1327,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
           <div className="q-content-card" style={{textAlign:"left",marginBottom:24}}>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
               <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
-              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Website importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Wir übernehmen Ihre Daten automatisch</div></div>
+              <div><div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Bestehende Präsenz importieren</div><div style={{fontSize:".75rem",color:T.textMuted}}>Website oder Google Maps Eintrag liefern die besten Ergebnisse</div></div>
             </div>
             <div className="q-import-row">
               <input className="q-import-input" type="url" value={importUrl} onChange={e=>setImportUrl(e.target.value)} placeholder="https://www.ihre-website.at" onKeyDown={e=>{if(e.key==="Enter")e.preventDefault()}}/>
@@ -1340,7 +1343,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:2}}>
                 <span style={{fontSize:".85rem",color:T.dark,fontWeight:600}}>{importPhase}</span>
-                <span style={{fontSize:".72rem",color:T.textMuted}}>Ihre Daten werden gründlich ausgelesen</span>
+                <span style={{fontSize:".72rem",color:T.textMuted}}>{/google\.(com|at|de|ch)\/(maps|place)|goo\.gl/i.test(importUrl)?"Google-Profil und verknüpfte Website werden analysiert":"Ihre Daten werden gründlich ausgelesen"}</span>
               </div>
             </div>}
             {importErr&&<div style={{marginTop:8,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,fontSize:".85rem",color:T.red,lineHeight:1.5}}>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>}
@@ -2968,7 +2971,7 @@ function Portal({session,onLogout}){
             }catch(e){}
           }} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".8rem",fontWeight:700,fontFamily:T.font}}>Zahlungsdaten verwalten</button>}
         </div>
-        {invoices==="loading"&&<div style={{color:T.textMuted,fontSize:".9rem"}}>Wird geladen...</div>}
+        {invoices==="loading"&&(()=>{const B=({w,h=14,r=6})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${T.bg3} 25%,${T.bg2} 50%,${T.bg3} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite"}}/>;return<div style={{display:"flex",flexDirection:"column",gap:8}}>{[0,1,2].map(i=><div key={i} style={{display:"flex",alignItems:"center",gap:16,padding:"14px 16px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}><div style={{flex:1}}><B w={180} h={13}/><div style={{height:6}}/><B w={80} h={11}/></div><B w={60} h={14}/><B w={56} h={22} r={4}/></div>)}</div>;})()}
         {Array.isArray(invoices)&&invoices.length===0&&<div style={{color:T.textMuted,fontSize:".9rem"}}>Noch keine Zahlungen vorhanden.</div>}
         {Array.isArray(invoices)&&invoices.length>0&&(<div style={{display:"flex",flexDirection:"column",gap:8}}>
           {invoices.map(c=>{
@@ -4044,7 +4047,10 @@ function Admin({adminKey}){
 
       {/* Main */}
       <div className="ad-main" style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
-        {loading&&<div style={{textAlign:"center",padding:60,color:T.textMuted}}>Wird geladen...</div>}
+        {loading&&(()=>{const B=({w,h=14,r=6,mb=0})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${T.bg3} 25%,${T.bg2} 50%,${T.bg3} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite",marginBottom:mb}}/>;return<div style={{display:"flex",flexDirection:"column",gap:16}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>{[0,1,2,3].map(i=><div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}><B w={80} h={12} mb={8}/><B w={60} h={28} mb={5}/><B w={100} h={11}/></div>)}</div>
+          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"12px 14px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>{[80,60,50,60,100,60].map((w,i)=><B key={i} w={w} h={11}/>)}</div>{[0,1,2,3,4].map(i=><div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"13px 14px",borderBottom:`1px solid ${T.bg3}`}}>{[120,70,50,70,130,60].map((w,j)=><B key={j} w={w} h={12}/>)}</div>)}</div>
+        </div>;})()}
         {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"1.4rem",fontWeight:800,color:T.textMuted}}>Desktop</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
         {(!isMobile||!DESKTOP_ONLY_TABS.includes(tab))&&<>
         {!loading&&alerts.length>0&&<div style={{marginBottom:20,display:"flex",flexDirection:"column",gap:6}}>
@@ -4064,7 +4070,7 @@ function Admin({adminKey}){
           const mrr=Math.round((mrrMonthly+mrrYearly)*100)/100;
           const openTickets=tickets.filter(t=>t.status==="offen");
           const expiringTrials=orders.filter(o=>o.status==="trial").map(o=>{const exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);return{...o,tl:exp?Math.ceil((new Date(exp)-Date.now())/(1000*60*60*24)):999};}).filter(o=>o.tl<=7).sort((a,b)=>a.tl-b.tl);
-          const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
+          const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0)+(o.import_cost_eur||0),0);
           return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
             {/* KPI Cards */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
@@ -4462,7 +4468,9 @@ function Admin({adminKey}){
           const pastDueN=orders.filter(o=>o.subscription_status==="past_due").length;
           const trialN=orders.filter(o=>o.status==="trial").length;
           const mrr=activeOrders.reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
-          const totalCostEur=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
+          const totalGenCostEur=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
+          const totalImportCostEur=orders.reduce((a,o)=>a+(o.import_cost_eur||0),0);
+          const totalCostEur=totalGenCostEur+totalImportCostEur;
           const months6=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleDateString("de-AT",{month:"short",year:"2-digit"}),key:`${d.getFullYear()}-${d.getMonth()}`};});
           const mData=months6.map(m=>({...m,count:orders.filter(o=>{if(!o.created_at)return false;const d=new Date(o.created_at);return`${d.getFullYear()}-${d.getMonth()}`===m.key;}).length}));
           const maxC=Math.max(1,...mData.map(m=>m.count));
@@ -4538,9 +4546,11 @@ function Admin({adminKey}){
                   </div>
                   {totalCostEur>0?[
                     ["Kumuliert gesamt",`\u20AC${totalCostEur.toFixed(4)}`],
-                    ["Input-Tokens",orders.reduce((a,o)=>a+(o.tokens_in||0),0).toLocaleString("de-AT")],
-                    ["Output-Tokens",orders.reduce((a,o)=>a+(o.tokens_out||0),0).toLocaleString("de-AT")],
-                  ].map(([l,v])=>(
+                    ["davon Generierung",`\u20AC${totalGenCostEur.toFixed(4)}`],
+                    totalImportCostEur>0&&["davon Import",`\u20AC${totalImportCostEur.toFixed(4)}`],
+                    ["Input-Tokens",orders.reduce((a,o)=>a+(o.tokens_in||0)+(o.import_tokens_in||0),0).toLocaleString("de-AT")],
+                    ["Output-Tokens",orders.reduce((a,o)=>a+(o.tokens_out||0)+(o.import_tokens_out||0),0).toLocaleString("de-AT")],
+                  ].filter(Boolean).map(([l,v])=>(
                     <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".78rem",padding:"5px 0",borderBottom:`1px solid ${T.bg3}`}}>
                       <span style={{color:T.textMuted}}>{l}</span>
                       <span style={{fontFamily:T.mono,fontWeight:700,color:T.dark}}>{v}</span>
@@ -5013,7 +5023,7 @@ function Admin({adminKey}){
               const genDurationSec=sel.generated_at&&sel.created_at?Math.round((new Date(sel.generated_at)-new Date(sel.created_at))/1000):null;
               const steps=[
                 {key:"pending",label:"Schritt 1 – Eingang",icon:"📋",detail:"Fragebogen ausgefuellt, Account erstellt, Auftrag eingegangen.",meta:[["Erstellt",fmtDate(sel.created_at)],["Branche",sel.branche_label],["Stil",sel.stil],["Fotos",sel.fotos?"Ja":"Nein"]]},
-                {key:"in_arbeit",label:"Schritt 2 – KI-Generierung",icon:"⚙️",detail:hasHtml?"Website wurde erfolgreich generiert.":st==="in_arbeit"?"Generierung laeuft gerade...":"Noch nicht gestartet.",meta:[hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`],genDurationSec&&["Dauer",`${genDurationSec}s`]].filter(Boolean),error:sel.last_error||null},
+                {key:"in_arbeit",label:"Schritt 2 – KI-Generierung",icon:"⚙️",detail:hasHtml?"Website wurde erfolgreich generiert.":st==="in_arbeit"?"Generierung laeuft gerade...":"Noch nicht gestartet.",meta:[hasHtml&&["Modell","claude-sonnet-4-6"],hasHtml&&["Tokens In",(sel.tokens_in||0).toLocaleString("de-AT")],hasHtml&&["Tokens Out",(sel.tokens_out||0).toLocaleString("de-AT")],hasHtml&&["Kosten Generierung",`\u20AC${(sel.cost_eur||0).toFixed(4)}`],sel.import_cost_eur&&["Kosten Import",`\u20AC${(sel.import_cost_eur||0).toFixed(4)}`],hasHtml&&["Kosten Gesamt",`\u20AC${((sel.cost_eur||0)+(sel.import_cost_eur||0)).toFixed(4)}`],hasHtml&&["HTML-Groesse",`${Math.round((sel.website_html||"").length/1024)} KB`],genDurationSec&&["Dauer",`${genDurationSec}s`]].filter(Boolean),error:sel.last_error||null},
                 {key:"trial",label:"Schritt 3 – Testphase",icon:"🔬",detail:st==="trial"?`Website aktiv. Kunde hat${trialDaysLeft!==null?` noch ${trialDaysLeft} Tag${trialDaysLeft===1?"":"e"}`:""} um ein Abo abzuschliessen.`:st==="live"||st==="offline"?"Testphase abgeschlossen – Abo aktiv.":"Noch nicht erreicht.",meta:[["Trial bis",trialExpiry?trialExpiry.toLocaleDateString("de-AT",{day:"2-digit",month:"long",year:"numeric"}):"—"],["Subdomain",sel.subdomain||"—"],["Plan",sel.subscription_plan||"—"]]},
                 {key:"live",label:"Schritt 4 – Abo & Live",icon:"🚀",detail:"Stripe-Abo aktiv. Erste Zahlung eingegangen. Website oeffentlich erreichbar.",meta:[["Abo-Plan",sel.subscription_plan==="yearly"?"Jährlich (\u20AC183.60)":sel.subscription_plan==="monthly"?"Monatlich (\u20AC18)":"—"],["Stripe Customer",sel.stripe_customer_id||"—"],["Status",st==="live"?"Online":st==="offline"?"Offline":"Ausstehend"],["Subdomain",sel.subdomain?`${sel.subdomain}.siteready.at`:"—"]]},
               ];

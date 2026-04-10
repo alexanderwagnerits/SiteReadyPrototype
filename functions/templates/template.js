@@ -629,17 +629,6 @@ a{color:inherit}
 }
 
 /* ═══════════════════════════════════════════════════════
-   STICKY CTA (fixierter Button unten)
-   ═══════════════════════════════════════════════════════ */
-.sr-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:999;padding:12px 16px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--sep);display:flex;justify-content:center;transform:translateY(100%);transition:transform .3s ease;pointer-events:none}
-.sr-sticky-cta.visible{transform:translateY(0);pointer-events:auto}
-.sr-sticky-cta a{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--accent);color:#fff;border-radius:var(--r);font-weight:700;font-size:.88rem;text-decoration:none;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,.15);transition:all .2s}
-.sr-sticky-cta a:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
-.stil-modern .sr-sticky-cta a{border-radius:100px}
-.stil-elegant .sr-sticky-cta a{font-weight:500;letter-spacing:.02em}
-@media(max-width:768px){.sr-sticky-cta{padding:10px 12px}.sr-sticky-cta a{width:100%;justify-content:center;padding:14px 20px}}
-
-/* ═══════════════════════════════════════════════════════
    PRINT
    ═══════════════════════════════════════════════════════ */
 @media print{
@@ -758,8 +747,6 @@ ${buchungslinkHtml}
 
 </main>
 
-${stickyCtaHtml ? `<div class="sr-sticky-cta">${stickyCtaHtml}</div>` : ""}
-
 <!-- FOOTER -->
 
 <div class="lb" id="sr-lb" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schließen">×</button><img id="sr-lb-img" src="" alt=""/></div>
@@ -803,10 +790,6 @@ function tick(now){var p=Math.min((now-st)/d,1);p=1-Math.pow(1-p,3);el.textConte
 requestAnimationFrame(tick)})}})},{threshold:.3});
 document.querySelectorAll('.ueber-stats').forEach(function(s){so.observe(s)});
 
-/* Sticky CTA — einblenden nach Hero */
-var sc=document.querySelector('.sr-sticky-cta');
-if(sc){var heroH=document.querySelector('.hero');
-window.addEventListener('scroll',function(){if(window.scrollY>(heroH?heroH.offsetHeight-100:300)){sc.classList.add('visible')}else{sc.classList.remove('visible')}},{passive:true});}
 })();</script>
 </body>
 </html>`;

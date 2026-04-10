@@ -873,6 +873,18 @@ export async function onRequestGet({params, env}) {
   const overrideStyle = `<style>:root{${customDesign.join(";")}}${heroOverride}</style>`;
   html = html.replace("</body>", overrideStyle + "\n</body>");
 
+  // ── Sticky CTA (serve-time) ──
+  if (o.telefon || o.buchungslink) {
+    const stickyHref = o.buchungslink || `tel:${(o.telefon||"").replace(/[\s\-\/]/g,"")}`;
+    const stickyLabel = o.buchungslink ? "Termin buchen" : `Jetzt anrufen – ${o.telefon}`;
+    const stickyBtnR = isModern ? "border-radius:100px" : isElegant ? "font-weight:500;letter-spacing:.02em" : "";
+    const stickyHtml = `<div class="sr-sticky-cta"><a href="${stickyHref}" style="${stickyBtnR}">${stickyLabel}</a></div>`;
+    const stickyStyle = `<style>.sr-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:999;padding:12px 16px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--sep);display:flex;justify-content:center;transform:translateY(100%);transition:transform .3s ease;pointer-events:none}.sr-sticky-cta.visible{transform:translateY(0);pointer-events:auto}.sr-sticky-cta a{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--accent);color:#fff;border-radius:var(--r);font-weight:700;font-size:.88rem;text-decoration:none;font-family:var(--font);box-shadow:0 4px 16px rgba(0,0,0,.15);transition:all .2s}.sr-sticky-cta a:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}@media(max-width:768px){.sr-sticky-cta{padding:10px 12px}.sr-sticky-cta a{width:100%;justify-content:center;padding:14px 20px}}</style>`;
+    const stickyScript = `<script>(function(){var sc=document.querySelector('.sr-sticky-cta');if(sc){var h=document.querySelector('.hero');window.addEventListener('scroll',function(){sc.classList.toggle('visible',window.scrollY>(h?h.offsetHeight-100:300))},{passive:true})}})();</script>`;
+    html = html.replace("</head>", stickyStyle + "</head>");
+    html = html.replace("</body>", stickyHtml + stickyScript + "\n</body>");
+  }
+
   // ── WhatsApp Floating Button ──
   if (o.whatsapp) {
     const waNum = o.whatsapp.replace(/[\s\-\/()]/g, "").replace(/^0/, "+43");

@@ -295,7 +295,7 @@ a{color:inherit}
 @media(max-width:480px){.ablauf-steps{grid-template-columns:1fr}}
 
 /* ═══════════════════════════════════════════════════════
-   \u00dcBER UNS
+   ÜBER UNS
    ═══════════════════════════════════════════════════════ */
 .ueber{padding:var(--sectionY) 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
 .ueber-grid{display:grid;gap:40px;position:relative;z-index:1}
@@ -672,7 +672,7 @@ footer{padding:16px 0!important}
 <div class="w">
 <div class="leist-head fade-up">
 <div class="leist-label">Leistungen</div>
-<h2>Was wir f\u00fcr Sie tun</h2>
+<h2>Was wir für Sie tun</h2>
 <p class="leist-intro">${leistungenIntro}</p>
 </div>
 <!-- LEISTUNGEN -->
@@ -689,7 +689,7 @@ ${preislisteHtml}
 <div class="w">
 <div class="ueber-grid">
 <div class="fade-up">
-<h2>\u00dcber ${firmenname}</h2>
+<h2>Über ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
 <!-- ABOUT_FOTOS -->
@@ -727,7 +727,7 @@ ${preislisteHtml}
 <a href="mailto:{{EMAIL}}" class="kontakt-email">{{EMAIL}}</a>
 </div>
 <div class="kontakt-item">
-<div class="kontakt-item-label">\u00d6ffnungszeiten</div>
+<div class="kontakt-item-label">Öffnungszeiten</div>
 <div class="kontakt-item-value">{{OEFFNUNGSZEITEN}}</div>
 </div>
 ${socialHtml}
@@ -749,7 +749,7 @@ ${buchungslinkHtml}
 
 <!-- FOOTER -->
 
-<div class="lb" id="sr-lb" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schlie\u00dfen">\u00d7</button><img id="sr-lb-img" src="" alt=""/></div>
+<div class="lb" id="sr-lb" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schließen">×</button><img id="sr-lb-img" src="" alt=""/></div>
 <script>(function(){
 /* Scroll-Animationen: fade-up + sr-fade */
 var f=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('visible','sr-vis');f.unobserve(i.target)}})},{threshold:.06,rootMargin:'0px 0px -40px 0px'});

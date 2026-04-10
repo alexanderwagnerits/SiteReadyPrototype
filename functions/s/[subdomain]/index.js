@@ -21,11 +21,11 @@ function buildSocialIcons(o) {
 }
 
 const OEZ_LABELS = {
-  "mo-fr-8-17": "Mo\u2013Fr 8:00\u201317:00",
-  "mo-fr-7-16": "Mo\u2013Fr 7:00\u201316:00",
-  "mo-fr-8-18": "Mo\u2013Fr 8:00\u201318:00",
-  "mo-sa-8-17": "Mo\u2013Sa 8:00\u201317:00",
-  "mo-sa-8-12": "Mo\u2013Sa 8:00\u201312:00",
+  "mo-fr-8-17": "Mo–Fr 8:00–17:00",
+  "mo-fr-7-16": "Mo–Fr 7:00–16:00",
+  "mo-fr-8-18": "Mo–Fr 8:00–18:00",
+  "mo-sa-8-17": "Mo–Sa 8:00–17:00",
+  "mo-sa-8-12": "Mo–Sa 8:00–12:00",
   "vereinbarung": "Nach Vereinbarung",
 };
 
@@ -101,17 +101,17 @@ export async function onRequestGet({params, env}) {
     if (o.notdienst) trustItems.push({l:"24/7 Notdienst",i:tIcon(`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`)});
     if (o.meisterbetrieb) trustItems.push({l:"Meisterbetrieb",i:tIcon(`<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>`)});
     if (o.kostenvoranschlag) trustItems.push({l:"Kostenloser KV",i:tIcon(`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/>`)});
-    if (o.foerderungsberatung) trustItems.push({l:"F\u00f6rderungsberatung",i:tIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`)});
-    if (o.erstgespraech_gratis) trustItems.push({l:"Erstgespr\u00e4ch gratis",i:tIcon(`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`)});
+    if (o.foerderungsberatung) trustItems.push({l:"Förderungsberatung",i:tIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`)});
+    if (o.erstgespraech_gratis) trustItems.push({l:"Erstgespräch gratis",i:tIcon(`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`)});
     if (o.ratenzahlung) trustItems.push({l:"Ratenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
     if (o.zertifiziert) trustItems.push({l:"Zertifiziert",i:tIcon(`<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`)});
     if (o.gutscheine) trustItems.push({l:"Gutscheine",i:tIcon(`<path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>`)});
-    const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "\u00d6GK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
+    const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "ÖGK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
     if (kassenLabel) trustItems.push({l:kassenLabel,i:tIcon(`<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`)});
     if (o.barrierefrei) trustItems.push({l:"Barrierefrei",i:tIcon(`<circle cx="12" cy="4" r="2"/><path d="M12 6v6l4 4"/><path d="M8 12l-2 6h12"/>`)});
     if (o.terminvereinbarung) trustItems.push({l:"Online-Termin",i:tIcon(`<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`)});
     if (o.kartenzahlung) trustItems.push({l:"Kartenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
-    if (o.parkplaetze) trustItems.push({l:"Parkpl\u00e4tze",i:tIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`)});
+    if (o.parkplaetze) trustItems.push({l:"Parkplätze",i:tIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`)});
     if (o.gastgarten) trustItems.push({l:"Gastgarten",i:tIcon(`<circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>`)});
     if (o.takeaway) trustItems.push({l:"Take-away",i:tIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`)});
     if (o.lieferservice) trustItems.push({l:"Lieferservice",i:tIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`)});
@@ -148,7 +148,7 @@ export async function onRequestGet({params, env}) {
       return true;
     });
     if (validAnn.length > 0) {
-      const annText = validAnn.map(a => a.text).join(" \u00b7 ");
+      const annText = validAnn.map(a => a.text).join(" · ");
       const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;background:var(--accent,#2563eb);color:#fff;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;line-height:1.4;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.2)">` +
         `<span style="opacity:.9">${annText}</span>` +
         `</div>`;
@@ -217,7 +217,7 @@ export async function onRequestGet({params, env}) {
 
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
   if (o.adresse || o.ort) {
-    const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", \u00d6sterreich");
+    const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", Österreich");
     const mapsIframe = `<div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)"><iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="280" style="border:0;display:block" allowfullscreen loading="lazy" title="Standort"></iframe></div>`;
     html = html.replace(/<!-- MAPS -->/g, mapsIframe);
     html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, mapsIframe);
@@ -360,7 +360,7 @@ export async function onRequestGet({params, env}) {
       const rest = bewertungen.slice(1, 5);
       const mainStars = makeStars(main);
       const highlight = `<div style="background:var(--primary);color:#fff;border-radius:${bewCardR};padding:36px;margin-bottom:20px;text-align:center">` +
-        `<div style="font-size:2rem;margin-bottom:12px;opacity:.3">\u201c</div>` +
+        `<div style="font-size:2rem;margin-bottom:12px;opacity:.3">„</div>` +
         `<div style="font-size:1rem;font-weight:${isElegant ? "400" : "500"};line-height:1.8;max-width:520px;margin:0 auto;opacity:.9">${esc(main.text)}</div>` +
         `<div style="margin-top:16px;font-size:.82rem;font-weight:${bewNameWeight};opacity:.7">${esc(main.name) || "Kunde"}</div>` +
         (mainStars ? `<div style="margin-top:8px;display:flex;justify-content:center;gap:2px">${mainStars}</div>` : "") +
@@ -369,7 +369,7 @@ export async function onRequestGet({params, env}) {
         const stars = makeStars(b);
         return `<div style="background:#fff;${bewCardBorder};border-radius:${bewCardR};padding:20px;display:flex;flex-direction:column;gap:8px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
-          `<p style="font-size:.88rem;color:var(--text);line-height:1.7;margin:0;flex:1;font-style:italic">\u201e${esc(b.text)}\u201c</p>` +
+          `<p style="font-size:.88rem;color:var(--text);line-height:1.7;margin:0;flex:1;font-style:italic">„${esc(b.text)}"</p>` +
           `<div style="font-size:.78rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</div></div>`;
       }).join("");
       const restCols = rest.length <= 2 ? `repeat(${rest.length},1fr)` : "repeat(3,1fr)";
@@ -381,7 +381,7 @@ export async function onRequestGet({params, env}) {
         const stars = makeStars(b);
         return `<div style="background:#fff;${bewCardBorder};border-radius:${bewCardR};padding:24px;display:flex;flex-direction:column;gap:12px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
-          `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">\u201e${esc(b.text)}\u201c</p>` +
+          `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">„${esc(b.text)}"</p>` +
           `<div style="font-size:.82rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</div>` +
           `</div>`;
       }).join("");
@@ -439,7 +439,7 @@ export async function onRequestGet({params, env}) {
     const ctaBtnShadow = isModern ? ";box-shadow:0 4px 16px rgba(0,0,0,.15)" : "";
     const ctaH2Weight = isElegant ? "500" : "800";
     const ctaPOpacity = isElegant ? ".5" : ".7";
-    const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">Bereit für Ihr Projekt?</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">Wir beraten Sie gerne \u2014 kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
+    const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">Bereit für Ihr Projekt?</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">Wir beraten Sie gerne — kostenlos und unverbindlich.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
     html = html.replace("<!-- CTA_BLOCK -->", ctaBlock);
   } else {
     html = html.replace("<!-- CTA_BLOCK -->", "");
@@ -659,7 +659,7 @@ export async function onRequestGet({params, env}) {
         `<div style="padding:24px 26px">` +
         `<div style="${iconStyle}">${checkIcon}</div>` +
         `<h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">${lCapitalized}</h3>` +
-        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">${desc}</p>` : `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7;opacity:.6">Professionelle Leistung f\u00fcr Ihre Bed\u00fcrfnisse.</p>`) +
+        (desc ? `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">${desc}</p>` : `<p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7;opacity:.6">Professionelle Leistung für Ihre Bedürfnisse.</p>`) +
         (preis ? `<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.06);font-size:.92rem;font-weight:700;color:var(--accent,#6366f1)">${preis}</div>` : "") +
         `</div></div>`;
     }).join("");
@@ -895,5 +895,5 @@ function notFoundPage(subdomain) {
 function offlinePage(firmenname) {
   return `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${firmenname} &ndash; Nicht erreichbar</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f8fafc;color:#1e293b;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}.box{text-align:center;max-width:480px}.icon{font-size:3rem;margin-bottom:16px}h2{font-size:1.5rem;font-weight:700;margin-bottom:8px}p{color:#64748b;line-height:1.6}</style>
-</head><body><div class="box"><div class="icon">&#128683;</div><h2>${firmenname}</h2><p>Diese Website ist vor\u00fcbergehend nicht erreichbar.<br>Bitte versuchen Sie es sp\u00e4ter erneut.</p></div></body></html>`;
+</head><body><div class="box"><div class="icon">&#128683;</div><h2>${firmenname}</h2><p>Diese Website ist vorübergehend nicht erreichbar.<br>Bitte versuchen Sie es später erneut.</p></div></body></html>`;
 }

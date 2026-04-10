@@ -26,7 +26,7 @@ function buildNav(o, pal, stil) {
 <a href="#" id="site-nav-logo" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em">{{FIRMENNAME}}</a>
 <div class="nav-links">
 <a href="#leistungen" class="nav-link">Leistungen</a>
-<a href="#ueber-uns" class="nav-link">\u00dcber uns</a>
+<a href="#ueber-uns" class="nav-link">Über uns</a>
 <a href="#kontakt" class="nav-link">Kontakt</a>
 ${tel ? `<a href="{{TEL_HREF}}" class="nav-link nav-cta">{{TEL_DISPLAY}}</a>` : ""}
 </div>
@@ -36,7 +36,7 @@ ${tel ? `<a href="{{TEL_HREF}}" class="nav-link nav-cta">{{TEL_DISPLAY}}</a>` : 
 </div>
 <div class="mob-menu" id="mob-menu">
 <a href="#leistungen" class="mob-link">Leistungen</a>
-<a href="#ueber-uns" class="mob-link">\u00dcber uns</a>
+<a href="#ueber-uns" class="mob-link">Über uns</a>
 <a href="#kontakt" class="mob-link">Kontakt</a>
 ${tel ? `<a href="{{TEL_HREF}}" class="mob-cta">{{TEL_DISPLAY}} &mdash; Jetzt anrufen</a>` : ""}
 </div>
@@ -80,7 +80,7 @@ ${tel ? `<a href="{{TEL_HREF}}" style="color:#fff;font-weight:700;font-size:.9re
 <div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Navigation</div>
 <div style="display:flex;flex-direction:column;gap:10px">
 <a href="#leistungen" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Leistungen</a>
-<a href="#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">\u00dcber uns</a>
+<a href="#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Über uns</a>
 <a href="#kontakt" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Kontakt</a>
 <a href="/s/${sub}/impressum" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Impressum</a>
 <a href="/s/${sub}/datenschutz" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Datenschutz</a>
@@ -130,7 +130,7 @@ function buildImpressum(o, pal, year) {
   } else if (uf === "gmbh") {
     add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);
     add("Firmenbuchgericht", o.firmenbuchgericht);
-    add("Gesch\u00e4ftsf\u00fchrer", o.geschaeftsfuehrer);
+    add("Geschäftsführer", o.geschaeftsfuehrer);
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "og" || uf === "kg") {
     add("Sitz", sitz); add("Firmenbuchnummer", o.firmenbuchnummer);
@@ -157,14 +157,14 @@ function buildImpressum(o, pal, year) {
   add("UID-Nummer", o.uid_nummer); add("GISA-Zahl", o.gisazahl);
 
   if (o.aufsichtsbehoerde) {
-    add("Aufsichtsbeh\u00f6rde", o.aufsichtsbehoerde);
+    add("Aufsichtsbehörde", o.aufsichtsbehoerde);
   } else if (uf !== "verein" && uf !== "gesnbr") {
-    add("Aufsichtsbeh\u00f6rde", "Zust\u00e4ndige Bezirksverwaltungsbeh\u00f6rde");
+    add("Aufsichtsbehörde", "Zuständige Bezirksverwaltungsbehörde");
   }
   if (o.kammer_berufsrecht) {
     add("Kammer / Berufsrecht", o.kammer_berufsrecht);
   } else if (uf !== "verein" && uf !== "gesnbr" && uf !== "einzelunternehmen") {
-    add("Mitglied der", "Wirtschaftskammer \u00d6sterreich");
+    add("Mitglied der", "Wirtschaftskammer Österreich");
     add("Berufsrecht", "Gewerbeordnung (www.ris.bka.gv.at)");
   }
 
@@ -172,14 +172,14 @@ function buildImpressum(o, pal, year) {
     `<tr><td style="padding:7px 20px 7px 0;font-weight:600;white-space:nowrap;vertical-align:top;color:var(--primary);font-size:.85rem">${l}</td><td style="padding:7px 0;color:#374151;font-size:.85rem">${v}</td></tr>`
   ).join("");
 
-  const dsgvo = `Diese Website verwendet keine Cookies au\u00dfer technisch notwendigen. Es findet kein Tracking statt. Ihre personenbezogenen Daten werden ausschlie\u00dflich zur Bearbeitung Ihrer Anfragen genutzt und nicht an Dritte weitergegeben. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Verantwortlicher: ${firmaVoll}, ${adresse}.`;
+  const dsgvo = `Diese Website verwendet keine Cookies außer technisch notwendigen. Es findet kein Tracking statt. Ihre personenbezogenen Daten werden ausschließlich zur Bearbeitung Ihrer Anfragen genutzt und nicht an Dritte weitergegeben. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO. Verantwortlicher: ${firmaVoll}, ${adresse}.`;
 
   return `<section id="impressum" style="background:#f8fafc;padding:64px 0;border-top:2px solid var(--sep)">
 <div style="max-width:960px;margin:0 auto;padding:0 24px">
 <h2 style="font-size:1.3rem;font-weight:800;color:var(--primary);margin-bottom:24px;letter-spacing:-.01em">Impressum</h2>
 <table style="border-collapse:collapse;width:100%">${tRows}</table>
 <div id="datenschutz" style="margin-top:48px;padding-top:40px;border-top:1px solid var(--sep)">
-<h3 style="font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:12px">Datenschutzerkl\u00e4rung</h3>
+<h3 style="font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:12px">Datenschutzerklärung</h3>
 <p style="font-size:.85rem;line-height:1.8;color:#4b5563;max-width:720px">${dsgvo}</p>
 </div>
 <p style="margin-top:32px;font-size:.78rem;color:#9ca3af">&copy; ${year} ${o.firmenname}</p>
@@ -217,7 +217,7 @@ const STIL = {
     feel: "hochwertig, ruhig, minimalistisch, Premium, zurueckhaltend elegant, Serif-Headings",
     heroDecor: "Klassischer Akzent-Unterstrich direkt unter H1: display:block, width:80px, height:3px, background:var(--accent), margin:16px 0 24px.",
     cardStyle: "border:1px solid var(--sep); padding:28px 24px; box-shadow:none. Hover: background:#fafaf8, box-shadow:0 4px 16px rgba(0,0,0,.06).",
-    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (\u2013) in Akzentfarbe als Marker. Ruhiger, Premium-Ton mit viel Whitespace.",
+    ueberStyle: "Klassische Strich-Liste: Vorteilspunkte mit einem langen Gedankenstrich (–) in Akzentfarbe als Marker. Ruhiger, Premium-Ton mit viel Whitespace.",
   },
 };
 
@@ -317,9 +317,9 @@ export async function generateWebsite(order_id, env) {
   trustItems.push(o.einsatzgebiet || o.bundesland || "Oesterreich");
   if (o.kostenvoranschlag) trustItems.push("Kostenloser Kostenvoranschlag");
   if (leistungen.length >= 3) trustItems.push(`${leistungen.length} Leistungsbereiche`);
-  const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo\u2013Fr 8\u201317 Uhr","mo-fr-7-16":"Mo\u2013Fr 7\u201316 Uhr","mo-fr-8-18":"Mo\u2013Fr 8\u201318 Uhr","mo-sa-8-17":"Mo\u2013Sa 8\u201317 Uhr","mo-sa-8-12":"Mo\u2013Sa 8\u201312 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
+  const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
   if (trustItems.length < 4) trustItems.push(oezLabel);
-  const trustBar = trustItems.slice(0, 4).join("  \u00b7  ");
+  const trustBar = trustItems.slice(0, 4).join("  ·  ");
 
   /* Trust-Leiste + Kontakt-Infos werden serve-time injiziert */
 
@@ -341,8 +341,8 @@ export async function generateWebsite(order_id, env) {
   const ctaSecondary = "Leistungen ansehen";
 
   /* ─── Meta ─── */
-  const metaTitle = `${o.firmenname} \u2013 ${o.spezialisierung || o.branche_label || o.branche} in ${o.ort || o.bundesland || "\u00d6sterreich"}`;
-  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "\u00d6sterreich"} \u2013 Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  const metaTitle = `${o.firmenname} – ${o.spezialisierung || o.branche_label || o.branche} in ${o.ort || o.bundesland || "Österreich"}`;
+  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "Österreich"} – Jetzt Kontakt aufnehmen!`).slice(0, 155);
   const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
 
   /* Trust-Leiste wird serve-time injiziert (<!-- TRUST --> Placeholder) */
@@ -364,7 +364,7 @@ export async function generateWebsite(order_id, env) {
   const buchungslinkHtml = o.buchungslink ? `<section class="sec termin-cta"><div class="wrap"><h2>Jetzt Termin buchen</h2><p>Buchen Sie bequem online &ndash; rund um die Uhr.</p><a href="${o.buchungslink}" target="_blank" class="btn btn-accent" style="font-size:1rem;padding:16px 36px">Termin buchen</a></div></section>` : "";
 
   /* ─── Sticky CTA HTML ─── */
-  const stickyCtaHtml = o.telefon ? `<a href="${o.buchungslink || "{{TEL_HREF}}"}">${o.buchungslink ? "Termin buchen" : "Jetzt anrufen \u2013 {{TEL_DISPLAY}}"}</a>` : "";
+  const stickyCtaHtml = o.telefon ? `<a href="${o.buchungslink || "{{TEL_HREF}}"}">${o.buchungslink ? "Termin buchen" : "Jetzt anrufen – {{TEL_DISPLAY}}"}</a>` : "";
 
   /* ═══ TEXT-GENERIERUNG via Claude (NUR Texte, kein HTML) ═══ */
 
@@ -507,7 +507,7 @@ REGELN fuer gut_zu_wissen:
   let html = buildTemplate({
     firmenname: o.firmenname,
     brancheLabel: o.spezialisierung || o.branche_label || o.branche,
-    einsatzgebiet: o.einsatzgebiet || o.bundesland || "\u00d6sterreich",
+    einsatzgebiet: o.einsatzgebiet || o.bundesland || "Österreich",
     kurzbeschreibung: o.kurzbeschreibung || "",
     ctaPrimary,
     ctaPrimaryHref,

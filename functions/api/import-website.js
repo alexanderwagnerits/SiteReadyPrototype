@@ -23,9 +23,7 @@ export async function onRequestPost({request, env}) {
     else if (/goo\.gl/.test(urlHost)) importType = "google";
     else if (/facebook\.com|fb\.com/.test(urlHost)) importType = "facebook";
 
-    // Fuer nicht-Website-Typen: Jina als Proxy verwenden (extrahiert readable text)
-    // google+website nutzt den normalen Website-Crawl (cleanUrl wurde auf Website umgesetzt)
-    const useJina = importType !== "website" && importType !== "google+website" && importType !== "google";
+
 
     let base = new URL(cleanUrl).origin;
     await log.info(null, "import_type", {type: importType, url: cleanUrl});
@@ -243,7 +241,7 @@ export async function onRequestPost({request, env}) {
         await log.info(null, "google_only_import", {url: cleanUrl, reason: "Website nicht lesbar, nur Google Maps Daten"});
       } else {
         await log.error("import", {message:"Website nicht lesbar", url:cleanUrl});
-        return Response.json({error:"Die Website konnte nicht gelesen werden. M\u00f6gliche Gr\u00fcnde: Die Seite ist passwortgesch\u00fctzt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar."}, {status:400});
+        return Response.json({error:"Die Website konnte nicht gelesen werden. Mögliche Gründe: Die Seite ist passwortgeschützt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar."}, {status:400});
       }
     }
 
@@ -339,9 +337,9 @@ export async function onRequestPost({request, env}) {
       if (headings && headings.length > 0) {
         const ht = headings.join(" ").toLowerCase();
         if (/leistung|service|angebot|schwerpunkt|behandlung|therapie|was wir|unsere /.test(ht)) return "leistungen";
-        if (/\u00fcber uns|team|wer wir|unser team|philosophie|leitbild/.test(ht)) return "ueberuns";
+        if (/über uns|team|wer wir|unser team|philosophie|leitbild/.test(ht)) return "ueberuns";
         if (/kontakt|erreich|anfahrt|standort/.test(ht)) return "kontakt";
-        if (/faq|h\u00e4ufig|fragen/.test(ht)) return "faq";
+        if (/faq|häufig|fragen/.test(ht)) return "faq";
         if (/partner|referenz|zertifik|auszeichnung/.test(ht)) return "partner";
       }
       return "sonstige";
@@ -501,7 +499,7 @@ export async function onRequestPost({request, env}) {
     }
     fullText += "=== HAUPTSEITE ===\n" + dedup(mainText).slice(0, 8000);
     const sectionOrder = ["leistungen","ueberuns","kontakt","impressum","faq","partner","galerie","sonstige"];
-    const sectionLabels = {leistungen:"LEISTUNGEN/ANGEBOT",ueberuns:"\u00dcBER UNS/TEAM",kontakt:"KONTAKT",impressum:"IMPRESSUM",faq:"FAQ",partner:"PARTNER/REFERENZEN",galerie:"GALERIE",sonstige:"WEITERE SEITEN"};
+    const sectionLabels = {leistungen:"LEISTUNGEN/ANGEBOT",ueberuns:"ÜBER UNS/TEAM",kontakt:"KONTAKT",impressum:"IMPRESSUM",faq:"FAQ",partner:"PARTNER/REFERENZEN",galerie:"GALERIE",sonstige:"WEITERE SEITEN"};
 
     for (const key of sectionOrder) {
       if (grouped[key]) {
@@ -878,6 +876,6 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
 
   } catch(e) {
     await log.error("import", {message:e.message, stack:e.stack});
-    return Response.json({error:"Der Import ist fehlgeschlagen. Bitte pr\u00fcfen Sie die URL und versuchen Sie es erneut."}, {status:500});
+    return Response.json({error:"Der Import ist fehlgeschlagen. Bitte prüfen Sie die URL und versuchen Sie es erneut."}, {status:500});
   }
 }

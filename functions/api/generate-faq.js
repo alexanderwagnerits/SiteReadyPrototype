@@ -70,7 +70,7 @@ Antworte NUR mit gueltigem JSON-Array, keine Erklaerung:
     });
 
     if (!aiRes.ok) {
-      console.error("Claude API Fehler:", aiRes.status);
+      // Claude API Fehler — wird als 502 an den Client weitergegeben
       return Response.json({error: "KI-Fehler"}, {status: 502});
     }
 
@@ -110,7 +110,7 @@ Antworte NUR mit gueltigem JSON-Array, keine Erklaerung:
 
     return Response.json({faq: validFaq});
   } catch (e) {
-    console.error("generate-faq error:", e);
+    // Fehler wird als 500 an den Client weitergegeben
     return Response.json({error: "Interner Fehler"}, {status: 500});
   }
 }

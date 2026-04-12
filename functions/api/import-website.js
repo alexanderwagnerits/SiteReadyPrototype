@@ -131,6 +131,32 @@ export async function onRequestPost({request, env}) {
       } catch(e) { console.error("firecrawl: fehlgeschlagen", pageUrl, e.message); return null; }
     };
 
+    /* ═══ CLAUDE API mit Rate-Limit Retry ═══ */
+    const callClaude = async (body, timeoutMs = 30000) => {
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const resp = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {"Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01"},
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+        if (resp.ok) return await resp.json();
+        if (resp.status === 429 && attempt < 3) {
+          const retryAfter = parseInt(resp.headers.get("retry-after") || "30");
+          const waitSec = Math.min(retryAfter, 45);
+          console.error(`Claude Rate Limit — warte ${waitSec}s (Versuch ${attempt}/3)`);
+          await new Promise(ok => setTimeout(ok, waitSec * 1000));
+          continue;
+        }
+        const errText = await resp.text().catch(() => "");
+        if (resp.status === 429) {
+          return {_error: "rate_limit", _message: "Der Server ist gerade ausgelastet. Bitte versuchen Sie es in einer Minute erneut."};
+        }
+        return {_error: "api_error", _message: "Die Analyse ist fehlgeschlagen: " + errText.slice(0, 200)};
+      }
+      return {_error: "unknown", _message: "Unbekannter Fehler bei der Analyse."};
+    };
+
     /* ═══ JINA FALLBACK (wenn kein Firecrawl-Key) ═══ */
     const fetchJina = async (pageUrl) => {
       try {
@@ -327,10 +353,7 @@ export async function onRequestPost({request, env}) {
       : `${firmennameGuess}${ortGuess ? " " + ortGuess : ""}`;
 
     try {
-      const wsResp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {"Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01"},
-        body: JSON.stringify({
+      const wsData = await callClaude({
           model: "claude-sonnet-4-6",
           max_tokens: 2048,
           tools: [{
@@ -362,14 +385,12 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum).
 Nur Daten die du tatsaechlich findest. Leere Strings fuer nicht gefundene Felder.
 Bewertungen: nur echte Google-Bewertungen mit Text, max 6.`,
           }],
-        }),
-        signal: AbortSignal.timeout(25000),
-      });
-      if (wsResp.ok) {
-        const wsData = await wsResp.json();
+        }, 40000);
+      if (wsData._error) {
+        console.error("web_search:", wsData._message);
+      } else {
         webSearchTokensIn = wsData.usage?.input_tokens || 0;
         webSearchTokensOut = wsData.usage?.output_tokens || 0;
-        // Text-Content aus der Antwort extrahieren
         const textBlocks = (wsData.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
         try {
           const jsonMatch = textBlocks.match(/\{[\s\S]*\}/);
@@ -443,10 +464,7 @@ Bewertungen: nur echte Google-Bewertungen mit Text, max 6.`,
     const phoneHint = filteredPhones.length > 0 ? `\nGefundene Telefonnummern: ${filteredPhones.join(", ")}` : "";
 
     /* ═══ 6. CLAUDE EXTRAKTION ═══ */
-    const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {"Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01"},
-      body: JSON.stringify({
+    const claudeData = await callClaude({
         model: "claude-sonnet-4-6",
         max_tokens: 8192,
         messages: [{
@@ -525,17 +543,13 @@ JSON-Felder:
 Website-Text:
 ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
         }],
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
+      }, 45000);
 
-    if (!claudeResp.ok) {
-      const errText = await claudeResp.text();
-      await log.error("import", {message:"Claude API Fehler: "+errText.slice(0,500), url:cleanUrl});
-      return Response.json({error:"Die Analyse der Website ist fehlgeschlagen. Bitte versuchen Sie es erneut."}, {status:500});
+    if (claudeData._error) {
+      await log.error("import", {message: claudeData._message, url: cleanUrl});
+      return Response.json({error: claudeData._message}, {status: claudeData._error === "rate_limit" ? 429 : 500});
     }
 
-    const claudeData = await claudeResp.json();
     const rawContent = claudeData.content?.[0]?.text || "{}";
     const usage = claudeData.usage || {};
     const extractTokIn = usage.input_tokens || 0;

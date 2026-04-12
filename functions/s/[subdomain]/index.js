@@ -402,7 +402,7 @@ export async function onRequestGet({params, env}) {
         `<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:10px">Gut zu wissen</div>` +
         `<div style="display:flex;flex-direction:column;gap:8px">${gzwLines.map(l => `<div style="display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text);line-height:1.55">${kIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`)}<span>${esc(l)}</span></div>`).join("")}</div></div>`;
     }
-    html = html.replace("<!-- KONTAKT_INFOS -->", `<div style="margin-top:32px;padding-top:28px;border-top:1px solid var(--sep)">${infoHtml}</div>`);
+    html = html.replace("<!-- KONTAKT_INFOS -->", `<div style="margin-top:20px;padding-top:16px">${infoHtml}</div>`);
   } else {
     html = html.replace("<!-- KONTAKT_INFOS -->", "");
   }

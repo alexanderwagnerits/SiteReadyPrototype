@@ -217,16 +217,60 @@ export async function onRequestPost({request, env}) {
       }
     }
 
-    /* ═══ 2. UNTERSEITEN CRAWLEN ═══ */
+    /* ═══ 2. LINK DISCOVERY + UNTERSEITEN CRAWLEN ═══ */
+    const skipExt = /\.(pdf|jpg|jpeg|png|gif|svg|css|js|ico|woff|woff2|xml|txt|json)$/i;
+    const skipPath = /\/(wp-admin|wp-content|cdn-cgi|assets|static|_next|login|cart|checkout|tag|category|page\/\d)\b/i;
+    const allInternalLinks = new Set(discoveredLinks);
+
+    const addLink = (href) => {
+      if (!href) return;
+      if (href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("javascript:") || href.startsWith("#")) return;
+      if (!href.startsWith("http")) href = href.startsWith("/") ? base + href : base + "/" + href;
+      try {
+        const u = new URL(href);
+        if (u.origin !== base) return;
+        const p = u.pathname.replace(/\/+$/,"") || "/";
+        if (p === "/") return;
+        if (skipExt.test(p) || skipPath.test(p)) return;
+        allInternalLinks.add(u.origin + p);
+      } catch(_) {}
+    };
+
+    // Links aus HTML extrahieren (Fallback wenn Firecrawl keine liefert)
+    if (mainHtml) {
+      for (const m of mainHtml.matchAll(/href=["']([^"'#]+)["']/gi)) addLink(m[1]);
+    }
+    // Links aus Markdown extrahieren
+    if (mainMarkdown) {
+      for (const m of mainMarkdown.matchAll(/\[([^\]]{2,60})\]\((https?:\/\/[^\s)]+)\)/gi)) addLink(m[2]);
+    }
+    // Sitemap checken (1 Subrequest, liefert oft die besten Links)
+    let sitemapFound = false;
+    if (importType === "website" && elapsed() < BUDGET_MS - 40000) {
+      try {
+        const smRes = await fetch(base + "/sitemap.xml", {signal: AbortSignal.timeout(5000), headers:{"User-Agent":"Mozilla/5.0 (compatible; SiteReady/1.0)"}});
+        if (smRes.ok) {
+          const smText = await smRes.text();
+          if (smText.includes("<urlset") || smText.includes("<sitemapindex")) {
+            sitemapFound = true;
+            for (const m of smText.matchAll(/<loc>\s*(https?:\/\/[^<]+)\s*<\/loc>/gi)) addLink(m[1]);
+          }
+        }
+      } catch(_) {}
+    }
+    // Standard-Pfade als letzter Fallback
+    if (allInternalLinks.size < 3 && importType === "website") {
+      const standardPaths = ["/kontakt","/contact","/impressum","/leistungen","/services","/angebot","/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen"];
+      for (const p of standardPaths) addLink(base + p);
+    }
+
     const priorityPatterns = [/kontakt|contact/i, /impressum|imprint/i, /leistung|service|angebot|schwerpunkt|behandlung/i, /ueber|about|team|praxis|ordination/i, /faq|haeufig|fragen/i, /partner|referenz|zertifik/i, /preise|pricing/i, /galerie|gallery|portfolio/i];
     const pageContents = [];
 
-    if (importType === "website" && discoveredLinks.length > 0) {
-      const priority = discoveredLinks.filter(u => {
-        const p = new URL(u).pathname.toLowerCase();
-        return priorityPatterns.some(rx => rx.test(p));
-      });
-      const rest = discoveredLinks.filter(u => !priority.includes(u));
+    if (importType === "website" && allInternalLinks.size > 0) {
+      const allLinks = [...allInternalLinks];
+      const priority = allLinks.filter(u => { try { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); } catch(_) { return false; } });
+      const rest = allLinks.filter(u => !priority.includes(u));
       const toFetch = [...new Set([...priority, ...rest])].slice(0, 8);
 
       const results = await Promise.all(toFetch.map(async (pageUrl) => {
@@ -635,6 +679,8 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
       merkmale, brand_color: brandColor,
       _meta: {
         pages_read: pageContents.length + 1,
+        links_found: allInternalLinks.size,
+        sitemap: sitemapFound,
         firecrawl_credits: firecrawlCreditsUsed,
         web_search_requests: usage.server_tool_use?.web_search_requests || 0,
         import_tokens_in: totalTokIn, import_tokens_out: totalTokOut,

@@ -207,28 +207,20 @@ export async function onRequestPost({request, env}) {
       return "";
     };
 
-    const fetchJina = async (pageUrl, attempt = 1) => {
+    const fetchJina = async (pageUrl) => {
       try {
         const r = await fetch("https://r.jina.ai/" + pageUrl, {
           headers: {"Accept":"text/plain","X-Return-Format":"text"},
-          signal: AbortSignal.timeout(20000),
+          signal: AbortSignal.timeout(15000),
         });
         if (r.ok) {
           const text = await r.text();
           if (text.length < 30 || /^(Unable to|Error:|404|Page not found)/i.test(text.trim())) return "";
           return text;
         }
-        // Retry bei 429 (Rate-Limit) oder 5xx
-        if ((r.status === 429 || r.status >= 500) && attempt < 3) {
-          await new Promise(ok => setTimeout(ok, attempt * 2000));
-          return fetchJina(pageUrl, attempt + 1);
-        }
+        console.error("import: fetchJina HTTP", r.status, pageUrl);
       } catch(e) {
-        console.error(`import: fetchJina Versuch ${attempt} fehlgeschlagen`, pageUrl, e.message);
-        if (attempt < 3) {
-          await new Promise(ok => setTimeout(ok, attempt * 2000));
-          return fetchJina(pageUrl, attempt + 1);
-        }
+        console.error("import: fetchJina fehlgeschlagen", pageUrl, e.message);
       }
       return "";
     };
@@ -246,17 +238,6 @@ export async function onRequestPost({request, env}) {
 
     let mainText = await fetchJina(cleanUrl);
     if (!mainText || mainText.length < 100) mainText = stripHtml(mainHtml);
-
-    // Zweiter Versuch mit anderem User-Agent falls beides leer
-    if (!mainText || mainText.length < 50) {
-      try {
-        const retryR = await fetch(cleanUrl, {
-          headers: {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36","Accept":"text/html,application/xhtml+xml","Accept-Language":"de-AT,de;q=0.9"},
-          redirect:"follow", signal: AbortSignal.timeout(15000),
-        });
-        if (retryR.ok) { const retryHtml = await retryR.text(); mainText = stripHtml(retryHtml); }
-      } catch(e) { console.error("import: retry fetch fehlgeschlagen", e.message); }
-    }
 
     if (!mainText || mainText.length < 50) {
       // Google-only: Kein Website-Crawl moeglich, aber Google Maps Text vorhanden
@@ -385,16 +366,10 @@ export async function onRequestPost({request, env}) {
       fetchedUrls.add(pageUrl);
 
       const doFetch = async () => {
-        const [html, jinaText] = await Promise.all([
-          fetchHtml(pageUrl, 6000),
-          fetchJina(pageUrl),
-        ]);
-        if (html) {
-          extractFromHtml(html);
-          collectLinks(html, null);
-        }
+        // Nur Jina fuer Unterseiten (spart Subrequests, Cloudflare Limit = 50)
+        const jinaText = await fetchJina(pageUrl);
 
-        let text = (jinaText && jinaText.length >= 50) ? jinaText : stripHtml(html);
+        let text = (jinaText && jinaText.length >= 50) ? jinaText : "";
         if (!text || text.length < 30) return;
 
         const headings = extractHeadings(html);
@@ -411,21 +386,18 @@ export async function onRequestPost({request, env}) {
       try {
         await doFetch();
       } catch(e) {
-        // Retry einmal fuer Schluesselseiten
-        if (isKeyPage(pageUrl) && elapsed() < BUDGET_MS - 15000) {
-          try { await doFetch(); } catch(e2) { console.error("import: Retry fehlgeschlagen", pageUrl, e2.message); }
-        }
+        console.error("import: fetchPage fehlgeschlagen", pageUrl, e.message);
       }
     };
 
     // Multi-Page-Crawl: Nur fuer normale Websites (nicht Instagram/Linktree/Facebook)
     let round2 = [];
     if (importType === "website") {
-      // Runde 1: Erste 15 Seiten (priorisiert)
+      // Runde 1: Erste 12 Seiten (priorisiert) — Cloudflare Workers haben 50 Subrequest-Limit
       const allLinks = [...allInternalLinks];
       const priority = allLinks.filter(u => { const p = new URL(u).pathname.toLowerCase(); return priorityPatterns.some(rx => rx.test(p)); });
       const rest = allLinks.filter(u => !priority.includes(u));
-      const round1 = [...new Set([...priority, ...rest])].slice(0, 15);
+      const round1 = [...new Set([...priority, ...rest])].slice(0, 12);
 
       await Promise.all(round1.map(fetchPage));
 
@@ -435,7 +407,7 @@ export async function onRequestPost({request, env}) {
         const p = new URL(u).pathname.toLowerCase();
         return priorityPatterns.some(rx => rx.test(p));
       });
-      round2 = elapsed() < BUDGET_MS - 30000 ? newPriority.slice(0, 8) : [];
+      round2 = elapsed() < BUDGET_MS - 30000 ? newPriority.slice(0, 5) : [];
       if (round2.length > 0) {
         await Promise.all(round2.map(fetchPage));
       }

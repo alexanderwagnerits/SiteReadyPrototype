@@ -95,6 +95,7 @@ a{color:inherit}
 .fade-up.visible,.sr-fade.sr-vis{opacity:1;transform:translateY(0)}
 .stil-elegant .fade-up,.stil-elegant .sr-fade{transform:translateY(12px);transition-duration:.8s}
 @media(prefers-reduced-motion:reduce){.fade-up,.sr-fade{opacity:1;transform:none;transition:none}.sr-grain::after{animation:none}}
+@media(max-width:768px){.sr-grain::after{animation:none}}
 
 /* Grain-Overlay fuer Tiefe (Hero, About) */
 .sr-grain::after{content:'';position:absolute;inset:-50%;width:200%;height:200%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");background-repeat:repeat;pointer-events:none;z-index:0;opacity:.5;animation:sr-grain 8s steps(8) infinite}
@@ -112,7 +113,7 @@ a{color:inherit}
 .kontakt-social a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .kontakt-tel:focus-visible,.kontakt-email:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.sr-skip{position:absolute;top:-100px;left:16px;background:var(--accent);color:#fff;padding:12px 24px;border-radius:var(--r);font-weight:700;font-size:.88rem;z-index:9999;text-decoration:none;transition:top .2s}
+.sr-skip{position:absolute;top:-100px;left:16px;background:var(--accent);color:#fff;padding:12px 24px;border-radius:var(--r);font-weight:700;font-size:.88rem;z-index:10000;text-decoration:none;transition:top .2s}
 .sr-skip:focus{top:16px}
 
 /* ═══════════════════════════════════════════════════════

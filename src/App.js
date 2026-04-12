@@ -1550,7 +1550,9 @@ function PortalLogin({onBack}){
 
   const submitForgot=async()=>{if(!email){setErr("Bitte E-Mail eingeben.");return;}setLoading(true);setErr("");const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+"/portal"});if(error)setErr(error.message);else setForgotDone(true);setLoading(false);};
   const submit=async()=>{
-    if(!email.trim()||!pw.trim()||!supabase)return;
+    if(!email.trim()){setErr("Bitte E-Mail eingeben.");return;}
+    if(!pw.trim()){setErr("Bitte Passwort eingeben.");return;}
+    if(!supabase)return;
     setLoading(true);setErr("");
     const{error}=await supabase.auth.signInWithPassword({email,password:pw});
     if(error){

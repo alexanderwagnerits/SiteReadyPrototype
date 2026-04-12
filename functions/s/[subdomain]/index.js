@@ -209,8 +209,9 @@ export async function onRequestGet({params, env}) {
   }
 
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
-  if (o.adresse || o.ort) {
-    const mapsQuery = encodeURIComponent([o.adresse, o.plz, o.ort].filter(Boolean).join(", ") + ", Österreich");
+  const mapsAddr = [o.adresse, o.plz, o.ort].filter(Boolean).join(", ");
+  if (mapsAddr) {
+    const mapsQuery = encodeURIComponent(mapsAddr + ", Österreich");
     const mapsIframe = `<div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)"><iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="280" style="border:0;display:block" allowfullscreen loading="lazy" title="Standort"></iframe></div>`;
     html = html.replace(/<!-- MAPS -->/g, mapsIframe);
     html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, mapsIframe);
@@ -552,11 +553,11 @@ export async function onRequestGet({params, env}) {
   // FAQ — Haeufig gestellte Fragen
   const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage && f.antwort) : [];
   const showFaq = sv.faq !== false && faqItems.length > 0;
-  if (showFaq && faqItems.length > 0 && html.includes("<!-- FAQ -->")) {
+  if (showFaq && html.includes("<!-- FAQ -->")) {
     const items = faqItems.slice(0, 8).map((f, i) =>
       `<div style="border-bottom:1px solid var(--sep)">` +
-      `<button class="sr-faq-btn" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
-      `<div class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
+      `<button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a${i}" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
+      `<div id="sr-faq-a${i}" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
       `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${esc(f.antwort) || ""}</p>` +
       `</div></div>`
     ).join("");
@@ -572,7 +573,7 @@ export async function onRequestGet({params, env}) {
     if (faqGridStyle) html = html.replace("</head>", faqGridStyle + "</head>");
     html = html.replace("<!-- FAQ -->", section);
     // FAQ-Accordion Script (Event-Listener statt inline onclick)
-    const faqScript = `<script>(function(){document.querySelectorAll('.sr-faq-btn').forEach(function(btn){btn.addEventListener('click',function(){var a=btn.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';btn.querySelector('.sr-faq-icon').textContent=open?'+':'\\u2212';});});})();</script>`;
+    const faqScript = `<script>(function(){document.querySelectorAll('.sr-faq-btn').forEach(function(btn){btn.addEventListener('click',function(){var a=btn.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';btn.querySelector('.sr-faq-icon').textContent=open?'+':'\\u2212';btn.setAttribute('aria-expanded',open?'false':'true');});});})();</script>`;
     html = html.replace("</body>", faqScript + "\n</body>");
   } else {
     html = html.replace("<!-- FAQ -->", "");
@@ -581,7 +582,7 @@ export async function onRequestGet({params, env}) {
   // Galerie — Foto-Grid mit Lightbox
   const galerieItems = Array.isArray(o.galerie) ? o.galerie.filter(g => g && g.url) : [];
   const showGalerie = sv.galerie !== false && galerieItems.length > 0;
-  if (showGalerie && galerieItems.length > 0 && html.includes("<!-- GALERIE -->")) {
+  if (showGalerie && html.includes("<!-- GALERIE -->")) {
     const cols = v.galerie === "grid-3x2" ? "repeat(3,1fr)" : "repeat(2,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
       `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
@@ -598,7 +599,7 @@ export async function onRequestGet({params, env}) {
   // Zahlen & Fakten — Counter-Blocks
   const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
   const showFakten = sv.fakten !== false && faktenItems.length >= 2;
-  if (showFakten && faktenItems.length >= 2 && html.includes("<!-- FAKTEN -->")) {
+  if (showFakten && html.includes("<!-- FAKTEN -->")) {
     const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
     const faktenFontWeight = isElegant ? "500" : "800";
     const faktenFontSize = isElegant ? "clamp(1.4rem,3.5vw,2rem)" : "clamp(1.6rem,4vw,2.4rem)";
@@ -614,7 +615,7 @@ export async function onRequestGet({params, env}) {
   // Partner & Zertifikate — Logo-Leiste
   const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && (p.url_logo || p.name)) : [];
   const showPartner = sv.partner !== false && partnerItems.length > 0;
-  if (showPartner && partnerItems.length > 0 && html.includes("<!-- PARTNER -->")) {
+  if (showPartner && html.includes("<!-- PARTNER -->")) {
     const logos = partnerItems.slice(0, 8).map(p => {
       if (p.url_logo) {
         return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${esc(p.name) || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;

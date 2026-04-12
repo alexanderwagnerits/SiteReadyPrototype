@@ -926,7 +926,7 @@ export async function onRequestGet({params, env}) {
 
   // ── Stil-Klasse serve-time aktualisieren (erlaubt Stilwechsel ohne Regenerierung) ──
   const currentStil = o.stil || "klassisch";
-  html = html.replace(/class="stil-\w+"/, `class="stil-${currentStil}"`);
+  html = html.replace(/class="stil-\w+"/g, `class="stil-${currentStil}"`);
 
   // ── Stil-Farben serve-time IMMER anwenden (damit Änderungen sofort greifen) ──
   const STIL_COLORS = {
@@ -960,7 +960,7 @@ export async function onRequestGet({params, env}) {
     fontLinks.push(`<link rel="stylesheet" href="${FONT_URLS[o.custom_font]}">`);
     customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
   }
-  if (currentStil === "elegant" || currentStil === "traditional") {
+  if (currentStil === "elegant") {
     fontLinks.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap">`);
   }
   if (fontLinks.length > 0) {

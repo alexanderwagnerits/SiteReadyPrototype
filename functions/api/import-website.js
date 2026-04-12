@@ -306,7 +306,7 @@ export async function onRequestPost({request, env}) {
     }
 
     // Emails/Phones aus Markdown extrahieren
-    for (const t of [mainText, ...pageContents.map(p => p.text)]) {
+    for (const t of [mainText, ...pageContents.map(p => p.text)].filter(Boolean)) {
       for (const m of t.matchAll(emailRegex)) allEmails.add(m[0].toLowerCase());
       for (const m of t.matchAll(phoneRegex)) { const p=m[0].replace(/[\s\-/]/g,""); if(p.length>=8) allPhones.add(p); }
       // Obfuskierte E-Mails

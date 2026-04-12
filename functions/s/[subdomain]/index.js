@@ -116,7 +116,7 @@ export async function onRequestGet({params, env}) {
   if (o.url_logo) {
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[\s\S]*?(<\/a>)/,
-      `$1<img src="${o.url_logo}" alt="Logo" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
+      `$1<img src="${esc(o.url_logo)}" alt="Logo" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
     );
   }
 
@@ -183,7 +183,7 @@ export async function onRequestGet({params, env}) {
       // Alle Text-Kinder von hero-inner in einen Wrapper wrappen
       html = html.replace(
         /(<div class="hero-inner">)([\s\S]*?)(<\/div>\s*<\/section>)/,
-        `$1<div class="hero-split-text">$2</div><div class="hero-split-img"><img src="${o.url_hero}" alt="${esc(o.firmenname || "")}" style="width:100%;display:block" fetchpriority="high"/></div>$3`
+        `$1<div class="hero-split-text">$2</div><div class="hero-split-img"><img src="${esc(o.url_hero)}" alt="${esc(o.firmenname || "")}" style="width:100%;display:block" fetchpriority="high"/></div>$3`
       );
       html = html.replace('</head>', heroStyle + '</head>');
     }

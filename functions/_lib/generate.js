@@ -1,3 +1,14 @@
+/* ═══ Merge: Import-Beschreibungen beibehalten, fehlende mit KI ergaenzen ═══ */
+function mergeDescriptions(imported, generated) {
+  if (!imported || Object.keys(imported).length === 0) return generated || {};
+  if (!generated) return imported;
+  const merged = {...generated};
+  for (const [key, val] of Object.entries(imported)) {
+    if (val && val.trim()) merged[key] = val;
+  }
+  return merged;
+}
+
 /* ═══ Nav-Builder ═══ */
 function buildNav(o, pal, stil) {
   const tel = o.telefon || "";
@@ -729,7 +740,8 @@ REGELN fuer gut_zu_wissen:
     tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
     ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
     ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
-    ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: texts.leistungen_beschreibungen} : {}),
+    // Leistungsbeschreibungen: Import-Daten beibehalten, nur fehlende durch KI ergaenzen
+    ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: mergeDescriptions(o.leistungen_beschreibungen, texts.leistungen_beschreibungen)} : {}),
     ...(!o.ablauf_schritte?.length && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
     ...(!o.gut_zu_wissen && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
     ...(!o.faq?.length && texts.faq?.length ? {faq: texts.faq} : {}),
@@ -758,7 +770,7 @@ REGELN fuer gut_zu_wissen:
       body: JSON.stringify({
         quality_score: qualityScore, quality_issues: qIssues.length > 0 ? qIssues : null, quality_fixed: qFixed || null,
         varianten_cache: variantenCache,
-        ai_generated: ["text_ueber_uns","text_vorteile","leistungen_beschreibungen","kontakt_cta",...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
+        ai_generated: ["text_ueber_uns","text_vorteile","kontakt_cta",...(!o.leistungen_beschreibungen||!Object.keys(o.leistungen_beschreibungen).length?["leistungen_beschreibungen"]:[]),...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
       }),
     });
   } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }

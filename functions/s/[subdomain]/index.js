@@ -136,11 +136,9 @@ export async function onRequestGet({params, env}) {
       const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;background:var(--accent,#2563eb);color:#fff;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;line-height:1.4;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.2)">` +
         `<span style="opacity:.9">${annText}</span>` +
         `</div>`;
-      // Vor die Badges im Hero einfuegen
-      if (html.includes('<div class="hero-badges">')) {
-        html = html.replace('<div class="hero-badges">', annHtml + '\n<div class="hero-badges">');
-      } else {
-        html = html.replace(/<body[^>]*>/i, m => m + "\n" + annHtml);
+      // Im Hero vor dem h1 einfuegen
+      if (html.includes('<div class="hero-inner">')) {
+        html = html.replace('<div class="hero-inner">', `<div class="hero-inner">\n${annHtml}`);
       }
     }
   }

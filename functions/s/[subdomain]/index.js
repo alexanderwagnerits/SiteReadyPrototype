@@ -1,13 +1,4 @@
-function esc(text) {
-  if (!text) return "";
-  return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-}
-
-function normSocial(v) {
-  if (!v) return "";
-  v = v.trim().replace(/\/+$/, "");
-  return v.startsWith("http") ? v : "https://" + v;
-}
+const { esc, normSocial } = require("../../_lib/shared");
 
 function buildSocialIcons(o) {
   const socials = [
@@ -451,7 +442,97 @@ export async function onRequestGet({params, env}) {
       steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",
       fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",
     }[o.branche] || "";
-    const ctaDefaults = {
+    const ctaBranch = {
+      // Handwerk
+      elektro:               {h:"Strom-Probleme? Wir helfen sofort",          t:"Sichere Elektroinstallationen vom Fachbetrieb — jetzt anfragen."},
+      installateur:          {h:"Heizung, Bad oder Sanitär?",                 t:"Wir sind Ihr verlässlicher Partner — kontaktieren Sie uns."},
+      maler:                 {h:"Neuer Anstrich gefällig?",                   t:"Fassade, Innenräume oder Spezialanstrich — wir beraten Sie gerne."},
+      tischler:              {h:"Maßarbeit aus Meisterhand",                  t:"Individuelle Möbel und Einbauten — lassen Sie sich beraten."},
+      fliesenleger:          {h:"Fliesen, die begeistern",                    t:"Bad, Küche oder Terrasse — wir verlegen mit Präzision."},
+      schlosser:             {h:"Metall in Bestform",                         t:"Geländer, Tore oder Sonderanfertigungen — sprechen Sie uns an."},
+      dachdecker:            {h:"Dicht, sicher, langlebig",                   t:"Ihr Dach in besten Händen — jetzt unverbindlich anfragen."},
+      zimmerei:              {h:"Holzbau vom Profi",                          t:"Dachstuhl, Carport oder Ausbau — wir setzen Ihr Projekt um."},
+      maurer:                {h:"Solide gebaut, fair kalkuliert",             t:"Neubau, Umbau oder Sanierung — kontaktieren Sie uns."},
+      bodenleger:            {h:"Der perfekte Boden für Ihr Zuhause",         t:"Parkett, Vinyl oder Fliesen — wir beraten und verlegen."},
+      glaser:                {h:"Glas nach Maß",                              t:"Fenster, Spiegel oder Glasduschen — fragen Sie jetzt an."},
+      gaertner:              {h:"Ihr Garten in Profi-Händen",                 t:"Pflege, Gestaltung oder Neubepflanzung — wir sind für Sie da."},
+      klima:                 {h:"Angenehmes Klima, das ganze Jahr",           t:"Klimaanlagen und Lüftungstechnik — jetzt beraten lassen."},
+      reinigung:             {h:"Sauberkeit, auf die Sie sich verlassen",     t:"Professionelle Reinigung für Büro, Praxis oder Zuhause."},
+      baumeister:            {h:"Ihr Bauvorhaben in besten Händen",           t:"Planung und Ausführung aus einer Hand — jetzt anfragen."},
+      kfz:                   {h:"Ihr Auto verdient das Beste",                t:"Reparatur, Service oder Pickerl — vereinbaren Sie einen Termin."},
+      aufsperrdienst:        {h:"Ausgesperrt? Wir kommen sofort",            t:"Schnelle Hilfe rund um die Uhr — rufen Sie uns an."},
+      hafner:                {h:"Wärme, die von Herzen kommt",                t:"Kachelofen, Kamin oder Sanierung — lassen Sie sich beraten."},
+      raumausstatter:        {h:"Wohnen, das zu Ihnen passt",                 t:"Vorhänge, Polster oder Bodenbeläge — individuelle Beratung."},
+      goldschmied:           {h:"Schmuck, so einzigartig wie Sie",            t:"Individuelle Anfertigungen und Reparaturen — besuchen Sie uns."},
+      schneider:             {h:"Perfekter Sitz, perfekter Stil",             t:"Änderungen oder Maßanfertigungen — wir freuen uns auf Sie."},
+      rauchfangkehrer:       {h:"Sicherheit für Ihr Zuhause",                 t:"Kehrung, Überprüfung oder Beratung — jetzt Termin vereinbaren."},
+      schaedlingsbekaempfung:{h:"Schädlinge? Wir lösen das Problem",          t:"Diskret, effektiv und nachhaltig — kontaktieren Sie uns."},
+      // Kosmetik
+      friseur:               {h:"Zeit für einen neuen Look?",                 t:"Schnitt, Farbe oder Styling — buchen Sie Ihren Termin."},
+      kosmetik:              {h:"Gönnen Sie sich eine Auszeit",               t:"Pflege und Beauty-Treatments — jetzt Termin buchen."},
+      nagel:                 {h:"Gepflegte Nägel, perfekter Auftritt",        t:"Maniküre, Pediküre oder Nageldesign — wir freuen uns auf Sie."},
+      massage:               {h:"Entspannung, die Sie verdienen",             t:"Klassisch, Thai oder Sportmassage — buchen Sie jetzt."},
+      tattoo:                {h:"Ihre Idee, unsere Kunst",                    t:"Individuelles Tattoo-Design — vereinbaren Sie ein Beratungsgespräch."},
+      fusspflege:            {h:"Gesunde Füße, leichter Schritt",             t:"Professionelle Fußpflege — jetzt Termin vereinbaren."},
+      permanent_makeup:      {h:"Natürliche Schönheit, dauerhaft betont",     t:"Augenbrauen, Lippen oder Lidstrich — lassen Sie sich beraten."},
+      hundesalon:            {h:"Wellness für Ihren Vierbeiner",              t:"Fellpflege und Styling — buchen Sie einen Termin für Ihren Hund."},
+      // Gastronomie
+      restaurant:            {h:"Genuss, der verbindet",                      t:"Reservieren Sie jetzt Ihren Tisch — wir freuen uns auf Sie."},
+      cafe:                  {h:"Kaffee, Kuchen und gute Laune",              t:"Kommen Sie vorbei — wir haben einen Platz für Sie."},
+      baeckerei:             {h:"Frisch gebacken, mit Liebe gemacht",         t:"Brot, Gebäck und Mehlspeisen — besuchen Sie uns."},
+      catering:              {h:"Ihr Event, unser Genuss",                    t:"Catering für jeden Anlass — jetzt unverbindlich anfragen."},
+      bar:                   {h:"Auf einen guten Abend",                      t:"Cocktails, Wein und beste Stimmung — wir freuen uns auf Sie."},
+      heuriger:              {h:"Gemütlichkeit und guter Wein",               t:"Jause, Wein und Gastfreundschaft — kommen Sie vorbei."},
+      imbiss:                {h:"Schnell, frisch und richtig lecker",         t:"Hunger? Schauen Sie bei uns vorbei oder bestellen Sie vor."},
+      fleischerei:           {h:"Qualität, die man schmeckt",                 t:"Frisches Fleisch und Wurstwaren — besuchen Sie uns."},
+      // Gesundheit
+      arzt:                  {h:"Ihre Gesundheit in guten Händen",            t:"Vereinbaren Sie jetzt Ihren Termin — wir nehmen uns Zeit für Sie."},
+      zahnarzt:              {h:"Für Ihr schönstes Lächeln",                  t:"Prophylaxe, Behandlung oder Beratung — jetzt Termin vereinbaren."},
+      physiotherapie:        {h:"Bewegung ist die beste Medizin",             t:"Individuelle Therapie für Ihre Beschwerden — jetzt Termin buchen."},
+      psychotherapie:        {h:"Der erste Schritt zählt",                    t:"Vertraulich und einfühlsam — vereinbaren Sie ein Erstgespräch."},
+      tierarzt:              {h:"Das Beste für Ihr Tier",                     t:"Vorsorge, Behandlung oder Notfall — wir sind für Sie da."},
+      apotheke:              {h:"Gesundheit beginnt bei guter Beratung",      t:"Medikamente, Hausmittel oder Tipps — besuchen Sie uns."},
+      optiker:               {h:"Sehen Sie die Welt in bester Qualität",      t:"Sehtest, Brillen oder Kontaktlinsen — jetzt Termin vereinbaren."},
+      heilpraktiker:         {h:"Ganzheitlich gesund werden",                 t:"Naturheilkunde und individuelle Therapie — jetzt anfragen."},
+      ergotherapie:          {h:"Wieder aktiv im Alltag",                     t:"Ergotherapie für Kinder und Erwachsene — Termin vereinbaren."},
+      logopaedie:            {h:"Sprache verbindet",                          t:"Sprachtherapie für alle Altersgruppen — jetzt Termin buchen."},
+      energetiker:           {h:"Neue Energie für Körper und Geist",          t:"Ganzheitliche Behandlungen — vereinbaren Sie einen Termin."},
+      hebamme:               {h:"Begleitung von Anfang an",                   t:"Schwangerschaft, Geburt und Nachsorge — jetzt Kontakt aufnehmen."},
+      diaetologe:            {h:"Ernährung, die zu Ihnen passt",              t:"Individuelle Beratung für Ihre Gesundheitsziele — jetzt anfragen."},
+      hoerakustiker:         {h:"Wieder gut hören, besser leben",             t:"Hörtest und Beratung — vereinbaren Sie Ihren Termin."},
+      zahntechnik:           {h:"Perfektion bis ins Detail",                  t:"Hochwertiger Zahnersatz aus dem Meisterlabor — jetzt anfragen."},
+      heilmasseur:           {h:"Heilsame Hände, spürbare Wirkung",           t:"Medizinische Massage — jetzt Termin vereinbaren."},
+      // Dienstleistung
+      steuerberater:         {h:"Steuern sparen, Überblick behalten",         t:"Professionelle Steuerberatung — vereinbaren Sie ein Erstgespräch."},
+      rechtsanwalt:          {h:"Ihr Recht in starken Händen",                t:"Kompetente Rechtsberatung — jetzt Termin vereinbaren."},
+      fotograf:              {h:"Momente, die bleiben",                       t:"Professionelle Fotografie für jeden Anlass — jetzt anfragen."},
+      versicherung:          {h:"Gut versichert, sorgenfrei leben",           t:"Individuelle Beratung für Ihren optimalen Schutz."},
+      immobilien:            {h:"Ihr Zuhause wartet",                         t:"Kauf, Verkauf oder Vermietung — lassen Sie sich beraten."},
+      hausverwaltung:        {h:"Ihre Immobilie in besten Händen",            t:"Professionelle Verwaltung — kontaktieren Sie uns."},
+      umzug:                 {h:"Stressfrei ins neue Zuhause",                t:"Umzugsservice vom Profi — jetzt unverbindlich anfragen."},
+      eventplanung:          {h:"Ihr Event, unser Konzept",                   t:"Von der Idee bis zur Umsetzung — lassen Sie uns planen."},
+      florist:               {h:"Blumen sagen mehr als Worte",                t:"Sträuße, Gestecke oder Eventfloristik — besuchen Sie uns."},
+      architekt:             {h:"Räume, die inspirieren",                     t:"Planung und Entwurf — kontaktieren Sie uns für ein Erstgespräch."},
+      it_service:            {h:"IT-Probleme? Wir kümmern uns",               t:"Support, Netzwerk oder Sicherheit — jetzt anfragen."},
+      werbeagentur:          {h:"Ihre Marke verdient Aufmerksamkeit",         t:"Kreative Lösungen für Ihren Erfolg — sprechen Sie uns an."},
+      bestattung:            {h:"In schweren Stunden für Sie da",             t:"Einfühlsame Begleitung und Organisation — rufen Sie uns an."},
+      notar:                 {h:"Rechtssicherheit für Ihre Vorhaben",         t:"Beglaubigungen und Beurkundungen — Termin vereinbaren."},
+      finanzberater:         {h:"Finanzen klug gestalten",                    t:"Unabhängige Beratung für Ihre Zukunft — jetzt Gespräch vereinbaren."},
+      reisebuero:            {h:"Traumurlaub beginnt hier",                   t:"Individuelle Reiseplanung — lassen Sie sich inspirieren."},
+      innenarchitekt:        {h:"Wohnen, das begeistert",                     t:"Raumkonzepte mit Stil — vereinbaren Sie eine Beratung."},
+      textilreinigung:       {h:"Sauber, frisch und gepflegt",                t:"Professionelle Reinigung für Ihre Textilien — besuchen Sie uns."},
+      // Bildung
+      fahrschule:            {h:"Führerschein? Los geht's!",                  t:"Anmeldung und Beratung — starten Sie jetzt durch."},
+      nachhilfe:             {h:"Bessere Noten, mehr Selbstvertrauen",        t:"Individuelle Nachhilfe — jetzt Probestunde vereinbaren."},
+      musikschule:           {h:"Musik macht glücklich",                      t:"Instrument lernen in jedem Alter — melden Sie sich an."},
+      trainer:               {h:"Erreichen Sie Ihre Ziele",                   t:"Persönliches Training — buchen Sie Ihre erste Einheit."},
+      yoga:                  {h:"Finden Sie Ihre innere Balance",             t:"Yoga-Kurse für alle Levels — jetzt Probestunde buchen."},
+      hundeschule:           {h:"Ein gutes Team — Mensch und Hund",           t:"Training und Erziehung — melden Sie sich zur Schnupperstunde."},
+      tanzschule:            {h:"Tanzen lernen mit Freude",                   t:"Kurse für Anfänger und Fortgeschrittene — jetzt anmelden."},
+      reitschule:            {h:"Reiten lernen, Natur erleben",               t:"Reitstunden für alle Altersgruppen — jetzt Schnupperstunde buchen."},
+      schwimmschule:         {h:"Sicher schwimmen lernen",                    t:"Schwimmkurse für Kinder und Erwachsene — jetzt anmelden."},
+    };
+    const ctaGroupDefaults = {
       handwerk:       {h:"Bereit für Ihr Projekt?",            t:"Wir beraten Sie gerne — kostenlos und unverbindlich."},
       kosmetik:       {h:"Bereit für Ihren Termin?",           t:"Wir freuen uns auf Ihren Besuch."},
       gastro:         {h:"Lust auf guten Geschmack?",          t:"Reservieren Sie jetzt Ihren Tisch."},
@@ -459,7 +540,7 @@ export async function onRequestGet({params, env}) {
       dienstleistung: {h:"Lassen Sie uns starten",             t:"Wir freuen uns auf Ihre Anfrage."},
       bildung:        {h:"Bereit für den nächsten Schritt?",   t:"Melden Sie sich jetzt an."},
     };
-    const ctaDef = ctaDefaults[brGruppe] || {h:"Wir freuen uns auf Sie", t:"Kontaktieren Sie uns — wir sind für Sie da."};
+    const ctaDef = ctaBranch[o.branche] || ctaGroupDefaults[brGruppe] || {h:"Wir freuen uns auf Sie", t:"Kontaktieren Sie uns — wir sind für Sie da."};
     const ctaH = esc(o.cta_headline || ctaDef.h);
     const ctaT = esc(o.cta_text || ctaDef.t);
     const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">${ctaH}</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">${ctaT}</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;

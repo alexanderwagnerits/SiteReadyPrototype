@@ -55,12 +55,7 @@ var sc=false;window.addEventListener('scroll',function(){var s=window.scrollY>60
 }
 
 /* ═══ Footer-Builder ═══ */
-function normSocial(v) {
-  if (!v) return "";
-  v = v.trim().replace(/\/+$/, "");
-  if (v.startsWith("http")) return v;
-  return "https://" + v;
-}
+const { normSocial } = require("./shared");
 
 function buildFooter(o, pal, year, sub) {
   const tel      = o.telefon || "";

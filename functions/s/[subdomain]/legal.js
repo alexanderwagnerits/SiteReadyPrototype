@@ -74,12 +74,7 @@ function buildImpressumRows(o) {
   return {rows, firmaVoll, adresse};
 }
 
-function normSocial(v) {
-  if (!v) return "";
-  v = v.trim().replace(/\/+$/, "");
-  if (v.startsWith("http")) return v;
-  return "https://" + v;
-}
+const { normSocial } = require("../../_lib/shared");
 
 function buildLegalNav(o, stil, subdomain) {
   const tel = o.telefon || "";

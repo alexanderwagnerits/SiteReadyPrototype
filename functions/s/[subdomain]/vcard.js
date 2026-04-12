@@ -7,13 +7,7 @@ const OEZ_LABELS = {
   "vereinbarung": "Nach Vereinbarung",
 };
 
-function normSocial(v) {
-  if (!v) return "";
-  v = v.trim().replace(/\/+$/, "");
-  return v.startsWith("http") ? v : "https://" + v;
-}
-
-function esc(s) { return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+const { esc, normSocial } = require("../../_lib/shared");
 
 // SVG Icons — consistent 20x20, stroke-width 2, Lucide style
 const ICONS = {

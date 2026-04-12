@@ -376,11 +376,21 @@ export async function generateWebsite(order_id, env) {
 
   // Importierte Daten als Kontext sammeln
   const importContext = [];
+  const hasImportedText = !!o.text_ueber_uns;
+  const hasImportedFaq = Array.isArray(o.faq) && o.faq.length > 0;
+  const hasImportedAblauf = Array.isArray(o.ablauf_schritte) && o.ablauf_schritte.length >= 2;
+  const hasImportedGzw = !!o.gut_zu_wissen;
   if (o.spezialisierung) importContext.push(`SPEZIALISIERUNG: ${o.spezialisierung}`);
-  if (o.text_ueber_uns) importContext.push(`BESTEHENDER UEBER-UNS-TEXT (als Grundlage verwenden, Stil anpassen):\n${o.text_ueber_uns}`);
-  if (o.gut_zu_wissen) importContext.push(`BESTEHENDE KUNDENHINWEISE (uebernehmen wenn sinnvoll): ${o.gut_zu_wissen}`);
+  if (hasImportedText) importContext.push(`BESTEHENDER UEBER-UNS-TEXT (sprachlich polieren, Inhalt BEIBEHALTEN, nicht komplett neu schreiben):\n${o.text_ueber_uns}`);
+  if (hasImportedGzw) importContext.push(`BESTEHENDE KUNDENHINWEISE (UEBERNEHMEN, nur sprachlich glaetten): ${o.gut_zu_wissen}`);
   if (o.leistungen_beschreibungen && Object.keys(o.leistungen_beschreibungen).length > 0) {
-    importContext.push(`BESTEHENDE LEISTUNGSBESCHREIBUNGEN (als Basis verwenden):\n${Object.entries(o.leistungen_beschreibungen).map(([k,v])=>`- ${k}: ${v}`).join("\n")}`);
+    importContext.push(`BESTEHENDE LEISTUNGSBESCHREIBUNGEN (kuerzen und optimieren, Inhalt beibehalten):\n${Object.entries(o.leistungen_beschreibungen).map(([k,v])=>`- ${k}: ${v}`).join("\n")}`);
+  }
+  if (hasImportedFaq) importContext.push(`BESTEHENDE FAQ (UEBERNEHMEN, nur sprachlich optimieren):\n${o.faq.map(f=>`- ${f.frage} → ${f.antwort}`).join("\n")}`);
+  if (hasImportedAblauf) importContext.push(`BESTEHENDE ABLAUF-SCHRITTE (UEBERNEHMEN):\n${o.ablauf_schritte.map((s,i)=>`${i+1}. ${s.titel}: ${s.text||""}`).join("\n")}`);
+  // Bewertungen als Kontext (damit KI authentischere Texte schreiben kann)
+  if (Array.isArray(o.bewertungen) && o.bewertungen.length > 0) {
+    importContext.push(`KUNDENBEWERTUNGEN (nutze diese als Inspiration fuer authentische Texte):\n${o.bewertungen.slice(0,3).map(b=>`"${b.text}" — ${b.name}`).join("\n")}`);
   }
 
   // Merkmale als Kontext
@@ -411,28 +421,51 @@ export async function generateWebsite(order_id, env) {
     modern: "Dynamisch, frisch, auf Augenhoehe. Kurze, praegnante Saetze. Betone Innovation und Kundenerlebnis.",
     elegant: "Zurueckhaltend, exklusiv, weniger ist mehr. Schlanke Formulierungen, gehobener Ton. Betone Qualitaet und Anspruch.",
     custom: "Professionell und authentisch. Passe den Ton an die Branche an.",
-  }[o.stil] || stilAnweisung.custom;
+  }[o.stil] || "Professionell und authentisch.";
+
+  // Branchengruppe fuer sprachlichen Kontext
+  const brGruppe = {
+    elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",fahrradwerkstatt:"handwerk",erdbau:"handwerk",
+    friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",
+    restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",winzer:"gastro",
+    arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",osteopath:"gesundheit",lebensberater:"gesundheit",
+    steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",unternehmensberater:"dienstleistung",dolmetscher:"dienstleistung",druckerei:"dienstleistung",sicherheitsdienst:"dienstleistung",
+    fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",coach:"bildung",
+  }[o.branche] || "";
+  const branchenSprache = {
+    handwerk: "Direkt und ehrlich. Handwerker reden nicht um den heissen Brei. Betone Qualitaet der Arbeit, nicht Marketing-Floskeln.",
+    kosmetik: "Einladend und persoenlich. Schaffe eine Wohlfuehl-Atmosphaere schon im Text. Betone das Erlebnis.",
+    gastro: "Warm und genussvoll. Mach Lust auf den Besuch. Betone Atmosphaere, Qualitaet der Zutaten, Gastfreundschaft.",
+    gesundheit: "Einfuehlsam und kompetent. Nimm Patienten ernst. Betone Vertrauen, Erfahrung und individuelle Betreuung.",
+    dienstleistung: "Kompetent und loesungsorientiert. Zeige Expertise ohne arrogant zu wirken. Betone den Nutzen fuer den Kunden.",
+    bildung: "Motivierend und unterstuetzend. Mach Lust aufs Lernen. Betone Fortschritt und persoenliche Entwicklung.",
+  }[brGruppe] || "";
 
   const textPrompt = `Generiere Website-Texte fuer einen oesterreichischen Betrieb. Antworte NUR mit validem JSON, keine Erklaerungen.
 
 BETRIEB: ${o.firmenname}
 BRANCHE: ${o.branche_label || o.branche}
-ORT: ${o.ort || o.bundesland || "Oesterreich"}
+ORT: ${[o.ort, o.bundesland ? `(${o.bundesland.toUpperCase()})` : ""].filter(Boolean).join(" ") || "Oesterreich"}
+EINSATZGEBIET: ${o.einsatzgebiet || o.ort || ""}
 BESCHREIBUNG: ${o.kurzbeschreibung || ""}
 LEISTUNGEN: ${leistungen.join(", ")}
 DESIGN-STIL: ${o.stil || "klassisch"}
 ${importContext.length > 0 ? "\n" + importContext.join("\n") + "\n" : ""}
 TONALITAET: ${stilAnweisung}
+${branchenSprache ? `BRANCHENSPRACHE: ${branchenSprache}` : ""}
 
 REGELN:
-- Oesterreichisches Deutsch, formelle Ansprache ("Sie")
+- Oesterreichisches Deutsch, formelle Ansprache ("Sie"). Verwende oesterreichische Begriffe (z.B. "Jänner", "heuer", "Ordination" statt "Praxis").
+- ${o.ort ? `Regionaler Bezug: Erwaehne "${o.ort}" im Ueber-uns-Text und in der Kontakt-CTA. Der Betrieb ist lokal verankert.` : ""}
 - Warm, professionell, KEINE Superlative ("beste", "fuehrend"), KEINE erfundenen Zahlen/Jahre
-- Wenn ein bestehender Ueber-uns-Text vorhanden ist: Nutze ihn als inhaltliche Grundlage, passe ihn stilistisch an und kuerze ihn. NICHTS dazuerfinden.
-- Wenn bestehende Leistungsbeschreibungen vorhanden sind: Kuerze und optimiere sie fuer die Website.
-- Leistungsbeschreibungen: MAXIMAL 15 Woerter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive ("Sie erhalten...", "Wir kuemmern uns um...").
-- Vorteile: Nutze echte Besonderheiten des Betriebs (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Woerter pro Punkt.
-- Vorteile MUESSEN sich voneinander unterscheiden. Keine Wiederholungen, keine Synonyme.
-- kontakt_cta: Branchenspezifisch, nicht generisch. Ein Arzt sagt "Vereinbaren Sie Ihren Termin", ein Installateur "Schildern Sie uns Ihr Anliegen".
+- KEINE generischen Phrasen wie "Wir freuen uns auf Ihre Anfrage", "Qualitaet steht bei uns an erster Stelle", "Ihr zuverlaessiger Partner"
+- ${hasImportedText ? "Bestehender Ueber-uns-Text: Inhalt BEIBEHALTEN, nur sprachlich polieren und auf 4-5 Saetze kuerzen. NICHT komplett neu schreiben." : "Ueber-uns-Text: Konkret und spezifisch fuer DIESEN Betrieb. Was macht ihn besonders? Ort, Geschichte, Spezialisierung einbauen."}
+- ${hasImportedFaq ? "Bestehende FAQ: UEBERNEHMEN und nur sprachlich glaetten." : "FAQ: 4-5 Fragen die ECHTE Kunden dieser Branche stellen wuerden. Konkrete, hilfreiche Antworten."}
+- ${hasImportedAblauf ? "Bestehende Ablauf-Schritte: UEBERNEHMEN, nur sprachlich optimieren." : "Ablauf: 3-4 Schritte die zum KONKRETEN Betrieb passen."}
+- ${hasImportedGzw ? "Bestehende Kundenhinweise: UEBERNEHMEN." : "Gut-zu-wissen: 2-3 praxisrelevante Hinweise fuer Kunden."}
+- Leistungsbeschreibungen: MAXIMAL 15 Woerter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
+- Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Woerter pro Punkt. Muessen sich voneinander unterscheiden.
+- kontakt_cta: Branchenspezifisch, nicht generisch. ${o.ort ? `"in ${o.ort}" einbauen.` : ""}
 
 JSON-FORMAT:
 {
@@ -738,13 +771,15 @@ REGELN fuer gut_zu_wissen:
   const savePayload = {
     website_html: html, subdomain: sub, status: o.status === "live" ? "live" : "trial",
     tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
+    // Ueber-uns: KI-polierte Version speichern (Prompt nutzt Import als Grundlage)
     ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
     ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
     // Leistungsbeschreibungen: Import-Daten beibehalten, nur fehlende durch KI ergaenzen
     ...(texts.leistungen_beschreibungen ? {leistungen_beschreibungen: mergeDescriptions(o.leistungen_beschreibungen, texts.leistungen_beschreibungen)} : {}),
-    ...(!o.ablauf_schritte?.length && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
-    ...(!o.gut_zu_wissen && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
-    ...(!o.faq?.length && texts.faq?.length ? {faq: texts.faq} : {}),
+    // Ablauf/FAQ/GzW: KI-Version NUR wenn keine Import-Daten vorhanden
+    ...(!hasImportedAblauf && texts.ablauf_schritte?.length ? {ablauf_schritte: texts.ablauf_schritte} : {}),
+    ...(!hasImportedGzw && texts.gut_zu_wissen ? {gut_zu_wissen: texts.gut_zu_wissen} : {}),
+    ...(!hasImportedFaq && texts.faq?.length ? {faq: texts.faq} : {}),
   };
 
   const save = await fetch(
@@ -770,7 +805,7 @@ REGELN fuer gut_zu_wissen:
       body: JSON.stringify({
         quality_score: qualityScore, quality_issues: qIssues.length > 0 ? qIssues : null, quality_fixed: qFixed || null,
         varianten_cache: variantenCache,
-        ai_generated: ["text_ueber_uns","text_vorteile","kontakt_cta",...(!o.leistungen_beschreibungen||!Object.keys(o.leistungen_beschreibungen).length?["leistungen_beschreibungen"]:[]),...(!o.ablauf_schritte?.length?["ablauf_schritte"]:[]),...(!o.gut_zu_wissen?["gut_zu_wissen"]:[]),...(!o.faq?.length&&texts.faq?.length?["faq"]:[])],
+        ai_generated: [hasImportedText?"text_ueber_uns_poliert":"text_ueber_uns","text_vorteile","kontakt_cta",...(!o.leistungen_beschreibungen||!Object.keys(o.leistungen_beschreibungen).length?["leistungen_beschreibungen"]:[]),...(!hasImportedAblauf?["ablauf_schritte"]:[]),...(!hasImportedGzw?["gut_zu_wissen"]:[]),...(!hasImportedFaq&&texts.faq?.length?["faq"]:[])],
       }),
     });
   } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }

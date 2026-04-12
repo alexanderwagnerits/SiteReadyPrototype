@@ -103,7 +103,7 @@ export async function onRequestGet({params, env}) {
       const items = trustItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
       // Trust-Items direkt nach den Hero-Buttons einfuegen (innerhalb hero-inner)
       const trustInHero = `<div class="hero-trust">${items}</div>`;
-      const trustStyle = `<style>.hero-trust{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,.12)}.hero-trust .trust-item{color:rgba(255,255,255,.7);font-size:.8rem;font-weight:500}.hero-trust .trust-item svg{color:rgba(255,255,255,.45);width:14px;height:14px}.hero.text-center .hero-trust{justify-content:center}@media(max-width:768px){.hero-trust{gap:8px 16px;margin-top:28px;padding-top:20px}.hero-trust .trust-item{font-size:.75rem}}</style>`;
+      const trustStyle = `<style>.hero-trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12)}.hero-trust .trust-item{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);padding:6px 14px;border-radius:100px;color:rgba(255,255,255,.85);font-size:.78rem;font-weight:600;backdrop-filter:blur(4px)}.hero-trust .trust-item svg{color:rgba(255,255,255,.6);width:14px;height:14px;flex-shrink:0}.hero.text-center .hero-trust{justify-content:center}@media(max-width:768px){.hero-trust{gap:6px;margin-top:24px;padding-top:18px}.hero-trust .trust-item{font-size:.72rem;padding:5px 11px}}</style>`;
       html = html.replace(/(<div class="hero-btns">[\s\S]*?<\/div>)/, '$1\n' + trustInHero);
       html = html.replace("<!-- TRUST -->", "");
       html = html.replace('</head>', trustStyle + '</head>');

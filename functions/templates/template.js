@@ -659,7 +659,7 @@ footer{padding:16px 0!important}
 <div class="hero-inner">
 <h1>${firmenname}</h1>
 <span class="hero-accent-line"></span>
-<p class="hero-sub">${brancheLabel} &ndash; ${einsatzgebiet}</p>
+<p class="hero-sub">${brancheLabel}${einsatzgebiet ? ` <span class="hero-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;opacity:.6"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${einsatzgebiet}</span>` : ""}</p>
 <p class="hero-desc">${kurzbeschreibung}</p>
 <div class="hero-btns">
 <a href="${ctaPrimaryHref}" class="btn btn-accent">${ctaPrimary}</a>

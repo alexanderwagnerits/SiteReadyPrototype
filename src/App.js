@@ -184,7 +184,7 @@ const STYLES_MAP={
   custom:{label:"Eigenes Branding",desc:"Ihre Farbe, Ihr Font",primary:"#111111",accent:"#2563eb",accentSoft:"rgba(37,99,235,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#111111",textMuted:"#6b7280",textLight:"#9ca3af",borderColor:"#e5e7eb",font:"'DM Sans',system-ui,sans-serif",radius:"8px",radiusLg:"12px",heroGradient:"linear-gradient(160deg,#111111 0%,#1f1f1f 50%,#333333 100%)",heroOverlay:"none",shadow:"0 1px 3px rgba(0,0,0,0.05)",badgeBg:"#f3f4f6",badgeText:"#374151",btnRadius:"8px",cardBorder:true,cardShadow:false,badgeRadius:"8px",sectionDivider:false,spacing:"normal"},
 };
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
-let _orderInProgress=false;
+// _orderInProgress: moved to useRef inside App component
 const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",layout:"standard",customColor:"#2563eb",customFont:"dm_sans"};
 
 /* ═══ TOKENS ═══ */
@@ -836,19 +836,17 @@ function SuccessPage({data,onBack,onPortal}){
     if(!supabase){setSaveErr("Konfigurationsfehler – bitte Administrator kontaktieren.");setSaving(false);return;}
     // Snapshot der Daten BEVOR signUp den Auth-State aendert und die Seite wechselt
     const snap=JSON.parse(JSON.stringify(data));
-    // Debug: Snapshot in error_logs speichern damit wir sehen was gesendet wird
-    try{await supabase.from("error_logs").insert({source:"order_debug",message:JSON.stringify({firmenname:snap.firmenname,telefon:snap.telefon,email:snap.email,adresse:snap.adresse,plz:snap.plz,ort:snap.ort,leistungen_count:snap.leistungen?.length,branche:snap.branche,stil:snap.stil,hasImportExtras:!!snap.importExtras,oeffnungszeiten:snap.oeffnungszeiten})});}catch(_){}
     const snapSub=snap.firmenname?snap.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
-    _orderInProgress=true;
+    orderInProgressRef.current=true;
     const{data:authData,error:authErr}=await supabase.auth.signUp({email:loginEmail,password:pw,options:{data:{firmenname:snap.firmenname,vorname,nachname}}});
-    if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);_orderInProgress=false;return;}
+    if(authErr&&authErr.message!=="User already registered"){setSaveErr("Registrierung: "+authErr.message);setSaving(false);orderInProgressRef.current=false;return;}
     const userId=authData?.user?.id||null;
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
       id:orderId,user_id:userId,vorname,nachname,
       firmenname:snap.firmenname,branche:snap.branche,branche_label:snap.brancheLabel,
       kurzbeschreibung:snap.kurzbeschreibung,bundesland:snap.bundesland,
-      leistungen:snap.leistungen,extra_leistung:snap.extraLeistung,notdienst:snap.notdienst,meisterbetrieb:snap.meisterbetrieb,kostenvoranschlag:snap.kostenvoranschlag,buchungslink:snap.buchungslink||null,hausbesuche:snap.hausbesuche,terminvereinbarung:snap.terminvereinbarung,foerderungsberatung:snap.foerderungsberatung,lieferservice:snap.lieferservice,barrierefrei:snap.barrierefrei,parkplaetze:snap.parkplaetze,kassenvertrag:snap.kassenvertrag||null,erstgespraech_gratis:snap.erstgespraech_gratis,online_beratung:snap.online_beratung,ratenzahlung:snap.ratenzahlung,
+      leistungen:snap.leistungen,extra_leistung:snap.extraLeistung,notdienst:snap.notdienst,meisterbetrieb:snap.meisterbetrieb,kostenvoranschlag:snap.kostenvoranschlag,buchungslink:snap.buchungslink||null,whatsapp:snap.whatsapp||null,hausbesuche:snap.hausbesuche,terminvereinbarung:snap.terminvereinbarung,foerderungsberatung:snap.foerderungsberatung,lieferservice:snap.lieferservice,barrierefrei:snap.barrierefrei,parkplaetze:snap.parkplaetze,kassenvertrag:snap.kassenvertrag||null,erstgespraech_gratis:snap.erstgespraech_gratis,online_beratung:snap.online_beratung,ratenzahlung:snap.ratenzahlung,
       adresse:snap.adresse,plz:snap.plz,ort:snap.ort,telefon:snap.telefon,email:snap.email,
       uid_nummer:snap.uid,oeffnungszeiten:snap.oeffnungszeiten,einsatzgebiet:snap.einsatzgebiet,
       unternehmensform:snap.unternehmensform,firmenbuchnummer:snap.firmenbuchnummer,gisazahl:snap.gisazahl,firmenbuchgericht:snap.firmenbuchgericht,
@@ -873,12 +871,12 @@ function SuccessPage({data,onBack,onPortal}){
       ...(snap.importExtras?.import_cost_eur?{import_cost_eur:snap.importExtras.import_cost_eur,import_tokens_in:snap.importExtras.import_tokens_in,import_tokens_out:snap.importExtras.import_tokens_out}:{}),
       website_ziel:null
     });
-    if(error){try{await supabase.from("error_logs").insert({source:"order_insert_error",message:error.message});}catch(_){}setSaveErr("Fehler: "+error.message);setSaving(false);_orderInProgress=false;return;}
+    if(error){try{await supabase.from("error_logs").insert({source:"order_insert_error",message:error.message});}catch(_){}setSaveErr("Fehler: "+error.message);setSaving(false);orderInProgressRef.current=false;return;}
     try{await supabase.from("error_logs").insert({source:"order_created",message:JSON.stringify({id:orderId,subdomain:snapSub})});}catch(_){}
-    try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(_){}
+    try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(e){console.error("start-build:",e);}
     /* Auto-Login nach signUp (kein E-Mail-Bestätigung nötig) */
     try{await supabase.auth.signInWithPassword({email:loginEmail,password:pw});}catch(_){}
-    _orderInProgress=false;
+    orderInProgressRef.current=false;
     setSaving(false);
     localStorage.setItem("sr_pending_email",loginEmail);
     setConfirmed(true);
@@ -886,9 +884,12 @@ function SuccessPage({data,onBack,onPortal}){
   const resendEmail=async()=>{
     if(!supabase||resending)return;
     setResending(true);
-    await supabase.auth.resend({type:"signup",email:loginEmail});
-    setResending(false);setResent(true);
-    setTimeout(()=>setResent(false),5000);
+    try{
+      const{error}=await supabase.auth.resend({type:"signup",email:loginEmail});
+      if(error){console.error("resendEmail:",error.message);setResending(false);return;}
+      setResent(true);setTimeout(()=>setResent(false),5000);
+    }catch(e){console.error("resendEmail:",e);}
+    setResending(false);
   };
   /* Sidebar sections */
   const qSecs=[{l:"Start"},{l:"Grunddaten"},{l:"Leistungen"},{l:"Kontakt"},{l:"Impressum"},{l:"Design"},{l:"Fertig"}];
@@ -1079,11 +1080,11 @@ function Combobox({label,value,onChange,options,placeholder,hint,required}){
   useEffect(()=>{const h=e=>{if(wrapRef.current&&!wrapRef.current.contains(e.target)){setOpen(false);setQuery("");setTouched(true);}};document.addEventListener("mousedown",h);return()=>document.removeEventListener("mousedown",h);},[]);
   useEffect(()=>{setHi(-1);},[query]);
   const pick=o=>{onChange(o.value);setQuery("");setOpen(false);setTouched(true);};
-  const onKey=e=>{if(e.key==="ArrowDown"){e.preventDefault();setHi(h=>(h+1)%filtered.length);}else if(e.key==="ArrowUp"){e.preventDefault();setHi(h=>h<=0?filtered.length-1:h-1);}else if(e.key==="Enter"&&hi>=0&&filtered[hi]){e.preventDefault();pick(filtered[hi]);}else if(e.key==="Escape"){setOpen(false);setQuery("");inputRef.current?.blur();}};
+  const onKey=e=>{if(e.key==="ArrowDown"){e.preventDefault();if(filtered.length>0)setHi(h=>(h+1)%filtered.length);}else if(e.key==="ArrowUp"){e.preventDefault();if(filtered.length>0)setHi(h=>h<=0?filtered.length-1:h-1);}else if(e.key==="Enter"&&hi>=0&&filtered[hi]){e.preventDefault();pick(filtered[hi]);}else if(e.key==="Escape"){setOpen(false);setQuery("");inputRef.current?.blur();}};
   return(<div style={{marginBottom:20,position:"relative"}} ref={wrapRef}>
     <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:err?T.red:open?T.dark:T.textSub,letterSpacing:".03em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label>
     <div style={{position:"relative"}}>
-      <input ref={inputRef} type="text" value={open?query:(selected?selected.label:"")} placeholder={placeholder||"Suchen..."} onChange={e=>{setQuery(e.target.value);if(!open)setOpen(true);}} onFocus={()=>{setOpen(true);setQuery("");}} onKeyDown={onKey} style={{width:"100%",padding:"12px 40px 12px 14px",border,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44}} autoComplete="off"/>
+      <input ref={inputRef} type="text" value={open?query:(selected?selected.label:"")} placeholder={placeholder||"Suchen..."} onChange={e=>{setQuery(e.target.value);if(!open)setOpen(true);}} onFocus={()=>{setOpen(true);}} onKeyDown={onKey} style={{width:"100%",padding:"12px 40px 12px 14px",border,borderRadius:T.rSm,fontSize:".875rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44}} autoComplete="off"/>
       {value&&!open&&<button onClick={()=>{onChange("");setQuery("");setTimeout(()=>inputRef.current?.focus(),0);}} style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:T.textMuted,fontSize:16,padding:4,lineHeight:1}}>&times;</button>}
       {!value&&<svg style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>}
     </div>
@@ -1539,9 +1540,12 @@ function PortalLogin({onBack}){
   const resendConfirmation=async()=>{
     if(!email||!supabase||resendingConfirm)return;
     setResendingConfirm(true);
-    await supabase.auth.resend({type:"signup",email});
-    setResendingConfirm(false);setResentConfirm(true);
-    setTimeout(()=>setResentConfirm(false),5000);
+    try{
+      const{error}=await supabase.auth.resend({type:"signup",email});
+      if(error){console.error("resendConfirmation:",error.message);setResendingConfirm(false);return;}
+      setResentConfirm(true);setTimeout(()=>setResentConfirm(false),5000);
+    }catch(e){console.error("resendConfirmation:",e);}
+    setResendingConfirm(false);
   };
 
   const submitForgot=async()=>{if(!email){setErr("Bitte E-Mail eingeben.");return;}setLoading(true);setErr("");const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+"/portal"});if(error)setErr(error.message);else setForgotDone(true);setLoading(false);};
@@ -1660,6 +1664,7 @@ function Portal({session,onLogout}){
   const nav=p=>{setPage(p==="domain"?"seo":p);setPtSbOpen(false);};
   const[order,setOrder]=useState(null);
   const originalOrderRef=useRef(null);
+  const orderInProgressRef=useRef(false);
   const[saving,setSaving]=useState(false);
   const[uploading,setUploading]=useState({});
   const[faqGenerating,setFaqGenerating]=useState(false);
@@ -1771,6 +1776,11 @@ function Portal({session,onLogout}){
       vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,
       zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,
       gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname,
+      cta_headline:order.cta_headline||null,cta_text:order.cta_text||null,
+      foerderungsberatung:order.foerderungsberatung,kassenvertrag:order.kassenvertrag||null,
+      team_members:order.team_members||null,announcements:order.announcements||null,
+      unternehmensgegenstand:order.unternehmensgegenstand||null,liquidation:order.liquidation||null,
+      kammer_berufsrecht:order.kammer_berufsrecht||null,aufsichtsbehoerde:order.aufsichtsbehoerde||null,
     }).eq("id",order.id);
     setSaving(false);
     if(!error){
@@ -5146,10 +5156,10 @@ export default function App(){
     });
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
       setSession(session);
-      if(session&&!_orderInProgress){setPageRaw("portal");navigate("portal");}
-      else if(session&&_orderInProgress){
+      if(session&&!orderInProgressRef.current){setPageRaw("portal");navigate("portal");}
+      else if(session&&orderInProgressRef.current){
         // Warte bis Order-Insert fertig, dann wechseln
-        const wait=setInterval(()=>{if(!_orderInProgress){clearInterval(wait);setPageRaw("portal");navigate("portal");}},200);
+        const wait=setInterval(()=>{if(!orderInProgressRef.current){clearInterval(wait);setPageRaw("portal");navigate("portal");}},200);
         setTimeout(()=>clearInterval(wait),15000);
       }
     });

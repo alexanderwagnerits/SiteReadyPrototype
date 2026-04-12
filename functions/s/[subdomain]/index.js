@@ -141,7 +141,7 @@ export async function onRequestGet({params, env}) {
       return true;
     });
     if (validAnn.length > 0) {
-      const annText = validAnn.map(a => a.text).join(" · ");
+      const annText = validAnn.map(a => esc(a.text)).join(" · ");
       const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;background:var(--accent,#2563eb);color:#fff;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;line-height:1.4;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.2)">` +
         `<span style="opacity:.9">${annText}</span>` +
         `</div>`;
@@ -309,8 +309,8 @@ export async function onRequestGet({params, env}) {
       const vSteps = ablaufSteps.slice(0, 5).map((s, i) =>
         `<div style="margin-bottom:28px;position:relative;padding-left:48px">` +
         `<div style="position:absolute;left:0;top:0;width:32px;height:32px;border-radius:${circleR};background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:${circleFontWeight};font-size:.82rem;z-index:1">${i + 1}</div>` +
-        `<div style="font-weight:${titleWeight};font-size:.95rem;color:var(--primary);margin-bottom:4px">${s.titel}</div>` +
-        (s.text ? `<div style="font-size:.85rem;color:var(--textMuted,#64748b);line-height:1.7">${s.text}</div>` : "") +
+        `<div style="font-weight:${titleWeight};font-size:.95rem;color:var(--primary);margin-bottom:4px">${esc(s.titel)}</div>` +
+        (s.text ? `<div style="font-size:.85rem;color:var(--textMuted,#64748b);line-height:1.7">${esc(s.text)}</div>` : "") +
         `</div>`
       ).join("");
       ablaufContent = `<div style="position:relative;max-width:560px"><div style="position:absolute;left:15px;top:0;bottom:0;width:${isElegant ? "1px" : "2px"};background:var(--sep,#e2e8f0)"></div>${vSteps}</div>`;
@@ -319,8 +319,8 @@ export async function onRequestGet({params, env}) {
       const hSteps = ablaufSteps.slice(0, 5).map((s, i) =>
         `<div style="flex:1;text-align:center;min-width:140px">` +
         `<div style="width:${circleSize};height:${circleSize};border-radius:${circleR};background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:${circleFontWeight};font-size:${circleFontSize};margin:0 auto 12px">${i + 1}</div>` +
-        `<div style="font-weight:${titleWeight};font-size:.95rem;color:var(--primary);margin-bottom:6px">${s.titel}</div>` +
-        (s.text ? `<div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">${s.text}</div>` : "") +
+        `<div style="font-weight:${titleWeight};font-size:.95rem;color:var(--primary);margin-bottom:6px">${esc(s.titel)}</div>` +
+        (s.text ? `<div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">${esc(s.text)}</div>` : "") +
         `</div>`
       ).join(`<div class="sr-ablauf-arrow" style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${isElegant ? "1.5" : "2"}"><polyline points="9 18 15 12 9 6"/></svg></div>`);
       ablaufContent = `<div class="sr-ablauf-h" style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap">${hSteps}</div>`;
@@ -555,9 +555,9 @@ export async function onRequestGet({params, env}) {
   if (showFaq && faqItems.length > 0 && html.includes("<!-- FAQ -->")) {
     const items = faqItems.slice(0, 8).map((f, i) =>
       `<div style="border-bottom:1px solid var(--sep)">` +
-      `<button class="sr-faq-btn" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${f.frage}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
+      `<button class="sr-faq-btn" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
       `<div class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
-      `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${f.antwort || ""}</p>` +
+      `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${esc(f.antwort) || ""}</p>` +
       `</div></div>`
     ).join("");
     const faqToggleWeight = isElegant ? "600" : "700";
@@ -585,7 +585,7 @@ export async function onRequestGet({params, env}) {
     const cols = v.galerie === "grid-3x2" ? "repeat(3,1fr)" : "repeat(2,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
       `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
-      `<img class="sr-zoom sr-img-hover" src="${g.url}" alt="${g.caption || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s">` +
+      `<img class="sr-zoom sr-img-hover" src="${g.url}" alt="${esc(g.caption) || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s">` +
       `</div>`
     ).join("");
     const galerieRadius = isModern ? "16px" : isElegant ? "2px" : "var(--rLg)";
@@ -603,7 +603,7 @@ export async function onRequestGet({params, env}) {
     const faktenFontWeight = isElegant ? "500" : "800";
     const faktenFontSize = isElegant ? "clamp(1.4rem,3.5vw,2rem)" : "clamp(1.6rem,4vw,2.4rem)";
     const items = faktenItems.slice(0, 4).map(f =>
-      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${f.zahl}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${f.label}</div></div>`
+      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${esc(f.zahl)}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${esc(f.label) || ""}</div></div>`
     ).join("");
     const section = `<section class="sec-fakten sr-fade" style="padding:80px 0;background:var(--bg)"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
     html = html.replace("<!-- FAKTEN -->", section);
@@ -617,9 +617,9 @@ export async function onRequestGet({params, env}) {
   if (showPartner && partnerItems.length > 0 && html.includes("<!-- PARTNER -->")) {
     const logos = partnerItems.slice(0, 8).map(p => {
       if (p.url_logo) {
-        return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${p.name || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;
+        return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${esc(p.name) || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;
       }
-      return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--r);font-size:.75rem;font-weight:600;color:var(--textMuted)">${p.name}</div>`;
+      return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--r);font-size:.75rem;font-weight:600;color:var(--textMuted)">${esc(p.name)}</div>`;
     }).join("");
     const section = `<section class="sec-partner" style="padding:48px 0;background:#fff;border-top:1px solid var(--sep)"><div class="w"><div style="text-align:center;margin-bottom:16px;font-size:.72rem;font-weight:600;color:var(--textMuted);text-transform:uppercase;letter-spacing:.1em">Unsere Partner &amp; Zertifizierungen</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${logos}</div></div></section>`;
     html = html.replace("<!-- PARTNER -->", section);

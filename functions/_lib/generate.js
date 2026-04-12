@@ -491,8 +491,8 @@ REGELN fuer gut_zu_wissen:
   rawText = rawText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
   let texts = {};
-  try { texts = JSON.parse(rawText); } catch(_) {
-    // Fallback: leere Texte
+  try { texts = JSON.parse(rawText); } catch(parseErr) {
+    console.error("JSON-Parse der Claude-Antwort fehlgeschlagen:", parseErr.message, "rawText:", rawText.slice(0, 500));
     texts = { leistungen_beschreibungen: {}, text_ueber_uns: "", text_vorteile: [], leistungen_intro: "", kontakt_cta_headline: "Kontaktieren Sie uns", kontakt_cta_text: "Wir freuen uns auf Ihre Anfrage." };
   }
 

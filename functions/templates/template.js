@@ -38,9 +38,10 @@ export function buildTemplate(data) {
 <link rel="canonical" href="${siteUrl}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="${fontUrl}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="${fontUrl}"></noscript>
 <title>${metaTitle}</title>
 <style>
-@import url('${fontUrl}');
 
 /* ═══════════════════════════════════════════════════════
    RESET & BASE
@@ -106,10 +107,10 @@ a{color:inherit}
    ACCESSIBILITY
    ═══════════════════════════════════════════════════════ */
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
-.btn:focus-visible{outline-offset:2px;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
+.btn:focus-visible{outline-offset:2px;box-shadow:0 0 0 4px rgba(99,102,241,.25);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
 .nav-link:focus-visible,.mob-link:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:3px}
 .nav-cta:focus-visible,.mob-cta:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:3px}
-.k-form input:focus-visible,.k-form textarea:focus-visible,.k-form select:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.k-form input:focus-visible,.k-form textarea:focus-visible,.k-form select:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
 .kontakt-social a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .kontakt-tel:focus-visible,.kontakt-email:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
@@ -137,7 +138,7 @@ a{color:inherit}
 /* ═══════════════════════════════════════════════════════
    HERO
    ═══════════════════════════════════════════════════════ */
-.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%);color:#fff;display:flex;align-items:flex-end;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
+.hero{background:linear-gradient(160deg,var(--primary),var(--primary));background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%);color:#fff;display:flex;align-items:flex-end;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
 .hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 56px}
 .hero h1{font-size:clamp(2.8rem,5.5vw,4.4rem);font-weight:800;line-height:1.08;letter-spacing:-.035em;margin-bottom:16px;max-width:680px}
 .hero-accent-line{display:none}
@@ -156,7 +157,7 @@ a{color:inherit}
 .stil-modern .hero-inner{padding:120px 28px 56px}
 
 /* Hero — Elegant: Schlicht, leicht, Akzentlinie */
-.stil-elegant .hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 100%);align-items:flex-end}
+.stil-elegant .hero{background:linear-gradient(160deg,var(--primary),var(--primary));background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 100%);align-items:flex-end}
 .stil-elegant .hero-inner{padding:140px 28px 64px}
 .stil-elegant .hero h1{font-size:clamp(3rem,7vw,5.5rem);font-weight:500;margin-bottom:0;letter-spacing:-.02em}
 .stil-elegant .hero-accent-line{display:block;width:48px;height:1px;background:var(--accent);margin:24px 0 28px;opacity:.5}
@@ -431,7 +432,7 @@ a{color:inherit}
 .cta-block .btn-accent{background:#fff;color:var(--primary)}
 .cta-block .btn-accent:hover{opacity:.9}
 
-.stil-modern .cta-block{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#818cf8))}
+.stil-modern .cta-block{background:var(--accent);background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#818cf8))}
 .stil-modern .cta-block::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.08);top:-100px;right:-50px;filter:blur(40px);pointer-events:none}
 .stil-modern .cta-block p{opacity:.8}
 .stil-modern .cta-block .btn-accent{color:var(--accent)}
@@ -750,7 +751,7 @@ ${buchungslinkHtml}
 
 <!-- FOOTER -->
 
-<div class="lb" id="sr-lb" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schließen">×</button><img id="sr-lb-img" src="" alt=""/></div>
+<div class="lb" id="sr-lb" role="dialog" aria-modal="true" aria-label="Bild vergrößert" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schließen">×</button><img id="sr-lb-img" src="" alt=""/></div>
 <script>(function(){
 /* Scroll-Animationen: fade-up + sr-fade */
 var f=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('visible','sr-vis');f.unobserve(i.target)}})},{threshold:.06,rootMargin:'0px 0px -40px 0px'});

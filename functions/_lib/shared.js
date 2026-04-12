@@ -10,8 +10,10 @@ function esc(text) {
 function normSocial(v) {
   if (!v) return "";
   v = v.trim().replace(/\/+$/, "");
-  if (v.startsWith("http")) return v;
-  return "https://" + v;
+  if (/^javascript:/i.test(v)) return "";
+  if (!v.startsWith("http")) v = "https://" + v;
+  if (!/^https?:\/\/[^\s]+\.[^\s]+/.test(v)) return "";
+  return v;
 }
 
 module.exports = { esc, normSocial };

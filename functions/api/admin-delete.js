@@ -13,6 +13,7 @@ export async function onRequestPost({request, env}) {
     "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`,
     "Content-Type": "application/json",
   };
+  const errors = [];
 
   // 1. Order laden (fuer email + user_id)
   const orderResp = await fetch(
@@ -21,8 +22,11 @@ export async function onRequestPost({request, env}) {
   );
   const orders = await orderResp.json();
   const order = orders?.[0];
-  const email = order?.email;
-  const userId = order?.user_id;
+  if (!order) {
+    return Response.json({error: "Order nicht gefunden"}, {status: 404});
+  }
+  const email = order.email;
+  const userId = order.user_id;
 
   // 2. Storage-Dateien loeschen (alle Fotos des Kunden)
   if (userId) {
@@ -41,18 +45,21 @@ export async function onRequestPost({request, env}) {
       }
     } catch(e) {
       console.error("admin-delete: Storage-Dateien loeschen fehlgeschlagen", e.message);
+      errors.push("storage: " + e.message);
     }
   }
 
   // 3. Auth-User loeschen
   if (userId) {
     try {
-      await fetch(
+      const r = await fetch(
         `${env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
         {method: "DELETE", headers}
       );
+      if (!r.ok) errors.push("auth: HTTP " + r.status);
     } catch(e) {
       console.error("admin-delete: Auth-User loeschen fehlgeschlagen", e.message);
+      errors.push("auth: " + e.message);
     }
   }
 
@@ -65,14 +72,27 @@ export async function onRequestPost({request, env}) {
       );
     } catch(e) {
       console.error("admin-delete: Support-Anfragen loeschen fehlgeschlagen", e.message);
+      errors.push("support: " + e.message);
     }
   }
 
-  // 5. Order loeschen
+  // 5. Error-Logs loeschen (mit order_id im message)
+  try {
+    await fetch(
+      `${env.SUPABASE_URL}/rest/v1/error_logs?message=cs.${encodeURIComponent(id)}`,
+      {method: "DELETE", headers: {...headers, "Prefer": "return=minimal"}}
+    );
+  } catch(e) {
+    console.error("admin-delete: Error-Logs loeschen fehlgeschlagen", e.message);
+    errors.push("logs: " + e.message);
+  }
+
+  // 6. Order loeschen
   const delResp = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${id}`,
     {method: "DELETE", headers: {...headers, "Prefer": "return=minimal"}}
   );
+  if (!delResp.ok) errors.push("order: HTTP " + delResp.status);
 
-  return Response.json({ok: delResp.ok});
+  return Response.json({ok: delResp.ok, ...(errors.length ? {warnings: errors} : {})});
 }

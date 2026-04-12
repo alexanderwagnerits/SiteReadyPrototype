@@ -647,6 +647,8 @@ REGELN fuer gut_zu_wissen:
         hebamme:"photo-1493894473891-10fc1e5dbd22",diaetologe:"photo-1490645935967-10de6ba17061",
         hoerakustiker:"photo-1559757175-5700dde675bc",zahntechnik:"photo-1606811841689-23dfddce3e95",
         heilmasseur:"photo-1519823551278-64ac92734fb1",
+        osteopath:"photo-1576091160550-2173dba999ef",
+        lebensberater:"photo-1573497620053-ea5300f94f21",
         // Dienstleistung
         steuerberater:"photo-1497366216548-37526070297c",rechtsanwalt:"photo-1589829545856-d10d557cf95f",
         versicherung:"photo-1450101499163-c8848e968838",immobilien:"photo-1560518883-ce09059eeffa",
@@ -657,12 +659,19 @@ REGELN fuer gut_zu_wissen:
         bestattung:"photo-1501621667575-af81f1f0bacc",notar:"photo-1507679799987-c73b1c7e2b48",
         finanzberater:"photo-1554224155-6726b3ff858f",reisebuero:"photo-1488646953014-85cb44e25828",
         innenarchitekt:"photo-1618221195710-dd6b41faaea6",textilreinigung:"photo-1545173168-9f1947eebb7f",
+        unternehmensberater:"photo-1497366216548-37526070297c",dolmetscher:"photo-1434030216411-0b793f4b4173",
+        druckerei:"photo-1562654501-a0ccc0fc3fb1",sicherheitsdienst:"photo-1557597774-9d273605dfa9",
         // Bildung
         fahrschule:"photo-1449965408869-eaa3f722e40d",nachhilfe:"photo-1427504494785-3a9ca7044f45",
         musikschule:"photo-1511379938547-c1f69419868d",trainer:"photo-1534438327276-14e5300c3a48",
         yoga:"photo-1545205597-3d9d02c29597",hundeschule:"photo-1587300003388-59208cc962cb",
         tanzschule:"photo-1504609813442-a8924e83f76e",reitschule:"photo-1553284965-83fd3e82fa5a",
         schwimmschule:"photo-1519315901367-f34ff9154487",
+        coach:"photo-1552581234-26160f608093",
+        // Handwerk (neue)
+        fahrradwerkstatt:"photo-1571068316344-75bc76f77890",erdbau:"photo-1504307651254-35680f356dfd",
+        // Gastro (neue)
+        winzer:"photo-1506377247377-2a5b3b417ebb",
       };
       const branche = (o.branche || "").toLowerCase();
       const photoId = stockPhotos[branche] || "photo-1497366216548-37526070297c"; // Fallback: modernes Büro

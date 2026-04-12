@@ -207,18 +207,29 @@ export async function onRequestPost({request, env}) {
       return "";
     };
 
-    const fetchJina = async (pageUrl) => {
+    const fetchJina = async (pageUrl, attempt = 1) => {
       try {
         const r = await fetch("https://r.jina.ai/" + pageUrl, {
           headers: {"Accept":"text/plain","X-Return-Format":"text"},
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(20000),
         });
         if (r.ok) {
           const text = await r.text();
           if (text.length < 30 || /^(Unable to|Error:|404|Page not found)/i.test(text.trim())) return "";
           return text;
         }
-      } catch(e) { console.error("import: fetchJina fehlgeschlagen", pageUrl, e.message); }
+        // Retry bei 429 (Rate-Limit) oder 5xx
+        if ((r.status === 429 || r.status >= 500) && attempt < 3) {
+          await new Promise(ok => setTimeout(ok, attempt * 2000));
+          return fetchJina(pageUrl, attempt + 1);
+        }
+      } catch(e) {
+        console.error(`import: fetchJina Versuch ${attempt} fehlgeschlagen`, pageUrl, e.message);
+        if (attempt < 3) {
+          await new Promise(ok => setTimeout(ok, attempt * 2000));
+          return fetchJina(pageUrl, attempt + 1);
+        }
+      }
       return "";
     };
 
@@ -230,11 +241,22 @@ export async function onRequestPost({request, env}) {
     };
 
     /* ═══ 1. HAUPTSEITE LADEN ═══ */
-    const mainHtml = await fetchHtml(cleanUrl, 10000);
+    const mainHtml = await fetchHtml(cleanUrl, 15000);
     extractFromHtml(mainHtml);
 
     let mainText = await fetchJina(cleanUrl);
     if (!mainText || mainText.length < 100) mainText = stripHtml(mainHtml);
+
+    // Zweiter Versuch mit anderem User-Agent falls beides leer
+    if (!mainText || mainText.length < 50) {
+      try {
+        const retryR = await fetch(cleanUrl, {
+          headers: {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36","Accept":"text/html,application/xhtml+xml","Accept-Language":"de-AT,de;q=0.9"},
+          redirect:"follow", signal: AbortSignal.timeout(15000),
+        });
+        if (retryR.ok) { const retryHtml = await retryR.text(); mainText = stripHtml(retryHtml); }
+      } catch(e) { console.error("import: retry fetch fehlgeschlagen", e.message); }
+    }
 
     if (!mainText || mainText.length < 50) {
       // Google-only: Kein Website-Crawl moeglich, aber Google Maps Text vorhanden
@@ -242,7 +264,7 @@ export async function onRequestPost({request, env}) {
         mainText = googleMapText;
         await log.info(null, "google_only_import", {url: cleanUrl, reason: "Website nicht lesbar, nur Google Maps Daten"});
       } else {
-        await log.error("import", {message:"Website nicht lesbar", url:cleanUrl});
+        await log.error("import", {message:"Website nicht lesbar", url:cleanUrl, mainHtmlLen:mainHtml?.length||0, mainTextLen:mainText?.length||0});
         return Response.json({error:"Die Website konnte nicht gelesen werden. Mögliche Gründe: Die Seite ist passwortgeschützt, blockiert automatische Zugriffe, oder die URL ist nicht erreichbar."}, {status:400});
       }
     }
@@ -883,7 +905,7 @@ ${fullText}${structuredHint}${emailHint}${phoneHint}`,
     });
 
   } catch(e) {
-    await log.error("import", {message:e.message, stack:e.stack});
-    return Response.json({error:"Der Import ist fehlgeschlagen. Bitte prüfen Sie die URL und versuchen Sie es erneut."}, {status:500});
+    await log.error("import", {message:e.message, stack:e.stack?.slice(0, 500)});
+    return Response.json({error:`Der Import ist fehlgeschlagen (${e.message?.slice(0, 80) || "unbekannter Fehler"}). Bitte versuchen Sie es erneut oder geben Sie die Daten manuell ein.`}, {status:500});
   }
 }

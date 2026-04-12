@@ -4585,6 +4585,14 @@ function Admin({adminKey}){
                     <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Claude API</div>
                     <span style={{fontSize:".75rem",color:T.textMuted}}>{orders.filter(o=>o.tokens_in>0).length}/{orders.length} getrackt</span>
                   </div>
+                  {(()=>{const tiers=[{min:0,tier:1,limit:"30k",next:40},{min:40,tier:2,limit:"80k",next:200},{min:200,tier:3,limit:"160k",next:400},{min:400,tier:4,limit:"400k",next:null}];const spent=totalCostEur;const balance=40;const currentTier=tiers.reduce((a,t)=>balance>=t.min?t:a,tiers[0]);const needsTier2=currentTier.tier<2;return(<div style={{padding:"10px 14px",borderRadius:T.rSm,background:needsTier2?"#fef2f2":"#f0fdf4",border:`1px solid ${needsTier2?"#fecaca":"#bbf7d0"}`,marginBottom:12,fontSize:".78rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <span style={{fontWeight:700,color:needsTier2?"#dc2626":"#16a34a"}}>API Tier {currentTier.tier}</span>
+                      <span style={{fontFamily:T.mono,fontWeight:700,color:needsTier2?"#dc2626":"#16a34a"}}>{currentTier.limit} Tokens/Min</span>
+                    </div>
+                    {needsTier2&&<div style={{marginTop:6,fontSize:".75rem",color:"#dc2626",lineHeight:1.5}}>Tier 2 benötigt (min. $40 Balance auf console.anthropic.com). Aktuell: max 1 Import/Minute.</div>}
+                    {!needsTier2&&<div style={{marginTop:4,fontSize:".72rem",color:"#16a34a"}}>3+ Imports gleichzeitig möglich</div>}
+                  </div>)})()}
                   {totalCostEur>0?[
                     ["Kumuliert gesamt",`€${totalCostEur.toFixed(4)}`],
                     ["davon Generierung",`€${totalGenCostEur.toFixed(4)}`],

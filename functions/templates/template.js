@@ -526,7 +526,7 @@ a{color:inherit}
 /* ═══════════════════════════════════════════════════════
    KONTAKT FORM
    ═══════════════════════════════════════════════════════ */
-.kontakt-form-wrap{margin-top:48px;padding-top:48px;border-top:1px solid var(--sep)}
+.kontakt-form-wrap{margin-top:32px;padding-top:32px;border-top:1px solid var(--sep)}.kontakt-form-wrap:empty{display:none}
 .k-form h3{font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:20px}
 .k-form label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:6px}
 .k-form input,.k-form textarea,.k-form select{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.9rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box;min-height:44px}

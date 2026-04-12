@@ -29,16 +29,29 @@ export async function onRequestGet({request, env}) {
     results.stripe = {ok: false, error: e.message};
   }
 
-  // Anthropic
+  // Anthropic + Rate Limits
   try {
-    const r = await fetch("https://api.anthropic.com/v1/models", {
-      headers: {"x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01"},
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "Content-Type": "application/json"},
+      body: JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1,messages:[{role:"user",content:"hi"}]}),
     });
-    results.anthropic = {ok: r.ok, status: r.status};
+    const rateLimits = {
+      requests_limit: r.headers.get("anthropic-ratelimit-requests-limit"),
+      requests_remaining: r.headers.get("anthropic-ratelimit-requests-remaining"),
+      requests_reset: r.headers.get("anthropic-ratelimit-requests-reset"),
+      tokens_limit: r.headers.get("anthropic-ratelimit-input-tokens-limit"),
+      tokens_remaining: r.headers.get("anthropic-ratelimit-input-tokens-remaining"),
+      tokens_reset: r.headers.get("anthropic-ratelimit-input-tokens-reset"),
+      output_tokens_limit: r.headers.get("anthropic-ratelimit-output-tokens-limit"),
+      output_tokens_remaining: r.headers.get("anthropic-ratelimit-output-tokens-remaining"),
+    };
+    const tokLimit = parseInt(rateLimits.tokens_limit) || 0;
+    const tier = tokLimit >= 400000 ? 4 : tokLimit >= 160000 ? 3 : tokLimit >= 80000 ? 2 : 1;
+    results.anthropic = {ok: r.ok, status: r.status, tier, rate_limits: rateLimits};
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
       results.anthropic.error = j.error?.message;
-      // 402 = no credits; type credit_limit_exceeded = quota exhausted
       results.anthropic.billing = r.status === 402 || (j.error?.type || "").includes("credit");
     }
   } catch(e) {

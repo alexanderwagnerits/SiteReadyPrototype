@@ -4585,13 +4585,18 @@ function Admin({adminKey}){
                     <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Claude API</div>
                     <span style={{fontSize:".75rem",color:T.textMuted}}>{orders.filter(o=>o.tokens_in>0).length}/{orders.length} getrackt</span>
                   </div>
-                  {(()=>{const tiers=[{min:0,tier:1,limit:"30k",next:40},{min:40,tier:2,limit:"80k",next:200},{min:200,tier:3,limit:"160k",next:400},{min:400,tier:4,limit:"400k",next:null}];const spent=totalCostEur;const balance=40;const currentTier=tiers.reduce((a,t)=>balance>=t.min?t:a,tiers[0]);const needsTier2=currentTier.tier<2;return(<div style={{padding:"10px 14px",borderRadius:T.rSm,background:needsTier2?"#fef2f2":"#f0fdf4",border:`1px solid ${needsTier2?"#fecaca":"#bbf7d0"}`,marginBottom:12,fontSize:".78rem"}}>
+                  {(()=>{const rl=sysStatus?.anthropic?.rate_limits;const tier=sysStatus?.anthropic?.tier||0;const tokLimit=rl?.tokens_limit||"?";const tokRemain=rl?.tokens_remaining||"?";const tokReset=rl?.tokens_reset;const outLimit=rl?.output_tokens_limit||"?";const outRemain=rl?.output_tokens_remaining||"?";const needsTier2=tier<2&&tier>0;const hasData=tier>0;return(<div style={{padding:"10px 14px",borderRadius:T.rSm,background:needsTier2?"#fef2f2":hasData?"#f0fdf4":"#f5f5f5",border:`1px solid ${needsTier2?"#fecaca":hasData?"#bbf7d0":"#e5e5e5"}`,marginBottom:12,fontSize:".78rem"}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <span style={{fontWeight:700,color:needsTier2?"#dc2626":"#16a34a"}}>API Tier {currentTier.tier}</span>
-                      <span style={{fontFamily:T.mono,fontWeight:700,color:needsTier2?"#dc2626":"#16a34a"}}>{currentTier.limit} Tokens/Min</span>
+                      <span style={{fontWeight:700,color:needsTier2?"#dc2626":hasData?"#16a34a":"#888"}}>{hasData?`API Tier ${tier}`:"API Tier unbekannt"}</span>
+                      {hasData&&<span style={{fontFamily:T.mono,fontWeight:700,color:needsTier2?"#dc2626":"#16a34a"}}>{parseInt(tokLimit).toLocaleString("de-AT")} Tok/Min</span>}
                     </div>
-                    {needsTier2&&<div style={{marginTop:6,fontSize:".75rem",color:"#dc2626",lineHeight:1.5}}>Tier 2 benötigt (min. $40 Balance auf console.anthropic.com). Aktuell: max 1 Import/Minute.</div>}
-                    {!needsTier2&&<div style={{marginTop:4,fontSize:".72rem",color:"#16a34a"}}>3+ Imports gleichzeitig möglich</div>}
+                    {hasData&&<div style={{marginTop:6,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px 16px",fontSize:".72rem",color:T.textMuted}}>
+                      <span>Input verbraucht:</span><span style={{fontFamily:T.mono,textAlign:"right"}}>{parseInt(tokLimit)-parseInt(tokRemain||0)>0?`${(parseInt(tokLimit)-parseInt(tokRemain||0)).toLocaleString("de-AT")} / ${parseInt(tokLimit).toLocaleString("de-AT")}`:"-"}</span>
+                      <span>Output verbraucht:</span><span style={{fontFamily:T.mono,textAlign:"right"}}>{parseInt(outLimit)-parseInt(outRemain||0)>0?`${(parseInt(outLimit)-parseInt(outRemain||0)).toLocaleString("de-AT")} / ${parseInt(outLimit).toLocaleString("de-AT")}`:"-"}</span>
+                      {tokReset&&<><span>Reset in:</span><span style={{fontFamily:T.mono,textAlign:"right"}}>{Math.max(0,Math.ceil((new Date(tokReset)-new Date())/1000))}s</span></>}
+                    </div>}
+                    {needsTier2&&<div style={{marginTop:6,fontSize:".75rem",color:"#dc2626",lineHeight:1.5}}>Tier 2 benötigt (min. $40 Balance auf console.anthropic.com). Aktuell können Imports und Generierungen bei hoher Last fehlschlagen.</div>}
+                    {!hasData&&<div style={{marginTop:4,fontSize:".72rem",color:"#888"}}>System-Check ausführen für aktuelle Daten</div>}
                   </div>)})()}
                   {totalCostEur>0?[
                     ["Kumuliert gesamt",`€${totalCostEur.toFixed(4)}`],

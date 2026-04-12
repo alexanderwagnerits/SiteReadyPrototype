@@ -1,4 +1,4 @@
-const { esc, normSocial } = require("../../_lib/shared");
+const { esc, normSocial, OEZ_LABELS } = require("../../_lib/shared");
 
 function buildSocialIcons(o) {
   const socials = [
@@ -10,15 +10,6 @@ function buildSocialIcons(o) {
   if (!socials.length) return "";
   return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s">${s.icon}</a>`).join("")}</div>`;
 }
-
-const OEZ_LABELS = {
-  "mo-fr-8-17": "Mo–Fr 8:00–17:00",
-  "mo-fr-7-16": "Mo–Fr 7:00–16:00",
-  "mo-fr-8-18": "Mo–Fr 8:00–18:00",
-  "mo-sa-8-17": "Mo–Sa 8:00–17:00",
-  "mo-sa-8-12": "Mo–Sa 8:00–12:00",
-  "vereinbarung": "Nach Vereinbarung",
-};
 
 export async function onRequestGet({params, env}) {
   const subdomain = params.subdomain;

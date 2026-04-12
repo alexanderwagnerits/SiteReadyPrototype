@@ -79,7 +79,7 @@ const { normSocial } = require("../../_lib/shared");
 function buildLegalNav(o, stil, subdomain) {
   const tel = o.telefon || "";
   const telDisplay = tel;
-  const telHref = tel ? `tel:${tel.replace(/\\s/g,"")}` : "";
+  const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "";
   const logoHtml = o.url_logo
     ? `<img src="${o.url_logo}" alt="${o.firmenname}" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">`
     : o.firmenname;
@@ -152,7 +152,7 @@ function buildLegalFooter(o, stil, subdomain) {
 <div>
 <div style="font-weight:800;font-size:1.05rem;margin-bottom:12px;letter-spacing:-.01em">${o.firmenname}</div>
 <p style="opacity:.65;line-height:1.75;font-size:.85rem;margin-bottom:16px;max-width:280px">${o.kurzbeschreibung || ""}</p>
-${tel ? `<a href="tel:${tel.replace(/\\s/g,"")}" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">${tel}</a>` : ""}
+${tel ? `<a href="tel:${tel.replace(/\s/g,"")}" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">${tel}</a>` : ""}
 ${socialIconsHtml}
 </div>
 <div>
@@ -169,7 +169,7 @@ ${socialIconsHtml}
 <div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Kontakt</div>
 <div style="display:flex;flex-direction:column;gap:10px;font-size:.88rem;color:rgba(255,255,255,.7)">
 ${adresse ? `<span>${adresse}</span>` : ""}
-${tel ? `<a href="tel:${tel.replace(/\\s/g,"")}" style="color:rgba(255,255,255,.85);text-decoration:none;font-weight:600">${tel}</a>` : ""}
+${tel ? `<a href="tel:${tel.replace(/\s/g,"")}" style="color:rgba(255,255,255,.85);text-decoration:none;font-weight:600">${tel}</a>` : ""}
 ${email ? `<a href="mailto:${email}" style="color:rgba(255,255,255,.7);text-decoration:none">${email}</a>` : ""}
 </div>
 </div>

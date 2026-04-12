@@ -3,7 +3,7 @@ export async function onRequestGet({params, env}) {
   if (!subdomain) return new Response("Not Found", {status: 404});
 
   const r = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,email,telefon,adresse,plz,ort,bundesland,facebook,instagram,linkedin,tiktok,url_logo`,
+    `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=firmenname,email,telefon,adresse,plz,ort,bundesland,facebook,instagram,linkedin,tiktok,url_logo,status`,
     {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
   );
   if (!r.ok) return new Response("Fehler", {status: 502});
@@ -11,6 +11,8 @@ export async function onRequestGet({params, env}) {
   if (!rows.length) return new Response("Not Found", {status: 404});
 
   const o = rows[0];
+  if (o.status === "offline") return new Response("Not Found", {status: 404});
+
   const tel = (o.telefon || "").replace(/\s/g, "");
   const adr = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   const website = `https://sitereadyprototype.pages.dev/s/${subdomain}`;

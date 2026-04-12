@@ -106,6 +106,8 @@ const BRANCHEN = [
   { value:"schneider",       label:"Schneider / Änderungsschneiderei",gruppe:"handwerk",leistungen:["Änderungen & Reparaturen","Maßanfertigungen","Hochzeitsmode","Lederarbeiten","Vorhänge & Textilien","Beratung"],stil:"elegant" },
   { value:"rauchfangkehrer", label:"Rauchfangkehrer",                  gruppe:"handwerk",leistungen:["Kehrung & Überprüfung","Abgasmessung","Feuerstättenbescheid","Brandschutzberatung","Kamininspektion","Gutachten"],stil:"klassisch" },
   { value:"schaedlingsbekaempfung",label:"Schädlingsbekämpfung",       gruppe:"handwerk",leistungen:["Insektenbekämpfung","Nagetierbekämpfung","Taubenabwehr","Holzschutz","Desinfektion","Beratung & Prävention"],stil:"klassisch" },
+  { value:"fahrradwerkstatt", label:"Fahrradwerkstatt",                gruppe:"handwerk",leistungen:["Reparatur & Service","E-Bike-Service","Fahrradcheck","Ersatzteile","Reifenwechsel","Individuelle Beratung"],stil:"modern" },
+  { value:"erdbau",           label:"Erdbau / Baggerungen",            gruppe:"handwerk",leistungen:["Baggerarbeiten","Aushubarbeiten","Planierungen","Kanalbau","Wegebau","Transporte"],stil:"klassisch" },
   // Kosmetik & Körperpflege
   { value:"kosmetik",        label:"Kosmetikstudio",                   gruppe:"kosmetik",leistungen:["Gesichtsbehandlungen","Körperpflege & Peeling","Waxing & Haarentfernung","Anti-Aging-Behandlungen","Augenbrauen & Wimpern","Beratung & Pflegeroutine"],stil:"modern" },
   { value:"friseur",         label:"Friseursalon",                     gruppe:"kosmetik",leistungen:["Haarschnitt Damen & Herren","Färben & Strähnchen","Hochzeitsstyling","Haarbehandlungen","Kinder-Haarschnitt","Bartpflege"],stil:"modern" },
@@ -124,6 +126,7 @@ const BRANCHEN = [
   { value:"catering",        label:"Catering / Partyservice",          gruppe:"gastro",leistungen:["Firmenevents","Hochzeiten","Buffets","Menü-Planung","Getränkeservice","Dekoration"],stil:"klassisch" },
   { value:"baeckerei",       label:"Bäckerei / Konditor",              gruppe:"gastro",leistungen:["Brot & Gebäck","Torten & Kuchen","Frühstück","Catering","Saisongebäck","Bestellung & Vorbestellung"],stil:"elegant" },
   { value:"fleischerei",     label:"Fleischerei / Metzger",            gruppe:"gastro",leistungen:["Frischfleisch","Wurst & Aufschnitt","Catering & Partyplatten","Grillspezialitäten","Regionale Produkte","Vorbestellung"],stil:"klassisch" },
+  { value:"winzer",          label:"Winzer / Weinbau",                 gruppe:"gastro",leistungen:["Eigenbauweine","Ab-Hof-Verkauf","Weinverkostung","Kellerführung","Feste & Events","Online-Shop"],stil:"elegant" },
   // Gesundheit
   { value:"physiotherapie",  label:"Physiotherapie",                   gruppe:"gesundheit",leistungen:["Manuelle Therapie","Bewegungstherapie","Sportphysiotherapie","Lymphdrainage","Elektrotherapie","Hausbesuche"],stil:"klassisch" },
   { value:"arzt",            label:"Arztpraxis / Ordination",          gruppe:"gesundheit",leistungen:["Allgemeinmedizin","Vorsorgeuntersuchung","Gesundenuntersuchung","Impfungen","Hausbesuche","Akutversorgung"],stil:"klassisch" },
@@ -140,6 +143,8 @@ const BRANCHEN = [
   { value:"hoerakustiker",   label:"Hörakustiker",                     gruppe:"gesundheit",leistungen:["Hörtest","Hörgeräte-Anpassung","Service & Reparatur","Gehörschutz","Tinnitus-Beratung","Erstberatung"],stil:"klassisch" },
   { value:"zahntechnik",     label:"Zahntechnik",                      gruppe:"gesundheit",leistungen:["Kronen & Brücken","Prothesen","Implantatsuprakonstruktion","Veneers","Schienen","Reparaturen"],stil:"klassisch" },
   { value:"heilmasseur",     label:"Heilmasseur",                      gruppe:"gesundheit",leistungen:["Heilmassage","Lymphdrainage","Reflexzonenmassage","Bindegewebsmassage","Sportmassage","Hausbesuche"],stil:"klassisch" },
+  { value:"osteopath",       label:"Osteopath",                        gruppe:"gesundheit",leistungen:["Osteopathische Behandlung","Cranio-Sacral-Therapie","Viszerale Osteopathie","Kinderosteopathie","Sportosteopathie","Erstanamnese"],stil:"modern" },
+  { value:"lebensberater",   label:"Lebens- und Sozialberater",        gruppe:"gesundheit",leistungen:["Lebensberatung","Paarberatung","Stressbewältigung","Konfliktlösung","Krisenbegleitung","Erstgespräch"],stil:"modern" },
   // Dienstleistungen
   { value:"steuerberater",   label:"Steuerberater / Buchhaltung",      gruppe:"dienstleistung",leistungen:["Buchhaltung","Jahresabschluss","Steuererklärung","Lohnverrechnung","Gründungsberatung","Unternehmensberatung"],stil:"klassisch" },
   { value:"rechtsanwalt",    label:"Rechtsanwalt / Kanzlei",           gruppe:"dienstleistung",leistungen:["Vertragsrecht","Arbeitsrecht","Familienrecht","Mietrecht","Strafrecht","Erstberatung"],stil:"klassisch" },
@@ -159,6 +164,10 @@ const BRANCHEN = [
   { value:"reisebuero",      label:"Reisebüro",                        gruppe:"dienstleistung",leistungen:["Pauschalreisen","Individualreisen","Flugbuchung","Kreuzfahrten","Gruppenreisen","Reiseversicherung"],stil:"modern" },
   { value:"innenarchitekt",  label:"Innenarchitekt / Raumdesign",      gruppe:"dienstleistung",leistungen:["Raumkonzepte","Farbberatung","Möbelplanung","Lichtplanung","Materialberatung","Umbauplanung"],stil:"elegant" },
   { value:"textilreinigung", label:"Textilreinigung / Wäscherei",      gruppe:"dienstleistung",leistungen:["Chemische Reinigung","Hemdenservice","Lederreinigung","Teppichreinigung","Expressservice","Abhol- & Lieferservice"],stil:"klassisch" },
+  { value:"unternehmensberater",label:"Unternehmensberater",             gruppe:"dienstleistung",leistungen:["Strategieberatung","Organisationsentwicklung","Gründungsberatung","Fördermanagement","Prozessoptimierung","Coaching"],stil:"klassisch" },
+  { value:"dolmetscher",    label:"Dolmetscher / Übersetzer",           gruppe:"dienstleistung",leistungen:["Dolmetschen","Fachübersetzungen","Beglaubigte Übersetzungen","Konferenzdolmetschen","Gerichtsdolmetschen","Lektorat"],stil:"elegant" },
+  { value:"druckerei",      label:"Druckerei / Copyshop",               gruppe:"dienstleistung",leistungen:["Digitaldruck","Offsetdruck","Großformatdruck","Visitenkarten & Drucksorten","Bindung & Veredelung","Expressservice"],stil:"modern" },
+  { value:"sicherheitsdienst",label:"Sicherheitsdienst / Detektei",     gruppe:"dienstleistung",leistungen:["Objektbewachung","Veranstaltungsschutz","Alarmservice","Ermittlungen","Personenschutz","Beratung"],stil:"klassisch" },
   // Bildung & Training
   { value:"fahrschule",      label:"Fahrschule",                       gruppe:"bildung",leistungen:["Führerschein B","Führerschein A","Auffrischungskurs","Erste-Hilfe-Kurs","Theoriekurs","Intensivkurs"],stil:"klassisch" },
   { value:"nachhilfe",       label:"Nachhilfe / Lernhilfe",            gruppe:"bildung",leistungen:["Mathematik","Deutsch","Englisch","Physik","Prüfungsvorbereitung","Online-Nachhilfe"],stil:"modern" },
@@ -169,6 +178,7 @@ const BRANCHEN = [
   { value:"tanzschule",      label:"Tanzschule",                        gruppe:"bildung",leistungen:["Standardtänze","Lateintänze","Hochzeitstanz","Kindertanzen","Workshops","Privatstunden"],stil:"elegant" },
   { value:"reitschule",      label:"Reitschule / Reitstall",            gruppe:"bildung",leistungen:["Reitunterricht","Longierstunden","Ausritte","Ferienkurse","Pferdeeinstellung","Beritt"],stil:"elegant" },
   { value:"schwimmschule",   label:"Schwimmschule",                     gruppe:"bildung",leistungen:["Babyschwimmen","Kinderschwimmkurse","Erwachsenenkurse","Techniktraining","Aquafitness","Einzelunterricht"],stil:"modern" },
+  { value:"coach",           label:"Coach / Trainer (Business & Life)", gruppe:"bildung",leistungen:["Business Coaching","Life Coaching","Karriereberatung","Teamentwicklung","Workshops & Seminare","Online-Coaching"],stil:"modern" },
   // Sonstige
   { value:"sonstige",        label:"Anderer Beruf (nicht in der Liste)",gruppe:"sonstige",leistungen:[],stil:"klassisch" },
 ];

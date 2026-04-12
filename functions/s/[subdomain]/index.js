@@ -425,12 +425,12 @@ export async function onRequestGet({params, env}) {
     const ctaPOpacity = isElegant ? ".5" : ".7";
     // Branchenspezifische CTA-Texte (Kunde kann im Portal überschreiben)
     const brGruppe = {
-      elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",baumeister:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",
+      elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",baumeister:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",fahrradwerkstatt:"handwerk",erdbau:"handwerk",
       friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",
-      restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",
-      arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",heilpraktiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",
-      steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",
-      fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",
+      restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",winzer:"gastro",
+      arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",heilpraktiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",osteopath:"gesundheit",lebensberater:"gesundheit",
+      steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",unternehmensberater:"dienstleistung",dolmetscher:"dienstleistung",druckerei:"dienstleistung",sicherheitsdienst:"dienstleistung",
+      fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",coach:"bildung",
     }[o.branche] || "";
     const ctaBranch = {
       // Handwerk
@@ -457,6 +457,8 @@ export async function onRequestGet({params, env}) {
       schneider:             {h:"Perfekter Sitz, perfekter Stil",             t:"Änderungen oder Maßanfertigungen — wir freuen uns auf Sie."},
       rauchfangkehrer:       {h:"Sicherheit für Ihr Zuhause",                 t:"Kehrung, Überprüfung oder Beratung — jetzt Termin vereinbaren."},
       schaedlingsbekaempfung:{h:"Schädlinge? Wir lösen das Problem",          t:"Diskret, effektiv und nachhaltig — kontaktieren Sie uns."},
+      fahrradwerkstatt:      {h:"Ihr Rad in besten Händen",                    t:"Reparatur, Service oder E-Bike-Check — kommen Sie vorbei."},
+      erdbau:                {h:"Baggerarbeiten vom Profi",                    t:"Aushub, Planierung oder Kanalbau — jetzt unverbindlich anfragen."},
       // Kosmetik
       friseur:               {h:"Zeit für einen neuen Look?",                 t:"Schnitt, Farbe oder Styling — buchen Sie Ihren Termin."},
       kosmetik:              {h:"Gönnen Sie sich eine Auszeit",               t:"Pflege und Beauty-Treatments — jetzt Termin buchen."},
@@ -475,6 +477,7 @@ export async function onRequestGet({params, env}) {
       heuriger:              {h:"Gemütlichkeit und guter Wein",               t:"Jause, Wein und Gastfreundschaft — kommen Sie vorbei."},
       imbiss:                {h:"Schnell, frisch und richtig lecker",         t:"Hunger? Schauen Sie bei uns vorbei oder bestellen Sie vor."},
       fleischerei:           {h:"Qualität, die man schmeckt",                 t:"Frisches Fleisch und Wurstwaren — besuchen Sie uns."},
+      winzer:                {h:"Wein mit Charakter",                         t:"Verkostung, Ab-Hof-Verkauf oder Kellerführung — besuchen Sie uns."},
       // Gesundheit
       arzt:                  {h:"Ihre Gesundheit in guten Händen",            t:"Vereinbaren Sie jetzt Ihren Termin — wir nehmen uns Zeit für Sie."},
       zahnarzt:              {h:"Für Ihr schönstes Lächeln",                  t:"Prophylaxe, Behandlung oder Beratung — jetzt Termin vereinbaren."},
@@ -492,6 +495,8 @@ export async function onRequestGet({params, env}) {
       hoerakustiker:         {h:"Wieder gut hören, besser leben",             t:"Hörtest und Beratung — vereinbaren Sie Ihren Termin."},
       zahntechnik:           {h:"Perfektion bis ins Detail",                  t:"Hochwertiger Zahnersatz aus dem Meisterlabor — jetzt anfragen."},
       heilmasseur:           {h:"Heilsame Hände, spürbare Wirkung",           t:"Medizinische Massage — jetzt Termin vereinbaren."},
+      osteopath:             {h:"Ganzheitlich behandeln, nachhaltig heilen",  t:"Osteopathische Therapie — vereinbaren Sie einen Termin."},
+      lebensberater:         {h:"Neue Perspektiven entdecken",                t:"Professionelle Begleitung in jeder Lebenslage — Erstgespräch vereinbaren."},
       // Dienstleistung
       steuerberater:         {h:"Steuern sparen, Überblick behalten",         t:"Professionelle Steuerberatung — vereinbaren Sie ein Erstgespräch."},
       rechtsanwalt:          {h:"Ihr Recht in starken Händen",                t:"Kompetente Rechtsberatung — jetzt Termin vereinbaren."},
@@ -511,6 +516,10 @@ export async function onRequestGet({params, env}) {
       reisebuero:            {h:"Traumurlaub beginnt hier",                   t:"Individuelle Reiseplanung — lassen Sie sich inspirieren."},
       innenarchitekt:        {h:"Wohnen, das begeistert",                     t:"Raumkonzepte mit Stil — vereinbaren Sie eine Beratung."},
       textilreinigung:       {h:"Sauber, frisch und gepflegt",                t:"Professionelle Reinigung für Ihre Textilien — besuchen Sie uns."},
+      unternehmensberater:   {h:"Ihr Unternehmen, unsere Expertise",          t:"Strategieberatung und Prozessoptimierung — jetzt Erstgespräch vereinbaren."},
+      dolmetscher:           {h:"Sprache verbindet Welten",                   t:"Professionelle Übersetzungen und Dolmetschleistungen — jetzt anfragen."},
+      druckerei:             {h:"Druck, der Eindruck macht",                  t:"Visitenkarten, Flyer oder Großformat — jetzt bestellen."},
+      sicherheitsdienst:     {h:"Sicherheit, auf die Sie zählen können",      t:"Objektschutz, Veranstaltungen oder Ermittlungen — kontaktieren Sie uns."},
       // Bildung
       fahrschule:            {h:"Führerschein? Los geht's!",                  t:"Anmeldung und Beratung — starten Sie jetzt durch."},
       nachhilfe:             {h:"Bessere Noten, mehr Selbstvertrauen",        t:"Individuelle Nachhilfe — jetzt Probestunde vereinbaren."},
@@ -521,6 +530,7 @@ export async function onRequestGet({params, env}) {
       tanzschule:            {h:"Tanzen lernen mit Freude",                   t:"Kurse für Anfänger und Fortgeschrittene — jetzt anmelden."},
       reitschule:            {h:"Reiten lernen, Natur erleben",               t:"Reitstunden für alle Altersgruppen — jetzt Schnupperstunde buchen."},
       schwimmschule:         {h:"Sicher schwimmen lernen",                    t:"Schwimmkurse für Kinder und Erwachsene — jetzt anmelden."},
+      coach:                 {h:"Ihr nächster Schritt beginnt hier",          t:"Business oder Life Coaching — buchen Sie Ihr Erstgespräch."},
     };
     const ctaGroupDefaults = {
       handwerk:       {h:"Bereit für Ihr Projekt?",            t:"Wir beraten Sie gerne — kostenlos und unverbindlich."},

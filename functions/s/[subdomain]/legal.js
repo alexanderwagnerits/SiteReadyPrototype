@@ -286,6 +286,9 @@ export async function buildLegalPage(subdomain, page, env) {
 <h2>Urheberrecht</h2>
 <p>Die Inhalte dieser Website unterliegen dem österreichischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Betreibers.</p>
 
+${o.foto_credit ? `<h2>Bildnachweis</h2>
+<p>${o.foto_credit.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</p>` : ""}
+
 <p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;
   } else {
     title = "Datenschutzerklärung";

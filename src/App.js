@@ -1851,6 +1851,7 @@ function Portal({session,onLogout}){
       team_members:order.team_members||null,announcements:order.announcements||null,
       unternehmensgegenstand:order.unternehmensgegenstand||null,liquidation:order.liquidation||null,
       kammer_berufsrecht:order.kammer_berufsrecht||null,aufsichtsbehoerde:order.aufsichtsbehoerde||null,
+      foto_credit:order.foto_credit||null,foto_rights_confirmed:order.foto_rights_confirmed||false,
     }).eq("id",order.id);
     setSaving(false);
     if(!error){
@@ -2649,6 +2650,20 @@ function Portal({session,onLogout}){
               <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Titelbild hochgeladen – Farbverlauf bleibt aktiv</div>
             </div>}
             <div style={{fontSize:".78rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>Empfohlen: JPG, mind. 1920 &times; 1080 px &middot; Querformat &middot; Ohne Textüberlagerungen (Bild wird automatisch mit Farbverlauf abgedunkelt)</div>
+            {url&&!isPlaceholder&&<>
+              <div style={{marginTop:14,padding:"12px 14px",borderRadius:T.rSm,background:T.bg,border:`1px solid ${T.bg3}`}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Urheberrecht</div>
+                <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",marginBottom:10}}>
+                  <input type="checkbox" checked={!!order.foto_rights_confirmed} onChange={e=>upOrder("foto_rights_confirmed")(e.target.checked)} style={{marginTop:2,flexShrink:0}}/>
+                  <span style={{fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, die Nutzungsrechte für dieses Foto zu besitzen oder eine entsprechende Lizenz zu haben.</span>
+                </label>
+                <div>
+                  <label style={{display:"block",fontSize:".78rem",fontWeight:600,color:T.dark,marginBottom:4}}>Bildnachweis <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></label>
+                  <input type="text" value={order.foto_credit||""} onChange={e=>upOrder("foto_credit")(e.target.value)} placeholder="z. B. Foto: Max Mustermann | unsplash.com/@beispiel" style={{width:"100%",padding:"8px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>
+                  <div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>Wird im Impressum Ihrer Website unter „Bildnachweis" angezeigt.</div>
+                </div>
+              </div>
+            </>}
           </div>
           );})()}
           {/* Grunddaten fields */}

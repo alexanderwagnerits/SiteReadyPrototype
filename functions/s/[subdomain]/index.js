@@ -132,13 +132,11 @@ export async function onRequestGet({params, env}) {
       return true;
     });
     if (validAnn.length > 0) {
-      const annText = validAnn.map(a => esc(a.text)).join(" · ");
-      const annHtml = `<div id="sr-announcements" style="display:inline-flex;align-items:center;background:var(--accent,#2563eb);color:#fff;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;line-height:1.4;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.2)">` +
-        `<span style="opacity:.9">${annText}</span>` +
-        `</div>`;
-      // Im Hero vor dem h1 einfuegen
-      if (html.includes('<div class="hero-inner">')) {
-        html = html.replace('<div class="hero-inner">', `<div class="hero-inner">\n${annHtml}`);
+      const annText = validAnn.map(a => esc(a.text)).join("  ·  ");
+      const annHtml = `<div id="sr-announcements" style="width:100%;background:var(--accent,#2563eb);color:#fff;text-align:center;padding:11px 24px;font-size:.82rem;font-weight:600;line-height:1.5;box-sizing:border-box;letter-spacing:.01em">${annText}</div>`;
+      // Volle Breite ueber dem Nav einfuegen
+      if (html.includes('<nav id="sitenav">')) {
+        html = html.replace('<nav id="sitenav">', `${annHtml}\n<nav id="sitenav">`);
       }
     }
   }

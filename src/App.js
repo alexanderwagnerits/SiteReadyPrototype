@@ -4054,7 +4054,7 @@ function Admin({adminKey}){
       info.push({label:"Quality-Score",value:`${order.quality_score}/100`});
       if(order.quality_score<80)issues.push({severity:"warn",msg:`Quality-Score ${order.quality_score}/100 – Website pruefen`});
       if(order.quality_issues&&Array.isArray(order.quality_issues)&&order.quality_issues.length>0)
-        issues.push({severity:"warn",msg:`Qualitaetsprobleme: ${order.quality_issues.join(", ")}`});
+        issues.push({severity:"warn",msg:`Qualitaetsprobleme: ${order.quality_issues.map(i=>i.section?`${i.type}:${i.section}`:i.type||"?").join(", ")}`});
     }
     /* Fehler */
     if(order.last_error)issues.push({severity:"error",msg:`Letzter Fehler: ${order.last_error}`});

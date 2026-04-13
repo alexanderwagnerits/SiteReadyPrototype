@@ -766,7 +766,7 @@ REGELN fuer gut_zu_wissen:
   const hasLeist = html.includes('id="leistungen"');
   const hasKontakt = html.includes('id="kontakt"');
   const hasNav = html.includes('id="sitenav"');
-  const hasFooter = html.includes('class="sr-footer"') || html.includes('class="footer"');
+  const hasFooter = html.includes('<footer');
   if (!hasHero) qIssues.push({type:"missing_section", section:"hero"});
   if (!hasLeist) qIssues.push({type:"missing_section", section:"leistungen"});
   if (!hasKontakt) qIssues.push({type:"missing_section", section:"kontakt"});

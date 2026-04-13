@@ -263,7 +263,7 @@ export async function buildLegalPage(subdomain, page, env) {
     if (FONTS[o.custom_font]) stil.font = FONTS[o.custom_font];
     if (FURLS[o.custom_font]) stil.url = FURLS[o.custom_font];
   }
-  if (o.custom_radius) stil.r = o.custom_radius;
+  if (o.custom_radius) { const rm={"0":"0px","2":"2px","4":"4px","8":"8px","12":"12px","16":"16px"}; stil.r = rm[o.custom_radius] || o.custom_radius; }
 
   let content, title;
 

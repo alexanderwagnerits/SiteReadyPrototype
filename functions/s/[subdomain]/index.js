@@ -794,6 +794,16 @@ export async function onRequestGet({params, env}) {
       const gridCols = n === 1 ? "1fr" : n <= 3 ? `repeat(${n},1fr)` : n === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";
       grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:${gridCols};gap:20px">${cards}</div>`;
     }
+    // Downloads unter den Leistungen (optional, max 3 PDFs/Links)
+    const downloads = Array.isArray(o.downloads) ? o.downloads.filter(d => d && d.url && d.label) : [];
+    if (downloads.length > 0) {
+      const dlHtml = downloads.map(d =>
+        `<a href="${d.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid var(--sep);border-radius:${isModern ? "100px" : isElegant ? "2px" : "6px"};color:var(--accent);font-size:.85rem;font-weight:600;text-decoration:none;transition:all .2s;background:#fff" onmouseover="this.style.background='color-mix(in srgb,var(--accent) 6%,#fff)'" onmouseout="this.style.background='#fff'">` +
+        `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>` +
+        `${d.label}</a>`
+      ).join("");
+      grid += `<div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px">${dlHtml}</div>`;
+    }
     html = html.replace("<!-- LEISTUNGEN -->", grid);
   }
 

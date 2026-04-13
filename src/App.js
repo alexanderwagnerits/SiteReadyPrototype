@@ -2795,6 +2795,19 @@ function Portal({session,onLogout}){
               ))}
               <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzufügen"}</button>
             </div>
+            {/* Downloads (PDFs, Preislisten etc.) */}
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Downloads</div>
+              <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Verlinken Sie Dokumente wie Speisekarte, Preisliste oder Broschüre. Erscheint unter den Leistungen.</div>
+              {(order.downloads||[]).map((dl,i)=>(
+                <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"center"}}>
+                  <input value={dl.label||""} onChange={e=>{const arr=[...(order.downloads||[])];arr[i]={...arr[i],label:e.target.value};upOrder("downloads")(arr);}} placeholder="Bezeichnung (z.B. Speisekarte)" style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.dark,background:"#fff"}}/>
+                  <input value={dl.url||""} onChange={e=>{const arr=[...(order.downloads||[])];arr[i]={...arr[i],url:e.target.value};upOrder("downloads")(arr);}} placeholder="Link (https://...)" style={{flex:2,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.dark,background:"#fff"}}/>
+                  <button onClick={()=>{const arr=[...(order.downloads||[])].filter((_,j)=>j!==i);upOrder("downloads")(arr.length?arr:null);}} style={{width:28,height:28,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
+                </div>
+              ))}
+              {(order.downloads||[]).length<3&&<button onClick={()=>{const arr=[...(order.downloads||[]),{label:"",url:""}];upOrder("downloads")(arr);}} style={{padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Download hinzufügen"}</button>}
+            </div>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
             <VariantenHint label="Team-Variante" value={order?.varianten_cache?.team}/>

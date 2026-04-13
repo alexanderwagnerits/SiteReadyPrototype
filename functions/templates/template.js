@@ -627,12 +627,13 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 }
 
 @media(max-width:768px){
-/* Hero — auf Mobile: vertikales Zentrieren, symmetrisches Padding */
+/* Hero — auf Mobile */
 .hero{min-height:78svh;align-items:center}
-.hero-inner{padding:40px 24px 40px}
-.hero h1{font-size:clamp(2.2rem,9vw,3rem);letter-spacing:-.03em;margin-bottom:16px}
-.hero-sub{font-size:.72rem;padding:6px 14px;margin-bottom:18px;max-width:calc(100vw - 48px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block}
-.hero-desc{font-size:.9rem;margin-bottom:28px;max-width:100%}
+.hero-inner{padding:52px 24px 44px}
+.hero h1{font-size:clamp(2.1rem,9vw,2.8rem);letter-spacing:-.03em;margin-bottom:14px}
+.hero-sub{display:block;background:transparent!important;border:none!important;border-radius:0!important;padding:0!important;font-size:.7rem;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-bottom:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-sub .hero-loc{display:none}
+.hero-desc{font-size:.88rem;margin-bottom:28px;max-width:100%;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .hero-btns{flex-direction:column;gap:10px}
 .hero-btns .btn{width:100%;text-align:center}
 .stil-modern .hero-inner{padding:40px 24px 40px}

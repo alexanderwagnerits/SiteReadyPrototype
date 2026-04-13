@@ -275,6 +275,34 @@ export async function onRequestPost({request, env}) {
     if (mainMarkdown) {
       for (const m of mainMarkdown.matchAll(/\[([^\]]{2,60})\]\((https?:\/\/[^\s)]+)\)/gi)) addLink(m[2]);
     }
+
+    // PDF-Links aus HTML sammeln (für Downloads-Feature)
+    const pdfLinksFound = new Map(); // url -> label
+    const addPdfLink = (href, labelHint) => {
+      if (!href) return;
+      try {
+        if (!href.startsWith("http")) href = href.startsWith("/") ? base + href : base + "/" + href;
+        if (!href.match(/\.pdf(\?|$)/i)) return;
+        if (pdfLinksFound.has(href) || pdfLinksFound.size >= 3) return;
+        // Label aus Link-Text, Dateiname oder Fallback ableiten
+        let label = (labelHint||"").trim().slice(0,60);
+        if (!label || /^https?:\/\//i.test(label)) {
+          const fname = href.split("/").pop().replace(/\.pdf(\?.*)?$/i,"").replace(/[-_]/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+          label = fname.slice(0,60) || "Dokument";
+        }
+        pdfLinksFound.set(href, label + " (PDF)");
+      } catch(_) {}
+    };
+    if (mainHtml) {
+      for (const m of mainHtml.matchAll(/href=["']([^"'#]+\.pdf[^"']*?)["'][^>]*>([^<]{0,60})/gi)) addPdfLink(m[1], m[2]);
+      // Nochmal ohne Text-Kontext falls oben nichts gefunden
+      if (pdfLinksFound.size === 0) {
+        for (const m of mainHtml.matchAll(/href=["']([^"'#]+\.pdf[^"']*?)["']/gi)) addPdfLink(m[1], "");
+      }
+    }
+    if (pdfLinksFound.size === 0 && mainMarkdown) {
+      for (const m of mainMarkdown.matchAll(/\[([^\]]{2,60})\]\((https?:\/\/[^\s)]+\.pdf[^\s)]*)\)/gi)) addPdfLink(m[2], m[1]);
+    }
     // Sitemap checken (1 Subrequest, liefert oft die besten Links)
     let sitemapFound = false;
     if (importType === "website" && elapsed() < BUDGET_MS - 40000) {
@@ -698,6 +726,7 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
       facebook: socialLinks.facebook || "", instagram: socialLinks.instagram || "",
       linkedin: socialLinks.linkedin || "", tiktok: socialLinks.tiktok || "",
       merkmale, brand_color: brandColor,
+      downloads: pdfLinksFound.size > 0 ? [...pdfLinksFound.entries()].map(([url,label]) => ({url, label})) : undefined,
       _meta: {
         pages_read: pageContents.length + 1,
         links_found: allInternalLinks.size,

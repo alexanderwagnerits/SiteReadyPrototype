@@ -808,7 +808,7 @@ export async function onRequestGet({params, env}) {
         const badge = ext ? `<span style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:${dlBadgeR};background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)">${ext}</span>` : "";
         return `<a href="${d.url}" target="_blank" rel="noopener" class="sr-dl-card" style="display:flex;align-items:center;gap:14px;padding:16px 20px;${dlBorder};border-radius:${dlR};background:#fff;${dlShadow};text-decoration:none;transition:all .25s cubic-bezier(.22,1,.36,1);cursor:pointer">` +
           `<div style="width:44px;height:44px;border-radius:${dlR};background:color-mix(in srgb,var(--accent) 8%,transparent);display:flex;align-items:center;justify-content:center;flex-shrink:0">${dlIcon}</div>` +
-          `<div style="flex:1;min-width:0"><div style="font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:2px">${d.label}</div><div style="font-size:.78rem;color:var(--textMuted)">Herunterladen ${badge}</div></div>` +
+          `<div style="flex:1;min-width:0"><div style="font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap">${d.label}${badge}</div></div>` +
           `<div style="flex-shrink:0;opacity:.5">${dlArrow}</div></a>`;
       }).join("");
       const dlCols = downloads.length === 1 ? "1fr" : "1fr 1fr";

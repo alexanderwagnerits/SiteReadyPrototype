@@ -197,18 +197,6 @@ export async function onRequestGet({params, env}) {
     html = html.replace('</head>', heroStyle + '</head>');
   }
 
-  // Mobile Hero CSS — serve-time Override (gilt sofort ohne Neugenerierung)
-  const mobileHeroStyle = `<style>@media(max-width:768px){` +
-    `.hero{min-height:78svh!important;align-items:center!important}` +
-    `.hero-inner{padding:52px 24px 44px!important}` +
-    `.hero h1{font-size:clamp(2.1rem,9vw,2.8rem)!important;letter-spacing:-.03em!important;margin-bottom:14px!important}` +
-    `.hero-sub{display:block!important;background:transparent!important;border:none!important;border-radius:0!important;padding:0!important;font-size:.7rem!important;font-weight:700!important;letter-spacing:.1em!important;color:rgba(255,255,255,.55)!important;margin-bottom:14px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}` +
-    `.hero-sub .hero-loc{display:none!important}` +
-    `.hero-desc{font-size:.88rem!important;margin-bottom:28px!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important}` +
-    `.hero-btns{flex-direction:column!important;gap:10px!important}` +
-    `.hero-btns .btn{width:100%!important;text-align:center!important}` +
-    `}</style>`;
-  html = html.replace('</head>', mobileHeroStyle + '</head>');
 
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
   const mapsAddr = [o.adresse, o.plz, o.ort].filter(Boolean).join(", ");
@@ -1020,6 +1008,24 @@ export async function onRequestGet({params, env}) {
   if (fontLinks.length > 0) {
     html = html.replace("</head>", fontLinks.join("\n") + "\n</head>");
   }
+
+  // ── CSS serve-time ersetzen: immer aktuelles template.js, nie gespeichertes CSS ──
+  try {
+    const { buildCss } = await import("../../templates/template.js");
+    const STYLE_R    = { klassisch:{r:"4px",rLg:"8px"}, modern:{r:"12px",rLg:"16px"}, elegant:{r:"2px",rLg:"4px"} };
+    const STYLE_FONT = { klassisch:"'DM Sans',system-ui,sans-serif", modern:"'Plus Jakarta Sans',system-ui,sans-serif", elegant:"'Inter',system-ui,sans-serif" };
+    const sr = STYLE_R[currentStil] || STYLE_R.klassisch;
+    const freshCss = buildCss({
+      primary:        safePrimary,
+      accent:         safeAccent,
+      bg:             o.custom_bg  || stilColors.bg,
+      sep:            o.custom_sep || stilColors.s,
+      borderRadius:   o.custom_radius || sr.r,
+      borderRadiusLg: o.custom_radius ? `${parseInt(o.custom_radius)+4}px` : sr.rLg,
+      fontFamily:     (o.custom_font && FONT_FAMILIES[o.custom_font]) || STYLE_FONT[currentStil] || STYLE_FONT.klassisch,
+    });
+    html = html.replace(/<style>[\s\S]*?<\/style>/, freshCss);
+  } catch(e) { console.error("buildCss serve-time: fehlgeschlagen", e.message); }
 
   // Style-Override am Ende des body (damit es ALLE vorherigen :root ueberschreibt)
   const heroOverride = `.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%)!important}` +

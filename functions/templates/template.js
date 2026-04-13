@@ -5,43 +5,13 @@
  * Style is applied serve-time via <body class="stil-{name}">.
  */
 
-export function buildTemplate(data) {
+export function buildCss(data) {
   const {
-    firmenname, brancheLabel, einsatzgebiet, kurzbeschreibung,
-    ctaPrimary, ctaPrimaryHref, ctaSecondary,
-    leistungenIntro, preislisteHtml,
-    ueberUnsText, vorteileHtml, oeffnungszeiten,
-    adresseVoll, telDisplay, telHref, email,
-    socialHtml, buchungslinkHtml, stickyCtaHtml,
-    metaTitle, metaDesc, siteUrl, fontUrl, fontFamily,
     primary, accent, bg, sep,
-    kontaktCtaHeadline, kontaktCtaText,
-    borderRadius, borderRadiusLg,
-    stil,
+    borderRadius, borderRadiusLg, fontFamily,
   } = data;
 
-  const stilClass = `stil-${stil || "klassisch"}`;
-
-  return `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<meta name="description" content="${metaDesc}">
-<meta property="og:title" content="${metaTitle}">
-<meta property="og:description" content="${metaDesc}">
-<meta property="og:type" content="website">
-<meta property="og:url" content="${siteUrl}">
-<meta property="og:image" content="{{OG_IMAGE}}">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="${siteUrl}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${fontUrl}" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="${fontUrl}"></noscript>
-<title>${metaTitle}</title>
-<style>
+  return `<style>
 
 /* ═══════════════════════════════════════════════════════
    RESET & BASE
@@ -679,6 +649,46 @@ footer{padding:16px 0!important}
 .ft-grid{gap:16px!important}
 }
 </style>
+`;
+}
+
+export function buildTemplate(data) {
+  const {
+    firmenname, brancheLabel, einsatzgebiet, kurzbeschreibung,
+    ctaPrimary, ctaPrimaryHref, ctaSecondary,
+    leistungenIntro, preislisteHtml,
+    ueberUnsText, vorteileHtml, oeffnungszeiten,
+    adresseVoll, telDisplay, telHref, email,
+    socialHtml, buchungslinkHtml, stickyCtaHtml,
+    metaTitle, metaDesc, siteUrl, fontUrl, fontFamily,
+    primary, accent, bg, sep,
+    kontaktCtaHeadline, kontaktCtaText,
+    borderRadius, borderRadiusLg,
+    stil,
+  } = data;
+
+  const stilClass = `stil-${stil || "klassisch"}`;
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="${metaDesc}">
+<meta property="og:title" content="${metaTitle}">
+<meta property="og:description" content="${metaDesc}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${siteUrl}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="${siteUrl}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="${fontUrl}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="${fontUrl}"></noscript>
+<title>${metaTitle}</title>
+${buildCss(data)}
 </head>
 <body class="${stilClass}">
 <a href="#leistungen" class="sr-skip">Zum Inhalt springen</a>

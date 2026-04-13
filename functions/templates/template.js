@@ -627,17 +627,17 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 }
 
 @media(max-width:768px){
-/* Hero — auf Mobile: vertikales Zentrieren statt unten kleben */
+/* Hero — auf Mobile: vertikales Zentrieren, symmetrisches Padding */
 .hero{min-height:78svh;align-items:center}
-.hero-inner{padding:96px 24px 48px}
+.hero-inner{padding:40px 24px 40px}
 .hero h1{font-size:clamp(2.2rem,9vw,3rem);letter-spacing:-.03em;margin-bottom:16px}
 .hero-sub{font-size:.72rem;padding:6px 14px;margin-bottom:18px;max-width:calc(100vw - 48px);flex-wrap:wrap}
 .hero-desc{font-size:.9rem;margin-bottom:28px;max-width:100%}
 .hero-btns{flex-direction:column;gap:10px}
 .hero-btns .btn{width:100%;text-align:center}
-.stil-modern .hero-inner{padding:96px 24px 48px}
+.stil-modern .hero-inner{padding:40px 24px 40px}
 .stil-modern .hero h1{font-size:clamp(2.4rem,10vw,3.6rem)}
-.stil-elegant .hero-inner{padding:100px 24px 52px}
+.stil-elegant .hero-inner{padding:40px 24px 44px}
 .stil-elegant .hero h1{font-size:clamp(2.2rem,9vw,3.2rem)}
 .hero-trust-bar{margin-top:24px;padding-top:20px}
 .hero-trust-inner{gap:10px 20px}

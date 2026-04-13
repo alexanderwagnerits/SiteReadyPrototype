@@ -2399,7 +2399,7 @@ function Portal({session,onLogout}){
       {/* Plan-Modal */}
       {showPlanModal&&(<div className="pt-plan-modal" style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:16}} onClick={()=>setShowPlanModal(false)}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"36px 32px",maxWidth:480,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
-          <div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:6}}>Plan waehlen</div>
+          <div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,marginBottom:6}}>Plan wählen</div>
           <div style={{fontSize:".85rem",color:T.textSub,marginBottom:28}}>Karte wird erst nach der Testphase belastet. Jederzeit kündbar.</div>
           <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24}}>
             <button onClick={()=>subscribe("monthly")} disabled={subscribing} style={{padding:"18px 20px",border:`2px solid ${T.bg3}`,borderRadius:T.r,background:"#fff",cursor:subscribing?"wait":"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .2s"}}>
@@ -2605,7 +2605,7 @@ function Portal({session,onLogout}){
               </div>
             </div>)}
             {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
-              <div style={{fontSize:"1.8rem",marginBottom:6}}>"—"</div>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.bg3} strokeWidth="1.5" style={{marginBottom:8}}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Logo hochgeladen</div>
             </div>)}
             <div style={{fontSize:".8rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>
@@ -2922,9 +2922,12 @@ function Portal({session,onLogout}){
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Partner & Zertifikate" desc="Zeigen Sie Logos und Namen von Partnern, Zertifizierungen oder Verbänden."/>
           {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
-          {(order.partner||[]).map((p,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginTop:i?10:0}}>
-            <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. WKO, TÜV, KNX Partner" style={{flex:1,padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font}}/>
-            <button onClick={()=>askDelete("Partner",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"×"}</button>
+          {(order.partner||[]).map((p,i)=><div key={i} style={{marginTop:i?10:0,display:"flex",flexDirection:"column",gap:6,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="Name (z.B. WKO, TÜV, KNX Partner)" style={{flex:1,padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
+              <button onClick={()=>askDelete("Partner",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
+            </div>
+            <input value={p.url_logo||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],url_logo:e.target.value};upOrder("partner")(arr);}} placeholder="Logo-URL (optional, z.B. https://…/logo.png)" style={{padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".78rem",fontFamily:T.font,background:"#fff",color:T.textMuted}}/>
           </div>)}
           {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Partner hinzugefügt.</div>}
           <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Partner hinzufügen</button>
@@ -3169,7 +3172,7 @@ function Portal({session,onLogout}){
               {value:"Custom Domain",label:"Custom Domain"},
               {value:"Kuendigung",label:"Kündigung"},
               {value:"Sonstiges",label:"Sonstiges"},
-            ]} placeholder="Betreff waehlen"/>
+            ]} placeholder="Betreff wählen"/>
             <Field label="Ihre Nachricht" value={supportMsg} onChange={setSupportMsg} placeholder="Beschreiben Sie Ihr Anliegen..." rows={4}/>
             {supportErr&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{supportErr}</div>}
             <button onClick={async()=>{
@@ -3219,7 +3222,7 @@ function Portal({session,onLogout}){
         <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,flex:"1 1 280px"}}>
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>{"Passwort ändern"}</div>
-            <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 6 Zeichen" type="password"/>
+            <Field label="Neues Passwort" value={newPw} onChange={setNewPw} placeholder="Mindestens 8 Zeichen" type="password"/>
             <Field label="Passwort bestätigen" value={newPw2} onChange={setNewPw2} placeholder="Passwort wiederholen" type="password"/>
             {pwErr&&<div style={{marginBottom:12,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,fontSize:".78rem",color:T.red}}>{pwErr}</div>}
             <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -3373,7 +3376,7 @@ function Portal({session,onLogout}){
               </div>
             </div>)}
             {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
-              <div style={{fontSize:"1.8rem",marginBottom:6}}>"—"</div>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.bg3} strokeWidth="1.5" style={{marginBottom:8}}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Logo hochgeladen</div>
             </div>)}
             <div style={{fontSize:".8rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>
@@ -3383,12 +3386,12 @@ function Portal({session,onLogout}){
           </div>
         );})()}
         {/* Hero-Bild */}
-        {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];return(
+        {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];const isPlaceholder=!!order?.hero_is_placeholder;return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>Hintergrundbild für den oberen Bereich der Website</div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:T.amberLight,color:T.amberText,marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch für einen persönlicheren Auftritt":"Hintergrundbild für den oberen Bereich der Website"}</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>

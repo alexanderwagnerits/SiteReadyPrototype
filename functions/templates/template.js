@@ -108,7 +108,7 @@ a{color:inherit}
 /* ═══════════════════════════════════════════════════════
    HERO
    ═══════════════════════════════════════════════════════ */
-.hero{background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 60%,color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);color:#fff;display:flex;align-items:flex-end;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
+.hero{background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 60%,color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
 .hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 60px}
 .hero h1{font-size:clamp(2.8rem,5.5vw,4.6rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:20px;max-width:720px}
 .hero-accent-line{display:none}
@@ -136,7 +136,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-modern .hero-sub{background:color-mix(in srgb,var(--accent) 18%,rgba(255,255,255,.05));border-color:color-mix(in srgb,var(--accent) 35%,rgba(255,255,255,.1));color:rgba(255,255,255,.95)}
 
 /* Hero — Elegant: Schlicht, Akzentlinie als Trenner */
-.stil-elegant .hero{background:linear-gradient(155deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 60%,#000) 100%);align-items:flex-end}
+.stil-elegant .hero{background:linear-gradient(155deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 60%,#000) 100%);align-items:center}
 .stil-elegant .hero-inner{padding:140px 28px 68px}
 .stil-elegant .hero h1{font-size:clamp(3rem,7vw,5.5rem);font-weight:500;margin-bottom:0;letter-spacing:-.02em}
 .stil-elegant .hero-accent-line{display:block;width:48px;height:1px;background:var(--accent);margin:28px 0 28px;opacity:.55}

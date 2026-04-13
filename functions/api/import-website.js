@@ -105,7 +105,11 @@ export async function onRequestPost({request, env}) {
       const tc = html.match(/<meta[^>]+name=["']theme-color["'][^>]+content=["']([^"']+)["']/i);
       if (tc) brandColors.push({source:"theme-color", color:tc[1].trim(), priority:10});
       for (const cm of html.matchAll(/--(?:primary|brand-?color|color-primary|main-?color|accent)\s*:\s*(#[0-9a-fA-F]{3,8})/g)) {
-        brandColors.push({source:"css-var", color:cm[1].trim(), priority:7});
+        brandColors.push({source:"css-var", color:cm[1].trim(), priority:8});
+      }
+      // Erweiterte Suche: häufige Variablen-Namen für Akzentfarben
+      for (const cm of html.matchAll(/--(?:blue|teal|cyan|green|red|orange|purple|violet|indigo|brand|highlight|link-color|cta)\s*:\s*(#[0-9a-fA-F]{3,8})/g)) {
+        brandColors.push({source:"css-var-ext", color:cm[1].trim(), priority:5});
       }
     };
 

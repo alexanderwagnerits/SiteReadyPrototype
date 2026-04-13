@@ -211,16 +211,50 @@ export async function onRequestGet({params, env}) {
     const avatarColors = ["#2563eb","#6366f1","#0891b2","#059669","#d97706","#dc2626","#7c3aed","#db2777"];
     const avatarR = isModern ? "50%" : isElegant ? "4px" : "50%";
     const nameWeight = isElegant ? "600" : "700";
-    const nameSize = isElegant ? "1rem" : "1.05rem";
-    const cards = teamMembers.map((m, idx) => {
+
+    const teamVariant = v.team; // "single" | "grid-3" | "grid-4"
+
+    function makeAvatar(m, idx, size) {
       const hasImg = !!m.foto;
       const initials = esc(m.name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
       const color = avatarColors[idx % avatarColors.length];
-      const avatar = hasImg
-        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:72px;height:72px;border-radius:${avatarR};object-fit:cover;flex-shrink:0;border:3px solid rgba(255,255,255,.15)">`
-        : `<div style="width:72px;height:72px;border-radius:${avatarR};background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:.02em">${initials}</div>`;
-      return `<div style="display:flex;align-items:center;gap:18px;padding:14px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:${nameSize};color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.85rem;opacity:.55;margin-top:3px">${esc(m.rolle)}</div>` : ""}</div></div>`;
-    }).join("");
+      return hasImg
+        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:${size}px;height:${size}px;border-radius:${avatarR};object-fit:cover;border:3px solid rgba(255,255,255,.15)">`
+        : `<div style="width:${size}px;height:${size}px;border-radius:${avatarR};background:${color};display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*.36)}px;font-weight:800;color:#fff;letter-spacing:.02em">${initials}</div>`;
+    }
+
+    let cards;
+    if (teamVariant === "single") {
+      // 1 Person: Horizontal, groß
+      const m = teamMembers[0];
+      const avatar = makeAvatar(m, 0, 80);
+      cards = `<div style="display:flex;align-items:center;gap:20px;padding:16px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:1.1rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.88rem;opacity:.55;margin-top:4px">${esc(m.rolle)}</div>` : ""}${m.beschreibung ? `<div style="font-size:.8rem;opacity:.4;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : ""}</div></div>`;
+    } else if (teamVariant === "grid-3") {
+      // 2–3 Personen: Karten nebeneinander, Avatar oben
+      const cols = teamMembers.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
+      cards = `<div style="display:grid;grid-template-columns:${cols};gap:12px">` +
+        teamMembers.map((m, idx) => {
+          const avatar = makeAvatar(m, idx, 56);
+          return `<div style="background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"10px"};padding:16px 12px;text-align:center">` +
+            `<div style="display:flex;justify-content:center;margin-bottom:10px">${avatar}</div>` +
+            `<div style="font-weight:${nameWeight};font-size:.88rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+            (m.rolle ? `<div style="font-size:.75rem;opacity:.5;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
+            `</div>`;
+        }).join("") +
+        `</div>`;
+    } else {
+      // 4+ Personen: Kompaktes 2-Spalter Grid, horizontal
+      cards = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">` +
+        teamMembers.map((m, idx) => {
+          const avatar = makeAvatar(m, idx, 44);
+          return `<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:8px;padding:10px">` +
+            `${avatar}<div><div style="font-weight:${nameWeight};font-size:.82rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+            (m.rolle ? `<div style="font-size:.72rem;opacity:.5;margin-top:2px">${esc(m.rolle)}</div>` : "") +
+            `</div></div>`;
+        }).join("") +
+        `</div>`;
+    }
+
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
   } else if (berufsregNr) {
     html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">${berufsregNr}</div>`);

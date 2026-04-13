@@ -1995,7 +1995,7 @@ function Portal({session,onLogout}){
   const SectionHeader=({label,desc,aiField,onRemove})=>(
     <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
       {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.amberText}" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen und bei Bedarf anpassen</span>
         {onRemove&&<button onClick={onRemove} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>}
       </div>}
@@ -2111,17 +2111,6 @@ function Portal({session,onLogout}){
     <span>{label}: <strong style={{color:T.dark,fontWeight:600}}>{value}</strong></span>
   </div>:null;
 
-  // AI-Badge: markiert AI-generierte Inhalte
-  const AiBadge=()=><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",background:"rgba(139,92,246,.08)",border:"1px solid rgba(139,92,246,.15)",borderRadius:T.rSm,fontSize:".65rem",fontWeight:600,color:"#7c3aed",letterSpacing:".02em",whiteSpace:"nowrap"}}>
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-    AI-generiert
-  </span>;
-
-  // Stockfoto-Badge: markiert Platzhalter-Bilder
-  const StockBadge=()=><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",background:"rgba(234,88,12,.06)",border:"1px solid rgba(234,88,12,.15)",borderRadius:T.rSm,fontSize:".65rem",fontWeight:600,color:"#c2410c",letterSpacing:".02em",whiteSpace:"nowrap"}}>
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-    Stockfoto — Eigenes hochladen
-  </span>;
 
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
@@ -2732,7 +2721,7 @@ function Portal({session,onLogout}){
             <Dropdown label="Öffnungszeiten" value={order.oeffnungszeiten||""} onChange={upOrder("oeffnungszeiten")} options={OEFFNUNGSZEITEN} placeholder="Öffnungszeiten wählen"/>
             {order.oeffnungszeiten==="custom"&&<Field label="Eigene Öffnungszeiten" value={order.oeffnungszeiten_custom||""} onChange={upOrder("oeffnungszeiten_custom")} placeholder={"Mo-Fr: 08:00-17:00"} rows={2}/>}
             {isAiGen("gut_zu_wissen")&&order.gut_zu_wissen&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,marginBottom:4,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.amberText}" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
               <span style={{flex:1,fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen</span>
               <button onClick={async()=>{await supabase.from("orders").update({gut_zu_wissen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}).eq("id",order.id);setOrder(o=>({...o,gut_zu_wissen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="gut_zu_wissen")}));showToast("Hinweise entfernt");}} style={{padding:"3px 10px",border:"1px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
             </div>}
@@ -2832,7 +2821,7 @@ function Portal({session,onLogout}){
           <SectionHeader label="Über uns & Vorteile" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
           <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
           <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
-          {isAiGen("text_vorteile")&&(order.text_vorteile||[]).some(v=>v)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.amberText}" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style={{fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen</span></div>}
+          {isAiGen("text_vorteile")&&(order.text_vorteile||[]).some(v=>v)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style={{fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen</span></div>}
           {[0,1,2,3].map(i=>{const ph=["z.B. Über 10 Jahre Erfahrung","z.B. Persönliche Beratung","z.B. Faire Preise","z.B. Flexible Termine"][i];return<Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}} placeholder={ph}/>})}
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>

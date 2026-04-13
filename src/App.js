@@ -858,6 +858,7 @@ function LandingPage({onStart,onPortal}){
 
 /* ═══ SUCCESS ═══ */
 function SuccessPage({data,onBack,onPortal}){
+  const orderInProgressRef=useRef(false);
   const[saving,setSaving]=useState(false);
   const[saveErr,setSaveErr]=useState("");
   const[vorname,setVorname]=useState(data.vorname||"");

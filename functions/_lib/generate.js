@@ -438,7 +438,7 @@ export async function generateWebsite(order_id, env) {
   if (merkmaleText.length > 0) importContext.push(`BESONDERHEITEN: ${merkmaleText.join(", ")}`);
 
   // Team als Kontext
-  const teamArr = Array.isArray(o.team) ? o.team : [];
+  const teamArr = Array.isArray(o.team_members) ? o.team_members : [];
   if (teamArr.length > 0) importContext.push(`TEAM: ${teamArr.map(t => `${t.name} (${t.rolle||""})`).join(", ")}`);
 
   // Stil-Anweisung fuer den Textstil

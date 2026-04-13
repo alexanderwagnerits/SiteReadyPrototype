@@ -631,7 +631,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .hero{min-height:78svh;align-items:center}
 .hero-inner{padding:40px 24px 40px}
 .hero h1{font-size:clamp(2.2rem,9vw,3rem);letter-spacing:-.03em;margin-bottom:16px}
-.hero-sub{font-size:.72rem;padding:6px 14px;margin-bottom:18px;max-width:calc(100vw - 48px);flex-wrap:wrap}
+.hero-sub{font-size:.72rem;padding:6px 14px;margin-bottom:18px;max-width:calc(100vw - 48px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block}
 .hero-desc{font-size:.9rem;margin-bottom:28px;max-width:100%}
 .hero-btns{flex-direction:column;gap:10px}
 .hero-btns .btn{width:100%;text-align:center}

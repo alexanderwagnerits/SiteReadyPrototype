@@ -1240,9 +1240,11 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
   const pct=step===0?0:Math.round((step/(SECS.length-1))*100);
   const selectedBranche=BRANCHEN.find(b=>b.value===data.branche);const brancheLeistungen=selectedBranche?selectedBranche.leistungen:[];
-  const onBrancheChange=val=>{const b=BRANCHEN.find(x=>x.value===val);setData(d=>{
-    const sameB=d.branche===val;
-    const gPal=b?GRUPPEN_PALETTEN[b.gruppe]||{}:{};
+  const onBrancheChange=val=>{const b=BRANCHEN.find(x=>x.value===val);
+    const hasLeistungen=data.leistungen?.length>0||data.extraLeistung?.trim();
+    const sameB=data.branche===val;
+    if(!sameB&&hasLeistungen&&!window.confirm("Branche wechseln? Ihre gewählten Leistungen werden zurückgesetzt.")){return;}
+    setData(d=>{const gPal=b?GRUPPEN_PALETTEN[b.gruppe]||{}:{};
     return{...d,branche:val,brancheLabel:b?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,
       leistungen:sameB?d.leistungen:[],extraLeistung:sameB?d.extraLeistung:"",
       ...(!sameB?gPal:{})};
@@ -1680,7 +1682,7 @@ function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
   const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",branchenfeatures:"website",medien:"website",faq:"website",fakten:"website",partner:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
   const tab=PAGE_TAB[page]||"website";
-  const nav=p=>{setPage(p==="domain"?"seo":p);setPtSbOpen(false);};
+  const nav=p=>{setPage(p);setPtSbOpen(false);};
   const[order,setOrder]=useState(null);
   const originalOrderRef=useRef(null);
   const orderInProgressRef=useRef(false);
@@ -1909,8 +1911,7 @@ function Portal({session,onLogout}){
     {id:"website",label:"Website",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`},
     {id:"medien",label:"Medien",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`},
     {id:"marketing",label:"Teilen",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`},
-    {id:"seo",label:"SEO",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`},
-    {id:"domain",label:"Domain",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`},
+    {id:"seo",label:"SEO & Domain",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`},
     {id:"rechnungen",label:"Rechnungen",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`},
     {id:"account",label:"Account",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`},
     {id:"support",label:"Support",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`},
@@ -2888,9 +2889,9 @@ function Portal({session,onLogout}){
               <label style={{display:"block",fontSize:".85rem",fontWeight:700,color:T.textSub,marginBottom:8}}>{label}</label>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <input type="color" value={dv(field,fallback)} onChange={e=>upOrder(field)(e.target.value)} style={{width:40,height:40,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:2}}/>
-                <div>
-                  <div style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{dv(field,fallback)}</div>
-                  <div style={{fontSize:".78rem",color:T.textMuted}}>{hint}</div>
+                <div style={{flex:1}}>
+                  <input value={dv(field,fallback)} maxLength={7} onChange={e=>{const v=e.target.value;if(/^#[0-9A-Fa-f]{0,6}$/.test(v))upOrder(field)(v.length===7?v:v);}} style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono,border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,padding:"4px 8px",width:90,background:T.white}}/>
+                  <div style={{fontSize:".78rem",color:T.textMuted,marginTop:2}}>{hint}</div>
                 </div>
               </div>
             </div>

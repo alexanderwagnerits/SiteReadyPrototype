@@ -857,9 +857,7 @@ function LandingPage({onStart,onPortal}){
 }
 
 /* ═══ SUCCESS ═══ */
-function SuccessPage({data,onBack,onPortal}){
-  const orderInProgressRef=useRef(false);
-  console.log("SUCCESSPAGE_V2_LOADED");
+function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
   const[saving,setSaving]=useState(false);
   const[saveErr,setSaveErr]=useState("");
   const[vorname,setVorname]=useState(data.vorname||"");
@@ -5208,6 +5206,7 @@ function navigate(page,replace=false){
 }
 
 export default function App(){
+  const orderInProgressRef=useRef(false);
   const initPage=()=>{
     const path=window.location.pathname;
     if(path==="/admin")return"admin-check";
@@ -5282,7 +5281,7 @@ export default function App(){
   );
 
   if(page==="landing")return<LandingPage onStart={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;
-  if(page==="success"){if(!data.firmenname){setPage("form");return null;}return<SuccessPage data={data} onBack={()=>setPage("form")} onPortal={()=>setPage("portal-login")}/>;};
+  if(page==="success"){if(!data.firmenname){setPage("form");return null;}return<SuccessPage data={data} onBack={()=>setPage("form")} onPortal={()=>setPage("portal-login")} orderInProgressRef={orderInProgressRef}/>;};
   if(page==="notfound")return(
     <div style={{minHeight:"100vh",background:"#fff",fontFamily:T.font,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"0 24px"}}><style>{css}</style>
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:48}}>

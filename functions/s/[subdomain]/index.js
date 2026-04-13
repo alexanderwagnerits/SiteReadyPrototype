@@ -133,7 +133,7 @@ export async function onRequestGet({params, env}) {
     });
     if (validAnn.length > 0) {
       const annText = validAnn.map(a => esc(a.text)).join("  ·  ");
-      const annHtml = `<div id="sr-announcements" style="width:100%;background:var(--accent,#2563eb);color:#fff;text-align:center;padding:11px 24px;font-size:.82rem;font-weight:600;line-height:1.5;box-sizing:border-box;letter-spacing:.01em">${annText}</div>`;
+      const annHtml = `<div id="sr-announcements" style="width:100%;background:var(--accent,#2563eb);color:#fff;text-align:center;padding:11px 24px;font-size:.82rem;font-weight:600;line-height:1.5;box-sizing:border-box;letter-spacing:.01em;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;opacity:.85"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>${annText}</span></div>`;
       // Volle Breite ueber dem Nav einfuegen
       if (html.includes('<nav id="sitenav">')) {
         html = html.replace('<nav id="sitenav">', `${annHtml}\n<nav id="sitenav">`);

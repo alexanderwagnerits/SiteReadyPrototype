@@ -451,7 +451,7 @@ function LandingPage({onStart,onPortal}){
     <div className="lp-w" style={{maxWidth:1200,margin:"0 auto",padding:"0 56px",display:"flex",alignItems:"center",justifyContent:"space-between",height:80}}>
       <img src="/logo.png" alt="SiteReady" style={{height:56,filter:scrolled?"none":"brightness(0) invert(1)",transition:"filter .3s"}}/>
       <div className="lp-nav-links" style={{display:"flex",gap:32,alignItems:"center"}}>
-        {[["#problem","Problem"],["#how","So gehts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:".9rem",fontWeight:400,color:scrolled?T.textSub:"rgba(255,255,255,.7)",textDecoration:"none",transition:"color .3s",textUnderlineOffset:"4px",fontFamily:LP_FONT}} onMouseEnter={e=>{e.target.style.color=scrolled?T.dark:"#fff";e.target.style.textDecoration="underline"}} onMouseLeave={e=>{e.target.style.color=scrolled?T.textSub:"rgba(255,255,255,.7)";e.target.style.textDecoration="none"}}>{l}</a>)}
+        {[["#problem","Problem"],["#how","So funktionierts"],["#preise","Preise"],["#vergleich","Vergleich"]].map(([h,l])=><a key={h} href={h} style={{fontSize:".9rem",fontWeight:400,color:scrolled?T.textSub:"rgba(255,255,255,.7)",textDecoration:"none",transition:"color .3s",textUnderlineOffset:"4px",fontFamily:LP_FONT}} onMouseEnter={e=>{e.target.style.color=scrolled?T.dark:"#fff";e.target.style.textDecoration="underline"}} onMouseLeave={e=>{e.target.style.color=scrolled?T.textSub:"rgba(255,255,255,.7)";e.target.style.textDecoration="none"}}>{l}</a>)}
         <button onClick={onPortal} style={{background:"transparent",color:scrolled?T.textSub:"rgba(255,255,255,.7)",padding:"10px 18px",borderRadius:6,fontWeight:500,fontSize:".9rem",border:"none",cursor:"pointer",fontFamily:LP_FONT,minHeight:44,transition:"color .3s"}}>Kunden-Portal</button>
         <button onClick={onStart} className="lp-btn-cta" style={{background:scrolled?CTA:"#fff",color:scrolled?"#fff":T.dark,padding:"10px 24px",borderRadius:6,fontWeight:500,fontSize:".9rem",border:"none",cursor:"pointer",fontFamily:LP_FONT,minHeight:44,transition:"all .3s"}}>Jetzt starten</button>
       </div>
@@ -668,8 +668,8 @@ function LandingPage({onStart,onPortal}){
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
             {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","Besucher-Statistiken im Portal","Monatlicher SEO-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
           </div>
-          <div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`,marginBottom:16,fontSize:".78rem",color:T.amberText,fontWeight:600,textAlign:"center"}}>Bald verfuegbar</div>
-          <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"none",background:T.bg3,color:T.textMuted,minHeight:48,opacity:.7}}>Bald verfuegbar</button>
+          <div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`,marginBottom:16,fontSize:".78rem",color:T.amberText,fontWeight:600,textAlign:"center"}}>Bald verfügbar</div>
+          <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"none",background:T.bg3,color:T.textMuted,minHeight:48,opacity:.7}}>Bald verfügbar</button>
         </div>
         {/* Dritte Spalte: 3 kleine Karten gestapelt */}
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -719,7 +719,7 @@ function LandingPage({onStart,onPortal}){
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}} className="lp-why-grid">
         {[
-          {icon:<IconRocket/>,t:"Fertig in Minuten, nicht Wochen",d:"Keine Agentur-Termine, kein wochenlanges Warten. Sie fuellen einen Fragebogen aus — Ihre Website ist sofort live."},
+          {icon:<IconRocket/>,t:"Fertig in Minuten, nicht Wochen",d:"Keine Agentur-Termine, kein wochenlanges Warten. Sie füllen einen Fragebogen aus — Ihre Website ist sofort live."},
           {icon:<IconScale/>,t:"Rechtlich auf der sicheren Seite",d:"Impressum nach ECG, DSGVO-Erklärung, Cookie-Hinweis — alles automatisch und österreich-spezifisch generiert."},
           {icon:<IconHammer/>,t:"Gemacht für Ihren Beruf",d:"Über 70 Branchen mit passenden Leistungen, Texten und Design. Kein generisches Template, sondern maßgeschneidert."},
           {icon:<IconSearch/>,t:"Sofort bei Google sichtbar",d:"SEO-Optimierung, Meta-Tags und Indexierung sind inklusive. Ihre Kunden finden Sie — nicht Ihren Mitbewerber."},
@@ -791,7 +791,7 @@ function LandingPage({onStart,onPortal}){
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:0}}>
           {[
-            {q:"Wie lange dauert es, bis meine Website online ist?",a:"Nach dem Ausfuellen des Fragebogens (ca. 10 Minuten) ist Ihre Website sofort live. Impressum, DSGVO und SSL sind automatisch eingerichtet."},
+            {q:"Wie lange dauert es, bis meine Website online ist?",a:"Nach dem Ausfüllen des Fragebogens (ca. 10 Minuten) ist Ihre Website sofort live. Impressum, DSGVO und SSL sind automatisch eingerichtet."},
             {q:"Brauche ich technische Vorkenntnisse?",a:"Nein. Sie beantworten einfache Fragen zu Ihrem Betrieb. SiteReady kümmert sich um Design, Texte, Impressum und alles Technische."},
             {q:"Was ist mit Impressum und DSGVO?",a:"Beides wird automatisch generiert — rechtlich konform nach österreichischem ECG und DSGVO. Sie müssen sich um nichts kümmern."},
             {q:"Kann ich meine bestehende Website importieren?",a:"Ja. Geben Sie einfach die URL Ihrer aktuellen Website ein. SiteReady übernimmt Texte, Kontaktdaten und Leistungen automatisch."},

@@ -221,7 +221,7 @@ a{color:inherit}
    ═══════════════════════════════════════════════════════ */
 .leist{padding:var(--sectionY) 0;background:#fff;position:relative}
 .leist-head{margin-bottom:40px}
-.leist-label{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.leist-label,.sec-label{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
 .leist h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px}
 .leist-intro{color:var(--textMuted);font-size:.95rem;max-width:540px;line-height:1.7}
 
@@ -247,13 +247,13 @@ a{color:inherit}
 .leist-more-item p{font-size:.82rem;color:var(--textMuted);line-height:1.6}
 
 /* Leistungen — Modern */
-.stil-modern .leist-label{gap:6px;letter-spacing:.1em;background:color-mix(in srgb,var(--accent) 8%,transparent);padding:6px 14px;border-radius:100px}
+.stil-modern .leist-label,.stil-modern .sec-label{gap:6px;letter-spacing:.1em;background:color-mix(in srgb,var(--accent) 8%,transparent);padding:6px 14px;border-radius:100px}
 .stil-modern .leist h2{font-size:clamp(1.6rem,3vw,2.4rem)}
 .stil-modern .leist-more-item{border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
 .stil-modern .leist-more-item:hover{transform:translateY(-5px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
 
 /* Leistungen — Elegant */
-.stil-elegant .leist-label{font-size:.68rem;font-weight:500;letter-spacing:.14em}
+.stil-elegant .leist-label,.stil-elegant .sec-label{font-size:.68rem;font-weight:500;letter-spacing:.14em}
 .stil-elegant .leist h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:500;letter-spacing:-.02em}
 .stil-elegant .leist-intro{line-height:1.8}
 .stil-elegant .leist-item-text h3{font-weight:500}
@@ -694,6 +694,7 @@ ${preislisteHtml}
 <div class="w">
 <div class="ueber-grid">
 <div class="fade-up">
+<div class="sec-label">Über uns</div>
 <h2>Über ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
@@ -718,6 +719,7 @@ ${preislisteHtml}
 <div class="w">
 <div class="kontakt-grid">
 <div class="fade-up">
+<div class="sec-label">Kontakt</div>
 <h2>So erreichen Sie uns</h2>
 <div class="kontakt-item">
 <div class="kontakt-item-label">Adresse</div>

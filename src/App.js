@@ -2387,12 +2387,12 @@ function Portal({session,onLogout}){
         onCancel={()=>setCropData(null)}
         onConfirm={blob=>{const cb=cropData.onCrop;setCropData(null);cb?cb(blob):uploadBlob(cropData.key,blob);}}/>}
       {/* Lösch-Bestätigung */}
-      {confirmDel&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>setConfirmDel(null)}>
+      {confirmDel&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>setConfirmDel(null)} onKeyDown={e=>{if(e.key==="Escape")setConfirmDel(null)}}>
         <div style={{background:"#fff",borderRadius:T.r,padding:"28px 28px 20px",maxWidth:380,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
           <div style={{fontSize:".95rem",fontWeight:700,color:T.dark,marginBottom:6}}>{confirmDel.label} entfernen?</div>
           <div style={{fontSize:".82rem",color:T.textSub,marginBottom:20,lineHeight:1.5}}>Dieser Eintrag wird entfernt. Sie können ihn danach neu anlegen.</div>
           <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-            <button onClick={()=>setConfirmDel(null)} style={{padding:"8px 18px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+            <button ref={el=>el&&el.focus()} onClick={()=>setConfirmDel(null)} style={{padding:"8px 18px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
             <button onClick={()=>{confirmDel.onConfirm();setConfirmDel(null);}} style={{padding:"8px 18px",border:"none",borderRadius:T.rSm,background:"#ef4444",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Entfernen</button>
           </div>
         </div>

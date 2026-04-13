@@ -123,8 +123,10 @@ ${tel ? `<a href="${telHref}" class="mob-cta">${telDisplay} \u2014 Jetzt anrufen
 var btn=document.getElementById('hbg');
 var mob=document.getElementById('mob-menu');
 var open=false;
-btn.addEventListener('click',function(){open=!open;mob.style.display=open?'block':'none';});
-document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){open=false;mob.style.display='none';});});
+function toggle(v){open=typeof v==='boolean'?v:!open;mob.style.display=open?'block':'none';btn.setAttribute('aria-expanded',open?'true':'false');}
+btn.addEventListener('click',function(){toggle();});
+document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){toggle(false);});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&open)toggle(false);});
 })();
 </script>`;
 }

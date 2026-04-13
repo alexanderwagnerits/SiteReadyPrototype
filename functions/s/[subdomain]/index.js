@@ -197,6 +197,19 @@ export async function onRequestGet({params, env}) {
     html = html.replace('</head>', heroStyle + '</head>');
   }
 
+  // Mobile Hero CSS — serve-time Override (gilt sofort ohne Neugenerierung)
+  const mobileHeroStyle = `<style>@media(max-width:768px){` +
+    `.hero{min-height:78svh!important;align-items:center!important}` +
+    `.hero-inner{padding:52px 24px 44px!important}` +
+    `.hero h1{font-size:clamp(2.1rem,9vw,2.8rem)!important;letter-spacing:-.03em!important;margin-bottom:14px!important}` +
+    `.hero-sub{display:block!important;background:transparent!important;border:none!important;border-radius:0!important;padding:0!important;font-size:.7rem!important;font-weight:700!important;letter-spacing:.1em!important;color:rgba(255,255,255,.55)!important;margin-bottom:14px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}` +
+    `.hero-sub .hero-loc{display:none!important}` +
+    `.hero-desc{font-size:.88rem!important;margin-bottom:28px!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important}` +
+    `.hero-btns{flex-direction:column!important;gap:10px!important}` +
+    `.hero-btns .btn{width:100%!important;text-align:center!important}` +
+    `}</style>`;
+  html = html.replace('</head>', mobileHeroStyle + '</head>');
+
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
   const mapsAddr = [o.adresse, o.plz, o.ort].filter(Boolean).join(", ");
   if (mapsAddr) {

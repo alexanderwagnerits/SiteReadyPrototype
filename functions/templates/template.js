@@ -138,31 +138,40 @@ a{color:inherit}
 /* ═══════════════════════════════════════════════════════
    HERO
    ═══════════════════════════════════════════════════════ */
-.hero{background:linear-gradient(160deg,var(--primary),var(--primary));background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%);color:#fff;display:flex;align-items:flex-end;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
-.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 56px}
-.hero h1{font-size:clamp(2.8rem,5.5vw,4.4rem);font-weight:800;line-height:1.08;letter-spacing:-.035em;margin-bottom:16px;max-width:680px}
+.hero{background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 60%,color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);color:#fff;display:flex;align-items:flex-end;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 60px}
+.hero h1{font-size:clamp(2.8rem,5.5vw,4.6rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:20px;max-width:720px}
 .hero-accent-line{display:none}
-.hero-sub{font-size:1rem;color:rgba(255,255,255,.72);font-weight:600;margin-bottom:8px;letter-spacing:.01em}
-.hero-desc{font-size:.95rem;color:rgba(255,255,255,.6);max-width:480px;margin-bottom:32px;line-height:1.75}
+
+/* Eyebrow-Badge: Branche oberhalb H1 (Klassisch + Modern) */
+.hero-sub{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border:1px solid rgba(255,255,255,.2);border-radius:100px;background:rgba(255,255,255,.09);font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.92);margin-bottom:22px}
+.hero-sub .hero-loc{display:inline-flex;align-items:center;gap:4px;text-transform:none;font-weight:600;opacity:.8}
+
+.hero-desc{font-size:.95rem;color:rgba(255,255,255,.62);max-width:500px;margin-bottom:34px;line-height:1.78}
 .hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}
+
+/* Klassisch: dekorative Kreise rechts oben */
+body:not(.stil-modern):not(.stil-elegant) .hero::before{content:'';position:absolute;top:-120px;right:-120px;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 65%);pointer-events:none;z-index:0}
+body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absolute;top:80px;right:180px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.04);pointer-events:none;z-index:0}
 
 /* Hero-Bild (serve-time Injection fuer Split-Variante) */
 .hero-img{display:none}
 
 /* Hero — Modern: Blur-Blobs statt Grain */
 .stil-modern .hero{background:var(--primary);overflow:hidden}
-.stil-modern .hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.12;top:-150px;right:-100px;filter:blur(40px);pointer-events:none}
-.stil-modern .hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 60%,#fff),transparent 70%);opacity:.06;bottom:-100px;left:-50px;filter:blur(60px);pointer-events:none;z-index:0}
-.stil-modern .hero h1{font-size:clamp(3.2rem,7vw,5.5rem);letter-spacing:-.04em}
-.stil-modern .hero-inner{padding:120px 28px 56px}
+.stil-modern .hero::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.14;top:-200px;right:-150px;filter:blur(50px);pointer-events:none}
+.stil-modern .hero::after{content:'';position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 60%,#fff),transparent 70%);opacity:.07;bottom:-120px;left:-60px;filter:blur(70px);pointer-events:none;z-index:0}
+.stil-modern .hero h1{font-size:clamp(3.2rem,7vw,5.8rem);letter-spacing:-.045em}
+.stil-modern .hero-inner{padding:120px 28px 60px}
+.stil-modern .hero-sub{background:color-mix(in srgb,var(--accent) 18%,rgba(255,255,255,.05));border-color:color-mix(in srgb,var(--accent) 35%,rgba(255,255,255,.1));color:rgba(255,255,255,.95)}
 
-/* Hero — Elegant: Schlicht, leicht, Akzentlinie */
-.stil-elegant .hero{background:linear-gradient(160deg,var(--primary),var(--primary));background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 100%);align-items:flex-end}
-.stil-elegant .hero-inner{padding:140px 28px 64px}
+/* Hero — Elegant: Schlicht, Akzentlinie als Trenner */
+.stil-elegant .hero{background:linear-gradient(155deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 60%,#000) 100%);align-items:flex-end}
+.stil-elegant .hero-inner{padding:140px 28px 68px}
 .stil-elegant .hero h1{font-size:clamp(3rem,7vw,5.5rem);font-weight:500;margin-bottom:0;letter-spacing:-.02em}
-.stil-elegant .hero-accent-line{display:block;width:48px;height:1px;background:var(--accent);margin:24px 0 28px;opacity:.5}
-.stil-elegant .hero-sub{font-size:1rem;color:rgba(255,255,255,.6);font-weight:400;letter-spacing:.03em}
-.stil-elegant .hero-desc{color:rgba(255,255,255,.5);line-height:1.85}
+.stil-elegant .hero-accent-line{display:block;width:48px;height:1px;background:var(--accent);margin:28px 0 28px;opacity:.55}
+.stil-elegant .hero-sub{background:transparent;border-color:rgba(255,255,255,.14);text-transform:none;letter-spacing:.04em;font-weight:400;font-size:.8rem;padding:6px 14px;color:rgba(255,255,255,.7);margin-bottom:0}
+.stil-elegant .hero-desc{color:rgba(255,255,255,.52);line-height:1.85}
 
 /* ── Trust Bar ── */
 .trust{padding:18px 0;background:var(--bg,#f8fafc);border-bottom:1px solid var(--sep)}
@@ -621,6 +630,7 @@ a{color:inherit}
 .hero{min-height:85vh;min-height:85svh;align-items:flex-end}
 .hero-inner{padding:80px 20px 36px}
 .hero h1{font-size:clamp(2rem,8vw,2.8rem)}
+.hero-sub{font-size:.68rem;padding:6px 13px;margin-bottom:16px}
 .hero-desc{font-size:.9rem;margin-bottom:24px}
 .hero-btns{flex-direction:column;gap:10px}
 .hero-btns .btn{width:100%;text-align:center}
@@ -660,9 +670,9 @@ footer{padding:16px 0!important}
 <main id="main">
 <section class="hero sr-grain" id="sr-hero">
 <div class="hero-inner">
+<p class="hero-sub">${brancheLabel}${einsatzgebiet ? ` · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}</p>
 <h1>${firmenname}</h1>
 <span class="hero-accent-line"></span>
-<p class="hero-sub">${brancheLabel}${einsatzgebiet ? ` <span class="hero-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;opacity:.6"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${einsatzgebiet}</span>` : ""}</p>
 <p class="hero-desc">${kurzbeschreibung}</p>
 <div class="hero-btns">
 <a href="${ctaPrimaryHref}" class="btn btn-accent">${ctaPrimary}</a>

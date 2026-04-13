@@ -1296,8 +1296,9 @@ function Questionnaire({data,setData,onComplete,onBack}){
     setData(d=>{const gPal=b?GRUPPEN_PALETTEN[b.gruppe]||{}:{};
     return{...d,branche:val,brancheLabel:b?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,
       leistungen:sameB?d.leistungen:[],extraLeistung:sameB?d.extraLeistung:"",
+      accentColor:"",
       ...(!sameB?gPal:{})};
-  })};
+  });if(!sameB){setHexInput("");}};
   const legalOk=(()=>{const u=data.unternehmensform;if(!u)return false;if(u==="einzelunternehmen"&&(!data.vorname?.trim()||!data.nachname?.trim()))return false;const needsFB=["eu","gmbh","og","kg","ag"].includes(u);if(needsFB&&(!data.firmenbuchnummer?.trim()||!data.firmenbuchgericht?.trim()))return false;if(u==="gmbh"&&!data.geschaeftsfuehrer?.trim())return false;if(u==="ag"&&!data.vorstand?.trim())return false;if(u==="verein"&&!data.zvr_zahl?.trim())return false;return true})();
   const sv1=!!(data.firmenname?.trim()&&data.branche&&data.bundesland&&data.kurzbeschreibung?.trim());
   const sv2=!!(data.leistungen?.length>0||data.extraLeistung?.trim());

@@ -48,32 +48,24 @@ export async function onRequestGet({params, env}) {
   const isModern = stilName === "modern";
   const isElegant = stilName === "elegant";
 
-  // ── Section-Varianten: varianten_cache (neu) oder Legacy-Felder (alt) ──
+  // ── Section-Varianten: serve-time aus aktuellem Content berechnen ──
   const vc = (typeof o.varianten_cache === "object" && o.varianten_cache) || {};
-  const tmCount = (Array.isArray(o.team_members) ? o.team_members.filter(t => t && t.name) : []).length;
-  const v = {
-    hero: vc.hero || (
-      (o.hero_variante === "minimal") ? "minimal" :
-      (o.hero_variante === "split" || (o.hero_layout || "split") === "split") ? "split" :
-      "fullscreen"
-    ),
-    leistungen: vc.leistungen || "grid",
-    ablauf: vc.ablauf || "horizontal",
-    bewertungen: vc.bewertungen || (
-      o.bewertungen_variante === "highlight" ? "blockquote" :
-      o.bewertungen_variante === "liste" ? "cards" :
-      "cards"
-    ),
-    team: vc.team || (
-      tmCount === 1 ? "single" : tmCount <= 3 ? "grid-3" : "grid-4"
-    ),
-    faq: vc.faq || "einspaltig",
-    galerie: vc.galerie || "grid-2x2",
-    kontakt: vc.kontakt || (
-      (o.kontakt_variante === "kompakt") ? "ohne-map" :
-      (o.adresse || o.plz) ? "mit-map" : "ohne-map"
-    ),
-  };
+  const { berechneVarianten } = await import("../../_lib/varianten.js");
+  const fotoMap = o.leistungen_fotos || {};
+  const leistArr = (o.leistungen || []).map(l => ({foto: !!(fotoMap[l] || fotoMap[l.charAt(0).toUpperCase() + l.slice(1)])}));
+  const v = berechneVarianten({
+    hero_image:    o.url_hero || null,
+    hero_override: vc.hero || null,   // Portal-Wahl beibehalten
+    stil:          o.stil || "klassisch",
+    leistungen:    leistArr,
+    ablauf:        o.ablauf_schritte || [],
+    bewertungen:   o.bewertungen || [],
+    team:          o.team_members || [],
+    faq:           o.faq || [],
+    galerie:       o.galerie || [],
+    adresse:       o.adresse,
+    plz:           o.plz,
+  });
   const sv = o.sections_visible || {};
 
   // Trust-Leiste serve-time (live updates bei Feature-Aenderungen)

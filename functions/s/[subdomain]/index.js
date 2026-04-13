@@ -797,12 +797,24 @@ export async function onRequestGet({params, env}) {
     // Downloads unter den Leistungen (optional, max 3 PDFs/Links)
     const downloads = Array.isArray(o.downloads) ? o.downloads.filter(d => d && d.url && d.label) : [];
     if (downloads.length > 0) {
-      const dlHtml = downloads.map(d =>
-        `<a href="${d.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid var(--sep);border-radius:${isModern ? "100px" : isElegant ? "2px" : "6px"};color:var(--accent);font-size:.85rem;font-weight:600;text-decoration:none;transition:all .2s;background:#fff" onmouseover="this.style.background='color-mix(in srgb,var(--accent) 6%,#fff)'" onmouseout="this.style.background='#fff'">` +
-        `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>` +
-        `${d.label}</a>`
-      ).join("");
-      grid += `<div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px">${dlHtml}</div>`;
+      const dlR = isModern ? "12px" : isElegant ? "2px" : "6px";
+      const dlBadgeR = isModern ? "100px" : isElegant ? "2px" : "4px";
+      const dlShadow = isModern ? "box-shadow:0 2px 8px rgba(0,0,0,.06)" : "";
+      const dlBorder = isModern ? "border:none" : `border:1px solid var(--sep)`;
+      const dlIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>`;
+      const dlArrow = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M7 17l9.2-9.2M17 17V7.8H7.8"/></svg>`;
+      const dlHtml = downloads.map(d => {
+        const ext = (d.url.match(/\.(\w{2,4})(\?|$)/)||[])[1]||"";
+        const badge = ext ? `<span style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:${dlBadgeR};background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)">${ext}</span>` : "";
+        return `<a href="${d.url}" target="_blank" rel="noopener" class="sr-dl-card" style="display:flex;align-items:center;gap:14px;padding:16px 20px;${dlBorder};border-radius:${dlR};background:#fff;${dlShadow};text-decoration:none;transition:all .25s cubic-bezier(.22,1,.36,1);cursor:pointer">` +
+          `<div style="width:44px;height:44px;border-radius:${dlR};background:color-mix(in srgb,var(--accent) 8%,transparent);display:flex;align-items:center;justify-content:center;flex-shrink:0">${dlIcon}</div>` +
+          `<div style="flex:1;min-width:0"><div style="font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:2px">${d.label}</div><div style="font-size:.78rem;color:var(--textMuted)">Herunterladen ${badge}</div></div>` +
+          `<div style="flex-shrink:0;opacity:.5">${dlArrow}</div></a>`;
+      }).join("");
+      const dlCols = downloads.length === 1 ? "1fr" : "1fr 1fr";
+      grid += `<div style="margin-top:24px;display:grid;grid-template-columns:${dlCols};gap:12px">` +
+        `<style>.sr-dl-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)!important}</style>` +
+        dlHtml + `</div>`;
     }
     html = html.replace("<!-- LEISTUNGEN -->", grid);
   }

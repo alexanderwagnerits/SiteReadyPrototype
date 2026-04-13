@@ -486,7 +486,7 @@ JSON-Felder:
 - vorname: Vorname des Inhabers/Geschaeftsfuehrers (aus Impressum)
 - nachname: Nachname des Inhabers/Geschaeftsfuehrers (aus Impressum)
 - telefon: Hauptnummer des Betriebs (Format +43..., Festnetz bevorzugt, sonst Mobil)
-- email: Primaere Kontakt-E-Mail. Priorisiere: office@/info@/kontakt@ > persoenliche Adressen. NIEMALS no-reply@ oder Drittanbieter.
+- email: Kontakt-E-Mail fuer die Website. Priorisiere: Impressum-E-Mail > Kontaktseite > office@/info@ > persoenliche. NIEMALS no-reply@ oder Drittanbieter. Nur E-Mails verwenden die TATSAECHLICH auf der Website stehen.
 - plz: 4-stellige oesterreichische Postleitzahl (aus Impressum bevorzugt)
 - ort: Ortsname (aus Impressum bevorzugt)
 - adresse: Strasse mit Hausnummer (aus Impressum bevorzugt, z.B. "Lavaterstraße 1/RH3")

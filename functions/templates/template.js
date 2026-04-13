@@ -627,10 +627,11 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 }
 
 @media(max-width:768px){
+/* Hero */
 .hero{min-height:85vh;min-height:85svh;align-items:flex-end}
 .hero-inner{padding:80px 20px 36px}
 .hero h1{font-size:clamp(2rem,8vw,2.8rem)}
-.hero-sub{font-size:.68rem;padding:6px 13px;margin-bottom:16px}
+.hero-sub{font-size:.68rem;padding:6px 13px;margin-bottom:16px;max-width:calc(100vw - 48px);flex-wrap:wrap}
 .hero-desc{font-size:.9rem;margin-bottom:24px}
 .hero-btns{flex-direction:column;gap:10px}
 .hero-btns .btn{width:100%;text-align:center}
@@ -641,6 +642,21 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .hero-trust-bar{margin-top:24px;padding-top:20px}
 .hero-trust-inner{gap:10px 20px}
 .t-item{font-size:.76rem}
+/* Section-Abstände auf Mobile deutlich reduzieren */
+.leist,.ablauf,.bew,.faq,.team,.galerie,.kontakt,.ueber,.sec-faq,.sec-galerie{padding:56px 0!important}
+.stil-modern .leist,.stil-modern .ablauf,.stil-modern .bew,.stil-modern .faq,.stil-modern .team,.stil-modern .galerie,.stil-modern .kontakt,.stil-modern .ueber{padding:64px 0!important}
+.stil-elegant .leist,.stil-elegant .ablauf,.stil-elegant .bew,.stil-elegant .faq,.stil-elegant .team,.stil-elegant .galerie,.stil-elegant .kontakt,.stil-elegant .ueber{padding:64px 0!important}
+.sec-fakten{padding:44px 0!important}
+.sec-partner{padding:32px 0!important}
+.sec-cta-block{padding:48px 0!important}
+/* Sektions-Überschriften */
+.leist-head,.ablauf-head,.bew-head,.team-head,.galerie-head,.faq-head,.kontakt-head{margin-bottom:28px}
+}
+
+@media(max-width:480px){
+.team-grid{grid-template-columns:1fr!important}
+.galerie-grid{grid-template-columns:1fr 1fr!important}
+.ueber-stats{grid-template-columns:1fr 1fr!important}
 }
 
 /* ═══════════════════════════════════════════════════════

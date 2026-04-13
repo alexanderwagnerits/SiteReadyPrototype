@@ -22,14 +22,17 @@ function buildNav(o, pal, stil) {
 .nav-link:hover{opacity:.7}
 .nav-cta{background:var(--accent);color:#fff!important;padding:9px 18px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:.85rem;white-space:nowrap;transition:all .25s}
 .nav-cta:hover{opacity:.85!important}
-.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;min-width:44px;min-height:44px;align-items:center;justify-content:center}
 .hbg-bar{width:24px;height:2px;background:rgba(255,255,255,.9);border-radius:2px;transition:transform .3s ease,opacity .3s ease}
 .hbg.open .hbg-bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .hbg.open .hbg-bar:nth-child(2){opacity:0}
 .hbg.open .hbg-bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.mob-menu{display:none;position:fixed;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:16px 24px 24px;z-index:999}
-.mob-link{display:block;padding:12px 0;font-size:1rem;font-weight:600;color:var(--primary);text-decoration:none;border-bottom:1px solid #f1f5f9}
-.mob-cta{display:block;margin-top:16px;background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:1rem;text-decoration:none}
+.mob-menu{position:fixed;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:8px 24px 20px;z-index:999;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.mob-menu.open{opacity:1;transform:translateY(0);pointer-events:auto}
+.mob-bd{position:fixed;inset:0;top:68px;background:rgba(0,0,0,.32);z-index:998;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.mob-bd.open{opacity:1;pointer-events:auto}
+.mob-link{display:block;padding:14px 0;font-size:1rem;font-weight:600;color:var(--primary);text-decoration:none;border-bottom:1px solid #f1f5f9}
+.mob-cta{display:block;margin-top:12px;background:var(--accent);color:#fff;text-align:center;padding:15px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:1rem;text-decoration:none}
 @media(max-width:768px){.nav-links{display:none}.hbg{display:flex}}
 </style>
 <nav id="sitenav">
@@ -45,6 +48,7 @@ ${tel ? `<a href="{{TEL_HREF}}" class="nav-link nav-cta">{{TEL_DISPLAY}}</a>` : 
 <span class="hbg-bar"></span><span class="hbg-bar"></span><span class="hbg-bar"></span>
 </button>
 </div>
+<div class="mob-bd" id="mob-bd"></div>
 <div class="mob-menu" id="mob-menu">
 <a href="#leistungen" class="mob-link">Leistungen</a>
 <a href="#ueber-uns" class="mob-link">Über uns</a>
@@ -57,9 +61,11 @@ ${tel ? `<a href="{{TEL_HREF}}" class="mob-cta">{{TEL_DISPLAY}} &mdash; Jetzt an
 var nav=document.getElementById('sitenav');
 var btn=document.getElementById('hbg');
 var mob=document.getElementById('mob-menu');
+var bd=document.getElementById('mob-bd');
 var open=false;
-function toggle(v){open=typeof v==='boolean'?v:!open;mob.style.display=open?'block':'none';btn.setAttribute('aria-expanded',open?'true':'false');if(open)btn.classList.add('open');else btn.classList.remove('open');}
+function toggle(v){open=typeof v==='boolean'?v:!open;if(open){mob.classList.add('open');bd.classList.add('open');}else{mob.classList.remove('open');bd.classList.remove('open');}btn.setAttribute('aria-expanded',open?'true':'false');if(open)btn.classList.add('open');else btn.classList.remove('open');}
 btn.addEventListener('click',function(){toggle();});
+bd.addEventListener('click',function(){toggle(false);});
 document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){toggle(false);});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&open)toggle(false);});
 var sc=false;window.addEventListener('scroll',function(){var s=window.scrollY>60;if(s!==sc){sc=s;if(s)nav.classList.add('scrolled');else nav.classList.remove('scrolled');}},{passive:true});

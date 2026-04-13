@@ -212,17 +212,18 @@ export async function onRequestPost({request, env}) {
       if (mainData) {
         mainMarkdown = mainData.markdown || "";
         mainHtml = mainData.html || mainData.rawHtml || "";
-        discoveredLinks = (mainData.links || []).filter(l => {
+        discoveredLinks = (mainData.links || []).map(l => {
           try {
+            if (!l.startsWith("http")) l = l.startsWith("/") ? base + l : base + "/" + l;
             const u = new URL(l);
-            if (u.origin !== base) return false;
+            if (u.origin !== base) return null;
             const p = u.pathname.replace(/\/+$/,"") || "/";
-            if (p === "/") return false;
-            if (/\.(pdf|jpg|jpeg|png|gif|svg|css|js|ico|woff|woff2|xml|txt|json)$/i.test(p)) return false;
-            if (/\/(wp-admin|wp-content|cdn-cgi|assets|static|_next|login|cart|checkout|tag|category|page\/\d)\b/i.test(p)) return false;
-            return true;
-          } catch(_) { return false; }
-        });
+            if (p === "/") return null;
+            if (/\.(pdf|jpg|jpeg|png|gif|svg|css|js|ico|woff|woff2|xml|txt|json)$/i.test(p)) return null;
+            if (/\/(wp-admin|wp-content|cdn-cgi|assets|static|_next|login|cart|checkout|tag|category|page\/\d)\b/i.test(p)) return null;
+            return u.origin + p;
+          } catch(_) { return null; }
+        }).filter(Boolean);
         firecrawlCreditsUsed++;
         extractFromHtml(mainHtml);
       }
@@ -481,12 +482,14 @@ Leere Strings "" und leere Arrays [] fuer nicht gefundene Felder.
 JSON-Felder:
 
 === FIRMA & KONTAKT ===
-- firmenname: Offizieller Name (max 60 Zeichen). Priorisiere: Impressum > Seitentitel > Logo-Text
-- telefon: Format +43... (leer wenn nicht gefunden)
-- email: Primaere Kontakt-E-Mail (nicht no-reply, nicht Drittanbieter)
-- plz: 4-stellige oesterreichische Postleitzahl
-- ort: Ortsname
-- adresse: Strasse mit Hausnummer
+- firmenname: Offizieller Name (max 60 Zeichen). Priorisiere: Impressum > Seitentitel > Logo-Text. Ohne Rechtsform-Zusatz wenn moeglich.
+- vorname: Vorname des Inhabers/Geschaeftsfuehrers (aus Impressum)
+- nachname: Nachname des Inhabers/Geschaeftsfuehrers (aus Impressum)
+- telefon: Hauptnummer des Betriebs (Format +43..., Festnetz bevorzugt, sonst Mobil)
+- email: Primaere Kontakt-E-Mail. Priorisiere: office@/info@/kontakt@ > persoenliche Adressen. NIEMALS no-reply@ oder Drittanbieter.
+- plz: 4-stellige oesterreichische Postleitzahl (aus Impressum bevorzugt)
+- ort: Ortsname (aus Impressum bevorzugt)
+- adresse: Strasse mit Hausnummer (aus Impressum bevorzugt, z.B. "Lavaterstraße 1/RH3")
 - kurzbeschreibung: Was das Unternehmen macht, 1-2 Saetze, max 200 Zeichen
 - bundesland: NUR: wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld
 - whatsapp: WhatsApp-Nummer falls erwaehnt (Format: +43...)

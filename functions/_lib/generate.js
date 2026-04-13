@@ -781,8 +781,9 @@ REGELN fuer gut_zu_wissen:
   const { berechneVarianten } = await import("./varianten.js");
   const fotoMap = o.leistungen_fotos || {};
   const leistMitFoto = leistungen.map(l => ({foto: !!(fotoMap[l] || fotoMap[l.charAt(0).toUpperCase() + l.slice(1)])}));
-  const ablaufFinal = texts.ablauf_schritte?.length ? texts.ablauf_schritte : (o.ablauf_schritte || []);
-  const faqFinal = texts.faq?.length ? texts.faq : (o.faq || []);
+  // Importierte Daten bevorzugen — Claude überschreibt keine bestehenden Customer-Daten
+  const ablaufFinal = hasImportedAblauf ? (o.ablauf_schritte || []) : (texts.ablauf_schritte || []);
+  const faqFinal = hasImportedFaq ? (o.faq || []) : (texts.faq || []);
   // Bestehende Hero-Wahl des Kunden beibehalten (Portal-Override)
   const existingHero = o.varianten_cache?.hero;
   const variantenCache = berechneVarianten({

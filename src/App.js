@@ -188,14 +188,27 @@ const BUNDESLAENDER=[{value:"wien",label:"Wien"},{value:"noe",label:"Niederöste
 const OEFFNUNGSZEITEN=[{value:"mo-fr-8-17",label:"Mo-Fr: 08:00-17:00"},{value:"mo-fr-7-16",label:"Mo-Fr: 07:00-16:00"},{value:"mo-fr-8-18",label:"Mo-Fr: 08:00-18:00"},{value:"mo-sa-8-17",label:"Mo-Sa: 08:00-17:00"},{value:"mo-sa-8-12",label:"Mo-Fr: 08:00-17:00, Sa: 08:00-12:00"},{value:"vereinbarung",label:"Nach Vereinbarung"},{value:"custom",label:"Eigene Zeiten eingeben"}];
 const UNTERNEHMENSFORMEN=[{value:"eu",label:"Einzelunternehmen (e.U.)"},{value:"einzelunternehmen",label:"Einzelunternehmen (nicht eingetragen)"},{value:"gmbh",label:"GmbH"},{value:"og",label:"OG"},{value:"kg",label:"KG"},{value:"ag",label:"AG"},{value:"verein",label:"Verein"},{value:"gesnbr",label:"GesbR"}];
 const STYLES_MAP={
-  klassisch:{label:"Klassisch",desc:"Seriös, vertrauenswürdig, zeitlos",primary:"#094067",accent:"#0369a1",accentSoft:"rgba(3,105,161,0.07)",bg:"#f4f7fa",cardBg:"#fff",text:"#1e293b",textMuted:"#475569",textLight:"#90b4ce",borderColor:"#d8eefe",font:"'Inter',system-ui,sans-serif",radius:"4px",radiusLg:"6px",heroGradient:"linear-gradient(160deg,#094067 0%,#062b44 50%,#0a1f42 100%)",heroOverlay:"radial-gradient(circle at 70% 20%,rgba(3,105,161,0.08) 0%,transparent 60%)",shadow:"none",badgeBg:"#d8eefe",badgeText:"#094067",btnRadius:"4px",cardBorder:true,cardShadow:false,badgeRadius:"4px",sectionDivider:true,spacing:"compact"},
+  klassisch:{label:"Klassisch",desc:"Seriös, klar strukturiert",primary:"#094067",accent:"#0369a1",accentSoft:"rgba(3,105,161,0.07)",bg:"#f4f7fa",cardBg:"#fff",text:"#1e293b",textMuted:"#475569",textLight:"#90b4ce",borderColor:"#d8eefe",font:"'Inter',system-ui,sans-serif",radius:"4px",radiusLg:"6px",heroGradient:"linear-gradient(160deg,#094067 0%,#062b44 50%,#0a1f42 100%)",heroOverlay:"radial-gradient(circle at 70% 20%,rgba(3,105,161,0.08) 0%,transparent 60%)",shadow:"none",badgeBg:"#d8eefe",badgeText:"#094067",btnRadius:"4px",cardBorder:true,cardShadow:false,badgeRadius:"4px",sectionDivider:true,spacing:"compact"},
   modern:{label:"Modern",desc:"Dynamisch, frisch, mit Akzenten",primary:"#18181b",accent:"#4f46e5",accentSoft:"rgba(79,70,229,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#18181b",textMuted:"#71717a",textLight:"#a1a1aa",borderColor:"#e4e4e7",font:"'Plus Jakarta Sans',system-ui,sans-serif",radius:"12px",radiusLg:"16px",heroGradient:"linear-gradient(135deg,#18181b 0%,#1e1b4b 50%,#4f46e5 100%)",heroOverlay:"radial-gradient(ellipse at 80% 30%,rgba(79,70,229,0.15) 0%,transparent 50%)",shadow:"0 2px 8px rgba(0,0,0,0.06)",badgeBg:"#eef2ff",badgeText:"#4338ca",btnRadius:"100px",cardBorder:false,cardShadow:true,badgeRadius:"100px",sectionDivider:false,spacing:"airy"},
   elegant:{label:"Elegant",desc:"Hochwertig, ruhig, Premium",primary:"#020826",accent:"#7a6844",accentSoft:"rgba(122,104,68,0.06)",bg:"#f9f4ef",cardBg:"#fff",text:"#2c2620",textMuted:"#6b6058",textLight:"#a89a84",borderColor:"#eaddcf",font:"'Inter',system-ui,sans-serif",fontHeading:"'Cormorant Garamond',Georgia,serif",radius:"2px",radiusLg:"4px",heroGradient:"linear-gradient(160deg,#020826 0%,#0a1628 50%,#1a1510 100%)",heroOverlay:"none",shadow:"none",badgeBg:"#eaddcf",badgeText:"#020826",btnRadius:"2px",cardBorder:true,cardShadow:false,badgeRadius:"2px",sectionDivider:true,spacing:"airy"},
-  custom:{label:"Eigenes Branding",desc:"Ihre Farbe, Ihr Font",primary:"#111111",accent:"#2563eb",accentSoft:"rgba(24,95,165,0.07)",bg:"#fafafa",cardBg:"#fff",text:"#111111",textMuted:"#6b7280",textLight:"#9ca3af",borderColor:"#e5e7eb",font:"'DM Sans',system-ui,sans-serif",radius:"8px",radiusLg:"12px",heroGradient:"linear-gradient(160deg,#111111 0%,#1f1f1f 50%,#333333 100%)",heroOverlay:"none",shadow:"0 1px 3px rgba(0,0,0,0.05)",badgeBg:"#f3f4f6",badgeText:"#374151",btnRadius:"8px",cardBorder:true,cardShadow:false,badgeRadius:"8px",sectionDivider:false,spacing:"normal"},
 };
+/* 7 WCAG-geprueft Accent-Presets (alle 4.5:1+ auf weiss UND allen 3 Stil-Bgs) */
+const ACCENT_PRESETS=[
+  {value:"#0369A1",label:"Blau"},
+  {value:"#2563EB",label:"Königsblau"},
+  {value:"#0E7490",label:"Teal"},
+  {value:"#047857",label:"Grün"},
+  {value:"#B91C1C",label:"Rot"},
+  {value:"#B45309",label:"Bernstein"},
+  {value:"#A16207",label:"Gold"},
+];
+/* Default-Accent pro Branche (variiert innerhalb jeder Branchengruppe) */
+const BRANCHEN_ACCENTS={elektro:"#0369A1",installateur:"#0E7490",maler:"#2563EB",tischler:"#A16207",fliesenleger:"#0E7490",schlosser:"#0369A1",dachdecker:"#B45309",zimmerei:"#B45309",maurer:"#0369A1",bodenleger:"#0E7490",glaser:"#2563EB",gaertner:"#047857",klima:"#0E7490",reinigung:"#0369A1",kfz:"#B91C1C",aufsperrdienst:"#B91C1C",hafner:"#B45309",raumausstatter:"#A16207",goldschmied:"#A16207",schneider:"#A16207",rauchfangkehrer:"#0369A1",schaedlingsbekaempfung:"#047857",fahrradwerkstatt:"#047857",erdbau:"#B45309",kosmetik:"#B45309",friseur:"#B91C1C",nagel:"#B91C1C",massage:"#047857",tattoo:"#0369A1",fusspflege:"#0E7490",permanent_makeup:"#A16207",hundesalon:"#B45309",restaurant:"#A16207",cafe:"#B45309",bar:"#B91C1C",heuriger:"#047857",imbiss:"#B91C1C",catering:"#A16207",baeckerei:"#B45309",fleischerei:"#B91C1C",winzer:"#047857",physiotherapie:"#0E7490",arzt:"#0369A1",zahnarzt:"#0369A1",tierarzt:"#047857",apotheke:"#047857",optiker:"#2563EB",psychotherapie:"#0E7490",ergotherapie:"#0E7490",logopaedie:"#2563EB",energetiker:"#047857",hebamme:"#B45309",diaetologe:"#047857",hoerakustiker:"#0369A1",zahntechnik:"#0369A1",heilmasseur:"#0E7490",osteopath:"#0E7490",lebensberater:"#B45309",steuerberater:"#0369A1",rechtsanwalt:"#0369A1",versicherung:"#2563EB",immobilien:"#A16207",hausverwaltung:"#0E7490",umzug:"#B45309",eventplanung:"#B91C1C",fotograf:"#A16207",florist:"#047857",architekt:"#0369A1",it_service:"#2563EB",werbeagentur:"#B91C1C",bestattung:"#0369A1",notar:"#0369A1",finanzberater:"#047857",reisebuero:"#0E7490",innenarchitekt:"#A16207",textilreinigung:"#0E7490",unternehmensberater:"#2563EB",dolmetscher:"#0E7490",druckerei:"#B91C1C",sicherheitsdienst:"#0369A1",fahrschule:"#B91C1C",nachhilfe:"#2563EB",musikschule:"#B91C1C",trainer:"#047857",yoga:"#047857",hundeschule:"#B45309",tanzschule:"#A16207",reitschule:"#B45309",schwimmschule:"#0E7490",coach:"#2563EB",sonstige:"#0369A1"};
+/* Kontrast-Check: zu helle Farben automatisch abdunkeln fuer weissen Text */
+function ensureContrast(hex,minRatio=4.5){if(!hex||!/^#[0-9a-fA-F]{6}$/.test(hex))return hex;const lum=c=>{const v=parseInt(c,16)/255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)};const L=h=>{const r=lum(h.slice(1,3)),g=lum(h.slice(3,5)),b=lum(h.slice(5,7));return 0.2126*r+0.7152*g+0.0722*b};const ratio=(l1,l2)=>(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);let color=hex;for(let i=0;i<20;i++){if(ratio(1,L(color))>=minRatio)return color;const r=Math.max(0,parseInt(color.slice(1,3),16)-10);const g=Math.max(0,parseInt(color.slice(3,5),16)-10);const b=Math.max(0,parseInt(color.slice(5,7),16)-10);color="#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("");}return color;}
 const STEPS=[{id:"basics",title:"Grunddaten",num:"01"},{id:"services",title:"Leistungen",num:"02"},{id:"contact",title:"Kontakt",num:"03"},{id:"firma",title:"Unternehmen",num:"04"},{id:"style",title:"Design",num:"05"}];
 // _orderInProgress: moved to useRef inside App component
-const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",layout:"standard",customColor:"#2563eb",customFont:"dm_sans"};
+const INIT={firmenname:"",branche:"",brancheLabel:"",brancheCustom:"",leistungen:[],extraLeistung:"",adresse:"",plz:"",ort:"",bundesland:"",telefon:"",email:"",uid:"",oeffnungszeiten:"",oeffnungszeitenCustom:"",einsatzgebiet:"",kurzbeschreibung:"",unternehmensform:"",vorname:"",nachname:"",firmenbuchnummer:"",gisazahl:"",firmenbuchgericht:"",geschaeftsfuehrer:"",vorstand:"",aufsichtsrat:"",zvr_zahl:"",vertretungsorgane:"",gesellschafter:"",unternehmensgegenstand:"",liquidation:"",kammer_berufsrecht:"",aufsichtsbehoerde:"",facebook:"",instagram:"",linkedin:"",tiktok:"",notdienst:false,meisterbetrieb:false,kostenvoranschlag:false,buchungslink:"",hausbesuche:false,terminvereinbarung:false,foerderungsberatung:false,lieferservice:false,barrierefrei:false,parkplaetze:false,kassenvertrag:"",erstgespraech_gratis:false,online_beratung:false,ratenzahlung:false,fotos:true,stil:"klassisch",layout:"standard",accentColor:"",customFont:""};
 
 /* ═══ TOKENS ═══ */ /* build:20260413 */
 const CTA="#185FA5",CTA_H="#0C447C",CTA_G="rgba(24,95,165,.25)",CTA_L="#E6F1FB";
@@ -900,7 +913,7 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
       zvr_zahl:snap.zvr_zahl,vertretungsorgane:snap.vertretungsorgane,gesellschafter:snap.gesellschafter,
       unternehmensgegenstand:snap.unternehmensgegenstand,liquidation:snap.liquidation,
       kammer_berufsrecht:snap.kammer_berufsrecht,aufsichtsbehoerde:snap.aufsichtsbehoerde,
-      stil:snap.stil,custom_color:snap.customColor||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:snapSub,status:"pending",
+      stil:snap.stil,custom_accent:snap.accentColor||BRANCHEN_ACCENTS[snap.branche]||null,custom_font:snap.customFont||null,fotos:snap.fotos,subdomain:snapSub,status:"pending",
       facebook:snap.facebook||null,instagram:snap.instagram||null,linkedin:snap.linkedin||null,tiktok:snap.tiktok||null,
       oeffnungszeiten_custom:snap.oeffnungszeitenCustom||null,
       ...(snap.importExtras?.spezialisierung?{spezialisierung:snap.importExtras.spezialisierung}:{}),
@@ -1148,8 +1161,8 @@ function Toggle({label,checked,onChange,desc}){return(<label style={{display:"fl
 
 function TagInput({label,value,onChange,placeholder,hint,max=12}){const[input,setInput]=useState("");const[f,setF]=useState(false);const tags=value?value.split("\n").filter(t=>t.trim()):[];const add=()=>{const v=input.trim();if(!v||tags.length>=max)return;onChange([...tags,v].join("\n"));setInput("");};const remove=i=>onChange(tags.filter((_,idx)=>idx!==i).join("\n"));const onKey=e=>{if(e.key==="Enter"){e.preventDefault();add();}};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".78rem",fontWeight:700,color:f?T.accent:T.textSub,letterSpacing:".03em"}}>{label}</label><div onFocus={()=>setF(true)} onBlur={()=>setF(false)} style={{border:f?`2px solid ${T.accent}`:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,padding:"10px 12px",transition:"all .2s",boxShadow:f?`0 0 0 4px ${T.accentGlow}`:"none",minHeight:52}}>{tags.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>{tags.map((t,i)=><span key={i} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"4px 10px",background:T.accentLight,border:`1px solid rgba(143,163,184,.2)`,borderRadius:20,fontSize:"12px",fontWeight:600,color:T.accent}}>{t}<button onClick={()=>remove(i)} style={{display:"flex",alignItems:"center",justifyContent:"center",width:14,height:14,borderRadius:"50%",border:"none",background:"rgba(143,163,184,.2)",color:T.accent,cursor:"pointer",padding:0,fontSize:10,fontWeight:700,lineHeight:1}}>×</button></span>)}</div>}<input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={onKey} placeholder={tags.length===0?placeholder:"Weitere Leistung eingeben + Enter"} style={{border:"none",outline:"none",width:"100%",fontSize:14,fontFamily:T.font,color:T.dark,background:"transparent",padding:0}}/></div>{tags.length>=max&&<div style={{marginTop:4,fontSize:".75rem",color:T.textMuted}}>Maximum ({max}) erreicht</div>}{hint&&tags.length<max&&<div style={{marginTop:4,fontSize:".75rem",color:T.textMuted}}>{hint}</div>}</div>);}
 
-function StylePicker({value,onChange}){return(<div style={{display:"flex",flexDirection:"column",gap:10}}>{Object.entries(STYLES_MAP).map(([key,s])=>{const on=value===key;const isCustom=key==="custom";return(<button key={key} onClick={()=>onChange(key)} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px",border:on?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:on?T.white:T.white,cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .2s",boxShadow:on?T.sh2:"none"}}>
-<div style={{width:44,height:44,borderRadius:T.rSm,background:isCustom?"conic-gradient(from 0deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)":s.heroGradient,flexShrink:0}}/>
+function StylePicker({value,onChange}){return(<div style={{display:"flex",flexDirection:"column",gap:10}}>{Object.entries(STYLES_MAP).map(([key,s])=>{const on=value===key;return(<button key={key} onClick={()=>onChange(key)} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px",border:on?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:on?T.white:T.white,cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .2s",boxShadow:on?T.sh2:"none"}}>
+<div style={{width:44,height:44,borderRadius:T.rSm,background:s.heroGradient,flexShrink:0}}/>
 <div style={{flex:1,minWidth:0}}>
 <div style={{fontWeight:700,fontSize:".88rem",color:T.dark}}>{s.label}</div>
 <div style={{fontSize:".75rem",color:T.textMuted,marginTop:1}}>{s.desc}</div>
@@ -1164,8 +1177,8 @@ const FONT_OPTIONS=[
 ];
 const CUSTOM_FONTS={dm_sans:"'DM Sans',sans-serif",inter:"'Inter',sans-serif",outfit:"'Outfit',sans-serif",poppins:"'Poppins',sans-serif",montserrat:"'Montserrat',sans-serif",raleway:"'Raleway',sans-serif",open_sans:"'Open Sans',sans-serif",lato:"'Lato',sans-serif",roboto:"'Roboto',sans-serif",nunito:"'Nunito',sans-serif",work_sans:"'Work Sans',sans-serif",manrope:"'Manrope',sans-serif",space_grotesk:"'Space Grotesk',sans-serif",plus_jakarta:"'Plus Jakarta Sans',sans-serif",rubik:"'Rubik',sans-serif",source_serif:"'Source Serif 4',Georgia,serif",playfair:"'Playfair Display',Georgia,serif",lora:"'Lora',Georgia,serif",merriweather:"'Merriweather',Georgia,serif",dm_serif:"'DM Serif Display',Georgia,serif"};
 function loadGoogleFont(fontKey){const nameMap={dm_sans:"DM+Sans:wght@400;500;600;700;800",inter:"Inter:wght@400;500;600;700;800",outfit:"Outfit:wght@400;500;600;700;800",poppins:"Poppins:wght@400;500;600;700;800",montserrat:"Montserrat:wght@400;500;600;700;800",raleway:"Raleway:wght@400;500;600;700;800",open_sans:"Open+Sans:wght@400;500;600;700;800",lato:"Lato:wght@400;700;900",roboto:"Roboto:wght@400;500;700;900",nunito:"Nunito:wght@400;500;600;700;800",work_sans:"Work+Sans:wght@400;500;600;700;800",manrope:"Manrope:wght@400;500;600;700;800",space_grotesk:"Space+Grotesk:wght@400;500;600;700",plus_jakarta:"Plus+Jakarta+Sans:wght@400;500;600;700;800",rubik:"Rubik:wght@400;500;600;700",source_serif:"Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700",playfair:"Playfair+Display:wght@400;600;700;800",lora:"Lora:wght@400;500;600;700",merriweather:"Merriweather:wght@400;700;900",dm_serif:"DM+Serif+Display:wght@400"};const name=nameMap[fontKey];if(!name)return;const id="gf-"+fontKey;if(document.getElementById(id))return;const link=document.createElement("link");link.id=id;link.rel="stylesheet";link.href=`https://fonts.googleapis.com/css2?family=${name}&display=swap`;document.head.appendChild(link);}
-function buildCustomStyle(d){const c=d.customColor||"#2563eb";const fk=d.customFont||"dm_sans";loadGoogleFont(fk);const f=CUSTOM_FONTS[fk]||CUSTOM_FONTS.dm_sans;const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);return{...STYLES_MAP.custom,primary:c,accent:c,accentSoft:`rgba(${r},${g},${b},0.07)`,font:f,heroGradient:`linear-gradient(160deg,${c} 0%,rgba(${r},${g},${b},0.85) 50%,rgba(${r},${g},${b},0.7) 100%)`,badgeBg:`rgba(${r},${g},${b},0.08)`,badgeText:c};}
-function Preview({d,compact}){const s=d.stil==="custom"?buildCustomStyle(d):(STYLES_MAP[d.stil]||STYLES_MAP.klassisch);const stil=d.stil||"klassisch";const extraItems=d.extraLeistung?d.extraLeistung.split("\n").filter(l=>l.trim()):[];const allItems=[...(d.leistungen||[]),...extraItems];const hasContact=d.adresse||d.telefon||d.email;const px=compact?"20px":"28px";const adressFull=[d.adresse,[d.plz,d.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");const zeit=d.oeffnungszeiten==="custom"?d.oeffnungszeitenCustom:(OEFFNUNGSZEITEN.find(o=>o.value===d.oeffnungszeiten)?.label||"");
+function applyAccent(baseStyle,accentHex){if(!accentHex)return baseStyle;const r=parseInt(accentHex.slice(1,3),16),g=parseInt(accentHex.slice(3,5),16),b=parseInt(accentHex.slice(5,7),16);return{...baseStyle,accent:accentHex,accentSoft:`rgba(${r},${g},${b},0.07)`,badgeBg:`rgba(${r},${g},${b},0.08)`,badgeText:accentHex};}
+function Preview({d,compact}){const base=STYLES_MAP[d.stil]||STYLES_MAP.klassisch;const accent=d.accentColor||BRANCHEN_ACCENTS[d.branche]||null;const s=accent?applyAccent(base,accent):base;const stil=d.stil||"klassisch";const extraItems=d.extraLeistung?d.extraLeistung.split("\n").filter(l=>l.trim()):[];const allItems=[...(d.leistungen||[]),...extraItems];const hasContact=d.adresse||d.telefon||d.email;const px=compact?"20px":"28px";const adressFull=[d.adresse,[d.plz,d.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");const zeit=d.oeffnungszeiten==="custom"?d.oeffnungszeitenCustom:(OEFFNUNGSZEITEN.find(o=>o.value===d.oeffnungszeiten)?.label||"");
 const Badge=({label})=><div style={{display:"inline-block",padding:"4px 11px",background:stil==="modern"?"rgba(255,255,255,.1)":"rgba(255,255,255,.08)",border:stil==="modern"?"none":`1px solid rgba(255,255,255,.1)`,borderRadius:stil==="modern"?"100px":s.badgeRadius||"4px",fontSize:"10px",fontWeight:600,letterSpacing:"0.03em",color:"rgba(255,255,255,.7)"}}>{label}</div>;
 const badges=[];if(d.notdienst)badges.push("24/7 Notdienst");if(d.meisterbetrieb)badges.push("Meisterbetrieb");if(d.kostenvoranschlag)badges.push("Kostenloser KV");if(d.hausbesuche)badges.push("Hausbesuche");if(d.terminvereinbarung)badges.push("Nur mit Termin");if(d.foerderungsberatung)badges.push("Förderungsberatung");if(d.lieferservice)badges.push("Lieferservice");if(d.barrierefrei)badges.push("Barrierefrei");if(d.parkplaetze)badges.push("Parkplätze");if(d.kassenvertrag)badges.push(d.kassenvertrag==="alle_kassen"?"Alle Kassen":d.kassenvertrag==="wahlarzt"?"Wahlarzt":d.kassenvertrag==="privat"?"Nur Privat":d.kassenvertrag.toUpperCase());if(d.erstgespraech_gratis)badges.push("Erstgespräch gratis");if(d.online_beratung)badges.push("Online-Beratung");if(d.ratenzahlung)badges.push("Ratenzahlung");
 const cardStyle=(i)=>{const base={background:s.cardBg,borderRadius:s.radius,padding:"12px 14px",display:"flex",alignItems:"flex-start",gap:"10px",fontSize:"12px",transition:"transform .15s"};if(stil==="modern")return{...base,border:"none",boxShadow:"0 2px 12px rgba(0,0,0,.06)",borderTop:`3px solid ${s.accent}`};if(stil==="elegant")return{...base,border:`1px solid ${s.borderColor}`,boxShadow:"none"};return{...base,border:`1px solid ${s.borderColor}`,borderLeft:`3px solid ${s.accent}`,boxShadow:"none"};};
@@ -1260,7 +1273,7 @@ const qCss=`
 function Questionnaire({data,setData,onComplete,onBack}){
   const SECS=[{id:"start",label:"Start",icon:<><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></>},{id:"grunddaten",label:"Grunddaten",icon:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>},{id:"leistungen",label:"Leistungen",icon:<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>},{id:"kontakt",label:"Kontakt",icon:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>},{id:"impressum",label:"Impressum",icon:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>},{id:"design",label:"Design",icon:<><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>},{id:"fertig",label:"Fertig",icon:<polyline points="20 6 9 17 4 12"/>}];
   const[step,setStep]=useState(0);
-  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[importResult,setImportResult]=useState(null);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.customColor?.toUpperCase()||"#2563EB");const[importPhase,setImportPhase]=useState("");
+  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[importResult,setImportResult]=useState(null);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.accentColor?.toUpperCase()||"");const[showAccentPicker,setShowAccentPicker]=useState(!!data.accentColor);const[importPhase,setImportPhase]=useState("");
   const[importSeconds,setImportSeconds]=useState(0);
   const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");setImportSeconds(0);
     const isGoogle=/google\.(com|at|de|ch)\/(maps|place)|goo\.gl/i.test(importUrl);
@@ -1270,7 +1283,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
     const tick=setInterval(()=>setImportSeconds(s=>s+1),1000);
     try{const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),120000);
     const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl}),signal:ctrl.signal});clearTimeout(timeout);
-    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:hasBrandColor?"custom":b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{stil:"custom",customColor:j.brand_color,hexInput:j.brand_color.toUpperCase()}:{})}));const meta=j._meta||{};const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{},import_tokens_in:meta.import_tokens_in||0,import_tokens_out:meta.import_tokens_out||0,import_cost_eur:meta.import_cost_eur||0,firecrawl_credits:meta.firecrawl_credits||0};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
+    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{accentColor:ensureContrast(j.brand_color)}:{})}));const meta=j._meta||{};const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{},import_tokens_in:meta.import_tokens_in||0,import_tokens_out:meta.import_tokens_out||0,import_cost_eur:meta.import_cost_eur||0,firecrawl_credits:meta.firecrawl_credits||0};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
     }catch(e){timers.forEach(clearTimeout);clearInterval(tick);setImportPhase("");setImportLoading(false);if(e.name==="AbortError")setImportErr("Der Import hat zu lange gedauert. Die Website ist möglicherweise nicht erreichbar oder zu komplex. Sie können die Daten manuell eingeben oder uns unter support@siteready.at melden — wir schauen uns das Problem an.");else setImportErr("Verbindungsfehler — bitte versuchen Sie es erneut oder melden Sie das Problem unter support@siteready.at");}};
   const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
@@ -1496,17 +1509,18 @@ function Questionnaire({data,setData,onComplete,onBack}){
       </div>
       {ftr(true,()=>go(5),"Weiter",!sv4)}
     </div>
-    {/* 5: Design — Stil + Layout getrennt */}
+    {/* 5: Design — Stil + optionale Akzentfarbe */}
     <div id="q-sec-5" className={`q-section${step===5?" q-vis":""}`}>
-      {hdr("Design","Design & Seitenaufbau","Wählen Sie Stil und Layout getrennt — beides ist im Portal jederzeit änderbar.")}
+      {hdr("Design","Design & Akzentfarbe","Wählen Sie einen Stil — die Akzentfarbe passt sich automatisch an Ihre Branche an.")}
       <div className="q-mb" style={{maxWidth:900}}>
         {(()=>{
           const STILE=[
-            {value:"klassisch",label:"Klassisch",desc:"Seriös, klar strukturiert. Navy-Blau, dezente Schatten.",color:"#0f2b5b",accent:"#2563eb"},
-            {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Indigo-Akzent, Pill-Buttons.",color:"#0f172a",accent:"#6366f1"},
-            {value:"elegant",label:"Elegant",desc:"Minimalistisch, dünne Linien. Anthrazit, leichte Typografie.",color:"#292524",accent:"#78716c"},
+            {value:"klassisch",label:"Klassisch",desc:"Seriös, klar strukturiert. Dezente Linien, kompaktes Layout.",color:"#094067",accent:"#0369a1"},
+            {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Schatten-Cards, Pill-Buttons.",color:"#18181b",accent:"#4f46e5"},
+            {value:"elegant",label:"Elegant",desc:"Minimalistisch, Serif-Überschriften. Premium-Ausstrahlung.",color:"#020826",accent:"#7a6844"},
           ];
-          const isCustom=data.stil==="custom";
+          const currentAccent=data.accentColor||BRANCHEN_ACCENTS[data.branche]||STYLES_MAP[data.stil]?.accent||"#0369A1";
+          const showAccent=showAccentPicker;const setShowAccent=setShowAccentPicker;
           return<div>
             {/* Stil-Auswahl */}
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
@@ -1521,32 +1535,28 @@ function Questionnaire({data,setData,onComplete,onBack}){
                 </button>;
               })}
             </div>
-            {/* Custom-Option */}
-            <button onClick={()=>up("stil")("custom")} style={{marginBottom:24,display:"flex",alignItems:"center",gap:12,padding:"14px 18px",border:isCustom?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:isCustom?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,width:"100%",transition:"all .15s",boxShadow:isCustom?T.sh2:"none"}}>
-              <div style={{width:32,height:32,borderRadius:6,background:"conic-gradient(from 0deg,#2563eb,#6366f1,#0891b2,#059669,#d97706,#dc2626,#2563eb)",flexShrink:0}}/>
-              <div style={{flex:1}}>
-                <div style={{fontSize:".88rem",fontWeight:700,color:T.dark}}>Eigenes Branding</div>
-                <div style={{fontSize:".75rem",color:T.textMuted}}>Eigene Farbe und Schrift wählen</div>
+            {/* Akzentfarbe — aufklappbar, optional */}
+            <button onClick={()=>setShowAccent(!showAccent)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",cursor:"pointer",fontFamily:T.font,width:"100%",transition:"all .15s",marginBottom:showAccent?0:24}}>
+              <div style={{width:22,height:22,borderRadius:6,background:currentAccent,flexShrink:0,border:"1px solid rgba(0,0,0,.1)"}}/>
+              <div style={{flex:1,textAlign:"left"}}>
+                <div style={{fontSize:".85rem",fontWeight:600,color:T.dark}}>Akzentfarbe anpassen</div>
+                <div style={{fontSize:".72rem",color:T.textMuted}}>Buttons, Links und Highlights — aktuell: {ACCENT_PRESETS.find(p=>p.value===currentAccent)?.label||currentAccent}</div>
               </div>
-              {isCustom&&<div style={{width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>{"✓"}</div>}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round" style={{transform:showAccent?"rotate(180deg)":"none",transition:"transform .2s"}}><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            {isCustom&&<div style={{marginTop:-12,marginBottom:24,padding:"20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
-              <div style={{marginBottom:18}}>
-                <label style={{display:"block",marginBottom:7,fontSize:".8rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>Primärfarbe</label>
-                <div style={{background:T.white,border:`2px solid ${T.bg3}`,borderRadius:T.r,padding:18}}>
-                  <div className="q-color-row">
-                    {["#2563eb","#6366f1","#0891b2","#059669","#dc2626","#d97706","#7c3aed","#db2777","#111111","#475569"].map(c=><button key={c} className={`q-color-dot${data.customColor===c?" q-sel":""}`} style={{background:c}} onClick={()=>{up("customColor")(c);setHexInput(c.toUpperCase())}}/>)}
-                  </div>
-                  <div className="q-color-custom">
-                    <input type="color" value={data.customColor} onChange={e=>{up("customColor")(e.target.value);setHexInput(e.target.value.toUpperCase())}} style={{width:40,height:40,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
-                    <input className="q-hex" value={hexInput} maxLength={7} onChange={e=>{const v=e.target.value;setHexInput(v);if(/^#[0-9A-Fa-f]{6}$/.test(v))up("customColor")(v)}} placeholder="#000000"/>
-                    <div style={{width:24,height:24,borderRadius:6,background:data.customColor,border:"1px solid rgba(0,0,0,.1)",marginLeft:"auto"}}/>
-                  </div>
-                </div>
+            {showAccent&&<div style={{padding:"20px",border:`1.5px solid ${T.bg3}`,borderTop:"none",borderRadius:`0 0 ${T.rSm} ${T.rSm}`,background:T.bg,marginBottom:24}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Farbe wählen</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:16}}>
+                {ACCENT_PRESETS.map(p=>{const active=currentAccent===p.value;return<button key={p.value} onClick={()=>{up("accentColor")(p.value);setHexInput(p.value.toUpperCase())}} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:active?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:100,background:active?T.white:"#fff",cursor:"pointer",fontFamily:T.font,transition:"all .15s",boxShadow:active?"0 2px 8px rgba(0,0,0,.08)":"none"}} title={p.label}><div style={{width:18,height:18,borderRadius:"50%",background:p.value,flexShrink:0,border:"1px solid rgba(0,0,0,.1)"}}/><span style={{fontSize:".78rem",fontWeight:active?700:500,color:active?T.dark:T.textMuted}}>{p.label}</span></button>})}
               </div>
-              <Combobox label="Schriftart" value={data.customFont} onChange={up("customFont")} options={FONT_OPTIONS} placeholder="Schriftart suchen..." hint="Wird für Überschriften und Text verwendet"/>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <input type="color" value={currentAccent} onChange={e=>{const v=ensureContrast(e.target.value);up("accentColor")(v);setHexInput(v.toUpperCase())}} style={{width:36,height:36,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
+                <input value={hexInput} maxLength={7} onChange={e=>{const v=e.target.value;setHexInput(v);if(/^#[0-9A-Fa-f]{6}$/.test(v)){up("accentColor")(ensureContrast(v))}}} placeholder="#000000" style={{width:90,padding:"6px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontFamily:T.mono,fontSize:".82rem",fontWeight:600,color:T.dark}}/>
+                <div style={{fontSize:".72rem",color:T.textMuted}}>Eigene Farbe (wird bei Bedarf abgedunkelt)</div>
+              </div>
+              {data.accentColor&&<button onClick={()=>{up("accentColor")("");}} style={{marginTop:12,padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".78rem",fontWeight:500,fontFamily:T.font}}>Auf Branchenstandard zurücksetzen</button>}
             </div>}
-            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil, Farben und Schrift können Sie im Portal jederzeit anpassen. Das Layout passt sich automatisch an Ihre Inhalte an.</div></div>
+            <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil und Akzentfarbe können Sie im Portal jederzeit anpassen. Für volle Kontrolle gibt es dort auch Einzelpicker für alle Farben.</div></div>
           </div>;
         })()}
       </div>
@@ -1564,7 +1574,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Leistungen</span><span style={{fontWeight:600,color:T.dark}}>{(data.leistungen?.length||0)+(data.extraLeistung?.split(",").filter(s=>s.trim()).length||0)} ausgewählt</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Kontakt</span><span style={{fontWeight:600,color:T.dark}}>{data.telefon||"–"}</span></div>
             <div className="q-summary-row"><span style={{color:T.textMuted}}>Impressum</span><span style={{fontWeight:600,color:T.dark}}>{uf?UNTERNEHMENSFORMEN.find(u=>u.value===uf)?.label||uf:"–"}{legalOk&&impressumConfirm?" – vollständig":""}</span></div>
-            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}</span></div>
+            <div className="q-summary-row"><span style={{color:T.textMuted}}>Design</span><span style={{fontWeight:600,color:T.dark,display:"flex",alignItems:"center",gap:8}}>{STYLES_MAP[data.stil]?.label||"Klassisch"}<span style={{width:14,height:14,borderRadius:"50%",background:data.accentColor||BRANCHEN_ACCENTS[data.branche]||STYLES_MAP[data.stil]?.accent||"#0369A1",display:"inline-block",border:"1px solid rgba(0,0,0,.1)"}}/></span></div>
           </div>
         </div>
         <div style={{marginTop:20,padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
@@ -2932,14 +2942,41 @@ function Portal({session,onLogout}){
               </div>
             </div>
           );
+          const [showErweitert,setShowErweitert]=useState(false);
+          const currentAccent=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||s.accent;
           return<div style={{display:"flex",flexDirection:"column",gap:16}}>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <SectionHeader label="Design & Farben" desc="Passen Sie Farben, Schriftart und Ecken Ihrer Website an. Alle Änderungen sind sofort sichtbar."/>
-              <InfoRow label="Stil" value={s.label||order.stil}/>
+            <SectionHeader label="Design & Farben" desc="Stil und Akzentfarbe sind unabhängig — ändern Sie eins, ohne das andere zu verlieren."/>
+
+              {/* Stil wechseln */}
+              <div style={{marginBottom:24}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                  {Object.entries(STYLES_MAP).map(([key,st])=>{const active=order.stil===key;return<button key={key} onClick={()=>upOrder("stil")(key)} style={{padding:"14px 16px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
+                    <div style={{width:28,height:28,borderRadius:6,background:st.heroGradient,marginBottom:10}}/>
+                    <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{st.label}</div>
+                    <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.5,marginTop:2}}>{st.desc}</div>
+                    {active&&<div style={{position:"absolute",top:8,right:8,width:18,height:18,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800}}>{"✓"}</div>}
+                  </button>})}
+                </div>
+              </div>
+
+              {/* Akzentfarbe */}
+              <div style={{marginBottom:24}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Akzentfarbe</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>
+                  {ACCENT_PRESETS.map(p=>{const active=currentAccent===p.value;return<button key={p.value} onClick={()=>upOrder("custom_accent")(p.value)} style={{display:"flex",alignItems:"center",gap:7,padding:"7px 13px",border:active?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:100,background:active?T.white:"#fff",cursor:"pointer",fontFamily:T.font,transition:"all .15s"}} title={p.label}><div style={{width:16,height:16,borderRadius:"50%",background:p.value,border:"1px solid rgba(0,0,0,.1)"}}/><span style={{fontSize:".76rem",fontWeight:active?700:500,color:active?T.dark:T.textMuted}}>{p.label}</span></button>})}
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <input type="color" value={currentAccent} onChange={e=>{const v=ensureContrast(e.target.value);upOrder("custom_accent")(v)}} style={{width:36,height:36,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
+                  <input value={currentAccent} maxLength={7} onChange={e=>{const v=e.target.value;if(/^#[0-9A-Fa-f]{6}$/.test(v))upOrder("custom_accent")(ensureContrast(v));}} style={{width:90,padding:"5px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontFamily:T.mono,fontSize:".82rem",fontWeight:600,color:T.dark}}/>
+                  <div style={{fontSize:".72rem",color:T.textMuted}}>Eigene Farbe (wird bei Bedarf abgedunkelt)</div>
+                </div>
+              </div>
 
               {/* Paletten */}
-              <div style={{marginTop:20,marginBottom:8}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Farbpalette wählen</div>
+              <div style={{marginBottom:20}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Farbstimmung</div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8}}>
                   {PALETTES.map((p,i)=>{const pc=p.colors;const isActive=i===0?!hasCustom:false;return(
                     <button key={i} onClick={()=>applyPalette(p)} style={{padding:"12px",border:`2px solid ${isActive?T.dark:T.bg3}`,borderRadius:T.rSm,background:isActive?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"border-color .15s"}}>
@@ -2953,10 +2990,13 @@ function Portal({session,onLogout}){
                 </div>
               </div>
 
-              {/* Farben einzeln */}
-              <div style={{marginTop:20,marginBottom:8}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Farben einzeln anpassen</div>
-                <div className="pt-color-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+              {/* Erweitert aufklappbar */}
+              <button onClick={()=>setShowErweitert(!showErweitert)} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 0",border:"none",background:"none",cursor:"pointer",fontFamily:T.font,color:T.textMuted,fontSize:".82rem",fontWeight:600}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform:showErweitert?"rotate(180deg)":"none",transition:"transform .2s"}}><polyline points="6 9 12 15 18 9"/></svg>
+                Erweitert — alle Farben, Schrift und Ecken einzeln
+              </button>
+              {showErweitert&&<div style={{marginTop:8}}>
+                <div className="pt-color-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:20}}>
                   <ColorPicker label="Primärfarbe" hint="Navigation, Überschriften, Über-uns" field="custom_color" fallback={s.primary}/>
                   <ColorPicker label="Akzentfarbe" hint="Buttons, Links, Highlights" field="custom_accent" fallback={s.accent}/>
                   <ColorPicker label="Hintergrund" hint="Seitenhintergrund" field="custom_bg" fallback={s.bg}/>
@@ -2964,15 +3004,12 @@ function Portal({session,onLogout}){
                   <ColorPicker label="Sekundärtext" hint="Hints, Labels" field="custom_text_muted" fallback={s.textMuted||"#64748b"}/>
                   <ColorPicker label="Trennlinien" hint="Borders, Rahmen" field="custom_sep" fallback={s.borderColor||"#e2e8f0"}/>
                 </div>
-              </div>
-
-              {/* Schriftart + Ecken als Dropdowns */}
-              <div className="pt-font-grid" style={{marginTop:20,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-                <Dropdown label="Schriftart" value={order.custom_font||""} onChange={upOrder("custom_font")} options={FONT_OPTIONS} placeholder="Standard (vom Stil)"/>
-                <Dropdown label="Ecken" value={order.custom_radius||""} onChange={upOrder("custom_radius")} options={RADIUS_OPTIONS} placeholder="Standard (vom Stil)"/>
-              </div>
-
-              {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{marginTop:16,padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}
+                <div className="pt-font-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+                  <Dropdown label="Schriftart" value={order.custom_font||""} onChange={upOrder("custom_font")} options={FONT_OPTIONS} placeholder="Standard (vom Stil)"/>
+                  <Dropdown label="Ecken" value={order.custom_radius||""} onChange={upOrder("custom_radius")} options={RADIUS_OPTIONS} placeholder="Standard (vom Stil)"/>
+                </div>
+                {hasCustom&&<button onClick={()=>{["custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius"].forEach(k=>upOrder(k)(null));}} style={{padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Alles auf Standard zurücksetzen</button>}
+              </div>}
           </div>
 
           {/* ── Seitenaufbau ── */}

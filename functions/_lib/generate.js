@@ -229,7 +229,7 @@ const STIL = {
   },
 };
 
-/* Custom-Fonts Mapping (fuer stil=custom) */
+/* Custom-Fonts Mapping (fuer custom_font bei jedem Stil) */
 const CUSTOM_FONT_URLS = {
   dm_sans:"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap",
   inter:"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
@@ -297,10 +297,10 @@ export async function generateWebsite(order_id, env) {
   const o = rows[0];
   await log.info(order_id, "generate_start", {firmenname: o.firmenname, stil: o.stil, branche: o.branche});
 
-  /* Konfiguration — Farben kommen immer aus custom_* Feldern (gesetzt via Branchengruppe oder User-Override) */
-  const hasCustomColors = o.custom_color || o.custom_accent;
+  /* Konfiguration — Basis-Stil aus STIL-Map, custom_* Felder mergen bei jedem Stil */
   const basStil = STIL[o.stil] || STIL.klassisch;
-  const stil = hasCustomColors ? { ...basStil, ...buildCustomStil(o) } : (o.stil === "custom" ? buildCustomStil(o) : basStil);
+  const hasCustomColors = o.custom_color || o.custom_accent;
+  const stil = hasCustomColors ? { ...basStil, ...buildCustomStil(o) } : basStil;
   const pal  = { p: stil.p, a: stil.a, bg: stil.bg, s: stil.s };
   const sub  = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
   const betriebstyp = o.branche_label || "Betrieb";
@@ -422,8 +422,7 @@ export async function generateWebsite(order_id, env) {
     klassisch: "Serioes, vertrauenswuerdig, bodenstaendig. Klare Sprache ohne Schnörkel. Betone Zuverlaessigkeit und Tradition.",
     modern: "Dynamisch, frisch, auf Augenhoehe. Kurze, praegnante Saetze. Betone Innovation und Kundenerlebnis.",
     elegant: "Zurueckhaltend, exklusiv, weniger ist mehr. Schlanke Formulierungen, gehobener Ton. Betone Qualitaet und Anspruch.",
-    custom: "Professionell und authentisch. Passe den Ton an die Branche an.",
-  }[o.stil] || "Professionell und authentisch.";
+  }[o.stil] || "Professionell und authentisch. Passe den Ton an die Branche an.";
 
   // Branchengruppe fuer sprachlichen Kontext
   const brGruppe = {

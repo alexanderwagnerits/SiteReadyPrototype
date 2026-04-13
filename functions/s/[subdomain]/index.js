@@ -936,16 +936,15 @@ export async function onRequestGet({params, env}) {
   };
   const stilColors = STIL_COLORS[currentStil] || STIL_COLORS.klassisch;
 
-  // Custom-Felder ueberschreiben Stil-Defaults NUR bei Stil "custom"
-  // Bei klassisch/modern/elegant gelten die festen Stil-Farben
-  const isCustomStil = currentStil === "custom";
+  // Custom-Felder ueberschreiben Stil-Defaults bei JEDEM Stil
+  // Wenn custom_* gesetzt → ueberschreibt, sonst → Stil-Default greift
   const customDesign = [
-    `--primary:${isCustomStil && o.custom_color ? o.custom_color : stilColors.p}`,
-    `--accent:${isCustomStil && o.custom_accent ? o.custom_accent : stilColors.a}`,
-    `--bg:${isCustomStil && o.custom_bg ? o.custom_bg : stilColors.bg}`,
-    `--sep:${isCustomStil && o.custom_sep ? o.custom_sep : stilColors.s}`,
-    `--text:${isCustomStil && o.custom_text ? o.custom_text : stilColors.t}`,
-    `--textMuted:${isCustomStil && o.custom_text_muted ? o.custom_text_muted : stilColors.tm}`,
+    `--primary:${o.custom_color || stilColors.p}`,
+    `--accent:${o.custom_accent || stilColors.a}`,
+    `--bg:${o.custom_bg || stilColors.bg}`,
+    `--sep:${o.custom_sep || stilColors.s}`,
+    `--text:${o.custom_text || stilColors.t}`,
+    `--textMuted:${o.custom_text_muted || stilColors.tm}`,
     o.custom_radius && `--r:${o.custom_radius}`,
     o.custom_radius && `--rLg:${parseInt(o.custom_radius)+4}px`,
   ].filter(Boolean);

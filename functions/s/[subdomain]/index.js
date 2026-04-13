@@ -928,6 +928,24 @@ export async function onRequestGet({params, env}) {
   const currentStil = o.stil || "klassisch";
   html = html.replace(/class="stil-\w+"/g, `class="stil-${currentStil}"`);
 
+  // ── Kontrast-Check: zu helle Farben abdunkeln (4.5:1 auf weiss) ──
+  function ensureContrast(hex, minRatio) {
+    if (!hex || !/^#[0-9a-fA-F]{6}$/i.test(hex)) return hex;
+    minRatio = minRatio || 4.5;
+    const lum = (c) => { const v = parseInt(c, 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    const L = (h) => { return 0.2126 * lum(h.slice(1, 3)) + 0.7152 * lum(h.slice(3, 5)) + 0.0722 * lum(h.slice(5, 7)); };
+    const ratio = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    let color = hex;
+    for (let i = 0; i < 20; i++) {
+      if (ratio(1, L(color)) >= minRatio) return color;
+      const r = Math.max(0, parseInt(color.slice(1, 3), 16) - 10);
+      const g = Math.max(0, parseInt(color.slice(3, 5), 16) - 10);
+      const b = Math.max(0, parseInt(color.slice(5, 7), 16) - 10);
+      color = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+    }
+    return color;
+  }
+
   // ── Stil-Farben serve-time IMMER anwenden (damit Änderungen sofort greifen) ──
   const STIL_COLORS = {
     klassisch: {p:"#094067",a:"#0369a1",bg:"#f4f7fa",s:"#d8eefe",t:"#1e293b",tm:"#475569"},
@@ -937,10 +955,12 @@ export async function onRequestGet({params, env}) {
   const stilColors = STIL_COLORS[currentStil] || STIL_COLORS.klassisch;
 
   // Custom-Felder ueberschreiben Stil-Defaults bei JEDEM Stil
-  // Wenn custom_* gesetzt → ueberschreibt, sonst → Stil-Default greift
+  // Accent + Primary werden durch Kontrast-Check abgesichert (zu hell → abdunkeln)
+  const safeAccent = o.custom_accent ? ensureContrast(o.custom_accent) : stilColors.a;
+  const safePrimary = o.custom_color ? ensureContrast(o.custom_color, 3.0) : stilColors.p;
   const customDesign = [
-    `--primary:${o.custom_color || stilColors.p}`,
-    `--accent:${o.custom_accent || stilColors.a}`,
+    `--primary:${safePrimary}`,
+    `--accent:${safeAccent}`,
     `--bg:${o.custom_bg || stilColors.bg}`,
     `--sep:${o.custom_sep || stilColors.s}`,
     `--text:${o.custom_text || stilColors.t}`,

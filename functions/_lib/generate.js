@@ -256,9 +256,27 @@ const CUSTOM_FONT_FAMILIES = {
   dm_sans:"'DM Sans',sans-serif",inter:"'Inter',sans-serif",outfit:"'Outfit',sans-serif",poppins:"'Poppins',sans-serif",montserrat:"'Montserrat',sans-serif",raleway:"'Raleway',sans-serif",open_sans:"'Open Sans',sans-serif",lato:"'Lato',sans-serif",roboto:"'Roboto',sans-serif",nunito:"'Nunito',sans-serif",work_sans:"'Work Sans',sans-serif",manrope:"'Manrope',sans-serif",space_grotesk:"'Space Grotesk',sans-serif",plus_jakarta:"'Plus Jakarta Sans',sans-serif",rubik:"'Rubik',sans-serif",source_serif:"'Source Serif 4',Georgia,serif",playfair:"'Playfair Display',Georgia,serif",lora:"'Lora',Georgia,serif",merriweather:"'Merriweather',Georgia,serif",dm_serif:"'DM Serif Display',Georgia,serif",
 };
 
+/* Kontrast-Check: zu helle Farben abdunkeln (WCAG AA 4.5:1 auf weiss) */
+function ensureContrast(hex, minRatio) {
+  if (!hex || !/^#[0-9a-fA-F]{6}$/i.test(hex)) return hex;
+  minRatio = minRatio || 4.5;
+  const lum = (c) => { const v = parseInt(c, 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const L = (h) => { return 0.2126 * lum(h.slice(1, 3)) + 0.7152 * lum(h.slice(3, 5)) + 0.0722 * lum(h.slice(5, 7)); };
+  const ratio = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  let color = hex;
+  for (let i = 0; i < 20; i++) {
+    if (ratio(1, L(color)) >= minRatio) return color;
+    const r = Math.max(0, parseInt(color.slice(1, 3), 16) - 10);
+    const g = Math.max(0, parseInt(color.slice(3, 5), 16) - 10);
+    const b = Math.max(0, parseInt(color.slice(5, 7), 16) - 10);
+    color = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+  }
+  return color;
+}
+
 function buildCustomStil(o) {
-  const p = o.custom_color || "#094067";
-  const a = o.custom_accent || p; // Accent = eigene Farbe oder Primary als Fallback
+  const p = ensureContrast(o.custom_color || "#094067", 3.0);
+  const a = ensureContrast(o.custom_accent || p); // Accent 4.5:1, Primary 3.0:1
   const bg = o.custom_bg || "#fafafa";
   const s = o.custom_sep || "#e5e7eb";
   const fk = o.custom_font || "dm_sans";

@@ -1256,7 +1256,8 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const svArr=[true,sv1,sv2,sv3,sv4,true,allValid];
   const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
   const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>{"›"}</span> <b>{bc}</b>{importResult&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,verticalAlign:"middle"}}>importiert — bitte prüfen</span>}</div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
-  const ftr=(back,next,label,disabled,style)=><div className="q-footer">{back&&<button className="q-btn-back" onClick={()=>go(step-1)}>Zurück</button>}<button className="q-btn-next" onClick={next} disabled={disabled} style={style}>{label} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button></div>;
+  const missingHint=(stepN)=>{const m=[];if(stepN===1){if(!data.firmenname?.trim())m.push("Firmenname");if(!data.branche)m.push("Branche");if(!data.bundesland)m.push("Bundesland");if(!data.kurzbeschreibung?.trim())m.push("Kurzbeschreibung");}else if(stepN===2){if(!(data.leistungen?.length>0||data.extraLeistung?.trim()))m.push("mind. 1 Leistung");}else if(stepN===3){if(!data.adresse?.trim())m.push("Adresse");if(!data.plz?.trim())m.push("PLZ");if(!data.ort?.trim())m.push("Ort");if(!data.telefon?.trim())m.push("Telefon");if(!data.email?.trim())m.push("E-Mail");if(!data.oeffnungszeiten)m.push("Öffnungszeiten");}else if(stepN===4){if(!legalOk)m.push("Impressum-Angaben");if(!impressumConfirm)m.push("Bestätigung");}return m;};
+  const ftr=(back,next,label,disabled,style)=>{const missing=disabled?missingHint(step):[];return<div className="q-footer">{disabled&&missing.length>0&&<div style={{fontSize:".78rem",color:T.textMuted,marginBottom:8,textAlign:"center"}}>Bitte ausfüllen: {missing.join(", ")}</div>}{back&&<button className="q-btn-back" onClick={()=>go(step-1)}>Zurück</button>}<button className="q-btn-next" onClick={next} disabled={disabled} style={style}>{label} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button></div>};
   const chevron=<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 
   return(<div className="q-layout"><style>{css+qCss}</style>
@@ -1357,7 +1358,13 @@ function Questionnaire({data,setData,onComplete,onBack}){
                 <span style={{fontSize:".72rem",color:T.textMuted}}>{/google\.(com|at|de|ch)\/(maps|place)|goo\.gl/i.test(importUrl)?"Google-Profil und verknüpfte Website werden analysiert":"Ihre Daten werden gründlich ausgelesen"}</span>
               </div>
             </div>}
-            {importErr&&<div style={{marginTop:8,padding:"10px 14px",background:T.redLight,borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,fontSize:".85rem",color:T.red,lineHeight:1.5}}>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>}
+            {importErr&&<div style={{marginTop:8,padding:"12px 14px",background:T.redLight,borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,fontSize:".85rem",color:T.red,lineHeight:1.5}}>
+              <div>{importErr.split("support@siteready.at").map((part,i,arr)=>i<arr.length-1?<span key={i}>{part}<a href="mailto:support@siteready.at?subject=Website-Import" style={{color:T.accent,fontWeight:700,textDecoration:"underline"}}>support@siteready.at</a></span>:<span key={i}>{part}</span>)}</div>
+              <div style={{display:"flex",gap:8,marginTop:10}}>
+                <button onClick={()=>{setImportErr("");doImport();}} style={{padding:"7px 16px",border:"none",borderRadius:T.rSm,background:T.red,color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>Nochmal versuchen</button>
+                <button onClick={()=>{setImportErr("");go(1);}} style={{padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.white,color:T.text,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font}}>Manuell eingeben</button>
+              </div>
+            </div>}
             <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${importConfirm?T.accent+"44":T.bg3}`,marginTop:12}}>
               <input type="checkbox" checked={importConfirm} onChange={e=>setImportConfirm(e.target.checked)} style={{marginTop:2,accentColor:T.accent,width:18,height:18,flexShrink:0,cursor:"pointer"}}/>
               <span style={{fontSize:".72rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, dass ich berechtigt bin, die Daten dieser Website zu importieren.</span>
@@ -1707,7 +1714,8 @@ function Portal({session,onLogout}){
   const[impressumChecked,setImpressumChecked]=useState(false);
   const[wizardOpen,setWizardOpen]=useState(()=>window.innerWidth>=768);
   const[ptSbOpen,setPtSbOpen]=useState(false);
-  const showToast=(msg)=>{setToastMsg(msg);setTimeout(()=>setToastMsg(null),2500);};
+  const toastTimer=useRef(null);
+  const showToast=(msg)=>{if(toastTimer.current)clearTimeout(toastTimer.current);setToastMsg(msg);const isError=/fehl|error|nicht|problem/i.test(msg);toastTimer.current=setTimeout(()=>setToastMsg(null),isError?5000:2500);};
   const[confirmDel,setConfirmDel]=useState(null);
   const askDelete=(label,onConfirm)=>setConfirmDel({label,onConfirm});
   const[cropData,setCropData]=useState(null);
@@ -2307,7 +2315,14 @@ function Portal({session,onLogout}){
     </aside>
     {/* Main */}
     <main className="pt-main">
-      {order?.status!=="pending"&&<>
+      {!order&&<div style={{padding:"40px 0"}}>
+        {[1,2,3].map(i=><div key={i} style={{marginBottom:24}}>
+          <div style={{height:14,width:i===1?"40%":"60%",background:T.bg3,borderRadius:6,marginBottom:12,animation:"pulse 1.5s ease-in-out infinite"}}/>
+          <div style={{height:48,background:T.bg3,borderRadius:T.rSm,animation:"pulse 1.5s ease-in-out infinite"}}/>
+        </div>)}
+        <style>{`@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+      </div>}
+      {order&&order?.status!=="pending"&&<>
         <div className="pt-mh">
           {pm.bc&&<div className="pt-bc">{pm.bc} <b>›</b> {pm.title}</div>}
           <div className="pt-mh-title">{pm.title}</div>
@@ -2316,7 +2331,7 @@ function Portal({session,onLogout}){
         <div className="pt-mh-line"/>
       </>}
       <div className="pt-mb">
-      {isDirty&&page!=="impressum"&&(
+      {isDirty&&(
         <div className="pt-save-bar" style={{position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between",
           padding:"12px 20px",background:"#111",borderRadius:T.rSm,boxShadow:"0 4px 16px rgba(0,0,0,.15)",marginBottom:12}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>

@@ -595,8 +595,11 @@ a{color:inherit}
 .lb{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);align-items:center;justify-content:center;cursor:zoom-out}
 .lb.open{display:flex}
 .lb img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:var(--rLg)}
-.lb-x{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;opacity:.6;transition:opacity .2s}
+.lb-x{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;opacity:.6;transition:opacity .2s;z-index:2}
 .lb-x:hover{opacity:1}
+.lb-prev,.lb-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;font-size:2.5rem;cursor:pointer;opacity:.6;transition:opacity .2s;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2;backdrop-filter:blur(4px)}
+.lb-prev{left:16px}.lb-next{right:16px}
+.lb-prev:hover,.lb-next:hover{opacity:1;background:rgba(255,255,255,.25)}
 .stil-elegant .lb{background:rgba(0,0,0,.92)}
 
 /* ═══════════════════════════════════════════════════════
@@ -751,7 +754,7 @@ ${buchungslinkHtml}
 
 <!-- FOOTER -->
 
-<div class="lb" id="sr-lb" role="dialog" aria-modal="true" aria-label="Bild vergrößert" onclick="this.classList.remove('open')"><button class="lb-x" aria-label="Schließen">×</button><img id="sr-lb-img" src="" alt=""/></div>
+<div class="lb" id="sr-lb" role="dialog" aria-modal="true" aria-label="Bild vergrößert" onclick="if(event.target===this)this.classList.remove('open')"><button class="lb-prev" aria-label="Vorheriges Bild" onclick="event.stopPropagation();window._lbNav(-1)">&#8249;</button><img id="sr-lb-img" src="" alt=""/><button class="lb-next" aria-label="Nächstes Bild" onclick="event.stopPropagation();window._lbNav(1)">&#8250;</button><button class="lb-x" aria-label="Schließen" onclick="event.stopPropagation();document.getElementById('sr-lb').classList.remove('open')">×</button></div>
 <script>(function(){
 /* Scroll-Animationen: fade-up + sr-fade */
 var f=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('visible','sr-vis');f.unobserve(i.target)}})},{threshold:.06,rootMargin:'0px 0px -40px 0px'});
@@ -779,9 +782,13 @@ document.querySelectorAll('.faq-toggle').forEach(function(el){el.textContent='+'
 if(!open){a.classList.add('open');var t=btn.querySelector('.faq-toggle');if(t)t.textContent='\\u2212'}
 });
 
-/* Lightbox */
-document.addEventListener('click',function(e){var img=e.target.closest('.sr-zoom');if(img){var lb=document.getElementById('sr-lb');document.getElementById('sr-lb-img').src=img.src;lb.classList.add('open')}});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('sr-lb').classList.remove('open')});
+/* Lightbox mit Navigation */
+var _lbImgs=[],_lbIdx=0;
+window._lbNav=function(dir){if(_lbImgs.length<2)return;_lbIdx=(_lbIdx+dir+_lbImgs.length)%_lbImgs.length;document.getElementById('sr-lb-img').src=_lbImgs[_lbIdx].src;};
+document.addEventListener('click',function(e){var img=e.target.closest('.sr-zoom');if(img){_lbImgs=Array.from(document.querySelectorAll('.sr-zoom'));_lbIdx=_lbImgs.indexOf(img);var lb=document.getElementById('sr-lb');document.getElementById('sr-lb-img').src=img.src;lb.classList.add('open');var has=_lbImgs.length>1;lb.querySelector('.lb-prev').style.display=has?'':'none';lb.querySelector('.lb-next').style.display=has?'':'none'}});
+document.addEventListener('keydown',function(e){var lb=document.getElementById('sr-lb');if(!lb.classList.contains('open'))return;if(e.key==='Escape')lb.classList.remove('open');else if(e.key==='ArrowLeft')window._lbNav(-1);else if(e.key==='ArrowRight')window._lbNav(1)});
+/* Swipe */
+(function(){var lb=document.getElementById('sr-lb'),sx=0;lb.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});lb.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50){window._lbNav(dx<0?1:-1)}},{passive:true})})();
 
 /* Stats Counter Animation */
 var so=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){so.unobserve(i.target);

@@ -707,6 +707,7 @@ export async function onRequestGet({params, env}) {
       `<div style="font-size:1.8rem;color:#16a34a">&#10003;</div>` +
       `<h4>Vielen Dank!</h4>` +
       `<p>${okText}</p>` +
+      `<p style="font-size:.75rem;color:#94a3b8;margin-top:12px">Hinweis: Im Testbetrieb wird diese Nachricht nicht zugestellt. Das Formular ist eine Vorschau.</p>` +
       `</div>` +
       `</div>`;
     html = html.replace("<!-- KONTAKT_FORM -->", inlineForm);

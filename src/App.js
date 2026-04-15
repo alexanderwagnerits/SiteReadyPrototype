@@ -650,7 +650,7 @@ function LandingPage({onStart,onPortal}){
             ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"€"}168 / Jahr &middot; statt {"€"}192</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kündbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-            {["Professionelle Website","Impressum + DSGVO","SEO & Google-Indexierung","Website-Import","Self-Service-Portal","Logo & Fotos hochladen","Subdomain inklusive"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.text}}><IconCheck/>{f}</div>)}
+            {["Professionelle Website","Impressum + DSGVO","Basis-SEO inklusive","Website-Import","Self-Service-Portal","Logo & Fotos hochladen","Subdomain inklusive"].map(f=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:T.text}}><IconCheck/>{f}</div>)}
           </div>
           <button onClick={onStart} className="lp-btn-cta" style={{width:"100%",padding:14,borderRadius:6,fontSize:".88rem",fontWeight:500,cursor:"pointer",fontFamily:LP_FONT,border:"none",background:CTA,color:"#fff",minHeight:48,transition:"all .2s",boxShadow:`0 4px 16px ${CTA_G}`}}>Kostenlos testen</button>
         </div>

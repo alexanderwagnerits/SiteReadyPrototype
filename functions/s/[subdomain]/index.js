@@ -435,7 +435,7 @@ export async function onRequestGet({params, env}) {
       bewContent = `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${cols};gap:20px${maxW}">${cards}</div>`;
     }
 
-    const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px">${bewLabel}${bewH2}</div>${bewContent}</div></section>`;
+    const section = `<section class="sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:40px">${bewLabel}${bewH2}</div>${bewContent}</div></section>`;
     html = html.replace("<!-- BEWERTUNGEN -->", section);
   } else {
     html = html.replace("<!-- BEWERTUNGEN -->", "");
@@ -631,7 +631,7 @@ export async function onRequestGet({params, env}) {
       ? `<div class="sr-faq-grid">${styledItems}</div>`
       : `<div style="max-width:720px">${styledItems}</div>`;
     const faqGridStyle = isTwoCol ? `<style>.sr-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}@media(max-width:768px){.sr-faq-grid{grid-template-columns:1fr}}</style>` : "";
-    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:#fff"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
+    const section = `<section class="sec-faq sr-fade sr-alt-bg" style="padding:100px 0"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
     if (faqGridStyle) html = html.replace("</head>", faqGridStyle + "</head>");
     html = html.replace("<!-- FAQ -->", section);
     // FAQ-Accordion Script (Event-Listener statt inline onclick)
@@ -652,7 +652,7 @@ export async function onRequestGet({params, env}) {
       `</div>`
     ).join("");
     const galerieRadius = isModern ? "16px" : isElegant ? "2px" : "var(--rLg)";
-    const section = `<section class="sec-galerie sr-fade" style="padding:100px 0;background:var(--bg)"><div class="w"><div style="margin-bottom:40px">${sectionLabel("Galerie")}${sectionH2("Einblicke in unsere Arbeit")}</div><div style="display:grid;grid-template-columns:${cols};gap:${isElegant ? "8px" : "12px"}">${photos.replace(/border-radius:var\(--rLg\)/g, `border-radius:${galerieRadius}`)}</div></div></section>`;
+    const section = `<section class="sec-galerie sr-fade sr-alt-bg" style="padding:100px 0"><div class="w"><div style="margin-bottom:40px">${sectionLabel("Galerie")}${sectionH2("Einblicke in unsere Arbeit")}</div><div style="display:grid;grid-template-columns:${cols};gap:${isElegant ? "8px" : "12px"}">${photos.replace(/border-radius:var\(--rLg\)/g, `border-radius:${galerieRadius}`)}</div></div></section>`;
     html = html.replace("<!-- GALERIE -->", section);
   } else {
     html = html.replace("<!-- GALERIE -->", "");
@@ -668,7 +668,7 @@ export async function onRequestGet({params, env}) {
     const items = faktenItems.slice(0, 4).map(f =>
       `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${esc(f.zahl)}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${esc(f.label) || ""}</div></div>`
     ).join("");
-    const section = `<section class="sec-fakten sr-fade" style="padding:80px 0;background:var(--bg)"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
+    const section = `<section class="sec-fakten sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
     html = html.replace("<!-- FAKTEN -->", section);
   } else {
     html = html.replace("<!-- FAKTEN -->", "");
@@ -699,7 +699,7 @@ export async function onRequestGet({params, env}) {
     }).join("");
     const refCount = partnerItems.filter(p => p.typ === "referenz").length;
     const labelText = refCount > partnerItems.length / 2 ? "Vertrauen &amp; Referenzen" : "Partner &amp; Zertifizierungen";
-    const section = `<section class="sec-partner sr-fade" style="padding:80px 0;background:var(--bg)"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:${isElegant ? "12px" : "16px"}">${logos}</div></div></section>`;
+    const section = `<section class="sec-partner sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:${isElegant ? "12px" : "16px"}">${logos}</div></div></section>`;
     html = html.replace("<!-- PARTNER -->", section);
   } else {
     html = html.replace("<!-- PARTNER -->", "");
@@ -978,6 +978,15 @@ export async function onRequestGet({params, env}) {
   //     '<meta name="robots" content="index,follow">'
   //   );
   // }
+
+  // ── Alternierende Section-Hintergründe ──
+  // Sections mit sr-alt-bg bekommen abwechselnd var(--bg) / #fff
+  let altIdx = 0;
+  html = html.replace(/sr-alt-bg" style="padding/g, () => {
+    const bg = altIdx % 2 === 0 ? "var(--bg)" : "#fff";
+    altIdx++;
+    return `" style="background:${bg};padding`;
+  });
 
   // ── Serve-time Style Fixes (Hover + Responsive) ──
   const responsiveStyle = `<style>

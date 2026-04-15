@@ -65,6 +65,7 @@ export async function onRequestGet({params, env}) {
     team:          o.team_members || [],
     faq:           o.faq || [],
     galerie:       o.galerie || [],
+    partner:       o.partner || [],
     adresse:       o.adresse,
     plz:           o.plz,
   });

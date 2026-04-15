@@ -51,7 +51,7 @@ export async function onRequestPost(context) {
       method: "POST",
       headers,
       body: JSON.stringify({order_id: orderId, action, details: details||null, actor: "system"}),
-    }).catch(()=>{});
+    }).catch(e => console.error("stripe-webhook: logEvent fehlgeschlagen", e.message));
   };
 
   // checkout.session.completed → stripe_customer_id + subscription_id speichern
@@ -85,8 +85,8 @@ export async function onRequestPost(context) {
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({order_id: orderId}),
-        }).catch(() => {});
-        if (waitUntil) waitUntil(buildTask); else buildTask;
+        }).catch(e => console.error("stripe-webhook: Build-Start fehlgeschlagen", e.message));
+        if (waitUntil) waitUntil(buildTask); else await buildTask;
       }
     }
   }

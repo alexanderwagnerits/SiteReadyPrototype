@@ -36,7 +36,7 @@ export async function onRequestGet({request, env}) {
           method: "DELETE",
           headers: {"apikey": sbKey, "Authorization": `Bearer ${sbKey}`, "Content-Type": "application/json"},
           body: JSON.stringify({prefixes: [`${order.user_id}/`]}),
-        }).catch(() => {});
+        }).catch(e => errors.push({id: order.id, step: "storage", error: e.message}));
       }
 
       // 2. Supabase Auth User loeschen
@@ -44,7 +44,7 @@ export async function onRequestGet({request, env}) {
         await fetch(`${sb}/auth/v1/admin/users/${order.user_id}`, {
           method: "DELETE",
           headers: {"apikey": sbKey, "Authorization": `Bearer ${sbKey}`},
-        }).catch(() => {});
+        }).catch(e => errors.push({id: order.id, step: "auth-user", error: e.message}));
       }
 
       // 3. Order-Record loeschen

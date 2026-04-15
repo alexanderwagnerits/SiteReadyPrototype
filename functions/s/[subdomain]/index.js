@@ -977,6 +977,9 @@ export async function onRequestGet({params, env}) {
   const currentStil = o.stil || "klassisch";
   html = html.replace(/class="stil-\w+"/g, `class="stil-${currentStil}"`);
 
+  // ── Hex-Validierung: nur gueltige Hex-Codes durchlassen ──
+  const safeHex = v => (v && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(v)) ? v : null;
+
   // ── Kontrast-Check: zu helle Farben abdunkeln (4.5:1 auf weiss) ──
   function ensureContrast(hex, minRatio) {
     if (!hex || !/^#[0-9a-fA-F]{6}$/i.test(hex)) return hex;
@@ -1059,16 +1062,16 @@ export async function onRequestGet({params, env}) {
 
   // Custom-Felder ueberschreiben Stil-Defaults bei JEDEM Stil
   // Accent + Primary werden durch Kontrast-Check abgesichert (zu hell → abdunkeln)
-  const safeAccent = o.custom_accent ? ensureContrast(o.custom_accent) : stilColors.a;
+  const safeAccent = safeHex(o.custom_accent) ? ensureContrast(o.custom_accent) : stilColors.a;
   const autoPalette = buildPaletteFromAccent(safeAccent, currentStil);
-  const safePrimary = o.custom_color ? ensureContrast(o.custom_color, 3.0) : ensureContrast(autoPalette.primary, 3.0);
+  const safePrimary = safeHex(o.custom_color) ? ensureContrast(o.custom_color, 3.0) : ensureContrast(autoPalette.primary, 3.0);
   const customDesign = [
     `--primary:${safePrimary}`,
     `--accent:${safeAccent}`,
-    `--bg:${o.custom_bg || autoPalette.bg}`,
-    `--sep:${o.custom_sep || autoPalette.sep}`,
-    `--text:${o.custom_text || autoPalette.t}`,
-    `--textMuted:${o.custom_text_muted || autoPalette.tm}`,
+    `--bg:${safeHex(o.custom_bg) || autoPalette.bg}`,
+    `--sep:${safeHex(o.custom_sep) || autoPalette.sep}`,
+    `--text:${safeHex(o.custom_text) || autoPalette.t}`,
+    `--textMuted:${safeHex(o.custom_text_muted) || autoPalette.tm}`,
     o.custom_radius && `--r:${o.custom_radius}`,
     o.custom_radius && `--rLg:${parseInt(o.custom_radius)+4}px`,
   ].filter(Boolean);

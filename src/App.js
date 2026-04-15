@@ -482,7 +482,7 @@ function LandingPage({onStart,onPortal}){
       <div className="lp-hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"center",padding:"80px 0 0"}}>
         <div>
           <h1 style={{fontSize:"clamp(2.8rem,4.5vw,3.8rem)",fontWeight:300,lineHeight:1.1,letterSpacing:"-.03em",color:"#fff",marginBottom:24,opacity:0,animation:"fadeUp .7s cubic-bezier(.22,1,.36,1) .15s both"}}>Ihre Website.<br/>In <span style={{position:"relative",display:"inline-block"}}><span style={{position:"relative",zIndex:1,fontWeight:600}}>wenigen Minuten</span><span style={{position:"absolute",bottom:2,left:"-4%",right:"-4%",height:"30%",background:`linear-gradient(90deg,${CTA},rgba(24,95,165,.4))`,borderRadius:4,zIndex:0,opacity:.5,animation:"highlightGrow .8s cubic-bezier(.22,1,.36,1) .6s both"}}/></span>.</h1>
-          <p style={{fontSize:"1.1rem",color:"rgba(255,255,255,.55)",lineHeight:1.7,maxWidth:440,marginBottom:40,opacity:0,animation:"fadeUp .7s cubic-bezier(.22,1,.36,1) .3s both"}}>Impressum nach ECG, DSGVO und Google-Indexierung inklusive. Bestehende Website importieren oder in 10 Minuten ausfüllen. Fertig.</p>
+          <p style={{fontSize:"1.1rem",color:"rgba(255,255,255,.55)",lineHeight:1.7,maxWidth:440,marginBottom:40,opacity:0,animation:"fadeUp .7s cubic-bezier(.22,1,.36,1) .3s both"}}>Impressum nach ECG, DSGVO und SEO-Optimierung inklusive. Bestehende Website importieren oder in 10 Minuten ausfüllen. Fertig.</p>
           <div className="lp-hero-btns" style={{display:"flex",gap:12,marginBottom:28,opacity:0,animation:"fadeUp .7s cubic-bezier(.22,1,.36,1) .45s both"}}>
             <button onClick={onStart} className="lp-btn-cta" style={{padding:"16px 36px",borderRadius:6,fontSize:"1rem",fontWeight:500,border:"none",cursor:"pointer",background:CTA,color:"#fff",fontFamily:LP_FONT,minHeight:52,boxShadow:`0 4px 20px ${CTA_G}`}}>Jetzt starten</button>
             <a href="#how" style={{padding:"14px 24px",borderRadius:6,fontSize:".95rem",fontWeight:500,textDecoration:"none",color:"rgba(255,255,255,.7)",border:"1px solid rgba(255,255,255,.15)",display:"inline-flex",alignItems:"center",minHeight:44,fontFamily:LP_FONT}}>Mehr erfahren</a>
@@ -523,7 +523,7 @@ function LandingPage({onStart,onPortal}){
     <div style={{marginTop:"auto",borderTop:"1px solid rgba(255,255,255,.06)",padding:"24px 0"}}>
       <W>
         <div className="lp-trust-bar" style={{display:"flex",justifyContent:"center",gap:32,flexWrap:"wrap",alignItems:"center"}}>
-          {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG konform"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:"rgba(255,255,255,.4)",fontSize:".78rem",fontWeight:400}}><span style={{display:"flex",color:"rgba(255,255,255,.3)"}}>{React.cloneElement(t.icon,{width:"16",height:"16"})}</span>{t.text}</div>)}
+          {[{icon:<IconShield/>,text:"SSL verschlüsselt"},{icon:<IconScale/>,text:"DSGVO & ECG inklusive"},{icon:<IconSearch/>,text:"Google-optimiert"},{icon:<IconGlobe/>,text:"Österreich-spezifisch"}].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,color:"rgba(255,255,255,.4)",fontSize:".78rem",fontWeight:400}}><span style={{display:"flex",color:"rgba(255,255,255,.3)"}}>{React.cloneElement(t.icon,{width:"16",height:"16"})}</span>{t.text}</div>)}
         </div>
       </W>
     </div>
@@ -551,7 +551,7 @@ function LandingPage({onStart,onPortal}){
             <h3 style={{fontSize:"2rem",fontWeight:800,marginBottom:12,letterSpacing:"-.04em"}}>SiteReady.at</h3>
             <p style={{fontSize:"1rem",color:"rgba(255,255,255,.6)",lineHeight:1.75,marginBottom:28}}>Kein Builder. Ein Service. Du beantwortest Fragen, wir liefern die fertige Website.</p>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:32}}>
-              {["Website fertig in Minuten","Live-Vorschau vor Kauf","Impressum ECG-konform","DSGVO automatisch","SSL inklusive","70+ Branchen","Website-Import","Self-Service-Portal","Eigene Domain möglich","Österreich-spezifisch"].map(l=><span key={l} style={{fontSize:".75rem",padding:"6px 13px",borderRadius:6,fontWeight:600,background:"rgba(255,255,255,.08)",color:T.accent,border:"1px solid rgba(255,255,255,.1)",display:"inline-flex",alignItems:"center",gap:4}}><IconCheck/>{l}</span>)}
+              {["Website fertig in Minuten","Live-Vorschau vor Kauf","Impressum nach ECG","DSGVO automatisch","SSL inklusive","70+ Branchen","Website-Import","Self-Service-Portal","Eigene Domain möglich","Österreich-spezifisch"].map(l=><span key={l} style={{fontSize:".75rem",padding:"6px 13px",borderRadius:6,fontWeight:600,background:"rgba(255,255,255,.08)",color:T.accent,border:"1px solid rgba(255,255,255,.1)",display:"inline-flex",alignItems:"center",gap:4}}><IconCheck/>{l}</span>)}
             </div>
             {/* Before/After */}
             <div style={{background:"rgba(255,255,255,.04)",borderRadius:12,padding:"20px",marginBottom:28,border:"1px solid rgba(255,255,255,.08)"}}>
@@ -667,7 +667,7 @@ function LandingPage({onStart,onPortal}){
             ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"€"}300 / Jahr &middot; statt {"€"}348</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kündbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-            {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","AI-Sichtbarkeit & Google-Indexierung","Besucher-Statistiken (echte Google-Daten)","Monatlicher SEO-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
+            {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","AI-Sichtbarkeit & Suchmaschinen-SEO","Besucher-Statistiken","Monatlicher Website-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
           </div>
           <div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`,marginBottom:16,fontSize:".78rem",color:T.amberText,fontWeight:600,textAlign:"center"}}>Bald verfügbar</div>
           <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"none",background:T.bg3,color:T.textMuted,minHeight:48,opacity:.7}}>Bald verfügbar</button>
@@ -745,10 +745,10 @@ function LandingPage({onStart,onPortal}){
                 ["Ohne SiteReady-Branding",false,true],
                 ["SEO & Sichtbarkeit",null,null],
                 ["Basis-SEO (Meta-Tags, Schema.org, Sitemap)",true,true],
-                ["AI-Sichtbarkeit",false,true],
-                ["Google-Indexierung",false,true],
+                ["AI-Sichtbarkeit (ChatGPT, Perplexity & Co.)",false,true],
+                ["Suchmaschinen-Indexierung",false,true],
                 ["Besucher-Statistiken",false,true],
-                ["Monatlicher SEO-Report",false,true],
+                ["Monatlicher Website-Report",false,true],
               ].map(([label,starter,pro],i)=>{
                 const isGroup=starter===null;
                 return <tr key={i} style={{borderBottom:`1px solid ${isGroup?"transparent":T.bg3}`,background:isGroup?"transparent":"#fff"}}>
@@ -775,7 +775,7 @@ function LandingPage({onStart,onPortal}){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}} className="lp-why-grid">
         {[
           {icon:<IconRocket/>,t:"Fertig in Minuten, nicht Wochen",d:"Keine Agentur-Termine, kein wochenlanges Warten. Sie füllen einen Fragebogen aus — Ihre Website ist sofort live."},
-          {icon:<IconScale/>,t:"Rechtlich auf der sicheren Seite",d:"Impressum nach ECG, DSGVO-Erklärung, Cookie-Hinweis — alles automatisch und österreich-spezifisch generiert."},
+          {icon:<IconScale/>,t:"Impressum & Datenschutz inklusive",d:"Impressum nach ECG und DSGVO-Erklärung — automatisch und österreich-spezifisch erstellt. Keine Cookies, kein Cookie-Banner nötig."},
           {icon:<IconHammer/>,t:"Gemacht für Ihren Beruf",d:"Über 70 Branchen mit passenden Leistungen, Texten und Design. Kein generisches Template, sondern maßgeschneidert."},
           {icon:<IconSearch/>,t:"Sofort bei Google sichtbar",d:"SEO-Optimierung, Meta-Tags und Indexierung sind inklusive. Ihre Kunden finden Sie — nicht Ihren Mitbewerber."},
           {icon:<IconGear/>,t:"Alles selbst anpassen",d:"Logo, Fotos, Texte, Farben — ändern Sie alles jederzeit im Self-Service-Portal. Kein Techniker nötig."},
@@ -848,7 +848,7 @@ function LandingPage({onStart,onPortal}){
           {[
             {q:"Wie lange dauert es, bis meine Website online ist?",a:"Nach dem Ausfüllen des Fragebogens (ca. 10 Minuten) ist Ihre Website sofort live. Impressum, DSGVO und SSL sind automatisch eingerichtet."},
             {q:"Brauche ich technische Vorkenntnisse?",a:"Nein. Sie beantworten einfache Fragen zu Ihrem Betrieb. SiteReady kümmert sich um Design, Texte, Impressum und alles Technische."},
-            {q:"Was ist mit Impressum und DSGVO?",a:"Beides wird automatisch generiert — rechtlich konform nach österreichischem ECG und DSGVO. Sie müssen sich um nichts kümmern."},
+            {q:"Was ist mit Impressum und DSGVO?",a:"Beides wird automatisch erstellt — Impressum nach ECG und Datenschutzerklärung nach DSGVO. Sie müssen sich um nichts kümmern."},
             {q:"Kann ich meine bestehende Website importieren?",a:"Ja. Geben Sie einfach die URL Ihrer aktuellen Website ein. SiteReady übernimmt Texte, Kontaktdaten und Leistungen automatisch."},
             {q:"Kann ich meine Website später ändern?",a:"Ja. Im Self-Service-Portal können Sie Logo, Fotos, Texte, Farben und Kontaktdaten jederzeit selbst ändern — ohne Techniker."},
             {q:"Was kostet SiteReady?",a:"Starter ab 16 Euro pro Monat (oder 14 Euro bei Jahreszahlung). Die ersten 7 Tage sind komplett kostenlos — keine Kreditkarte nötig."},
@@ -1160,7 +1160,7 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
           {/* Right: Features */}
           <div className="q-split-right">
             <div className="q-split-title">Inklusive</div>
-            {["Subdomain sofort live","Texte individuell von KI formuliert","Impressum ECG-konform","DSGVO automatisch integriert","SEO & Google-Indexierung",data.fotos?"Branchenfotos als Platzhalter":null,"Self-Service-Portal","Logo & Fotos hochladen","Daten jederzeit anpassen","Custom Domain möglich","SSL-Zertifikat inklusive"].filter(Boolean).map((t,i,a)=><React.Fragment key={t}>
+            {["Subdomain sofort live","Texte individuell von KI formuliert","Impressum nach ECG","DSGVO-Erklärung inklusive","SEO-Optimierung inklusive",data.fotos?"Branchenfotos als Platzhalter":null,"Self-Service-Portal","Logo & Fotos hochladen","Daten jederzeit anpassen","Custom Domain möglich","SSL-Zertifikat inklusive"].filter(Boolean).map((t,i,a)=><React.Fragment key={t}>
               {i===6&&<div style={{height:1,background:T.bg3,margin:"4px 0"}}/>}
               <div style={{display:"flex",alignItems:"center",gap:10,fontSize:".82rem",fontWeight:500,color:T.dark,padding:"6px 0"}}>
                 <span style={{width:20,height:20,borderRadius:6,background:T.greenLight,color:T.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,flexShrink:0,border:"1px solid rgba(22,163,74,.15)"}}>{"✓"}</span>{t}
@@ -1443,7 +1443,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
         : <div style={{maxWidth:520,width:"100%",textAlign:"center"}}>
           <img src="/logo.png" alt="SiteReady" style={{height:32,marginBottom:24}} onError={e=>{e.currentTarget.style.display="none"}}/>
           <div style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,letterSpacing:"-.03em",lineHeight:1.2,marginBottom:8}}>Ihre professionelle Website<br/>in wenigen Minuten.</div>
-          <div style={{fontSize:".9rem",color:T.textMuted,marginBottom:40,lineHeight:1.5}}>Impressum nach ECG, DSGVO und Google-Indexierung inklusive.</div>
+          <div style={{fontSize:".9rem",color:T.textMuted,marginBottom:40,lineHeight:1.5}}>Impressum nach ECG, DSGVO und SEO-Optimierung inklusive.</div>
           <div className="q-content-card" style={{textAlign:"left",marginBottom:24}}>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
               <div style={{width:32,height:32,borderRadius:8,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
@@ -1483,7 +1483,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
           <div style={{marginTop:16,display:"flex",justifyContent:"center",gap:24,fontSize:".72rem",color:T.textMuted}}>
             <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Fertig in unter 10 Min.</span>
             <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> 7 Tage kostenlos</span>
-            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> DSGVO-konform</span>
+            <span style={{display:"flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> DSGVO inklusive</span>
           </div>
         </div>}
       </div>
@@ -1560,7 +1560,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
             <Field label="GISA-Zahl" value={data.gisazahl} onChange={up("gisazahl")} placeholder="z.B. 12345678"/>
             <Field label="Aufsichtsbehörde" value={data.aufsichtsbehoerde} onChange={up("aufsichtsbehoerde")} placeholder="z.B. MA 63"/>
             <Field label="Kammer / Berufsrecht" value={data.kammer_berufsrecht} onChange={up("kammer_berufsrecht")} placeholder="z.B. WKO Wien"/>
-            <div style={{marginTop:8,padding:"10px 12px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".72rem",color:T.textSub,lineHeight:1.6}}>Alle Angaben werden automatisch in Ihr Impressum eingebaut (ECG-konform).</div></div>
+            <div style={{marginTop:8,padding:"10px 12px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".72rem",color:T.textSub,lineHeight:1.6}}>Alle Angaben werden automatisch in Ihr Impressum nach ECG eingebaut.</div></div>
           </div>
         </div>
       </div>

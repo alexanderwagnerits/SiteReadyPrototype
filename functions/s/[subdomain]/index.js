@@ -92,7 +92,9 @@ export async function onRequestGet({params, env}) {
     if (o.online_beratung) trustItems.push({l:"Online-Beratung",i:tIcon(`<path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>`)});
     if (o.hausbesuche) trustItems.push({l:"Hausbesuche",i:tIcon(`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`)});
     if (trustItems.length > 0) {
-      const items = trustItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
+      // Maximal 8 Trust-Items anzeigen — zu viele wirken ueberladen
+      const visibleItems = trustItems.slice(0, 8);
+      const items = visibleItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
       // Trust-Items direkt nach den Hero-Buttons einfuegen (innerhalb hero-inner)
       const trustInHero = `<div class="hero-trust">${items}</div>`;
       const trustStyle = `<style>.hero-trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12)}.hero-trust .trust-item{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);padding:6px 14px;border-radius:100px;color:rgba(255,255,255,.85);font-size:.78rem;font-weight:600;backdrop-filter:blur(4px)}.hero-trust .trust-item svg{color:rgba(255,255,255,.6);width:14px;height:14px;flex-shrink:0}.hero.text-center .hero-trust{justify-content:center}@media(max-width:768px){.hero-trust{gap:6px;margin-top:24px;padding-top:18px}.hero-trust .trust-item{font-size:.72rem;padding:5px 11px}}</style>`;
@@ -230,19 +232,35 @@ export async function onRequestGet({params, env}) {
       const avatar = makeAvatar(m, 0, 80);
       cards = `<div style="display:flex;align-items:center;gap:20px;padding:16px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:1.1rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.88rem;opacity:.55;margin-top:4px">${esc(m.rolle)}</div>` : ""}${m.email ? `<div style="font-size:.78rem;opacity:.45;margin-top:4px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none;opacity:.8">${esc(m.email)}</a></div>` : ""}${m.beschreibung ? `<div style="font-size:.8rem;opacity:.4;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : ""}</div></div>`;
     } else if (teamVariant === "grid-3") {
-      // 2–3 Personen: Karten nebeneinander, Avatar oben
-      const cols = teamMembers.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
-      cards = `<div style="display:grid;grid-template-columns:${cols};gap:12px">` +
-        teamMembers.map((m, idx) => {
-          const avatar = makeAvatar(m, idx, 56);
-          return `<div style="background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"10px"};padding:16px 12px;text-align:center">` +
-            `<div style="display:flex;justify-content:center;margin-bottom:10px">${avatar}</div>` +
-            `<div style="font-weight:${nameWeight};font-size:.88rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
-            (m.rolle ? `<div style="font-size:.75rem;opacity:.5;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
-            (m.email ? `<div style="font-size:.7rem;opacity:.4;margin-top:3px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
-            `</div>`;
-        }).join("") +
-        `</div>`;
+      if (teamMembers.length === 2) {
+        // 2 Personen: Grosse Cards untereinander, mit Beschreibung
+        cards = `<div style="display:flex;flex-direction:column;gap:16px">` +
+          teamMembers.map((m, idx) => {
+            const avatar = makeAvatar(m, idx, 64);
+            return `<div style="display:flex;align-items:flex-start;gap:16px;background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"12px"};padding:20px">` +
+              `<div style="flex-shrink:0">${avatar}</div>` +
+              `<div style="min-width:0">` +
+              `<div style="font-weight:${nameWeight};font-size:1rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+              (m.rolle ? `<div style="font-size:.82rem;opacity:.55;margin-top:3px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
+              (m.beschreibung ? `<div style="font-size:.8rem;opacity:.45;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : "") +
+              (m.email ? `<div style="font-size:.72rem;opacity:.4;margin-top:6px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
+              `</div></div>`;
+          }).join("") +
+          `</div>`;
+      } else {
+        // 3 Personen: Karten nebeneinander, Avatar oben
+        cards = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">` +
+          teamMembers.map((m, idx) => {
+            const avatar = makeAvatar(m, idx, 56);
+            return `<div style="background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"10px"};padding:16px 12px;text-align:center">` +
+              `<div style="display:flex;justify-content:center;margin-bottom:10px">${avatar}</div>` +
+              `<div style="font-weight:${nameWeight};font-size:.88rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+              (m.rolle ? `<div style="font-size:.75rem;opacity:.5;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
+              (m.email ? `<div style="font-size:.7rem;opacity:.4;margin-top:3px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
+              `</div>`;
+          }).join("") +
+          `</div>`;
+      }
     } else {
       // 4+ Personen: Kompaktes 2-Spalter Grid, horizontal
       cards = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">` +
@@ -980,19 +998,53 @@ export async function onRequestGet({params, env}) {
   // ── Hex-Validierung: nur gueltige Hex-Codes durchlassen ──
   const safeHex = v => (v && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(v)) ? v : null;
 
-  // ── Kontrast-Check: zu helle Farben abdunkeln (4.5:1 auf weiss) ──
+  // ── Kontrast-Check: zu helle Farben abdunkeln (WCAG AA auf weiss) ──
+  const lum = (c) => { const v = parseInt(c, 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const luminance = (h) => 0.2126 * lum(h.slice(1, 3)) + 0.7152 * lum(h.slice(3, 5)) + 0.0722 * lum(h.slice(5, 7));
+  const contrastRatio = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+
   function ensureContrast(hex, minRatio) {
     if (!hex || !/^#[0-9a-fA-F]{6}$/i.test(hex)) return hex;
     minRatio = minRatio || 4.5;
-    const lum = (c) => { const v = parseInt(c, 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
-    const L = (h) => { return 0.2126 * lum(h.slice(1, 3)) + 0.7152 * lum(h.slice(3, 5)) + 0.0722 * lum(h.slice(5, 7)); };
-    const ratio = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
     let color = hex;
     for (let i = 0; i < 20; i++) {
-      if (ratio(1, L(color)) >= minRatio) return color;
+      if (contrastRatio(1, luminance(color)) >= minRatio) return color;
       const r = Math.max(0, parseInt(color.slice(1, 3), 16) - 10);
       const g = Math.max(0, parseInt(color.slice(3, 5), 16) - 10);
       const b = Math.max(0, parseInt(color.slice(5, 7), 16) - 10);
+      color = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+    }
+    return color;
+  }
+
+  // Accent als Button-Hintergrund: weisser Text muss lesbar sein (3:1 Minimum)
+  function ensureAccentBg(hex) {
+    if (!hex || !/^#[0-9a-fA-F]{6}$/i.test(hex)) return hex;
+    let color = hex;
+    for (let i = 0; i < 20; i++) {
+      // Weisser Text auf farbigem Hintergrund: Kontrast Weiss(1.0) vs Hintergrund
+      if (contrastRatio(1, luminance(color)) >= 3.0) return color;
+      const r = Math.max(0, parseInt(color.slice(1, 3), 16) - 8);
+      const g = Math.max(0, parseInt(color.slice(3, 5), 16) - 8);
+      const b = Math.max(0, parseInt(color.slice(5, 7), 16) - 8);
+      color = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+    }
+    return color;
+  }
+
+  // Accent darf nicht zu aehnlich wie Primary sein (sonst unsichtbar auf Nav)
+  function ensureAccentVisible(accent, primary) {
+    if (!accent || !primary) return accent;
+    const la = luminance(accent), lp = luminance(primary);
+    // Wenn Kontrast Accent vs Primary zu niedrig ist, Accent aufhellen
+    if (contrastRatio(la, lp) >= 2.5) return accent;
+    // Accent aufhellen damit er auf dunklem Primary sichtbar wird
+    let color = accent;
+    for (let i = 0; i < 30; i++) {
+      if (contrastRatio(luminance(color), lp) >= 2.0) return color;
+      const r = Math.min(255, parseInt(color.slice(1, 3), 16) + 12);
+      const g = Math.min(255, parseInt(color.slice(3, 5), 16) + 12);
+      const b = Math.min(255, parseInt(color.slice(5, 7), 16) + 12);
       color = "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
     }
     return color;
@@ -1061,10 +1113,12 @@ export async function onRequestGet({params, env}) {
   }
 
   // Custom-Felder ueberschreiben Stil-Defaults bei JEDEM Stil
-  // Accent + Primary werden durch Kontrast-Check abgesichert (zu hell → abdunkeln)
-  const safeAccent = safeHex(o.custom_accent) ? ensureContrast(o.custom_accent) : stilColors.a;
-  const autoPalette = buildPaletteFromAccent(safeAccent, currentStil);
+  // Accent: 1) auf weissem Text als BG lesbar 2) sichtbar auf dunklem Primary
+  // Primary: Mindest-Kontrast 3.0 auf weiss
+  const rawAccent = safeHex(o.custom_accent) ? ensureContrast(o.custom_accent) : stilColors.a;
+  const autoPalette = buildPaletteFromAccent(rawAccent, currentStil);
   const safePrimary = safeHex(o.custom_color) ? ensureContrast(o.custom_color, 3.0) : ensureContrast(autoPalette.primary, 3.0);
+  const safeAccent = ensureAccentVisible(ensureAccentBg(rawAccent), safePrimary);
   const customDesign = [
     `--primary:${safePrimary}`,
     `--accent:${safeAccent}`,

@@ -748,6 +748,8 @@ ${preislisteHtml}
 
 <!-- GALERIE -->
 
+<!-- PARTNER -->
+
 <!-- BEWERTUNGEN -->
 
 <!-- FAQ -->
@@ -784,8 +786,6 @@ ${socialHtml}
 </div>
 </div>
 </section>
-
-<!-- PARTNER -->
 
 ${buchungslinkHtml}
 

@@ -44,12 +44,8 @@ function berechneVarianten(data) {
   const leist = fotoAnteil >= 0.5 ? 'editorial' : 'grid';
 
   // ── Ablauf ──
-  const ablaufSteps = Array.isArray(d.ablauf) ? d.ablauf.length : 0;
-  // Vertikal wirkt bei Handwerk/Gesundheit/DL professioneller
-  // Horizontal nur bei genau 3 Steps und Bildungs-/Gastro-Branchen
-  const ablauf = ablaufSteps > 4 ? 'vertikal'
-    : ablaufSteps === 3 && (gruppe === "bildung" || gruppe === "gastro") ? 'horizontal'
-    : 'vertikal';
+  // Immer horizontal — kompakte Zeile auf Desktop, vertikal auf Mobile
+  const ablauf = 'horizontal';
 
   // ── Bewertungen ──
   const bewAnzahl = Array.isArray(d.bewertungen) ? d.bewertungen.length : 0;

@@ -1008,12 +1008,20 @@ export async function onRequestGet({params, env}) {
 .kontakt-form-wrap{margin-bottom:24px}
 /* Fakten: 2col bleibt */
 .sec-fakten [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
-/* Galerie: 2col → 1col bei ganz schmal */
+/* Galerie: 2col → 1col */
 .sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+/* Kontakt-Infos Badges: Wrap erlauben */
+.kontakt-infos{gap:6px!important}
+.kontakt-info-item{font-size:.75rem!important;padding:6px 10px!important}
 }
 @media(max-width:480px){
-/* Fakten ganz klein: 2col bleibt (zahlen sind kurz) */
-.sr-team-fokus{grid-template-columns:1fr 1fr!important}
+/* Fakten: 2col → 1col bei sehr schmal + langen Labels */
+.sec-fakten [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+/* Team kompakt: 2col → 1col */
+.sr-team-fokus{grid-template-columns:1fr!important}
+/* Floating CTA kleiner */
+.sr-float-cta{width:52px!important;height:52px!important;font-size:.7rem!important}
+.sr-float-cta svg{width:20px!important;height:20px!important}
 }
 </style>`;
   html = html.replace("</head>", responsiveStyle + "</head>");

@@ -466,63 +466,65 @@ export async function generateWebsite(order_id, env) {
     bildung: "Motivierend und unterstuetzend. Mach Lust aufs Lernen. Betone Fortschritt und persoenliche Entwicklung.",
   }[brGruppe] || "";
 
-  const textPrompt = `Generiere Website-Texte fuer einen oesterreichischen Betrieb. Antworte NUR mit validem JSON, keine Erklaerungen.
+  const textPrompt = `Generiere Website-Texte für einen österreichischen Betrieb. Antworte NUR mit validem JSON, keine Erklärungen.
+
+WICHTIG: Verwende IMMER echte deutsche Umlaute (ä, ö, ü, ß) in allen Texten. NIEMALS ae, oe, ue Umschreibungen.
 
 BETRIEB: ${o.firmenname}
 BRANCHE: ${o.branche_label || o.branche}
-ORT: ${[o.ort, o.bundesland ? `(${o.bundesland.toUpperCase()})` : ""].filter(Boolean).join(" ") || "Oesterreich"}
+ORT: ${[o.ort, o.bundesland ? `(${o.bundesland.toUpperCase()})` : ""].filter(Boolean).join(" ") || "Österreich"}
 EINSATZGEBIET: ${o.einsatzgebiet || o.ort || ""}
 BESCHREIBUNG: ${o.kurzbeschreibung || ""}
 LEISTUNGEN: ${leistungen.join(", ")}
 DESIGN-STIL: ${o.stil || "klassisch"}
 ${importContext.length > 0 ? "\n" + importContext.join("\n") + "\n" : ""}
-TONALITAET: ${stilAnweisung}
+TONALITÄT: ${stilAnweisung}
 ${branchenSprache ? `BRANCHENSPRACHE: ${branchenSprache}` : ""}
 
 REGELN:
-- Oesterreichisches Deutsch, formelle Ansprache ("Sie"). Verwende oesterreichische Begriffe (z.B. "Jänner", "heuer", "Ordination" statt "Praxis").
-- ${o.ort ? `Regionaler Bezug: Erwaehne "${o.ort}" im Ueber-uns-Text und in der Kontakt-CTA. Der Betrieb ist lokal verankert.` : ""}
-- Warm, professionell, KEINE Superlative ("beste", "fuehrend"), KEINE erfundenen Zahlen/Jahre
-- KEINE generischen Phrasen wie "Wir freuen uns auf Ihre Anfrage", "Qualitaet steht bei uns an erster Stelle", "Ihr zuverlaessiger Partner"
-- ${hasImportedText ? "Bestehender Ueber-uns-Text: Inhalt BEIBEHALTEN, nur sprachlich polieren und auf 4-5 Saetze kuerzen. NICHT komplett neu schreiben." : "Ueber-uns-Text: Konkret und spezifisch fuer DIESEN Betrieb. Was macht ihn besonders? Ort, Geschichte, Spezialisierung einbauen."}
-- ${hasImportedFaq ? "Bestehende FAQ: UEBERNEHMEN und nur sprachlich glaetten." : "FAQ: 4-5 Fragen die ECHTE Kunden dieser Branche stellen wuerden. Konkrete, hilfreiche Antworten."}
-- ${hasImportedAblauf ? "Bestehende Ablauf-Schritte: UEBERNEHMEN, nur sprachlich optimieren." : "Ablauf: 3-4 Schritte die zum KONKRETEN Betrieb passen."}
-- ${hasImportedGzw ? "Bestehende Kundenhinweise: UEBERNEHMEN." : "Gut-zu-wissen: 2-3 praxisrelevante Hinweise fuer Kunden."}
-- Leistungsbeschreibungen: MAXIMAL 15 Woerter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
-- Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Woerter pro Punkt. Muessen sich voneinander unterscheiden.
+- Österreichisches Deutsch, formelle Ansprache ("Sie"). Verwende österreichische Begriffe (z.B. "Jänner", "heuer", "Ordination" statt "Praxis").
+- ${o.ort ? `Regionaler Bezug: Erwähne "${o.ort}" im Über-uns-Text und in der Kontakt-CTA. Der Betrieb ist lokal verankert.` : ""}
+- Warm, professionell, KEINE Superlative ("beste", "führend"), KEINE erfundenen Zahlen/Jahre
+- KEINE generischen Phrasen wie "Wir freuen uns auf Ihre Anfrage", "Qualität steht bei uns an erster Stelle", "Ihr zuverlässiger Partner"
+- ${hasImportedText ? "Bestehender Über-uns-Text: Inhalt BEIBEHALTEN, nur sprachlich polieren und auf 4-5 Sätze kürzen. NICHT komplett neu schreiben." : "Über-uns-Text: Konkret und spezifisch für DIESEN Betrieb. Was macht ihn besonders? Ort, Geschichte, Spezialisierung einbauen."}
+- ${hasImportedFaq ? "Bestehende FAQ: ÜBERNEHMEN und nur sprachlich glätten." : "FAQ: 4-5 Fragen die ECHTE Kunden dieser Branche stellen würden. Konkrete, hilfreiche Antworten."}
+- ${hasImportedAblauf ? "Bestehende Ablauf-Schritte: ÜBERNEHMEN, nur sprachlich optimieren." : "Ablauf: 3-4 Schritte die zum KONKRETEN Betrieb passen."}
+- ${hasImportedGzw ? "Bestehende Kundenhinweise: ÜBERNEHMEN." : "Gut-zu-wissen: 2-3 praxisrelevante Hinweise für Kunden."}
+- Leistungsbeschreibungen: MAXIMAL 15 Wörter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
+- Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Wörter pro Punkt. Müssen sich voneinander unterscheiden.
 - kontakt_cta: Branchenspezifisch, nicht generisch. ${o.ort ? `"in ${o.ort}" einbauen.` : ""}
 
 JSON-FORMAT:
 {
-  "leistungen_beschreibungen": {"${leistungen.join('":"[2 kurze Saetze, max 25 Woerter]","')}":"[2 kurze Saetze, max 25 Woerter]"},
-  "text_ueber_uns": "4-5 Saetze ueber den Betrieb. Konkret, authentisch, nicht austauschbar.",
+  "leistungen_beschreibungen": {"${leistungen.join('":"[2 kurze Sätze, max 25 Wörter]","')}":"[2 kurze Sätze, max 25 Wörter]"},
+  "text_ueber_uns": "4-5 Sätze über den Betrieb. Konkret, authentisch, nicht austauschbar.",
   "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
-  "leistungen_intro": "1 kurzer Einleitungssatz fuer die Leistungen-Sektion",
+  "leistungen_intro": "1 kurzer Einleitungssatz für die Leistungen-Sektion",
   "kontakt_cta_headline": "Kurze, branchenspezifische Headline",
-  "kontakt_cta_text": "1-2 Saetze, konkrete Motivation zur Kontaktaufnahme",
+  "kontakt_cta_text": "1-2 Sätze, konkrete Motivation zur Kontaktaufnahme",
   "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"},{"titel":"Schritt 2","text":"Kurze Beschreibung"},{"titel":"Schritt 3","text":"Kurze Beschreibung"}],
   "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3",
-  "faq": [{"frage":"Haeufige Frage 1?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 2?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 3?","antwort":"Antwort in 1-2 Saetzen"},{"frage":"Haeufige Frage 4?","antwort":"Antwort in 1-2 Saetzen"}]
+  "faq": [{"frage":"Häufige Frage 1?","antwort":"Antwort in 1-2 Sätzen"},{"frage":"Häufige Frage 2?","antwort":"Antwort in 1-2 Sätzen"},{"frage":"Häufige Frage 3?","antwort":"Antwort in 1-2 Sätzen"},{"frage":"Häufige Frage 4?","antwort":"Antwort in 1-2 Sätzen"}]
 }
-REGELN fuer faq:
-- 4-5 branchenspezifische Fragen die Kunden TATSAECHLICH stellen
-- Antworten: 1-2 kurze, hilfreiche Saetze. Konkret, nicht ausweichend.
+REGELN für faq:
+- 4-5 branchenspezifische Fragen die Kunden TATSÄCHLICH stellen
+- Antworten: 1-2 kurze, hilfreiche Sätze. Konkret, nicht ausweichend.
 - Wenn bestehende FAQ importiert wurden, verwende diese als Grundlage.
 - Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
-- Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Vertraege mit allen oesterreichischen Sozialversicherungstraegern."
-REGELN fuer ablauf_schritte:
-- 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit ablaeuft
-- Titel: 2-4 Woerter. Text: 1 kurzer Satz, max 10 Woerter
-- Muessen zum konkreten Betrieb passen, nicht generisch
-- Beispiel Arzt: Termin vereinbaren → Erstgespraech → Untersuchung → Befund & Therapie
+- Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Verträge mit allen österreichischen Sozialversicherungsträgern."
+REGELN für ablauf_schritte:
+- 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit abläuft
+- Titel: 2-4 Wörter. Text: 1 kurzer Satz, max 10 Wörter
+- Müssen zum konkreten Betrieb passen, nicht generisch
+- Beispiel Arzt: Termin vereinbaren → Erstgespräch → Untersuchung → Befund & Therapie
 - Beispiel Handwerker: Anfrage schildern → Besichtigung & KV → Terminvereinbarung → Umsetzung
 
-REGELN fuer gut_zu_wissen:
-- 2-3 branchentypische permanente Hinweise fuer Kunden, getrennt durch Zeilenumbruch
-- Wenn bestehende Hinweise importiert wurden, uebernimm diese.
+REGELN für gut_zu_wissen:
+- 2-3 branchentypische permanente Hinweise für Kunden, getrennt durch Zeilenumbruch
+- Wenn bestehende Hinweise importiert wurden, übernimm diese.
 - Nur relevante, konkrete Infos. Keine Marketing-Floskeln.
 - Beispiel Arzt: Bitte e-Card mitbringen\nAnnahmeschluss 30 Min vor Ordinationsende
-- Beispiel Friseur: Termine koennen bis 24h vorher kostenlos storniert werden`;
+- Beispiel Friseur: Termine können bis 24h vorher kostenlos storniert werden`;
 
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",

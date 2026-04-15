@@ -409,6 +409,7 @@ function LandingPage({onStart,onPortal}){
   const[mockIdx,setMockIdx]=useState(0);
   const[faqOpen,setFaqOpen]=useState({});
   const[hovCard,setHovCard]=useState(null);
+  const[showCompare,setShowCompare]=useState(false);
   useEffect(()=>{const h=()=>{setScrolled(window.scrollY>30);if(window.scrollY>30)setMenuOpen(false)};window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
   useEffect(()=>{const iv=setInterval(()=>setMockIdx(p=>(p+1)%3),4000);return()=>clearInterval(iv)},[]);
   useEffect(()=>{const els=document.querySelectorAll(".sr-reveal");const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("sr-visible");obs.unobserve(e.target)}})},{threshold:.15});els.forEach(el=>obs.observe(el));return()=>obs.disconnect()},[]);
@@ -659,14 +660,14 @@ function LandingPage({onStart,onPortal}){
           <div style={{fontSize:".78rem",fontWeight:700,color:T.accent,letterSpacing:".06em",textTransform:"uppercase",marginBottom:6}}>Professional</div>
           <div style={{fontSize:".88rem",color:T.textMuted,marginBottom:20}}>Für etablierte Betriebe</div>
           <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
-            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"€21":"€24"}</span>
+            <span style={{fontSize:"2.8rem",fontWeight:800,color:T.dark,fontFamily:T.mono,lineHeight:1,letterSpacing:"-.04em"}}>{pricingYearly?"€25":"€29"}</span>
             <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/Monat</span>
           </div>
           {pricingYearly
-            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"€"}252 / Jahr &middot; statt {"€"}288</div>
+            ?<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>{"€"}300 / Jahr &middot; statt {"€"}348</div>
             :<div style={{fontSize:".75rem",color:T.textMuted,marginBottom:24}}>Monatlich kündbar</div>}
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-            {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","Besucher-Statistiken im Portal","Monatlicher SEO-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
+            {["Alles aus Starter","Eigene Domain (www.ihre-firma.at)","AI-Sichtbarkeit & Google-Indexierung","Besucher-Statistiken (echte Google-Daten)","Monatlicher SEO-Report","Ohne SiteReady-Branding"].map((f,i)=><div key={f} style={{display:"flex",alignItems:"center",gap:8,fontSize:".82rem",color:i===0?T.textMuted:T.text,fontWeight:i===0?400:500}}>{i===0?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<IconCheck/>}{f}</div>)}
           </div>
           <div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`,marginBottom:16,fontSize:".78rem",color:T.amberText,fontWeight:600,textAlign:"center"}}>Bald verfügbar</div>
           <button disabled style={{width:"100%",padding:14,borderRadius:10,fontSize:".92rem",fontWeight:700,cursor:"not-allowed",fontFamily:T.font,border:"none",background:T.bg3,color:T.textMuted,minHeight:48,opacity:.7}}>Bald verfügbar</button>
@@ -680,7 +681,7 @@ function LandingPage({onStart,onPortal}){
               <div style={{width:36,height:36,borderRadius:9,background:T.accentLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
               <div>
                 <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Business</div>
-                <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>Alles aus Professional + Social Media, Google Business Setup</div>
+                <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.4}}>Alles aus Professional + Social Media, Newsletter</div>
               </div>
             </div>
           </div>
@@ -707,6 +708,60 @@ function LandingPage({onStart,onPortal}){
         </div>
       </div>
       <p style={{fontSize:".78rem",color:T.textMuted,maxWidth:500,margin:"20px 0 0",lineHeight:1.7,textAlign:"center",marginLeft:"auto",marginRight:"auto"}}>7 Tage kostenlos &middot; Karte wird erst nach 7 Tagen belastet &middot; Alle Preise inkl. MwSt.</p>
+      {/* Feature-Vergleich aufklappbar */}
+      <div style={{textAlign:"center",marginTop:32}}>
+        <button onClick={()=>setShowCompare(p=>!p)} style={{background:"none",border:`1.5px solid ${T.bg3}`,borderRadius:8,padding:"10px 24px",fontSize:".82rem",fontWeight:600,color:T.textSub,cursor:"pointer",fontFamily:LP_FONT,display:"inline-flex",alignItems:"center",gap:8,transition:"all .2s",minHeight:44}} onMouseEnter={e=>{e.currentTarget.style.borderColor=CTA;e.currentTarget.style.color=CTA}} onMouseLeave={e=>{e.currentTarget.style.borderColor=T.bg3;e.currentTarget.style.color=T.textSub}}>
+          Alle Features vergleichen
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{transition:"transform .25s",transform:showCompare?"rotate(180deg)":"rotate(0)"}}><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div style={{maxHeight:showCompare?1200:0,overflow:"hidden",transition:"max-height .4s cubic-bezier(.22,1,.36,1)"}}>
+        <div style={{maxWidth:700,margin:"32px auto 0"}}>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:".82rem",fontFamily:LP_FONT}}>
+            <thead>
+              <tr style={{borderBottom:`2px solid ${T.bg3}`}}>
+                <th style={{textAlign:"left",padding:"12px 16px",fontWeight:600,color:T.textMuted,fontSize:".72rem",letterSpacing:".06em",textTransform:"uppercase"}}>Feature</th>
+                <th style={{textAlign:"center",padding:"12px 16px",fontWeight:700,color:T.dark,fontSize:".82rem"}}>Starter</th>
+                <th style={{textAlign:"center",padding:"12px 16px",fontWeight:700,color:CTA,fontSize:".82rem"}}>Professional</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Website & Design",null,null],
+                ["AI-generierte Website",true,true],
+                ["3 Design-Stile + Firmenfarbe",true,true],
+                ["Responsive Design",true,true],
+                ["SSL-Zertifikat",true,true],
+                ["Inhalte",null,null],
+                ["Website-Import",true,true],
+                ["Impressum + DSGVO automatisch",true,true],
+                ["Kontaktformular",true,true],
+                ["Self-Service-Portal",true,true],
+                ["Logo & Fotos hochladen",true,true],
+                ["FAQ, Team, Galerie, Partner",true,true],
+                ["Hosting & Domain",null,null],
+                ["Subdomain (firma.siteready.at)",true,true],
+                ["Eigene Domain (www.firma.at)",false,true],
+                ["Ohne SiteReady-Branding",false,true],
+                ["SEO & Sichtbarkeit",null,null],
+                ["Basis-SEO (Meta-Tags, Schema.org, Sitemap)",true,true],
+                ["AI-Sichtbarkeit",false,true],
+                ["Google-Indexierung",false,true],
+                ["Besucher-Statistiken",false,true],
+                ["Monatlicher SEO-Report",false,true],
+              ].map(([label,starter,pro],i)=>{
+                const isGroup=starter===null;
+                return <tr key={i} style={{borderBottom:`1px solid ${isGroup?"transparent":T.bg3}`,background:isGroup?"transparent":"#fff"}}>
+                  <td style={{padding:isGroup?"20px 16px 8px 16px":"11px 16px",fontWeight:isGroup?700:400,color:isGroup?T.dark:T.text,fontSize:isGroup?".75rem":".82rem",letterSpacing:isGroup?".04em":"0",textTransform:isGroup?"uppercase":"none"}}>{label}</td>
+                  {!isGroup&&<td style={{textAlign:"center",padding:"11px 16px"}}>{starter?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<span style={{color:T.bg3,fontSize:"1.1rem"}}>—</span>}</td>}
+                  {!isGroup&&<td style={{textAlign:"center",padding:"11px 16px"}}>{pro?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={CTA} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>:<span style={{color:T.bg3,fontSize:"1.1rem"}}>—</span>}</td>}
+                  {isGroup&&<td colSpan={2}/>}
+                </tr>;
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </W>
   </section>
 

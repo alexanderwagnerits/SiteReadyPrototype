@@ -632,11 +632,19 @@ export async function onRequestGet({params, env}) {
       ? `<div class="sr-faq-grid">${styledItems}</div>`
       : `<div style="max-width:720px">${styledItems}</div>`;
     const faqGridStyle = isTwoCol ? `<style>.sr-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}@media(max-width:768px){.sr-faq-grid{grid-template-columns:1fr}}</style>` : "";
-    const faqLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px">FAQ</div>`;
-    const faqH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:${isElegant ? "500" : "800"};color:#fff;letter-spacing:-.03em">Häufig gestellte Fragen</h2>`;
-    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:var(--primary);color:#fff"><div class="w"><div style="margin-bottom:40px">${faqLabel}${faqH2}</div>${faqLayout}</div></section>`;
+    // FAQ dunkel ODER hell — abhängig davon ob eine helle Section davor kommt
+    const hasSectionBefore = showFakten || showGalerie || showPartner || (bewertungen.length > 0);
+    const faqDark = hasSectionBefore;
+    let faqSection;
+    if (faqDark) {
+      const faqLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px">FAQ</div>`;
+      const faqH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:${isElegant ? "500" : "800"};color:#fff;letter-spacing:-.03em">Häufig gestellte Fragen</h2>`;
+      faqSection = `<section class="sec-faq sr-fade" style="padding:100px 0;background:var(--primary);color:#fff"><div class="w"><div style="margin-bottom:40px">${faqLabel}${faqH2}</div>${faqLayout}</div></section>`;
+    } else {
+      faqSection = `<section class="sec-faq sr-fade sr-alt-bg" style="padding:100px 0"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
+    }
     if (faqGridStyle) html = html.replace("</head>", faqGridStyle + "</head>");
-    html = html.replace("<!-- FAQ -->", section);
+    html = html.replace("<!-- FAQ -->", faqSection);
     // FAQ-Accordion Script (Event-Listener statt inline onclick)
     const faqScript = `<script>(function(){document.querySelectorAll('.sr-faq-btn').forEach(function(btn){btn.addEventListener('click',function(){var a=btn.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';btn.querySelector('.sr-faq-icon').textContent=open?'+':'\\u2212';btn.setAttribute('aria-expanded',open?'false':'true');});});})();</script>`;
     html = html.replace("</body>", faqScript + "\n</body>");
@@ -1046,8 +1054,11 @@ export async function onRequestGet({params, env}) {
     return `" style="background:${bg};padding`;
   });
 
-  // FAQ → dunkel (fest), reset
-  if (html.includes("sec-faq")) getBg(true);
+  // FAQ → dunkel nur wenn Sections davor, sonst hell (sr-alt-bg)
+  if (html.includes("sec-faq")) {
+    const faqIsDark = showFakten || showGalerie || showPartner || (bewertungen.length > 0);
+    getBg(faqIsDark);
+  }
 
   // Kontakt
   const kontaktBg = getBg(false);

@@ -188,7 +188,7 @@ export async function onRequestGet({params, env}) {
     }
   } else if (o.url_hero) {
     // Standard + full: Hintergrundbild — Text zentriert (nicht flex-end, sieht bei KMU besser aus)
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.35) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.45) 100%),url('${o.url_hero}') center/cover no-repeat!important;align-items:center!important}` +
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.4) 50%,rgba(0,0,0,.65) 100%),url('${o.url_hero}') center/cover no-repeat!important;align-items:center!important}` +
       `#sr-hero h1,#hero h1{text-shadow:0 2px 16px rgba(0,0,0,.5)}` +
       `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 8px rgba(0,0,0,.4)}` +
       `#sr-hero .hero-btns .btn{text-shadow:none}` +

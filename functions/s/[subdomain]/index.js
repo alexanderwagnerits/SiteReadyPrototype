@@ -188,11 +188,11 @@ export async function onRequestGet({params, env}) {
     }
   } else if (o.url_hero) {
     // Standard + full: Hintergrundbild — Text zentriert (nicht flex-end, sieht bei KMU besser aus)
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.65) 0%,rgba(0,0,0,.55) 50%,rgba(0,0,0,.7) 100%),url('${o.url_hero}') center/cover no-repeat!important;align-items:center!important}` +
-      `#sr-hero h1,#hero h1{text-shadow:0 2px 16px rgba(0,0,0,.5)}` +
-      `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 1px 8px rgba(0,0,0,.4)}` +
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.6) 0%,rgba(0,0,0,.5) 40%,rgba(0,0,0,.75) 100%),url('${o.url_hero}') center/cover no-repeat!important;align-items:center!important}` +
+      `#sr-hero h1,#hero h1{text-shadow:0 4px 24px rgba(0,0,0,.7),0 1px 4px rgba(0,0,0,.5)}` +
+      `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 2px 12px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.4)}` +
       `#sr-hero .hero-btns .btn{text-shadow:none}` +
-      `#sr-hero .hero-trust .trust-item{text-shadow:0 1px 6px rgba(0,0,0,.3)}</style>`;
+      `#sr-hero .hero-trust .trust-item{text-shadow:0 2px 8px rgba(0,0,0,.5)}</style>`;
     html = html.replace('</head>', heroStyle + '</head>');
   }
 

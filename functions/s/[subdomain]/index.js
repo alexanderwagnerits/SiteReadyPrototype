@@ -625,11 +625,18 @@ export async function onRequestGet({params, env}) {
   const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage && f.antwort) : [];
   const showFaq = sv.faq !== false && faqItems.length > 0;
   if (showFaq && html.includes("<!-- FAQ -->")) {
+    // FAQ dunkel oder hell — abhängig davon ob Sections davor sichtbar
+    const hasSectionBefore = showFakten || showGalerie || showPartner || (bewertungen.length > 0);
+    const faqDark = hasSectionBefore;
+    const faqBorder = faqDark ? "rgba(255,255,255,.12)" : "var(--sep)";
+    const faqColor = faqDark ? "#fff" : "var(--primary)";
+    const faqIconColor = faqDark ? "rgba(255,255,255,.4)" : "var(--accent)";
+    const faqAnswerColor = faqDark ? "rgba(255,255,255,.6)" : "var(--textMuted)";
     const items = faqItems.slice(0, 8).map((f, i) =>
-      `<div style="border-bottom:1px solid rgba(255,255,255,.12)">` +
-      `<button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a${i}" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:#fff;text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:rgba(255,255,255,.4);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
+      `<div style="border-bottom:1px solid ${faqBorder}">` +
+      `<button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a${i}" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:${faqColor};text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:${faqIconColor};font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
       `<div id="sr-faq-a${i}" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
-      `<p style="font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.8;margin:0;padding-right:32px">${esc(f.antwort) || ""}</p>` +
+      `<p style="font-size:.88rem;color:${faqAnswerColor};line-height:1.8;margin:0;padding-right:32px">${esc(f.antwort) || ""}</p>` +
       `</div></div>`
     ).join("");
     const faqToggleWeight = isElegant ? "600" : "700";
@@ -640,9 +647,6 @@ export async function onRequestGet({params, env}) {
       ? `<div class="sr-faq-grid">${styledItems}</div>`
       : `<div style="max-width:720px">${styledItems}</div>`;
     const faqGridStyle = isTwoCol ? `<style>.sr-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}@media(max-width:768px){.sr-faq-grid{grid-template-columns:1fr}}</style>` : "";
-    // FAQ dunkel ODER hell — abhängig davon ob eine helle Section davor kommt
-    const hasSectionBefore = showFakten || showGalerie || showPartner || (bewertungen.length > 0);
-    const faqDark = hasSectionBefore;
     let faqSection;
     if (faqDark) {
       const faqLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px">FAQ</div>`;

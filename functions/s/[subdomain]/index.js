@@ -256,16 +256,20 @@ export async function onRequestGet({params, env}) {
           }).join("") +
           `</div>`;
       } else {
-        // 3 Personen: Karten nebeneinander, Avatar oben
-        cards = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">` +
+        // 3 Personen: Gleich wie 2 — große Cards untereinander
+        cards = `<div style="display:flex;flex-direction:column;gap:16px">` +
           teamMembers.map((m, idx) => {
-            const avatar = makeAvatar(m, idx, 56);
-            return `<div style="background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"10px"};padding:16px 12px;text-align:center">` +
-              `<div style="display:flex;justify-content:center;margin-bottom:10px">${avatar}</div>` +
-              `<div style="font-weight:${nameWeight};font-size:.88rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
-              (m.rolle ? `<div style="font-size:.75rem;opacity:.5;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
-              (m.email ? `<div style="font-size:.7rem;opacity:.4;margin-top:3px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
-              `</div>`;
+            const hasImg = !!m.foto;
+            const avatarSize = hasImg ? 96 : 80;
+            const avatar = makeAvatar(m, idx, avatarSize);
+            return `<div style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"12px"};padding:20px 24px">` +
+              `<div style="flex-shrink:0">${avatar}</div>` +
+              `<div style="min-width:0;flex:1">` +
+              `<div style="font-weight:${nameWeight};font-size:1.05rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+              (m.rolle ? `<div style="font-size:.82rem;opacity:.55;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
+              (m.beschreibung ? `<div style="font-size:.8rem;opacity:.45;margin-top:8px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
+              (m.email ? `<div style="font-size:.72rem;opacity:.4;margin-top:6px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
+              `</div></div>`;
           }).join("") +
           `</div>`;
       }

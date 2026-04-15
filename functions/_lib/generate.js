@@ -799,6 +799,7 @@ REGELN für gut_zu_wissen:
     team: o.team_members || [],
     faq: faqFinal,
     galerie: o.galerie || [],
+    partner: o.partner || [],
     adresse: o.adresse,
     plz: o.plz,
   });

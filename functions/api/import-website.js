@@ -713,7 +713,8 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
     const variantenCache = berechneVarianten({
       hero_image: null, url_hero: null, stil: "klassisch", branche,
       leistungen: leistungen.map(() => ({foto: false})),
-      ablauf: ablaufSchritte, bewertungen, team, faq, galerie: [], adresse, plz,
+      ablauf: ablaufSchritte, bewertungen, team, faq, galerie: [],
+      partner, adresse, plz,
     });
 
     // Brand-Farbe

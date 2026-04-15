@@ -996,6 +996,11 @@ export async function onRequestGet({params, env}) {
     altIdx++;
     return `" style="background:${bg};padding`;
   });
+  // Kontakt-Section: Hintergrund passend zur Alternierung
+  const kontaktBg = altIdx % 2 === 0
+    ? "color-mix(in srgb,var(--sep) 35%,#fff)"
+    : "#fff";
+  html = html.replace('class="kontakt"', `class="kontakt" style="background:${kontaktBg}"`);
 
   // ── Serve-time Style Fixes (Hover + Responsive) ──
   const responsiveStyle = `<style>

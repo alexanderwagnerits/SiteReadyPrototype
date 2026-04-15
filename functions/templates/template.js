@@ -198,7 +198,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 /* ═══════════════════════════════════════════════════════
    LEISTUNGEN
    ═══════════════════════════════════════════════════════ */
-.leist{padding:var(--sectionY) 0;background:#fff;position:relative}
+.leist{padding:var(--sectionY) 0;background:var(--bg);position:relative}
 .leist-head{margin-bottom:40px}
 .leist-label,.sec-label{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
 .leist h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px}
@@ -250,7 +250,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 /* ═══════════════════════════════════════════════════════
    ABLAUF (serve-time Section)
    ═══════════════════════════════════════════════════════ */
-.ablauf{padding:var(--sectionY) 0;background:#fff}
+.ablauf{padding:var(--sectionY) 0;background:#fff;position:relative}
 .ablauf-head{margin-bottom:48px}
 .ablauf-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
 .ablauf-step{background:var(--bg);border-radius:var(--rLg);padding:28px 24px;position:relative;transition:transform .3s cubic-bezier(.22,1,.36,1)}
@@ -448,7 +448,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 /* ═══════════════════════════════════════════════════════
    KONTAKT
    ═══════════════════════════════════════════════════════ */
-.kontakt{padding:var(--sectionY) 0;background:var(--bg,#f8fafc)}
+.kontakt{padding:var(--sectionY) 0}
 .kontakt-head{margin-bottom:40px}
 .kontakt-grid{display:grid;gap:40px}
 .kontakt h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:28px}

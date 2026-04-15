@@ -623,7 +623,15 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
 
     const claudePhone = (extracted.telefon||"").replace(/[\s\-/]/g,"");
     const wsPhone = (webSearchData.telefon||"").replace(/[\s\-/]/g,"");
-    const finalPhone = filteredPhones[0] || claudePhone || wsPhone || "";
+    // Telefon nur verwenden wenn aus vertrauenswürdiger Quelle:
+    // 1. Direkt auf der Website gefunden (Regex)
+    // 2. Von Claude aus dem Website-Text extrahiert (wenn Regex auch was fand)
+    // 3. Web Search (Google Maps) als letzte Option
+    // NICHT: Claude-Extraktion wenn auf der Website gar keine Nummer stand (dann erfindet Claude manchmal)
+    const hasPhoneOnSite = filteredPhones.length > 0;
+    const finalPhone = hasPhoneOnSite
+      ? filteredPhones[0]
+      : (wsPhone || "");
 
     const plzRaw = (extracted.plz || webSearchData.plz || structuredData.plz || "").replace(/\D/g,"");
     const plz = plzRaw.length === 4 ? plzRaw : "";

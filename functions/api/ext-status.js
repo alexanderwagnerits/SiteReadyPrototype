@@ -19,6 +19,15 @@ export async function onRequestGet({request,env}){
     out[s.key]=results[i].status==="fulfilled"?(results[i].value||null):null;
   });
 
+  // API-Keys Verfügbarkeit (ohne die Keys selbst zu zeigen)
+  out.api_keys={
+    anthropic: !!env.ANTHROPIC_API_KEY,
+    supabase: !!env.SUPABASE_SERVICE_KEY,
+    stripe: !!env.STRIPE_SECRET_KEY,
+    firecrawl: !!env.FIRECRAWL_API_KEY,
+    admin: !!env.ADMIN_SECRET,
+  };
+
   return new Response(JSON.stringify(out),{
     headers:{"Content-Type":"application/json","Cache-Control":"no-store"},
   });

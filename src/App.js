@@ -3999,8 +3999,9 @@ function Admin({adminKey}){
         cloudflare:j.cloudflare||false,
         supabase:j.supabase||false,
         stripe:j.stripe||false,
+        api_keys:j.api_keys||{},
       });
-    }catch(e){setExtStatus({anthropic:false,cloudflare:false,supabase:false,stripe:false});}
+    }catch(e){setExtStatus({anthropic:false,cloudflare:false,supabase:false,stripe:false,api_keys:{}});}
   };
   useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();fetchErrorLogs();const iv=setInterval(()=>{checkSystem();fetchExtStatus();fetchErrorLogs();},60000);return()=>clearInterval(iv);}},[tab]);
   useEffect(()=>{
@@ -4203,6 +4204,7 @@ function Admin({adminKey}){
   if(sysStatus?.anthropic?.billing)alerts.push({type:"error",msg:"Claude Guthaben aufgebraucht – keine Generierung möglich!",tab:"system"});
   else if(sysStatus?.anthropic&&!sysStatus.anthropic.ok)alerts.push({type:"warn",msg:"Anthropic API nicht erreichbar"+(sysStatus.anthropic.error?" – "+sysStatus.anthropic.error:""),tab:"system"});
   if(stuckOrders.length)alerts.push({type:"warn",msg:`${stuckOrders.length} Bestellung${stuckOrders.length>1?"en":""} seit >2h in Generierung – bitte pruefen`,tab:"sites"});
+  if(extStatus?.api_keys&&!extStatus.api_keys.firecrawl)alerts.push({type:"warn",msg:"Firecrawl API Key fehlt — Website-Import funktioniert nur eingeschränkt (kein JS-Rendering)",tab:"system"});
   /* Daten-Check Alerts */
   const expiredTrials=orders.filter(o=>{if(o.status!=="trial")return false;const exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);return exp&&new Date(exp)<new Date();});
   if(expiredTrials.length)alerts.push({type:"warn",msg:`${expiredTrials.length} Trial${expiredTrials.length>1?"s":""} abgelaufen`,tab:"sites"});
@@ -4571,6 +4573,8 @@ function Admin({adminKey}){
                 intOk:sysStatus?.anthropic?.ok&&!sysStatus?.anthropic?.billing,intLabel:sysStatus?.anthropic?.billing?"Billing-Problem":sysStatus?.anthropic?.ok?"API Key OK":null,intErr:sysStatus?.anthropic?.billing?"Guthaben aufgebraucht":sysStatus?.anthropic?.error},
               {key:"cloudflare",label:"Cloudflare",desc:"Hosting & CDN",href:"https://www.cloudflarestatus.com",
                 intOk:null,intLabel:null,intErr:null},
+              {key:"firecrawl",label:"Firecrawl",desc:"Website-Import (Headless Browser)",href:"https://www.firecrawl.dev",
+                intOk:extStatus?.api_keys?.firecrawl===true,intLabel:extStatus?.api_keys?.firecrawl?"Key gesetzt":"Kein Key — Import nur mit Jina (eingeschränkt)",intErr:extStatus?.api_keys?.firecrawl===false?"FIRECRAWL_API_KEY fehlt in Cloudflare Env Vars":null},
             ];
             const StatusRow=({dotColor,text,detail,err,loading,href})=>(
               <div style={{display:"flex",alignItems:"center",gap:6,marginTop:6}}>

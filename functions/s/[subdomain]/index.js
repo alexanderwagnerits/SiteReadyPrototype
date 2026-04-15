@@ -674,20 +674,22 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- FAKTEN -->", "");
   }
 
-  // Partner & Zertifikate — Logo-Leiste
+  // Vertrauen & Referenzen — eigene Section wie andere Sections
   const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && (p.url_logo || p.name)) : [];
   const showPartner = sv.partner !== false && partnerItems.length > 0;
   if (showPartner && html.includes("<!-- PARTNER -->")) {
+    const partnerR = isModern ? "12px" : isElegant ? "2px" : "var(--r)";
+    const partnerBorder = isModern ? "border:none;box-shadow:0 2px 12px rgba(0,0,0,.06)" : `border:1px solid var(--sep)`;
+    const partnerBg = isModern ? "#fff" : "var(--bg)";
     const logos = partnerItems.slice(0, 8).map(p => {
       if (p.url_logo) {
-        return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 20px"><img src="${p.url_logo}" alt="${esc(p.name) || "Partner"}" loading="lazy" style="height:40px;width:auto;object-fit:contain;opacity:.7;filter:grayscale(30%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;
+        return `<div style="display:flex;align-items:center;justify-content:center;padding:16px 24px;${partnerBorder};border-radius:${partnerR};background:${partnerBg}"><img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:36px;width:auto;max-width:120px;object-fit:contain;opacity:.65;filter:grayscale(20%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;
       }
-      return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--r);font-size:.75rem;font-weight:600;color:var(--textMuted)">${esc(p.name)}</div>`;
+      return `<div style="display:flex;align-items:center;justify-content:center;padding:14px 28px;${partnerBorder};border-radius:${partnerR};background:${partnerBg};font-size:.82rem;font-weight:${isElegant ? "500" : "600"};color:var(--textMuted);letter-spacing:${isElegant ? ".04em" : "0"}">${esc(p.name)}</div>`;
     }).join("");
-    // Label dynamisch: wenn mehrheitlich Referenzen/Kunden → "Referenzen", sonst "Partner"
     const refCount = partnerItems.filter(p => p.typ === "referenz").length;
-    const partnerLabel = refCount > partnerItems.length / 2 ? "Unsere Kunden &amp; Referenzen" : "Unsere Partner &amp; Zertifizierungen";
-    const section = `<section class="sec-partner" style="padding:48px 0;background:#fff;border-top:1px solid var(--sep)"><div class="w"><div style="text-align:center;margin-bottom:16px;font-size:.72rem;font-weight:600;color:var(--textMuted);text-transform:uppercase;letter-spacing:.1em">${partnerLabel}</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${logos}</div></div></section>`;
+    const labelText = refCount > partnerItems.length / 2 ? "Vertrauen &amp; Referenzen" : "Partner &amp; Zertifizierungen";
+    const section = `<section class="sec-partner sr-fade" style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:${isElegant ? "12px" : "16px"}">${logos}</div></div></section>`;
     html = html.replace("<!-- PARTNER -->", section);
   } else {
     html = html.replace("<!-- PARTNER -->", "");

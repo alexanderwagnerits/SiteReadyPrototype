@@ -674,32 +674,47 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- FAKTEN -->", "");
   }
 
-  // Vertrauen & Referenzen — eigene Section wie andere Sections
+  // Vertrauen & Referenzen — 3 Layout-Varianten
   const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && (p.url_logo || p.name)) : [];
   const showPartner = sv.partner !== false && partnerItems.length > 0;
   if (showPartner && html.includes("<!-- PARTNER -->")) {
-    const partnerR = isModern ? "12px" : isElegant ? "2px" : "var(--r)";
-    const partnerBorder = isModern ? "border:none;box-shadow:0 2px 12px rgba(0,0,0,.06)" : `border:1px solid var(--sep)`;
-    const partnerBg = "#fff";
-    const hasAnyLogo = partnerItems.some(p => p.url_logo);
-    const logos = partnerItems.slice(0, 8).map(p => {
-      if (p.url_logo) {
-        return `<div style="display:flex;align-items:center;justify-content:center;padding:16px 24px;${partnerBorder};border-radius:${partnerR};background:${partnerBg}"><img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:36px;width:auto;max-width:120px;object-fit:contain;opacity:.65;filter:grayscale(20%);transition:opacity .2s,filter .2s" class="sr-partner-hover"></div>`;
-      }
-      // Text-Fallback: Wenn andere Logos haben → kleine Badge. Wenn keiner Logos hat → Logo-artige Darstellung
-      if (hasAnyLogo) {
-        return `<div style="display:flex;align-items:center;justify-content:center;padding:16px 24px;${partnerBorder};border-radius:${partnerR};background:${partnerBg};font-size:.82rem;font-weight:${isElegant ? "500" : "600"};color:var(--textMuted)">${esc(p.name)}</div>`;
-      }
-      // Alle ohne Logo: größere Cards mit Icon + Name, wie eine Trust-Leiste
-      const initials = esc(p.name).split(/[\s&]+/).map(w => w[0]).filter(Boolean).join("").slice(0, 2).toUpperCase();
-      return `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 32px;${partnerBorder};border-radius:${partnerR};background:${partnerBg};min-width:120px">` +
-        `<div style="width:48px;height:48px;border-radius:${isModern ? "12px" : isElegant ? "2px" : "8px"};background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;letter-spacing:.02em">${initials}</div>` +
-        `<div style="font-size:.82rem;font-weight:${isElegant ? "500" : "600"};color:var(--text);text-align:center;line-height:1.3">${esc(p.name)}</div>` +
-        `</div>`;
-    }).join("");
+    const pR = isModern ? "12px" : isElegant ? "2px" : "var(--r)";
+    const pBorder = isModern ? "border:none;box-shadow:0 2px 12px rgba(0,0,0,.06)" : `border:1px solid var(--sep)`;
+    const pVariant = v.partner; // "logo-leiste" | "grid" | "kompakt"
     const refCount = partnerItems.filter(p => p.typ === "referenz").length;
     const labelText = refCount > partnerItems.length / 2 ? "Vertrauen &amp; Referenzen" : "Partner &amp; Zertifizierungen";
-    const section = `<section class="sec-partner sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:${isElegant ? "12px" : "16px"}">${logos}</div></div></section>`;
+
+    let partnerContent;
+    if (pVariant === "logo-leiste") {
+      // Logo-Leiste: Logos nebeneinander, grayscale, hover-farbig
+      const items = partnerItems.slice(0, 8).map(p => {
+        if (p.url_logo) {
+          return `<div style="display:flex;align-items:center;justify-content:center;padding:16px 28px"><img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:40px;width:auto;max-width:140px;object-fit:contain;opacity:.5;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover"></div>`;
+        }
+        return `<div style="padding:16px 28px;font-size:.85rem;font-weight:${isElegant ? "500" : "600"};color:var(--textMuted);opacity:.6">${esc(p.name)}</div>`;
+      }).join("");
+      partnerContent = `<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px">${items}</div>`;
+    } else if (pVariant === "grid") {
+      // Grid: Cards mit Initialen-Icon + Name (3+ Items ohne Logos)
+      const items = partnerItems.slice(0, 8).map(p => {
+        const initials = esc(p.name).split(/[\s&]+/).map(w => w[0]).filter(Boolean).join("").slice(0, 2).toUpperCase();
+        return `<div style="display:flex;align-items:center;gap:14px;padding:16px 20px;${pBorder};border-radius:${pR};background:#fff">` +
+          `<div style="width:40px;height:40px;border-radius:${isModern ? "10px" : isElegant ? "2px" : "8px"};background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0">${initials}</div>` +
+          `<div style="font-size:.85rem;font-weight:${isElegant ? "500" : "600"};color:var(--text)">${esc(p.name)}</div>` +
+          `</div>`;
+      }).join("");
+      const cols = partnerItems.length <= 3 ? `repeat(${partnerItems.length},1fr)` : "repeat(3,1fr)";
+      partnerContent = `<div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div>` +
+        `<style>@media(max-width:768px){.sec-partner [style*="grid-template-columns"]{grid-template-columns:1fr!important}}</style>`;
+    } else {
+      // Kompakt: 1-2 Items, zentriert als Inline-Badges
+      const items = partnerItems.slice(0, 4).map(p =>
+        `<div style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;${pBorder};border-radius:${pR};background:#fff;font-size:.85rem;font-weight:${isElegant ? "500" : "600"};color:var(--text)">${esc(p.name)}</div>`
+      ).join("");
+      partnerContent = `<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px">${items}</div>`;
+    }
+
+    const section = `<section class="sec-partner sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div>${partnerContent}</div></section>`;
     html = html.replace("<!-- PARTNER -->", section);
   } else {
     html = html.replace("<!-- PARTNER -->", "");

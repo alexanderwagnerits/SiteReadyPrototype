@@ -664,12 +664,12 @@ export async function onRequestGet({params, env}) {
   const showFakten = sv.fakten !== false && faktenItems.length >= 2;
   if (showFakten && html.includes("<!-- FAKTEN -->")) {
     const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
-    const faktenFontWeight = isElegant ? "500" : "800";
-    const faktenFontSize = isElegant ? "clamp(1.4rem,3.5vw,2rem)" : "clamp(1.6rem,4vw,2.4rem)";
+    const faktenFontWeight = isElegant ? "400" : "700";
+    const faktenFontSize = isElegant ? "clamp(1.6rem,4vw,2.4rem)" : "clamp(1.8rem,4.5vw,2.8rem)";
     const items = faktenItems.slice(0, 4).map(f =>
-      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${esc(f.zahl)}</div><div style="font-size:.85rem;color:var(--textMuted);margin-top:6px">${esc(f.label) || ""}</div></div>`
+      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:#fff;letter-spacing:-.03em;line-height:1">${esc(f.zahl)}</div><div style="font-size:.88rem;color:rgba(255,255,255,.55);margin-top:8px;font-weight:${isElegant ? "400" : "500"}">${esc(f.label) || ""}</div></div>`
     ).join("");
-    const section = `<section class="sec-fakten sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
+    const section = `<section class="sec-fakten sr-fade" style="padding:80px 0;background:var(--primary)"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
     html = html.replace("<!-- FAKTEN -->", section);
   } else {
     html = html.replace("<!-- FAKTEN -->", "");

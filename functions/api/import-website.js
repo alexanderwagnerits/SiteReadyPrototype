@@ -699,7 +699,7 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
 
     const { berechneVarianten } = await import("../_lib/varianten.js");
     const variantenCache = berechneVarianten({
-      hero_image: null, stil: "klassisch", branche,
+      hero_image: null, url_hero: null, stil: "klassisch", branche,
       leistungen: leistungen.map(() => ({foto: false})),
       ablauf: ablaufSchritte, bewertungen, team, faq, galerie: [], adresse, plz,
     });

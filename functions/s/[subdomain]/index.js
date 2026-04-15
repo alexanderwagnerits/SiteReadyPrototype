@@ -54,9 +54,11 @@ export async function onRequestGet({params, env}) {
   const fotoMap = o.leistungen_fotos || {};
   const leistArr = (o.leistungen || []).map(l => ({foto: !!(fotoMap[l] || fotoMap[l.charAt(0).toUpperCase() + l.slice(1)])}));
   const v = berechneVarianten({
-    hero_image:    o.url_hero || null,
-    hero_override: vc.hero || null,   // Portal-Wahl beibehalten
+    url_hero:      o.url_hero || null,
+    hero_image:    o.url_hero || null, // Legacy-Compat
+    hero_override: vc.hero || null,
     stil:          o.stil || "klassisch",
+    branche:       o.branche || "",
     leistungen:    leistArr,
     ablauf:        o.ablauf_schritte || [],
     bewertungen:   o.bewertungen || [],
@@ -404,17 +406,23 @@ export async function onRequestGet({params, env}) {
       bewContent = highlight + (rest.length > 0 ? `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${restCols};gap:16px">${restCards}</div>` : "");
 
     } else {
-      // Cards (Standard): Grid nebeneinander
+      // Cards: Layout je nach Anzahl
       const cards = bewertungen.slice(0, 6).map(b => {
         const stars = makeStars(b);
+        const isLong = b.text && b.text.length > 120;
         return `<div style="background:#fff;${bewCardBorder};border-radius:${bewCardR};padding:24px;display:flex;flex-direction:column;gap:12px">` +
           (stars ? `<div style="display:flex;gap:2px">${stars}</div>` : "") +
           `<p style="font-size:.92rem;color:var(--text);line-height:1.7;margin:0;flex:1">„${esc(b.text)}"</p>` +
           `<div style="font-size:.82rem;font-weight:${bewNameWeight};color:var(--primary)">${esc(b.name) || "Kunde"}</div>` +
           `</div>`;
       }).join("");
-      const cols = bewertungen.length === 1 ? "1fr" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
-      bewContent = `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${cols};gap:20px">${cards}</div>`;
+      // 1 Bewertung: volle Breite, zentriert
+      // 2 Bewertungen: nebeneinander
+      // 3+: Dreispalter
+      const cols = bewertungen.length === 1 ? "max-content" : bewertungen.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
+      const justify = bewertungen.length === 1 ? ";justify-content:center" : "";
+      const maxW = bewertungen.length === 1 ? ";max-width:560px;margin:0 auto" : "";
+      bewContent = `<div class="sec-bew-grid" style="display:grid;grid-template-columns:${cols};gap:20px${maxW}">${cards}</div>`;
     }
 
     const section = `<section style="padding:80px 0;background:#fff"><div class="w"><div style="text-align:center;margin-bottom:40px">${bewLabel}${bewH2}</div>${bewContent}</div></section>`;

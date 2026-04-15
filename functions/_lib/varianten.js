@@ -17,70 +17,65 @@ const BRANCHE_GRUPPE = {
 
 function berechneVarianten(data) {
   const d = data || {};
-
-  // Hero: Stil bestimmt Default, Kunde kann im Portal überschreiben
-  const hatHeroBild = !!(d.hero_image);
   const stil = d.stil || "klassisch";
+  const gruppe = BRANCHE_GRUPPE[d.branche] || "";
 
-  // Wenn Kunde manuell gewählt hat (Portal) → beibehalten
+  // ── Hero ──
+  // url_hero (Upload/Import) oder hero_image (Legacy)
+  const hatHeroBild = !!(d.url_hero || d.hero_image);
   let hero = d.hero_override || null;
   if (!hero) {
-    // Auto-Default nach Stil
     if (!hatHeroBild) {
-      hero = "minimal"; // Kein Bild → zentriert, kein Bild
+      hero = "minimal";
     } else if (stil === "elegant") {
-      hero = "fullscreen"; // Immersiv, Premium
+      hero = "fullscreen";
     } else if (stil === "modern") {
-      hero = "split"; // Clean, Bild als eigenständiges Element
+      hero = "split";
     } else {
-      hero = "fullscreen"; // Klassisch + Custom → bewährt, seriös
+      hero = "fullscreen";
     }
   }
 
-  // Leistungen: Anzahl + Foto-Anteil
+  // ── Leistungen ──
   const leistungen = Array.isArray(d.leistungen) ? d.leistungen : [];
   const leistAnzahl = leistungen.length;
   const leistMitFoto = leistungen.filter(l => l && l.foto).length;
   const fotoAnteil = leistAnzahl > 0 ? leistMitFoto / leistAnzahl : 0;
-  const leist = leistAnzahl > 5 ? 'grid'
-    : fotoAnteil >= 0.5 ? 'editorial'
-    : 'grid';
+  const leist = fotoAnteil >= 0.5 ? 'editorial' : 'grid';
 
-  // Ablauf: Step-Anzahl
+  // ── Ablauf ──
   const ablaufSteps = Array.isArray(d.ablauf) ? d.ablauf.length : 0;
-  const ablauf = ablaufSteps > 4 ? 'vertikal' : 'horizontal';
+  // Vertikal wirkt bei Handwerk/Gesundheit/DL professioneller
+  // Horizontal nur bei genau 3 Steps und Bildungs-/Gastro-Branchen
+  const ablauf = ablaufSteps > 4 ? 'vertikal'
+    : ablaufSteps === 3 && (gruppe === "bildung" || gruppe === "gastro") ? 'horizontal'
+    : 'vertikal';
 
-  // Bewertungen: Anzahl
+  // ── Bewertungen ──
   const bewAnzahl = Array.isArray(d.bewertungen) ? d.bewertungen.length : 0;
-  const bewertungen = bewAnzahl === 1 ? 'blockquote' : 'cards';
+  // 1-3: Blockquote (Hauptbewertung groß, Rest als kleine Cards)
+  // 4+: Grid Cards (zu viele fuer Blockquote)
+  const bewertungen = bewAnzahl <= 3 ? 'blockquote' : 'cards';
 
-  // Team: Anzahl
+  // ── Team ──
   const teamAnzahl = Array.isArray(d.team) ? d.team.length : 0;
   const team = teamAnzahl === 1 ? 'single'
     : teamAnzahl <= 3 ? 'grid-3'
     : 'grid-4';
 
-  // FAQ: Anzahl
+  // ── FAQ ──
   const faqAnzahl = Array.isArray(d.faq) ? d.faq.length : 0;
-  const faq = faqAnzahl <= 2 ? 'einspaltig' : 'zweispaltig';
+  // Einspaltig wirkt ruhiger bei wenig Fragen, zweispaltig nutzt Platz bei vielen
+  const faq = faqAnzahl <= 4 ? 'einspaltig' : 'zweispaltig';
 
-  // Galerie: Anzahl
+  // ── Galerie ──
   const galerieAnzahl = Array.isArray(d.galerie) ? d.galerie.length : 0;
   const galerie = galerieAnzahl <= 4 ? 'grid-2x2' : 'grid-3x2';
 
-  // Kontakt: Map vorhanden
+  // ── Kontakt ──
   const kontakt = d.adresse || d.plz ? 'mit-map' : 'ohne-map';
 
-  return {
-    hero,
-    leistungen: leist,
-    ablauf,
-    bewertungen,
-    team,
-    faq,
-    galerie,
-    kontakt
-  };
+  return { hero, leistungen: leist, ablauf, bewertungen, team, faq, galerie, kontakt };
 }
 
 export { berechneVarianten };

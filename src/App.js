@@ -1932,7 +1932,12 @@ function Portal({session,onLogout}){
       setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",about5:"url_about5",about6:"url_about6",about7:"url_about7",about8:"url_about8",preisliste:"url_preisliste"};
       const col=colMap[key];
-      if(col&&order?.id){
+      // Partner-Logo: key = "ref_0", "ref_1" etc. → URL in partner Array speichern
+      if(key.startsWith("ref_")){
+        const idx=parseInt(key.split("_")[1]);
+        const arr=[...(order.partner||[])];
+        if(arr[idx]){arr[idx]={...arr[idx],url_logo:data.publicUrl+"?t="+Date.now()};upOrder("partner")(arr);}
+      } else if(col&&order?.id){
         const updatePayload={[col]:data.publicUrl};
         if(key==="hero"&&order.hero_is_placeholder) updatePayload.hero_is_placeholder=false;
         const{error:upErr}=await supabase.from("orders").update(updatePayload).eq("id",order.id);
@@ -2980,12 +2985,19 @@ function Portal({session,onLogout}){
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft."/>
           {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
-          {(order.partner||[]).map((p,i)=><div key={i} style={{marginTop:i?10:0,display:"flex",flexDirection:"column",gap:6,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
-            <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. Red Bull, WKO, TÜV, Ärztekammer" style={{flex:1,padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
-              <button onClick={()=>askDelete("Eintrag",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
+          {(order.partner||[]).map((p,i)=><div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,alignItems:"center"}}>
+            {/* Logo-Vorschau oder Upload */}
+            <div style={{width:56,height:56,borderRadius:T.rSm,border:`1.5px dashed ${T.bg3}`,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()}>
+              {p.url_logo
+                ? <img src={p.url_logo} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>}
+              <input id={`ref-upload-${i}`} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{if(e.target.files?.[0])upload(`ref_${i}`,e.target.files[0]);}}/>
             </div>
-            <input value={p.url_logo||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],url_logo:e.target.value};upOrder("partner")(arr);}} placeholder="Logo-URL (optional, z.B. https://…/logo.png)" style={{padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".78rem",fontFamily:T.font,background:"#fff",color:T.textMuted}}/>
+            <div style={{flex:1,display:"flex",flexDirection:"column",gap:4}}>
+              <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. Red Bull, WKO, TÜV, Ärztekammer" style={{padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
+              {uploading[`ref_${i}`]&&<div style={{fontSize:".72rem",color:T.accent}}>Logo wird hochgeladen...</div>}
+            </div>
+            <button onClick={()=>askDelete("Eintrag",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
           </div>)}
           {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen.</div>}
           <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>

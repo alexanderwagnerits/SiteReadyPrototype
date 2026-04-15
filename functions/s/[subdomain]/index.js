@@ -217,14 +217,21 @@ export async function onRequestGet({params, env}) {
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const imgR = isModern ? "16px" : isElegant ? "4px" : "var(--r,4px)";
-    const items = aboutFotos.map(url =>
+    const makeImg = (url, ratio) =>
       `<div style="overflow:hidden;border-radius:${imgR};line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:${aboutFotos.length === 1 ? "3/4" : "1/1"};transition:transform .3s">` +
-      `</div>`
-    ).join("");
-    const n = aboutFotos.length;
-    const cols = n === 1 ? "1fr" : "1fr 1fr";
-    html = html.replace("<!-- ABOUT_FOTOS -->", `<div class="fade-up"><div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div></div>`);
+      `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:${ratio};transition:transform .3s">` +
+      `</div>`;
+    let fotosHtml;
+    if (aboutFotos.length === 1) {
+      fotosHtml = makeImg(aboutFotos[0], "3/4");
+    } else if (aboutFotos.length === 2) {
+      fotosHtml = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${aboutFotos.map(u => makeImg(u, "3/4")).join("")}</div>`;
+    } else {
+      // 3+: Erstes Bild groß, Rest als kleine Reihe darunter
+      fotosHtml = makeImg(aboutFotos[0], "4/3") +
+        `<div style="display:grid;grid-template-columns:repeat(${Math.min(aboutFotos.length - 1, 3)},1fr);gap:8px;margin-top:8px">${aboutFotos.slice(1, 4).map(u => makeImg(u, "1/1")).join("")}</div>`;
+    }
+    html = html.replace("<!-- ABOUT_FOTOS -->", `<div class="fade-up">${fotosHtml}</div>`);
   } else {
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
   }

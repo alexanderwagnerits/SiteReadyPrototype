@@ -987,16 +987,70 @@ export async function onRequestGet({params, env}) {
   //   );
   // }
 
-  // ── Alternierende Section-Hintergründe ──
-  // Getönt = leichter Accent-Hauch (on-brand) statt generisches Grau
-  let altIdx = 0;
+  // ── Alternierende Section-Hintergründe (finale Zuweisung) ──
+  // Problem: Welche Sections sichtbar sind variiert pro Kunde.
+  // Lösung: Alle Sections haben eine Kategorie (hell/dunkel/farbig).
+  //         Wir gehen das finale HTML durch und sorgen dafür dass
+  //         keine zwei gleichen Kategorien aufeinander folgen.
+  //
+  // Feste Kategorien (nicht änderbar):
+  //   hero        → dunkel
+  //   cta-block   → farbig (accent)
+  //   ueber       → dunkel (grain)
+  //   sec-faq     → dunkel (primary)
+  //
+  // Variable Kategorien (alternieren zwischen var(--bg) und #fff):
+  //   leist, ablauf, sec-fakten, sec-galerie, sec-partner,
+  //   sec-bew (Bewertungen), kontakt
+  //
+  // Algorithmus: Nach jeder dunklen/farbigen Section → Reset auf var(--bg).
+  // Danach alternieren die hellen Sections.
+
+  let lastWasDark = true; // Hero ist dunkel → erste helle Section = var(--bg)
+  let lightToggle = 0;
+
+  const getBg = (isDark) => {
+    if (isDark) {
+      lastWasDark = true;
+      lightToggle = 0; // Reset nach dunkler Section
+      return null; // Hintergrund ist fest (primary/accent/grain)
+    }
+    if (lastWasDark) {
+      lastWasDark = false;
+      lightToggle = 0;
+    }
+    const bg = lightToggle % 2 === 0 ? "var(--bg)" : "#fff";
+    lightToggle++;
+    return bg;
+  };
+
+  // Leistungen
+  const leistBg = getBg(false);
+  if (leistBg) html = html.replace('class="leist"', `class="leist" style="background:${leistBg}"`);
+
+  // CTA-Block → farbig (fest), reset
+  if (html.includes("sec-cta-block")) getBg(true);
+
+  // Ablauf
+  if (html.includes("class=\"sr-fade\" style=\"background:var(--bg")) {
+    const ablaufBg = getBg(false);
+    if (ablaufBg) html = html.replace(/class="sr-fade" style="background:var\(--bg[^"]*"/, `class="sr-fade" style="background:${ablaufBg}"`);
+  }
+
+  // Über-uns → dunkel (fest), reset
+  if (html.includes("class=\"ueber")) getBg(true);
+
+  // Optionale Sections: sr-alt-bg
   html = html.replace(/sr-alt-bg" style="padding/g, () => {
-    const bg = altIdx % 2 === 0 ? "var(--bg)" : "#fff";
-    altIdx++;
+    const bg = getBg(false);
     return `" style="background:${bg};padding`;
   });
-  // Kontakt-Section: passend zur Alternierung
-  const kontaktBg = altIdx % 2 === 0 ? "var(--bg)" : "#fff";
+
+  // FAQ → dunkel (fest), reset
+  if (html.includes("sec-faq")) getBg(true);
+
+  // Kontakt
+  const kontaktBg = getBg(false);
   html = html.replace('class="kontakt"', `class="kontakt" style="background:${kontaktBg}"`);
 
   // ── Serve-time Style Fixes (Hover + Responsive) ──

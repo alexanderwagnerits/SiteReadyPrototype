@@ -532,12 +532,17 @@ JSON-Felder:
 - whatsapp: WhatsApp-Nummer falls erwaehnt (Format: +43...)
 - buchungslink: URL zum Online-Terminbuchungssystem falls vorhanden
 
-=== RECHTLICHES (aus Impressum) ===
+=== RECHTLICHES (aus Impressum — ALLES was du findest) ===
 - unternehmensform: NUR: eu/einzelunternehmen/gmbh/og/kg/ag/verein/gesnbr
 - uid: ATU...
 - firmenbuchnummer: FN...
-- firmenbuchgericht: z.B. HG Wien
+- firmenbuchgericht: z.B. HG Wien, LG Linz
 - gisazahl: Nur Ziffern
+- geschaeftsfuehrer: Name(n) der Geschäftsführer
+- gesellschafter: Name(n) der Gesellschafter falls angegeben
+- unternehmensgegenstand: Gewerbebezeichnung falls im Impressum
+- kammer_berufsrecht: Kammerzugehörigkeit (z.B. WKO, Ärztekammer)
+- aufsichtsbehoerde: Aufsichtsbehörde falls angegeben
 
 === BRANCHE & LEISTUNGEN ===
 - branche: NUR einer dieser Werte:
@@ -548,7 +553,7 @@ JSON-Felder:
   Dienstleistung: steuerberater/rechtsanwalt/fotograf/versicherung/immobilien/hausverwaltung/umzug/eventplanung/florist/architekt/it_service/werbeagentur/bestattung/notar/finanzberater/reisebuero/innenarchitekt/textilreinigung/unternehmensberater/dolmetscher/druckerei/sicherheitsdienst
   Bildung: fahrschule/nachhilfe/musikschule/trainer/yoga/hundeschule/tanzschule/reitschule/schwimmschule/coach
   Sonstige: sonstige
-- leistungen: Array mit ALLEN konkreten Leistungen/Angeboten (max 12). Durchsuche ALLE Seiten!
+- leistungen: Array mit konkreten Leistungen/Angeboten die ein KUNDE BUCHEN kann (max 8). NUR echte Services, NICHT interne Arbeitsschritte (z.B. "Redaktion" oder "Grafik" sind keine buchbaren Leistungen). Qualität vor Quantität.
 - spezialisierung: Fachgebiet
 
 === OEFFNUNGSZEITEN & HINWEISE ===
@@ -568,7 +573,7 @@ JSON-Felder:
 - partner: [{"name":"WKO"}] Max 8.
 
 === TEAM ===
-- team: [{"name":"...","rolle":"...","email":"..."}] Max 8. Email nur wenn eine persoenliche E-Mail auf der Website steht (z.B. max@firma.at). Nicht die allgemeine Kontakt-E-Mail wiederholen.
+- team: [{"name":"...","rolle":"...","email":"...","beschreibung":"..."}] Max 8. Email nur wenn eine persönliche E-Mail auf der Website steht. beschreibung: 1-2 Sätze über die Person, NUR wenn auf der Website ein Bio-Text steht. NICHT erfinden.
 
 === ABLAUF ===
 - ablauf_schritte: [{"titel":"...","text":"..."}] Max 5. NUR wenn auf Website beschrieben.
@@ -621,7 +626,6 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
     const claudeEmailValid = claudeEmail && emailRegex.test(claudeEmail);
     const finalEmail = domainMatch || (claudeEmailValid ? claudeEmail : "") || wsEmail || filteredEmails[0] || "";
 
-    const claudePhone = (extracted.telefon||"").replace(/[\s\-/]/g,"");
     const wsPhone = (webSearchData.telefon||"").replace(/[\s\-/]/g,"");
     // Telefon nur verwenden wenn aus vertrauenswürdiger Quelle:
     // 1. Direkt auf der Website gefunden (Regex)
@@ -730,6 +734,11 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
       bundesland, unternehmensform,
       uid: extracted.uid || "", firmenbuchnummer: extracted.firmenbuchnummer || "",
       firmenbuchgericht: extracted.firmenbuchgericht || "", gisazahl: extracted.gisazahl || "",
+      geschaeftsfuehrer: extracted.geschaeftsfuehrer || "",
+      gesellschafter: extracted.gesellschafter || "",
+      unternehmensgegenstand: extracted.unternehmensgegenstand || "",
+      kammer_berufsrecht: extracted.kammer_berufsrecht || "",
+      aufsichtsbehoerde: extracted.aufsichtsbehoerde || "",
       branche, leistungen, spezialisierung: extracted.spezialisierung || "",
       oeffnungszeiten_import: oeffnungszeiten,
       gut_zu_wissen: extracted.gut_zu_wissen || "",

@@ -2119,6 +2119,9 @@ function Portal({session,onLogout}){
      done:!!(order.adresse&&order.telefon),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
+    {label:"Design anpassen",
+     desc:"Stil, Farben und Schriftart nicht zufrieden? Hier können Sie alles ändern — sofort live.",
+     done:!!(order.custom_color||order.custom_font||order.custom_accent),page:"design"},
     {label:"Betriebsfotos hochladen",
      desc:"Professionelle Fotos sind der größte Hebel für mehr Anfragen.",
      done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
@@ -2146,9 +2149,6 @@ function Portal({session,onLogout}){
     {label:"WhatsApp-Button aktivieren",
      desc:"Kunden können Sie direkt über WhatsApp kontaktieren.",
      done:!!order.whatsapp,page:"kontakt"},
-    {label:"Layout & Design anpassen",
-     desc:"Farben, Schriftart und Seitenaufbau individualisieren.",
-     done:!!(order.custom_color||order.custom_font||order.stil),page:"design"},
   ]:[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;

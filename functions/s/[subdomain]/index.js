@@ -1056,10 +1056,10 @@ export async function onRequestGet({params, env}) {
     return `" style="background:${bg};padding`;
   });
 
-  // FAQ → dunkel nur wenn Sections davor, sonst hell (sr-alt-bg)
+  // FAQ → dunkel nur wenn Sections davor, sonst hell (bereits als sr-alt-bg gezählt)
   if (html.includes("sec-faq")) {
     const faqIsDark = showFakten || showGalerie || showPartner || (bewertungen.length > 0);
-    getBg(faqIsDark);
+    if (faqIsDark) getBg(true); // Nur dunkel separat zählen, hell wurde schon im sr-alt-bg Replace gezählt
   }
 
   // Kontakt

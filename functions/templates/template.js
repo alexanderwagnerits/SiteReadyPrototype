@@ -736,14 +736,11 @@ ${preislisteHtml}
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
 </div>
-<div class="fade-up">
 <!-- ABOUT_FOTOS -->
 </div>
-</div>
+<!-- TEAM -->
 </div>
 </section>
-
-<!-- TEAM -->
 
 <!-- FAKTEN -->
 

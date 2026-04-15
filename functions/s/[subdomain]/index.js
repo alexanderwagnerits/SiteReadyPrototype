@@ -213,7 +213,7 @@ export async function onRequestGet({params, env}) {
   // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
   html = html.replace("<!-- LEIST_FOTOS -->", "");
 
-  // About-Fotos — rechte Spalte in Über-uns (wenn vorhanden)
+  // About-Fotos — rechte Spalte in Über-uns (wenn vorhanden, sonst einspaltig)
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const imgR = isModern ? "16px" : isElegant ? "4px" : "var(--r,4px)";
@@ -224,9 +224,8 @@ export async function onRequestGet({params, env}) {
     ).join("");
     const n = aboutFotos.length;
     const cols = n === 1 ? "1fr" : "1fr 1fr";
-    html = html.replace("<!-- ABOUT_FOTOS -->", `<div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div>`);
+    html = html.replace("<!-- ABOUT_FOTOS -->", `<div class="fade-up"><div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div></div>`);
   } else {
-    // Keine Fotos → rechte Spalte entfernen, Über-uns einspaltig
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
     html = html.replace("ueber-grid", "ueber-grid ueber-single");
   }
@@ -239,7 +238,6 @@ export async function onRequestGet({params, env}) {
     const avatarR = isModern ? "50%" : isElegant ? "4px" : "50%";
     const nameWeight = isElegant ? "500" : "700";
     const cardR = isModern ? "16px" : isElegant ? "4px" : "var(--r)";
-    const cardBorder = isModern ? "box-shadow:0 2px 12px rgba(0,0,0,.06)" : `border:1px solid var(--sep)`;
 
     function makeAvatar(m, idx, size) {
       const hasImg = !!m.foto;
@@ -252,12 +250,12 @@ export async function onRequestGet({params, env}) {
 
     function makeCard(m, idx, avatarSize) {
       const avatar = makeAvatar(m, idx, avatarSize);
-      return `<div style="text-align:center;padding:28px 20px;background:#fff;${cardBorder};border-radius:${cardR}">` +
+      return `<div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.06);border-radius:${cardR}">` +
         `<div style="display:flex;justify-content:center;margin-bottom:14px">${avatar}</div>` +
-        `<div style="font-weight:${nameWeight};font-size:1rem;color:var(--primary);line-height:1.3">${esc(m.name)}</div>` +
-        (m.rolle ? `<div style="font-size:.82rem;color:var(--accent);margin-top:4px;font-weight:500">${esc(m.rolle)}</div>` : "") +
-        (m.beschreibung ? `<div style="font-size:.82rem;color:var(--textMuted);margin-top:10px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
-        (m.email ? `<div style="font-size:.75rem;color:var(--textMuted);margin-top:8px"><a href="mailto:${esc(m.email)}" style="color:var(--accent);text-decoration:none">${esc(m.email)}</a></div>` : "") +
+        `<div style="font-weight:${nameWeight};font-size:1rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+        (m.rolle ? `<div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-top:4px;font-weight:500">${esc(m.rolle)}</div>` : "") +
+        (m.beschreibung ? `<div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-top:10px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
+        (m.email ? `<div style="font-size:.75rem;margin-top:8px"><a href="mailto:${esc(m.email)}" style="color:rgba(255,255,255,.45);text-decoration:none">${esc(m.email)}</a></div>` : "") +
         `</div>`;
     }
 
@@ -277,10 +275,10 @@ export async function onRequestGet({params, env}) {
       teamGrid = `<div style="display:grid;grid-template-columns:${cols};gap:16px">${teamMembers.map((m, i) => makeCard(m, i, 80)).join("")}</div>`;
     }
 
-    const section = `<section class="sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel("Team")}${sectionH2("Wer hinter dem Betrieb steht")}</div>${teamGrid}${berufsregNr}</div></section>`;
-    html = html.replace("<!-- TEAM -->", section);
+    const teamBlock = `<div style="margin-top:48px;padding-top:40px;border-top:1px solid rgba(255,255,255,.1)"><div style="margin-bottom:24px"><div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.4);margin-bottom:8px">Unser Team</div></div>${teamGrid}${berufsregNr}</div>`;
+    html = html.replace("<!-- TEAM -->", teamBlock);
   } else {
-    html = html.replace("<!-- TEAM -->", berufsregNr ? `<section class="sr-fade sr-alt-bg" style="padding:40px 0"><div class="w">${berufsregNr}</div></section>` : "");
+    html = html.replace("<!-- TEAM -->", berufsregNr ? `<div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)">${berufsregNr}</div>` : "");
   }
 
   // (About-Fotos werden oben in der rechten Über-uns Spalte gerendert)

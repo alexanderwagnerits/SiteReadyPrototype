@@ -2129,8 +2129,8 @@ function Portal({session,onLogout}){
     {label:order.fakten?.some(f=>f.zahl)?"Zahlen & Fakten prüfen":"Zahlen & Fakten hinzufügen",
      desc:order.fakten?.some(f=>f.zahl)?"Prüfen Sie die übernommenen Zahlen.":`z.B. „15+ Jahre Erfahrung" – beeindruckt Besucher.`,
      done:!!(order.fakten?.some(f=>f.zahl)),page:"fakten"},
-    {label:order.partner?.some(p=>p.name)?"Partner prüfen":"Partner & Zertifikate hinzufügen",
-     desc:order.partner?.some(p=>p.name)?"Prüfen Sie die übernommenen Partner.":"WKO, TÜV, ISO — zeigen Sie Ihre Mitgliedschaften.",
+    {label:order.partner?.some(p=>p.name)?"Referenzen prüfen":"Referenzen hinzufügen",
+     desc:order.partner?.some(p=>p.name)?"Prüfen Sie Kunden, Partner und Zertifikate.":"Kunden, Partner oder Zertifikate — zeigen Sie, wer Ihnen vertraut.",
      done:!!(order.partner?.some(p=>p.name)),page:"partner"},
     {label:(order.facebook||order.instagram||order.linkedin||order.tiktok)?"Social Media prüfen":"Social Media Profile angeben",
      desc:"Ihre Profile erscheinen als Icons auf der Website.",
@@ -2356,7 +2356,7 @@ function Portal({session,onLogout}){
           ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,false],
           ["faq","FAQ",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,false],
           ["fakten","Zahlen & Fakten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,false],
-          ["partner","Partner",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,false],
+          ["partner","Referenzen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,false],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`,false],
         ].map(([p,label,iconSvg,hasComp])=>(
           <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)} style={!hasComp?{opacity:page===p?1:.65}:undefined}>
@@ -2978,17 +2978,17 @@ function Portal({session,onLogout}){
 
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Partner & Zertifikate" desc="Zeigen Sie Logos und Namen von Partnern, Zertifizierungen oder Verbänden."/>
+          <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft."/>
           {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           {(order.partner||[]).map((p,i)=><div key={i} style={{marginTop:i?10:0,display:"flex",flexDirection:"column",gap:6,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg}}>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="Name (z.B. WKO, TÜV, KNX Partner)" style={{flex:1,padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
-              <button onClick={()=>askDelete("Partner",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
+              <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. Red Bull, WKO, TÜV, Ärztekammer" style={{flex:1,padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
+              <button onClick={()=>askDelete("Eintrag",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
             </div>
             <input value={p.url_logo||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],url_logo:e.target.value};upOrder("partner")(arr);}} placeholder="Logo-URL (optional, z.B. https://…/logo.png)" style={{padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".78rem",fontFamily:T.font,background:"#fff",color:T.textMuted}}/>
           </div>)}
-          {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Partner hinzugefügt.</div>}
-          <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Partner hinzufügen</button>
+          {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen.</div>}
+          <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>
         </div>}
 
         {page==="design"&&(()=>{

@@ -310,7 +310,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-elegant .ueber-stat-num{font-weight:300}
 .stil-elegant .ueber-stat-label{font-size:.7rem;letter-spacing:.12em}
 
-@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}.ueber-grid.ueber-single{grid-template-columns:1fr;max-width:680px;margin:0 auto}}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}.ueber-grid.ueber-single{grid-template-columns:1fr!important;max-width:680px;margin:0 auto;text-align:center}.ueber-grid.ueber-single>*:not(:first-child){display:none}.ueber-grid.ueber-single .ueber-vorteile{text-align:left;display:inline-flex}}
 @media(max-width:768px){.ueber-stats{grid-template-columns:1fr 1fr}}
 
 /* ═══════════════════════════════════════════════════════

@@ -201,7 +201,7 @@ export async function onRequestGet({params, env}) {
   const mapsAddr = [o.adresse, o.plz, o.ort].filter(Boolean).join(", ");
   if (mapsAddr) {
     const mapsQuery = encodeURIComponent(mapsAddr + ", Österreich");
-    const mapsIframe = `<div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10)"><iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="280" style="border:0;display:block" allowfullscreen loading="lazy" title="Standort"></iframe></div>`;
+    const mapsIframe = `<div style="border-radius:${isModern ? "16px" : isElegant ? "4px" : "12px"};overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10);height:100%;min-height:360px"><iframe src="https://maps.google.com/maps?q=${mapsQuery}&output=embed&hl=de&z=15" width="100%" height="100%" style="border:0;display:block;min-height:360px" allowfullscreen loading="lazy" title="Standort"></iframe></div>`;
     html = html.replace(/<!-- MAPS -->/g, mapsIframe);
     html = html.replace(/<div[^>]*class="maps-placeholder"[^>]*>[\s\S]*?<\/div>/gi, mapsIframe);
     html = html.replace(/🗺️[^<]*Kartenansicht[^<]*/gi, "");

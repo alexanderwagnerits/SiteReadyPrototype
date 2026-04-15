@@ -484,7 +484,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-elegant .kontakt-email{font-weight:500}
 .stil-elegant .kontakt-social a:hover{transform:none;box-shadow:none}
 
-@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1fr;gap:64px;align-items:start}}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1.2fr;gap:40px;align-items:stretch}}
 
 /* ═══════════════════════════════════════════════════════
    KONTAKT INFOS (Features-Grid)

@@ -1003,17 +1003,75 @@ export async function onRequestGet({params, env}) {
   };
   const stilColors = STIL_COLORS[currentStil] || STIL_COLORS.klassisch;
 
+  // ── Automatische Palette aus Akzentfarbe ableiten ──
+  // Erzeugt harmonische Primary/Background/Border aus dem Accent-Hue
+  function hexToHsl(hex) {
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b), d = max-min;
+    let h=0, s=0, l=(max+min)/2;
+    if (d>0) {
+      s = l>0.5 ? d/(2-max-min) : d/(max+min);
+      if (max===r) h=((g-b)/d+(g<b?6:0))/6;
+      else if (max===g) h=((b-r)/d+2)/6;
+      else h=((r-g)/d+4)/6;
+    }
+    return [h*360, s*100, l*100];
+  }
+  function hslToHex(h, s, l) {
+    h=((h%360)+360)%360; s=Math.max(0,Math.min(100,s))/100; l=Math.max(0,Math.min(100,l))/100;
+    const a=s*Math.min(l,1-l);
+    const f=(n)=>{const k=(n+h/30)%12;const c=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(c*255).toString(16).padStart(2,"0");};
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
+
+  function buildPaletteFromAccent(accent, stil) {
+    const [h, s, l] = hexToHsl(accent);
+    // Saettigung begrenzen: zu grelle Farben abschwaechen, graue Farben kaum toenen
+    const effectiveS = Math.min(s, 70);
+    const isNeutral = s < 10; // fast grau → wenig toenen
+
+    if (stil === "modern") {
+      // Modern: Primary bleibt fast-schwarz, nur minimal Hue-Shift
+      return {
+        primary: isNeutral ? "#18181b" : hslToHex(h, Math.min(effectiveS, 15), 10),
+        bg: isNeutral ? "#fafafa" : hslToHex(h, Math.min(effectiveS*0.15, 8), 98),
+        sep: isNeutral ? "#e4e4e7" : hslToHex(h, Math.min(effectiveS*0.12, 6), 90),
+        t: "#18181b",
+        tm: "#71717a",
+      };
+    }
+    if (stil === "elegant") {
+      // Elegant: Warme Untertöne, Primary sehr dunkel mit Hue
+      return {
+        primary: isNeutral ? "#020826" : hslToHex(h, Math.min(effectiveS*0.5, 35), 8),
+        bg: isNeutral ? "#f9f4ef" : hslToHex(h, Math.min(effectiveS*0.2, 15), 97),
+        sep: isNeutral ? "#eaddcf" : hslToHex(h, Math.min(effectiveS*0.15, 12), 89),
+        t: "#2c2620",
+        tm: "#6b6058",
+      };
+    }
+    // Klassisch: Standard — Primary dunkel mit klarem Hue
+    return {
+      primary: isNeutral ? "#094067" : hslToHex(h, Math.min(effectiveS*0.6, 45), 14),
+      bg: isNeutral ? "#f4f7fa" : hslToHex(h, Math.min(effectiveS*0.2, 18), 97),
+      sep: isNeutral ? "#d8eefe" : hslToHex(h, Math.min(effectiveS*0.18, 15), 90),
+      t: "#1e293b",
+      tm: "#475569",
+    };
+  }
+
   // Custom-Felder ueberschreiben Stil-Defaults bei JEDEM Stil
   // Accent + Primary werden durch Kontrast-Check abgesichert (zu hell → abdunkeln)
   const safeAccent = o.custom_accent ? ensureContrast(o.custom_accent) : stilColors.a;
-  const safePrimary = o.custom_color ? ensureContrast(o.custom_color, 3.0) : stilColors.p;
+  const autoPalette = buildPaletteFromAccent(safeAccent, currentStil);
+  const safePrimary = o.custom_color ? ensureContrast(o.custom_color, 3.0) : ensureContrast(autoPalette.primary, 3.0);
   const customDesign = [
     `--primary:${safePrimary}`,
     `--accent:${safeAccent}`,
-    `--bg:${o.custom_bg || stilColors.bg}`,
-    `--sep:${o.custom_sep || stilColors.s}`,
-    `--text:${o.custom_text || stilColors.t}`,
-    `--textMuted:${o.custom_text_muted || stilColors.tm}`,
+    `--bg:${o.custom_bg || autoPalette.bg}`,
+    `--sep:${o.custom_sep || autoPalette.sep}`,
+    `--text:${o.custom_text || autoPalette.t}`,
+    `--textMuted:${o.custom_text_muted || autoPalette.tm}`,
     o.custom_radius && `--r:${o.custom_radius}`,
     o.custom_radius && `--rLg:${parseInt(o.custom_radius)+4}px`,
   ].filter(Boolean);
@@ -1044,8 +1102,8 @@ export async function onRequestGet({params, env}) {
     const freshCss = buildCss({
       primary:        safePrimary,
       accent:         safeAccent,
-      bg:             o.custom_bg  || stilColors.bg,
-      sep:            o.custom_sep || stilColors.s,
+      bg:             o.custom_bg  || autoPalette.bg,
+      sep:            o.custom_sep || autoPalette.sep,
       borderRadius:   o.custom_radius || sr.r,
       borderRadiusLg: o.custom_radius ? `${parseInt(o.custom_radius)+4}px` : sr.rLg,
       fontFamily:     (o.custom_font && FONT_FAMILIES[o.custom_font]) || STYLE_FONT[currentStil] || STYLE_FONT.klassisch,

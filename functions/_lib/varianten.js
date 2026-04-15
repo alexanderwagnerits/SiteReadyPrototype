@@ -72,15 +72,14 @@ function berechneVarianten(data) {
   const galerieAnzahl = Array.isArray(d.galerie) ? d.galerie.length : 0;
   const galerie = galerieAnzahl <= 4 ? 'grid-2x2' : 'grid-3x2';
 
-  // ── Partner/Referenzen ──
-  const partnerAnzahl = Array.isArray(d.partner) ? d.partner.length : 0;
-  const hatLogos = Array.isArray(d.partner) && d.partner.some(p => p && p.url_logo);
-  // logo-leiste: Logos nebeneinander (wenn Logos vorhanden)
-  // grid: Cards im Grid (3+ ohne Logos)
-  // kompakt: Inline-Leiste (1-2 ohne Logos)
-  const partner = hatLogos ? 'logo-leiste'
-    : partnerAnzahl >= 3 ? 'grid'
-    : 'kompakt';
+  // ── Partner/Referenzen (nur mit Logos sichtbar) ──
+  const partnerMitLogo = Array.isArray(d.partner) ? d.partner.filter(p => p && p.url_logo).length : 0;
+  // gross: 1-2 Logos groß zentriert
+  // einzeilig: 3-4 Logos normal in einer Zeile
+  // zweizeilig: 5-8 Logos in 2 Zeilen (Grid 4er)
+  const partner = partnerMitLogo <= 2 ? 'gross'
+    : partnerMitLogo <= 4 ? 'einzeilig'
+    : 'zweizeilig';
 
   // ── Kontakt ──
   const kontakt = d.adresse || d.plz ? 'mit-map' : 'ohne-map';

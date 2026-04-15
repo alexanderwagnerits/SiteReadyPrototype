@@ -989,15 +989,14 @@ export async function onRequestGet({params, env}) {
 
   // ── Alternierende Section-Hintergründe ──
   // Getönt = leichter Accent-Hauch (on-brand) statt generisches Grau
-  const tintedBg = "color-mix(in srgb,var(--accent) 4%,var(--bg))";
   let altIdx = 0;
   html = html.replace(/sr-alt-bg" style="padding/g, () => {
-    const bg = altIdx % 2 === 0 ? tintedBg : "#fff";
+    const bg = altIdx % 2 === 0 ? "var(--bg)" : "#fff";
     altIdx++;
     return `" style="background:${bg};padding`;
   });
   // Kontakt-Section: passend zur Alternierung
-  const kontaktBg = altIdx % 2 === 0 ? tintedBg : "#fff";
+  const kontaktBg = altIdx % 2 === 0 ? "var(--bg)" : "#fff";
   html = html.replace('class="kontakt"', `class="kontakt" style="background:${kontaktBg}"`);
 
   // ── Serve-time Style Fixes (Hover + Responsive) ──

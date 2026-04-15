@@ -310,7 +310,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-elegant .ueber-stat-num{font-weight:300}
 .stil-elegant .ueber-stat-label{font-size:.7rem;letter-spacing:.12em}
 
-@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:64px;align-items:start}}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}.ueber-grid.ueber-single{grid-template-columns:1fr;max-width:680px}}
 @media(max-width:768px){.ueber-stats{grid-template-columns:1fr 1fr}}
 
 /* ═══════════════════════════════════════════════════════
@@ -735,14 +735,15 @@ ${preislisteHtml}
 <h2>Über ${firmenname}</h2>
 <p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
 <ul class="ueber-vorteile">{{VORTEILE}}</ul>
-<!-- ABOUT_FOTOS -->
 </div>
 <div class="fade-up">
-<!-- TEAM -->
+<!-- ABOUT_FOTOS -->
 </div>
 </div>
 </div>
 </section>
+
+<!-- TEAM -->
 
 <!-- FAKTEN -->
 

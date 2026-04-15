@@ -213,117 +213,77 @@ export async function onRequestGet({params, env}) {
   // Leistungen-Fotos Galerie entfernt — Fotos sind jetzt in den Cards
   html = html.replace("<!-- LEIST_FOTOS -->", "");
 
-  // Team-Members + Berufsregister-Nr. — rechte Spalte in Über-uns
+  // About-Fotos — rechte Spalte in Über-uns (wenn vorhanden)
+  const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
+  if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
+    const imgR = isModern ? "16px" : isElegant ? "4px" : "var(--r,4px)";
+    const items = aboutFotos.map(url =>
+      `<div style="overflow:hidden;border-radius:${imgR};line-height:0;cursor:zoom-in">` +
+      `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:${aboutFotos.length === 1 ? "3/4" : "1/1"};transition:transform .3s">` +
+      `</div>`
+    ).join("");
+    const n = aboutFotos.length;
+    const cols = n === 1 ? "1fr" : "1fr 1fr";
+    html = html.replace("<!-- ABOUT_FOTOS -->", `<div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div>`);
+  } else {
+    // Keine Fotos → rechte Spalte entfernen, Über-uns einspaltig
+    html = html.replace("<!-- ABOUT_FOTOS -->", "");
+    html = html.replace("ueber-grid", "ueber-grid ueber-single");
+  }
+
+  // Team — eigene Section unterhalb von Über-uns
   const teamMembers = Array.isArray(o.team_members) ? o.team_members.filter(m => m && m.name) : [];
-  const berufsregNr = o.berufsregister_nr ? `<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:.75rem;opacity:.4"><span style="text-transform:uppercase;letter-spacing:.1em;font-weight:600">Berufsregister-Nr.</span><br><span style="font-weight:500;opacity:1">${o.berufsregister_nr}</span></div>` : "";
+  const berufsregNr = o.berufsregister_nr ? `<div style="margin-top:24px;font-size:.78rem;color:var(--textMuted)"><span style="text-transform:uppercase;letter-spacing:.1em;font-weight:600;font-size:.68rem">Berufsregister-Nr.</span><br>${o.berufsregister_nr}</div>` : "";
   if (teamMembers.length > 0 && html.includes("<!-- TEAM -->")) {
     const avatarColors = ["#2563eb","#6366f1","#0891b2","#059669","#d97706","#dc2626","#7c3aed","#db2777"];
     const avatarR = isModern ? "50%" : isElegant ? "4px" : "50%";
-    const nameWeight = isElegant ? "600" : "700";
-
-    const teamVariant = v.team; // "single" | "grid-3" | "grid-4"
+    const nameWeight = isElegant ? "500" : "700";
+    const cardR = isModern ? "16px" : isElegant ? "4px" : "var(--r)";
+    const cardBorder = isModern ? "box-shadow:0 2px 12px rgba(0,0,0,.06)" : `border:1px solid var(--sep)`;
 
     function makeAvatar(m, idx, size) {
       const hasImg = !!m.foto;
       const initials = esc(m.name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase());
       const color = avatarColors[idx % avatarColors.length];
       return hasImg
-        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:${size}px;height:${size}px;border-radius:${avatarR};object-fit:cover;border:3px solid rgba(255,255,255,.15)">`
+        ? `<img src="${m.foto}" alt="${esc(m.name)}" style="width:${size}px;height:${size}px;border-radius:${avatarR};object-fit:cover">`
         : `<div style="width:${size}px;height:${size}px;border-radius:${avatarR};background:${color};display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*.36)}px;font-weight:800;color:#fff;letter-spacing:.02em">${initials}</div>`;
     }
 
-    let cards;
-    if (teamVariant === "single") {
-      // 1 Person: Horizontal, groß
-      const m = teamMembers[0];
-      const avatar = makeAvatar(m, 0, 80);
-      cards = `<div style="display:flex;align-items:center;gap:20px;padding:16px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:1.1rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.88rem;opacity:.55;margin-top:4px">${esc(m.rolle)}</div>` : ""}${m.email ? `<div style="font-size:.78rem;opacity:.45;margin-top:4px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none;opacity:.8">${esc(m.email)}</a></div>` : ""}${m.beschreibung ? `<div style="font-size:.8rem;opacity:.4;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : ""}</div></div>`;
-    } else if (teamVariant === "grid-3") {
-      if (teamMembers.length === 2) {
-        // 2 Personen: Grosse Cards untereinander, Foto/Avatar prominent
-        cards = `<div style="display:flex;flex-direction:column;gap:16px">` +
-          teamMembers.map((m, idx) => {
-            const hasImg = !!m.foto;
-            const avatarSize = hasImg ? 96 : 80;
-            const avatar = makeAvatar(m, idx, avatarSize);
-            return `<div style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"12px"};padding:20px 24px">` +
-              `<div style="flex-shrink:0">${avatar}</div>` +
-              `<div style="min-width:0;flex:1">` +
-              `<div style="font-weight:${nameWeight};font-size:1.05rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
-              (m.rolle ? `<div style="font-size:.82rem;opacity:.55;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
-              (m.beschreibung ? `<div style="font-size:.8rem;opacity:.45;margin-top:8px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
-              (m.email ? `<div style="font-size:.72rem;opacity:.4;margin-top:6px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
-              `</div></div>`;
-          }).join("") +
-          `</div>`;
-      } else {
-        // 3 Personen: Gleich wie 2 — große Cards untereinander
-        cards = `<div style="display:flex;flex-direction:column;gap:16px">` +
-          teamMembers.map((m, idx) => {
-            const hasImg = !!m.foto;
-            const avatarSize = hasImg ? 96 : 80;
-            const avatar = makeAvatar(m, idx, avatarSize);
-            return `<div style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"12px"};padding:20px 24px">` +
-              `<div style="flex-shrink:0">${avatar}</div>` +
-              `<div style="min-width:0;flex:1">` +
-              `<div style="font-weight:${nameWeight};font-size:1.05rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
-              (m.rolle ? `<div style="font-size:.82rem;opacity:.55;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
-              (m.beschreibung ? `<div style="font-size:.8rem;opacity:.45;margin-top:8px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
-              (m.email ? `<div style="font-size:.72rem;opacity:.4;margin-top:6px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
-              `</div></div>`;
-          }).join("") +
-          `</div>`;
-      }
-    } else {
-      // 4+ Personen: Kompaktes 2-Spalter Grid, horizontal
-      cards = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">` +
-        teamMembers.map((m, idx) => {
-          const avatar = makeAvatar(m, idx, 44);
-          return `<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:8px;padding:10px">` +
-            `${avatar}<div><div style="font-weight:${nameWeight};font-size:.82rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
-            (m.rolle ? `<div style="font-size:.72rem;opacity:.5;margin-top:2px">${esc(m.rolle)}</div>` : "") +
-            (m.email ? `<div style="font-size:.65rem;opacity:.4;margin-top:2px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
-            `</div></div>`;
-        }).join("") +
+    function makeCard(m, idx, avatarSize) {
+      const avatar = makeAvatar(m, idx, avatarSize);
+      return `<div style="text-align:center;padding:28px 20px;background:#fff;${cardBorder};border-radius:${cardR}">` +
+        `<div style="display:flex;justify-content:center;margin-bottom:14px">${avatar}</div>` +
+        `<div style="font-weight:${nameWeight};font-size:1rem;color:var(--primary);line-height:1.3">${esc(m.name)}</div>` +
+        (m.rolle ? `<div style="font-size:.82rem;color:var(--accent);margin-top:4px;font-weight:500">${esc(m.rolle)}</div>` : "") +
+        (m.beschreibung ? `<div style="font-size:.82rem;color:var(--textMuted);margin-top:10px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
+        (m.email ? `<div style="font-size:.75rem;color:var(--textMuted);margin-top:8px"><a href="mailto:${esc(m.email)}" style="color:var(--accent);text-decoration:none">${esc(m.email)}</a></div>` : "") +
         `</div>`;
     }
 
-    html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.4;margin-bottom:12px">Unser Team</div>${cards}${berufsregNr}</div>`);
-  } else if (berufsregNr) {
-    html = html.replace("<!-- TEAM -->", `<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">${berufsregNr}</div>`);
-  } else {
-    // Kein Team — About-Fotos in die rechte Spalte verschieben
-    const aboutFotosForTeamSlot = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
-    if (aboutFotosForTeamSlot.length > 0) {
-      const items = aboutFotosForTeamSlot.map(url =>
-        `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-        `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s">` +
-        `</div>`
-      ).join("");
-      const n = aboutFotosForTeamSlot.length;
-      const cols = n === 1 ? "1fr" : n === 2 ? "1fr" : "1fr 1fr";
-      const grid = `<div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div>`;
-      html = html.replace("<!-- TEAM -->", grid);
-      html = html.replace("<!-- ABOUT_FOTOS -->", "");
+    let teamGrid;
+    const n = teamMembers.length;
+    if (n <= 2) {
+      // 1-2: Große Avatare (120px), 2-spaltig zentriert
+      const cols = n === 1 ? "max-content" : "1fr 1fr";
+      const maxW = n === 1 ? ";max-width:320px;margin:0 auto" : "";
+      teamGrid = `<div style="display:grid;grid-template-columns:${cols};gap:24px${maxW}">${teamMembers.map((m, i) => makeCard(m, i, 120)).join("")}</div>`;
+    } else if (n === 3) {
+      // 3: Dreispaltig, 100px Avatare
+      teamGrid = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">${teamMembers.map((m, i) => makeCard(m, i, 100)).join("")}</div>`;
     } else {
-      html = html.replace("<!-- TEAM -->", "");
+      // 4+: Vierspaltig, 80px Avatare
+      const cols = n <= 4 ? `repeat(${n},1fr)` : "repeat(4,1fr)";
+      teamGrid = `<div style="display:grid;grid-template-columns:${cols};gap:16px">${teamMembers.map((m, i) => makeCard(m, i, 80)).join("")}</div>`;
     }
+
+    const section = `<section class="sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel("Team")}${sectionH2("Wer hinter dem Betrieb steht")}</div>${teamGrid}${berufsregNr}</div></section>`;
+    html = html.replace("<!-- TEAM -->", section);
+  } else {
+    html = html.replace("<!-- TEAM -->", berufsregNr ? `<section class="sr-fade sr-alt-bg" style="padding:40px 0"><div class="w">${berufsregNr}</div></section>` : "");
   }
 
-  // Über-uns-Fotos (max 8) — unter dem Text, nur wenn nicht schon rechts angezeigt
-  const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
-  if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
-    const items = aboutFotos.map(url =>
-      `<div style="overflow:hidden;border-radius:var(--r,4px);line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1;transition:transform .3s">` +
-      `</div>`
-    ).join("");
-    const cols = aboutFotos.length <= 2 ? "1fr 1fr" : aboutFotos.length <= 4 ? `repeat(${Math.min(aboutFotos.length, 4)},1fr)` : "repeat(4,1fr)";
-    const grid = `<div class="sr-foto-grid" style="display:grid;grid-template-columns:${cols};gap:12px;margin-top:32px">${items}</div>`;
-    html = html.replace("<!-- ABOUT_FOTOS -->", grid);
-  } else {
-    html = html.replace("<!-- ABOUT_FOTOS -->", "");
-  }
+  // (About-Fotos werden oben in der rechten Über-uns Spalte gerendert)
 
   // Ueber-uns: immer Standard-Layout (Story/Team-Fokus Varianten entfernt)
 

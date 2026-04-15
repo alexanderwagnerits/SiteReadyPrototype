@@ -1025,36 +1025,33 @@ export async function onRequestGet({params, env}) {
   }
 
   function buildPaletteFromAccent(accent, stil) {
-    const [h, s, l] = hexToHsl(accent);
-    // Saettigung begrenzen: zu grelle Farben abschwaechen, graue Farben kaum toenen
-    const effectiveS = Math.min(s, 70);
-    const isNeutral = s < 10; // fast grau → wenig toenen
+    const [h, s] = hexToHsl(accent);
+    const es = Math.min(s, 80);
+    const isNeutral = s < 10;
 
     if (stil === "modern") {
-      // Modern: Primary bleibt fast-schwarz, nur minimal Hue-Shift
       return {
-        primary: isNeutral ? "#18181b" : hslToHex(h, Math.min(effectiveS, 15), 10),
-        bg: isNeutral ? "#fafafa" : hslToHex(h, Math.min(effectiveS*0.15, 8), 98),
-        sep: isNeutral ? "#e4e4e7" : hslToHex(h, Math.min(effectiveS*0.12, 6), 90),
+        primary: isNeutral ? "#18181b" : hslToHex(h, Math.min(es*0.2, 12), 11),
+        bg: isNeutral ? "#fafafa" : hslToHex(h, Math.min(es*0.12, 8), 98),
+        sep: isNeutral ? "#e4e4e7" : hslToHex(h, Math.min(es*0.1, 6), 91),
         t: "#18181b",
         tm: "#71717a",
       };
     }
     if (stil === "elegant") {
-      // Elegant: Warme Untertöne, Primary sehr dunkel mit Hue
       return {
-        primary: isNeutral ? "#020826" : hslToHex(h, Math.min(effectiveS*0.5, 35), 8),
-        bg: isNeutral ? "#f9f4ef" : hslToHex(h, Math.min(effectiveS*0.2, 15), 97),
-        sep: isNeutral ? "#eaddcf" : hslToHex(h, Math.min(effectiveS*0.15, 12), 89),
+        primary: isNeutral ? "#020826" : hslToHex(h, Math.min(es*0.7, 50), 10),
+        bg: isNeutral ? "#f9f4ef" : hslToHex(h, Math.min(es*0.18, 14), 97),
+        sep: isNeutral ? "#eaddcf" : hslToHex(h, Math.min(es*0.15, 12), 89),
         t: "#2c2620",
         tm: "#6b6058",
       };
     }
-    // Klassisch: Standard — Primary dunkel mit klarem Hue
+    // klassisch
     return {
-      primary: isNeutral ? "#094067" : hslToHex(h, Math.min(effectiveS*0.6, 45), 14),
-      bg: isNeutral ? "#f4f7fa" : hslToHex(h, Math.min(effectiveS*0.2, 18), 97),
-      sep: isNeutral ? "#d8eefe" : hslToHex(h, Math.min(effectiveS*0.18, 15), 90),
+      primary: isNeutral ? "#094067" : hslToHex(h, Math.min(es*0.85, 65), 17),
+      bg: isNeutral ? "#f4f7fa" : hslToHex(h, Math.min(es*0.15, 14), 97),
+      sep: isNeutral ? "#d8eefe" : hslToHex(h, Math.min(es*0.2, 18), 90),
       t: "#1e293b",
       tm: "#475569",
     };

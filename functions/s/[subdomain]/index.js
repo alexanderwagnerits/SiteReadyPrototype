@@ -226,10 +226,11 @@ export async function onRequestGet({params, env}) {
     const cols = n === 1 ? "1fr" : "1fr 1fr";
     html = html.replace("<!-- ABOUT_FOTOS -->", `<div class="fade-up"><div style="display:grid;grid-template-columns:${cols};gap:12px">${items}</div></div>`);
   } else {
-    // Fotos-Platzhalter + eventuell leeren Wrapper entfernen
     html = html.replace("<!-- ABOUT_FOTOS -->", "");
-    html = html.replace(/<div class="fade-up">\s*<\/div>/g, ""); // leere rechte Spalte entfernen
-    html = html.replace("ueber-grid", "ueber-grid ueber-single");
+  }
+  // Ohne Fotos: Über-uns einspaltig + zentriert
+  if (aboutFotos.length === 0) {
+    html = html.replace('class="ueber-grid"', 'class="ueber-grid ueber-single"');
   }
 
   // Team — eigene Section unterhalb von Über-uns

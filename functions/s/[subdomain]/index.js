@@ -228,7 +228,7 @@ export async function onRequestGet({params, env}) {
       // 1 Person: Horizontal, groß
       const m = teamMembers[0];
       const avatar = makeAvatar(m, 0, 80);
-      cards = `<div style="display:flex;align-items:center;gap:20px;padding:16px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:1.1rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.88rem;opacity:.55;margin-top:4px">${esc(m.rolle)}</div>` : ""}${m.beschreibung ? `<div style="font-size:.8rem;opacity:.4;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : ""}</div></div>`;
+      cards = `<div style="display:flex;align-items:center;gap:20px;padding:16px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:1.1rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.88rem;opacity:.55;margin-top:4px">${esc(m.rolle)}</div>` : ""}${m.email ? `<div style="font-size:.78rem;opacity:.45;margin-top:4px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none;opacity:.8">${esc(m.email)}</a></div>` : ""}${m.beschreibung ? `<div style="font-size:.8rem;opacity:.4;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : ""}</div></div>`;
     } else if (teamVariant === "grid-3") {
       // 2–3 Personen: Karten nebeneinander, Avatar oben
       const cols = teamMembers.length === 2 ? "1fr 1fr" : "repeat(3,1fr)";
@@ -239,6 +239,7 @@ export async function onRequestGet({params, env}) {
             `<div style="display:flex;justify-content:center;margin-bottom:10px">${avatar}</div>` +
             `<div style="font-weight:${nameWeight};font-size:.88rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
             (m.rolle ? `<div style="font-size:.75rem;opacity:.5;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
+            (m.email ? `<div style="font-size:.7rem;opacity:.4;margin-top:3px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
             `</div>`;
         }).join("") +
         `</div>`;
@@ -250,6 +251,7 @@ export async function onRequestGet({params, env}) {
           return `<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:8px;padding:10px">` +
             `${avatar}<div><div style="font-weight:${nameWeight};font-size:.82rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
             (m.rolle ? `<div style="font-size:.72rem;opacity:.5;margin-top:2px">${esc(m.rolle)}</div>` : "") +
+            (m.email ? `<div style="font-size:.65rem;opacity:.4;margin-top:2px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
             `</div></div>`;
         }).join("") +
         `</div>`;

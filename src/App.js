@@ -2889,6 +2889,7 @@ function Portal({session,onLogout}){
                 <div style={{flex:1}}>
                   <input value={m.name||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],name:e.target.value};upOrder("team_members")(a);}} placeholder="Name" style={{width:"100%",padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
                   <input value={m.rolle||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],rolle:e.target.value};upOrder("team_members")(a);}} placeholder="Rolle (z.B. Geschäftsführer)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".78rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
+                  <input value={m.email||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],email:e.target.value};upOrder("team_members")(a);}} placeholder="E-Mail (optional)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".72rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
                 </div>
                 <label style={{padding:"5px 10px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".72rem",fontWeight:600,color:T.textSub,flexShrink:0}}>
                   {m.foto?"Ändern":"Foto"}

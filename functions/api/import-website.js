@@ -317,10 +317,15 @@ export async function onRequestPost({request, env}) {
         }
       } catch(_) {}
     }
-    // Standard-Pfade als letzter Fallback
-    if (allInternalLinks.size < 3 && importType === "website") {
-      const standardPaths = ["/kontakt","/contact","/impressum","/leistungen","/services","/angebot","/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen"];
-      for (const p of standardPaths) addLink(base + p);
+    // Standard-Pfade als Fallback (wenige Links) oder kritische Pfade immer hinzufuegen
+    if (importType === "website") {
+      const criticalPaths = ["/impressum","/kontakt","/contact"];
+      const hasPath = (p) => [...allInternalLinks].some(u => { try { return new URL(u).pathname.toLowerCase().includes(p.replace("/","")); } catch(_) { return false; } });
+      for (const p of criticalPaths) { if (!hasPath(p)) addLink(base + p); }
+      if (allInternalLinks.size < 3) {
+        const standardPaths = ["/leistungen","/services","/angebot","/ueber-uns","/about","/team","/faq","/preise","/galerie","/partner","/referenzen"];
+        for (const p of standardPaths) addLink(base + p);
+      }
     }
 
     const priorityPatterns = [/kontakt|contact/i, /impressum|imprint/i, /leistung|service|angebot|schwerpunkt|behandlung/i, /ueber|about|team|praxis|ordination/i, /faq|haeufig|fragen/i, /partner|referenz|zertifik/i, /preise|pricing/i, /galerie|gallery|portfolio/i];
@@ -518,7 +523,7 @@ JSON-Felder:
 - vorname: Vorname des Inhabers/Geschaeftsfuehrers (aus Impressum)
 - nachname: Nachname des Inhabers/Geschaeftsfuehrers (aus Impressum)
 - telefon: Hauptnummer des Betriebs (Format +43..., Festnetz bevorzugt, sonst Mobil)
-- email: Kontakt-E-Mail fuer die Website. Priorisiere: Impressum-E-Mail > Kontaktseite > office@/info@ > persoenliche. NIEMALS no-reply@ oder Drittanbieter. Nur E-Mails verwenden die TATSAECHLICH auf der Website stehen.
+- email: Offizielle Kontakt-E-Mail des Unternehmens (NICHT persoenliche Team-E-Mails). Priorisiere: Impressum > Kontaktseite > office@/info@. NIEMALS no-reply@ oder Drittanbieter. Nur E-Mails die TATSAECHLICH auf der Website stehen.
 - plz: 4-stellige oesterreichische Postleitzahl (aus Impressum bevorzugt)
 - ort: Ortsname (aus Impressum bevorzugt)
 - adresse: Strasse mit Hausnummer (aus Impressum bevorzugt, z.B. "Lavaterstraße 1/RH3")
@@ -563,7 +568,7 @@ JSON-Felder:
 - partner: [{"name":"WKO"}] Max 8.
 
 === TEAM ===
-- team: [{"name":"...","rolle":"..."}] Max 8.
+- team: [{"name":"...","rolle":"...","email":"..."}] Max 8. Email nur wenn eine persoenliche E-Mail auf der Website steht (z.B. max@firma.at). Nicht die allgemeine Kontakt-E-Mail wiederholen.
 
 === ABLAUF ===
 - ablauf_schritte: [{"titel":"...","text":"..."}] Max 5. NUR wenn auf Website beschrieben.
@@ -611,9 +616,10 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
 
     const siteDomain = new URL(cleanUrl).hostname.replace(/^www\./,"");
     const domainMatch = filteredEmails.find(e => e.split("@")[1] === siteDomain);
-    const claudeEmail = (extracted.email||"").toLowerCase();
-    const wsEmail = (webSearchData.email||"").toLowerCase();
-    const finalEmail = domainMatch || (filteredEmails.includes(claudeEmail)?claudeEmail:"") || wsEmail || filteredEmails[0] || "";
+    const claudeEmail = (extracted.email||"").toLowerCase().trim();
+    const wsEmail = (webSearchData.email||"").toLowerCase().trim();
+    const claudeEmailValid = claudeEmail && emailRegex.test(claudeEmail);
+    const finalEmail = domainMatch || (claudeEmailValid ? claudeEmail : "") || wsEmail || filteredEmails[0] || "";
 
     const claudePhone = (extracted.telefon||"").replace(/[\s\-/]/g,"");
     const wsPhone = (webSearchData.telefon||"").replace(/[\s\-/]/g,"");

@@ -986,10 +986,13 @@ export async function onRequestGet({params, env}) {
   // }
 
   // ── Alternierende Section-Hintergründe ──
-  // Sections mit sr-alt-bg bekommen abwechselnd var(--bg) / #fff
+  // Sections mit sr-alt-bg bekommen abwechselnd getönt / weiß
+  // var(--bg) ist zu nah an #fff — darum var(--sep) mit niedriger Opacity als Kontrast
   let altIdx = 0;
   html = html.replace(/sr-alt-bg" style="padding/g, () => {
-    const bg = altIdx % 2 === 0 ? "var(--bg)" : "#fff";
+    const bg = altIdx % 2 === 0
+      ? "color-mix(in srgb,var(--sep) 35%,#fff)"  // sichtbar getönt
+      : "#fff";
     altIdx++;
     return `" style="background:${bg};padding`;
   });

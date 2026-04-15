@@ -618,10 +618,10 @@ export async function onRequestGet({params, env}) {
   const showFaq = sv.faq !== false && faqItems.length > 0;
   if (showFaq && html.includes("<!-- FAQ -->")) {
     const items = faqItems.slice(0, 8).map((f, i) =>
-      `<div style="border-bottom:1px solid var(--sep)">` +
-      `<button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a${i}" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
+      `<div style="border-bottom:1px solid rgba(255,255,255,.12)">` +
+      `<button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a${i}" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:#fff;text-align:left;line-height:1.5"><span style="flex:1">${esc(f.frage)}</span><span class="sr-faq-icon" style="font-size:1.2rem;color:rgba(255,255,255,.4);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button>` +
       `<div id="sr-faq-a${i}" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0">` +
-      `<p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">${esc(f.antwort) || ""}</p>` +
+      `<p style="font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.8;margin:0;padding-right:32px">${esc(f.antwort) || ""}</p>` +
       `</div></div>`
     ).join("");
     const faqToggleWeight = isElegant ? "600" : "700";
@@ -632,7 +632,9 @@ export async function onRequestGet({params, env}) {
       ? `<div class="sr-faq-grid">${styledItems}</div>`
       : `<div style="max-width:720px">${styledItems}</div>`;
     const faqGridStyle = isTwoCol ? `<style>.sr-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}@media(max-width:768px){.sr-faq-grid{grid-template-columns:1fr}}</style>` : "";
-    const section = `<section class="sec-faq sr-fade sr-alt-bg" style="padding:100px 0"><div class="w"><div style="margin-bottom:40px">${sectionLabel("FAQ")}${sectionH2("Häufig gestellte Fragen")}</div>${faqLayout}</div></section>`;
+    const faqLabel = `<div style="display:inline-flex;align-items:center;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px">FAQ</div>`;
+    const faqH2 = `<h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:${isElegant ? "500" : "800"};color:#fff;letter-spacing:-.03em">Häufig gestellte Fragen</h2>`;
+    const section = `<section class="sec-faq sr-fade" style="padding:100px 0;background:var(--primary);color:#fff"><div class="w"><div style="margin-bottom:40px">${faqLabel}${faqH2}</div>${faqLayout}</div></section>`;
     if (faqGridStyle) html = html.replace("</head>", faqGridStyle + "</head>");
     html = html.replace("<!-- FAQ -->", section);
     // FAQ-Accordion Script (Event-Listener statt inline onclick)
@@ -667,9 +669,9 @@ export async function onRequestGet({params, env}) {
     const faktenFontWeight = isElegant ? "400" : "700";
     const faktenFontSize = isElegant ? "clamp(1.6rem,4vw,2.4rem)" : "clamp(1.8rem,4.5vw,2.8rem)";
     const items = faktenItems.slice(0, 4).map(f =>
-      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:#fff;letter-spacing:-.03em;line-height:1">${esc(f.zahl)}</div><div style="font-size:.88rem;color:rgba(255,255,255,.55);margin-top:8px;font-weight:${isElegant ? "400" : "500"}">${esc(f.label) || ""}</div></div>`
+      `<div style="text-align:center;padding:20px"><div style="font-size:${faktenFontSize};font-weight:${faktenFontWeight};color:var(--accent);letter-spacing:-.03em;line-height:1">${esc(f.zahl)}</div><div style="font-size:.88rem;color:var(--textMuted);margin-top:8px">${esc(f.label) || ""}</div></div>`
     ).join("");
-    const section = `<section class="sec-fakten sr-fade" style="padding:80px 0;background:var(--primary)"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
+    const section = `<section class="sec-fakten sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="display:grid;grid-template-columns:${cols};gap:16px">${items}</div></div></section>`;
     html = html.replace("<!-- FAKTEN -->", section);
   } else {
     html = html.replace("<!-- FAKTEN -->", "");

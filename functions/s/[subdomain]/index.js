@@ -613,6 +613,14 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- CTA_BLOCK -->", "");
   }
 
+  // ── Sichtbarkeit vorab berechnen (für FAQ-Dunkel-Logik) ──
+  const galerieItems = Array.isArray(o.galerie) ? o.galerie.filter(g => g && g.url) : [];
+  const showGalerie = sv.galerie !== false && galerieItems.length > 0;
+  const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
+  const showFakten = sv.fakten !== false && faktenItems.length >= 2;
+  const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && p.url_logo) : [];
+  const showPartner = sv.partner !== false && partnerItems.length > 0;
+
   // FAQ — Haeufig gestellte Fragen
   const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage && f.antwort) : [];
   const showFaq = sv.faq !== false && faqItems.length > 0;
@@ -653,8 +661,6 @@ export async function onRequestGet({params, env}) {
   }
 
   // Galerie — Foto-Grid mit Lightbox
-  const galerieItems = Array.isArray(o.galerie) ? o.galerie.filter(g => g && g.url) : [];
-  const showGalerie = sv.galerie !== false && galerieItems.length > 0;
   if (showGalerie && html.includes("<!-- GALERIE -->")) {
     const cols = v.galerie === "grid-3x2" ? "repeat(3,1fr)" : "repeat(2,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
@@ -670,8 +676,6 @@ export async function onRequestGet({params, env}) {
   }
 
   // Zahlen & Fakten — Counter-Blocks
-  const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
-  const showFakten = sv.fakten !== false && faktenItems.length >= 2;
   if (showFakten && html.includes("<!-- FAKTEN -->")) {
     const cols = `repeat(${Math.min(faktenItems.length, 4)},1fr)`;
     const faktenFontWeight = isElegant ? "400" : "700";
@@ -686,8 +690,6 @@ export async function onRequestGet({params, env}) {
   }
 
   // Vertrauen & Referenzen — nur mit Logos sichtbar
-  const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && p.url_logo) : [];
-  const showPartner = sv.partner !== false && partnerItems.length > 0;
   if (showPartner && html.includes("<!-- PARTNER -->")) {
     const pVariant = v.partner; // "gross" | "einzeilig" | "zweizeilig"
     const refCount = partnerItems.filter(p => p.typ === "referenz").length;

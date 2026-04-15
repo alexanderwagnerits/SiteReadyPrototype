@@ -74,28 +74,32 @@ export async function onRequestGet({params, env}) {
   if (html.includes("<!-- TRUST -->")) {
     const tIcon = (svg) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg>`;
     const trustItems = [];
+    // Prio 1: Branchen-USPs (Alleinstellungsmerkmale)
     if (o.notdienst) trustItems.push({l:"24/7 Notdienst",i:tIcon(`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`)});
     if (o.meisterbetrieb) trustItems.push({l:"Meisterbetrieb",i:tIcon(`<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>`)});
-    if (o.kostenvoranschlag) trustItems.push({l:"Kostenloser KV",i:tIcon(`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/>`)});
-    if (o.foerderungsberatung) trustItems.push({l:"Förderungsberatung",i:tIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`)});
-    if (o.erstgespraech_gratis) trustItems.push({l:"Erstgespräch gratis",i:tIcon(`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`)});
-    if (o.ratenzahlung) trustItems.push({l:"Ratenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
     if (o.zertifiziert) trustItems.push({l:"Zertifiziert",i:tIcon(`<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`)});
-    if (o.gutscheine) trustItems.push({l:"Gutscheine",i:tIcon(`<path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>`)});
     const kassenLabel = o.kassenvertrag === "alle_kassen" ? "Alle Kassen" : o.kassenvertrag === "wahlarzt" ? "Wahlarzt" : o.kassenvertrag === "privat" ? "Privat" : o.kassenvertrag === "oegk" ? "ÖGK" : o.kassenvertrag === "bvaeb" ? "BVAEB" : o.kassenvertrag === "svs" ? "SVS" : null;
     if (kassenLabel) trustItems.push({l:kassenLabel,i:tIcon(`<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`)});
-    if (o.barrierefrei) trustItems.push({l:"Barrierefrei",i:tIcon(`<circle cx="12" cy="4" r="2"/><path d="M12 6v6l4 4"/><path d="M8 12l-2 6h12"/>`)});
+    // Prio 2: Aktive Kundenvorteile
+    if (o.kostenvoranschlag) trustItems.push({l:"Kostenloser KV",i:tIcon(`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/>`)});
+    if (o.erstgespraech_gratis) trustItems.push({l:"Erstgespräch gratis",i:tIcon(`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`)});
+    if (o.foerderungsberatung) trustItems.push({l:"Förderungsberatung",i:tIcon(`<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`)});
+    if (o.hausbesuche) trustItems.push({l:"Hausbesuche",i:tIcon(`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`)});
+    if (o.online_beratung) trustItems.push({l:"Online-Beratung",i:tIcon(`<path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>`)});
+    // Prio 3: Komfort-Features (werden bei >6 abgeschnitten)
+    if (o.ratenzahlung) trustItems.push({l:"Ratenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
+    if (o.gutscheine) trustItems.push({l:"Gutscheine",i:tIcon(`<path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>`)});
     if (o.terminvereinbarung) trustItems.push({l:"Online-Termin",i:tIcon(`<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`)});
-    if (o.kartenzahlung) trustItems.push({l:"Kartenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
-    if (o.parkplaetze) trustItems.push({l:"Parkplätze",i:tIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`)});
+    if (o.barrierefrei) trustItems.push({l:"Barrierefrei",i:tIcon(`<circle cx="12" cy="4" r="2"/><path d="M12 6v6l4 4"/><path d="M8 12l-2 6h12"/>`)});
     if (o.gastgarten) trustItems.push({l:"Gastgarten",i:tIcon(`<circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>`)});
     if (o.takeaway) trustItems.push({l:"Take-away",i:tIcon(`<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>`)});
     if (o.lieferservice) trustItems.push({l:"Lieferservice",i:tIcon(`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`)});
-    if (o.online_beratung) trustItems.push({l:"Online-Beratung",i:tIcon(`<path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>`)});
-    if (o.hausbesuche) trustItems.push({l:"Hausbesuche",i:tIcon(`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`)});
+    if (o.kartenzahlung) trustItems.push({l:"Kartenzahlung",i:tIcon(`<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>`)});
+    if (o.parkplaetze) trustItems.push({l:"Parkplätze",i:tIcon(`<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>`)});
     if (trustItems.length > 0) {
-      // Maximal 8 Trust-Items anzeigen — zu viele wirken ueberladen
-      const visibleItems = trustItems.slice(0, 8);
+      // Maximal 6 Trust-Items im Hero — die wichtigsten zuerst
+      // Prio: Branchenspezifische Alleinstellungsmerkmale > allgemeine Services
+      const visibleItems = trustItems.slice(0, 6);
       const items = visibleItems.map(t => `<div class="trust-item">${t.i}<span>${t.l}</span></div>`).join("");
       // Trust-Items direkt nach den Hero-Buttons einfuegen (innerhalb hero-inner)
       const trustInHero = `<div class="hero-trust">${items}</div>`;
@@ -235,16 +239,18 @@ export async function onRequestGet({params, env}) {
       cards = `<div style="display:flex;align-items:center;gap:20px;padding:16px 0">${avatar}<div><div style="font-weight:${nameWeight};font-size:1.1rem;color:#fff">${esc(m.name)}</div>${m.rolle ? `<div style="font-size:.88rem;opacity:.55;margin-top:4px">${esc(m.rolle)}</div>` : ""}${m.email ? `<div style="font-size:.78rem;opacity:.45;margin-top:4px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none;opacity:.8">${esc(m.email)}</a></div>` : ""}${m.beschreibung ? `<div style="font-size:.8rem;opacity:.4;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : ""}</div></div>`;
     } else if (teamVariant === "grid-3") {
       if (teamMembers.length === 2) {
-        // 2 Personen: Grosse Cards untereinander, mit Beschreibung
+        // 2 Personen: Grosse Cards untereinander, Foto/Avatar prominent
         cards = `<div style="display:flex;flex-direction:column;gap:16px">` +
           teamMembers.map((m, idx) => {
-            const avatar = makeAvatar(m, idx, 64);
-            return `<div style="display:flex;align-items:flex-start;gap:16px;background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"12px"};padding:20px">` +
+            const hasImg = !!m.foto;
+            const avatarSize = hasImg ? 96 : 80;
+            const avatar = makeAvatar(m, idx, avatarSize);
+            return `<div style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.06);border-radius:${isElegant?"4px":"12px"};padding:20px 24px">` +
               `<div style="flex-shrink:0">${avatar}</div>` +
-              `<div style="min-width:0">` +
-              `<div style="font-weight:${nameWeight};font-size:1rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
-              (m.rolle ? `<div style="font-size:.82rem;opacity:.55;margin-top:3px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
-              (m.beschreibung ? `<div style="font-size:.8rem;opacity:.45;margin-top:8px;line-height:1.6">${esc(m.beschreibung)}</div>` : "") +
+              `<div style="min-width:0;flex:1">` +
+              `<div style="font-weight:${nameWeight};font-size:1.05rem;color:#fff;line-height:1.3">${esc(m.name)}</div>` +
+              (m.rolle ? `<div style="font-size:.82rem;opacity:.55;margin-top:4px;line-height:1.4">${esc(m.rolle)}</div>` : "") +
+              (m.beschreibung ? `<div style="font-size:.8rem;opacity:.45;margin-top:8px;line-height:1.65">${esc(m.beschreibung)}</div>` : "") +
               (m.email ? `<div style="font-size:.72rem;opacity:.4;margin-top:6px"><a href="mailto:${esc(m.email)}" style="color:inherit;text-decoration:none">${esc(m.email)}</a></div>` : "") +
               `</div></div>`;
           }).join("") +
@@ -825,23 +831,36 @@ export async function onRequestGet({params, env}) {
 
     let grid;
     if (v.leistungen === "editorial") {
-      // Editorial: Liste mit Foto + Beschreibung nebeneinander
+      // Editorial: Foto + Text abwechselnd links/rechts
+      const imgR = isModern ? "16px" : isElegant ? "2px" : "var(--r,4px)";
+      const titleW = isElegant ? "600" : "800";
       const listCards = leistungenArr.map((l, i) => {
         const lCap = esc(l.charAt(0).toUpperCase() + l.slice(1));
         const desc = esc(findInMap(descMap, l) || findInMap(descMap, l.charAt(0).toUpperCase() + l.slice(1)));
         const preis = esc(findInMap(preisMap, l) || findInMap(preisMap, l.charAt(0).toUpperCase() + l.slice(1)));
         const foto = findInMap(fotoMap, l) || findInMap(fotoMap, l.charAt(0).toUpperCase() + l.slice(1));
-        return `<div class="sr-fade sr-card-hover" style="${cardStyle};display:grid;grid-template-columns:${foto ? '160px ' : ''}auto 1fr;gap:0;align-items:stretch">` +
-          (foto ? `<div style="overflow:hidden"><img src="${foto}" alt="${lCap}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : "") +
-          `<div style="padding:20px 24px;display:flex;align-items:center">` +
-          `<div style="${iconStyle};margin:0 16px 0 0">${checkIcon}</div>` +
-          `<div style="flex:1">` +
-          `<h3 style="color:var(--primary);font-weight:800;margin:0 0 4px;font-size:1.05rem;letter-spacing:-.02em">${lCap}</h3>` +
+        const imgLeft = i % 2 === 0;
+        if (foto) {
+          const imgCol = `<div style="overflow:hidden;border-radius:${imgR};aspect-ratio:4/3"><img src="${foto}" alt="${lCap}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`;
+          const textCol = `<div style="display:flex;flex-direction:column;justify-content:center;padding:8px 0">` +
+            `<h3 style="color:var(--primary);font-weight:${titleW};margin:0 0 10px;font-size:1.15rem;letter-spacing:-.02em">${lCap}</h3>` +
+            (desc ? `<p style="color:var(--textMuted);margin:0;font-size:.92rem;line-height:1.8">${desc}</p>` : "") +
+            (preis ? `<div style="margin-top:12px;font-size:.92rem;font-weight:700;color:var(--accent)">${preis}</div>` : "") +
+            `</div>`;
+          return `<div class="sr-fade" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:24px 0;${i > 0 ? "border-top:1px solid var(--sep)" : ""}">` +
+            (imgLeft ? imgCol + textCol : textCol + imgCol) + `</div>`;
+        }
+        // Ohne Foto: kompakte Zeile
+        return `<div class="sr-fade" style="padding:20px 0;${i > 0 ? "border-top:1px solid var(--sep)" : ""}">` +
+          `<div style="display:flex;align-items:flex-start;gap:14px">` +
+          `<div style="${iconStyle}">${checkIcon}</div>` +
+          `<div><h3 style="color:var(--primary);font-weight:${titleW};margin:0 0 4px;font-size:1.05rem">${lCap}</h3>` +
           (desc ? `<p style="color:var(--textMuted);margin:0;font-size:.88rem;line-height:1.7">${desc}</p>` : "") +
           (preis ? `<div style="margin-top:8px;font-size:.88rem;font-weight:700;color:var(--accent)">${preis}</div>` : "") +
           `</div></div></div>`;
       }).join("");
-      grid = `<div class="sr-leist-grid" style="display:grid;grid-template-columns:1fr;gap:14px">${listCards}</div>`;
+      grid = `<div class="sr-leist-grid">${listCards}</div>` +
+        `<style>@media(max-width:768px){.sr-leist-grid>div{grid-template-columns:1fr!important}}</style>`;
     } else {
       // Standard: Grid
       const gridCols = n === 1 ? "1fr" : n <= 3 ? `repeat(${n},1fr)` : n === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)";

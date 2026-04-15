@@ -684,7 +684,10 @@ export async function onRequestGet({params, env}) {
       }
       return `<div style="display:flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--r);font-size:.75rem;font-weight:600;color:var(--textMuted)">${esc(p.name)}</div>`;
     }).join("");
-    const section = `<section class="sec-partner" style="padding:48px 0;background:#fff;border-top:1px solid var(--sep)"><div class="w"><div style="text-align:center;margin-bottom:16px;font-size:.72rem;font-weight:600;color:var(--textMuted);text-transform:uppercase;letter-spacing:.1em">Unsere Partner &amp; Zertifizierungen</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${logos}</div></div></section>`;
+    // Label dynamisch: wenn mehrheitlich Referenzen/Kunden → "Referenzen", sonst "Partner"
+    const refCount = partnerItems.filter(p => p.typ === "referenz").length;
+    const partnerLabel = refCount > partnerItems.length / 2 ? "Unsere Kunden &amp; Referenzen" : "Unsere Partner &amp; Zertifizierungen";
+    const section = `<section class="sec-partner" style="padding:48px 0;background:#fff;border-top:1px solid var(--sep)"><div class="w"><div style="text-align:center;margin-bottom:16px;font-size:.72rem;font-weight:600;color:var(--textMuted);text-transform:uppercase;letter-spacing:.1em">${partnerLabel}</div><div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${logos}</div></div></section>`;
     html = html.replace("<!-- PARTNER -->", section);
   } else {
     html = html.replace("<!-- PARTNER -->", "");

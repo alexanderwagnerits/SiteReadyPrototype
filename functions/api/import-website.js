@@ -519,7 +519,7 @@ Leere Strings "" und leere Arrays [] fuer nicht gefundene Felder.
 JSON-Felder:
 
 === FIRMA & KONTAKT ===
-- firmenname: Offizieller Name (max 60 Zeichen). Priorisiere: Impressum > Seitentitel > Logo-Text. Ohne Rechtsform-Zusatz wenn moeglich.
+- firmenname: Offizieller Name MIT Rechtsform (max 60 Zeichen). Priorisiere: Impressum > Seitentitel > Logo-Text. Rechtsform (GmbH, e.U., OG, KG etc.) IMMER anhängen wenn im Impressum vorhanden.
 - vorname: Vorname des Inhabers/Geschaeftsfuehrers (aus Impressum)
 - nachname: Nachname des Inhabers/Geschaeftsfuehrers (aus Impressum)
 - telefon: Hauptnummer des Betriebs (Format +43..., Festnetz bevorzugt, sonst Mobil)
@@ -569,8 +569,8 @@ JSON-Felder:
 === ZAHLEN & FAKTEN ===
 - fakten: [{"zahl":"15+","label":"Jahre Erfahrung"}] Max 4.
 
-=== PARTNER & ZERTIFIKATE ===
-- partner: [{"name":"WKO"}] Max 8.
+=== PARTNER, REFERENZEN & ZERTIFIKATE ===
+- partner: [{"name":"WKO","typ":"partner|referenz|zertifikat"}] Max 8. typ: "referenz" für Kunden/Auftraggeber, "partner" für Kooperationspartner, "zertifikat" für Auszeichnungen/Zertifikate.
 
 === TEAM ===
 - team: [{"name":"...","rolle":"...","email":"...","beschreibung":"..."}] Max 8. Email nur wenn eine persönliche E-Mail auf der Website steht. beschreibung: 1-2 Sätze über die Person, NUR wenn auf der Website ein Bio-Text steht. NICHT erfinden.

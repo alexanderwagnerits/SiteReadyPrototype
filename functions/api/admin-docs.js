@@ -1,7 +1,8 @@
+import { checkAdminAuth } from "../_lib/auth.js";
+
 export async function onRequest({request, env}) {
-  const url = new URL(request.url);
-  if (url.searchParams.get("key") !== env.ADMIN_SECRET)
-    return Response.json({error: "Unauthorized"}, {status: 401});
+  const unauthorized = checkAdminAuth(request, env);
+  if (unauthorized) return unauthorized;
 
   const h = {
     "apikey": env.SUPABASE_SERVICE_KEY,

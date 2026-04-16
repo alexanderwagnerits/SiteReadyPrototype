@@ -1,9 +1,8 @@
+import { checkAdminAuth } from "../_lib/auth.js";
+
 export async function onRequestPost({request, env}) {
-  const url = new URL(request.url);
-  const key = url.searchParams.get("key");
-  if (!key || key !== env.ADMIN_SECRET) {
-    return Response.json({error: "Unauthorized"}, {status: 401});
-  }
+  const unauthorized = checkAdminAuth(request, env);
+  if (unauthorized) return unauthorized;
 
   const {id} = await request.json();
   if (!id) return Response.json({error: "ID required"}, {status: 400});

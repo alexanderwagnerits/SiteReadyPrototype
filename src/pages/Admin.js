@@ -168,7 +168,6 @@ function Admin({adminKey}){
     setTimeout(()=>setNotizSaved(s=>({...s,[id]:false})),2000);
   };
 
-  const nextStatus=s=>{const i=STATUS_FLOW.indexOf(s);return i<STATUS_FLOW.length-1?STATUS_FLOW[i+1]:s;};
 
   const generateWebsite=async(id)=>{
     setGenLoading(g=>({...g,[id]:true}));

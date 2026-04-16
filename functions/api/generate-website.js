@@ -1,12 +1,10 @@
 import { generateWebsite } from "../_lib/generate.js";
+import { checkAdminAuth } from "../_lib/auth.js";
 
 export async function onRequestPost({request, env}) {
   try {
-    const url = new URL(request.url);
-    const key = url.searchParams.get("key");
-    if (!key || key !== env.ADMIN_SECRET) {
-      return Response.json({error: "Unauthorized"}, {status: 401});
-    }
+    const unauthorized = checkAdminAuth(request, env);
+    if (unauthorized) return unauthorized;
     let body;
     try { body = await request.json(); } catch(e) {
       return Response.json({error: "Invalid JSON"}, {status: 400});

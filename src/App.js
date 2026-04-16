@@ -236,6 +236,7 @@ const css=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 .sr-reveal-d1{transition-delay:.1s}.sr-reveal-d2{transition-delay:.2s}.sr-reveal-d3{transition-delay:.3s}.sr-reveal-d4{transition-delay:.4s}
 @media(prefers-reduced-motion:reduce){.sr-reveal{transition:none!important;opacity:1!important;transform:none!important}}
 .sr-form-btn{transition:background .2s,transform .15s,box-shadow .15s!important}.sr-form-btn:not(:disabled):hover{transform:translateY(-1px)!important;box-shadow:0 4px 16px rgba(0,0,0,.18)!important}.sr-form-btn:not(:disabled):active{transform:translateY(0)!important}
+.ad-wrap button{transition:border-color .15s,color .15s,box-shadow .15s,background .15s}.ad-wrap button:not(:disabled):hover{border-color:${T.dark}!important}.ad-wrap button:not(:disabled):active{transform:scale(.98)}
 .lp-hamburger{display:none}
 @media(max-width:960px){
   .lp-w{padding:0 28px!important}
@@ -4240,7 +4241,7 @@ function Admin({adminKey}){
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     <div className="ad-wrap" style={{display:"flex",height:"100vh"}}>
       {/* Sidebar — gleicher Stil wie Kunden-Portal */}
-      <div className="ad-sidebar" style={{width:236,background:"#111111",display:"flex",flexDirection:"column",flexShrink:0,overflow:"hidden"}}>
+      <div className="ad-sidebar" style={{width:236,background:T.dark,display:"flex",flexDirection:"column",flexShrink:0,overflow:"hidden"}}>
         <div style={{padding:"22px 18px 18px",borderBottom:"1px solid rgba(255,255,255,.07)"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
             <img src="/logo.png" alt="SiteReady" style={{height:24,filter:"brightness(0) invert(1)",opacity:.88}} onError={e=>{e.currentTarget.style.display="none"}}/>
@@ -4308,7 +4309,7 @@ function Admin({adminKey}){
                 {l:"Live-Kunden",v:liveN,s:`€${mrr} MRR`,c:T.green,a:()=>setTab("sites")},
                 {l:"Trials aktiv",v:trialN,s:expiringTrials.filter(o=>o.tl<=4).length>0?`${expiringTrials.filter(o=>o.tl<=4).length} laufen in ≤4d ab`:"Alle noch frisch",c:"#7c3aed",a:()=>{setTab("sites");setFilter("trial");}},
                 {l:"Offene Tickets",v:openTickets.length,s:openTickets.length===0?"Alles beantwortet":"Bitte pruefen",c:openTickets.length>0?T.red:T.textMuted,a:()=>setTab("support")},
-                {l:"KI-Kosten",v:`€${totalCost.toFixed(2)}`,s:"kumuliert",c:T.orange,a:()=>setTab("finanzen")},
+                {l:"KI-Kosten",v:`€${totalCost.toFixed(2)}`,s:"kumuliert",c:T.amber,a:()=>setTab("finanzen")},
                 {l:"System",v:sysTotal>0?`${sysOk}/${sysTotal}`:"—",s:sysLabel,c:sysColor,a:()=>setTab("system")},
               ].map((k,i)=>(
                 <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${k.c===T.red?"#fecaca":T.bg3}`,boxShadow:T.sh2,cursor:"pointer",transition:"box-shadow .15s"}} onMouseOver={e=>e.currentTarget.style.boxShadow=T.sh3} onMouseOut={e=>e.currentTarget.style.boxShadow=T.sh2}>
@@ -4531,7 +4532,7 @@ function Admin({adminKey}){
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {tickets.map(t=>{
               const tOrder=orders.find(o=>o.email&&t.email&&o.email.toLowerCase()===t.email.toLowerCase());
-              return(<div key={t.id} style={{background:"#fff",borderRadius:T.r,padding:"18px 22px",border:`1px solid ${t.status==="offen"?T.bg3:T.bg3}`,boxShadow:T.sh2}}>
+              return(<div key={t.id} style={{background:"#fff",borderRadius:T.r,padding:"18px 22px",border:`1px solid ${t.status==="offen"?T.amberBorder:T.bg3}`,boxShadow:T.sh2}}>
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:8,gap:8}}>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
@@ -4623,6 +4624,7 @@ function Admin({adminKey}){
 
             {/* Service Pills */}
             {(!sysStatus&&sysLoading)?<div style={{display:"flex",gap:10}}>{[0,1,2,3,4].map(i=><div key={i} style={{flex:1,height:80,borderRadius:T.r,background:`linear-gradient(90deg,${T.bg3} 25%,${T.bg2} 50%,${T.bg3} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite"}}/>)}</div>
+            :(!sysStatus&&!sysLoading)?<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"24px",textAlign:"center"}}><div style={{fontSize:".82rem",color:T.textMuted}}>System-Check fehlgeschlagen</div><button onClick={()=>{checkSystem();fetchExtStatus();}} style={{marginTop:8,padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Erneut prüfen</button></div>
             :<div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
               {services.map(s=>{
                 const ext=extL(s.key);
@@ -5130,7 +5132,7 @@ function Admin({adminKey}){
                       {zahlungContent}
                     </div>);
                   })()}
-                  {[["E-Mail",sel.email],["Branche",sel.branche_label],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Rechtsform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Fotos",sel.fotos?"Ja":"Nein"],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
+                  {[["E-Mail",sel.email],["Telefon",sel.telefon],["Adresse",[sel.adresse,[sel.plz,sel.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")],["UID",sel.uid_nummer],["Rechtsform",sel.unternehmensform],["Firmenbuch",sel.firmenbuchnummer],["GISA",sel.gisazahl],["Fotos",sel.fotos?"Ja":"Nein"],["Bestellt",fmtDate(sel.created_at)]].map(([l,v])=>v?<div key={l} style={{display:"grid",gridTemplateColumns:"110px 1fr",padding:"9px 0",borderBottom:`1px solid ${T.bg3}`,fontSize:".83rem"}}>
                     <span style={{color:T.textMuted,fontWeight:600}}>{l}</span>
                     <span style={{display:"flex",alignItems:"center",gap:4,color:T.dark}}>
                       <span>{v}</span>

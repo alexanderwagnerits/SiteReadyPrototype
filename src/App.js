@@ -4273,7 +4273,7 @@ function Admin({adminKey}){
       {/* Main */}
       <div className="ad-main" style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
         {loading&&(()=>{const B=({w,h=14,r=6,mb=0})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${T.bg3} 25%,${T.bg2} 50%,${T.bg3} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite",marginBottom:mb}}/>;return<div style={{display:"flex",flexDirection:"column",gap:16}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12}}>{[0,1,2,3,4].map(i=><div key={i} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}><B w={80} h={12} mb={8}/><B w={60} h={28} mb={5}/><B w={100} h={11}/></div>)}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>{[0,1,2,3].map(i=><div key={i} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${T.bg3}`}}><B w={80} h={12} mb={8}/><B w={60} h={28} mb={5}/><B w={100} h={11}/></div>)}</div>
           <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"12px 14px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>{[80,60,50,60,100,60].map((w,i)=><B key={i} w={w} h={11}/>)}</div>{[0,1,2,3,4].map(i=><div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"13px 14px",borderBottom:`1px solid ${T.bg3}`}}>{[120,70,50,70,130,60].map((w,j)=><B key={j} w={w} h={12}/>)}</div>)}</div>
         </div>;})()}
         {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"1.4rem",fontWeight:800,color:T.textMuted}}>Desktop</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
@@ -4291,82 +4291,61 @@ function Admin({adminKey}){
         {!loading&&tab==="start"&&(()=>{
           const liveN=orders.filter(o=>o.status==="live").length;
           const trialN=orders.filter(o=>o.status==="trial").length;
-          const mrrMonthly=orders.filter(o=>o.status==="live"&&o.subscription_plan!=="yearly").length*18;
-          const mrrYearly=orders.filter(o=>o.status==="live"&&o.subscription_plan==="yearly").length*(183.6/12);
-          const mrr=Math.round((mrrMonthly+mrrYearly)*100)/100;
+          const activeOrders=orders.filter(o=>o.subscription_status==="active");
+          const mrr=activeOrders.reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
+          const pastDueN=orders.filter(o=>o.subscription_status==="past_due").length;
           const openTickets=tickets.filter(t=>t.status==="offen");
-          const expiringTrials=orders.filter(o=>o.status==="trial").map(o=>{const exp=o.trial_expires_at||(o.created_at?new Date(new Date(o.created_at).getTime()+7*24*60*60*1000).toISOString():null);return{...o,tl:exp?Math.ceil((new Date(exp)-Date.now())/(1000*60*60*24)):999};}).filter(o=>o.tl<=7).sort((a,b)=>a.tl-b.tl);
-          const totalCost=orders.reduce((a,o)=>a+(o.cost_eur||0)+(o.import_cost_eur||0),0);
+          const failedN=orders.filter(o=>o.last_error).length;
           const sysOk=[sysStatus?.supabase?.ok,sysStatus?.stripe?.ok,sysStatus?.anthropic?.ok&&!sysStatus?.anthropic?.billing,extStatus?.api_keys?.firecrawl].filter(v=>v===true).length;
           const sysTotal=sysStatus?4+(extStatus?.api_keys!==undefined?1:0):0;
           const sysBilling=sysStatus?.anthropic?.billing;
-          const sysColor=sysBilling?T.red:sysTotal===0?T.textMuted:sysOk===sysTotal?T.green:sysOk>=sysTotal-1?"#d97706":T.red;
-          const sysLabel=sysBilling?"Claude: Guthaben leer":sysTotal===0?"Wird geprüft...":sysOk===sysTotal?"Alle Services OK":`${sysTotal-sysOk} Service${sysTotal-sysOk>1?"s":""} mit Problem`;
-          return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
-            {/* KPI Cards */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12}}>
+          /* Attention items — nur was Aktion braucht */
+          const attentionItems=[];
+          if(sysBilling)attentionItems.push({msg:"Anthropic Guthaben leer — keine Generierung möglich",action:()=>window.open("https://console.anthropic.com/settings/plans","_blank"),btn:"Credits aufladen"});
+          if(pastDueN>0)attentionItems.push({msg:`${pastDueN} Kunde${pastDueN>1?"n":""} mit offener Zahlung`,action:()=>{setTab("sites");setFilter("alle");},btn:"Ansehen"});
+          if(failedN>0)attentionItems.push({msg:`${failedN} Website${failedN>1?"s":""} mit Generierungsfehler`,action:()=>setTab("system"),btn:"Prüfen"});
+          if(openTickets.length>0)attentionItems.push({msg:`${openTickets.length} offene${openTickets.length>1?" Support-Anfragen":" Support-Anfrage"}`,action:()=>setTab("support"),btn:"Beantworten"});
+          if(sysTotal>0&&sysOk<sysTotal&&!sysBilling)attentionItems.push({msg:`${sysTotal-sysOk} Service${sysTotal-sysOk>1?"s":""} nicht erreichbar`,action:()=>setTab("system"),btn:"System prüfen"});
+          return(<div style={{display:"flex",flexDirection:"column",gap:20}}>
+            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>Dashboard</h2>
+
+            {/* Attention Box — nur wenn es Probleme gibt */}
+            {attentionItems.length>0?<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"16px 20px"}}>
+              <div style={{fontSize:".72rem",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>{attentionItems.length} {attentionItems.length===1?"Punkt braucht":"Punkte brauchen"} Aufmerksamkeit</div>
+              {attentionItems.map((a,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderTop:i?`1px solid ${T.bg3}`:"none"}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:T.red,flexShrink:0}}/>
+                <span style={{fontSize:".82rem",color:T.dark,flex:1}}>{a.msg}</span>
+                <button onClick={a.action} style={{padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>{a.btn}</button>
+              </div>)}
+            </div>
+            :<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px",textAlign:"center"}}>
+              <div style={{fontSize:".85rem",color:T.textSub}}>Alles in Ordnung — keine Aktion nötig</div>
+            </div>}
+
+            {/* KPI Row — neutral, monochrom */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
               {[
-                {l:"Live-Kunden",v:liveN,s:`€${mrr} MRR`,c:T.green,a:()=>setTab("sites")},
-                {l:"Trials aktiv",v:trialN,s:expiringTrials.filter(o=>o.tl<=4).length>0?`${expiringTrials.filter(o=>o.tl<=4).length} laufen in ≤4d ab`:"Alle noch frisch",c:"#7c3aed",a:()=>{setTab("sites");setFilter("trial");}},
-                {l:"Offene Tickets",v:openTickets.length,s:openTickets.length===0?"Alles beantwortet":"Bitte pruefen",c:openTickets.length>0?T.red:T.textMuted,a:()=>setTab("support")},
-                {l:"KI-Kosten",v:`€${totalCost.toFixed(2)}`,s:"kumuliert",c:T.amber,a:()=>setTab("finanzen")},
-                {l:"System",v:sysTotal>0?`${sysOk}/${sysTotal}`:"—",s:sysLabel,c:sysColor,a:()=>setTab("system")},
-              ].map((k,i)=>(
-                <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${k.c===T.red?"#fecaca":T.bg3}`,boxShadow:T.sh2,cursor:"pointer",transition:"box-shadow .15s"}} onMouseOver={e=>e.currentTarget.style.boxShadow=T.sh3} onMouseOut={e=>e.currentTarget.style.boxShadow=T.sh2}>
-                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>{k.l}</div>
-                  <div style={{fontSize:"1.8rem",fontWeight:800,color:k.c,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:5}}>{k.s}</div>
-                </div>
-              ))}
+                {l:"Kunden",v:liveN,s:`${trialN} in Trial`,a:()=>setTab("sites")},
+                {l:"MRR",v:`€${mrr.toFixed(0)}`,s:`${activeOrders.length} Abos`,a:()=>setTab("finanzen")},
+                {l:"Support",v:openTickets.length,s:openTickets.length===0?"Keine offenen":"Offen",a:()=>setTab("support")},
+                {l:"System",v:sysTotal>0?`${sysOk}/${sysTotal}`:"—",s:sysTotal>0&&sysOk===sysTotal?"Alle OK":"Prüfen",a:()=>setTab("system")},
+              ].map((k,i)=><div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${T.bg3}`,cursor:"pointer"}}>
+                <div style={{fontSize:".72rem",fontWeight:600,color:T.textMuted,marginBottom:6}}>{k.l}</div>
+                <div style={{fontSize:"1.5rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
+                <div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>{k.s}</div>
+              </div>)}
             </div>
-            {/* Trials ablaufend + Offene Tickets */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Trials ablaufend (7 Tage)</div>
-                {expiringTrials.length===0
-                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>{"Kein Trial läuft in 7 Tagen ab."}</div>
-                  :<div style={{display:"flex",flexDirection:"column",gap:0}}>
-                    {expiringTrials.map((o,i)=>{const tc=o.tl<=2?"#dc2626":o.tl<=4?"#d97706":T.green;return(<div key={o.id} onClick={()=>setSel(o)} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<expiringTrials.length-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontWeight:700,fontSize:".85rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.firmenname||"—"}</div>
-                        <div style={{fontSize:".75rem",color:T.textMuted}}>{o.email}</div>
-                      </div>
-                      <span style={{padding:"2px 8px",borderRadius:4,background:tc+"22",color:tc,fontWeight:700,fontSize:".75rem",flexShrink:0}}>{o.tl>0?`${o.tl}d`:"Abgelaufen"}</span>
-                    </div>);})}
-                  </div>
-                }
-              </div>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>Offene Support-Anfragen</div>
-                  {openTickets.length>0&&<button onClick={()=>setTab("support")} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:600,fontFamily:T.font}}>Alle ansehen</button>}
-                </div>
-                {openTickets.length===0
-                  ?<div style={{color:T.textMuted,fontSize:".82rem",padding:"12px 0"}}>Keine offenen Anfragen.</div>
-                  :<div style={{display:"flex",flexDirection:"column",gap:0}}>
-                    {openTickets.slice(0,5).map((t,i)=><div key={t.id} onClick={()=>setTab("support")} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 0",borderBottom:i<Math.min(openTickets.length,5)-1?`1px solid ${T.bg3}`:"none",cursor:"pointer"}}>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontWeight:600,fontSize:".84rem",color:T.dark,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.subject||"Allgemein"}</div>
-                        <div style={{fontSize:".75rem",color:T.textMuted}}>{t.email} &middot; {fmtDate(t.created_at)}</div>
-                      </div>
-                    </div>)}
-                  </div>
-                }
-              </div>
-            </div>
+
             {/* Pipeline */}
-            <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Status-Pipeline</div>
-              <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} onClick={()=>{setTab("sites");setFilter(s);}} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
-                  <span style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0,display:"inline-block"}}/>
-                  <span style={{fontSize:".8rem",color:T.dark,width:80}}>{STATUS_LABELS[s]}</span>
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"16px 20px"}}>
+              <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:12}}>Pipeline</div>
+              {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} onClick={()=>{setTab("sites");setFilter(s);}} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",padding:"4px 0"}}>
+                  <span style={{fontSize:".78rem",color:T.textSub,width:80}}>{STATUS_LABELS[s]}</span>
                   <div style={{flex:1,height:6,background:T.bg3,borderRadius:3,overflow:"hidden"}}>
-                    <div style={{width:`${pct}%`,height:"100%",background:STATUS_COLORS[s],borderRadius:3,transition:"width .4s"}}/>
+                    <div style={{width:`${pct}%`,height:"100%",background:T.dark,borderRadius:3,transition:"width .4s"}}/>
                   </div>
-                  <span style={{fontSize:".75rem",fontWeight:700,color:T.textMuted,fontFamily:T.mono,width:24,textAlign:"right"}}>{n}</span>
+                  <span style={{fontSize:".75rem",fontWeight:700,color:T.dark,fontFamily:T.mono,width:24,textAlign:"right"}}>{n}</span>
                 </div>);})}
-              </div>
             </div>
           </div>);
         })()}
@@ -4554,242 +4533,155 @@ function Admin({adminKey}){
         {/* Tab: System & Kosten */}
         {!loading&&tab==="system"&&(()=>{
           const extInd=k=>extStatus[k]?.status?.indicator;
-          const extL=k=>{const st=extStatus[k];if(st===null||st===undefined)return null;if(st===false)return{c:T.textMuted,l:"Nicht erreichbar"};const i=extInd(k);return i==="none"?{c:T.green,l:"OK"}:i==="minor"?{c:"#d97706",l:"Warnung"}:{c:T.red,l:"Störung"};};
           const isBilling=sysStatus?.anthropic?.billing;
-          const services=[
-            {key:"supabase",label:"Supabase",desc:"Datenbank & Auth",href:"https://status.supabase.com",
-              ok:sysStatus?.supabase?.ok,detail:sysStatus?.supabase?.latency?`${sysStatus.supabase.latency}ms`:""},
-            {key:"stripe",label:"Stripe",desc:"Zahlungen",href:"https://www.stripestatus.com",
-              ok:sysStatus?.stripe?.ok,detail:sysStatus?.stripe?.livemode===false?"Testmodus":"Live"},
-            {key:"anthropic",label:"Claude",desc:"KI-Generierung",href:"https://console.anthropic.com/settings/plans",
-              ok:sysStatus?.anthropic?.ok&&!isBilling,detail:isBilling?"Guthaben leer":sysStatus?.anthropic?.tier?`Tier ${sysStatus.anthropic.tier}`:""},
-            {key:"cloudflare",label:"Cloudflare",desc:"Hosting & CDN",href:"https://www.cloudflarestatus.com",
-              ok:extL("cloudflare")?.c===T.green||null,detail:""},
-            {key:"firecrawl",label:"Firecrawl",desc:"Website-Import",href:"https://www.firecrawl.dev",
-              ok:extStatus?.api_keys?.firecrawl===true,detail:extStatus?.api_keys?.firecrawl?"Key gesetzt":"Kein Key"},
-          ];
+          const rl=sysStatus?.anthropic?.rate_limits;
+          const tokUsedPct=rl?Math.round((1-parseInt(rl.tokens_remaining||0)/Math.max(1,parseInt(rl.tokens_limit||1)))*100):null;
+          const fcCredits=orders.reduce((a,o)=>a+(o.firecrawl_credits||0),0);
+          const fcPct=Math.round(fcCredits/500*100);
           const envVars=sysStatus?.envvars||{};
           const envOk=Object.values(envVars).filter(Boolean).length;
           const envTotal=Object.keys(envVars).length;
-          const totalGenCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
-          const totalImportCost=orders.reduce((a,o)=>a+(o.import_cost_eur||0),0);
-          const totalCost=totalGenCost+totalImportCost;
+          const errOrders=orders.filter(o=>o.last_error).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
           const totalTokIn=orders.reduce((a,o)=>a+(o.tokens_in||0)+(o.import_tokens_in||0),0);
           const totalTokOut=orders.reduce((a,o)=>a+(o.tokens_out||0)+(o.import_tokens_out||0),0);
-          const fcCredits=orders.reduce((a,o)=>a+(o.firecrawl_credits||0),0);
-          const websitesTracked=orders.filter(o=>o.tokens_in>0).length;
-          const avgCost=websitesTracked>0?totalCost/websitesTracked:0;
-          const activeN=orders.filter(o=>o.subscription_status==="active").length;
-          const stripeFee=Math.round((activeN*18*0.014+activeN*0.25)*100)/100;
-          const rl=sysStatus?.anthropic?.rate_limits;
-          const errOrders=orders.filter(o=>o.last_error).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+          /* Helpers */
+          const SvcDot=({ok})=><div style={{width:8,height:8,borderRadius:"50%",background:ok===false?T.red:ok===true?T.dark:T.bg3,flexShrink:0}}/>;
+          const SvcRow=({label,desc,ok,detail,href})=>(
+            <div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:`1px solid ${T.bg3}`}}>
+              <SvcDot ok={ok}/>
+              <div style={{flex:1,minWidth:0}}>
+                <span style={{fontSize:".85rem",fontWeight:600,color:T.dark}}>{label}</span>
+                <span style={{fontSize:".75rem",color:T.textMuted,marginLeft:8}}>{desc}</span>
+              </div>
+              {detail&&<span style={{fontSize:".78rem",fontFamily:T.mono,fontWeight:600,color:ok===false?T.red:T.textSub}}>{detail}</span>}
+              {href&&<a href={href} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} style={{fontSize:".72rem",color:T.textMuted,textDecoration:"none",flexShrink:0}}>Status &rarr;</a>}
+            </div>
+          );
+          const Bar=({pct,warn,crit})=>{const c=pct>=crit?T.red:pct>=warn?T.amber:T.dark;return<div style={{height:6,borderRadius:3,background:T.bg3,overflow:"hidden",flex:1}}><div style={{width:`${Math.min(100,pct)}%`,height:"100%",borderRadius:3,background:c,transition:"width .4s"}}/></div>;};
           return(<div>
           {/* Header */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
             <div>
-              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>System</h2>
-              {sysLastCheck&&<div style={{fontSize:".75rem",color:T.textMuted}}>Geprüft: {sysLastCheck.toLocaleTimeString("de-AT")} · Auto-Refresh 60s</div>}
+              <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>System</h2>
+              {sysLastCheck&&<div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Zuletzt geprüft {sysLastCheck.toLocaleTimeString("de-AT")} · Auto-Refresh 60s</div>}
             </div>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              {sysLoading&&<div style={{width:14,height:14,borderRadius:"50%",border:`2px solid ${T.accent}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
-              <button onClick={()=>{checkSystem();fetchExtStatus();}} disabled={sysLoading} style={{padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:sysLoading?"wait":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,transition:"all .15s"}}>Aktualisieren</button>
-            </div>
+            <button onClick={()=>{checkSystem();fetchExtStatus();}} disabled={sysLoading} style={{padding:"8px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:sysLoading?"wait":"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,display:"flex",alignItems:"center",gap:6}}>
+              {sysLoading&&<div style={{width:12,height:12,borderRadius:"50%",border:`2px solid ${T.textMuted}`,borderTopColor:"transparent",animation:"spin 1s linear infinite"}}/>}
+              Prüfen
+            </button>
           </div>
 
-          {/* Billing-Alert */}
-          {isBilling&&<div style={{padding:"14px 18px",background:"#fef2f2",border:"1px solid #fecaca",borderRadius:T.r,marginBottom:20,display:"flex",alignItems:"center",gap:14}}>
-            <div style={{width:10,height:10,borderRadius:"50%",background:T.red,flexShrink:0}}/>
-            <div style={{flex:1}}>
-              <div style={{fontSize:".85rem",fontWeight:700,color:"#991b1b"}}>Anthropic Guthaben leer</div>
-              <div style={{fontSize:".75rem",color:"#991b1b",opacity:.8,marginTop:2}}>Keine Generierungen oder Imports möglich</div>
-            </div>
-            <a href="https://console.anthropic.com/settings/plans" target="_blank" rel="noreferrer" style={{padding:"7px 16px",borderRadius:T.rSm,background:CTA,color:"#fff",fontSize:".78rem",fontWeight:700,textDecoration:"none",whiteSpace:"nowrap"}}>Credits aufladen</a>
-          </div>}
-
-          {/* Stuck orders */}
-          {stuckOrders.length>0&&<div style={{marginBottom:20}}>
-            {stuckOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.r,padding:"12px 16px",border:`1px solid ${T.amberBorder}`,display:"flex",alignItems:"center",gap:14,marginBottom:6}}>
-              <div style={{width:8,height:8,borderRadius:"50%",background:"#f59e0b",flexShrink:0}}/>
-              <div style={{flex:1,minWidth:0}}>
-                <span style={{fontWeight:700,fontSize:".85rem",color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</span>
-                <span style={{fontSize:".75rem",color:T.amberText,marginLeft:8}}>seit {fmtDate(o.created_at)} in Generierung</span>
-              </div>
-              <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"5px 12px",border:"none",borderRadius:T.rSm,background:genLoading[o.id]?T.bg3:T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>{genLoading[o.id]?"Generiert...":"Generieren"}</button>
+          {/* Alert-Bereich: Nur sichtbar wenn es Probleme gibt */}
+          {(isBilling||stuckOrders.length>0)&&<div style={{marginBottom:24,display:"flex",flexDirection:"column",gap:8}}>
+            {isBilling&&<div style={{padding:"12px 16px",background:T.redLight,border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,display:"flex",alignItems:"center",gap:12}}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.red} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span style={{fontSize:".82rem",fontWeight:600,color:T.red,flex:1}}>Anthropic Guthaben leer — keine Generierung möglich</span>
+              <a href="https://console.anthropic.com/settings/plans" target="_blank" rel="noreferrer" style={{padding:"6px 14px",borderRadius:T.rSm,background:T.dark,color:"#fff",fontSize:".75rem",fontWeight:700,textDecoration:"none",flexShrink:0}}>Credits aufladen</a>
+            </div>}
+            {stuckOrders.map(o=><div key={o.id} style={{padding:"12px 16px",background:T.amberLight,border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,display:"flex",alignItems:"center",gap:12}}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.amber} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span style={{fontSize:".82rem",color:T.amberText,flex:1}}><strong style={{color:T.dark,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</strong> — seit {fmtDate(o.created_at)} in Generierung</span>
+              <button onClick={()=>generateWebsite(o.id)} disabled={genLoading[o.id]} style={{padding:"6px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:genLoading[o.id]?"wait":"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>{genLoading[o.id]?"...":"Generieren"}</button>
             </div>)}
           </div>}
 
-          {/* ═══ ZONE 1: SYSTEM-STATUS ═══ */}
-          <div style={{marginBottom:32}}>
-            <div style={{fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>System-Status</div>
+          {/* Services */}
+          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"4px 20px",marginBottom:24}}>
+            {(!sysStatus&&sysLoading)?<div style={{padding:"24px 0",textAlign:"center",color:T.textMuted,fontSize:".82rem"}}>Verbindungen werden geprüft...</div>
+            :(!sysStatus&&!sysLoading)?<div style={{padding:"24px 0",textAlign:"center"}}><div style={{color:T.textMuted,fontSize:".82rem",marginBottom:8}}>System-Check fehlgeschlagen</div><button onClick={()=>{checkSystem();fetchExtStatus();}} style={{padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Erneut prüfen</button></div>
+            :<>
+              <SvcRow label="Supabase" desc="Datenbank & Auth" ok={sysStatus?.supabase?.ok} detail={sysStatus?.supabase?.latency?`${sysStatus.supabase.latency}ms`:""} href="https://status.supabase.com"/>
+              <SvcRow label="Stripe" desc="Zahlungen" ok={sysStatus?.stripe?.ok} detail={sysStatus?.stripe?.livemode===false?"Testmodus":"Live"} href="https://www.stripestatus.com"/>
+              <SvcRow label="Anthropic" desc="KI-Generierung" ok={sysStatus?.anthropic?.ok&&!isBilling} detail={isBilling?"Guthaben leer":sysStatus?.anthropic?.tier?`Tier ${sysStatus.anthropic.tier}`:""} href="https://console.anthropic.com"/>
+              <SvcRow label="Cloudflare" desc="Hosting & CDN" ok={extStatus?.cloudflare?extInd("cloudflare")==="none":null} href="https://www.cloudflarestatus.com"/>
+              <SvcRow label="Firecrawl" desc="Website-Import" ok={extStatus?.api_keys?.firecrawl===true} detail={extStatus?.api_keys?.firecrawl?"Key gesetzt":"Kein Key"} href="https://www.firecrawl.dev"/>
+            </>}
+          </div>
 
-            {/* Service Pills */}
-            {(!sysStatus&&sysLoading)?<div style={{display:"flex",gap:10}}>{[0,1,2,3,4].map(i=><div key={i} style={{flex:1,height:80,borderRadius:T.r,background:`linear-gradient(90deg,${T.bg3} 25%,${T.bg2} 50%,${T.bg3} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite"}}/>)}</div>
-            :(!sysStatus&&!sysLoading)?<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"24px",textAlign:"center"}}><div style={{fontSize:".82rem",color:T.textMuted}}>System-Check fehlgeschlagen</div><button onClick={()=>{checkSystem();fetchExtStatus();}} style={{marginTop:8,padding:"7px 16px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Erneut prüfen</button></div>
-            :<div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
-              {services.map(s=>{
-                const ext=extL(s.key);
-                const dotColor=s.ok===false?T.red:s.ok===true?T.green:ext?.c||T.textMuted;
-                const borderC=s.ok===false?"#fecaca":s.ok===true?"rgba(22,163,74,.12)":T.bg3;
-                return(<div key={s.key} style={{background:"#fff",borderRadius:T.r,padding:"14px 16px",border:`1.5px solid ${borderC}`,boxShadow:T.sh1,transition:"box-shadow .15s,border-color .15s",cursor:"pointer",position:"relative"}} onClick={()=>s.href&&window.open(s.href,"_blank")}>
-                  <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:6}}>
-                    <div style={{width:8,height:8,borderRadius:"50%",background:dotColor,flexShrink:0}}/>
-                    <span style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{s.label}</span>
-                  </div>
-                  <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:4}}>{s.desc}</div>
-                  {s.detail&&<div style={{fontSize:".75rem",fontWeight:600,color:s.ok===false?T.red:s.ok?T.green:T.textSub}}>{s.detail}</div>}
-                  {ext&&<div style={{fontSize:".68rem",color:ext.c,marginTop:4}}>{ext.l}</div>}
-                </div>);
-              })}
-            </div>}
-
-            {/* Env Vars kompakt */}
-            <div style={{marginTop:12}}>
-              <details style={{margin:0}}>
-                <summary style={{cursor:"pointer",fontSize:".78rem",fontWeight:600,color:T.textSub,display:"flex",alignItems:"center",gap:8,padding:"8px 0",listStyle:"none"}}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{transition:"transform .2s"}}><polyline points="9 18 15 12 9 6"/></svg>
-                  <span>Konfiguration</span>
-                  {envTotal>0&&<span style={{fontSize:".75rem",fontWeight:700,color:envOk===envTotal?T.green:T.red,fontFamily:T.mono}}>{envOk}/{envTotal} Env Vars</span>}
-                  {envOk===envTotal&&envTotal>0&&<span style={{fontSize:".68rem",color:T.green,fontWeight:600}}>Alles gesetzt</span>}
-                </summary>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,padding:"8px 0 0 20px"}}>
-                  {Object.entries(envVars).map(([k,v])=><div key={k} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderRadius:T.rSm,background:v?T.greenLight:"#fef2f2",border:`1px solid ${v?"rgba(22,163,74,.1)":"rgba(220,38,38,.08)"}`}}>
-                    <span style={{fontSize:".72rem",color:v?T.green:T.red,fontWeight:700}}>{v?"✓":"✗"}</span>
-                    <span style={{fontSize:".75rem",fontFamily:T.mono,color:T.dark}}>{k}</span>
-                  </div>)}
+          {/* API-Kontingente */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
+            {/* Anthropic */}
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${isBilling?T.redBorder:T.bg3}`,padding:"20px"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+                <span style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Anthropic</span>
+                {sysStatus?.anthropic?.tier&&<span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,background:T.bg,padding:"2px 8px",borderRadius:4}}>Tier {sysStatus.anthropic.tier}</span>}
+              </div>
+              {rl&&<div style={{marginBottom:16}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                  <span style={{fontSize:".75rem",color:T.textMuted,width:80}}>Tokens/Min</span>
+                  <Bar pct={tokUsedPct||0} warn={70} crit={90}/>
+                  <span style={{fontSize:".75rem",fontFamily:T.mono,fontWeight:600,color:T.textSub,width:40,textAlign:"right"}}>{tokUsedPct}%</span>
                 </div>
-              </details>
+                <div style={{display:"flex",gap:16,fontSize:".72rem",color:T.textMuted}}>
+                  <span>{parseInt(rl.tokens_remaining||0).toLocaleString("de-AT")} von {parseInt(rl.tokens_limit||0).toLocaleString("de-AT")} frei</span>
+                  <span>{rl.requests_remaining}/{rl.requests_limit} Requests frei</span>
+                </div>
+              </div>}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px 16px",fontSize:".75rem",marginBottom:12}}>
+                <span style={{color:T.textMuted}}>Tokens IN</span><span style={{fontFamily:T.mono,fontWeight:600,color:T.textSub,textAlign:"right"}}>{totalTokIn.toLocaleString("de-AT")}</span>
+                <span style={{color:T.textMuted}}>Tokens OUT</span><span style={{fontFamily:T.mono,fontWeight:600,color:T.textSub,textAlign:"right"}}>{totalTokOut.toLocaleString("de-AT")}</span>
+              </div>
+              <a href="https://console.anthropic.com/settings/plans" target="_blank" rel="noreferrer" style={{fontSize:".75rem",color:T.textMuted,textDecoration:"none"}}>console.anthropic.com &rarr;</a>
+            </div>
+            {/* Firecrawl */}
+            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+                <span style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Firecrawl</span>
+                <span style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,background:T.bg,padding:"2px 8px",borderRadius:4}}>Free Tier</span>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                <span style={{fontSize:".75rem",color:T.textMuted,width:80}}>Credits</span>
+                <Bar pct={fcPct} warn={50} crit={80}/>
+                <span style={{fontSize:".75rem",fontFamily:T.mono,fontWeight:600,color:T.textSub,width:60,textAlign:"right"}}>{fcCredits}/500</span>
+              </div>
+              <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:12}}>{500-fcCredits} übrig · 500/Monat</div>
+              <a href="https://www.firecrawl.dev/app" target="_blank" rel="noreferrer" style={{fontSize:".75rem",color:T.textMuted,textDecoration:"none"}}>firecrawl.dev &rarr;</a>
             </div>
           </div>
 
-          {/* ═══ ZONE 2: API-CREDITS ═══ */}
-          <div style={{marginBottom:32}}>
-            <div style={{fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>API-Credits & Limits</div>
-
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-              {/* Anthropic Card */}
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 22px",border:`1.5px solid ${isBilling?"#fecaca":T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
-                  <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Anthropic (Claude)</div>
-                  {sysStatus?.anthropic?.tier&&<span style={{fontSize:".68rem",fontWeight:700,color:"#fff",background:isBilling?T.red:T.green,padding:"2px 8px",borderRadius:100}}>Tier {sysStatus.anthropic.tier}</span>}
-                </div>
-
-                {isBilling?<div style={{padding:"14px",borderRadius:T.rSm,background:"#fef2f2",border:"1px solid #fecaca",marginBottom:14}}>
-                  <div style={{fontSize:".85rem",fontWeight:700,color:T.red}}>Guthaben aufgebraucht</div>
-                  <div style={{fontSize:".75rem",color:"#991b1b",marginTop:4,lineHeight:1.5}}>Keine Generierungen oder Imports möglich</div>
-                </div>
-                :<div style={{padding:"10px 12px",borderRadius:T.rSm,background:T.greenLight,border:"1px solid rgba(22,163,74,.12)",marginBottom:14}}>
-                  <div style={{fontSize:".78rem",fontWeight:700,color:T.green}}>Guthaben aktiv</div>
-                </div>}
-
-                <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:14}}>
-                  {[
-                    rl&&["Rate Limit",`${parseInt(rl.tokens_limit||0).toLocaleString("de-AT")} Tok/Min`],
-                    rl&&["Requests",`${rl.requests_limit} Req/Min`],
-                    ["Tokens verbraucht (IN)",totalTokIn.toLocaleString("de-AT")],
-                    ["Tokens verbraucht (OUT)",totalTokOut.toLocaleString("de-AT")],
-                    websitesTracked>0&&["Websites getrackt",`${websitesTracked} / ${orders.length}`],
-                  ].filter(Boolean).map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".75rem"}}>
-                    <span style={{color:T.textMuted}}>{l}</span>
-                    <span style={{fontFamily:T.mono,fontWeight:600,color:T.textSub}}>{v}</span>
-                  </div>)}
-                </div>
-
-                <a href="https://console.anthropic.com/settings/plans" target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:"8px 0",borderRadius:T.rSm,border:`1.5px solid ${T.bg3}`,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.textSub,textDecoration:"none",cursor:"pointer"}}>
-                  Anthropic Console
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-              </div>
-
-              {/* Firecrawl Card */}
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 22px",border:`1.5px solid ${T.bg3}`,boxShadow:T.sh2,display:"flex",flexDirection:"column"}}>
-                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:16}}>Firecrawl</div>
-
-                <div style={{marginBottom:14}}>
-                  <div style={{display:"flex",alignItems:"baseline",gap:4}}>
-                    <span style={{fontSize:"2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{fcCredits}</span>
-                    <span style={{fontSize:".85rem",color:T.textMuted,fontWeight:500}}>/ 500</span>
-                  </div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Credits verbraucht</div>
-                </div>
-
-                <div style={{marginBottom:14}}>
-                  <div style={{height:8,borderRadius:4,background:T.bg3,overflow:"hidden"}}>
-                    <div style={{width:`${Math.min(100,Math.round(fcCredits/500*100))}%`,height:"100%",borderRadius:4,background:fcCredits>400?T.red:fcCredits>250?"#d97706":T.green,transition:"width .4s"}}/>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
-                    <span style={{fontSize:".72rem",color:T.textMuted}}>{Math.round(fcCredits/500*100)}% verbraucht</span>
-                    <span style={{fontSize:".72rem",fontWeight:600,color:fcCredits>400?T.red:T.green}}>{500-fcCredits} übrig</span>
-                  </div>
-                </div>
-
-                <div style={{padding:"10px 12px",borderRadius:T.rSm,background:T.bg,marginBottom:14}}>
-                  <div style={{fontSize:".75rem",fontWeight:600,color:T.textSub}}>Free Tier</div>
-                  <div style={{fontSize:".72rem",color:T.textMuted,marginTop:2}}>500 Credits/Monat · Headless Browser</div>
-                </div>
-
-                <div style={{marginTop:"auto"}}>
-                  <a href="https://www.firecrawl.dev/app" target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:"8px 0",borderRadius:T.rSm,border:`1.5px solid ${T.bg3}`,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.textSub,textDecoration:"none",cursor:"pointer"}}>
-                    Firecrawl Dashboard
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ═══ ZONE 3: FEHLER ═══ */}
-          {(errOrders.length>0||errorLogs.length>0)&&<div style={{marginBottom:24}}>
-            <div style={{fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>Fehler</div>
-
-            {errOrders.length>0&&<div style={{marginBottom:16}}>
-              <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Generierungsfehler</div>
-              <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                {errOrders.map(o=><div key={o.id} style={{background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,padding:"10px 14px",display:"flex",gap:12,alignItems:"flex-start",cursor:"pointer"}} onClick={()=>setSel(o)}>
-                  <span style={{fontSize:".78rem",fontWeight:700,color:T.dark,flexShrink:0}}>{o.firmenname||"—"}</span>
-                  <span style={{fontSize:".72rem",color:T.red,flex:1,fontFamily:T.mono,lineHeight:1.4}}>{o.last_error}</span>
-                  <span style={{fontSize:".72rem",color:T.textMuted,flexShrink:0}}>{fmtDate(o.created_at)}</span>
-                </div>)}
-              </div>
-            </div>}
-
-            {/* Error Logs */}
-            <details style={{margin:0}} open={errorLogs.length>0&&errOrders.length===0}>
-              <summary style={{cursor:"pointer",fontSize:".78rem",fontWeight:700,color:T.dark,display:"flex",alignItems:"center",gap:8,padding:"4px 0",listStyle:"none"}}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{transition:"transform .2s"}}><polyline points="9 18 15 12 9 6"/></svg>
-                Fehler-Log
-                {errorLogs.length>0&&<span style={{background:T.red,color:"#fff",fontSize:".68rem",fontWeight:700,padding:"1px 7px",borderRadius:100}}>{errorLogs.length}</span>}
-                <div style={{marginLeft:"auto",display:"flex",gap:6}}>
-                  {errorLogs.length>0&&<button onClick={e=>{e.preventDefault();clearErrorLogs();}} style={{padding:"3px 10px",border:`1px solid #fecaca`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Löschen</button>}
-                  <button onClick={e=>{e.preventDefault();fetchErrorLogs();}} disabled={errorLogsLoading} style={{padding:"3px 10px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:errorLogsLoading?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Laden</button>
-                </div>
+          {/* Konfiguration */}
+          {envTotal>0&&<div style={{marginBottom:24}}>
+            <details style={{margin:0}}>
+              <summary style={{cursor:"pointer",fontSize:".78rem",fontWeight:600,color:T.textSub,display:"flex",alignItems:"center",gap:8,padding:"8px 0",listStyle:"none"}}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                Konfiguration — {envOk}/{envTotal} Env Vars {envOk===envTotal?"gesetzt":""}
+                {envOk<envTotal&&<span style={{color:T.red,fontWeight:700}}>{envTotal-envOk} fehlen</span>}
               </summary>
-              <div style={{paddingTop:8}}>
-                {errorLogs.length===0?<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px",textAlign:"center"}}>
-                  <div style={{fontSize:".82rem",color:T.green,fontWeight:600}}>Keine Fehler</div>
-                </div>:<div style={{display:"flex",flexDirection:"column",gap:4,maxHeight:300,overflowY:"auto"}}>
-                  {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.redBorder}`,padding:"10px 12px"}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginBottom:4}}>
-                      <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <span style={{background:["generate","start-build","import","serve"].includes(e.source)?"#eff6ff":e.source==="unhandledrejection"?"#fef3c7":"#fef2f2",color:["generate","start-build","import","serve"].includes(e.source)?"#1e40af":e.source==="unhandledrejection"?"#92400e":"#991b1b",fontSize:".68rem",fontWeight:700,padding:"1px 5px",borderRadius:3,textTransform:"uppercase"}}>{({"unhandledrejection":"Promise","window.onerror":"JS","generate":"Generate","start-build":"Build","import":"Import","serve":"Serve"})[e.source]||e.source||"Error"}</span>
-                        {e.user_email&&<span style={{fontSize:".72rem",color:T.accent,fontWeight:600}}>{e.user_email}</span>}
-                      </div>
-                      <span style={{fontSize:".72rem",color:T.textMuted,flexShrink:0}}>{new Date(e.created_at).toLocaleString("de-AT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
-                    </div>
-                    <div style={{fontSize:".75rem",color:T.red,fontWeight:600,fontFamily:T.mono,lineHeight:1.4,wordBreak:"break-word"}}>{e.message}</div>
-                    {e.stack&&<details style={{margin:"4px 0 0"}}><summary style={{fontSize:".72rem",color:T.textMuted,cursor:"pointer",fontFamily:T.font}}>Stack-Trace</summary><pre style={{fontSize:".72rem",color:T.textSub,fontFamily:T.mono,margin:"4px 0 0",lineHeight:1.4,whiteSpace:"pre-wrap",wordBreak:"break-all",maxHeight:120,overflow:"auto"}}>{e.stack}</pre></details>}
-                  </div>)}
-                </div>}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,padding:"8px 0 0 20px"}}>
+                {Object.entries(envVars).map(([k,v])=><div key={k} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderRadius:T.rSm,background:v?"#fff":T.redLight,border:`1px solid ${v?T.bg3:T.redBorder}`}}>
+                  <span style={{fontSize:".72rem",color:v?T.dark:T.red,fontWeight:700}}>{v?"✓":"✗"}</span>
+                  <span style={{fontSize:".75rem",fontFamily:T.mono,color:T.dark}}>{k}</span>
+                </div>)}
               </div>
             </details>
           </div>}
 
-          {/* Keine Fehler Hinweis */}
-          {errOrders.length===0&&errorLogs.length===0&&<div style={{marginBottom:24}}>
-            <div style={{fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>Fehler</div>
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px",textAlign:"center"}}>
-              <div style={{fontSize:".82rem",color:T.green,fontWeight:600}}>Keine Fehler</div>
-              <div style={{fontSize:".72rem",color:T.textMuted,marginTop:3}}>Alle Systeme laufen fehlerfrei</div>
-            </div>
+          {/* Fehler — nur wenn vorhanden */}
+          {(errOrders.length>0||errorLogs.length>0)&&<div>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Fehler</div>
+            {errOrders.map(o=><div key={o.id} style={{padding:"10px 16px",border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,display:"flex",gap:12,alignItems:"center",cursor:"pointer",marginBottom:4,background:"#fff"}} onClick={()=>setSel(o)}>
+              <span style={{fontSize:".78rem",fontWeight:600,color:T.dark}}>{o.firmenname||"—"}</span>
+              <span style={{fontSize:".72rem",color:T.red,flex:1,fontFamily:T.mono}}>{o.last_error}</span>
+              <span style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(o.created_at)}</span>
+            </div>)}
+            {errorLogs.length>0&&<details style={{marginTop:8}}>
+              <summary style={{cursor:"pointer",fontSize:".75rem",fontWeight:600,color:T.textMuted,listStyle:"none",display:"flex",alignItems:"center",gap:6}}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                {errorLogs.length} Log-Einträge
+                <div style={{marginLeft:"auto",display:"flex",gap:6}}>
+                  <button onClick={e=>{e.preventDefault();clearErrorLogs();}} style={{padding:"4px 10px",border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,background:"#fff",color:T.red,cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Löschen</button>
+                </div>
+              </summary>
+              <div style={{display:"flex",flexDirection:"column",gap:4,maxHeight:240,overflowY:"auto",marginTop:8}}>
+                {errorLogs.map((e,i)=><div key={e.id||i} style={{background:"#fff",borderRadius:T.rSm,border:`1px solid ${T.bg3}`,padding:"8px 12px",fontSize:".75rem"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                    <span style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase"}}>{({"unhandledrejection":"Promise","window.onerror":"JS","generate":"Generate","start-build":"Build","import":"Import","serve":"Serve"})[e.source]||e.source||"Error"}</span>
+                    <span style={{fontSize:".72rem",color:T.textMuted,marginLeft:"auto"}}>{new Date(e.created_at).toLocaleString("de-AT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
+                  </div>
+                  <div style={{color:T.red,fontFamily:T.mono,lineHeight:1.4,wordBreak:"break-word"}}>{e.message}</div>
+                </div>)}
+              </div>
+            </details>}
           </div>}
         </div>);
         })()}
@@ -4801,96 +4693,99 @@ function Admin({adminKey}){
           const pastDueN=orders.filter(o=>o.subscription_status==="past_due").length;
           const trialN=orders.filter(o=>o.status==="trial").length;
           const mrr=activeOrders.reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
-          const totalGenCostEur=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
-          const totalImportCostEur=orders.reduce((a,o)=>a+(o.import_cost_eur||0),0);
-          const totalCostEur=totalGenCostEur+totalImportCostEur;
-          const months6=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleDateString("de-AT",{month:"short",year:"2-digit"}),key:`${d.getFullYear()}-${d.getMonth()}`};});
+          const totalGenCost=orders.reduce((a,o)=>a+(o.cost_eur||0),0);
+          const totalImportCost=orders.reduce((a,o)=>a+(o.import_cost_eur||0),0);
+          const totalApiCost=totalGenCost+totalImportCost;
+          const tracked=orders.filter(o=>o.tokens_in>0).length;
+          const avgCostPerSite=tracked>0?totalApiCost/tracked:0;
+          const stripeFee=Math.round((mrr*0.014+activeOrders.length*0.25)*100)/100;
+          const monthN=Math.max(1,now.getMonth()||1);
+          const apiCostMo=totalApiCost/monthN;
+          const ausgaben=Math.round((stripeFee+apiCostMo)*100)/100;
+          const netto=Math.round((mrr-ausgaben)*100)/100;
+          const marge=mrr>0?Math.round((netto/mrr)*100):0;
+          const months6=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleDateString("de-AT",{month:"short"}),key:`${d.getFullYear()}-${d.getMonth()}`};});
           const mData=months6.map(m=>({...m,count:orders.filter(o=>{if(!o.created_at)return false;const d=new Date(o.created_at);return`${d.getFullYear()}-${d.getMonth()}`===m.key;}).length}));
           const maxC=Math.max(1,...mData.map(m=>m.count));
-          const stripeFee=Math.round((mrr*0.014+activeOrders.length*0.25)*100)/100;
-          const claudeCostMo=totalCostEur/Math.max(1,now.getMonth());
-          const ausgaben=Math.round((stripeFee+claudeCostMo)*100)/100;
-          const netto=Math.round((mrr-ausgaben)*100)/100;
+          const Row=({label,value,bold,sub})=><div style={{display:"flex",justifyContent:"space-between",padding:`${sub?"3px":"6px"} 0`,borderBottom:`1px solid ${T.bg3}`}}>
+            <span style={{fontSize:sub?".72rem":".78rem",color:sub?T.textMuted:T.textSub,paddingLeft:sub?12:0}}>{label}</span>
+            <span style={{fontSize:sub?".72rem":".78rem",fontFamily:T.mono,fontWeight:bold?800:600,color:bold?T.dark:T.textSub}}>{value}</span>
+          </div>;
           return(<div>
-            <div style={{marginBottom:24}}>
-              <h2 style={{margin:"0 0 4px",fontSize:"1.2rem",fontWeight:800,color:T.dark}}>Finanzen</h2>
-              <p style={{margin:0,fontSize:".82rem",color:T.textMuted}}>{"Einnahmen, Ausgaben und Abo-Status im Überblick"}</p>
+            <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 24px"}}>Finanzen</h2>
+
+            {/* KPI Row */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,marginBottom:24}}>
+              {[
+                {l:"MRR",v:`€${mrr.toFixed(0)}`,s:`${activeOrders.length} Abos`,warn:false},
+                {l:"Ausgaben/Mo",v:`€${ausgaben.toFixed(2)}`,s:"Stripe + API",warn:false},
+                {l:"Netto/Mo",v:`€${netto.toFixed(2)}`,s:`${marge}% Marge`,warn:netto<0},
+                {l:"∅ Kosten/Website",v:`€${avgCostPerSite.toFixed(3)}`,s:`${tracked} getrackt`,warn:avgCostPerSite>0.15},
+              ].map(k=><div key={k.l} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${k.warn?T.redBorder:T.bg3}`}}>
+                <div style={{fontSize:".75rem",fontWeight:600,color:T.textMuted,marginBottom:6}}>{k.l}</div>
+                <div style={{fontSize:"1.5rem",fontWeight:800,color:k.warn?T.red:T.dark,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{k.v}</div>
+                <div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>{k.s}</div>
+              </div>)}
             </div>
-            {/* Top KPIs: Einnahmen | Ausgaben | Netto */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:24}}>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Einnahmen (MRR)</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:T.green,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"€"}{mrr.toFixed(2)}</div>
-                <div style={{marginTop:10,display:"flex",gap:12,flexWrap:"wrap"}}>
-                  <span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:T.green}}>{activeOrders.length}</span> aktive Abos</span>
-                  {trialN>0&&<span style={{fontSize:".75rem",color:T.textMuted}}><span style={{fontWeight:700,color:"#8b5cf6"}}>{trialN}</span> in Trial</span>}
-                  {pastDueN>0&&<span style={{fontSize:".75rem",color:"#d97706",fontWeight:700}}>{"⚠"} {pastDueN} Zahlung offen</span>}
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
+              {/* Einnahmen */}
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
+                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:12}}>Einnahmen</div>
+                <Row label="MRR (monatlich wiederkehrend)" value={`€${mrr.toFixed(2)}`} bold/>
+                <Row label="Aktive Abos" value={activeOrders.length} sub/>
+                <Row label="davon Jahresabos" value={activeOrders.filter(o=>o.subscription_plan==="yearly").length} sub/>
+                {trialN>0&&<Row label="In Trial" value={trialN} sub/>}
+                {pastDueN>0&&<Row label="Zahlung offen" value={pastDueN} sub/>}
+                <div style={{marginTop:12,padding:"10px 12px",background:T.bg,borderRadius:T.rSm,fontSize:".72rem",color:T.textMuted}}>
+                  ARR (hochgerechnet): €{(mrr*12).toFixed(0)} · LTV bei 12 Mo: €{(activeOrders.length>0?(mrr/activeOrders.length)*12:0).toFixed(0)}/Kunde
                 </div>
               </div>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Ausgaben / Mo</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:T.red,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"€"}{ausgaben.toFixed(2)}</div>
-                <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
-                  {[["Stripe",`€${stripeFee.toFixed(2)}`],["Claude API",`€${claudeCostMo.toFixed(3)}`],["Cloudflare / Supabase","€0"]].map(([l,v])=>(
-                    <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".75rem",color:T.textMuted}}>
-                      <span>{l}</span><span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>{v}</span>
-                    </div>
-                  ))}
+
+              {/* Ausgaben */}
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
+                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:12}}>Ausgaben</div>
+                <Row label="Gesamt / Monat" value={`€${ausgaben.toFixed(2)}`} bold/>
+                <Row label="Stripe (1.4% + €0.25/Txn)" value={`€${stripeFee.toFixed(2)}`} sub/>
+                <Row label="Claude API (∅/Monat)" value={`€${apiCostMo.toFixed(3)}`} sub/>
+                <Row label="Cloudflare / Supabase" value="€0 (Free)" sub/>
+                <div style={{marginTop:12}}>
+                  <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>API-Kosten kumuliert</div>
+                  <Row label="Generierung" value={`€${totalGenCost.toFixed(4)}`} sub/>
+                  {totalImportCost>0&&<Row label="Import" value={`€${totalImportCost.toFixed(4)}`} sub/>}
+                  <Row label="Gesamt" value={`€${totalApiCost.toFixed(4)}`}/>
+                  {tracked>0&&<Row label="∅ pro Website" value={`€${avgCostPerSite.toFixed(4)}`} sub/>}
                 </div>
               </div>
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`2px solid ${netto>=0?T.green+"44":"#fca5a5"}`,boxShadow:T.sh2}}>
-                <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:8}}>Netto / Mo</div>
-                <div style={{fontSize:"2rem",fontWeight:800,color:netto>=0?T.green:"#dc2626",fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>{"€"}{netto.toFixed(2)}</div>
-                <div style={{marginTop:10,fontSize:".75rem",color:T.textMuted}}>nach Stripe-Geb. + API-Kosten</div>
-              </div>
             </div>
-            {/* Unterer Bereich: Bestellungen Chart + Abo-Status */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              {/* Bestellungen Chart */}
-              <div style={{background:"#fff",borderRadius:T.r,padding:"22px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:18}}>Neue Bestellungen &mdash; letzte 6 Monate</div>
-                <svg viewBox="0 0 340 170" style={{width:"100%",overflow:"visible"}}>
-                  <line x1="0" y1="148" x2="340" y2="148" stroke={T.bg3} strokeWidth="1"/>
-                  {mData.map((m,i)=>{const bW=38,gap=18,x=i*(bW+gap)+10,maxH=120,bH=m.count===0?2:Math.max(8,Math.round((m.count/maxC)*maxH)),y=148-bH;return(<g key={i}>
-                    <rect x={x} y={y} width={bW} height={bH} rx={5} fill={m.count>0?T.accent:"#e8ebf0"} opacity={m.count>0?.85:1}/>
-                    {m.count>0&&<text x={x+bW/2} y={y-7} textAnchor="middle" fontSize="11" fontWeight="700" fill={T.accent} fontFamily={T.mono}>{m.count}</text>}
-                    <text x={x+bW/2} y={163} textAnchor="middle" fontSize="10" fill={T.textMuted}>{m.label}</text>
+
+            {/* Chart + Abo-Status */}
+            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:16}}>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
+                <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16}}>Neue Kunden — letzte 6 Monate</div>
+                <svg viewBox="0 0 340 150" style={{width:"100%",overflow:"visible"}}>
+                  <line x1="0" y1="130" x2="340" y2="130" stroke={T.bg3} strokeWidth="1"/>
+                  {mData.map((m,i)=>{const bW=38,gap=18,x=i*(bW+gap)+10,maxH=100,bH=m.count===0?2:Math.max(6,Math.round((m.count/maxC)*maxH)),y=130-bH;return(<g key={i}>
+                    <rect x={x} y={y} width={bW} height={bH} rx={4} fill={m.count>0?T.dark:T.bg3}/>
+                    {m.count>0&&<text x={x+bW/2} y={y-6} textAnchor="middle" fontSize="11" fontWeight="700" fill={T.dark} fontFamily={T.mono}>{m.count}</text>}
+                    <text x={x+bW/2} y={145} textAnchor="middle" fontSize="10" fill={T.textMuted}>{m.label}</text>
                   </g>);})}
                 </svg>
               </div>
-              {/* Abo-Status + Claude Details */}
-              <div style={{display:"flex",flexDirection:"column",gap:16}}>
-                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Abo-Status</div>
-                  {[{label:"Aktiv",val:activeOrders.length,c:T.green},{label:"Trial",val:trialN,c:"#8b5cf6"},{label:"Zahlung offen",val:pastDueN,c:"#d97706"},{label:"Kein Abo",val:orders.filter(o=>!o.stripe_customer_id).length,c:T.textMuted}].map(({label,val,c})=>(
-                    <div key={label} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                      <div style={{flex:1,height:6,borderRadius:3,background:T.bg3,overflow:"hidden"}}>
-                        <div style={{width:`${Math.round((val/Math.max(1,orders.length))*100)}%`,height:"100%",background:c,borderRadius:3}}/>
-                      </div>
-                      <span style={{fontSize:".75rem",color:T.textMuted,minWidth:90}}>{label}</span>
-                      <span style={{fontSize:".75rem",fontWeight:700,color:c,fontFamily:T.mono,minWidth:20,textAlign:"right"}}>{val}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>API-Kosten (Claude + Firecrawl)</div>
-                  {totalCostEur>0?<>
-                    <div style={{display:"flex",flexDirection:"column",gap:5}}>
-                      {[
-                        ["Kumuliert gesamt",`€${totalCostEur.toFixed(4)}`,T.dark],
-                        ["Generierung (Claude)",`€${totalGenCostEur.toFixed(4)}`,T.textSub],
-                        totalImportCostEur>0&&["Import (Claude)",`€${totalImportCostEur.toFixed(4)}`,T.textSub],
-                        orders.filter(o=>o.tokens_in>0).length>0&&["∅ pro Website",`€${(totalCostEur/orders.filter(o=>o.tokens_in>0).length).toFixed(4)}`,T.textSub],
-                        ["Input-Tokens",orders.reduce((a,o)=>a+(o.tokens_in||0)+(o.import_tokens_in||0),0).toLocaleString("de-AT"),T.textMuted],
-                        ["Output-Tokens",orders.reduce((a,o)=>a+(o.tokens_out||0)+(o.import_tokens_out||0),0).toLocaleString("de-AT"),T.textMuted],
-                        ["Firecrawl Credits",orders.reduce((a,o)=>a+(o.firecrawl_credits||0),0)+" / 500 (Free)",T.textMuted],
-                      ].filter(Boolean).map(([l,v,c])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".78rem",padding:"4px 0",borderBottom:l==="Kumuliert gesamt"?`1.5px solid ${T.bg3}`:`1px solid ${T.bg3}`}}>
-                        <span style={{color:T.textMuted,fontWeight:l==="Kumuliert gesamt"?700:400}}>{l}</span>
-                        <span style={{fontFamily:T.mono,fontWeight:l==="Kumuliert gesamt"?800:600,color:c}}>{v}</span>
-                      </div>)}
-                    </div>
-                  </>:<div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Daten</div>}
-                </div>
+              <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
+                <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:12}}>Verteilung</div>
+                {[
+                  {label:"Aktiv",val:activeOrders.length},
+                  {label:"Trial",val:trialN},
+                  {label:"Zahlung offen",val:pastDueN},
+                  {label:"Kein Abo",val:orders.filter(o=>!o.stripe_customer_id).length},
+                ].map(({label,val})=><div key={label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                  <div style={{flex:1,height:6,borderRadius:3,background:T.bg3,overflow:"hidden"}}>
+                    <div style={{width:`${Math.round((val/Math.max(1,orders.length))*100)}%`,height:"100%",background:T.dark,borderRadius:3}}/>
+                  </div>
+                  <span style={{fontSize:".75rem",color:T.textMuted,minWidth:88}}>{label}</span>
+                  <span style={{fontSize:".75rem",fontWeight:700,color:T.dark,fontFamily:T.mono,minWidth:20,textAlign:"right"}}>{val}</span>
+                </div>)}
               </div>
             </div>
           </div>);

@@ -43,6 +43,14 @@ export async function onRequestGet({params, env}) {
   let html = rows[0].website_html;
   const o = rows[0];
 
+  // ── Indexing-Flip: nur Live-Kunden werden indexiert, Trial/Beta bleibt noindex ──
+  if (o.status === "live") {
+    html = html.replace(
+      /<meta name="robots" content="[^"]*">/,
+      '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">'
+    );
+  }
+
   // ── Stil lesen ──
   const stilName = o.stil || "klassisch";
   const isModern = stilName === "modern";
@@ -117,7 +125,7 @@ export async function onRequestGet({params, env}) {
   if (o.url_logo) {
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[\s\S]*?(<\/a>)/,
-      `$1<img src="${esc(o.url_logo)}" alt="Logo" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
+      `$1<img src="${esc(o.url_logo)}" alt="${esc(o.firmenname || "")} Logo" loading="eager" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
     );
   }
 
@@ -217,9 +225,10 @@ export async function onRequestGet({params, env}) {
   const aboutFotos = [o.url_about1, o.url_about2, o.url_about3, o.url_about4, o.url_about5, o.url_about6, o.url_about7, o.url_about8].filter(Boolean);
   if (aboutFotos.length > 0 && html.includes("<!-- ABOUT_FOTOS -->")) {
     const imgR = isModern ? "16px" : isElegant ? "4px" : "var(--r,4px)";
+    const aboutAlt = `Einblick bei ${o.firmenname || "uns"}`;
     const makeImg = (url, ratio) =>
       `<div style="overflow:hidden;border-radius:${imgR};line-height:0;cursor:zoom-in">` +
-      `<img class="sr-zoom sr-img-hover" src="${url}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:${ratio};transition:transform .3s">` +
+      `<img class="sr-zoom sr-img-hover" src="${url}" alt="${esc(aboutAlt)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:${ratio};transition:transform .3s">` +
       `</div>`;
     let fotosHtml;
     if (aboutFotos.length === 1) {
@@ -637,7 +646,7 @@ export async function onRequestGet({params, env}) {
     const cols = v.galerie === "grid-3x2" ? "repeat(3,1fr)" : "repeat(2,1fr)";
     const photos = galerieItems.slice(0, 12).map(g =>
       `<div style="overflow:hidden;border-radius:var(--rLg);line-height:0;cursor:zoom-in;aspect-ratio:4/3">` +
-      `<img class="sr-zoom sr-img-hover" src="${g.url}" alt="${esc(g.caption) || ""}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s">` +
+      `<img class="sr-zoom sr-img-hover" src="${g.url}" alt="${esc(g.caption) || esc(`Galerie ${o.firmenname || ""}`.trim())}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s">` +
       `</div>`
     ).join("");
     const galerieRadius = isModern ? "16px" : isElegant ? "2px" : "var(--rLg)";

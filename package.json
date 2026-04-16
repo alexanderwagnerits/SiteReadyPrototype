@@ -9,7 +9,9 @@
     "test:e2e:ui": "playwright test --ui",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css}\" \"functions/**/*.js\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,json,css}\" \"functions/**/*.js\"",
-    "lint": "eslint \"src/**/*.{js,jsx}\""
+    "lint": "eslint \"src/**/*.{js,jsx}\"",
+    "dev:full": "npm run build && wrangler pages dev ./build",
+    "check:functions": "find functions -name '*.js' -exec node --check {} \\;"
   },
   "eslintConfig": {
     "extends": [
@@ -38,6 +40,7 @@
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "wrangler": "^4.83.0"
   }
 }

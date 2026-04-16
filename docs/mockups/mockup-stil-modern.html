@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Physio Muster — Stil: Modern</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" crossorigin>
+<style>
+:root {
+  --primary: #18181b;
+  --accent: #4f46e5;
+  --accentLight: #eef2ff;
+  --bg: #fafafa;
+  --sep: #e4e4e7;
+  --text: #18181b;
+  --textMuted: #71717a;
+  --white: #fff;
+  --r: 12px;
+  --rLg: 16px;
+  --btnR: 100px;
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --maxW: 1140px;
+  --sectionY: 100px;
+}
+@media(min-width:900px){:root{--sectionY:128px}}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1.05rem;-webkit-font-smoothing:antialiased;background:var(--white)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none;cursor:pointer}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+:focus:not(:focus-visible){outline:none}
+.skip-link{position:absolute;top:-100%;left:16px;z-index:9999;padding:12px 24px;background:var(--accent);color:#fff;font-weight:700;border-radius:var(--btnR);font-size:.9rem}
+.skip-link:focus{top:16px}
+.w{max-width:var(--maxW);margin:0 auto;padding:0 32px}
+
+/* ═══ NAV — Floating Pill ═══ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 32px 0;transition:padding .4s cubic-bezier(.22,1,.36,1)}
+.nav.scrolled{padding:10px 32px 0}
+.nav-bar{max-width:calc(var(--maxW) - 40px);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-radius:var(--btnR);background:rgba(255,255,255,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 2px 16px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);transition:all .4s cubic-bezier(.22,1,.36,1)}
+.nav.scrolled .nav-bar{box-shadow:0 4px 24px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04)}
+.nav-logo{font-size:1.25rem;font-weight:800;color:var(--primary);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px}
+.nav-logo::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.nav-logo img{height:30px;width:auto}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--textMuted);transition:color .2s}
+.nav-links a:hover{color:var(--primary)}
+.nav-cta{font-size:.86rem;font-weight:700;color:#fff!important;background:var(--accent);padding:10px 24px;border-radius:var(--btnR);transition:all .25s cubic-bezier(.22,1,.36,1);display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(79,70,229,.3)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(79,70,229,.4)}
+.nav-cta svg{width:14px;height:14px}
+.nav-burger{display:none;width:28px;height:20px;flex-direction:column;justify-content:space-between;cursor:pointer;border:none;background:none;padding:0}
+.nav-burger span{display:block;width:100%;height:2.5px;background:var(--primary);border-radius:2px;transition:all .3s}
+.nav-burger.open span:nth-child(1){transform:translateY(8.75px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:translateY(-8.75px) rotate(-45deg)}
+.nav-mobile{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.98);backdrop-filter:blur(20px);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.nav-mobile.open{display:flex}
+.nav-mobile a{font-size:1.2rem;font-weight:600;color:var(--primary)}
+.nav-mobile .nav-cta{font-size:1rem;padding:14px 36px;margin-top:8px}
+
+/* ═══ HERO — Gradient + Blur-Blob ═══ */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;overflow:hidden;background:var(--primary)}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80') center/cover;transform:scale(1.05);animation:heroZoom 20s ease-out forwards}
+@keyframes heroZoom{from{transform:scale(1.05)}to{transform:scale(1)}}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(145deg, rgba(24,24,27,.92) 0%, rgba(24,24,27,.7) 40%, rgba(79,70,229,.3) 80%, rgba(24,24,27,.85) 100%)}
+/* Blur-Blob */
+.hero-bg::before{content:'';position:absolute;z-index:1;width:600px;height:600px;border-radius:60% 40% 55% 45%;background:linear-gradient(135deg, var(--accent), #818cf8);opacity:.18;top:-120px;right:-120px;filter:blur(60px);pointer-events:none;animation:blobFloat 10s ease-in-out infinite alternate;will-change:transform}
+/* Zweiter Blob unten links */
+.hero::after{content:'';position:absolute;z-index:1;width:350px;height:350px;border-radius:45% 55% 40% 60%;background:linear-gradient(180deg, #818cf8, #a78bfa);opacity:.1;bottom:-60px;left:-60px;filter:blur(60px);pointer-events:none;animation:blobFloat2 14s ease-in-out infinite alternate;will-change:transform}
+@keyframes blobFloat{from{transform:translate(0,0) rotate(0deg)}to{transform:translate(-40px,30px) rotate(15deg)}}
+@keyframes blobFloat2{from{transform:translate(0,0) rotate(0deg)}to{transform:translate(30px,-20px) rotate(-10deg)}}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:0 32px}
+.hero-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px;animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .2s both}
+/* Accent-Chip vor Label */
+.hero-label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-size:clamp(3.2rem,7vw,5.5rem);font-weight:800;line-height:1;letter-spacing:-.05em;color:#fff;margin-bottom:20px;max-width:750px;text-wrap:balance;animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .35s both}
+.hero-sub{font-size:1.15rem;color:rgba(255,255,255,.65);font-weight:500;margin-bottom:12px;animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .5s both}
+.hero-desc{font-size:1.02rem;color:rgba(255,255,255,.65);max-width:480px;margin-bottom:36px;line-height:1.8;animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .6s both}
+.hero-btns{display:flex;flex-wrap:wrap;gap:14px;animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .7s both}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:14px 32px;font-size:.95rem;font-weight:700;border-radius:var(--btnR);transition:all .3s cubic-bezier(.22,1,.36,1);cursor:pointer;border:none;font-family:var(--font);letter-spacing:-.01em}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(79,70,229,.35)}
+.btn-accent:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 32px rgba(79,70,229,.45)}
+.btn-accent:active{transform:translateY(0) scale(.97)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);padding:14px 28px}
+.btn-ghost:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.35);transform:translateY(-3px)}
+.btn svg{width:16px;height:16px}
+/* Trust-Bar */
+.hero-trust-bar{position:absolute;bottom:0;left:0;right:0;z-index:4;background:rgba(255,255,255,.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.08);animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .9s both}
+.hero-trust-inner{max-width:var(--maxW);margin:0 auto;padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+.hero-trust-inner .t-item{display:flex;align-items:center;gap:10px;font-size:.86rem;font-weight:600;color:rgba(255,255,255,.85)}
+.hero-trust-inner .t-icon{width:32px;height:32px;border-radius:var(--r);background:rgba(79,70,229,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-trust-inner .t-icon svg{width:15px;height:15px;color:rgba(255,255,255,.8)}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ SECTION HELPERS ═══ */
+.s-label{display:inline-flex;align-items:center;font-size:.76rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accentLight);padding:6px 14px;border-radius:var(--btnR);margin-bottom:16px}
+.s-h2{font-size:clamp(2.2rem,4.5vw,3.2rem);font-weight:800;color:var(--primary);letter-spacing:-.04em;margin-bottom:14px;text-wrap:balance;max-width:640px}
+.s-intro{color:var(--textMuted);font-size:1.05rem;max-width:520px;line-height:1.75}
+.s-label-light{background:rgba(79,70,229,.15);color:rgba(255,255,255,.8)}
+
+/* ═══ LEISTUNGEN ═══ */
+.leist{padding:var(--sectionY) 0;background:var(--white)}
+.leist-head{margin-bottom:64px}
+.leist-list{display:grid;gap:0}
+.leist-item{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding:48px 0;border-top:1px solid var(--sep)}
+.leist-item:last-child{border-bottom:1px solid var(--sep)}
+.leist-item-text h3{font-size:1.4rem;font-weight:800;color:var(--primary);margin-bottom:10px;letter-spacing:-.02em}
+.leist-item-text p{font-size:.98rem;color:var(--textMuted);line-height:1.7;margin-bottom:16px}
+.leist-item-meta{display:flex;align-items:center;gap:20px}
+.leist-item-price{font-size:.92rem;font-weight:700;color:var(--accent);font-family:var(--mono)}
+.leist-item-link{font-size:.86rem;font-weight:600;color:var(--textMuted);display:inline-flex;align-items:center;gap:5px;transition:all .25s}
+.leist-item-link:hover{color:var(--accent);gap:8px}
+.leist-item-link svg{width:14px;height:14px}
+.leist-item-img{border-radius:var(--rLg);overflow:hidden;aspect-ratio:3/2;box-shadow:0 8px 32px rgba(79,70,229,.1)}
+.leist-item-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.leist-item:hover .leist-item-img img{transform:scale(1.04)}
+.leist-item:nth-child(even) .leist-item-text{order:2}
+.leist-item:nth-child(even) .leist-item-img{order:1}
+/* Kompakte Cards mit Top-Stripe */
+.leist-more{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.leist-more-item{background:var(--accentLight);border-radius:var(--rLg);padding:28px 24px;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,background .3s}
+.leist-more-item:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.08);background:var(--white)}
+.leist-more-item h4{font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:8px}
+.leist-more-item p{font-size:.9rem;color:var(--textMuted);line-height:1.6}
+.leist-more-item .leist-item-price{margin-top:10px;font-size:.88rem;font-weight:700;color:var(--accent);font-family:var(--mono)}
+
+/* ═══ ABLAUF ═══ */
+.ablauf{padding:var(--sectionY) 0;background:var(--accentLight)}
+.ablauf-head{margin-bottom:56px}
+.ablauf-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.ablauf-step{text-align:center;background:var(--white);border-radius:var(--rLg);padding:32px 16px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s;position:relative;overflow:hidden}
+.ablauf-step::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, var(--accent), #818cf8)}
+.ablauf-step:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(79,70,229,.15)}
+.ablauf-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg, var(--accent), #818cf8);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;font-family:var(--mono);margin:0 auto 16px;box-shadow:0 4px 16px rgba(79,70,229,.25)}
+.ablauf-step h4{font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:4px}
+.ablauf-step p{font-size:.86rem;color:var(--textMuted);line-height:1.55}
+
+/* ═══ ÜBER UNS ═══ */
+.ueber{padding:var(--sectionY) 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+/* Blob-Deko */
+.ueber::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:var(--accent);opacity:.08;filter:blur(80px);bottom:-100px;left:-100px;pointer-events:none}
+.ueber-inner{position:relative;z-index:1}
+.ueber-content{display:grid;gap:32px;margin-bottom:56px}
+@media(min-width:900px){.ueber-content{grid-template-columns:340px 1fr;gap:56px;align-items:start}}
+.ueber-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--rLg);box-shadow:0 16px 48px rgba(0,0,0,.3)}
+.ueber-text-col{display:flex;flex-direction:column;gap:20px}
+.ueber h2{font-size:clamp(2.2rem,4.5vw,3.2rem);font-weight:800;color:#fff;letter-spacing:-.04em}
+.ueber-text{font-size:1.05rem;line-height:1.85;color:rgba(255,255,255,.7)}
+/* Modern: Runde Icons vor Vorteilen */
+.ueber-vorteile{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.ueber-vorteile li{font-size:.92rem;font-weight:500;color:rgba(255,255,255,.85);padding-left:32px;position:relative}
+.ueber-vorteile li::before{content:'';position:absolute;left:0;top:4px;width:22px;height:22px;border-radius:50%;background:rgba(79,70,229,.25);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a5b4fc' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center}
+.ueber-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:48px;border-top:1px solid rgba(255,255,255,.1)}
+.ueber-stat{text-align:center;background:rgba(255,255,255,.04);border-radius:var(--r);padding:20px 12px}
+.ueber-stat-num{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;color:#fff;font-family:var(--mono);letter-spacing:-.03em;line-height:1}
+.ueber-stat-label{font-size:.8rem;color:rgba(255,255,255,.55);margin-top:6px}
+
+/* ═══ TEAM ═══ */
+.team{padding:var(--sectionY) 0;background:var(--accentLight)}
+.team-head{margin-bottom:48px}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.team-member{text-align:center}
+.team-avatar{width:100%;aspect-ratio:1;border-radius:var(--rLg);object-fit:cover;margin-bottom:16px;transition:filter .4s,transform .4s cubic-bezier(.22,1,.36,1);box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.team-member:hover .team-avatar{transform:scale(1.03)}
+.team-avatar-placeholder{width:100%;aspect-ratio:1;border-radius:var(--rLg);margin-bottom:16px;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--accent);transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.team-member:hover .team-avatar-placeholder{transform:scale(1.03)}
+.team-name{font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:2px}
+.team-role{font-size:.86rem;color:var(--textMuted)}
+
+/* ═══ GALERIE ═══ */
+.galerie{padding:var(--sectionY) 0;background:var(--bg)}
+.galerie-head{margin-bottom:48px}
+.galerie-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;gap:14px}
+.galerie-item{border-radius:var(--rLg);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.galerie-item:nth-child(1){grid-column:span 2;grid-row:span 2;aspect-ratio:1}
+.galerie-item:nth-child(n+2){aspect-ratio:3/2}
+.galerie-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.galerie-item:hover img{transform:scale(1.05)}
+
+/* ═══ BEWERTUNGEN — Cards mit Shadow + Accent-Border-top ═══ */
+.bew{padding:var(--sectionY) 0;background:var(--bg)}
+.bew-head{margin-bottom:48px}
+.bew-rating{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:.9rem;color:var(--textMuted)}
+.bew-rating-num{font-family:var(--mono);font-size:1.15rem;font-weight:700;color:var(--accent)}
+.bew-rating-bar{width:52px;height:6px;border-radius:var(--btnR);background:var(--sep);overflow:hidden}
+.bew-rating-fill{height:100%;border-radius:var(--btnR);background:var(--accent)}
+.bew-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.bew-card{background:var(--white);border-radius:var(--rLg);padding:32px 24px;display:flex;flex-direction:column;gap:16px;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s;position:relative;isolation:isolate}
+/* Gradient-Border */
+.bew-card::before{content:'';position:absolute;inset:-1px;border-radius:calc(var(--rLg) + 1px);background:linear-gradient(135deg, var(--accent), #818cf8, #c084fc);z-index:-1;opacity:.3;transition:opacity .3s}
+.bew-card::after{content:'';position:absolute;inset:1px;border-radius:calc(var(--rLg) - 1px);background:var(--white);z-index:-1}
+.bew-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(79,70,229,.15)}
+.bew-card:hover::before{opacity:.7}
+.bew-text{font-size:.98rem;color:var(--text);line-height:1.7;flex:1}
+.bew-author{display:flex;align-items:center;gap:10px}
+.bew-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0}
+.bew-name{font-size:.9rem;font-weight:700;color:var(--primary);line-height:1.2}
+.bew-meta{font-size:.78rem;color:var(--textMuted)}
+
+/* ═══ CTA-BLOCK ═══ */
+.cta-block{padding:var(--sectionY) 0;background:linear-gradient(135deg, #1e1b4b 0%, var(--accent) 60%, #6366f1 100%);position:relative;overflow:hidden}
+.cta-block::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,.06);filter:blur(40px);top:-100px;right:5%;pointer-events:none;animation:blobFloat 10s ease-in-out infinite alternate}
+.cta-block::after{content:'';position:absolute;width:250px;height:250px;border-radius:40% 60% 50% 50%;background:rgba(255,255,255,.04);filter:blur(30px);bottom:-50px;left:10%;pointer-events:none;animation:blobFloat2 12s ease-in-out infinite alternate}
+.cta-block-inner{position:relative;z-index:1;text-align:center;max-width:600px;margin:0 auto}
+.cta-block h2{font-size:clamp(2rem,4.5vw,3rem);font-weight:800;color:#fff;letter-spacing:-.04em;margin-bottom:14px}
+.cta-block p{font-size:1.05rem;color:rgba(255,255,255,.7);margin-bottom:32px;line-height:1.7}
+.cta-block .btn{background:#fff;color:var(--accent);font-size:1rem;font-weight:700;padding:16px 40px;border-radius:var(--btnR);box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.cta-block .btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 32px rgba(0,0,0,.2)}
+
+/* ═══ FAQ ═══ */
+.faq{padding:var(--sectionY) 0;background:var(--white)}
+.faq-layout{display:grid;gap:32px}
+@media(min-width:900px){.faq-layout{grid-template-columns:1fr 2fr;gap:64px;align-items:start}}
+.faq-head .s-intro{margin-top:12px}
+.faq-item{border-bottom:1px solid var(--sep)}
+.faq-item:first-child{border-top:1px solid var(--sep)}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 0;background:none;border:none;cursor:pointer;font-size:1rem;font-weight:600;color:var(--primary);text-align:left;line-height:1.4;font-family:var(--font);gap:16px;transition:color .2s}
+.faq-q:hover{color:var(--accent)}
+.faq-q span{flex:1}
+.faq-toggle{font-size:1.2rem;color:var(--textMuted);font-weight:300;flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--accentLight);transition:all .2s}
+.faq-q:hover .faq-toggle{background:var(--accent);color:#fff}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-a.open{max-height:300px;padding-bottom:20px}
+.faq-a p{font-size:.95rem;color:var(--textMuted);line-height:1.8}
+
+/* ═══ KONTAKT ═══ */
+.kontakt{padding:var(--sectionY) 0;background:var(--bg)}
+.kontakt-head{margin-bottom:48px}
+.kontakt-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.kontakt-info{display:flex;flex-direction:column}
+.kontakt-item{padding:20px 0;border-bottom:1px solid var(--sep)}
+.kontakt-item:first-child{border-top:1px solid var(--sep)}
+.kontakt-item-label{font-size:.76rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--textMuted);margin-bottom:4px}
+.kontakt-item-value{font-size:1.05rem;font-weight:500;color:var(--primary)}
+.kontakt-tel{font-size:1.2rem;font-weight:800;color:var(--primary);transition:color .2s}
+.kontakt-tel:hover{color:var(--accent)}
+.kontakt-email{color:var(--accent);font-weight:600;font-size:1rem;transition:color .2s}
+.kontakt-email:hover{color:var(--primary)}
+.kontakt-social{display:flex;gap:10px;padding:20px 0}
+.kontakt-social a{width:38px;height:38px;border-radius:var(--r);background:var(--accentLight);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s}
+.kontakt-social a:hover{background:var(--accent);transform:translateY(-2px)}
+.kontakt-social a:hover svg{color:#fff}
+.kontakt-social svg{width:16px;height:16px;color:var(--accent);transition:color .2s}
+.kontakt-map{border-radius:var(--rLg);overflow:hidden;aspect-ratio:1;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.kontakt-map iframe{width:100%;height:100%;border:0;display:block}
+.kontakt-form{margin-top:64px;background:var(--white);border-radius:var(--rLg);padding:40px;box-shadow:0 4px 24px rgba(0,0,0,.06);border-left:4px solid var(--accent)}
+.kontakt-form h3{font-size:1.2rem;font-weight:800;color:var(--primary);margin-bottom:6px}
+.kontakt-form-sub{font-size:.92rem;color:var(--textMuted);margin-bottom:24px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-field label{display:block;font-size:.76rem;font-weight:600;color:var(--textMuted);margin-bottom:6px}
+.form-field input,.form-field textarea{width:100%;padding:12px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.95rem;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;transition:all .2s}
+.form-field input:focus,.form-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(79,70,229,.08);background:#fff}
+.form-field textarea{resize:vertical;min-height:120px}
+.form-btn{background:var(--accent);color:#fff;border:none;padding:14px 36px;border-radius:var(--btnR);font-size:.95rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .3s cubic-bezier(.22,1,.36,1);display:inline-flex;align-items:center;gap:8px;margin-top:4px;box-shadow:0 2px 12px rgba(79,70,229,.3)}
+.form-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(79,70,229,.4)}
+.form-btn svg{width:16px;height:16px}
+
+/* ═══ FOOTER ═══ */
+.footer{padding:48px 0 28px;background:var(--primary);color:rgba(255,255,255,.6);border-top:3px solid var(--accent)}
+.footer-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;margin-bottom:28px}
+.footer-brand{max-width:280px}
+.footer-logo{font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:8px}
+.footer-desc{font-size:.88rem;line-height:1.6}
+.footer-links{display:flex;gap:48px}
+.footer-col-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.5);margin-bottom:12px}
+.footer-col a{display:block;font-size:.88rem;color:rgba(255,255,255,.6);margin-bottom:8px;transition:color .2s}
+.footer-col a:hover{color:rgba(255,255,255,.85)}
+.footer-bottom{padding-top:20px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;font-size:.82rem}
+.footer-social{display:flex;gap:10px}
+.footer-social a{width:34px;height:34px;border-radius:var(--r);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;transition:background .2s}
+.footer-social a:hover{background:rgba(79,70,229,.3)}
+.footer-social svg{width:16px;height:16px;color:rgba(255,255,255,.6)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px){
+  .nav{padding:10px 16px 0}
+  .nav-bar{padding:12px 16px;border-radius:var(--rLg)}
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .hero h1{font-size:clamp(2.4rem,10vw,3.6rem)}
+  .hero-btns{flex-direction:column;gap:10px}
+  .hero-btns .btn{width:100%;justify-content:center}
+  .hero-trust-inner{flex-wrap:wrap;gap:12px;justify-content:center}
+  .leist-item{grid-template-columns:1fr;gap:24px;padding:32px 0}
+  .leist-item-img{order:-1}
+  .leist-item:nth-child(even) .leist-item-text{order:1}
+  .leist-item:nth-child(even) .leist-item-img{order:-1}
+  .leist-more{grid-template-columns:1fr;gap:12px}
+  .ablauf-steps{grid-template-columns:repeat(2,1fr);gap:12px}
+  .ueber-content{grid-template-columns:1fr}
+  .ueber-img{aspect-ratio:16/9}
+  .ueber-stats{grid-template-columns:repeat(2,1fr);gap:12px}
+  .team-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .galerie-grid{grid-template-columns:repeat(2,1fr)}
+  .galerie-item:nth-child(1){grid-column:span 2;grid-row:span 1;aspect-ratio:16/9}
+  .bew-grid{grid-template-columns:1fr}
+  .kontakt-grid{grid-template-columns:1fr}
+  .kontakt-form{padding:24px}
+  .form-row{grid-template-columns:1fr}
+  .faq-layout{grid-template-columns:1fr}
+  .footer-grid{flex-direction:column;gap:24px}
+  .footer-links{gap:32px}
+  .footer-bottom{flex-direction:column;gap:8px}
+}
+
+.fade-up{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.fade-up{opacity:1;transform:none;transition:none}.hero-bg::before,.hero::after,.cta-block::before,.cta-block::after,.ueber::before{animation:none!important}}
+
+.mockup-note{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 24px;border-radius:var(--btnR);font-size:.82rem;font-weight:700;z-index:999;box-shadow:0 4px 24px rgba(79,70,229,.4);pointer-events:none}
+</style>
+</head>
+<body>
+<div class="mockup-note">Stil: Modern — dynamisch, frisch, einladend</div>
+<a href="#main" class="skip-link">Zum Inhalt springen</a>
+
+<nav class="nav" id="nav">
+<div class="nav-bar">
+  <div class="nav-logo">Physio Muster</div>
+  <div class="nav-links">
+    <a href="#leistungen">Leistungen</a>
+    <a href="#ueber">Über uns</a>
+    <a href="#kontakt">Kontakt</a>
+    <a href="tel:+4312345678" class="nav-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Anrufen</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Menü"><span></span><span></span><span></span></button>
+</div>
+</nav>
+<div class="nav-mobile" id="mobileMenu">
+  <a href="#leistungen" onclick="closeMobile()">Leistungen</a>
+  <a href="#ueber" onclick="closeMobile()">Über uns</a>
+  <a href="#kontakt" onclick="closeMobile()">Kontakt</a>
+  <a href="tel:+4312345678" class="nav-cta" onclick="closeMobile()">Anrufen</a>
+</div>
+
+<main id="main">
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-inner">
+  <div class="hero-label">Physiotherapie in Wien</div>
+  <h1>Ihre Gesundheit.<br>Unsere Expertise.</h1>
+  <p class="hero-sub">Physiotherapie — Wien & Umgebung</p>
+  <p class="hero-desc">Von Sportphysiotherapie bis Rehabilitation — individuelle Behandlungen auf dem Weg zur Schmerzfreiheit.</p>
+  <div class="hero-btns">
+    <a href="#kontakt" class="btn btn-accent">Termin vereinbaren <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    <a href="#leistungen" class="btn btn-ghost">Leistungen ansehen</a>
+  </div>
+</div>
+<div class="hero-trust-bar">
+  <div class="hero-trust-inner">
+    <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Alle Kassen</div>
+    <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>Zertifiziert</div>
+    <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></span>Erstgespräch gratis</div>
+    <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></span>Barrierefrei</div>
+  </div>
+</div>
+</section>
+
+<section class="leist" id="leistungen">
+<div class="w">
+  <div class="leist-head fade-up"><div class="s-label">Leistungen</div><h2 class="s-h2">Was wir für Sie tun</h2><p class="s-intro">Maßgeschneiderte Therapie für Ihre individuellen Beschwerden — evidenzbasiert und persönlich.</p></div>
+  <div class="leist-list">
+    <div class="leist-item fade-up"><div class="leist-item-text"><h3>Sportphysiotherapie</h3><p>Behandlung und Prävention von Sportverletzungen. Individuelle Trainingspläne für Ihre Rückkehr zum Sport.</p><div class="leist-item-meta"><span class="leist-item-price">ab 85 EUR</span><a href="#kontakt" class="leist-item-link">Termin anfragen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div><div class="leist-item-img"><img loading="lazy" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" alt="Sportphysiotherapie"></div></div>
+    <div class="leist-item fade-up"><div class="leist-item-text"><h3>Manuelle Therapie</h3><p>Gezielte Mobilisierung von Gelenken und Weichteilen. Lösung von Blockaden und Verspannungen.</p><div class="leist-item-meta"><span class="leist-item-price">ab 75 EUR</span><a href="#kontakt" class="leist-item-link">Termin anfragen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div><div class="leist-item-img"><img loading="lazy" src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80" alt="Manuelle Therapie"></div></div>
+    <div class="leist-item fade-up"><div class="leist-item-text"><h3>Rehabilitation</h3><p>Wiederherstellung nach Operationen und Unfällen. Schritt für Schritt zurück in den Alltag.</p><div class="leist-item-meta"><a href="#kontakt" class="leist-item-link">Termin anfragen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div><div class="leist-item-img"><img loading="lazy" src="https://images.unsplash.com/photo-1598257006458-087169a1f08d?w=600&q=80" alt="Rehabilitation"></div></div>
+  </div>
+  <div class="leist-more fade-up">
+    <div class="leist-more-item"><h4>Schmerztherapie</h4><p>Chronische Schmerzen behandeln mit modernen Methoden.</p></div>
+    <div class="leist-more-item"><h4>Beckenbodentraining</h4><p>Spezialisierte Therapie für Schwangere und nach der Geburt.</p><div class="leist-item-price">ab 80 EUR</div></div>
+    <div class="leist-more-item"><h4>Hausbesuche</h4><p>Mobile Physiotherapie bei Ihnen zu Hause.</p></div>
+  </div>
+</div>
+</section>
+
+<section class="ablauf">
+<div class="w">
+  <div class="ablauf-head fade-up"><div class="s-label">So funktioniert's</div><h2 class="s-h2">In 4 Schritten zur Behandlung</h2></div>
+  <div class="ablauf-steps fade-up">
+    <div class="ablauf-step"><div class="ablauf-num">1</div><h4>Termin buchen</h4><p>Online, telefonisch oder per E-Mail</p></div>
+    <div class="ablauf-step"><div class="ablauf-num">2</div><h4>Erstgespräch</h4><p>Befund und individuelle Zielsetzung</p></div>
+    <div class="ablauf-step"><div class="ablauf-num">3</div><h4>Behandlung</h4><p>Therapie nach Forschungsstand</p></div>
+    <div class="ablauf-step"><div class="ablauf-num">4</div><h4>Nachbetreuung</h4><p>Übungsprogramm für zu Hause</p></div>
+  </div>
+</div>
+</section>
+
+<section class="ueber" id="ueber">
+<div class="w">
+  <div class="ueber-inner">
+    <div class="ueber-content">
+      <img loading="lazy" class="ueber-img fade-up" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&q=80" alt="Praxis">
+      <div class="ueber-text-col fade-up" style="transition-delay:.1s">
+        <div class="s-label s-label-light">Über uns</div>
+        <h2>Seit 2010 für Ihre Gesundheit da</h2>
+        <p class="ueber-text">Unser Team in Wien-Landstraße verbindet fundierte Ausbildung mit persönlicher Betreuung — weil jeder Mensch und jede Beschwerde einzigartig ist.</p>
+        <ul class="ueber-vorteile"><li>Kassenvertrag ÖGK & BVA</li><li>Über 15 Jahre Erfahrung</li><li>Evidenzbasierte Methoden</li><li>Moderne Praxisausstattung</li><li>Barrierefreier Zugang</li><li>Flexible Terminvergabe</li></ul>
+      </div>
+    </div>
+    <div class="ueber-stats fade-up">
+      <div class="ueber-stat"><div class="ueber-stat-num">15+</div><div class="ueber-stat-label">Jahre Erfahrung</div></div>
+      <div class="ueber-stat"><div class="ueber-stat-num">3.000+</div><div class="ueber-stat-label">Patienten behandelt</div></div>
+      <div class="ueber-stat"><div class="ueber-stat-num">98%</div><div class="ueber-stat-label">Weiterempfehlung</div></div>
+      <div class="ueber-stat"><div class="ueber-stat-num">6</div><div class="ueber-stat-label">Schwerpunkte</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="team">
+<div class="w">
+  <div class="team-head fade-up"><div class="s-label">Team</div><h2 class="s-h2">Die Menschen hinter der Praxis</h2></div>
+  <div class="team-grid">
+    <div class="team-member fade-up"><img loading="lazy" class="team-avatar" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80" alt="Dr. Maria Muster"><div class="team-name">Dr. Maria Muster</div><div class="team-role">Leitung</div></div>
+    <div class="team-member fade-up" style="transition-delay:.1s"><div class="team-avatar-placeholder">TK</div><div class="team-name">Thomas K.</div><div class="team-role">Sportphysio</div></div>
+    <div class="team-member fade-up" style="transition-delay:.2s"><div class="team-avatar-placeholder">SH</div><div class="team-name">Sarah H.</div><div class="team-role">Manuelle Therapie</div></div>
+  </div>
+</div>
+</section>
+
+<section class="galerie" id="galerie">
+<div class="w">
+  <div class="galerie-head fade-up"><div class="s-label">Einblicke</div><h2 class="s-h2">Unsere Praxis</h2></div>
+  <div class="galerie-grid">
+    <div class="galerie-item fade-up"><img loading="lazy" src="https://images.unsplash.com/photo-1629909615184-74f495363b67?w=600&q=80" alt="Behandlungsraum"></div>
+    <div class="galerie-item fade-up" style="transition-delay:.06s"><img loading="lazy" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&q=80" alt="Empfang"></div>
+    <div class="galerie-item fade-up" style="transition-delay:.12s"><img loading="lazy" src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80" alt="Therapie"></div>
+    <div class="galerie-item fade-up" style="transition-delay:.18s"><img loading="lazy" src="https://images.unsplash.com/photo-1598257006458-087169a1f08d?w=600&q=80" alt="Geräte"></div>
+    <div class="galerie-item fade-up" style="transition-delay:.24s"><img loading="lazy" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" alt="Training"></div>
+    <div class="galerie-item fade-up" style="transition-delay:.3s"><img loading="lazy" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&q=80" alt="Praxis"></div>
+  </div>
+</div>
+</section>
+
+<section class="bew" id="bewertungen">
+<div class="w">
+  <div class="bew-head fade-up"><div class="s-label">Kundenstimmen</div><h2 class="s-h2">Was unsere Patienten sagen</h2><div class="bew-rating"><span class="bew-rating-num">4.9</span><span class="bew-rating-bar"><span class="bew-rating-fill" style="width:98%"></span></span><span>von 5 — basierend auf 47 Bewertungen</span></div></div>
+  <div class="bew-grid">
+    <div class="bew-card fade-up"><p class="bew-text">„Nach meinem Kreuzbandriss war Frau Dr. Muster meine Rettung. In 3 Monaten wieder am Fußballplatz."</p><div class="bew-author"><div class="bew-avatar">MW</div><div><div class="bew-name">Markus W.</div><div class="bew-meta">Patient seit 2023</div></div></div></div>
+    <div class="bew-card fade-up" style="transition-delay:.08s"><p class="bew-text">„Endlich schmerzfrei nach Jahren mit Rückenproblemen. Das Team ist unglaublich kompetent."</p><div class="bew-author"><div class="bew-avatar">CS</div><div><div class="bew-name">Claudia S.</div><div class="bew-meta">Patientin seit 2022</div></div></div></div>
+    <div class="bew-card fade-up" style="transition-delay:.16s"><p class="bew-text">„Super Praxis, modern eingerichtet. Die Beckenbodentherapie hat mir sehr geholfen."</p><div class="bew-author"><div class="bew-avatar">AM</div><div><div class="bew-name">Anna M.</div><div class="bew-meta">Patientin seit 2024</div></div></div></div>
+  </div>
+</div>
+</section>
+
+<section class="cta-block">
+<div class="w"><div class="cta-block-inner fade-up"><h2>Bereit für den ersten Schritt?</h2><p>Vereinbaren Sie jetzt Ihren Termin — wir nehmen uns Zeit für Ihre Anliegen.</p><a href="#kontakt" class="btn">Termin vereinbaren <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div>
+</section>
+
+<section class="faq" id="faq">
+<div class="w">
+  <div class="faq-layout">
+  <div class="faq-head fade-up"><div class="s-label">FAQ</div><h2 class="s-h2">Häufige Fragen</h2><p class="s-intro">Alles was Sie vor Ihrem ersten Besuch wissen sollten.</p></div>
+  <div class="faq-list fade-up">
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>Brauche ich eine Überweisung?</span><span class="faq-toggle">+</span></button><div class="faq-a"><p>Nein, Sie können direkt einen Termin vereinbaren. Für eine Kostenübernahme durch die Kasse ist jedoch eine ärztliche Verordnung notwendig.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>Wie lange dauert eine Behandlung?</span><span class="faq-toggle">+</span></button><div class="faq-a"><p>Eine Einzelbehandlung dauert 45–60 Minuten. Die Erstbefundung kann bis zu 75 Minuten dauern.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>Werden die Kosten von der Kasse übernommen?</span><span class="faq-toggle">+</span></button><div class="faq-a"><p>Ja, wir haben einen Kassenvertrag mit der ÖGK und BVA. Mit Verordnung übernimmt die Kasse einen Großteil der Kosten.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>Bieten Sie auch Hausbesuche an?</span><span class="faq-toggle">+</span></button><div class="faq-a"><p>Ja, in Wien und Umgebung. Kontaktieren Sie uns für Details und Verfügbarkeit.</p></div></div>
+  </div>
+  </div>
+</div>
+</section>
+
+<section class="kontakt" id="kontakt">
+<div class="w">
+  <div class="kontakt-head fade-up"><div class="s-label">Kontakt</div><h2 class="s-h2">So erreichen Sie uns</h2></div>
+  <div class="kontakt-grid">
+    <div class="kontakt-info fade-up">
+      <div class="kontakt-item"><div class="kontakt-item-label">Adresse</div><div class="kontakt-item-value">Landstraßer Hauptstraße 42, 1030 Wien</div></div>
+      <div class="kontakt-item"><div class="kontakt-item-label">Telefon</div><a href="tel:+4312345678" class="kontakt-tel">+43 1 234 56 78</a></div>
+      <div class="kontakt-item"><div class="kontakt-item-label">E-Mail</div><a href="mailto:praxis@physio-muster.at" class="kontakt-email">praxis@physio-muster.at</a></div>
+      <div class="kontakt-item"><div class="kontakt-item-label">Öffnungszeiten</div><div class="kontakt-item-value">Mo–Fr 08:00–18:00<br>Sa nach Vereinbarung</div></div>
+      <div class="kontakt-social"><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a><a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></div>
+    </div>
+    <div class="kontakt-map fade-up" style="transition-delay:.1s"><iframe src="https://maps.google.com/maps?q=Landstra%C3%9Fer+Hauptstra%C3%9Fe+42+1030+Wien&output=embed&hl=de&z=15" allowfullscreen loading="lazy" title="Standort"></iframe></div>
+  </div>
+  <div class="kontakt-form fade-up">
+    <h3>Termin anfragen</h3>
+    <p class="kontakt-form-sub">Wir melden uns innerhalb von 24 Stunden.</p>
+    <div class="form-row"><div class="form-field"><label for="m-vorname">Vorname</label><input id="m-vorname" type="text" placeholder="Maria" autocomplete="given-name"></div><div class="form-field"><label for="m-nachname">Nachname</label><input id="m-nachname" type="text" placeholder="Mustermann" autocomplete="family-name"></div></div>
+    <div class="form-row"><div class="form-field"><label for="m-email">E-Mail</label><input id="m-email" type="email" placeholder="maria@email.at" autocomplete="email"></div><div class="form-field"><label for="m-tel">Telefon</label><input id="m-tel" type="tel" inputmode="tel" placeholder="+43 ..." autocomplete="tel"></div></div>
+    <div class="form-field" style="margin-bottom:12px"><label for="m-msg">Ihre Nachricht</label><textarea id="m-msg" placeholder="Beschreiben Sie kurz Ihre Beschwerden..."></textarea></div>
+    <button class="form-btn">Anfrage senden <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+  </div>
+</div>
+</section>
+
+</main>
+<footer class="footer">
+<div class="w">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="footer-logo">Physio Muster</div><div class="footer-desc">Ihre Physiotherapie-Praxis in Wien-Landstraße.</div></div>
+    <div class="footer-links">
+      <div class="footer-col"><div class="footer-col-title">Navigation</div><a href="#leistungen">Leistungen</a><a href="#ueber">Über uns</a><a href="#bewertungen">Bewertungen</a><a href="#kontakt">Kontakt</a></div>
+      <div class="footer-col"><div class="footer-col-title">Rechtliches</div><a href="/impressum">Impressum</a><a href="/datenschutz">Datenschutz</a></div>
+      <div class="footer-col"><div class="footer-col-title">Kontakt</div><a href="tel:+4312345678">+43 1 234 56 78</a><a href="mailto:praxis@physio-muster.at">praxis@physio-muster.at</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Physio Muster</span><div class="footer-social"><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a><a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a></div></div>
+</div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+const obs=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting){i.target.classList.add('visible');obs.unobserve(i.target)}})},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+const burger=document.getElementById('burger'),mm=document.getElementById('mobileMenu');
+burger.addEventListener('click',()=>{burger.classList.toggle('open');mm.classList.toggle('open')});
+function closeMobile(){burger.classList.remove('open');mm.classList.remove('open')}
+function toggleFaq(btn){btn.nextElementSibling.classList.toggle('open');btn.querySelector('.faq-toggle').textContent=btn.nextElementSibling.classList.contains('open')?'\u2212':'+'}
+// Stagger: sibling fade-ups bekommen gestaffelte delays
+document.querySelectorAll('.leist-item,.ablauf-step,.bew-card,.galerie-item').forEach((el,i)=>{const siblings=el.parentElement.children;const idx=[...siblings].indexOf(el);el.style.transitionDelay=(idx*60)+'ms'});
+</script>
+</body>
+</html>

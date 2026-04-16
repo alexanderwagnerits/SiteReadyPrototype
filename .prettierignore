@@ -1,0 +1,11 @@
+node_modules
+build
+.wrangler
+.claude
+test-results
+playwright-report
+package-lock.json
+public/mockup-stil-*.html
+paletten-uebersicht.html
+migrations
+functions/templates/template.js

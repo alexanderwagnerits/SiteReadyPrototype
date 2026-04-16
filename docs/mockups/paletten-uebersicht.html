@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiteReady Farbpaletten — Final</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:#111;color:#fff;padding:56px}
+  h1{font-family:'Instrument Serif',serif;font-size:48px;font-weight:400;letter-spacing:-1px;margin-bottom:4px}
+  .sub{font-size:13px;color:#666;margin-bottom:48px}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+
+  .card{border-radius:14px;overflow:hidden;transition:transform .3s ease}
+  .card:hover{transform:translateY(-4px)}
+  .site{display:flex;flex-direction:column;min-height:400px}
+  .site-nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+  .site-nav strong{font-size:13px;font-weight:700;letter-spacing:-.2px}
+  .site-nav span{font-size:10px;opacity:.45;letter-spacing:.3px}
+  .site-hero{padding:36px 24px 32px;flex:1}
+  .site-hero h2{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;line-height:1.2;letter-spacing:-.5px;margin-bottom:12px}
+  .site-hero p{font-size:12px;line-height:1.7;margin-bottom:20px;max-width:88%}
+  .site-btn{display:inline-block;padding:10px 24px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.3px}
+  .site-foot{padding:10px 24px;font-size:9px;opacity:.3;border-top:1px solid rgba(128,128,128,.12)}
+
+  .meta{padding:14px 2px 0;display:flex;align-items:center;justify-content:space-between}
+  .meta-left{display:flex;flex-direction:column;gap:1px}
+  .meta-name{font-size:14px;font-weight:600;color:#ccc}
+  .meta-gruppe{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px}
+  .meta-stil{font-size:9px;color:#444;margin-top:2px;font-style:italic}
+  .dots{display:flex;gap:4px}
+  .dot-col{display:flex;flex-direction:column;align-items:center;gap:0}
+  .dot{width:20px;height:20px;border-radius:5px;border:1px solid rgba(255,255,255,.08)}
+  .dot-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;text-align:center;margin-top:2px}
+
+  @media print{body{background:#fff;color:#000}.meta-name{color:#333}}
+</style>
+</head>
+<body>
+
+<h1>Farbpaletten</h1>
+<p class="sub">SiteReady &middot; 6 Branchengruppen &middot; Basierend auf echten Referenzen + Stilkategorien</p>
+
+<div class="grid">
+
+  <!-- ═══ 1. HANDWERK — "Auffallend": Dunkel + kraeftiger warmer Accent ═══ -->
+  <div>
+    <div class="card">
+      <div class="site" style="background:#f4f4f2">
+        <div class="site-nav" style="background:#1a1a1a;color:#f4f4f2">
+          <strong>Holzbau Gruber</strong>
+          <span>Leistungen &middot; Ueber uns &middot; Kontakt</span>
+        </div>
+        <div class="site-hero">
+          <h2 style="color:#1a1a1a">Qualitaetshandwerk<br>seit 1987</h2>
+          <p style="color:#6b6b6b">Zuverlaessig und praezise — Ihr Partner fuer Bau, Sanierung und Innenausbau in der Region.</p>
+          <span class="site-btn" style="background:#b08d57;color:#fff">Angebot anfragen</span>
+        </div>
+        <div class="site-foot" style="color:#6b6b6b">Holzbau Gruber GmbH &middot; Impressum</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <span class="meta-name">Werkstatt</span>
+        <span class="meta-gruppe">Handwerk</span>
+        <span class="meta-stil">Accent: Gold &middot; BG: Hellgrau</span>
+      </div>
+      <div class="dots">
+        <div class="dot-col"><div class="dot" style="background:#1a1a1a"></div><div class="dot-label">pri</div></div>
+        <div class="dot-col"><div class="dot" style="background:#b08d57"></div><div class="dot-label">acc</div></div>
+        <div class="dot-col"><div class="dot" style="background:#f4f4f2;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">bg</div></div>
+        <div class="dot-col"><div class="dot" style="background:#6b6b6b"></div><div class="dot-label">mut</div></div>
+        <div class="dot-col"><div class="dot" style="background:#e5e5e3;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">brd</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 2. KOSMETIK — "Elegant": Waldgruen + Peach/Lachs ═══ -->
+  <div>
+    <div class="card">
+      <div class="site" style="background:#f5f0ea">
+        <div class="site-nav" style="background:#2d3b2d;color:#d4c4b0">
+          <strong>Studio Lena</strong>
+          <span>Behandlungen &middot; Preise &middot; Kontakt</span>
+        </div>
+        <div class="site-hero">
+          <h2 style="color:#2d3b2d">Ihr Moment<br>der Ruhe</h2>
+          <p style="color:#8a8278">Professionelle Pflege und Wohlbefinden in entspannter, persoenlicher Atmosphaere.</p>
+          <span class="site-btn" style="background:#c4917a;color:#fff">Termin buchen</span>
+        </div>
+        <div class="site-foot" style="color:#8a8278">Studio Lena &middot; Impressum</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <span class="meta-name">Atelier</span>
+        <span class="meta-gruppe">Kosmetik &amp; Pflege</span>
+        <span class="meta-stil">Accent: Peach &middot; BG: Warmes Creme</span>
+      </div>
+      <div class="dots">
+        <div class="dot-col"><div class="dot" style="background:#2d3b2d"></div><div class="dot-label">pri</div></div>
+        <div class="dot-col"><div class="dot" style="background:#c4917a"></div><div class="dot-label">acc</div></div>
+        <div class="dot-col"><div class="dot" style="background:#f5f0ea;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">bg</div></div>
+        <div class="dot-col"><div class="dot" style="background:#8a8278"></div><div class="dot-label">mut</div></div>
+        <div class="dot-col"><div class="dot" style="background:#e6e0d6;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">brd</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 3. GASTRO — "Elegant" warm: Bordeaux + Kupfer ═══ -->
+  <div>
+    <div class="card">
+      <div class="site" style="background:#f9f5ee">
+        <div class="site-nav" style="background:#2d1215;color:#f0e6d8">
+          <strong>Gasthaus Linde</strong>
+          <span>Speisekarte &middot; Reservierung &middot; Kontakt</span>
+        </div>
+        <div class="site-hero">
+          <h2 style="color:#2d1215">Willkommen<br>bei uns</h2>
+          <p style="color:#7a7068">Regionale Kueche mit frischen Zutaten — ehrlich, saisonal, handgemacht.</p>
+          <span class="site-btn" style="background:#a0522d;color:#fff">Tisch reservieren</span>
+        </div>
+        <div class="site-foot" style="color:#7a7068">Gasthaus Linde &middot; Impressum</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <span class="meta-name">Tafel</span>
+        <span class="meta-gruppe">Gastronomie</span>
+        <span class="meta-stil">Accent: Sienna &middot; BG: Warmes Creme</span>
+      </div>
+      <div class="dots">
+        <div class="dot-col"><div class="dot" style="background:#2d1215"></div><div class="dot-label">pri</div></div>
+        <div class="dot-col"><div class="dot" style="background:#a0522d"></div><div class="dot-label">acc</div></div>
+        <div class="dot-col"><div class="dot" style="background:#f9f5ee;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">bg</div></div>
+        <div class="dot-col"><div class="dot" style="background:#7a7068"></div><div class="dot-label">mut</div></div>
+        <div class="dot-col"><div class="dot" style="background:#ece5d8;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">brd</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 4. GESUNDHEIT — Klinisch: Petrol + Teal ═══ -->
+  <div>
+    <div class="card">
+      <div class="site" style="background:#ffffff">
+        <div class="site-nav" style="background:#0f2b3c;color:#a8c5ca">
+          <strong>Praxis Dr. Weber</strong>
+          <span>Leistungen &middot; Team &middot; Kontakt</span>
+        </div>
+        <div class="site-hero">
+          <h2 style="color:#1e1e1e">Ihre Gesundheit<br>in guten Haenden</h2>
+          <p style="color:#757575">Kompetente medizinische Betreuung mit modernen Methoden und persoenlicher Zuwendung.</p>
+          <span class="site-btn" style="background:#15779b;color:#fff">Termin vereinbaren</span>
+        </div>
+        <div class="site-foot" style="color:#a6a6a6">Praxis Dr. Weber &middot; Impressum</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <span class="meta-name">Praxis</span>
+        <span class="meta-gruppe">Gesundheit</span>
+        <span class="meta-stil">Accent: Teal &middot; BG: Reines Weiss</span>
+      </div>
+      <div class="dots">
+        <div class="dot-col"><div class="dot" style="background:#0f2b3c"></div><div class="dot-label">pri</div></div>
+        <div class="dot-col"><div class="dot" style="background:#15779b"></div><div class="dot-label">acc</div></div>
+        <div class="dot-col"><div class="dot" style="background:#ffffff;border-color:rgba(255,255,255,.2)"></div><div class="dot-label">bg</div></div>
+        <div class="dot-col"><div class="dot" style="background:#757575"></div><div class="dot-label">mut</div></div>
+        <div class="dot-col"><div class="dot" style="background:#e8e8e8;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">brd</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 5. DIENSTLEISTUNG — "Elegant" kuehl: Olive-Dunkel + warmer Stein ═══ -->
+  <div>
+    <div class="card">
+      <div class="site" style="background:#f2f2ef">
+        <div class="site-nav" style="background:#2f3529;color:#b8b4a8">
+          <strong>Kanzlei Berger &amp; Partner</strong>
+          <span>Fachgebiete &middot; Team &middot; Kontakt</span>
+        </div>
+        <div class="site-hero">
+          <h2 style="color:#2f3529">Kompetente<br>Rechtsberatung</h2>
+          <p style="color:#7a7a72">Persoenlich, diskret und loesungsorientiert — seit ueber 25 Jahren Ihr Partner in allen Rechtsfragen.</p>
+          <span class="site-btn" style="background:#8a7e5a;color:#fff">Erstgespraech buchen</span>
+        </div>
+        <div class="site-foot" style="color:#a0a098">Kanzlei Berger &amp; Partner &middot; Impressum</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <span class="meta-name">Kanzlei</span>
+        <span class="meta-gruppe">Dienstleistungen</span>
+        <span class="meta-stil">Accent: Olive-Gold &middot; BG: Kuehles Creme</span>
+      </div>
+      <div class="dots">
+        <div class="dot-col"><div class="dot" style="background:#2f3529"></div><div class="dot-label">pri</div></div>
+        <div class="dot-col"><div class="dot" style="background:#8a7e5a"></div><div class="dot-label">acc</div></div>
+        <div class="dot-col"><div class="dot" style="background:#f2f2ef;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">bg</div></div>
+        <div class="dot-col"><div class="dot" style="background:#7a7a72"></div><div class="dot-label">mut</div></div>
+        <div class="dot-col"><div class="dot" style="background:#e0e0db;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">brd</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 6. BILDUNG — "Innovativ": Dunkel + Violett/Indigo ═══ -->
+  <div>
+    <div class="card">
+      <div class="site" style="background:#f8f8fa">
+        <div class="site-nav" style="background:#1a1a2e;color:#8a8ab0">
+          <strong>Fahrschule Schnell</strong>
+          <span>Kurse &middot; Preise &middot; Anmeldung</span>
+        </div>
+        <div class="site-hero">
+          <h2 style="color:#1a1a2e">Entspannt zum<br>Fuehrerschein</h2>
+          <p style="color:#6b6b80">Moderne Ausbildung mit erfahrenen Fahrlehrern — flexibel und individuell auf dich abgestimmt.</p>
+          <span class="site-btn" style="background:#5642e8;color:#fff">Jetzt anmelden</span>
+        </div>
+        <div class="site-foot" style="color:#a0a0b0">Fahrschule Schnell &middot; Impressum</div>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <span class="meta-name">Campus</span>
+        <span class="meta-gruppe">Bildung &amp; Training</span>
+        <span class="meta-stil">Accent: Indigo &middot; BG: Kuehles Weiss</span>
+      </div>
+      <div class="dots">
+        <div class="dot-col"><div class="dot" style="background:#1a1a2e"></div><div class="dot-label">pri</div></div>
+        <div class="dot-col"><div class="dot" style="background:#5642e8"></div><div class="dot-label">acc</div></div>
+        <div class="dot-col"><div class="dot" style="background:#f8f8fa;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">bg</div></div>
+        <div class="dot-col"><div class="dot" style="background:#6b6b80"></div><div class="dot-label">mut</div></div>
+        <div class="dot-col"><div class="dot" style="background:#e2e2ea;border-color:rgba(255,255,255,.15)"></div><div class="dot-label">brd</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

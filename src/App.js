@@ -4295,27 +4295,37 @@ function Admin({adminKey}){
           const mrr=activeOrders.reduce((a,o)=>a+(o.subscription_plan==="yearly"?183.6/12:18),0);
           const pastDueN=orders.filter(o=>o.subscription_status==="past_due").length;
           const openTickets=tickets.filter(t=>t.status==="offen");
-          const failedN=orders.filter(o=>o.last_error).length;
+          const failedOrders=orders.filter(o=>o.last_error).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
           const sysOk=[sysStatus?.supabase?.ok,sysStatus?.stripe?.ok,sysStatus?.anthropic?.ok&&!sysStatus?.anthropic?.billing,extStatus?.api_keys?.firecrawl].filter(v=>v===true).length;
           const sysTotal=sysStatus?4+(extStatus?.api_keys!==undefined?1:0):0;
           const sysBilling=sysStatus?.anthropic?.billing;
           /* Attention items — nur was Aktion braucht */
           const attentionItems=[];
           if(sysBilling)attentionItems.push({msg:"Anthropic Guthaben leer — keine Generierung möglich",action:()=>window.open("https://console.anthropic.com/settings/plans","_blank"),btn:"Credits aufladen"});
-          if(pastDueN>0)attentionItems.push({msg:`${pastDueN} Kunde${pastDueN>1?"n":""} mit offener Zahlung`,action:()=>{setTab("sites");setFilter("alle");},btn:"Ansehen"});
-          if(failedN>0)attentionItems.push({msg:`${failedN} Website${failedN>1?"s":""} mit Generierungsfehler`,action:()=>setTab("system"),btn:"Prüfen"});
-          if(openTickets.length>0)attentionItems.push({msg:`${openTickets.length} offene${openTickets.length>1?" Support-Anfragen":" Support-Anfrage"}`,action:()=>setTab("support"),btn:"Beantworten"});
           if(sysTotal>0&&sysOk<sysTotal&&!sysBilling)attentionItems.push({msg:`${sysTotal-sysOk} Service${sysTotal-sysOk>1?"s":""} nicht erreichbar`,action:()=>setTab("system"),btn:"System prüfen"});
+          if(pastDueN>0)attentionItems.push({msg:`${pastDueN} Kunde${pastDueN>1?"n":""} mit offener Zahlung`,action:()=>{setTab("sites");setFilter("alle");},btn:"Ansehen"});
+          if(openTickets.length>0)attentionItems.push({msg:`${openTickets.length} offene${openTickets.length>1?" Support-Anfragen":" Support-Anfrage"}`,action:()=>setTab("support"),btn:"Beantworten"});
+          const hasIssues=attentionItems.length>0||failedOrders.length>0;
           return(<div style={{display:"flex",flexDirection:"column",gap:20}}>
             <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:0}}>Dashboard</h2>
 
             {/* Attention Box — nur wenn es Probleme gibt */}
-            {attentionItems.length>0?<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"16px 20px"}}>
-              <div style={{fontSize:".72rem",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>{attentionItems.length} {attentionItems.length===1?"Punkt braucht":"Punkte brauchen"} Aufmerksamkeit</div>
+            {hasIssues?<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"16px 20px"}}>
+              <div style={{fontSize:".72rem",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>Braucht Aufmerksamkeit</div>
               {attentionItems.map((a,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderTop:i?`1px solid ${T.bg3}`:"none"}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:T.red,flexShrink:0}}/>
                 <span style={{fontSize:".82rem",color:T.dark,flex:1}}>{a.msg}</span>
                 <button onClick={a.action} style={{padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>{a.btn}</button>
+              </div>)}
+              {/* Fehler mit Details */}
+              {failedOrders.map((o,i)=><div key={o.id} style={{padding:"10px 0",borderTop:(attentionItems.length>0||i>0)?`1px solid ${T.bg3}`:"none"}}>
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:T.amber,flexShrink:0}}/>
+                  <span style={{fontSize:".82rem",fontWeight:600,color:T.dark,flex:1,cursor:"pointer"}} onClick={()=>setSel(o)}>{o.firmenname||"—"}</span>
+                  <span style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(o.created_at)}</span>
+                  <button onClick={()=>setSel(o)} style={{padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font,flexShrink:0}}>Details</button>
+                </div>
+                <div style={{marginTop:4,marginLeft:20,fontSize:".75rem",color:T.red,fontFamily:T.mono,lineHeight:1.5,maxHeight:40,overflow:"hidden",textOverflow:"ellipsis"}}>{o.last_error}</div>
               </div>)}
             </div>
             :<div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px",textAlign:"center"}}>
@@ -4658,11 +4668,14 @@ function Admin({adminKey}){
 
           {/* Fehler — nur wenn vorhanden */}
           {(errOrders.length>0||errorLogs.length>0)&&<div>
-            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Fehler</div>
-            {errOrders.map(o=><div key={o.id} style={{padding:"10px 16px",border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,display:"flex",gap:12,alignItems:"center",cursor:"pointer",marginBottom:4,background:"#fff"}} onClick={()=>setSel(o)}>
-              <span style={{fontSize:".78rem",fontWeight:600,color:T.dark}}>{o.firmenname||"—"}</span>
-              <span style={{fontSize:".72rem",color:T.red,flex:1,fontFamily:T.mono}}>{o.last_error}</span>
-              <span style={{fontSize:".72rem",color:T.textMuted}}>{fmtDate(o.created_at)}</span>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:8}}>Generierungsfehler</div>
+            {errOrders.map(o=><div key={o.id} style={{padding:"12px 16px",border:`1px solid ${T.redBorder}`,borderRadius:T.rSm,cursor:"pointer",marginBottom:6,background:"#fff"}} onClick={()=>setSel(o)}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
+                <span style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>{o.firmenname||"—"}</span>
+                <span style={{fontSize:".72rem",color:T.textMuted,marginLeft:"auto"}}>{fmtDate(o.created_at)}</span>
+              </div>
+              <div style={{fontSize:".75rem",color:T.red,fontFamily:T.mono,lineHeight:1.5,wordBreak:"break-word"}}>{o.last_error}</div>
+              {o.branche_label&&<div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>{o.branche_label} · {o.subdomain||"kein Subdomain"}</div>}
             </div>)}
             {errorLogs.length>0&&<details style={{marginTop:8}}>
               <summary style={{cursor:"pointer",fontSize:".75rem",fontWeight:600,color:T.textMuted,listStyle:"none",display:"flex",alignItems:"center",gap:6}}>

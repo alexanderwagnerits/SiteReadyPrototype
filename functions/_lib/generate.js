@@ -267,11 +267,53 @@ export async function generateWebsite(order_id, env) {
     bildung: "Motivierend und unterstuetzend. Mach Lust aufs Lernen. Betone Fortschritt und persoenliche Entwicklung.",
   }[brGruppe] || "";
 
-  const textPrompt = `Generiere Website-Texte für einen österreichischen Betrieb. Antworte NUR mit validem JSON, keine Erklärungen.
+  // System-Prompt: stabile Regeln + JSON-Format. Wird via Prompt Caching wiederverwendet.
+  const systemPrompt = `Du generierst Website-Texte für österreichische Betriebe. Antworte NUR mit validem JSON, keine Erklärungen.
 
 WICHTIG: Verwende IMMER echte deutsche Umlaute (ä, ö, ü, ß) in allen Texten. NIEMALS ae, oe, ue Umschreibungen.
 
-BETRIEB: ${o.firmenname}
+ALLGEMEINE REGELN:
+- Österreichisches Deutsch, formelle Ansprache ("Sie"). Verwende österreichische Begriffe (z.B. "Jänner", "heuer", "Ordination" statt "Praxis").
+- Warm, professionell, KEINE Superlative ("beste", "führend"), KEINE erfundenen Zahlen/Jahre.
+- KEINE generischen Phrasen wie "Wir freuen uns auf Ihre Anfrage", "Qualität steht bei uns an erster Stelle", "Ihr zuverlässiger Partner".
+- Leistungsbeschreibungen: MAXIMAL 15 Wörter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
+- Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Wörter pro Punkt. Müssen sich voneinander unterscheiden.
+- kontakt_cta: Branchenspezifisch, nicht generisch.
+
+JSON-FORMAT (nur diese Felder, keine zusätzlichen):
+{
+  "leistungen_beschreibungen": {"<Leistungsname>":"[2 kurze Sätze, max 25 Wörter]"},
+  "text_ueber_uns": "4-5 Sätze über den Betrieb. Konkret, authentisch, nicht austauschbar.",
+  "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
+  "leistungen_intro": "1 kurzer Einleitungssatz für die Leistungen-Sektion",
+  "kontakt_cta_headline": "Kurze, branchenspezifische Headline",
+  "kontakt_cta_text": "1-2 Sätze, konkrete Motivation zur Kontaktaufnahme",
+  "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"}],
+  "gut_zu_wissen": "Hinweis 1\\nHinweis 2\\nHinweis 3",
+  "faq": [{"frage":"Häufige Frage?","antwort":"Antwort in 1-2 Sätzen"}]
+}
+
+REGELN für faq:
+- 4-5 branchenspezifische Fragen die Kunden TATSÄCHLICH stellen.
+- Antworten: 1-2 kurze, hilfreiche Sätze. Konkret, nicht ausweichend.
+- Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
+- Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Verträge mit allen österreichischen Sozialversicherungsträgern."
+
+REGELN für ablauf_schritte:
+- 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit abläuft.
+- Titel: 2-4 Wörter. Text: 1 kurzer Satz, max 10 Wörter.
+- Müssen zum konkreten Betrieb passen, nicht generisch.
+- Beispiel Arzt: Termin vereinbaren → Erstgespräch → Untersuchung → Befund & Therapie.
+- Beispiel Handwerker: Anfrage schildern → Besichtigung & KV → Terminvereinbarung → Umsetzung.
+
+REGELN für gut_zu_wissen:
+- 2-3 branchentypische permanente Hinweise für Kunden, getrennt durch Zeilenumbruch.
+- Nur relevante, konkrete Infos. Keine Marketing-Floskeln.
+- Beispiel Arzt: Bitte e-Card mitbringen\\nAnnahmeschluss 30 Min vor Ordinationsende.
+- Beispiel Friseur: Termine können bis 24h vorher kostenlos storniert werden.`;
+
+  // User-Prompt: dynamische Kundendaten. Nicht gecacht.
+  const userPrompt = `BETRIEB: ${o.firmenname}
 BRANCHE: ${o.branche_label || o.branche}
 ORT: ${[o.ort, o.bundesland ? `(${o.bundesland.toUpperCase()})` : ""].filter(Boolean).join(" ") || "Österreich"}
 EINSATZGEBIET: ${o.einsatzgebiet || o.ort || ""}
@@ -282,50 +324,15 @@ ${importContext.length > 0 ? "\n" + importContext.join("\n") + "\n" : ""}
 TONALITÄT: ${stilAnweisung}
 ${branchenSprache ? `BRANCHENSPRACHE: ${branchenSprache}` : ""}
 
-REGELN:
-- Österreichisches Deutsch, formelle Ansprache ("Sie"). Verwende österreichische Begriffe (z.B. "Jänner", "heuer", "Ordination" statt "Praxis").
-- ${o.ort ? `Regionaler Bezug: Erwähne "${o.ort}" im Über-uns-Text und in der Kontakt-CTA. Der Betrieb ist lokal verankert.` : ""}
-- Warm, professionell, KEINE Superlative ("beste", "führend"), KEINE erfundenen Zahlen/Jahre
-- KEINE generischen Phrasen wie "Wir freuen uns auf Ihre Anfrage", "Qualität steht bei uns an erster Stelle", "Ihr zuverlässiger Partner"
+SPEZIFISCH für diesen Auftrag:
+- ${o.ort ? `Regionaler Bezug: Erwähne "${o.ort}" im Über-uns-Text und in der Kontakt-CTA. Der Betrieb ist lokal verankert.` : "Kein spezifischer Ort angegeben — bleibe allgemein."}
 - ${hasImportedText ? "Bestehender Über-uns-Text: Inhalt BEIBEHALTEN, nur sprachlich polieren und auf 4-5 Sätze kürzen. NICHT komplett neu schreiben." : "Über-uns-Text: Konkret und spezifisch für DIESEN Betrieb. Was macht ihn besonders? Ort, Geschichte, Spezialisierung einbauen."}
 - ${hasImportedFaq ? "Bestehende FAQ: ÜBERNEHMEN und nur sprachlich glätten." : "FAQ: 4-5 Fragen die ECHTE Kunden dieser Branche stellen würden. Konkrete, hilfreiche Antworten."}
 - ${hasImportedAblauf ? "Bestehende Ablauf-Schritte: ÜBERNEHMEN, nur sprachlich optimieren." : "Ablauf: 3-4 Schritte die zum KONKRETEN Betrieb passen."}
 - ${hasImportedGzw ? "Bestehende Kundenhinweise: ÜBERNEHMEN." : "Gut-zu-wissen: 2-3 praxisrelevante Hinweise für Kunden."}
-- Leistungsbeschreibungen: MAXIMAL 15 Wörter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
-- Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Wörter pro Punkt. Müssen sich voneinander unterscheiden.
-- kontakt_cta: Branchenspezifisch, nicht generisch. ${o.ort ? `"in ${o.ort}" einbauen.` : ""}
+- ${o.ort ? `kontakt_cta: "in ${o.ort}" einbauen.` : ""}
 
-JSON-FORMAT:
-{
-  "leistungen_beschreibungen": {"${leistungen.join('":"[2 kurze Sätze, max 25 Wörter]","')}":"[2 kurze Sätze, max 25 Wörter]"},
-  "text_ueber_uns": "4-5 Sätze über den Betrieb. Konkret, authentisch, nicht austauschbar.",
-  "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
-  "leistungen_intro": "1 kurzer Einleitungssatz für die Leistungen-Sektion",
-  "kontakt_cta_headline": "Kurze, branchenspezifische Headline",
-  "kontakt_cta_text": "1-2 Sätze, konkrete Motivation zur Kontaktaufnahme",
-  "ablauf_schritte": [{"titel":"Schritt 1","text":"Kurze Beschreibung"},{"titel":"Schritt 2","text":"Kurze Beschreibung"},{"titel":"Schritt 3","text":"Kurze Beschreibung"}],
-  "gut_zu_wissen": "Hinweis 1\nHinweis 2\nHinweis 3",
-  "faq": [{"frage":"Häufige Frage 1?","antwort":"Antwort in 1-2 Sätzen"},{"frage":"Häufige Frage 2?","antwort":"Antwort in 1-2 Sätzen"},{"frage":"Häufige Frage 3?","antwort":"Antwort in 1-2 Sätzen"},{"frage":"Häufige Frage 4?","antwort":"Antwort in 1-2 Sätzen"}]
-}
-REGELN für faq:
-- 4-5 branchenspezifische Fragen die Kunden TATSÄCHLICH stellen
-- Antworten: 1-2 kurze, hilfreiche Sätze. Konkret, nicht ausweichend.
-- Wenn bestehende FAQ importiert wurden, verwende diese als Grundlage.
-- Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
-- Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Verträge mit allen österreichischen Sozialversicherungsträgern."
-REGELN für ablauf_schritte:
-- 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit abläuft
-- Titel: 2-4 Wörter. Text: 1 kurzer Satz, max 10 Wörter
-- Müssen zum konkreten Betrieb passen, nicht generisch
-- Beispiel Arzt: Termin vereinbaren → Erstgespräch → Untersuchung → Befund & Therapie
-- Beispiel Handwerker: Anfrage schildern → Besichtigung & KV → Terminvereinbarung → Umsetzung
-
-REGELN für gut_zu_wissen:
-- 2-3 branchentypische permanente Hinweise für Kunden, getrennt durch Zeilenumbruch
-- Wenn bestehende Hinweise importiert wurden, übernimm diese.
-- Nur relevante, konkrete Infos. Keine Marketing-Floskeln.
-- Beispiel Arzt: Bitte e-Card mitbringen\nAnnahmeschluss 30 Min vor Ordinationsende
-- Beispiel Friseur: Termine können bis 24h vorher kostenlos storniert werden`;
+LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
 
   const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -337,7 +344,10 @@ REGELN für gut_zu_wissen:
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
-      messages: [{role: "user", content: textPrompt}],
+      system: [
+        { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
+      ],
+      messages: [{role: "user", content: userPrompt}],
     }),
   });
 
@@ -357,7 +367,10 @@ REGELN für gut_zu_wissen:
   const usage = aiData.usage || {};
   const tokIn = usage.input_tokens || 0;
   const tokOut = usage.output_tokens || 0;
-  const costEur = Math.round(((tokIn * 3 + tokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
+  const tokCacheWrite = usage.cache_creation_input_tokens || 0;
+  const tokCacheRead = usage.cache_read_input_tokens || 0;
+  // Sonnet 4.6: Input $3/M, Cache-Write $3.75/M (+25%), Cache-Read $0.30/M (-90%), Output $15/M.
+  const costEur = Math.round(((tokIn * 3 + tokCacheWrite * 3.75 + tokCacheRead * 0.30 + tokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
 
   let rawText = aiData.content?.[0]?.text || "{}";
   rawText = rawText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
@@ -419,19 +432,83 @@ REGELN für gut_zu_wissen:
     );
   }
 
-  /* ─── Schema.org JSON-LD ─── */
+  /* ─── Schema.org JSON-LD (LocalBusiness + Services + FAQPage + AggregateRating) ─── */
   const sameAs = [o.facebook, o.instagram, o.linkedin, o.tiktok].filter(Boolean).map(normSocial);
-  const schema = {
-    "@context": "https://schema.org", "@type": "LocalBusiness",
-    "name": o.firmenname, "description": metaDesc, "url": siteUrl,
+  const businessId = `${siteUrl}#business`;
+
+  // OpeningHoursSpecification strukturiert aus Preset-Key oder Custom-String
+  const OEZ_STRUCT = {
+    "mo-fr-8-17": [{dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "08:00", closes: "17:00"}],
+    "mo-fr-7-16": [{dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "07:00", closes: "16:00"}],
+    "mo-fr-8-18": [{dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "08:00", closes: "18:00"}],
+    "mo-sa-8-17": [{dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], opens: "08:00", closes: "17:00"}],
+    "mo-sa-8-12": [{dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], opens: "08:00", closes: "12:00"}],
+  };
+  const openingSpec = OEZ_STRUCT[o.oeffnungszeiten] || null;
+
+  // LocalBusiness Core
+  const localBusiness = {
+    "@type": "LocalBusiness",
+    "@id": businessId,
+    "name": o.firmenname,
+    "description": metaDesc,
+    "url": siteUrl,
     "address": { "@type": "PostalAddress", ...(o.adresse ? {"streetAddress": o.adresse} : {}), ...(o.plz ? {"postalCode": o.plz} : {}), ...(o.ort ? {"addressLocality": o.ort} : {}), "addressCountry": "AT" },
     ...(o.telefon ? {"telephone": "{{TEL_DISPLAY}}"} : {}),
     ...(o.email ? {"email": "{{EMAIL}}"} : {}),
+    ...(o.url_logo ? {"logo": o.url_logo} : {}),
     ...(o.url_hero ? {"image": o.url_hero} : {}),
     ...(o.einsatzgebiet || o.ort ? {"areaServed": o.einsatzgebiet || o.ort} : {}),
-    ...(oez && oez !== "Nach Vereinbarung" ? {"openingHours": oez} : {}),
+    ...(openingSpec
+      ? {"openingHoursSpecification": openingSpec.map(s => ({"@type":"OpeningHoursSpecification", ...s}))}
+      : (oez && oez !== "Nach Vereinbarung" ? {"openingHours": oez} : {})),
     ...(sameAs.length ? {"sameAs": sameAs} : {}),
   };
+
+  // AggregateRating (nur wenn ≥ 2 Bewertungen mit Sterne > 0)
+  const ratedBewertungen = Array.isArray(o.bewertungen) ? o.bewertungen.filter(b => b && b.sterne > 0) : [];
+  if (ratedBewertungen.length >= 2) {
+    const avg = ratedBewertungen.reduce((s, b) => s + (parseInt(b.sterne) || 0), 0) / ratedBewertungen.length;
+    localBusiness.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": Math.round(avg * 10) / 10,
+      "reviewCount": ratedBewertungen.length,
+      "bestRating": 5,
+      "worstRating": 1,
+    };
+  }
+
+  // Service Schema pro Leistung
+  const serviceEntities = leistungen.map((l, i) => ({
+    "@type": "Service",
+    "@id": `${siteUrl}#service-${i + 1}`,
+    "name": l,
+    ...(texts.leistungen_beschreibungen?.[l] || o.leistungen_beschreibungen?.[l]
+      ? {"description": (texts.leistungen_beschreibungen?.[l] || o.leistungen_beschreibungen?.[l]).slice(0, 200)}
+      : {}),
+    "provider": {"@id": businessId},
+    ...(o.einsatzgebiet || o.ort ? {"areaServed": o.einsatzgebiet || o.ort} : {}),
+  }));
+  if (serviceEntities.length > 0) {
+    localBusiness.makesOffer = serviceEntities.map(s => ({"@type": "Offer", "itemOffered": {"@id": s["@id"]}}));
+  }
+
+  // FAQPage Schema (aus Import oder Claude-Output)
+  const faqForSchema = hasImportedFaq ? (o.faq || []) : (texts.faq || []);
+  const graphEntities = [localBusiness, ...serviceEntities];
+  if (Array.isArray(faqForSchema) && faqForSchema.length >= 2) {
+    graphEntities.push({
+      "@type": "FAQPage",
+      "@id": `${siteUrl}#faq`,
+      "mainEntity": faqForSchema.slice(0, 10).map(f => ({
+        "@type": "Question",
+        "name": String(f.frage || "").slice(0, 300),
+        "acceptedAnswer": {"@type": "Answer", "text": String(f.antwort || "").slice(0, 1000)},
+      })),
+    });
+  }
+
+  const schema = {"@context": "https://schema.org", "@graph": graphEntities};
   html = html.replace("</head>", `<script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
 
   /* ─── Scroll-Spy ─── */

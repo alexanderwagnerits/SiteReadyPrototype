@@ -502,19 +502,13 @@ Bewertungen: nur echte Google-Bewertungen mit Text, max 6.`,
     const phoneHint = filteredPhones.length > 0 ? `\nGefundene Telefonnummern: ${filteredPhones.join(", ")}` : "";
 
     /* ═══ 6. CLAUDE EXTRAKTION ═══ */
-    const claudeData = await callClaude({
-        model: "claude-sonnet-4-6",
-        max_tokens: 8192,
-        messages: [{
-          role: "user",
-          content: `Extrahiere aus folgendem Website-Text ALLE Daten eines oesterreichischen Unternehmens.
-Du bekommst den Inhalt von ${pageContents.length + 1} Seiten${webSearchData.bewertungen?.length ? " + Google-Bewertungen" : ""}.
-
-WICHTIG: Lies den GESAMTEN Text SEHR GRUENDLICH durch. Informationen koennen auf verschiedenen Seiten verstreut sein.
+    // System-Prompt: JSON-Schema + Extraktions-Regeln. Wird via Prompt Caching wiederverwendet.
+    const extractSystem = `Extrahiere aus einem Website-Text ALLE Daten eines oesterreichischen Unternehmens.
 Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Text drumherum).
 
 OBERSTE REGEL: Nur Informationen die TATSAECHLICH im Text stehen. NICHTS erfinden.
 Leere Strings "" und leere Arrays [] fuer nicht gefundene Felder.
+Lies den GESAMTEN Text SEHR GRUENDLICH durch. Informationen koennen auf verschiedenen Seiten verstreut sein.
 
 JSON-Felder:
 
@@ -583,11 +577,20 @@ JSON-Felder:
 
 === MERKMALE ===
 - merkmale: Objekt. NUR auf true wenn KLAR im Text erwaehnt.
-  Keys: kassenvertrag ("alle_kassen"/"wahlarzt"/"privat"/"oegk"/"bvaeb"/"svs"), barrierefrei, parkplaetze, notdienst, meisterbetrieb, terminvereinbarung, erstgespraech_gratis, online_beratung, hausbesuche, kartenzahlung, ratenzahlung, gutscheine, zertifiziert, kostenvoranschlag, foerderungsberatung, gastgarten, takeaway, lieferservice
+  Keys: kassenvertrag ("alle_kassen"/"wahlarzt"/"privat"/"oegk"/"bvaeb"/"svs"), barrierefrei, parkplaetze, notdienst, meisterbetrieb, terminvereinbarung, erstgespraech_gratis, online_beratung, hausbesuche, kartenzahlung, ratenzahlung, gutscheine, zertifiziert, kostenvoranschlag, foerderungsberatung, gastgarten, takeaway, lieferservice`;
+
+    const extractUser = `Du bekommst den Inhalt von ${pageContents.length + 1} Seiten${webSearchData.bewertungen?.length ? " + Google-Bewertungen" : ""}.
 
 Website-Text:
-${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
-        }],
+${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`;
+
+    const claudeData = await callClaude({
+        model: "claude-sonnet-4-6",
+        max_tokens: 8192,
+        system: [
+          { type: "text", text: extractSystem, cache_control: { type: "ephemeral" } },
+        ],
+        messages: [{ role: "user", content: extractUser }],
       }, 45000);
 
     if (claudeData._error) {
@@ -599,11 +602,13 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`,
     const usage = claudeData.usage || {};
     const extractTokIn = usage.input_tokens || 0;
     const extractTokOut = usage.output_tokens || 0;
+    const extractCacheWrite = usage.cache_creation_input_tokens || 0;
+    const extractCacheRead = usage.cache_read_input_tokens || 0;
 
-    // Gesamt-Kosten
+    // Gesamt-Kosten (inkl. Cache-Tokens: Write +25%, Read -90%)
     const totalTokIn = extractTokIn + webSearchTokensIn;
     const totalTokOut = extractTokOut + webSearchTokensOut;
-    const importCostEur = Math.round(((totalTokIn * 3 + totalTokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
+    const importCostEur = Math.round(((totalTokIn * 3 + extractCacheWrite * 3.75 + extractCacheRead * 0.30 + totalTokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
     const webSearchCost = (usage.server_tool_use?.web_search_requests || 0) * 0.01;
 
     let extracted;

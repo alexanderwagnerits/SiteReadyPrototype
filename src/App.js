@@ -4228,10 +4228,10 @@ function Admin({adminKey}){
   if(lowQuality.length)alerts.push({type:"warn",msg:`${lowQuality.length} Website${lowQuality.length>1?"s":""} mit Quality-Score unter 80`,action:()=>{setTab("sites");if(lowQuality.length===1)setSel(lowQuality[0]);}});
   const TABS=[
     {id:"start",label:"Dashboard",icon:`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,section:"ADMIN"},
-    {id:"sites",label:"Sites",icon:`<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,badge:regenBadge},
+    {id:"sites",label:"Kunden",icon:`<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,badge:regenBadge},
     {id:"finanzen",label:"Finanzen",icon:`<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>`},
     {id:"support",label:"Support",icon:`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,badge:tickets.filter(t=>t.status==="offen").length||null},
-    {id:"system",label:"System & Kosten",icon:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>`},
+    {id:"system",label:"System",icon:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>`},
     {id:"arch-system",label:"Architektur",icon:`<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>`,section:"DOKUMENTATION"},
     {id:"arch-flows",label:"Flows",icon:`<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`},
     {id:"docs",label:"Dokumentation",icon:`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`},
@@ -4308,7 +4308,7 @@ function Admin({adminKey}){
                 {l:"Live-Kunden",v:liveN,s:`€${mrr} MRR`,c:T.green,a:()=>setTab("sites")},
                 {l:"Trials aktiv",v:trialN,s:expiringTrials.filter(o=>o.tl<=4).length>0?`${expiringTrials.filter(o=>o.tl<=4).length} laufen in ≤4d ab`:"Alle noch frisch",c:"#7c3aed",a:()=>{setTab("sites");setFilter("trial");}},
                 {l:"Offene Tickets",v:openTickets.length,s:openTickets.length===0?"Alles beantwortet":"Bitte pruefen",c:openTickets.length>0?T.red:T.textMuted,a:()=>setTab("support")},
-                {l:"KI-Kosten",v:`€${totalCost.toFixed(2)}`,s:"kumuliert",c:T.orange,a:()=>setTab("system")},
+                {l:"KI-Kosten",v:`€${totalCost.toFixed(2)}`,s:"kumuliert",c:T.orange,a:()=>setTab("finanzen")},
                 {l:"System",v:sysTotal>0?`${sysOk}/${sysTotal}`:"—",s:sysLabel,c:sysColor,a:()=>setTab("system")},
               ].map((k,i)=>(
                 <div key={i} onClick={k.a} style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${k.c===T.red?"#fecaca":T.bg3}`,boxShadow:T.sh2,cursor:"pointer",transition:"box-shadow .15s"}} onMouseOver={e=>e.currentTarget.style.boxShadow=T.sh3} onMouseOut={e=>e.currentTarget.style.boxShadow=T.sh2}>
@@ -4357,7 +4357,7 @@ function Admin({adminKey}){
             <div style={{background:"#fff",borderRadius:T.r,padding:"18px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
               <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>Status-Pipeline</div>
               <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} onClick={()=>{setTab("bestellungen");setFilter(s);}} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
+                {STATUS_FLOW.map(s=>{const n=orders.filter(o=>o.status===s).length;const pct=orders.length?Math.round((n/orders.length)*100):0;return(<div key={s} onClick={()=>{setTab("sites");setFilter(s);}} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
                   <span style={{width:8,height:8,borderRadius:"50%",background:STATUS_COLORS[s],flexShrink:0,display:"inline-block"}}/>
                   <span style={{fontSize:".8rem",color:T.dark,width:80}}>{STATUS_LABELS[s]}</span>
                   <div style={{flex:1,height:6,background:T.bg3,borderRadius:3,overflow:"hidden"}}>
@@ -4586,7 +4586,7 @@ function Admin({adminKey}){
           {/* Header */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
             <div>
-              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>System & Kosten</h2>
+              <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:"0 0 4px"}}>System</h2>
               {sysLastCheck&&<div style={{fontSize:".75rem",color:T.textMuted}}>Geprüft: {sysLastCheck.toLocaleTimeString("de-AT")} · Auto-Refresh 60s</div>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -4659,41 +4659,32 @@ function Admin({adminKey}){
             </div>
           </div>
 
-          {/* ═══ ZONE 2: KOSTEN & CREDITS ═══ */}
+          {/* ═══ ZONE 2: API-CREDITS ═══ */}
           <div style={{marginBottom:32}}>
-            <div style={{fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>Kosten & Credits</div>
+            <div style={{fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.textMuted,marginBottom:12}}>API-Credits & Limits</div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1.3fr 1fr 1fr",gap:14}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
               {/* Anthropic Card */}
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 22px",border:`1.5px solid ${isBilling?"#fecaca":T.bg3}`,boxShadow:T.sh2}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-                  <div style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>Anthropic (Claude)</div>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+                  <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>Anthropic (Claude)</div>
                   {sysStatus?.anthropic?.tier&&<span style={{fontSize:".68rem",fontWeight:700,color:"#fff",background:isBilling?T.red:T.green,padding:"2px 8px",borderRadius:100}}>Tier {sysStatus.anthropic.tier}</span>}
                 </div>
+
                 {isBilling?<div style={{padding:"14px",borderRadius:T.rSm,background:"#fef2f2",border:"1px solid #fecaca",marginBottom:14}}>
-                  <div style={{fontSize:"1.6rem",fontWeight:800,color:T.red,fontFamily:T.mono,lineHeight:1}}>€0.00</div>
-                  <div style={{fontSize:".75rem",color:"#991b1b",marginTop:6}}>Guthaben aufgebraucht</div>
+                  <div style={{fontSize:".85rem",fontWeight:700,color:T.red}}>Guthaben aufgebraucht</div>
+                  <div style={{fontSize:".75rem",color:"#991b1b",marginTop:4,lineHeight:1.5}}>Keine Generierungen oder Imports möglich</div>
                 </div>
-                :<div style={{marginBottom:14}}>
-                  <div style={{fontSize:"2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>€{totalCost.toFixed(2)}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>kumulierte API-Kosten</div>
+                :<div style={{padding:"10px 12px",borderRadius:T.rSm,background:T.greenLight,border:"1px solid rgba(22,163,74,.12)",marginBottom:14}}>
+                  <div style={{fontSize:".78rem",fontWeight:700,color:T.green}}>Guthaben aktiv</div>
                 </div>}
 
-                <div style={{display:"flex",flexDirection:"column",gap:6,padding:"12px 0",borderTop:`1px solid ${T.bg3}`,borderBottom:`1px solid ${T.bg3}`,marginBottom:12}}>
+                <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:14}}>
                   {[
-                    ["Generierung",`€${totalGenCost.toFixed(4)}`],
-                    ["Import",`€${totalImportCost.toFixed(4)}`],
-                    websitesTracked>0&&["∅ pro Website",`€${avgCost.toFixed(4)}`],
-                  ].filter(Boolean).map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".78rem"}}>
-                    <span style={{color:T.textMuted}}>{l}</span>
-                    <span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>{v}</span>
-                  </div>)}
-                </div>
-
-                <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:12}}>
-                  {[
-                    ["Tokens IN",totalTokIn.toLocaleString("de-AT")],
-                    ["Tokens OUT",totalTokOut.toLocaleString("de-AT")],
+                    rl&&["Rate Limit",`${parseInt(rl.tokens_limit||0).toLocaleString("de-AT")} Tok/Min`],
+                    rl&&["Requests",`${rl.requests_limit} Req/Min`],
+                    ["Tokens verbraucht (IN)",totalTokIn.toLocaleString("de-AT")],
+                    ["Tokens verbraucht (OUT)",totalTokOut.toLocaleString("de-AT")],
                     websitesTracked>0&&["Websites getrackt",`${websitesTracked} / ${orders.length}`],
                   ].filter(Boolean).map(([l,v])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".75rem"}}>
                     <span style={{color:T.textMuted}}>{l}</span>
@@ -4701,11 +4692,7 @@ function Admin({adminKey}){
                   </div>)}
                 </div>
 
-                {rl&&<div style={{padding:"8px 10px",borderRadius:T.rSm,background:T.bg,fontSize:".72rem",color:T.textMuted,marginBottom:12}}>
-                  Rate Limits: {parseInt(rl.tokens_limit||0).toLocaleString("de-AT")} Tok/Min · {rl.requests_limit} Req/Min
-                </div>}
-
-                <a href="https://console.anthropic.com/settings/plans" target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:"8px 0",borderRadius:T.rSm,border:`1.5px solid ${T.bg3}`,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.textSub,textDecoration:"none",transition:"all .15s",cursor:"pointer"}}>
+                <a href="https://console.anthropic.com/settings/plans" target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:"8px 0",borderRadius:T.rSm,border:`1.5px solid ${T.bg3}`,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.textSub,textDecoration:"none",cursor:"pointer"}}>
                   Anthropic Console
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 </a>
@@ -4713,7 +4700,7 @@ function Admin({adminKey}){
 
               {/* Firecrawl Card */}
               <div style={{background:"#fff",borderRadius:T.r,padding:"20px 22px",border:`1.5px solid ${T.bg3}`,boxShadow:T.sh2,display:"flex",flexDirection:"column"}}>
-                <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:14}}>Firecrawl</div>
+                <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:16}}>Firecrawl</div>
 
                 <div style={{marginBottom:14}}>
                   <div style={{display:"flex",alignItems:"baseline",gap:4}}>
@@ -4723,7 +4710,6 @@ function Admin({adminKey}){
                   <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Credits verbraucht</div>
                 </div>
 
-                {/* Progress Bar */}
                 <div style={{marginBottom:14}}>
                   <div style={{height:8,borderRadius:4,background:T.bg3,overflow:"hidden"}}>
                     <div style={{width:`${Math.min(100,Math.round(fcCredits/500*100))}%`,height:"100%",borderRadius:4,background:fcCredits>400?T.red:fcCredits>250?"#d97706":T.green,transition:"width .4s"}}/>
@@ -4742,42 +4728,6 @@ function Admin({adminKey}){
                 <div style={{marginTop:"auto"}}>
                   <a href="https://www.firecrawl.dev/app" target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:"8px 0",borderRadius:T.rSm,border:`1.5px solid ${T.bg3}`,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.textSub,textDecoration:"none",cursor:"pointer"}}>
                     Firecrawl Dashboard
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  </a>
-                </div>
-              </div>
-
-              {/* Stripe Card */}
-              <div style={{background:"#fff",borderRadius:T.r,padding:"20px 22px",border:`1.5px solid ${T.bg3}`,boxShadow:T.sh2,display:"flex",flexDirection:"column"}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-                  <div style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>Stripe</div>
-                  <span style={{fontSize:".68rem",fontWeight:700,color:sysStatus?.stripe?.livemode?"#fff":T.textMuted,background:sysStatus?.stripe?.livemode?T.green:T.bg3,padding:"2px 8px",borderRadius:100}}>{sysStatus?.stripe?.livemode?"Live":"Testmodus"}</span>
-                </div>
-
-                <div style={{marginBottom:14}}>
-                  <div style={{fontSize:"2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,letterSpacing:"-.03em",lineHeight:1}}>€{stripeFee.toFixed(2)}</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginTop:4}}>Gebühren / Monat</div>
-                </div>
-
-                <div style={{display:"flex",flexDirection:"column",gap:6,padding:"12px 0",borderTop:`1px solid ${T.bg3}`,marginBottom:14}}>
-                  <div style={{display:"flex",justifyContent:"space-between",fontSize:".78rem"}}>
-                    <span style={{color:T.textMuted}}>pro Transaktion</span>
-                    <span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>1.4% + €0.25</span>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",fontSize:".78rem"}}>
-                    <span style={{color:T.textMuted}}>Aktive Abos</span>
-                    <span style={{fontFamily:T.mono,fontWeight:600,color:T.dark}}>{activeN}</span>
-                  </div>
-                </div>
-
-                <div style={{padding:"10px 12px",borderRadius:T.rSm,background:T.bg,marginBottom:14}}>
-                  <div style={{fontSize:".75rem",fontWeight:600,color:T.textSub}}>EU-Tarif (Standard)</div>
-                  <div style={{fontSize:".72rem",color:T.textMuted,marginTop:2}}>Keine monatliche Grundgebühr</div>
-                </div>
-
-                <div style={{marginTop:"auto"}}>
-                  <a href="https://dashboard.stripe.com" target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:"8px 0",borderRadius:T.rSm,border:`1.5px solid ${T.bg3}`,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.textSub,textDecoration:"none",cursor:"pointer"}}>
-                    Stripe Dashboard
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   </a>
                 </div>
@@ -4920,15 +4870,24 @@ function Admin({adminKey}){
                     </div>
                   ))}
                 </div>
-                <div style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div>
-                      <div style={{fontSize:".8rem",fontWeight:700,color:T.dark}}>API-Kosten</div>
-                      <div style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,fontFamily:T.mono,marginTop:4}}>€{totalCostEur.toFixed(2)}</div>
-                      <div style={{fontSize:".72rem",color:T.textMuted,marginTop:2}}>kumuliert (Claude + Firecrawl)</div>
+                <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
+                  <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:12}}>API-Kosten (Claude + Firecrawl)</div>
+                  {totalCostEur>0?<>
+                    <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                      {[
+                        ["Kumuliert gesamt",`€${totalCostEur.toFixed(4)}`,T.dark],
+                        ["Generierung (Claude)",`€${totalGenCostEur.toFixed(4)}`,T.textSub],
+                        totalImportCostEur>0&&["Import (Claude)",`€${totalImportCostEur.toFixed(4)}`,T.textSub],
+                        orders.filter(o=>o.tokens_in>0).length>0&&["∅ pro Website",`€${(totalCostEur/orders.filter(o=>o.tokens_in>0).length).toFixed(4)}`,T.textSub],
+                        ["Input-Tokens",orders.reduce((a,o)=>a+(o.tokens_in||0)+(o.import_tokens_in||0),0).toLocaleString("de-AT"),T.textMuted],
+                        ["Output-Tokens",orders.reduce((a,o)=>a+(o.tokens_out||0)+(o.import_tokens_out||0),0).toLocaleString("de-AT"),T.textMuted],
+                        ["Firecrawl Credits",orders.reduce((a,o)=>a+(o.firecrawl_credits||0),0)+" / 500 (Free)",T.textMuted],
+                      ].filter(Boolean).map(([l,v,c])=><div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:".78rem",padding:"4px 0",borderBottom:l==="Kumuliert gesamt"?`1.5px solid ${T.bg3}`:`1px solid ${T.bg3}`}}>
+                        <span style={{color:T.textMuted,fontWeight:l==="Kumuliert gesamt"?700:400}}>{l}</span>
+                        <span style={{fontFamily:T.mono,fontWeight:l==="Kumuliert gesamt"?800:600,color:c}}>{v}</span>
+                      </div>)}
                     </div>
-                    <button onClick={()=>setTab("system")} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".75rem",fontWeight:700,fontFamily:T.font}}>Details →</button>
-                  </div>
+                  </>:<div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Daten</div>}
                 </div>
               </div>
             </div>

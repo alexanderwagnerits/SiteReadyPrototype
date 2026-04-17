@@ -128,7 +128,67 @@ export async function generateWebsite(order_id, env) {
   const stil = hasCustomColors ? { ...basStil, ...buildCustomStil(o) } : basStil;
   const pal  = { p: stil.p, a: stil.a, bg: stil.bg, s: stil.s };
   const sub  = o.subdomain || (o.firmenname || "firma").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
-  const betriebstyp = o.branche_label || "Betrieb";
+  // Hero-Label: kuerzere, natuerlichere Variante fuer Hero/Meta/Footer. Dropdown-Label bleibt "Installateur / Heizung / Sanitaer".
+  const HERO_LABELS = {
+    installateur: "Installateur", fliesenleger: "Fliesenleger", schlosser: "Schlossereibetrieb",
+    dachdecker: "Dachdeckerei", maurer: "Baumeister", bodenleger: "Bodenleger",
+    gaertner: "Gärtnerei", klima: "Klimatechnik", reinigung: "Reinigungsservice",
+    kfz: "KFZ-Werkstatt", aufsperrdienst: "Schlüsseldienst", hafner: "Hafner",
+    raumausstatter: "Raumausstatter", goldschmied: "Goldschmied", schneider: "Schneiderei",
+    erdbau: "Erdbau",
+    restaurant: "Restaurant", cafe: "Café", imbiss: "Imbiss", catering: "Catering",
+    baeckerei: "Bäckerei", fleischerei: "Fleischerei", winzer: "Weingut",
+    arzt: "Ordination", lebensberater: "Lebensberater",
+    steuerberater: "Steuerberatung", rechtsanwalt: "Rechtsanwaltskanzlei",
+    umzug: "Umzug", eventplanung: "Eventplanung", fotograf: "Fotograf",
+    florist: "Blumenladen", architekt: "Architekturbüro", it_service: "IT-Service",
+    werbeagentur: "Werbeagentur", finanzberater: "Finanzberatung",
+    innenarchitekt: "Innenarchitektur", textilreinigung: "Textilreinigung",
+    dolmetscher: "Übersetzungsbüro", druckerei: "Druckerei",
+    sicherheitsdienst: "Sicherheitsdienst",
+    musikschule: "Musikschule", trainer: "Personal Trainer", yoga: "Yogastudio",
+    hundeschule: "Hundeschule", reitschule: "Reitstall", coach: "Coach",
+    nachhilfe: "Nachhilfe", hundesalon: "Hundesalon",
+    permanent_makeup: "Permanent Make-up", tattoo: "Tattoo-Studio",
+    // Neue Kategorien
+    wellness_hotel: "Wellness-Hotel", urlaubambauernhof: "Urlaub am Bauernhof",
+    almhuette: "Almhütte",
+    modeboutique: "Modeboutique", schuhladen: "Schuhgeschäft",
+    moebelhaus: "Einrichtungshaus", sportgeschaeft: "Sportfachgeschäft",
+    elektronikhandel: "Elektronikhandel", bioladen: "Bioladen",
+    antiquitaeten: "Antiquitätenhandel", fahrradhandel: "Fahrradhaus",
+    spielwaren: "Spielwarengeschäft",
+    taxi: "Taxi-Service", limousine: "Limousinen-Service",
+    spedition: "Spedition", kurierdienst: "Kurierdienst",
+    pannendienst: "Pannendienst", busunternehmen: "Busunternehmen",
+    imker: "Imkerei", hofladen: "Hofladen", obstbauer: "Obstgut",
+    brennerei: "Destillerie", baumschule: "Baumschule",
+    galerie: "Kunstgalerie", kuenstler: "Atelier",
+    musiker: "Musiker", theater: "Theater",
+    // Fachaerzte
+    dermatologe: "Dermatologie", gynaekologe: "Gynäkologie",
+    orthopaede: "Orthopädie", hno: "HNO-Ordination",
+    augenarzt: "Augenarzt", kinderarzt: "Kinderarzt",
+    internist: "Internist", chiropraktiker: "Chiropraktik",
+    // Neue Kosmetik
+    barbershop: "Barbershop", spa: "Day-Spa",
+    // Neue Gastro
+    pizzeria: "Pizzeria", eissalon: "Eissalon", vinothek: "Vinothek",
+    // Neue Dienstleistung
+    webdesigner: "Webdesign-Studio", hochzeitsplaner: "Hochzeitsplanung",
+    hausbetreuung: "Hausbetreuung", personenbetreuung: "24h-Betreuung",
+    kinderbetreuung: "Kinderbetreuung",
+    // Neue Bildung
+    sprachschule: "Sprachschule", fitnessstudio: "Fitnessstudio",
+    ballettschule: "Ballettschule", kampfsport: "Kampfsportschule",
+    skilehrer: "Skischule", bergfuehrer: "Bergführer",
+    kochschule: "Kochschule",
+    // Neue Handwerk
+    steinmetz: "Steinmetzbetrieb", uhrmacher: "Uhrmacher",
+    stuckateur: "Stuckateurbetrieb",
+  };
+  const heroLabel = o.spezialisierung || HERO_LABELS[o.branche] || o.branche_label || o.branche || "Betrieb";
+  const betriebstyp = heroLabel;
 
   const rawLeistungen = [...(o.leistungen || [])];
   if (o.extra_leistung?.trim()) {
@@ -169,13 +229,107 @@ export async function generateWebsite(order_id, env) {
   if (o.tiktok) socials.push({name:"TikTok",url:normSocial(o.tiktok)});
 
   /* ─── CTA-Texte ─── */
-  const ctaPrimary = o.buchungslink ? "Termin buchen" : o.notdienst ? "Notdienst anrufen" : o.kostenvoranschlag ? "Kostenlosen KV anfordern" : o.erstgespraech_gratis ? "Gratis Erstgespräch" : "Jetzt kontaktieren";
+  // Branchen-Default-CTAs (werden genutzt wenn keine Feature-CTAs zutreffen)
+  const BRANCHEN_CTA = {
+    // Gesundheit — immer "Termin"
+    arzt: "Termin vereinbaren", zahnarzt: "Termin vereinbaren", tierarzt: "Termin vereinbaren",
+    physiotherapie: "Termin vereinbaren", psychotherapie: "Termin vereinbaren",
+    ergotherapie: "Termin vereinbaren", logopaedie: "Termin vereinbaren",
+    hebamme: "Termin vereinbaren", diaetologe: "Termin vereinbaren",
+    heilmasseur: "Termin vereinbaren", osteopath: "Termin vereinbaren",
+    energetiker: "Termin vereinbaren", optiker: "Termin vereinbaren",
+    hoerakustiker: "Termin vereinbaren", lebensberater: "Termin vereinbaren",
+    zahntechnik: "Anfrage stellen", apotheke: "Anfrage stellen",
+    // Kosmetik — "Termin buchen"
+    friseur: "Termin buchen", kosmetik: "Termin buchen", nagel: "Termin buchen",
+    massage: "Termin buchen", fusspflege: "Termin buchen",
+    permanent_makeup: "Termin buchen", tattoo: "Termin anfragen",
+    hundesalon: "Termin buchen",
+    // Gastro
+    restaurant: "Tisch reservieren", cafe: "Tisch reservieren", bar: "Tisch reservieren",
+    heuriger: "Tisch reservieren", imbiss: "Bestellung anfragen",
+    catering: "Angebot anfragen", baeckerei: "Vorbestellen",
+    fleischerei: "Vorbestellen", winzer: "Verkostung anfragen",
+    // Dienstleistung mit Erstgespraech-Fokus
+    rechtsanwalt: "Erstberatung anfragen", notar: "Termin vereinbaren",
+    steuerberater: "Erstgespräch anfragen", unternehmensberater: "Erstgespräch anfragen",
+    finanzberater: "Erstgespräch anfragen", versicherung: "Beratung anfragen",
+    coach: "Erstgespräch anfragen",
+    // Dienstleistung mit Anfrage-Fokus
+    fotograf: "Termin anfragen", florist: "Anfrage stellen",
+    immobilien: "Beratung anfragen", hausverwaltung: "Angebot anfragen",
+    umzug: "Angebot anfragen", eventplanung: "Anfrage stellen",
+    architekt: "Erstgespräch anfragen", innenarchitekt: "Erstgespräch anfragen",
+    it_service: "Angebot anfragen", werbeagentur: "Briefing anfragen",
+    bestattung: "Kontakt aufnehmen", reisebuero: "Beratung anfragen",
+    textilreinigung: "Anfrage stellen", dolmetscher: "Angebot anfragen",
+    druckerei: "Angebot anfragen", sicherheitsdienst: "Angebot anfragen",
+    // Bildung — Anmeldung/Probestunde
+    fahrschule: "Jetzt anmelden", nachhilfe: "Probestunde anfragen",
+    musikschule: "Probestunde anfragen", trainer: "Probetraining anfragen",
+    yoga: "Probestunde buchen", hundeschule: "Kurs anfragen",
+    tanzschule: "Kurs anfragen", reitschule: "Probestunde anfragen",
+    schwimmschule: "Kurs anfragen", sprachschule: "Kurs anfragen",
+    fitnessstudio: "Probetraining buchen", ballettschule: "Probestunde anfragen",
+    kampfsport: "Probetraining buchen", skilehrer: "Kurs buchen",
+    bergfuehrer: "Tour anfragen", kochschule: "Kurs buchen",
+    // Handwerk ohne Notdienst/KV
+    maler: "Angebot anfordern", tischler: "Anfrage stellen",
+    bodenleger: "Angebot anfordern", goldschmied: "Beratung anfragen",
+    schneider: "Termin vereinbaren", raumausstatter: "Beratung anfragen",
+    fahrradwerkstatt: "Service anfragen", rauchfangkehrer: "Termin vereinbaren",
+    steinmetz: "Beratung anfragen", uhrmacher: "Anfrage stellen",
+    stuckateur: "Angebot anfordern",
+    // Neue Gesundheit
+    dermatologe: "Termin vereinbaren", gynaekologe: "Termin vereinbaren",
+    orthopaede: "Termin vereinbaren", hno: "Termin vereinbaren",
+    augenarzt: "Termin vereinbaren", kinderarzt: "Termin vereinbaren",
+    internist: "Termin vereinbaren", chiropraktiker: "Termin vereinbaren",
+    // Kosmetik neu
+    barbershop: "Termin buchen", spa: "Termin buchen",
+    // Gastro neu
+    pizzeria: "Tisch reservieren", eissalon: "Anfrage stellen",
+    vinothek: "Verkostung anfragen",
+    // Dienstleistung neu
+    webdesigner: "Angebot anfragen", hochzeitsplaner: "Erstgespräch anfragen",
+    hausbetreuung: "Angebot anfordern", personenbetreuung: "Beratung anfragen",
+    kinderbetreuung: "Kennenlerntermin buchen",
+    // Tourismus
+    hotel: "Jetzt buchen", pension: "Jetzt buchen",
+    ferienwohnung: "Jetzt buchen", urlaubambauernhof: "Jetzt buchen",
+    campingplatz: "Platz anfragen", wellness_hotel: "Jetzt buchen",
+    almhuette: "Anfrage stellen",
+    // Handel
+    modeboutique: "Sortiment ansehen", schuhladen: "Sortiment ansehen",
+    buchhandlung: "Kontakt aufnehmen", moebelhaus: "Beratung anfragen",
+    sportgeschaeft: "Beratung anfragen", elektronikhandel: "Beratung anfragen",
+    bioladen: "Sortiment ansehen", trachten: "Beratung anfragen",
+    antiquitaeten: "Anfrage stellen", fahrradhandel: "Probefahrt anfragen",
+    spielwaren: "Sortiment ansehen",
+    // Mobilitaet
+    taxi: "Jetzt anrufen", limousine: "Fahrt anfragen",
+    spedition: "Angebot anfragen", kurierdienst: "Lieferung buchen",
+    pannendienst: "Jetzt anrufen", busunternehmen: "Angebot anfragen",
+    // Agrar
+    imker: "Sortiment ansehen", hofladen: "Kontakt aufnehmen",
+    obstbauer: "Kontakt aufnehmen", brennerei: "Verkostung anfragen",
+    baumschule: "Beratung anfragen",
+    // Kultur
+    galerie: "Ausstellung besuchen", kuenstler: "Anfrage stellen",
+    musiker: "Booking anfragen", theater: "Tickets sichern",
+  };
+  const ctaPrimary = o.buchungslink ? "Termin buchen"
+    : o.notdienst ? "Notdienst anrufen"
+    : o.kostenvoranschlag ? "Kostenlosen KV anfordern"
+    : o.erstgespraech_gratis ? "Gratis Erstgespräch"
+    : BRANCHEN_CTA[o.branche]
+    || "Jetzt kontaktieren";
   const ctaPrimaryHref = o.buchungslink || (o.telefon ? "{{TEL_HREF}}" : "#kontakt");
   const ctaSecondary = "Leistungen ansehen";
 
   /* ─── Meta ─── */
-  const metaTitle = `${o.firmenname} – ${o.spezialisierung || o.branche_label || o.branche} in ${o.ort || o.bundesland || "Österreich"}`;
-  const metaDesc  = (o.kurzbeschreibung || `${o.branche_label || "Ihr Betrieb"} in ${o.ort || "Österreich"} – Jetzt Kontakt aufnehmen!`).slice(0, 155);
+  const metaTitle = `${o.firmenname} – ${heroLabel} in ${o.ort || o.bundesland || "Österreich"}`;
+  const metaDesc  = (o.kurzbeschreibung || `${heroLabel} in ${o.ort || "Österreich"} – Jetzt Kontakt aufnehmen!`).slice(0, 155);
   const siteUrl   = `https://sitereadyprototype.pages.dev/s/${sub}`;
 
   /* Trust-Leiste wird serve-time injiziert (<!-- TRUST --> Placeholder) */
@@ -195,9 +349,6 @@ export async function generateWebsite(order_id, env) {
 
   /* ─── Buchungslink CTA Sektion ─── */
   const buchungslinkHtml = o.buchungslink ? `<section class="sec termin-cta"><div class="wrap"><h2>Jetzt Termin buchen</h2><p>Buchen Sie bequem online &ndash; rund um die Uhr.</p><a href="${o.buchungslink}" target="_blank" class="btn btn-accent" style="font-size:1rem;padding:16px 36px">Termin buchen</a></div></section>` : "";
-
-  /* ─── Sticky CTA HTML ─── */
-  const stickyCtaHtml = o.telefon ? `<a href="${o.buchungslink || "{{TEL_HREF}}"}">${o.buchungslink ? "Termin buchen" : "Jetzt anrufen – {{TEL_DISPLAY}}"}</a>` : "";
 
   /* ═══ TEXT-GENERIERUNG via Claude (NUR Texte, kein HTML) ═══ */
 
@@ -251,21 +402,62 @@ export async function generateWebsite(order_id, env) {
 
   // Branchengruppe fuer sprachlichen Kontext
   const brGruppe = {
-    elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",fahrradwerkstatt:"handwerk",erdbau:"handwerk",
-    friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",
-    restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",winzer:"gastro",
-    arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",osteopath:"gesundheit",lebensberater:"gesundheit",
-    steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",unternehmensberater:"dienstleistung",dolmetscher:"dienstleistung",druckerei:"dienstleistung",sicherheitsdienst:"dienstleistung",
-    fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",coach:"bildung",
+    elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",fahrradwerkstatt:"handwerk",erdbau:"handwerk",steinmetz:"handwerk",uhrmacher:"handwerk",stuckateur:"handwerk",
+    friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",barbershop:"kosmetik",spa:"kosmetik",
+    restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",winzer:"gastro",pizzeria:"gastro",eissalon:"gastro",vinothek:"gastro",
+    arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",osteopath:"gesundheit",lebensberater:"gesundheit",dermatologe:"gesundheit",gynaekologe:"gesundheit",orthopaede:"gesundheit",hno:"gesundheit",augenarzt:"gesundheit",kinderarzt:"gesundheit",internist:"gesundheit",chiropraktiker:"gesundheit",
+    steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",unternehmensberater:"dienstleistung",dolmetscher:"dienstleistung",druckerei:"dienstleistung",sicherheitsdienst:"dienstleistung",webdesigner:"dienstleistung",hochzeitsplaner:"dienstleistung",hausbetreuung:"dienstleistung",personenbetreuung:"dienstleistung",kinderbetreuung:"dienstleistung",
+    fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",coach:"bildung",sprachschule:"bildung",fitnessstudio:"bildung",ballettschule:"bildung",kampfsport:"bildung",skilehrer:"bildung",bergfuehrer:"bildung",kochschule:"bildung",
+    hotel:"tourismus",pension:"tourismus",ferienwohnung:"tourismus",urlaubambauernhof:"tourismus",campingplatz:"tourismus",wellness_hotel:"tourismus",almhuette:"tourismus",
+    modeboutique:"handel",schuhladen:"handel",buchhandlung:"handel",moebelhaus:"handel",sportgeschaeft:"handel",elektronikhandel:"handel",bioladen:"handel",trachten:"handel",antiquitaeten:"handel",fahrradhandel:"handel",spielwaren:"handel",
+    taxi:"mobilitaet",limousine:"mobilitaet",spedition:"mobilitaet",kurierdienst:"mobilitaet",pannendienst:"mobilitaet",busunternehmen:"mobilitaet",
+    imker:"agrar",hofladen:"agrar",obstbauer:"agrar",brennerei:"agrar",baumschule:"agrar",
+    galerie:"kultur",kuenstler:"kultur",musiker:"kultur",theater:"kultur",
   }[o.branche] || "";
-  const branchenSprache = {
+  const branchenSpezifisch = {
+    // Handwerk
+    elektro: "Technisch prazise, sicherheitsbewusst. Betone Fachkenntnis bei Stark- und Schwachstrom. Keine uebertriebene Werbesprache.",
+    installateur: "Pragmatisch, loesungsorientiert. Spreche Probleme beim Namen (tropfender Hahn, kalte Heizung). Betone Schnelligkeit und Foerder-Know-how.",
+    maler: "Ruhig, handwerklich. Betone Sauberkeit, saubere Kanten, staubarmes Arbeiten. Farbberatung als Service, nicht als Verkauf.",
+    tischler: "Wertig, handwerklich, stolz aufs Material. Betone Massanfertigung und regionales Holz. Details wie Verbindungen, Oberflaechen.",
+    dachdecker: "Zuverlaessig, wetterfest. Betone Dichtheit, Sturmsicherheit, Lebensdauer. Fachbegriffe wie Unterspannbahn, First, Kehle ok.",
+    kfz: "Direkt, technisch kompetent. Keine Angstrhetorik, sondern Loesung. Betone Pickerl-Termine, faire Diagnose.",
+    // Kosmetik
+    friseur: "Einladend, persoenlich, leicht modisch. Vermeide Uebertriebenheit. Betone individuelles Eingehen auf den Kopf, nicht auf Trends.",
+    kosmetik: "Ruhig, pflegend, nicht Schoenheitsindustrie-Hype. Betone Hauttypberatung, saubere Produkte, Wohlbefinden.",
+    massage: "Entspannt, koerperlich ehrlich. Betone spuerbare Entspannung und fachliche Griffe, nicht esoterische Versprechen.",
+    // Gastro
+    restaurant: "Warm, appetitanregend. Betone frische Zutaten, Kueche, Atmosphaere. Vermeide Werbesprache ('kulinarische Highlights' vermeiden).",
+    cafe: "Gemuetlich, einladend. Spreche ueber Kaffee, hausgemachten Kuchen, Atmosphaere. Nicht zu gestelzt.",
+    baeckerei: "Handwerklich, ehrlich. Betone frisches Backen am Morgen, regionale Zutaten. Vermeide Floskeln wie 'mit Liebe'.",
+    // Gesundheit
+    arzt: "Sachlich, vertrauensvoll, ohne Pathos. Nimm Patienten ernst ohne belehrend zu sein. Betone Termintreue und Diskretion.",
+    zahnarzt: "Beruhigend, aufklaerend. Viele Menschen haben Zahnarzt-Angst — sprich das indirekt an. Betone schmerzarme Behandlung und moderne Technik.",
+    physiotherapie: "Aktivierend, kompetent. Betone Befundung, individueller Therapieplan, aktive Mitarbeit. Keine Wunderheilungs-Versprechen.",
+    apotheke: "Vertrauensvoll, beratend. Betone persoenliche Beratung und Verfuegbarkeit, weniger die Produkte selbst.",
+    // Dienstleistung
+    steuerberater: "Sachlich, strukturiert, diskret. Betone Fristeneinhaltung, Gestaltungsspielraum, langfristige Begleitung. Kein Finanzlatein.",
+    rechtsanwalt: "Praezise, klar, diskret. Zeige Fachgebiete ohne zu fachlich zu werden. Betone Erreichbarkeit und realistische Einschaetzungen.",
+    fotograf: "Persoenlich, bildstark. Betone Vorgespraech, Lockerheit beim Shooting, schnelle Lieferung. Keine Kunstfloskeln.",
+    immobilien: "Seriös, marktkundig, ehrlich. Betone regionale Kenntnis, realistische Preiseinschaetzung, sauberen Ablauf.",
+    architekt: "Konzeptionell, ruhig, im Dienst des Projekts. Betone Zuhoerer-Qualitaet, nicht Egotrip. Spreche ueber Kosten, Zeitplan, Genehmigung.",
+    // Bildung
+    fahrschule: "Locker, geduldig, praxisnah. Betone Fahrpraxis, gute Pruefungsquote, moderne Fahrzeuge. Keine Panikmache.",
+  };
+  const gruppenSprache = {
     handwerk: "Direkt und ehrlich. Handwerker reden nicht um den heissen Brei. Betone Qualitaet der Arbeit, nicht Marketing-Floskeln.",
     kosmetik: "Einladend und persoenlich. Schaffe eine Wohlfuehl-Atmosphaere schon im Text. Betone das Erlebnis.",
     gastro: "Warm und genussvoll. Mach Lust auf den Besuch. Betone Atmosphaere, Qualitaet der Zutaten, Gastfreundschaft.",
     gesundheit: "Einfuehlsam und kompetent. Nimm Patienten ernst. Betone Vertrauen, Erfahrung und individuelle Betreuung.",
     dienstleistung: "Kompetent und loesungsorientiert. Zeige Expertise ohne arrogant zu wirken. Betone den Nutzen fuer den Kunden.",
     bildung: "Motivierend und unterstuetzend. Mach Lust aufs Lernen. Betone Fortschritt und persoenliche Entwicklung.",
-  }[brGruppe] || "";
+    tourismus: "Einladend, gastfreundlich, regional verankert. Mach Lust auf einen Aufenthalt. Betone Atmosphaere, Lage, Ausstattung.",
+    handel: "Einladend, kundennah, produktbewusst. Betone Sortiment, Beratung, Qualitaet — nicht Preiskampf.",
+    mobilitaet: "Zuverlaessig, puenktlich, serviceorientiert. Betone Erreichbarkeit, faire Preise, sauberen Ablauf.",
+    agrar: "Bodenstaendig, ehrlich, regional. Betone Herkunft, Qualitaet der Produkte, Handwerk. Keine Marketing-Phrasen.",
+    kultur: "Kreativ, persoenlich, mit Haltung. Betone Kunstwerke, Stil, Entstehungsprozess — nicht Selbstdarstellung.",
+  };
+  const branchenSprache = branchenSpezifisch[o.branche] || gruppenSprache[brGruppe] || "";
 
   // System-Prompt: stabile Regeln + JSON-Format. Wird via Prompt Caching wiederverwendet.
   const systemPrompt = `Du generierst Website-Texte für österreichische Betriebe. Antworte NUR mit validem JSON, keine Erklärungen.
@@ -274,11 +466,29 @@ WICHTIG: Verwende IMMER echte deutsche Umlaute (ä, ö, ü, ß) in allen Texten.
 
 ALLGEMEINE REGELN:
 - Österreichisches Deutsch, formelle Ansprache ("Sie"). Verwende österreichische Begriffe (z.B. "Jänner", "heuer", "Ordination" statt "Praxis").
-- Warm, professionell, KEINE Superlative ("beste", "führend"), KEINE erfundenen Zahlen/Jahre.
-- KEINE generischen Phrasen wie "Wir freuen uns auf Ihre Anfrage", "Qualität steht bei uns an erster Stelle", "Ihr zuverlässiger Partner".
+- Warm, professionell, KEINE Superlative ("beste", "führend", "Marktführer", "Nr. 1"), KEINE erfundenen Zahlen/Jahre.
+
+VERBOTENE WÖRTER/PHRASEN (KI-Sprech, Marketing-Bullshit):
+- "innovativ", "Innovation", "innovativ zu sein"
+- "mit Leidenschaft", "Leidenschaft für...", "leidenschaftlich"
+- "ganzheitlich", "ganzheitlicher Ansatz"
+- "maßgeschneidert", "individuell zugeschnitten", "perfekt abgestimmt"
+- "auf Augenhöhe", "partnerschaftlich"
+- "mit Herzblut", "mit Herz"
+- "höchste Qualität", "höchste Ansprüche"
+- "Ihr Partner für...", "Ihr zuverlässiger Partner"
+- "Qualität steht bei uns an erster Stelle"
+- "Wir freuen uns auf Ihre Anfrage" (als CTA)
+- "aus einer Hand", "Rundum-Service"
+- "kompetent und zuverlässig" (als Phrase)
+- "langjährige Erfahrung" OHNE konkrete Jahresangabe
+- "Ihr Wohlbefinden ist uns wichtig", "Sie stehen im Mittelpunkt"
+- "Vertrauen Sie auf...", "Setzen Sie auf..."
+
+REGELN für spezifische Felder:
 - Leistungsbeschreibungen: MAXIMAL 15 Wörter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
 - Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Wörter pro Punkt. Müssen sich voneinander unterscheiden.
-- kontakt_cta: Branchenspezifisch, nicht generisch.
+- kontakt_cta: Branchenspezifisch, nicht generisch. Konkrete Handlungsaufforderung (z.B. "Termin vereinbaren", nicht "Kontakt aufnehmen").
 
 JSON-FORMAT (nur diese Felder, keine zusätzlichen):
 {
@@ -296,21 +506,50 @@ JSON-FORMAT (nur diese Felder, keine zusätzlichen):
 REGELN für faq:
 - 4-5 branchenspezifische Fragen die Kunden TATSÄCHLICH stellen.
 - Antworten: 1-2 kurze, hilfreiche Sätze. Konkret, nicht ausweichend.
-- Beispiel Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" - "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
-- Beispiel Zahnarzt: "Arbeiten Sie mit Kassen zusammen?" - "Ja, wir haben Verträge mit allen österreichischen Sozialversicherungsträgern."
+- Beispiele pro Branche:
+  - Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" → "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
+  - Installateur: "Übernehmen Sie Förderanträge für Wärmepumpen?" → "Ja, wir unterstützen Sie bei der Antragstellung für Bundes- und Landesförderungen."
+  - Zahnarzt: "Arbeiten Sie mit allen Kassen zusammen?" → "Ja, wir haben Verträge mit allen österreichischen Sozialversicherungsträgern."
+  - Arzt: "Brauche ich einen Termin?" → "Ja, bitte vereinbaren Sie telefonisch oder online einen Termin. Akutfälle werden dazwischen behandelt."
+  - Physiotherapie: "Übernimmt die Kasse die Kosten?" → "Bei ärztlicher Verordnung übernimmt die Kasse einen Teil. Den Rest verrechnen wir privat."
+  - Friseur: "Kann ich kurzfristig einen Termin bekommen?" → "Oft ja — rufen Sie einfach an oder buchen Sie online. Wir finden meist einen Platz."
+  - Restaurant: "Kann ich einen Tisch reservieren?" → "Ja, gerne — telefonisch oder online. Für größere Gruppen bitte rechtzeitig melden."
+  - Cafe: "Haben Sie glutenfreie oder vegane Optionen?" → "Ja, wir haben täglich mehrere vegane und glutenfreie Auswahl, auf Anfrage auch Sonderwünsche."
+  - Steuerberater: "Wann sollte ich den ersten Termin vereinbaren?" → "Spätestens im ersten Geschäftsjahr. Je früher, desto mehr Gestaltungsspielraum haben Sie."
+  - Rechtsanwalt: "Was kostet ein Erstgespräch?" → "Das Erstgespräch dauert 30 Minuten und kostet [Betrag]. Wir besprechen offen, ob wir Ihnen helfen können."
+  - Fotograf: "Wann bekomme ich die Bilder?" → "Innerhalb von 2-3 Wochen erhalten Sie die fertig bearbeiteten Bilder per Online-Galerie."
+  - Immobilienmakler: "Was kostet die Maklerprovision?" → "Gesetzlich geregelt: max. 3% plus USt. vom Kaufpreis. Details klären wir im Erstgespräch."
 
 REGELN für ablauf_schritte:
 - 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit abläuft.
 - Titel: 2-4 Wörter. Text: 1 kurzer Satz, max 10 Wörter.
 - Müssen zum konkreten Betrieb passen, nicht generisch.
-- Beispiel Arzt: Termin vereinbaren → Erstgespräch → Untersuchung → Befund & Therapie.
-- Beispiel Handwerker: Anfrage schildern → Besichtigung & KV → Terminvereinbarung → Umsetzung.
+- Beispiele pro Branche:
+  - Arzt: Termin vereinbaren → Erstgespräch → Untersuchung → Befund & Therapie.
+  - Zahnarzt: Termin buchen → Untersuchung → Behandlungsplan → Durchführung.
+  - Handwerker: Anfrage schildern → Besichtigung & KV → Terminvereinbarung → Umsetzung.
+  - Installateur: Anruf/Anfrage → Vor-Ort-Termin → Kostenvoranschlag → Montage.
+  - Physiotherapie: Erstgespräch → Befunderhebung → Therapieplan → Behandlung.
+  - Friseur: Termin buchen → Beratung → Behandlung → Styling & Pflege-Tipps.
+  - Fotograf: Kennenlernen → Location-Planung → Shooting → Bildauswahl & Lieferung.
+  - Anwalt: Erstberatung → Aktenstudium → Strategie → Umsetzung.
+  - Architekt: Erstgespräch → Entwurf → Einreichung → Bauleitung.
+  - Steuerberater: Unterlagen → Prüfung → Besprechung → Einreichung.
+  - Restaurant: Reservierung → Ankunft → Empfehlungen vom Küchenchef → Genuss.
 
 REGELN für gut_zu_wissen:
 - 2-3 branchentypische permanente Hinweise für Kunden, getrennt durch Zeilenumbruch.
 - Nur relevante, konkrete Infos. Keine Marketing-Floskeln.
-- Beispiel Arzt: Bitte e-Card mitbringen\\nAnnahmeschluss 30 Min vor Ordinationsende.
-- Beispiel Friseur: Termine können bis 24h vorher kostenlos storniert werden.`;
+- Beispiele pro Branche:
+  - Arzt: "Bitte e-Card mitbringen\\nAnnahmeschluss 30 Min vor Ordinationsende."
+  - Zahnarzt: "Bitte e-Card und Befunde mitbringen\\nBei Verhinderung mindestens 24h vorher absagen."
+  - Physiotherapie: "Bitte Überweisung und e-Card mitbringen\\nBequeme Kleidung empfohlen."
+  - Friseur: "Termine können bis 24h vorher kostenlos storniert werden\\nKartenzahlung möglich."
+  - Restaurant: "Reservierung empfohlen\\nBitte Allergien vorab bekannt geben."
+  - Installateur: "Notdienst auch am Wochenende erreichbar\\nKostenvoranschlag immer vor Beginn der Arbeiten."
+  - Fotograf: "Anzahlung bei Buchung\\nFinale Bildauswahl 2-3 Wochen nach Shooting."
+  - Anwalt: "Erstgespräch nach Terminvereinbarung\\nBitte relevante Unterlagen mitbringen."
+  - Steuerberater: "Jahresabschluss-Unterlagen bis Ende März einreichen\\nBelege bitte chronologisch geordnet."`;
 
   // User-Prompt: dynamische Kundendaten. Nicht gecacht.
   const userPrompt = `BETRIEB: ${o.firmenname}
@@ -386,7 +625,7 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
 
   let html = buildTemplate({
     firmenname: o.firmenname,
-    brancheLabel: o.spezialisierung || o.branche_label || o.branche,
+    brancheLabel: heroLabel,
     einsatzgebiet: o.einsatzgebiet || o.bundesland || "Österreich",
     kurzbeschreibung: o.kurzbeschreibung || "",
     ctaPrimary,
@@ -403,7 +642,6 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
     email: "{{EMAIL}}",
     socialHtml,
     buchungslinkHtml,
-    stickyCtaHtml,
     metaTitle,
     metaDesc,
     siteUrl,

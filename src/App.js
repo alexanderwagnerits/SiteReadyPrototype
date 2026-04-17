@@ -542,8 +542,22 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
   const[pwTouched,setPwTouched]=useState(false);
   const[pw2Touched,setPw2Touched]=useState(false);
   const[confirmed,setConfirmed]=useState(false);
+  const[building,setBuilding]=useState(false);
+  const[buildPhase,setBuildPhase]=useState(0);
   const[resending,setResending]=useState(false);
   const[resent,setResent]=useState(false);
+  // Phasen-Animation waehrend Build (wird in handleOrder gestartet)
+  useEffect(()=>{
+    if(!building)return;
+    const phases=[0,1,2,3];
+    let idx=0;
+    const iv=setInterval(()=>{
+      idx++;
+      if(idx>=phases.length){setBuildPhase(phases.length-1);clearInterval(iv);return;}
+      setBuildPhase(phases[idx]);
+    },4200);
+    return()=>clearInterval(iv);
+  },[building]);
   const[agbAccepted,setAgbAccepted]=useState(false);
   const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
   const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
@@ -600,7 +614,10 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
     orderInProgressRef.current=false;
     setSaving(false);
     localStorage.setItem("sr_pending_email",loginEmail);
-    setConfirmed(true);
+    setBuildPhase(0);
+    setBuilding(true);
+    // Simulierter Phasen-Timer (~18s), parallel laeuft echter Build
+    setTimeout(()=>{setBuilding(false);setConfirmed(true);},18000);
   };
   const resendEmail=async()=>{
     if(!supabase||resending)return;
@@ -671,7 +688,110 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
   </aside>
   {/* Main */}
   <div className="q-main">
-    {confirmed?<>
+    {building?<>
+      {/* Build-in-progress Screen mit Skeleton-Preview + Phasen */}
+      {(()=>{
+        const PHASEN=[
+          {titel:"Betriebsdaten werden analysiert",sub:"Branche, Leistungen und Standort werden verarbeitet."},
+          {titel:"Texte werden individuell formuliert",sub:"KI schreibt Über-Uns, Leistungen und Vorteile auf Ihren Betrieb zugeschnitten."},
+          {titel:"Design wird angewendet",sub:"Farbpalette, Typografie und Layout werden zusammengestellt."},
+          {titel:"Website wird veröffentlicht",sub:"Subdomain und SSL-Zertifikat werden aktiviert."},
+        ];
+        const currentStil=data.stil||"klassisch";
+        const currentAccent=data.accentColor||BRANCHEN_ACCENTS[data.branche]||STYLES_MAP[currentStil]?.accent||"#0369A1";
+        const currentPrimary=STYLES_MAP[currentStil]?.primary||"#094067";
+        const stilBg=STYLES_MAP[currentStil]?.bg||"#f4f7fa";
+        const heroFont=currentStil==="elegant"?"'Cormorant Garamond','Georgia',serif":"inherit";
+        const heroWeight=currentStil==="elegant"?600:800;
+        const btnR=currentStil==="modern"?100:currentStil==="elegant"?2:4;
+        return<>
+          <div className="q-mh">
+            <div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>›</span> <b>Wird erstellt</b></div>
+            <div className="q-mh-title">Ihre Website wird gerade erstellt</div>
+            <div className="q-mh-sub">Das dauert etwa 15-20 Sekunden. Schauen Sie zu — oder machen Sie sich einen Kaffee.</div>
+          </div>
+          <div style={{margin:"16px 36px 0",padding:"12px 18px",background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,display:"flex",alignItems:"center",gap:12}}>
+            <div style={{width:8,height:8,borderRadius:"50%",background:T.accent,animation:"sb-blink 1.2s ease-in-out infinite",flexShrink:0}}/>
+            <span style={{fontSize:".82rem",fontWeight:600,color:T.dark,fontFamily:T.mono}}>{sub}.siteready.at</span>
+            <span style={{fontSize:".72rem",fontWeight:700,color:T.accent,background:T.accentLight,padding:"2px 8px",borderRadius:4,textTransform:"uppercase",letterSpacing:".06em"}}>Wird erstellt</span>
+          </div>
+          <div className="q-mh-line"/>
+          <div className="q-mb" style={{maxWidth:900}}>
+            <div style={{display:"grid",gridTemplateColumns:"minmax(0,1.3fr) minmax(0,1fr)",gap:24,alignItems:"start"}}>
+              {/* Skeleton-Preview */}
+              <div style={{background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,overflow:"hidden",boxShadow:T.sh1}}>
+                <div style={{background:"#f3f4f6",padding:"8px 12px",display:"flex",alignItems:"center",gap:6,borderBottom:`1px solid ${T.bg3}`}}>
+                  <div style={{width:10,height:10,borderRadius:"50%",background:"#e5e7eb"}}/>
+                  <div style={{width:10,height:10,borderRadius:"50%",background:"#e5e7eb"}}/>
+                  <div style={{width:10,height:10,borderRadius:"50%",background:"#e5e7eb"}}/>
+                  <div style={{marginLeft:12,background:"#fff",borderRadius:4,padding:"3px 10px",fontSize:".7rem",fontFamily:T.mono,color:T.textMuted,border:`1px solid ${T.bg3}`,flex:1,maxWidth:260}}>{sub}.siteready.at</div>
+                </div>
+                <div style={{background:stilBg,aspectRatio:"16/11",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+                  {/* Nav */}
+                  <div style={{background:currentPrimary,height:36,display:"flex",alignItems:"center",padding:"0 18px",gap:14}}>
+                    <div style={{height:10,width:80,background:"rgba(255,255,255,.9)",borderRadius:2,opacity:buildPhase>=1?1:.35,transition:"opacity .6s"}}/>
+                    <div style={{flex:1}}/>
+                    <div style={{height:6,width:40,background:"rgba(255,255,255,.4)",borderRadius:2}}/>
+                    <div style={{height:6,width:52,background:"rgba(255,255,255,.4)",borderRadius:2}}/>
+                    <div style={{height:6,width:36,background:"rgba(255,255,255,.4)",borderRadius:2}}/>
+                  </div>
+                  {/* Hero */}
+                  <div style={{padding:"28px 32px 18px 32px",position:"relative"}}>
+                    {currentStil==="modern"&&<div style={{position:"absolute",top:-40,right:-40,width:180,height:180,borderRadius:"50%",background:currentAccent,opacity:.08,filter:"blur(40px)"}}/>}
+                    <div style={{fontFamily:heroFont,fontWeight:heroWeight,fontSize:26,color:currentPrimary,lineHeight:1.1,marginBottom:8,opacity:buildPhase>=1?1:.3,transition:"opacity .6s"}}>
+                      {buildPhase>=1?(data.firmenname||"Ihr Betrieb"):<span style={{display:"inline-block",width:"65%",height:28,background:"#e5e7eb",borderRadius:3}}/>}
+                    </div>
+                    {currentStil==="elegant"&&buildPhase>=1&&<div style={{width:36,height:2,background:currentAccent,marginBottom:10}}/>}
+                    <div style={{fontSize:12,color:"rgba(0,0,0,.55)",marginBottom:14,opacity:buildPhase>=1?1:.3,transition:"opacity .6s"}}>
+                      {buildPhase>=1?(data.brancheLabel||data.branche||"Ihr Beruf")+(data.ort?" in "+data.ort:""):<span style={{display:"inline-block",width:"40%",height:12,background:"#e5e7eb",borderRadius:2}}/>}
+                    </div>
+                    <div style={{display:"inline-block",background:currentAccent,color:"#fff",fontSize:11,padding:"7px 16px",borderRadius:btnR,fontWeight:600,opacity:buildPhase>=2?1:.25,transition:"opacity .6s"}}>Termin vereinbaren</div>
+                  </div>
+                  {/* Leistungen */}
+                  <div style={{padding:"0 32px 18px 32px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                    {[0,1,2].map(i=>(
+                      <div key={i} style={{background:"#fff",borderRadius:currentStil==="modern"?10:currentStil==="elegant"?2:4,padding:"10px 10px 12px 10px",border:currentStil==="modern"?"none":`1px solid ${currentStil==="elegant"?"#eaddcf":"#dce6ef"}`,boxShadow:currentStil==="modern"?"0 2px 6px rgba(0,0,0,.06)":"none",borderLeft:currentStil==="klassisch"?`2px solid ${currentAccent}`:undefined,borderTop:currentStil==="modern"?`2px solid ${currentAccent}`:undefined,minHeight:54,opacity:buildPhase>=2?1:.25,transition:"opacity .6s",transitionDelay:(i*120)+"ms"}}>
+                        <div style={{height:4,width:"50%",background:currentAccent,opacity:.8,borderRadius:1,marginBottom:6}}/>
+                        <div style={{height:3,width:"85%",background:"rgba(0,0,0,.14)",borderRadius:1,marginBottom:3}}/>
+                        <div style={{height:3,width:"70%",background:"rgba(0,0,0,.14)",borderRadius:1}}/>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Content-Block */}
+                  <div style={{padding:"0 32px 20px 32px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,opacity:buildPhase>=3?1:.2,transition:"opacity .8s"}}>
+                    <div style={{height:5,background:"rgba(0,0,0,.18)",borderRadius:1}}/>
+                    <div style={{height:5,background:"rgba(0,0,0,.08)",borderRadius:1}}/>
+                    <div style={{height:5,background:"rgba(0,0,0,.12)",borderRadius:1}}/>
+                    <div style={{height:5,background:"rgba(0,0,0,.1)",borderRadius:1}}/>
+                  </div>
+                  {buildPhase>=3&&<div style={{position:"absolute",bottom:10,left:0,right:0,textAlign:"center",fontSize:11,fontWeight:700,color:T.green,letterSpacing:".08em",textTransform:"uppercase",opacity:.8}}>Seite wird veröffentlicht…</div>}
+                </div>
+              </div>
+              {/* Phasen-Liste */}
+              <div style={{background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"22px 22px",boxShadow:T.sh1}}>
+                <div style={{fontSize:".72rem",fontWeight:800,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Fortschritt</div>
+                {PHASEN.map((p,i)=>{
+                  const done=i<buildPhase;const active=i===buildPhase;
+                  return<div key={i} style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:14,opacity:done||active?1:.4,transition:"opacity .3s"}}>
+                    <div style={{width:22,height:22,borderRadius:"50%",flexShrink:0,background:done?T.green:active?"rgba(59,130,246,.08)":T.bg,border:`1.5px solid ${done?T.green:active?T.accent:T.bg3}`,display:"flex",alignItems:"center",justifyContent:"center",marginTop:1}}>
+                      {done?<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      :active?<div style={{width:8,height:8,borderRadius:"50%",background:T.accent,animation:"sb-blink 1.2s ease-in-out infinite"}}/>
+                      :null}
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:".82rem",fontWeight:700,color:done||active?T.dark:T.textMuted,marginBottom:2}}>{p.titel}</div>
+                      <div style={{fontSize:".74rem",color:T.textMuted,lineHeight:1.5}}>{p.sub}</div>
+                    </div>
+                  </div>;
+                })}
+                <div style={{height:1,background:T.bg3,margin:"16px 0 14px"}}/>
+                <div style={{fontSize:".74rem",color:T.textMuted,lineHeight:1.6}}>Gleich können Sie im Portal Logo, Fotos und Texte anpassen.</div>
+              </div>
+            </div>
+          </div>
+        </>;
+      })()}
+    </>:confirmed?<>
       {/* Bestätigungsseite */}
       <div className="q-mh">
         <div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>›</span> <b>Account erstellt</b></div>
@@ -684,32 +804,42 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
         <span style={{fontSize:".72rem",fontWeight:700,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:4,textTransform:"uppercase",letterSpacing:".06em"}}>Live</span>
       </div>
       <div className="q-mh-line"/>
-      <div className="q-mb" style={{maxWidth:900}}>
+      <div className="q-mb" style={{maxWidth:1100}}>
+        {/* Success card */}
+        <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1,marginBottom:20,display:"flex",alignItems:"flex-start",gap:14}}>
+          <div style={{width:48,height:48,borderRadius:12,background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"1px solid rgba(22,163,74,.15)",boxShadow:`0 4px 16px ${T.greenGlow}`,animation:"fadeUp .5s cubic-bezier(.22,1,.36,1)"}}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:4}}>Ihre Website ist bereit!</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Bestätigungs-E-Mail an <strong style={{color:T.dark}}>{loginEmail}</strong> gesendet. Im Portal können Sie Logo, Fotos und Texte anpassen.</div>
+          </div>
+        </div>
+        {/* Live Preview iFrame */}
+        <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,overflow:"hidden",boxShadow:T.sh2,marginBottom:20}}>
+          <div style={{background:"#f3f4f6",padding:"10px 16px",display:"flex",alignItems:"center",gap:10,borderBottom:`1px solid ${T.bg3}`}}>
+            <div style={{display:"flex",gap:6}}>
+              <div style={{width:11,height:11,borderRadius:"50%",background:"#e5e7eb"}}/>
+              <div style={{width:11,height:11,borderRadius:"50%",background:"#e5e7eb"}}/>
+              <div style={{width:11,height:11,borderRadius:"50%",background:"#e5e7eb"}}/>
+            </div>
+            <div style={{marginLeft:8,background:"#fff",borderRadius:6,padding:"5px 14px",fontSize:".78rem",fontFamily:T.mono,color:T.textMuted,border:`1px solid ${T.bg3}`,flex:1,maxWidth:420,display:"flex",alignItems:"center",gap:8}}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              {sub}.siteready.at
+            </div>
+            <a href={`/s/${sub}`} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:6,background:"#fff",fontSize:".75rem",fontWeight:700,color:T.dark,textDecoration:"none",fontFamily:T.font}}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              In neuem Tab öffnen
+            </a>
+          </div>
+          <iframe src={`/s/${sub}`} title="Ihre Website" style={{display:"block",width:"100%",height:580,border:"none",background:"#fff"}} loading="lazy"/>
+        </div>
+        {/* Next steps */}
         <div className="q-split">
-          <div>
-            {/* Success card */}
-            <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1,marginBottom:16}}>
-              <div style={{display:"flex",alignItems:"flex-start",gap:14,marginBottom:16}}>
-                <div style={{width:48,height:48,borderRadius:12,background:T.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"1px solid rgba(22,163,74,.15)",boxShadow:`0 4px 16px ${T.greenGlow}`,animation:"fadeUp .5s cubic-bezier(.22,1,.36,1)"}}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <div>
-                  <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:4}}>Ihre Website ist bereit!</div>
-                  <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.6}}>Wir haben eine Bestätigungs-E-Mail an <strong style={{color:T.dark}}>{loginEmail}</strong> gesendet. Bitte bestätigen Sie diese, um sich einloggen zu können.</div>
-                </div>
-              </div>
-              <div style={{height:1,background:T.bg3,marginBottom:16}}/>
-              <div style={{display:"flex",alignItems:"flex-start",gap:10,padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}>
-                <div style={{fontSize:".75rem",fontWeight:700,color:T.accent,flexShrink:0}}>→</div>
-                <div style={{fontSize:".78rem",color:T.accent,lineHeight:1.6}}><strong>Ihre Website ist live</strong> und unter <strong>{sub}.siteready.at</strong> erreichbar. Im Portal können Sie Logo, Fotos und Texte anpassen.</div>
-              </div>
-            </div>
-            {/* Next steps */}
-            <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1}}>
-              <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".06em",marginBottom:12}}>Nächste Schritte</div>
-              {[{n:"1",t:"E-Mail-Adresse bestätigen",active:true},{n:"2",t:"Im Portal einloggen"},{n:"3",t:"Logo, Fotos und Texte anpassen"}].map(s=><div key={s.n} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-                <div style={{width:24,height:24,borderRadius:"50%",background:s.active?T.greenLight:T.bg,color:s.active?T.green:T.textMuted,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".72rem",fontWeight:800,flexShrink:0,border:`1px solid ${s.active?"rgba(22,163,74,.15)":T.bg3}`}}>{s.n}</div>
-                <span style={{fontSize:".82rem",color:s.active?T.dark:T.textMuted,fontWeight:500}}>{s.t}</span>
-              </div>)}
-            </div>
+          <div style={{background:T.white,border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px 24px",boxShadow:T.sh1}}>
+            <div style={{fontSize:".78rem",fontWeight:700,color:T.textSub,textTransform:"uppercase",letterSpacing:".06em",marginBottom:12}}>Nächste Schritte</div>
+            {[{n:"1",t:"E-Mail-Adresse bestätigen",active:true},{n:"2",t:"Im Portal einloggen"},{n:"3",t:"Logo, Fotos und Texte anpassen"}].map(s=><div key={s.n} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+              <div style={{width:24,height:24,borderRadius:"50%",background:s.active?T.greenLight:T.bg,color:s.active?T.green:T.textMuted,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".72rem",fontWeight:800,flexShrink:0,border:`1px solid ${s.active?"rgba(22,163,74,.15)":T.bg3}`}}>{s.n}</div>
+              <span style={{fontSize:".82rem",color:s.active?T.dark:T.textMuted,fontWeight:500}}>{s.t}</span>
+            </div>)}
           </div>
           {helpCol}
         </div>
@@ -1140,20 +1270,55 @@ function Questionnaire({data,setData,onComplete,onBack}){
       <div className="q-mb" style={{maxWidth:900}}>
         {(()=>{
           const STILE=[
-            {value:"klassisch",label:"Klassisch",desc:"Seriös, klar strukturiert. Dezente Linien, kompaktes Layout.",color:"#094067",accent:"#0369a1"},
-            {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Schatten-Cards, Pill-Buttons.",color:"#18181b",accent:"#4f46e5"},
-            {value:"elegant",label:"Elegant",desc:"Minimalistisch, Serif-Überschriften. Premium-Ausstrahlung.",color:"#020826",accent:"#7a6844"},
+            {value:"klassisch",label:"Klassisch",desc:"Seriös, klar strukturiert. Dezente Linien, kompaktes Layout.",color:"#094067",accent:"#0369a1",bg:"#f4f7fa"},
+            {value:"modern",label:"Modern",desc:"Frisch, runde Formen. Schatten-Cards, Pill-Buttons.",color:"#18181b",accent:"#4f46e5",bg:"#fafafa"},
+            {value:"elegant",label:"Elegant",desc:"Minimalistisch, Serif-Überschriften. Premium-Ausstrahlung.",color:"#020826",accent:"#7a6844",bg:"#f9f4ef"},
           ];
           const currentAccent=data.accentColor||BRANCHEN_ACCENTS[data.branche]||STYLES_MAP[data.stil]?.accent||"#0369A1";
           const showAccent=showAccentPicker;const setShowAccent=setShowAccentPicker;
+          const renderThumb=(s)=>{
+            const r=s.value==="modern"?10:s.value==="elegant"?2:4;
+            const cardBorder=s.value==="modern"?"none":`1px solid ${s.value==="elegant"?"#eaddcf":"#dce6ef"}`;
+            const cardShadow=s.value==="modern"?"0 2px 6px rgba(0,0,0,.06)":"none";
+            const cardBorderLeft=s.value==="klassisch"?`2px solid ${s.accent}`:"none";
+            const cardBorderTop=s.value==="modern"?`2px solid ${s.accent}`:"none";
+            const heroFont=s.value==="elegant"?"'Cormorant Garamond','Georgia',serif":"inherit";
+            const heroWeight=s.value==="elegant"?600:800;
+            const btnR=s.value==="modern"?100:r;
+            return(<div style={{width:"100%",aspectRatio:"4/2.6",borderRadius:r,overflow:"hidden",background:s.bg,border:`1px solid rgba(0,0,0,.08)`,position:"relative",marginBottom:12}}>
+              {/* Nav */}
+              <div style={{background:s.color,height:"18%",display:"flex",alignItems:"center",padding:"0 8px",gap:4}}>
+                <div style={{width:10,height:4,background:"rgba(255,255,255,.85)",borderRadius:1}}/>
+                <div style={{flex:1}}/>
+                <div style={{width:18,height:3,background:"rgba(255,255,255,.4)",borderRadius:1}}/>
+                <div style={{width:10,height:3,background:"rgba(255,255,255,.4)",borderRadius:1,marginLeft:3}}/>
+              </div>
+              {/* Hero */}
+              <div style={{padding:"7px 9px 5px 9px",position:"relative"}}>
+                {s.value==="modern"&&<div style={{position:"absolute",top:-8,right:-12,width:40,height:40,borderRadius:"50%",background:s.accent,opacity:.1,filter:"blur(8px)"}}/>}
+                {s.value==="klassisch"&&<div style={{position:"absolute",top:6,right:7,display:"flex",flexDirection:"column",gap:2,alignItems:"flex-end"}}><div style={{width:16,height:1,background:s.accent,opacity:.5}}/><div style={{width:22,height:1,background:s.accent,opacity:.5}}/><div style={{width:12,height:1,background:s.accent,opacity:.5}}/></div>}
+                <div style={{fontFamily:heroFont,fontWeight:heroWeight,fontSize:9,color:s.color,lineHeight:1.15,maxWidth:"75%"}}>Ihr Betrieb in Wien</div>
+                {s.value==="elegant"&&<div style={{width:14,height:1.5,background:s.accent,marginTop:3}}/>}
+                <div style={{fontSize:6,color:"rgba(0,0,0,.45)",marginTop:3,maxWidth:"80%",lineHeight:1.3}}>Professionelle Leistungen</div>
+                <div style={{display:"inline-block",marginTop:4,background:s.accent,color:"#fff",fontSize:5,padding:"2.5px 6px",borderRadius:btnR,fontWeight:600}}>Termin</div>
+              </div>
+              {/* Cards */}
+              <div style={{position:"absolute",bottom:6,left:9,right:9,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:3}}>
+                {[0,1,2].map(i=>(<div key={i} style={{height:15,background:"#fff",borderRadius:r,border:cardBorder,boxShadow:cardShadow,borderLeft:cardBorderLeft||cardBorder,borderTop:cardBorderTop||cardBorder,display:"flex",flexDirection:"column",gap:1.5,padding:"2px 3px",justifyContent:"center"}}>
+                  <div style={{height:1.5,background:s.accent,width:"40%",borderRadius:.5,opacity:.8}}/>
+                  <div style={{height:1,background:"rgba(0,0,0,.12)",width:"80%",borderRadius:.5}}/>
+                </div>))}
+              </div>
+            </div>);
+          };
           return<div>
             {/* Stil-Auswahl */}
             <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:24}}>
               {STILE.map(s=>{
                 const active=data.stil===s.value;
-                return<button key={s.value} onClick={()=>up("stil")(s.value)} style={{padding:"20px 18px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
-                  <div style={{width:32,height:32,borderRadius:6,background:`linear-gradient(135deg,${s.color},${s.accent})`,marginBottom:12}}/>
+                return<button key={s.value} onClick={()=>up("stil")(s.value)} style={{padding:14,border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
+                  {renderThumb(s)}
                   <div style={{fontSize:".92rem",fontWeight:800,color:T.dark,marginBottom:4}}>{s.label}</div>
                   <div style={{fontSize:".75rem",color:T.textMuted,lineHeight:1.55}}>{s.desc}</div>
                   {active&&<div style={{position:"absolute",top:10,right:10,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800}}>{"✓"}</div>}

@@ -659,7 +659,7 @@ export function buildTemplate(data) {
     leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
     adresseVoll, telDisplay, telHref, email,
-    socialHtml, buchungslinkHtml, stickyCtaHtml,
+    socialHtml, buchungslinkHtml,
     metaTitle, metaDesc, siteUrl, fontUrl, fontFamily,
     primary, accent, bg, sep,
     kontaktCtaHeadline, kontaktCtaText,

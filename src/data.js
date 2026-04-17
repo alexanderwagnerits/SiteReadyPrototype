@@ -37,6 +37,10 @@ export const FT_HANDWERK = ['notdienst', 'meisterbetrieb', 'kostenvoranschlag', 
 export const FT_GASTRO = ['gastgarten', 'takeaway', 'lieferservice'];
 export const FT_GESUNDHEIT = ['kassenvertrag', 'notdienst'];
 export const FT_DIENSTLEISTUNG = ['kostenvoranschlag'];
+export const FT_TOURISMUS = ['fruehstueck', 'wlan', 'haustiere'];
+export const FT_HANDEL = ['online_shop'];
+export const FT_MOBILITAET = ['notdienst'];
+export const FT_AGRAR = ['online_shop'];
 
 export const BRANCHEN_GRUPPEN = {
   handwerk: { label: 'Handwerk', features: FT_HANDWERK },
@@ -45,6 +49,11 @@ export const BRANCHEN_GRUPPEN = {
   gesundheit: { label: 'Gesundheit', features: FT_GESUNDHEIT },
   dienstleistung: { label: 'Dienstleistungen', features: FT_DIENSTLEISTUNG },
   bildung: { label: 'Bildung & Training', features: [] },
+  tourismus: { label: 'Tourismus & Beherbergung', features: FT_TOURISMUS },
+  handel: { label: 'Einzelhandel & Shops', features: FT_HANDEL },
+  mobilitaet: { label: 'Mobilität & Transport', features: FT_MOBILITAET },
+  agrar: { label: 'Landwirtschaft & Direktvermarktung', features: FT_AGRAR },
+  kultur: { label: 'Kultur & Kunst', features: [] },
 };
 
 // Farbpaletten pro Branchengruppe (Ref: echte Premium-Websites + Stilkategorien)
@@ -55,6 +64,11 @@ export const GRUPPEN_PALETTEN = {
   gesundheit:    { custom_color: '#0f2b3c', custom_accent: '#15779b', custom_bg: '#ffffff', custom_text: '#1e1e1e', custom_text_muted: '#757575', custom_sep: '#e8e8e8' },
   dienstleistung:{ custom_color: '#2f3529', custom_accent: '#8a7e5a', custom_bg: '#f2f2ef', custom_text: '#2f3529', custom_text_muted: '#7a7a72', custom_sep: '#e0e0db' },
   bildung:       { custom_color: '#1a1a2e', custom_accent: '#5642e8', custom_bg: '#f8f8fa', custom_text: '#1a1a2e', custom_text_muted: '#6b6b80', custom_sep: '#e2e2ea' },
+  tourismus:     { custom_color: '#1f2e3d', custom_accent: '#c9a96e', custom_bg: '#faf7f2', custom_text: '#1f2e3d', custom_text_muted: '#7a7a7a', custom_sep: '#e8e0d4' },
+  handel:        { custom_color: '#1a1a1a', custom_accent: '#d4847a', custom_bg: '#faf8f6', custom_text: '#1a1a1a', custom_text_muted: '#757575', custom_sep: '#ebe5df' },
+  mobilitaet:    { custom_color: '#121826', custom_accent: '#f59e0b', custom_bg: '#f5f6f8', custom_text: '#121826', custom_text_muted: '#6b6b80', custom_sep: '#e2e4ea' },
+  agrar:         { custom_color: '#2f3a1d', custom_accent: '#7a8c47', custom_bg: '#f7f6ef', custom_text: '#2f3a1d', custom_text_muted: '#6b6b4f', custom_sep: '#e0dec8' },
+  kultur:        { custom_color: '#1c1a26', custom_accent: '#a78bcf', custom_bg: '#f8f6f4', custom_text: '#1c1a26', custom_text_muted: '#6b6880', custom_sep: '#e5e2e9' },
 };
 
 export const BRANCHEN = [
@@ -83,14 +97,19 @@ export const BRANCHEN = [
   { value: 'schaedlingsbekaempfung', label: 'Schädlingsbekämpfung',       gruppe: 'handwerk', leistungen: ['Insektenbekämpfung','Nagetierbekämpfung','Taubenabwehr','Holzschutz','Desinfektion','Beratung & Prävention'], stil: 'klassisch' },
   { value: 'fahrradwerkstatt', label: 'Fahrradwerkstatt',                 gruppe: 'handwerk', leistungen: ['Reparatur & Service','E-Bike-Service','Fahrradcheck','Ersatzteile','Reifenwechsel','Individuelle Beratung'], stil: 'modern' },
   { value: 'erdbau',           label: 'Erdbau / Baggerungen',             gruppe: 'handwerk', leistungen: ['Baggerarbeiten','Aushubarbeiten','Planierungen','Kanalbau','Wegebau','Transporte'], stil: 'klassisch' },
+  { value: 'steinmetz',        label: 'Steinmetz',                        gruppe: 'handwerk', leistungen: ['Grabmale','Natursteinarbeiten','Restaurierung','Gartendeko','Küchenplatten','Beratung'], stil: 'elegant' },
+  { value: 'uhrmacher',        label: 'Uhrmacher',                        gruppe: 'handwerk', leistungen: ['Uhrenreparatur','Batteriewechsel','Restaurierung','Armbandwechsel','Schmuckreparatur','Verkauf'], stil: 'elegant' },
+  { value: 'stuckateur',       label: 'Stuckateur / Trockenbau',          gruppe: 'handwerk', leistungen: ['Trockenbau','Stuckarbeiten','Dämmarbeiten','Deckenverkleidung','Putzarbeiten','Sanierung'], stil: 'klassisch' },
   // Kosmetik & Körperpflege
   { value: 'kosmetik',         label: 'Kosmetikstudio',                   gruppe: 'kosmetik', leistungen: ['Gesichtsbehandlungen','Körperpflege & Peeling','Waxing & Haarentfernung','Anti-Aging-Behandlungen','Augenbrauen & Wimpern','Beratung & Pflegeroutine'], stil: 'modern' },
   { value: 'friseur',          label: 'Friseursalon',                     gruppe: 'kosmetik', leistungen: ['Haarschnitt Damen & Herren','Färben & Strähnchen','Hochzeitsstyling','Haarbehandlungen','Kinder-Haarschnitt','Bartpflege'], stil: 'modern' },
+  { value: 'barbershop',       label: 'Barbershop',                       gruppe: 'kosmetik', leistungen: ['Klassischer Herrenhaarschnitt','Bartrasur & Pflege','Haarwäsche','Trockenrasur','Augenbrauen','Kopfmassage'], stil: 'klassisch' },
+  { value: 'spa',              label: 'Spa / Day-Spa',                    gruppe: 'kosmetik', leistungen: ['Massagen','Gesichtsbehandlungen','Körperpackungen','Sauna & Dampfbad','Paar-Treatments','Day-Spa-Arrangements'], stil: 'elegant' },
   { value: 'nagel',            label: 'Nagelstudio',                      gruppe: 'kosmetik', leistungen: ['Gel-Nägel & Shellac','Nagelverlängerung','Nail Art & Design','Nagelreparatur','Fußpflege & Nagellack','Beratung'], stil: 'modern' },
   { value: 'massage',          label: 'Massage & Wellness',               gruppe: 'kosmetik', leistungen: ['Klassische Massage','Sportmassage','Entspannungsmassage','Hot-Stone-Massage','Triggerpunkt-Therapie','Lymphdrainage'], stil: 'modern' },
   { value: 'tattoo',           label: 'Tattoo & Piercing',                gruppe: 'kosmetik', leistungen: ['Custom Tattoos','Cover-ups & Korrekturen','Piercing','Beratung & Design','Pflege & Nachsorge','Laser-Entfernung'], stil: 'klassisch' },
   { value: 'fusspflege',       label: 'Fußpflege',                        gruppe: 'kosmetik', leistungen: ['Medizinische Fußpflege','Nagelpflege & Korrektur','Hornhautentfernung','Fußpeeling & Entspannungsbad','Diabetische Fußpflege','Beratung'], stil: 'klassisch' },
-  { value: 'permanent_makeup', label: 'Permanent Make-up & Wimpern',      gruppe: 'kosmetik', leistungen: ['Microblading','Permanent Make-up Lippen','Wimpernverlängerung','Wimpernlifting','Augenbrauen-Styling','Touch-up & Nachbehandlung'], stil: 'modern' },
+  { value: 'permanent_makeup', label: 'Permanent Make-up & Wimpern',      gruppe: 'kosmetik', leistungen: ['Microblading','Permanent Make-up Lippen','Wimpernverlängerung','Wimpernlifting','Augenbrauen-Styling','Touch-up & Nachbehandlung'], stil: 'elegant' },
   { value: 'hundesalon',       label: 'Hundesalon / Tierbetreuung',       gruppe: 'kosmetik', leistungen: ['Hundefrisur & Pflege','Baden & Föhnen','Krallenpflege','Tierbetreuung','Gassi-Service','Hundetraining'], stil: 'modern' },
   // Gastronomie
   { value: 'restaurant',       label: 'Restaurant / Gasthaus',            gruppe: 'gastro', leistungen: ['Speisekarte','Tagesmenü','Catering','Reservierung','Veranstaltungen','Lieferservice'], stil: 'elegant' },
@@ -98,13 +117,24 @@ export const BRANCHEN = [
   { value: 'bar',              label: 'Bar / Lounge',                     gruppe: 'gastro', leistungen: ['Cocktails & Drinks','Events & Partys','DJ & Live-Musik','Private Feiern','Afterwork','Catering'], stil: 'klassisch' },
   { value: 'heuriger',         label: 'Heuriger / Buschenschank',         gruppe: 'gastro', leistungen: ['Eigenbauweine','Kalte Jause','Saisonale Schmankerl','Gartenbereich','Weinverkostung','Veranstaltungen'], stil: 'elegant' },
   { value: 'imbiss',           label: 'Imbiss / Foodtruck',               gruppe: 'gastro', leistungen: ['Speisekarte','Mittagsmenü','Lieferservice','Catering','Take-away','Events'], stil: 'modern' },
+  { value: 'pizzeria',         label: 'Pizzeria',                         gruppe: 'gastro', leistungen: ['Pizza aus dem Holzofen','Pasta','Lieferservice','Abholung','Take-away','Mittagsmenü'], stil: 'modern' },
+  { value: 'eissalon',         label: 'Eissalon / Gelateria',             gruppe: 'gastro', leistungen: ['Eis hausgemacht','Eisbecher','Kaffeespezialitäten','Torten','Vegane Varianten','Familienkarte'], stil: 'modern' },
+  { value: 'vinothek',         label: 'Vinothek / Weinhandel',            gruppe: 'gastro', leistungen: ['Weinauswahl','Verkostungen','Beratung','Online-Shop','Veranstaltungen','Geschenkservice'], stil: 'elegant' },
   { value: 'catering',         label: 'Catering / Partyservice',          gruppe: 'gastro', leistungen: ['Firmenevents','Hochzeiten','Buffets','Menü-Planung','Getränkeservice','Dekoration'], stil: 'klassisch' },
   { value: 'baeckerei',        label: 'Bäckerei / Konditor',              gruppe: 'gastro', leistungen: ['Brot & Gebäck','Torten & Kuchen','Frühstück','Catering','Saisongebäck','Bestellung & Vorbestellung'], stil: 'elegant' },
   { value: 'fleischerei',      label: 'Fleischerei / Metzger',            gruppe: 'gastro', leistungen: ['Frischfleisch','Wurst & Aufschnitt','Catering & Partyplatten','Grillspezialitäten','Regionale Produkte','Vorbestellung'], stil: 'klassisch' },
   { value: 'winzer',           label: 'Winzer / Weinbau',                 gruppe: 'gastro', leistungen: ['Eigenbauweine','Ab-Hof-Verkauf','Weinverkostung','Kellerführung','Feste & Events','Online-Shop'], stil: 'elegant' },
   // Gesundheit
   { value: 'physiotherapie',   label: 'Physiotherapie',                   gruppe: 'gesundheit', leistungen: ['Manuelle Therapie','Bewegungstherapie','Sportphysiotherapie','Lymphdrainage','Elektrotherapie','Hausbesuche'], stil: 'klassisch' },
-  { value: 'arzt',             label: 'Arztpraxis / Ordination',          gruppe: 'gesundheit', leistungen: ['Allgemeinmedizin','Vorsorgeuntersuchung','Gesundenuntersuchung','Impfungen','Hausbesuche','Akutversorgung'], stil: 'klassisch' },
+  { value: 'arzt',             label: 'Arztpraxis / Ordination (Allgemeinmedizin)',          gruppe: 'gesundheit', leistungen: ['Allgemeinmedizin','Vorsorgeuntersuchung','Gesundenuntersuchung','Impfungen','Hausbesuche','Akutversorgung'], stil: 'klassisch' },
+  { value: 'dermatologe',      label: 'Hautarzt / Dermatologe',           gruppe: 'gesundheit', leistungen: ['Hautuntersuchung','Muttermalkontrolle','Akne-Behandlung','Hautkrebsvorsorge','Ästhetische Dermatologie','Laser-Behandlung'], stil: 'elegant' },
+  { value: 'gynaekologe',      label: 'Gynäkologe / Frauenarzt',          gruppe: 'gesundheit', leistungen: ['Vorsorgeuntersuchungen','Schwangerschaftsbetreuung','Verhütungsberatung','Ultraschall','Krebsvorsorge','Wechseljahre-Beratung'], stil: 'klassisch' },
+  { value: 'orthopaede',       label: 'Orthopäde',                        gruppe: 'gesundheit', leistungen: ['Gelenkuntersuchung','Sportmedizin','Injektionstherapie','Stoßwellentherapie','Einlagenberatung','Gutachten'], stil: 'klassisch' },
+  { value: 'hno',              label: 'HNO-Arzt',                         gruppe: 'gesundheit', leistungen: ['Hörtest','Allergie-Diagnostik','Stimmdiagnostik','Endoskopie','Schlafapnoe','Kinder-HNO'], stil: 'klassisch' },
+  { value: 'augenarzt',        label: 'Augenarzt',                        gruppe: 'gesundheit', leistungen: ['Sehtest','Augeninnendruck','Netzhautuntersuchung','Kontaktlinsen-Anpassung','Kinderaugen','Führerschein-Gutachten'], stil: 'klassisch' },
+  { value: 'kinderarzt',       label: 'Kinderarzt / Pädiater',            gruppe: 'gesundheit', leistungen: ['Mutter-Kind-Pass','Impfungen','Akutversorgung','Entwicklungsdiagnostik','Ernährungsberatung','Jugendmedizin'], stil: 'modern' },
+  { value: 'internist',        label: 'Internist',                        gruppe: 'gesundheit', leistungen: ['Herz-Kreislauf','Diabetes','Magen-Darm','Ultraschall','EKG','Gesundheitscheck'], stil: 'klassisch' },
+  { value: 'chiropraktiker',   label: 'Chiropraktiker',                   gruppe: 'gesundheit', leistungen: ['Wirbelsäulentherapie','Gelenkmanipulation','Schmerzbehandlung','Haltungsanalyse','Sportverletzungen','Beratung'], stil: 'modern' },
   { value: 'zahnarzt',         label: 'Zahnarztpraxis',                   gruppe: 'gesundheit', leistungen: ['Zahnreinigung','Füllungen','Zahnersatz','Implantate','Kieferorthopädie','Ästhetische Zahnmedizin'], stil: 'klassisch' },
   { value: 'tierarzt',         label: 'Tierarztpraxis',                   gruppe: 'gesundheit', leistungen: ['Vorsorge & Impfungen','Chirurgie','Zahnmedizin','Notfallversorgung','Hausbesuche','Ernährungsberatung'], stil: 'klassisch' },
   { value: 'apotheke',         label: 'Apotheke',                         gruppe: 'gesundheit', leistungen: ['Rezepteinlösung','Beratung','Naturheilmittel','Kosmetik','Vorbestellung','Lieferservice'], stil: 'klassisch' },
@@ -133,6 +163,11 @@ export const BRANCHEN = [
   { value: 'architekt',        label: 'Architekt / Planungsbüro',         gruppe: 'dienstleistung', leistungen: ['Entwurfsplanung','Einreichplanung','Ausführungsplanung','Bauleitung','Sanierungsplanung','Beratung'], stil: 'elegant' },
   { value: 'it_service',       label: 'IT-Service / EDV-Betreuung',       gruppe: 'dienstleistung', leistungen: ['IT-Support','Netzwerk & Server','Cloud-Lösungen','Datensicherung','Software-Beratung','Wartungsverträge'], stil: 'modern' },
   { value: 'werbeagentur',     label: 'Werbeagentur / Grafik & Design',   gruppe: 'dienstleistung', leistungen: ['Corporate Design','Webdesign','Print & Drucksorten','Social Media','Fotografie','Kampagnenplanung'], stil: 'modern' },
+  { value: 'webdesigner',      label: 'Webdesigner / Web-Agentur',        gruppe: 'dienstleistung', leistungen: ['Websites','Online-Shops','SEO-Optimierung','Webhosting','Wartung & Pflege','Beratung'], stil: 'modern' },
+  { value: 'hochzeitsplaner',  label: 'Hochzeitsplaner',                  gruppe: 'dienstleistung', leistungen: ['Komplettplanung','Tag-des-Tages-Koordination','Locationsuche','Dekoration','Zeremonie','Budgetplanung'], stil: 'elegant' },
+  { value: 'hausbetreuung',    label: 'Hausbetreuung / Winterdienst',     gruppe: 'dienstleistung', leistungen: ['Winterdienst','Gartenpflege','Kontrolle bei Abwesenheit','Reinigung','Kleinreparaturen','Jahresvertrag'], stil: 'klassisch' },
+  { value: 'personenbetreuung',label: '24h-Personenbetreuung / Pflege',   gruppe: 'dienstleistung', leistungen: ['24h-Betreuung','Pflege','Haushaltshilfe','Begleitung zum Arzt','Vermittlung','Beratung'], stil: 'klassisch' },
+  { value: 'kinderbetreuung',  label: 'Kinderbetreuung / Tagesmutter',    gruppe: 'dienstleistung', leistungen: ['Tagesbetreuung','Stundenweise Betreuung','Hausaufgabenbetreuung','Ausflüge','Ferienbetreuung','Elterngespräche'], stil: 'modern' },
   { value: 'bestattung',       label: 'Bestattung',                       gruppe: 'dienstleistung', leistungen: ['Erdbestattung','Feuerbestattung','Trauerfeier','Überführung','Vorsorge','Beratung & Begleitung'], stil: 'elegant' },
   { value: 'notar',            label: 'Notar',                            gruppe: 'dienstleistung', leistungen: ['Kaufverträge','Gesellschaftsverträge','Beglaubigungen','Verlassenschaften','Eheverträge','Vorsorgevollmacht'], stil: 'klassisch' },
   { value: 'finanzberater',    label: 'Finanzberater / Vermögensberatung',gruppe: 'dienstleistung', leistungen: ['Vermögensaufbau','Altersvorsorge','Finanzplanung','Kreditberatung','Veranlagung','Erstgespräch'], stil: 'klassisch' },
@@ -154,6 +189,51 @@ export const BRANCHEN = [
   { value: 'reitschule',       label: 'Reitschule / Reitstall',           gruppe: 'bildung', leistungen: ['Reitunterricht','Longierstunden','Ausritte','Ferienkurse','Pferdeeinstellung','Beritt'], stil: 'elegant' },
   { value: 'schwimmschule',    label: 'Schwimmschule',                    gruppe: 'bildung', leistungen: ['Babyschwimmen','Kinderschwimmkurse','Erwachsenenkurse','Techniktraining','Aquafitness','Einzelunterricht'], stil: 'modern' },
   { value: 'coach',            label: 'Coach / Trainer (Business & Life)',gruppe: 'bildung', leistungen: ['Business Coaching','Life Coaching','Karriereberatung','Teamentwicklung','Workshops & Seminare','Online-Coaching'], stil: 'modern' },
+  { value: 'sprachschule',     label: 'Sprachschule',                     gruppe: 'bildung', leistungen: ['Gruppenkurse','Einzelunterricht','Prüfungsvorbereitung','Business-Sprachkurse','Online-Unterricht','Ferienkurse'], stil: 'modern' },
+  { value: 'fitnessstudio',    label: 'Fitnessstudio',                    gruppe: 'bildung', leistungen: ['Krafttraining','Cardio-Bereich','Gruppenkurse','Personal Training','Sauna & Wellness','Ernährungsberatung'], stil: 'modern' },
+  { value: 'ballettschule',    label: 'Ballettschule',                    gruppe: 'bildung', leistungen: ['Kinderballett','Erwachsenenballett','Spitzentanz','Modern Dance','Workshops','Aufführungen'], stil: 'elegant' },
+  { value: 'kampfsport',       label: 'Kampfsport / Karate / Judo',       gruppe: 'bildung', leistungen: ['Kinder-Training','Erwachsenen-Training','Selbstverteidigung','Wettkampftraining','Probetraining','Prüfungen'], stil: 'modern' },
+  { value: 'skilehrer',        label: 'Skischule / Ski-Snowboardlehrer',  gruppe: 'bildung', leistungen: ['Kinder-Skikurse','Erwachsenen-Kurse','Privatstunden','Snowboard-Kurse','Gruppenreisen','Ausrüstung'], stil: 'modern' },
+  { value: 'bergfuehrer',      label: 'Bergführer / Wanderführer',        gruppe: 'bildung', leistungen: ['Hochtouren','Klettersteige','Wanderungen','Skitouren','Kletterkurse','Firmenausflüge'], stil: 'elegant' },
+  { value: 'kochschule',       label: 'Kochschule',                       gruppe: 'bildung', leistungen: ['Kochkurse','Teamevents','Kinderkochen','Spezialitäten-Kurse','Private Dinner','Ferienkurse'], stil: 'elegant' },
+  // Tourismus & Beherbergung
+  { value: 'hotel',            label: 'Hotel',                            gruppe: 'tourismus', leistungen: ['Zimmer & Suiten','Frühstück','Restaurant','Wellness & Sauna','Seminarräume','Event-Buchungen'], stil: 'elegant' },
+  { value: 'pension',          label: 'Pension / Frühstückspension',      gruppe: 'tourismus', leistungen: ['Zimmer','Frühstück','Familienzimmer','Fahrradverleih','Ausflugstipps','WLAN'], stil: 'modern' },
+  { value: 'ferienwohnung',    label: 'Ferienwohnung / Apartment',        gruppe: 'tourismus', leistungen: ['Apartments','Langzeit-Angebote','Reinigungsservice','Fahrradverleih','Ausstattung','Ausflugstipps'], stil: 'modern' },
+  { value: 'urlaubambauernhof',label: 'Urlaub am Bauernhof',              gruppe: 'tourismus', leistungen: ['Ferienwohnungen','Frühstück vom Hof','Hoftiere','Wanderungen','Kinderprogramm','Hofladen'], stil: 'elegant' },
+  { value: 'campingplatz',     label: 'Campingplatz',                     gruppe: 'tourismus', leistungen: ['Stellplätze','Mobilheime','Sanitäranlagen','Pool & Freizeit','Shop','Animation'], stil: 'modern' },
+  { value: 'wellness_hotel',   label: 'Boutique- & Wellness-Hotel',       gruppe: 'tourismus', leistungen: ['Suiten','Gourmet-Restaurant','Spa & Wellness','Beauty-Treatments','Yoga & Meditation','Erlebnistouren'], stil: 'elegant' },
+  { value: 'almhuette',        label: 'Almhütte / Berghütte',             gruppe: 'tourismus', leistungen: ['Schlafmöglichkeiten','Küche','Getränke','Hüttenatmosphäre','Wanderziele','Tourenberatung'], stil: 'klassisch' },
+  // Einzelhandel & Shops
+  { value: 'modeboutique',     label: 'Modeboutique',                     gruppe: 'handel', leistungen: ['Damenmode','Herrenmode','Accessoires','Styling-Beratung','Online-Shop','Click & Collect'], stil: 'elegant' },
+  { value: 'schuhladen',       label: 'Schuhgeschäft',                    gruppe: 'handel', leistungen: ['Damenschuhe','Herrenschuhe','Kinderschuhe','Sportschuhe','Schuhpflege','Beratung & Anprobe'], stil: 'modern' },
+  { value: 'buchhandlung',     label: 'Buchhandlung',                     gruppe: 'handel', leistungen: ['Belletristik','Sachbücher','Kinderbücher','Geschenkbücher','Lesungen','Bestellservice'], stil: 'elegant' },
+  { value: 'moebelhaus',       label: 'Möbelhaus / Einrichtung',          gruppe: 'handel', leistungen: ['Möbel','Leuchten','Accessoires','Planung','Lieferung & Montage','Einrichtungsberatung'], stil: 'elegant' },
+  { value: 'sportgeschaeft',   label: 'Sportgeschäft',                    gruppe: 'handel', leistungen: ['Sportbekleidung','Outdoor-Ausrüstung','Ski-Verleih','Fahrräder','Schuhberatung','Reparaturen'], stil: 'modern' },
+  { value: 'elektronikhandel', label: 'Elektronikhandel',                 gruppe: 'handel', leistungen: ['Computer & Laptops','Smartphones','Haushaltsgeräte','Beratung','Reparaturen','Zustellung'], stil: 'modern' },
+  { value: 'bioladen',         label: 'Bioladen / Feinkost',              gruppe: 'handel', leistungen: ['Bio-Lebensmittel','Regionales','Feinkost','Weine','Geschenkkörbe','Lieferservice'], stil: 'elegant' },
+  { value: 'trachten',         label: 'Trachten & Dirndl',                gruppe: 'handel', leistungen: ['Damen-Dirndl','Herren-Trachten','Kinder-Trachten','Maßanfertigung','Brautdirndl','Beratung'], stil: 'elegant' },
+  { value: 'antiquitaeten',    label: 'Antiquitäten / Vintage',           gruppe: 'handel', leistungen: ['Möbel','Schmuck','Porzellan','Restaurierung','Schätzungen','Ankauf'], stil: 'elegant' },
+  { value: 'fahrradhandel',    label: 'Fahrradhandel',                    gruppe: 'handel', leistungen: ['Fahrräder','E-Bikes','Zubehör','Beratung','Probefahrten','Wartung & Service'], stil: 'modern' },
+  { value: 'spielwaren',       label: 'Spielwaren',                       gruppe: 'handel', leistungen: ['Kinderspielzeug','Brettspiele','Outdoor-Spielzeug','Lernspielzeug','Geschenkverpackung','Wunschliste'], stil: 'modern' },
+  // Mobilität & Transport
+  { value: 'taxi',             label: 'Taxi / Mietwagen',                 gruppe: 'mobilitaet', leistungen: ['Taxifahrten','Flughafentransfer','Gruppenfahrten','Kurierfahrten','Festpreise','24/7 erreichbar'], stil: 'klassisch' },
+  { value: 'limousine',        label: 'Limousinen- & Chauffeur-Service',  gruppe: 'mobilitaet', leistungen: ['Hochzeitsfahrten','Business-Fahrten','Flughafentransfer','Event-Service','Stadtrundfahrten','Festpreise'], stil: 'elegant' },
+  { value: 'spedition',        label: 'Spedition / Transport',            gruppe: 'mobilitaet', leistungen: ['Nationale Transporte','Internationale Transporte','Sondertransporte','Lagerung','Zollabwicklung','Angebotserstellung'], stil: 'klassisch' },
+  { value: 'kurierdienst',     label: 'Kurierdienst',                     gruppe: 'mobilitaet', leistungen: ['Stadtkurier','Expresslieferung','Großkunden','Sonderfahrten','Dokumenten-Transport','Online-Buchung'], stil: 'modern' },
+  { value: 'pannendienst',     label: 'Pannen- & Abschleppdienst',        gruppe: 'mobilitaet', leistungen: ['Pannenhilfe','Abschleppdienst','Fahrzeugbergung','Starthilfe','Reifenpanne','Notdienst 24/7'], stil: 'klassisch' },
+  { value: 'busunternehmen',   label: 'Busunternehmen / Reisebus',        gruppe: 'mobilitaet', leistungen: ['Reisebusse','Transfers','Vereinsfahrten','Ausflüge','Hochzeitsbusse','Angebotsanfragen'], stil: 'klassisch' },
+  // Landwirtschaft & Direktvermarktung
+  { value: 'imker',            label: 'Imker / Honigmanufaktur',          gruppe: 'agrar', leistungen: ['Honig','Bienenwachs-Produkte','Propolis','Met','Imkereibedarf','Führungen'], stil: 'elegant' },
+  { value: 'hofladen',         label: 'Hofladen / Direktvermarkter',      gruppe: 'agrar', leistungen: ['Frische Produkte','Fleisch & Wurst','Milchprodukte','Säfte & Most','Gemüse','Abholung & Lieferung'], stil: 'klassisch' },
+  { value: 'obstbauer',        label: 'Obstbauer / Obstgarten',           gruppe: 'agrar', leistungen: ['Frisches Obst','Säfte','Marmeladen','Edelbrände','Selbstpflücken','Hofverkauf'], stil: 'elegant' },
+  { value: 'brennerei',        label: 'Destillerie / Brennerei',          gruppe: 'agrar', leistungen: ['Edelbrände','Liköre','Gin','Verkostungen','Führungen','Online-Shop'], stil: 'elegant' },
+  { value: 'baumschule',       label: 'Baumschule / Gärtnerei (Verkauf)', gruppe: 'agrar', leistungen: ['Obstbäume','Ziergehölze','Stauden','Zimmerpflanzen','Beratung','Lieferung'], stil: 'modern' },
+  // Kultur & Kunst
+  { value: 'galerie',          label: 'Kunstgalerie',                     gruppe: 'kultur', leistungen: ['Ausstellungen','Kunstverkauf','Vernissagen','Kunstberatung','Künstlerportfolio','Events'], stil: 'elegant' },
+  { value: 'kuenstler',        label: 'Künstler (Maler / Bildhauer)',     gruppe: 'kultur', leistungen: ['Werke','Auftragsarbeiten','Atelier-Besuche','Ausstellungen','Workshops','Editionen'], stil: 'elegant' },
+  { value: 'musiker',          label: 'Musiker / Band',                   gruppe: 'kultur', leistungen: ['Hochzeiten','Firmenfeiern','Konzerte','Studio-Aufnahmen','Unterricht','Booking'], stil: 'modern' },
+  { value: 'theater',          label: 'Theater / Kleinbühne',             gruppe: 'kultur', leistungen: ['Vorstellungen','Spielplan','Abonnements','Kinderprogramm','Workshops','Saalmiete'], stil: 'elegant' },
   // Sonstige
   { value: 'sonstige',         label: 'Anderer Beruf (nicht in der Liste)', gruppe: 'sonstige', leistungen: [], stil: 'klassisch' },
 ];
@@ -222,7 +302,7 @@ export const ACCENT_PRESETS = [
 
 /* Default-Accent pro Branche (variiert innerhalb jeder Branchengruppe) */
 export const BRANCHEN_ACCENTS = {
-  elektro:'#0369A1',installateur:'#0E7490',maler:'#2563EB',tischler:'#A16207',fliesenleger:'#0E7490',schlosser:'#0369A1',dachdecker:'#B45309',zimmerei:'#B45309',maurer:'#0369A1',bodenleger:'#0E7490',glaser:'#2563EB',gaertner:'#047857',klima:'#0E7490',reinigung:'#0369A1',kfz:'#B91C1C',aufsperrdienst:'#B91C1C',hafner:'#B45309',raumausstatter:'#A16207',goldschmied:'#A16207',schneider:'#A16207',rauchfangkehrer:'#0369A1',schaedlingsbekaempfung:'#047857',fahrradwerkstatt:'#047857',erdbau:'#B45309',kosmetik:'#B45309',friseur:'#B91C1C',nagel:'#B91C1C',massage:'#047857',tattoo:'#0369A1',fusspflege:'#0E7490',permanent_makeup:'#A16207',hundesalon:'#B45309',restaurant:'#A16207',cafe:'#B45309',bar:'#B91C1C',heuriger:'#047857',imbiss:'#B91C1C',catering:'#A16207',baeckerei:'#B45309',fleischerei:'#B91C1C',winzer:'#047857',physiotherapie:'#0E7490',arzt:'#0369A1',zahnarzt:'#0369A1',tierarzt:'#047857',apotheke:'#047857',optiker:'#2563EB',psychotherapie:'#0E7490',ergotherapie:'#0E7490',logopaedie:'#2563EB',energetiker:'#047857',hebamme:'#B45309',diaetologe:'#047857',hoerakustiker:'#0369A1',zahntechnik:'#0369A1',heilmasseur:'#0E7490',osteopath:'#0E7490',lebensberater:'#B45309',steuerberater:'#0369A1',rechtsanwalt:'#0369A1',versicherung:'#2563EB',immobilien:'#A16207',hausverwaltung:'#0E7490',umzug:'#B45309',eventplanung:'#B91C1C',fotograf:'#A16207',florist:'#047857',architekt:'#0369A1',it_service:'#2563EB',werbeagentur:'#B91C1C',bestattung:'#0369A1',notar:'#0369A1',finanzberater:'#047857',reisebuero:'#0E7490',innenarchitekt:'#A16207',textilreinigung:'#0E7490',unternehmensberater:'#2563EB',dolmetscher:'#0E7490',druckerei:'#B91C1C',sicherheitsdienst:'#0369A1',fahrschule:'#B91C1C',nachhilfe:'#2563EB',musikschule:'#B91C1C',trainer:'#047857',yoga:'#047857',hundeschule:'#B45309',tanzschule:'#A16207',reitschule:'#B45309',schwimmschule:'#0E7490',coach:'#2563EB',sonstige:'#0369A1',
+  elektro:'#0369A1',installateur:'#0E7490',maler:'#2563EB',tischler:'#A16207',fliesenleger:'#0E7490',schlosser:'#0369A1',dachdecker:'#B45309',zimmerei:'#B45309',maurer:'#0369A1',bodenleger:'#0E7490',glaser:'#2563EB',gaertner:'#047857',klima:'#0E7490',reinigung:'#0369A1',kfz:'#B91C1C',aufsperrdienst:'#B91C1C',hafner:'#B45309',raumausstatter:'#A16207',goldschmied:'#A16207',schneider:'#A16207',rauchfangkehrer:'#0369A1',schaedlingsbekaempfung:'#047857',fahrradwerkstatt:'#047857',erdbau:'#B45309',steinmetz:'#A16207',uhrmacher:'#A16207',stuckateur:'#0369A1',kosmetik:'#B45309',friseur:'#B91C1C',barbershop:'#0369A1',nagel:'#B91C1C',massage:'#047857',spa:'#A16207',tattoo:'#0369A1',fusspflege:'#0E7490',permanent_makeup:'#A16207',hundesalon:'#B45309',restaurant:'#A16207',cafe:'#B45309',bar:'#B91C1C',heuriger:'#047857',imbiss:'#B91C1C',pizzeria:'#B91C1C',eissalon:'#B45309',vinothek:'#047857',catering:'#A16207',baeckerei:'#B45309',fleischerei:'#B91C1C',winzer:'#047857',physiotherapie:'#0E7490',arzt:'#0369A1',dermatologe:'#B45309',gynaekologe:'#B91C1C',orthopaede:'#0369A1',hno:'#0E7490',augenarzt:'#2563EB',kinderarzt:'#047857',internist:'#0369A1',chiropraktiker:'#047857',zahnarzt:'#0369A1',tierarzt:'#047857',apotheke:'#047857',optiker:'#2563EB',psychotherapie:'#0E7490',ergotherapie:'#0E7490',logopaedie:'#2563EB',energetiker:'#047857',hebamme:'#B45309',diaetologe:'#047857',hoerakustiker:'#0369A1',zahntechnik:'#0369A1',heilmasseur:'#0E7490',osteopath:'#0E7490',lebensberater:'#B45309',steuerberater:'#0369A1',rechtsanwalt:'#0369A1',versicherung:'#2563EB',immobilien:'#A16207',hausverwaltung:'#0E7490',umzug:'#B45309',eventplanung:'#B91C1C',fotograf:'#A16207',florist:'#047857',architekt:'#0369A1',it_service:'#2563EB',werbeagentur:'#B91C1C',webdesigner:'#2563EB',hochzeitsplaner:'#A16207',hausbetreuung:'#047857',personenbetreuung:'#0E7490',kinderbetreuung:'#047857',bestattung:'#0369A1',notar:'#0369A1',finanzberater:'#047857',reisebuero:'#0E7490',innenarchitekt:'#A16207',textilreinigung:'#0E7490',unternehmensberater:'#2563EB',dolmetscher:'#0E7490',druckerei:'#B91C1C',sicherheitsdienst:'#0369A1',fahrschule:'#B91C1C',nachhilfe:'#2563EB',musikschule:'#B91C1C',trainer:'#047857',yoga:'#047857',hundeschule:'#B45309',tanzschule:'#A16207',reitschule:'#B45309',schwimmschule:'#0E7490',coach:'#2563EB',sprachschule:'#2563EB',fitnessstudio:'#B91C1C',ballettschule:'#A16207',kampfsport:'#B91C1C',skilehrer:'#2563EB',bergfuehrer:'#047857',kochschule:'#B45309',hotel:'#A16207',pension:'#B45309',ferienwohnung:'#0E7490',urlaubambauernhof:'#B45309',campingplatz:'#047857',wellness_hotel:'#A16207',almhuette:'#B45309',modeboutique:'#A16207',schuhladen:'#B45309',buchhandlung:'#0369A1',moebelhaus:'#A16207',sportgeschaeft:'#B91C1C',elektronikhandel:'#2563EB',bioladen:'#047857',trachten:'#B45309',antiquitaeten:'#A16207',fahrradhandel:'#047857',spielwaren:'#B91C1C',taxi:'#B45309',limousine:'#0369A1',spedition:'#0E7490',kurierdienst:'#B91C1C',pannendienst:'#B91C1C',busunternehmen:'#0369A1',imker:'#B45309',hofladen:'#047857',obstbauer:'#047857',brennerei:'#B45309',baumschule:'#047857',galerie:'#A16207',kuenstler:'#A16207',musiker:'#B91C1C',theater:'#A16207',sonstige:'#0369A1',
 };
 
 /* Kontrast-Check: zu helle Farben automatisch abdunkeln fuer weissen Text */

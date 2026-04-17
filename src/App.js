@@ -580,7 +580,7 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
       id:orderId,user_id:userId,vorname,nachname,
       firmenname:snap.firmenname,branche:snap.branche,branche_label:snap.brancheLabel,
       kurzbeschreibung:snap.kurzbeschreibung,bundesland:snap.bundesland,
-      leistungen:snap.leistungen,extra_leistung:snap.extraLeistung,notdienst:snap.notdienst,meisterbetrieb:snap.meisterbetrieb,kostenvoranschlag:snap.kostenvoranschlag,buchungslink:snap.buchungslink||null,whatsapp:snap.whatsapp||null,hausbesuche:snap.hausbesuche,terminvereinbarung:snap.terminvereinbarung,foerderungsberatung:snap.foerderungsberatung,lieferservice:snap.lieferservice,barrierefrei:snap.barrierefrei,parkplaetze:snap.parkplaetze,kassenvertrag:snap.kassenvertrag||null,erstgespraech_gratis:snap.erstgespraech_gratis,online_beratung:snap.online_beratung,ratenzahlung:snap.ratenzahlung,
+      leistungen:snap.leistungen,extra_leistung:snap.extraLeistung,notdienst:snap.notdienst,meisterbetrieb:snap.meisterbetrieb,kostenvoranschlag:snap.kostenvoranschlag,buchungslink:snap.buchungslink||null,whatsapp:snap.whatsapp||null,hausbesuche:snap.hausbesuche,terminvereinbarung:snap.terminvereinbarung,foerderungsberatung:snap.foerderungsberatung,lieferservice:snap.lieferservice,barrierefrei:snap.barrierefrei,parkplaetze:snap.parkplaetze,kassenvertrag:snap.kassenvertrag||null,erstgespraech_gratis:snap.erstgespraech_gratis,online_beratung:snap.online_beratung,ratenzahlung:snap.ratenzahlung,fruehstueck:snap.fruehstueck||false,wlan:snap.wlan||false,haustiere:snap.haustiere||false,online_shop:snap.online_shop||false,
       adresse:snap.adresse,plz:snap.plz,ort:snap.ort,telefon:snap.telefon,email:snap.email,
       uid_nummer:snap.uid,oeffnungszeiten:snap.oeffnungszeiten,einsatzgebiet:snap.einsatzgebiet,
       unternehmensform:snap.unternehmensform,firmenbuchnummer:snap.firmenbuchnummer,gisazahl:snap.gisazahl,firmenbuchgericht:snap.firmenbuchgericht,
@@ -2951,6 +2951,16 @@ function Portal({session,onLogout}){
             <Toggle label="Gutscheine erhältlich" checked={!!order.gutscheine} onChange={upOrder("gutscheine")} desc="Geschenkgutscheine zum Kaufen"/>
             <div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,fontSize:".78rem",color:T.textMuted,marginTop:8}}>Preisliste (PDF) können Sie unter <button onClick={()=>nav("leistungen")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0,textDecoration:"underline"}}>Leistungen</button> hochladen.</div>
           </div>
+          {(ft.includes("fruehstueck")||ft.includes("wlan")||ft.includes("haustiere"))&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Tourismus-Angebote" desc="Was bieten Sie Gästen? Wird als Badges angezeigt."/>
+            {ft.includes("fruehstueck")&&<Toggle label="Frühstück inklusive" checked={!!order.fruehstueck} onChange={upOrder("fruehstueck")} desc="Zeigt Frühstücks-Badge"/>}
+            {ft.includes("wlan")&&<Toggle label="WLAN kostenlos" checked={!!order.wlan} onChange={upOrder("wlan")} desc="Wichtig für Geschäftsreisende"/>}
+            {ft.includes("haustiere")&&<Toggle label="Haustiere willkommen" checked={!!order.haustiere} onChange={upOrder("haustiere")} desc="Für Reisende mit Hund"/>}
+          </div>}
+          {ft.includes("online_shop")&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <SectionHeader label="Verkauf" desc="Online-Shop oder andere Verkaufsoptionen."/>
+            <Toggle label="Online-Shop verfügbar" checked={!!order.online_shop} onChange={upOrder("online_shop")} desc="Kunden können online bestellen/reservieren"/>
+          </div>}
         </>})()}
         {page==="social"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Social Media" desc="Ihre Profile erscheinen als Icons im Footer. Nur ausfüllen was Sie aktiv nutzen."/>

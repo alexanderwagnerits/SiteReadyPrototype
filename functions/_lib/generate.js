@@ -282,6 +282,15 @@ export async function generateWebsite(order_id, env) {
     fahrradwerkstatt: "Service anfragen", rauchfangkehrer: "Termin vereinbaren",
     steinmetz: "Beratung anfragen", uhrmacher: "Anfrage stellen",
     stuckateur: "Angebot anfordern",
+    // Handwerk Defaults (Fallback wenn kein notdienst/KV aktiv)
+    elektro: "Angebot anfordern", installateur: "Angebot anfordern",
+    fliesenleger: "Angebot anfordern", schlosser: "Anfrage stellen",
+    dachdecker: "Angebot anfordern", zimmerei: "Angebot anfordern",
+    maurer: "Angebot anfordern", glaser: "Anfrage stellen",
+    gaertner: "Angebot anfordern", klima: "Angebot anfordern",
+    reinigung: "Angebot anfordern", kfz: "Termin vereinbaren",
+    aufsperrdienst: "Jetzt anrufen", hafner: "Beratung anfragen",
+    schaedlingsbekaempfung: "Einsatz anfragen", erdbau: "Angebot anfordern",
     // Neue Gesundheit
     dermatologe: "Termin vereinbaren", gynaekologe: "Termin vereinbaren",
     orthopaede: "Termin vereinbaren", hno: "Termin vereinbaren",
@@ -389,6 +398,10 @@ export async function generateWebsite(order_id, env) {
   if (o.gastgarten) merkmaleText.push("Gastgarten");
   if (o.takeaway) merkmaleText.push("Take-away");
   if (o.lieferservice) merkmaleText.push("Lieferservice");
+  if (o.fruehstueck) merkmaleText.push("Frühstück inklusive");
+  if (o.wlan) merkmaleText.push("WLAN kostenlos");
+  if (o.haustiere) merkmaleText.push("Haustiere willkommen");
+  if (o.online_shop) merkmaleText.push("Online-Shop");
   if (merkmaleText.length > 0) importContext.push(`BESONDERHEITEN: ${merkmaleText.join(", ")}`);
 
   // Team als Kontext

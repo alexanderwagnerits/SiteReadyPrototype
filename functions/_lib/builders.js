@@ -18,9 +18,9 @@ export function buildNav(o, pal, stil) {
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:80px;display:flex;align-items:center;justify-content:space-between;transition:height .3s ease}
 #sitenav.scrolled .nav-inner{height:56px}
 .nav-links{display:flex;align-items:center;gap:28px}
-.nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s}
+.nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
 .nav-link:hover{opacity:.7}
-.nav-cta{background:var(--accent);color:#fff!important;padding:9px 18px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:.85rem;white-space:nowrap;transition:all .25s}
+.nav-cta{background:var(--accent);color:#fff!important;padding:11px 22px;border-radius:${stil.btnR || stil.r};font-weight:700;font-size:.85rem;white-space:nowrap;transition:all .25s;display:inline-flex;align-items:center;min-height:44px}
 .nav-cta:hover{opacity:.85!important}
 .hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;min-width:44px;min-height:44px;align-items:center;justify-content:center}
 .hbg-bar{width:24px;height:2px;background:rgba(255,255,255,.9);border-radius:2px;transition:transform .3s ease,opacity .3s ease}
@@ -116,7 +116,7 @@ ${email   ? `<a href="mailto:{{EMAIL}}" style="color:rgba(255,255,255,.7);text-d
 </div>
 </div>
 </footer>
-<style>@media(max-width:900px){.ft-grid{grid-template-columns:1fr 1fr!important}}@media(max-width:540px){.ft-grid{grid-template-columns:1fr!important}}</style>`;
+<style>@media(max-width:900px){.ft-grid{grid-template-columns:1fr 1fr!important}}@media(max-width:540px){.ft-grid{grid-template-columns:1fr!important}}@media(max-width:768px){footer a{padding:8px 0!important;display:inline-block}footer .ft-grid>div>div[style*="flex-direction:column"] a{padding:10px 0!important}}</style>`;
 }
 
 /* ═══ Impressum-Builder (ECG-konform, rechtsformspezifisch) ═══ */

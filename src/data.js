@@ -305,6 +305,17 @@ export const BRANCHEN_ACCENTS = {
   elektro:'#0369A1',installateur:'#0E7490',maler:'#2563EB',tischler:'#A16207',fliesenleger:'#0E7490',schlosser:'#0369A1',dachdecker:'#B45309',zimmerei:'#B45309',maurer:'#0369A1',bodenleger:'#0E7490',glaser:'#2563EB',gaertner:'#047857',klima:'#0E7490',reinigung:'#0369A1',kfz:'#B91C1C',aufsperrdienst:'#B91C1C',hafner:'#B45309',raumausstatter:'#A16207',goldschmied:'#A16207',schneider:'#A16207',rauchfangkehrer:'#0369A1',schaedlingsbekaempfung:'#047857',fahrradwerkstatt:'#047857',erdbau:'#B45309',steinmetz:'#A16207',uhrmacher:'#A16207',stuckateur:'#0369A1',kosmetik:'#B45309',friseur:'#B91C1C',barbershop:'#0369A1',nagel:'#B91C1C',massage:'#047857',spa:'#A16207',tattoo:'#0369A1',fusspflege:'#0E7490',permanent_makeup:'#A16207',hundesalon:'#B45309',restaurant:'#A16207',cafe:'#B45309',bar:'#B91C1C',heuriger:'#047857',imbiss:'#B91C1C',pizzeria:'#B91C1C',eissalon:'#B45309',vinothek:'#047857',catering:'#A16207',baeckerei:'#B45309',fleischerei:'#B91C1C',winzer:'#047857',physiotherapie:'#0E7490',arzt:'#0369A1',dermatologe:'#B45309',gynaekologe:'#B91C1C',orthopaede:'#0369A1',hno:'#0E7490',augenarzt:'#2563EB',kinderarzt:'#047857',internist:'#0369A1',chiropraktiker:'#047857',zahnarzt:'#0369A1',tierarzt:'#047857',apotheke:'#047857',optiker:'#2563EB',psychotherapie:'#0E7490',ergotherapie:'#0E7490',logopaedie:'#2563EB',energetiker:'#047857',hebamme:'#B45309',diaetologe:'#047857',hoerakustiker:'#0369A1',zahntechnik:'#0369A1',heilmasseur:'#0E7490',osteopath:'#0E7490',lebensberater:'#B45309',steuerberater:'#0369A1',rechtsanwalt:'#0369A1',versicherung:'#2563EB',immobilien:'#A16207',hausverwaltung:'#0E7490',umzug:'#B45309',eventplanung:'#B91C1C',fotograf:'#A16207',florist:'#047857',architekt:'#0369A1',it_service:'#2563EB',werbeagentur:'#B91C1C',webdesigner:'#2563EB',hochzeitsplaner:'#A16207',hausbetreuung:'#047857',personenbetreuung:'#0E7490',kinderbetreuung:'#047857',bestattung:'#0369A1',notar:'#0369A1',finanzberater:'#047857',reisebuero:'#0E7490',innenarchitekt:'#A16207',textilreinigung:'#0E7490',unternehmensberater:'#2563EB',dolmetscher:'#0E7490',druckerei:'#B91C1C',sicherheitsdienst:'#0369A1',fahrschule:'#B91C1C',nachhilfe:'#2563EB',musikschule:'#B91C1C',trainer:'#047857',yoga:'#047857',hundeschule:'#B45309',tanzschule:'#A16207',reitschule:'#B45309',schwimmschule:'#0E7490',coach:'#2563EB',sprachschule:'#2563EB',fitnessstudio:'#B91C1C',ballettschule:'#A16207',kampfsport:'#B91C1C',skilehrer:'#2563EB',bergfuehrer:'#047857',kochschule:'#B45309',hotel:'#A16207',pension:'#B45309',ferienwohnung:'#0E7490',urlaubambauernhof:'#B45309',campingplatz:'#047857',wellness_hotel:'#A16207',almhuette:'#B45309',modeboutique:'#A16207',schuhladen:'#B45309',buchhandlung:'#0369A1',moebelhaus:'#A16207',sportgeschaeft:'#B91C1C',elektronikhandel:'#2563EB',bioladen:'#047857',trachten:'#B45309',antiquitaeten:'#A16207',fahrradhandel:'#047857',spielwaren:'#B91C1C',taxi:'#B45309',limousine:'#0369A1',spedition:'#0E7490',kurierdienst:'#B91C1C',pannendienst:'#B91C1C',busunternehmen:'#0369A1',imker:'#B45309',hofladen:'#047857',obstbauer:'#047857',brennerei:'#B45309',baumschule:'#047857',galerie:'#A16207',kuenstler:'#A16207',musiker:'#B91C1C',theater:'#A16207',sonstige:'#0369A1',
 };
 
+/* Kontrast-Ratio einer Farbe gegen weiss (WCAG 4.5:1 = AA Text, 3:1 = AA Large/UI) */
+export function contrastRatioVsWhite(hex) {
+  if (!hex || !/^#[0-9a-fA-F]{6}$/.test(hex)) return 1;
+  const lum = (c) => {
+    const v = parseInt(c, 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const L = 0.2126 * lum(hex.slice(1, 3)) + 0.7152 * lum(hex.slice(3, 5)) + 0.0722 * lum(hex.slice(5, 7));
+  return (1 + 0.05) / (L + 0.05);
+}
+
 /* Kontrast-Check: zu helle Farben automatisch abdunkeln fuer weissen Text */
 export function ensureContrast(hex, minRatio = 4.5) {
   if (!hex || !/^#[0-9a-fA-F]{6}$/.test(hex)) return hex;
@@ -392,6 +403,44 @@ export function buildPaletteFromAccent(accent, stil) {
     custom_text: '#1e293b',
     custom_text_muted: '#475569',
   };
+}
+
+/* 3 Harmonische Paletten-Vorschlaege basierend auf Akzentfarbe */
+export function suggestPalettesFromAccent(accent, stil) {
+  const [h, s] = hexToHsl(accent);
+  const es = Math.min(s, 80);
+  // Variante 1: Dezent — fast neutrale Palette, Accent bringt die Farbe
+  const dezent = {
+    custom_color: hslToHex(h, Math.min(es * 0.2, 10), 14),
+    custom_accent: accent,
+    custom_bg: hslToHex(h, Math.min(es * 0.05, 3), 98),
+    custom_sep: hslToHex(h, Math.min(es * 0.08, 5), 92),
+    custom_text: '#18181b',
+    custom_text_muted: '#71717a',
+  };
+  // Variante 2: Natuerlich — warme Grundtoene, gedaempfte Stimmung
+  const natuerlich = {
+    custom_color: hslToHex(h, Math.min(es * 0.35, 22), 17),
+    custom_accent: accent,
+    custom_bg: hslToHex(30, 14, 96),
+    custom_sep: hslToHex(30, 10, 89),
+    custom_text: '#2c2620',
+    custom_text_muted: '#6b6058',
+  };
+  // Variante 3: Ausdrucksstark — tiefe primary aus dem Akzent-Hue, leicht getoentes BG
+  const bold = {
+    custom_color: hslToHex(h, Math.min(es * 0.9, 55), 11),
+    custom_accent: accent,
+    custom_bg: hslToHex(h, Math.min(es * 0.1, 6), 97),
+    custom_sep: hslToHex(h, Math.min(es * 0.15, 10), 90),
+    custom_text: '#18181b',
+    custom_text_muted: '#6b6b7a',
+  };
+  return [
+    { name: 'Dezent', desc: 'Neutral, Akzent-betont', colors: dezent },
+    { name: 'Natürlich', desc: 'Warm, gedämpft', colors: natuerlich },
+    { name: 'Ausdrucksstark', desc: 'Tief, mit Akzent-Hue', colors: bold },
+  ];
 }
 
 export const STEPS = [

@@ -473,7 +473,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-modern .kontakt-item-value{font-size:.9rem}
 .stil-modern .kontakt-tel{color:var(--accent)}
 .stil-modern .kontakt-tel:hover{opacity:.7}
-.stil-modern .kontakt-social a{width:40px;height:40px;border-radius:50%;border:none;background:color-mix(in srgb,var(--accent) 8%,#fff);color:var(--accent)}
+.stil-modern .kontakt-social a{width:44px;height:44px;border-radius:50%;border:none;background:color-mix(in srgb,var(--accent) 8%,#fff);color:var(--accent)}
 .stil-modern .kontakt-social a:hover{background:var(--accent);color:#fff;transform:translateY(-2px)}
 .stil-modern .kontakt-map{border-radius:16px}
 
@@ -517,11 +517,23 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .k-form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .k-form-row-2{grid-template-columns:1fr 1fr}
 .k-form-field{margin-bottom:12px}
-.k-form button{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font);min-height:48px;transition:all .2s}
+.k-form button{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font);min-height:48px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;position:relative}
 .k-form button:hover{opacity:.85}
-.k-form-ok{display:none;text-align:center;padding:40px 20px}
+.k-form button:disabled{opacity:.7;cursor:wait}
+.k-form button .kf-spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:kf-spin .7s linear infinite}
+.k-form button.loading .kf-spinner{display:inline-block}
+.k-form button.loading .kf-label{opacity:.7}
+@keyframes kf-spin{to{transform:rotate(360deg)}}
+#sr-form-wrap{transition:opacity .3s ease}
+#sr-form-wrap.fading{opacity:0;pointer-events:none}
+.k-form-ok{display:none;text-align:center;padding:40px 20px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+.k-form-ok.visible{display:block;opacity:1;transform:translateY(0)}
 .k-form-ok h4{font-size:1.1rem;font-weight:800;color:var(--primary);margin:12px 0 6px}
 .k-form-ok p{color:var(--textMuted);font-size:.88rem}
+.k-form-check{width:56px;height:56px;border-radius:50%;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto;animation:kf-check .45s cubic-bezier(.22,1,.36,1) .1s backwards}
+.k-form-check svg{width:28px;height:28px;stroke-dasharray:30;stroke-dashoffset:30;animation:kf-draw .4s cubic-bezier(.22,1,.36,1) .3s forwards}
+@keyframes kf-check{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes kf-draw{to{stroke-dashoffset:0}}
 
 /* Form — Modern */
 .stil-modern .k-form input,.stil-modern .k-form textarea{padding:12px 16px;border-width:2px;border-radius:12px}

@@ -8,7 +8,7 @@ import {
   getBrancheFeatures, getBrancheGruppe,
   BUNDESLAENDER, OEFFNUNGSZEITEN, UNTERNEHMENSFORMEN,
   STYLES_MAP, ACCENT_PRESETS,
-  ensureContrast, buildPaletteFromAccent,
+  ensureContrast, contrastRatioVsWhite, buildPaletteFromAccent, suggestPalettesFromAccent,
   INIT,
 } from "./data";
 import { CTA, CTA_G, CTA_L, T, LP_FONT, css } from "./theme";
@@ -1342,8 +1342,22 @@ function Questionnaire({data,setData,onComplete,onBack}){
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <input type="color" value={currentAccent} onChange={e=>{const v=ensureContrast(e.target.value);up("accentColor")(v);setHexInput(v.toUpperCase())}} style={{width:36,height:36,border:`2px solid ${T.bg3}`,borderRadius:T.rSm,cursor:"pointer",padding:0}}/>
                 <input value={hexInput} maxLength={7} onChange={e=>{const v=e.target.value;setHexInput(v);if(/^#[0-9A-Fa-f]{6}$/.test(v)){up("accentColor")(ensureContrast(v))}}} placeholder="#000000" style={{width:90,padding:"6px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontFamily:T.mono,fontSize:".82rem",fontWeight:600,color:T.dark}}/>
-                <div style={{fontSize:".72rem",color:T.textMuted}}>Eigene Farbe (wird bei Bedarf abgedunkelt)</div>
+                <div style={{fontSize:".72rem",color:T.textMuted}}>Eigene Farbe</div>
               </div>
+              {/* Kontrast-Info */}
+              {(()=>{
+                const userHex=/^#[0-9A-Fa-f]{6}$/.test(hexInput)?hexInput:currentAccent;
+                const adjusted=ensureContrast(userHex);
+                const wasDarkened=userHex.toLowerCase()!==adjusted.toLowerCase();
+                const ratio=contrastRatioVsWhite(adjusted);
+                const ratioOk=ratio>=4.5;
+                return<div style={{marginTop:10,padding:"10px 12px",background:wasDarkened?"#fef3c7":ratioOk?T.greenLight:"#fef3c7",border:`1px solid ${wasDarkened?"#fcd34d":ratioOk?"rgba(22,163,74,.2)":"#fcd34d"}`,borderRadius:T.rSm,fontSize:".74rem",color:wasDarkened?"#78350f":ratioOk?T.green:"#78350f",lineHeight:1.55,display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontWeight:800,fontFamily:T.mono}}>{ratio.toFixed(2)}:1</span>
+                  {wasDarkened?<span><strong>Angepasst</strong> — Ihre Farbe war zu hell und wurde für gute Lesbarkeit auf Weiß abgedunkelt.</span>
+                  :ratioOk?<span><strong>Guter Kontrast</strong> — erfüllt WCAG AA (4.5:1) auf weißem Hintergrund.</span>
+                  :<span><strong>Niedriger Kontrast</strong> — unter WCAG AA (4.5:1). Texte werden schwer lesbar.</span>}
+                </div>;
+              })()}
               {data.accentColor&&<button onClick={()=>{up("accentColor")("");}} style={{marginTop:12,padding:"6px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textMuted,cursor:"pointer",fontSize:".78rem",fontWeight:500,fontFamily:T.font}}>Auf Branchenstandard zurücksetzen</button>}
             </div>}
             <div style={{padding:"12px 14px",background:T.accentLight,borderRadius:T.rSm,border:"1px solid rgba(143,163,184,.15)"}}><div style={{fontSize:".78rem",fontWeight:700,color:T.accent,marginBottom:3}}>Jederzeit änderbar</div><div style={{fontSize:".78rem",color:T.textSub,lineHeight:1.65}}>Stil und Akzentfarbe können Sie im Portal jederzeit anpassen. Für volle Kontrolle gibt es dort auch Einzelpicker für alle Farben.</div></div>
@@ -2801,7 +2815,37 @@ function Portal({session,onLogout}){
                   <input value={currentAccent} maxLength={7} onChange={e=>{const v=e.target.value;if(/^#[0-9A-Fa-f]{6}$/.test(v)){const safe=ensureContrast(v);upOrder("custom_accent")(safe);const pal=buildPaletteFromAccent(safe,order.stil||"klassisch");Object.entries(pal).forEach(([k,vv])=>upOrder(k)(vv));}}} style={{width:90,padding:"5px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontFamily:T.mono,fontSize:".82rem",fontWeight:600,color:T.dark}}/>
                   <div style={{fontSize:".72rem",color:T.textMuted}}>Eigene Farbe (Palette passt sich automatisch an)</div>
                 </div>
+                {/* Kontrast-Info */}
+                {(()=>{
+                  const ratio=contrastRatioVsWhite(currentAccent);
+                  const ratioOk=ratio>=4.5;
+                  return<div style={{marginTop:10,padding:"8px 12px",background:ratioOk?T.greenLight:"#fef3c7",border:`1px solid ${ratioOk?"rgba(22,163,74,.2)":"#fcd34d"}`,borderRadius:T.rSm,fontSize:".74rem",color:ratioOk?T.green:"#78350f",display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontWeight:800,fontFamily:T.mono}}>{ratio.toFixed(2)}:1</span>
+                    {ratioOk?<span>Guter Kontrast auf Weiß (WCAG AA)</span>:<span>Kontrast unter WCAG AA 4.5:1 — Texte werden schwer lesbar</span>}
+                  </div>;
+                })()}
               </div>
+
+              {/* Vorschlaege zur Akzentfarbe */}
+              {(()=>{
+                const suggestions=suggestPalettesFromAccent(currentAccent,order.stil||"klassisch");
+                return<div style={{marginBottom:24}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Vorschläge zu Ihrer Akzentfarbe</div>
+                  <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:10,lineHeight:1.5}}>Automatisch harmonisch abgestimmt — ein Klick übernimmt Hintergrund, Primary und Trennlinien.</div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:8}}>
+                    {suggestions.map((p,i)=>{const pc=p.colors;const matches=order.custom_color===pc.custom_color&&order.custom_bg===pc.custom_bg;return<button key={i} onClick={()=>{Object.entries(pc).forEach(([k,v])=>upOrder(k)(v));}} style={{padding:"12px",border:`2px solid ${matches?T.dark:T.bg3}`,borderRadius:T.rSm,background:matches?T.bg:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s"}}>
+                      <div style={{display:"flex",gap:0,marginBottom:10,borderRadius:4,overflow:"hidden",height:28,border:"1px solid rgba(0,0,0,.08)"}}>
+                        <div style={{flex:1.5,background:pc.custom_color}}/>
+                        <div style={{flex:1,background:pc.custom_accent}}/>
+                        <div style={{flex:2,background:pc.custom_bg}}/>
+                        <div style={{flex:.5,background:pc.custom_sep}}/>
+                      </div>
+                      <div style={{fontSize:".82rem",fontWeight:700,color:T.dark}}>{p.name}</div>
+                      <div style={{fontSize:".7rem",color:T.textMuted,marginTop:2}}>{p.desc}</div>
+                    </button>})}
+                  </div>
+                </div>;
+              })()}
 
               {/* Paletten */}
               <div style={{marginBottom:20}}>

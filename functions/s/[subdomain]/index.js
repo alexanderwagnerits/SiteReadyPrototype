@@ -771,7 +771,7 @@ export async function onRequestGet({params, env}) {
     const inlineForm = `<div class="k-form">` +
       `<h3>${headline}</h3>` +
       `<div id="sr-form-wrap">` +
-      `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
+      `<form id="sr-kf">` +
       `<div class="k-form-row">` +
       `<div><label for="sr-kf-name"><span>Name *</span></label><input id="sr-kf-name" name="name" required aria-required="true" type="text" placeholder="Ihr Name" autocomplete="name"></div>` +
       `<div><label for="sr-kf-email"><span>E-Mail *</span></label><input id="sr-kf-email" name="email" required aria-required="true" type="email" placeholder="ihre@email.at" autocomplete="email" inputmode="email"></div>` +
@@ -779,14 +779,15 @@ export async function onRequestGet({params, env}) {
       `</div>` +
       extraFields +
       `<div class="k-form-field"><label for="sr-kf-msg"><span>${msgLabel} *</span></label><textarea id="sr-kf-msg" name="message" required aria-required="true" rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +
-      `<button type="submit">${btnText}</button>` +
+      `<button type="submit" id="sr-kf-btn"><span class="kf-spinner" aria-hidden="true"></span><span class="kf-label">${btnText}</span></button>` +
       `</form></div>` +
-      `<div id="sr-form-ok" class="k-form-ok">` +
-      `<div style="font-size:1.8rem;color:#16a34a">&#10003;</div>` +
+      `<div id="sr-form-ok" class="k-form-ok" role="status" aria-live="polite">` +
+      `<div class="k-form-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>` +
       `<h4>Vielen Dank!</h4>` +
       `<p>${okText}</p>` +
       `<p style="font-size:.75rem;color:#94a3b8;margin-top:12px">Hinweis: Im Testbetrieb wird diese Nachricht nicht zugestellt. Das Formular ist eine Vorschau.</p>` +
       `</div>` +
+      `<script>(function(){var f=document.getElementById('sr-kf');if(!f)return;f.addEventListener('submit',function(e){e.preventDefault();if(!f.checkValidity()){f.reportValidity();return;}var btn=document.getElementById('sr-kf-btn');btn.classList.add('loading');btn.disabled=true;setTimeout(function(){var wrap=document.getElementById('sr-form-wrap');var ok=document.getElementById('sr-form-ok');wrap.classList.add('fading');setTimeout(function(){wrap.style.display='none';ok.classList.add('visible');ok.scrollIntoView({behavior:'smooth',block:'center'});},320);},850);});})();</script>` +
       `</div>`;
     html = html.replace("<!-- KONTAKT_FORM -->", inlineForm);
   }

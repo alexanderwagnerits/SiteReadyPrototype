@@ -211,6 +211,10 @@ export async function generateWebsite(order_id, env) {
   if (o.meisterbetrieb) trustItems.push("Meisterbetrieb");
   trustItems.push(o.einsatzgebiet || o.bundesland || "Oesterreich");
   if (o.kostenvoranschlag) trustItems.push("Kostenloser Kostenvoranschlag");
+  if (o.fruehstueck) trustItems.push("Frühstück inklusive");
+  if (o.wlan) trustItems.push("WLAN kostenlos");
+  if (o.haustiere) trustItems.push("Haustiere willkommen");
+  if (o.online_shop) trustItems.push("Online-Shop");
   if (leistungen.length >= 3) trustItems.push(`${leistungen.length} Leistungsbereiche`);
   const oezLabel = o.oeffnungszeiten_custom || ({"mo-fr-8-17":"Mo–Fr 8–17 Uhr","mo-fr-7-16":"Mo–Fr 7–16 Uhr","mo-fr-8-18":"Mo–Fr 8–18 Uhr","mo-sa-8-17":"Mo–Sa 8–17 Uhr","mo-sa-8-12":"Mo–Sa 8–12 Uhr","vereinbarung":"Nach Vereinbarung"}[o.oeffnungszeiten]) || "Nach Vereinbarung";
   if (trustItems.length < 4) trustItems.push(oezLabel);
@@ -402,7 +406,7 @@ export async function generateWebsite(order_id, env) {
   if (o.wlan) merkmaleText.push("WLAN kostenlos");
   if (o.haustiere) merkmaleText.push("Haustiere willkommen");
   if (o.online_shop) merkmaleText.push("Online-Shop");
-  if (merkmaleText.length > 0) importContext.push(`BESONDERHEITEN: ${merkmaleText.join(", ")}`);
+  if (merkmaleText.length > 0) importContext.push(`BESONDERHEITEN (BINDEND — diese Fakten NICHT widersprechen in FAQ/gut_zu_wissen/Texten): ${merkmaleText.join(", ")}`);
 
   // Team als Kontext
   const teamArr = Array.isArray(o.team_members) ? o.team_members : [];
@@ -504,6 +508,14 @@ REGELN für spezifische Felder:
 - Leistungsbeschreibungen: MAXIMAL 15 Wörter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.
 - Vorteile: Nutze ECHTE Besonderheiten (Merkmale, Team, Spezialisierung) statt generische Phrasen. 3-6 Wörter pro Punkt. Müssen sich voneinander unterscheiden.
 - kontakt_cta: Branchenspezifisch, nicht generisch. Konkrete Handlungsaufforderung (z.B. "Termin vereinbaren", nicht "Kontakt aufnehmen").
+
+WICHTIG — BESONDERHEITEN als Fakten:
+Wenn im User-Prompt "BESONDERHEITEN" gelistet sind, sind das BINDENDE FAKTEN über den Betrieb. Du darfst ihnen in FAQ-Antworten und gut_zu_wissen NIEMALS widersprechen.
+- "Haustiere willkommen" → FAQ/gut_zu_wissen zu Haustieren muss POSITIV sein.
+- "Frühstück inklusive" → NICHT "optional dazubuchen" oder "auf Anfrage".
+- "WLAN kostenlos" → NICHT "gegen Aufpreis".
+- "Online-Shop" → erwähne den Shop, nicht "nur vor Ort".
+Nutze die BESONDERHEITEN aktiv als Verkaufsargumente in Vorteilen und Texten.
 
 JSON-FORMAT (nur diese Felder, keine zusätzlichen):
 {

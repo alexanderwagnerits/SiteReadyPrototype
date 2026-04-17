@@ -1556,6 +1556,7 @@ function Portal({session,onLogout}){
   const[confirmDel,setConfirmDel]=useState(null);
   const askDelete=(label,onConfirm)=>setConfirmDel({label,onConfirm});
   const[cropData,setCropData]=useState(null);
+  const[dragOverAbout,setDragOverAbout]=useState(false);
 
   useEffect(()=>{
     if(!supabase||!session?.user?.email)return;
@@ -1688,6 +1689,21 @@ function Portal({session,onLogout}){
     }
     // Bilder: Crop-Dialog öffnen
     setCropData({key,file});
+  };
+
+  // Batch-Upload: verteilt mehrere Dateien auf freie Slots, ohne Crop-Dialog.
+  const uploadBatch=async(files,candidateKeys)=>{
+    if(!files||!files.length)return;
+    const imageFiles=Array.from(files).filter(f=>f.type.startsWith("image/"));
+    if(!imageFiles.length){showToast("Nur Bilddateien moeglich");return;}
+    const freeKeys=candidateKeys.filter(k=>!assetUrls[k]);
+    if(!freeKeys.length){showToast("Alle Slots belegt — bitte erst einen freigeben");return;}
+    const pairs=imageFiles.slice(0,freeKeys.length).map((f,i)=>[freeKeys[i],f]);
+    const skipped=imageFiles.length-pairs.length;
+    for(const [k,f] of pairs){
+      await uploadBlob(k,f);
+    }
+    if(skipped>0)showToast(`${pairs.length} hochgeladen, ${skipped} uebersprungen (keine freien Slots)`);
   };
 
   const deleteAsset=async(key)=>{
@@ -3209,11 +3225,28 @@ function Portal({session,onLogout}){
           <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.5}}>Leistungsfotos können Sie direkt im <span style={{fontWeight:700,color:T.accent,cursor:"pointer"}} onClick={()=>nav("leistungen")}>Leistungen-Editor</span> pro Leistung zuordnen.</div>
         </div>
         {/* Über-uns-Fotos */}
-        {(()=>{const keys=["about1","about2","about3","about4","about5","about6","about7","about8"];return(
-        <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Über-uns-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
-          <div style={{fontSize:".82rem",color:T.textSub,marginBottom:16}}>Zeigen Sie Ihren Betrieb — Team, Werkstatt, Atmosphäre, Referenzen. Bis zu 8 Fotos.</div>
-          <div className="pt-about-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+        {(()=>{const keys=["about1","about2","about3","about4","about5","about6","about7","about8"];const freeCount=keys.filter(k=>!assetUrls[k]).length;return(
+        <div
+          style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${dragOverAbout?T.accent:T.bg3}`,boxShadow:T.sh1,transition:"border-color .15s",position:"relative"}}
+          onDragOver={e=>{e.preventDefault();if(!dragOverAbout)setDragOverAbout(true);}}
+          onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setDragOverAbout(false);}}
+          onDrop={e=>{e.preventDefault();setDragOverAbout(false);if(e.dataTransfer.files?.length)uploadBatch(e.dataTransfer.files,keys);}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Über-uns-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
+              <div style={{fontSize:".82rem",color:T.textSub}}>Zeigen Sie Ihren Betrieb — Team, Werkstatt, Atmosphäre, Referenzen. Bis zu 8 Fotos.</div>
+            </div>
+            {freeCount>0&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Mehrere auswählen
+              <input type="file" accept="image/*" multiple style={{display:"none"}} onChange={e=>{if(e.target.files?.length)uploadBatch(e.target.files,keys);e.target.value="";}}/>
+            </label>}
+          </div>
+          <div style={{fontSize:".74rem",color:T.textMuted,marginTop:8,marginBottom:16,padding:"8px 12px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{verticalAlign:"-2px",marginRight:6,opacity:.6}}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Tipp: Sie können mehrere Fotos gleichzeitig hierher ziehen — sie werden automatisch auf freie Plätze verteilt.
+          </div>
+          <div className="pt-about-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,pointerEvents:dragOverAbout?"none":"auto"}}>
             {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
               <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
                 <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -3229,6 +3262,9 @@ function Portal({session,onLogout}){
               </div>
             );})}
           </div>
+          {dragOverAbout&&<div style={{position:"absolute",inset:0,background:"rgba(143,163,184,.12)",borderRadius:T.r,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",border:`2.5px dashed ${T.accent}`}}>
+            <div style={{fontSize:".95rem",fontWeight:800,color:T.accent,background:"#fff",padding:"10px 20px",borderRadius:T.rSm,boxShadow:T.sh2}}>Fotos hier ablegen ({freeCount} {freeCount===1?"freier Platz":"freie Plätze"})</div>
+          </div>}
         </div>);})()}
         <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,fontSize:".78rem",color:T.textSub}}>
           Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.

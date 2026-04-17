@@ -6,7 +6,8 @@ const STIL = {
   klassisch: {
     p:"#094067", a:"#0369a1", bg:"#f4f7fa", s:"#d8eefe",
     font: "Inter",
-    url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+    fontHeading: "Merriweather",
+    url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Merriweather:wght@400;700;900&display=swap",
     r: "4px", rLg: "6px", btnR: "4px",
     feel: "serioes, klar, vertrauenswuerdig, zeitlos, geschaeftlich professionell",
     heroDecor: "3 horizontale Accent-Linien oben rechts (position:absolute, top:48px, right:32px, width:48px/72px/36px, height:2px, background:var(--accent), opacity:.4, gestaffelt mit margin-bottom:8px).",
@@ -16,7 +17,8 @@ const STIL = {
   modern: {
     p:"#18181b", a:"#4f46e5", bg:"#fafafa", s:"#e4e4e7",
     font: "Plus Jakarta Sans",
-    url: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
+    fontHeading: "Space Grotesk",
+    url: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap",
     r: "12px", rLg: "16px", btnR: "100px",
     feel: "modern, dynamisch, frisch, mit Akzenten, einladend",
     heroDecor: "Grosser Hintergrund-Blob: position:absolute, width:480px, height:480px, border-radius:60% 40% 55% 45%, background:var(--accent), opacity:.1, top:-80px, right:-80px, filter:blur(64px), pointer-events:none.",
@@ -582,7 +584,8 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
+      max_tokens: 8192,
+      thinking: { type: "enabled", budget_tokens: 2000 },
       system: [
         { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
       ],
@@ -611,7 +614,8 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
   // Sonnet 4.6: Input $3/M, Cache-Write $3.75/M (+25%), Cache-Read $0.30/M (-90%), Output $15/M.
   const costEur = Math.round(((tokIn * 3 + tokCacheWrite * 3.75 + tokCacheRead * 0.30 + tokOut * 15) / 1000000) * 0.92 * 10000) / 10000;
 
-  let rawText = aiData.content?.[0]?.text || "{}";
+  // Mit Extended Thinking enthaelt content[] zuerst einen thinking-Block, dann text.
+  let rawText = aiData.content?.find(c => c.type === "text")?.text || "{}";
   rawText = rawText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
   let texts = {};

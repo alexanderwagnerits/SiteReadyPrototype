@@ -586,19 +586,21 @@ ${fullText}${structuredHint}${webSearchHint}${emailHint}${phoneHint}`;
 
     const claudeData = await callClaude({
         model: "claude-sonnet-4-6",
-        max_tokens: 8192,
+        max_tokens: 10240,
+        thinking: { type: "enabled", budget_tokens: 2000 },
         system: [
           { type: "text", text: extractSystem, cache_control: { type: "ephemeral" } },
         ],
         messages: [{ role: "user", content: extractUser }],
-      }, 45000);
+      }, 60000);
 
     if (claudeData._error) {
       await log.error("import", {message: claudeData._message, url: cleanUrl});
       return Response.json({error: claudeData._message}, {status: claudeData._error === "rate_limit" ? 429 : 500});
     }
 
-    const rawContent = claudeData.content?.[0]?.text || "{}";
+    // Mit Extended Thinking: text-Block finden (thinking-Block ist zuerst).
+    const rawContent = claudeData.content?.find(c => c.type === "text")?.text || "{}";
     const usage = claudeData.usage || {};
     const extractTokIn = usage.input_tokens || 0;
     const extractTokOut = usage.output_tokens || 0;

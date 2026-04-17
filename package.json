@@ -11,7 +11,8 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx,json,css}\" \"functions/**/*.js\"",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
     "dev:full": "npm run build && wrangler pages dev ./build",
-    "check:functions": "find functions -name '*.js' -exec node --check {} \\;"
+    "check:functions": "find functions -name '*.js' -exec node --check {} \\;",
+    "lighthouse": "mkdir -p .lighthouse && npx lighthouse $URL --output=json --output=html --output-path=.lighthouse/report --chrome-flags=\"--headless --no-sandbox\" --quiet --preset=desktop"
   },
   "eslintConfig": {
     "extends": [

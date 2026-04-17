@@ -63,7 +63,7 @@ var btn=document.getElementById('hbg');
 var mob=document.getElementById('mob-menu');
 var bd=document.getElementById('mob-bd');
 var open=false;
-function toggle(v){open=typeof v==='boolean'?v:!open;if(open){mob.classList.add('open');bd.classList.add('open');}else{mob.classList.remove('open');bd.classList.remove('open');}btn.setAttribute('aria-expanded',open?'true':'false');if(open)btn.classList.add('open');else btn.classList.remove('open');}
+function toggle(v){open=typeof v==='boolean'?v:!open;if(open){mob.classList.add('open');bd.classList.add('open');document.body.style.overflow='hidden';}else{mob.classList.remove('open');bd.classList.remove('open');document.body.style.overflow='';}btn.setAttribute('aria-expanded',open?'true':'false');if(open)btn.classList.add('open');else btn.classList.remove('open');}
 btn.addEventListener('click',function(){toggle();});
 bd.addEventListener('click',function(){toggle(false);});
 document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){toggle(false);});});

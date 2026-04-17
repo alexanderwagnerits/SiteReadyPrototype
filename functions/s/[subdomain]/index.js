@@ -158,16 +158,17 @@ export async function onRequestGet({params, env}) {
   const heroMinH1Weight = isElegant ? "500" : "800";
 
   if (v.hero === "minimal") {
-    // Minimal: Kein Bild, zentriert, reduziert
+    // Minimal: Kein Bild, zentriert, reduziert aber mit mehr Wucht
     const minimalStyle = `<style>
-.hero{min-height:70vh!important;min-height:70svh!important;justify-content:center;text-align:center}
-.hero-inner{display:flex!important;flex-direction:column;align-items:center}
-.hero h1{font-size:clamp(2.5rem,6vw,4rem)!important;max-width:100%;font-weight:${heroMinH1Weight}!important}
-.hero-desc{text-align:center;max-width:480px}
-.hero-btns{justify-content:center}
+.hero{min-height:82vh!important;min-height:82svh!important;justify-content:center;text-align:center}
+.hero-inner{display:flex!important;flex-direction:column;align-items:center;padding-top:80px;padding-bottom:60px}
+.hero h1{font-size:clamp(2.8rem,7.5vw,5.2rem)!important;max-width:900px;font-weight:${heroMinH1Weight}!important;line-height:1.05;letter-spacing:-.03em}
+.hero-desc{text-align:center;max-width:560px;font-size:1.02rem;line-height:1.8;margin-bottom:40px}
+.hero-btns{justify-content:center;gap:14px}
 .hero-trust{justify-content:center}
-.hero-sub{margin-bottom:16px}
-.hero-accent-line{display:block!important;width:48px;height:${isElegant ? "1px" : "2px"};background:var(--accent);margin:16px auto 24px;opacity:.6}
+.hero-sub{margin-bottom:24px}
+.hero-accent-line{display:block!important;width:64px;height:${isElegant ? "1px" : "3px"};background:var(--accent);margin:20px auto 28px;opacity:.7}
+@media(max-width:768px){.hero{min-height:72vh!important;min-height:72svh!important}.hero h1{font-size:clamp(2.2rem,8vw,3.4rem)!important}.hero-inner{padding-top:56px;padding-bottom:40px}}
 </style>`;
     html = html.replace("</head>", minimalStyle + "</head>");
   } else if (v.hero === "split") {
@@ -735,9 +736,9 @@ export async function onRequestGet({params, env}) {
       headline = "Reservierung anfragen";
       extraFields =
         `<div class="k-form-row">` +
-        `<div><label>Datum</label><input type="date" autocomplete="off"></div>` +
-        `<div><label>Uhrzeit</label><input type="time" autocomplete="off"></div>` +
-        `<div><label>Personen</label><input type="number" min="1" max="50" placeholder="2" inputmode="numeric" autocomplete="off"></div>` +
+        `<div><label for="sr-kf-date"><span>Datum</span></label><input id="sr-kf-date" name="datum" type="date" autocomplete="off"></div>` +
+        `<div><label for="sr-kf-time"><span>Uhrzeit</span></label><input id="sr-kf-time" name="uhrzeit" type="time" autocomplete="off"></div>` +
+        `<div><label for="sr-kf-persons"><span>Personen</span></label><input id="sr-kf-persons" name="personen" type="number" min="1" max="50" placeholder="2" inputmode="numeric" autocomplete="off"></div>` +
         `</div>`;
       msgLabel = "Anmerkungen";
       msgPlaceholder = "z.B. Allergien, Kinderhochstuhl, besondere Wünsche...";
@@ -747,8 +748,8 @@ export async function onRequestGet({params, env}) {
       headline = "Termin anfragen";
       extraFields =
         `<div class="k-form-row k-form-row-2">` +
-        `<div><label>Wunschtermin</label><input type="date" autocomplete="off"></div>` +
-        `<div><label>Bevorzugte Uhrzeit</label><select aria-label="Bevorzugte Uhrzeit" style="width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);box-sizing:border-box;min-height:44px">` +
+        `<div><label for="sr-kf-wunsch"><span>Wunschtermin</span></label><input id="sr-kf-wunsch" name="wunschtermin" type="date" autocomplete="off"></div>` +
+        `<div><label for="sr-kf-zeit"><span>Bevorzugte Uhrzeit</span></label><select id="sr-kf-zeit" name="bevorzugte_zeit" style="width:100%;padding:11px 14px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.88rem;font-family:var(--font);background:#fff;color:var(--text);box-sizing:border-box;min-height:44px">` +
         `<option value="">Egal</option><option>Vormittag</option><option>Nachmittag</option><option>Abend</option>` +
         `</select></div>` +
         `</div>`;
@@ -759,7 +760,7 @@ export async function onRequestGet({params, env}) {
     } else if (angebot) {
       headline = "Anfrage senden";
       extraFields =
-        `<div class="k-form-field"><label>Adresse / Einsatzort</label><input type="text" placeholder="Straße, PLZ Ort" autocomplete="street-address"></div>`;
+        `<div class="k-form-field"><label for="sr-kf-addr"><span>Adresse / Einsatzort</span></label><input id="sr-kf-addr" name="einsatzort" type="text" placeholder="Straße, PLZ Ort" autocomplete="street-address"></div>`;
       msgLabel = "Beschreibung des Anliegens";
       msgPlaceholder = "Was soll gemacht werden? Bitte beschreiben Sie Ihr Anliegen möglichst genau.";
       msgRows = 6;
@@ -772,12 +773,12 @@ export async function onRequestGet({params, env}) {
       `<div id="sr-form-wrap">` +
       `<form id="sr-kf" onsubmit="document.getElementById('sr-form-wrap').style.display='none';document.getElementById('sr-form-ok').style.display='block';return false;">` +
       `<div class="k-form-row">` +
-      `<div><label>Name *</label><input required aria-required="true" type="text" placeholder="Ihr Name" autocomplete="name"></div>` +
-      `<div><label>E-Mail *</label><input required aria-required="true" type="email" placeholder="ihre@email.at" autocomplete="email" inputmode="email"></div>` +
-      `<div><label>Telefon</label><input type="tel" placeholder="+43 ..." autocomplete="tel" inputmode="tel"></div>` +
+      `<div><label for="sr-kf-name"><span>Name *</span></label><input id="sr-kf-name" name="name" required aria-required="true" type="text" placeholder="Ihr Name" autocomplete="name"></div>` +
+      `<div><label for="sr-kf-email"><span>E-Mail *</span></label><input id="sr-kf-email" name="email" required aria-required="true" type="email" placeholder="ihre@email.at" autocomplete="email" inputmode="email"></div>` +
+      `<div><label for="sr-kf-tel"><span>Telefon</span></label><input id="sr-kf-tel" name="tel" type="tel" placeholder="+43 ..." autocomplete="tel" inputmode="tel"></div>` +
       `</div>` +
       extraFields +
-      `<div class="k-form-field"><label>${msgLabel} *</label><textarea required aria-required="true" rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +
+      `<div class="k-form-field"><label for="sr-kf-msg"><span>${msgLabel} *</span></label><textarea id="sr-kf-msg" name="message" required aria-required="true" rows="${msgRows}" placeholder="${msgPlaceholder}"></textarea></div>` +
       `<button type="submit">${btnText}</button>` +
       `</form></div>` +
       `<div id="sr-form-ok" class="k-form-ok">` +

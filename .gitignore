@@ -12,3 +12,4 @@ package-lock.json
 skills-lock.json
 test-results/
 playwright-report/
+.lighthouse/

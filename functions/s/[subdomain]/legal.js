@@ -19,61 +19,111 @@ const BRANCHEN_KAMMER = {
   architekt: "Bundeskammer der ZiviltechnikerInnen",
 };
 
+// HTML-Escape fuer User-Daten (Defense gegen XSS)
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+
+// Pflichtfelder pro Unternehmensform — definiert was im Impressum stehen MUSS
 function buildImpressumRows(o) {
   const uf = o.unternehmensform || "";
   const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
   const firmaVoll = o.firmenname + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
   const sitz = [o.plz, o.ort].filter(Boolean).join(" ");
   const adresse = [o.adresse, sitz].filter(Boolean).join(", ");
-  // Fallback fuer Unternehmensgegenstand: Branche-Label wenn nicht explizit angegeben
   const ugFallback = o.unternehmensgegenstand || o.branche_label || "";
   const rows = [];
-  const add = (l, v) => { if (v && String(v).trim()) rows.push([l, String(v).trim()]); };
+  let missingCount = 0;
+
+  // Optional-Wert: nur einfuegen wenn vorhanden
+  const add = (l, v) => { if (v && String(v).trim()) rows.push([l, esc(String(v).trim())]); };
+  // Vorgefertigtes HTML (z.B. mailto-Link) — caller verantwortet Escape
+  const addHtml = (l, html) => { rows.push([l, html]); };
+  // Pflichtfeld: ergaenzen-Hinweis wenn leer (zaehlt missing hoch)
+  const addRequired = (l, v, hint) => {
+    if (v && String(v).trim()) {
+      rows.push([l, esc(String(v).trim())]);
+    } else {
+      missingCount++;
+      rows.push([l, `<span style="color:#b45309;font-style:italic;font-weight:500">[bitte im Portal ergänzen: ${esc(hint || l)}]</span>`]);
+    }
+  };
 
   add("Medieninhaber & Herausgeber", firmaVoll);
 
   if (uf === "einzelunternehmen") {
-    add("Inhaber", o.firmenname); add("Anschrift", adresse);
-    add("Unternehmensgegenstand", ugFallback);
+    add("Inhaber", o.firmenname);
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Unternehmensgegenstand", ugFallback, "Gewerbebezeichnung (z.B. Friseurleistungen, IT-Beratung)");
   } else if (uf === "eu") {
-    add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
-    add("Firmenbuchgericht", o.firmenbuchgericht);
-    add("Unternehmensgegenstand", ugFallback);
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Firmenbuchnummer", o.firmenbuchnummer, "Firmenbuchnummer (FN ...)");
+    addRequired("Firmenbuchgericht", o.firmenbuchgericht, "Firmenbuchgericht (z.B. HG Wien)");
+    addRequired("Unternehmensgegenstand", ugFallback, "Gewerbebezeichnung");
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "gmbh") {
-    add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
-    add("Firmenbuchgericht", o.firmenbuchgericht);
-    add("Geschäftsführer", o.geschaeftsfuehrer);
-    add("Unternehmensgegenstand", ugFallback);
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Firmenbuchnummer", o.firmenbuchnummer, "Firmenbuchnummer (FN ...)");
+    addRequired("Firmenbuchgericht", o.firmenbuchgericht, "Firmenbuchgericht (z.B. HG Wien)");
+    addRequired("Geschäftsführer", o.geschaeftsfuehrer, "Name(n) der Geschäftsführer");
+    addRequired("Unternehmensgegenstand", ugFallback, "Unternehmensgegenstand");
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
-  } else if (uf === "og" || uf === "kg") {
-    add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
-    add("Firmenbuchgericht", o.firmenbuchgericht);
-    add("Unternehmensgegenstand", ugFallback);
+  } else if (uf === "og") {
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Firmenbuchnummer", o.firmenbuchnummer, "Firmenbuchnummer (FN ...)");
+    addRequired("Firmenbuchgericht", o.firmenbuchgericht, "Firmenbuchgericht");
+    addRequired("Gesellschafter", o.gesellschafter, "alle unbeschränkt haftenden Gesellschafter");
+    addRequired("Unternehmensgegenstand", ugFallback, "Unternehmensgegenstand");
+    if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
+  } else if (uf === "kg") {
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Firmenbuchnummer", o.firmenbuchnummer, "Firmenbuchnummer (FN ...)");
+    addRequired("Firmenbuchgericht", o.firmenbuchgericht, "Firmenbuchgericht");
+    addRequired("Komplementär(e)", o.gesellschafter, "Name(n) der Komplementäre");
+    addRequired("Unternehmensgegenstand", ugFallback, "Unternehmensgegenstand");
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "ag") {
-    add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
-    add("Firmenbuchgericht", o.firmenbuchgericht);
-    add("Vorstand", o.vorstand); add("Aufsichtsrat", o.aufsichtsrat);
-    add("Unternehmensgegenstand", ugFallback);
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Firmenbuchnummer", o.firmenbuchnummer, "Firmenbuchnummer (FN ...)");
+    addRequired("Firmenbuchgericht", o.firmenbuchgericht, "Firmenbuchgericht");
+    addRequired("Vorstand", o.vorstand, "Name(n) des Vorstands");
+    addRequired("Aufsichtsrat", o.aufsichtsrat, "Vorsitz des Aufsichtsrats");
+    addRequired("Unternehmensgegenstand", ugFallback, "Unternehmensgegenstand");
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "verein") {
-    add("Vereinsname", o.firmenname); add("Anschrift", adresse);
-    add("ZVR-Zahl", o.zvr_zahl);
-    add("Vertretungsbefugte Organe", o.vertretungsorgane);
+    add("Vereinsname", o.firmenname);
+    addRequired("Anschrift", adresse, "Vereinssitz");
+    addRequired("ZVR-Zahl", o.zvr_zahl, "ZVR-Zahl (Zentrales Vereinsregister)");
+    addRequired("Vertretungsbefugte Organe", o.vertretungsorgane, "z.B. Obmann/Obfrau");
+    if (ugFallback) add("Vereinszweck", ugFallback);
   } else if (uf === "gesnbr") {
-    add("Bezeichnung", o.firmenname); add("Anschrift", adresse);
-    add("Unternehmensgegenstand", ugFallback);
-    add("Gesellschafter", o.gesellschafter);
+    add("Bezeichnung", o.firmenname);
+    addRequired("Anschrift", adresse, "Geschäftsanschrift");
+    addRequired("Gesellschafter", o.gesellschafter, "alle Gesellschafter");
+    addRequired("Unternehmensgegenstand", ugFallback, "Unternehmensgegenstand");
   } else {
-    add("Anschrift", adresse);
-    add("Unternehmensgegenstand", ugFallback);
+    addRequired("Rechtsform", "", "Einzelunternehmen / e.U. / GmbH / OG / KG / AG / Verein / GesnbR");
+    addRequired("Anschrift", adresse, "vollständige Geschäftsanschrift");
+    addRequired("Unternehmensgegenstand", ugFallback, "Unternehmensgegenstand");
   }
 
-  add("Telefon", o.telefon); add("E-Mail", o.email);
-  add("UID-Nummer", o.uid_nummer); add("GISA-Zahl", o.gisazahl);
+  // Kontaktdaten — klickbar (ECG verlangt schnelle elektronische Kontaktaufnahme)
+  if (o.telefon && String(o.telefon).trim()) {
+    const telClean = String(o.telefon).replace(/[\s\-/]/g,"");
+    addHtml("Telefon", `<a href="tel:${esc(telClean)}">${esc(o.telefon)}</a>`);
+  } else {
+    addRequired("Telefon", "", "Telefonnummer");
+  }
+  if (o.email && String(o.email).trim()) {
+    addHtml("E-Mail", `<a href="mailto:${esc(o.email)}">${esc(o.email)}</a>`);
+  } else {
+    addRequired("E-Mail", "", "E-Mail-Adresse für Kontaktaufnahme");
+  }
 
-  // Berufsbezeichnung + Verleihungsstaat (§ 5 ECG Abs. 1 Z 9)
+  add("UID-Nummer", o.uid_nummer);
+  add("GISA-Zahl", o.gisazahl);
+
+  // Berufsbezeichnung + Verleihungsstaat (§ 5 ECG Abs. 1 Z 9 — bei reglementierten Berufen)
   if (o.berufsbezeichnung) {
     add("Berufsbezeichnung", o.berufsbezeichnung);
     add("Verleihungsstaat", o.verleihungsstaat || "Österreich");
@@ -81,18 +131,17 @@ function buildImpressumRows(o) {
 
   if (o.aufsichtsbehoerde) {
     add("Aufsichtsbehörde", o.aufsichtsbehoerde);
-  } else if (uf !== "verein" && uf !== "gesnbr") {
+  } else if (uf !== "verein" && uf !== "gesnbr" && uf) {
     add("Aufsichtsbehörde", "Zuständige Bezirksverwaltungsbehörde");
   }
   if (o.kammer_berufsrecht) {
     add("Kammer / Berufsrecht", o.kammer_berufsrecht);
-  } else if (uf !== "verein" && uf !== "gesnbr") {
-    // Standes-/Berufskammer aus Branche, sonst WKO als Default
+  } else if (uf !== "verein" && uf !== "gesnbr" && uf) {
     const kammer = BRANCHEN_KAMMER[o.branche] || "Wirtschaftskammer Österreich";
     add("Mitglied der", kammer);
     add("Berufsrecht", "Gewerbeordnung (www.ris.bka.gv.at)");
   }
-  return {rows, firmaVoll, adresse};
+  return {rows, firmaVoll, adresse, missingCount};
 }
 
 const { normSocial } = require("../../_lib/shared");
@@ -291,12 +340,15 @@ export async function buildLegalPage(subdomain, page, env) {
 
   if (page === "impressum") {
     title = "Impressum";
-    const {rows: irows, firmaVoll, adresse} = buildImpressumRows(o);
+    const {rows: irows, missingCount} = buildImpressumRows(o);
     const tRows = irows.map(([l,v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join("");
+    const missingBanner = missingCount > 0
+      ? `<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:14px 18px;margin-bottom:24px;font-size:.85rem;color:#92400e;line-height:1.6"><strong>Hinweis:</strong> ${missingCount} ${missingCount === 1 ? "Pflichtangabe ist" : "Pflichtangaben sind"} unvollständig (orange markiert). Bitte ergänzen Sie ${missingCount === 1 ? "diese" : "diese"} im Portal — ein vollständiges Impressum ist gesetzlich vorgeschrieben (§ 5 ECG, § 25 MedienG).</div>`
+      : "";
     content = `<h1>Impressum</h1>
 <p class="h1-sub">Angaben gemäß § 5 ECG und § 25 MedienG</p>
 
-<table>${tRows}</table>
+${missingBanner}<table>${tRows}</table>
 
 <h2>Online-Streitbeilegung</h2>
 <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a></p>
@@ -309,7 +361,7 @@ export async function buildLegalPage(subdomain, page, env) {
 <p>Die Inhalte dieser Website unterliegen dem österreichischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Betreibers.</p>
 
 ${o.foto_credit ? `<h2>Bildnachweis</h2>
-<p>${o.foto_credit.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</p>` : ""}
+<p>${esc(o.foto_credit)}</p>` : ""}
 
 <p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;
   } else {
@@ -323,8 +375,8 @@ ${o.foto_credit ? `<h2>Bildnachweis</h2>
 <p class="h1-sub">Gemäß DSGVO (EU 2016/679) und TKG 2021</p>
 
 <h2>Verantwortlicher</h2>
-<p><strong>${firmaVoll}</strong><br>
-${adresse}${o.email ? `<br>${o.email}` : ""}${o.telefon ? `<br>${o.telefon}` : ""}</p>
+<p><strong>${esc(firmaVoll)}</strong><br>
+${esc(adresse)}${o.email ? `<br><a href="mailto:${esc(o.email)}">${esc(o.email)}</a>` : ""}${o.telefon ? `<br><a href="tel:${esc(String(o.telefon).replace(/[\s\-/]/g,""))}">${esc(o.telefon)}</a>` : ""}</p>
 
 <h2>Auftragsverarbeiter</h2>
 
@@ -367,7 +419,7 @@ ${adresse}${o.email ? `<br>${o.email}` : ""}${o.telefon ? `<br>${o.telefon}` : "
 <p>Beschwerden können Sie bei der österreichischen Datenschutzbehörde einreichen: Barichgasse 40\u201342, 1030 Wien \u2014 <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a></p>
 
 <h2>Kontakt bei Datenschutzfragen</h2>
-<p>Bei Fragen zum Datenschutz wenden Sie sich direkt an den Verantwortlichen: ${o.email ? `<a href="mailto:${o.email}">${o.email}</a>` : firmaVoll}${o.telefon ? ` \u2014 ${o.telefon}` : ""}</p>
+<p>Bei Fragen zum Datenschutz wenden Sie sich direkt an den Verantwortlichen: ${o.email ? `<a href="mailto:${esc(o.email)}">${esc(o.email)}</a>` : esc(firmaVoll)}${o.telefon ? ` \u2014 <a href="tel:${esc(String(o.telefon).replace(/[\s\-/]/g,""))}">${esc(o.telefon)}</a>` : ""}</p>
 
 <p class="note">Diese Datenschutzerklärung wurde auf Basis der eingesetzten Dienste und technischen Parameter erstellt. Für eine rechtsverbindliche Prüfung empfehlen wir die Kontrolle durch einen Datenschutzexperten.</p>`;
   }

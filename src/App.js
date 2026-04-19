@@ -1701,8 +1701,14 @@ function Portal({session,onLogout}){
     if(!supabase){showToast("Verbindungsfehler");return;}
     setUploading(u=>({...u,[key]:true}));
     try{
-      const path=`${session.user.id}/${key}.jpg`;
-      const{error}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});
+      // Format aus Blob-Type ableiten — Logos bleiben PNG/SVG/WebP (Transparenz!)
+      // statt zwangsweise zu JPEG mit weissem Hintergrund konvertiert zu werden.
+      const blobType=blob?.type||"image/jpeg";
+      const extMap={"image/png":"png","image/svg+xml":"svg","image/webp":"webp","image/gif":"gif","application/pdf":"pdf"};
+      const ext=extMap[blobType]||"jpg";
+      const contentType=blobType||"image/jpeg";
+      const path=`${session.user.id}/${key}.${ext}`;
+      const{error}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType});
       if(error){showToast("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
       // Cache-Buster muss auch in der DB-URL landen — sonst zeigt die Kunden-Website
@@ -1758,11 +1764,14 @@ function Portal({session,onLogout}){
 
   const upload=(key,file)=>{
     if(!file)return;
-    // Preisliste (PDF) und nicht-Bild-Dateien direkt hochladen
-    if(key==="preisliste"||!file.type.startsWith("image/")){
+    // Logos + Preisliste + nicht-Bilder: direkt durchreichen (Logo behaelt PNG-
+    // Transparenz und Original-Groesse — Crop zerstoert beides und erzwingt JPEG).
+    // Partner-Logos (ref_*) auch, aus demselben Grund.
+    const isLogo=key==="logo"||key.startsWith("ref_");
+    if(key==="preisliste"||isLogo||!file.type.startsWith("image/")){
       uploadBlob(key,file);return;
     }
-    // Bilder: Crop-Dialog öffnen
+    // Andere Bilder: Crop-Dialog öffnen
     setCropData({key,file});
   };
 
@@ -1871,7 +1880,7 @@ function Portal({session,onLogout}){
     </div>
   );
   const ASSETS=[
-    {key:"logo",label:"Logo",desc:"Wird in der Navigation angezeigt – am besten quadratisch oder Querformat"},
+    {key:"logo",label:"Logo",desc:"PNG mit transparentem Hintergrund empfohlen. Wird in der Navigation mit 64px Hoehe angezeigt."},
     {key:"foto1",label:"Foto 1",desc:""},
     {key:"foto2",label:"Foto 2",desc:""},
     {key:"foto3",label:"Foto 3",desc:""},

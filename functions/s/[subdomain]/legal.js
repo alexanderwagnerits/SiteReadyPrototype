@@ -151,7 +151,7 @@ function buildLegalNav(o, stil, subdomain) {
   const telDisplay = tel;
   const telHref = tel ? `tel:${tel.replace(/\s/g,"")}` : "";
   const logoHtml = o.url_logo
-    ? `<img src="${o.url_logo}" alt="${o.firmenname}" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">`
+    ? `<img src="${o.url_logo}" alt="${o.firmenname}" style="height:48px;width:auto;object-fit:contain;display:block;max-width:280px">`
     : o.firmenname;
   return `<style>
 #sitenav{position:sticky;top:0;z-index:1000;background:${stil.p}}

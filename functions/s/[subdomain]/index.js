@@ -122,11 +122,15 @@ export async function onRequestGet({params, env}) {
   }
 
   // Logo in Nav injizieren (ersetzt Firmenname-Text durch <img>)
+  // 48px Hoehe + max 280px Breite — moderner Standard (Apple 44, Stripe 32,
+  // Shopify 36). Mobile skaliert ueber media query auf 36px.
   if (o.url_logo) {
     html = html.replace(
       /(<a[^>]*id="site-nav-logo"[^>]*>)[\s\S]*?(<\/a>)/,
-      `$1<img src="${esc(o.url_logo)}" alt="${esc(o.firmenname || "")} Logo" loading="eager" style="height:64px;width:auto;object-fit:contain;display:block;max-width:240px">$2`
+      `$1<img src="${esc(o.url_logo)}" alt="${esc(o.firmenname || "")} Logo" loading="eager" class="sr-nav-logo" style="height:48px;width:auto;object-fit:contain;display:block;max-width:280px">$2`
     );
+    // Mobile-Reduktion
+    html = html.replace('</head>', `<style>@media(max-width:768px){.sr-nav-logo{height:36px!important;max-width:200px!important}}</style></head>`);
   }
 
   // Aktuelles-Banner injizieren (aktive Announcements mit Start/Enddatum)

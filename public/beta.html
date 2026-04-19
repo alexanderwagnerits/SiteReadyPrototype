@@ -27,6 +27,22 @@
     /* Content area */
     .content{background:#f5f5f2;color:#111;padding:48px 0 80px;border-radius:24px 24px 0 0}
 
+    /* Service card (Komplett-Service Vorstellung) */
+    .service-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:14px;padding:32px 32px 24px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+    .service-head h2{font-size:1.35rem;font-weight:800;color:#111;letter-spacing:-.02em;margin-bottom:8px;line-height:1.25}
+    .service-head p{font-size:.88rem;color:#555;line-height:1.6;margin-bottom:24px;max-width:640px}
+    .service-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,.06)}
+    .service-col-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8fa3b8;margin-bottom:14px}
+    .service-list{list-style:none;padding:0;margin:0}
+    .service-list li{position:relative;padding:8px 0 8px 24px;font-size:.85rem;color:#444;line-height:1.55;border-bottom:1px solid #f3f4f6}
+    .service-list li:last-child{border-bottom:none}
+    .service-list li::before{content:'';position:absolute;left:0;top:14px;width:14px;height:14px;border-radius:50%;background:#111;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'><polyline points='20 6 9 17 4 12'/></svg>");background-size:10px 10px;background-repeat:no-repeat;background-position:center}
+    .service-list li strong{color:#111;font-weight:700}
+    .service-list em{color:#666;font-style:italic;font-weight:400}
+    .service-list .opt{display:inline-block;font-size:.7rem;font-weight:700;color:#8fa3b8;text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+    .service-col-right .service-list li::before{background:#8fa3b8}
+    .service-tagline{margin-top:20px;padding-top:18px;border-top:1px solid rgba(0,0,0,.06);font-size:.92rem;font-weight:700;color:#111;text-align:center;letter-spacing:-.005em}
+
     /* Info banner */
     .info-banner{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:18px 22px;margin-bottom:32px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.04)}
     .info-icon{width:36px;height:36px;border-radius:9px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -102,6 +118,9 @@
       .cc-row{flex-direction:column;gap:12px}
       .hero h1{font-size:1.7rem}
       .hero-stats{flex-wrap:wrap}
+      .service-card{padding:24px 20px 18px}
+      .service-head h2{font-size:1.15rem}
+      .service-grid{grid-template-columns:1fr;gap:20px;padding-top:16px}
     }
   </style>
 </head>
@@ -127,6 +146,37 @@
 <!-- Content area (light) -->
 <div class="content">
   <div class="wrap">
+
+    <!-- SiteReady Komplett-Service Vorstellung -->
+    <div class="service-card">
+      <div class="service-head">
+        <h2>Komplett-Service. Du gibst nur deine Daten ein.</h2>
+        <p>Kein einmaliger Kauf — wir betreuen deine Website laufend. Hosting, Recht, SEO, Updates, Sicherheit. Alles inklusive.</p>
+      </div>
+      <div class="service-grid">
+        <div class="service-col">
+          <div class="service-col-label">Wir kümmern uns dauerhaft um:</div>
+          <ul class="service-list">
+            <li><strong>Hosting &amp; SSL</strong> — 24/7 erreichbar</li>
+            <li><strong>Subdomain</strong> sofort live (<em>firma</em>.sitereadyprototype.pages.dev)</li>
+            <li><strong>Impressum + DSGVO</strong> — bei Gesetzesänderung automatisch aktualisiert</li>
+            <li><strong>SEO</strong> — laufende Google-Optimierung</li>
+            <li><strong>Mobile &amp; Performance</strong> — automatisch optimiert</li>
+            <li><strong>Sicherheits-Updates &amp; tägliche Backups</strong></li>
+            <li><strong>Portal</strong> — Inhalte selbst änderbar, sofort live</li>
+          </ul>
+        </div>
+        <div class="service-col service-col-right">
+          <div class="service-col-label">Du machst nur:</div>
+          <ul class="service-list">
+            <li><strong>Daten eingeben</strong> (10 Minuten, einmalig)</li>
+            <li><span class="opt">Optional:</span> eigene Domain mitbringen — wir verbinden sie kostenlos</li>
+            <li><span class="opt">Optional:</span> Fotos &amp; Texte aktualisieren wann du willst</li>
+          </ul>
+        </div>
+      </div>
+      <div class="service-tagline">Sieben laufende Leistungen. 10 Minuten Aufwand für dich.</div>
+    </div>
 
     <!-- Prototyp-Hinweis -->
     <div style="background:#111;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px 22px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start">

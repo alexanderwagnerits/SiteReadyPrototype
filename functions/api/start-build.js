@@ -31,9 +31,9 @@ export async function onRequestPost(context) {
       });
       if (!userRes.ok) return Response.json({error: "Unauthorized"}, {status: 401});
       const user = await userRes.json();
-      if (!user?.email) return Response.json({error: "Unauthorized"}, {status: 401});
+      if (!user?.id) return Response.json({error: "Unauthorized"}, {status: 401});
       const orderRes = await fetch(
-        `${env.SUPABASE_URL}/rest/v1/orders?email=eq.${encodeURIComponent(user.email)}&select=id,status&order=created_at.desc&limit=1`,
+        `${env.SUPABASE_URL}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&select=id,status&order=created_at.desc&limit=1`,
         {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
       );
       const orders = await orderRes.json();

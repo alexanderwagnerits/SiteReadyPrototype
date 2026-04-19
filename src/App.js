@@ -546,6 +546,7 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
   const[buildPhase,setBuildPhase]=useState(0);
   const[resending,setResending]=useState(false);
   const[resent,setResent]=useState(false);
+  const[orderHtmlReady,setOrderHtmlReady]=useState(false);
   // Phasen-Animation waehrend Build (wird in handleOrder gestartet)
   useEffect(()=>{
     if(!building)return;
@@ -559,6 +560,23 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
     return()=>clearInterval(iv);
   },[building]);
   const[agbAccepted,setAgbAccepted]=useState(false);
+  // Sobald confirmed: pollt /s/sub bis Build wirklich fertig (verhindert iFrame-404)
+  useEffect(()=>{
+    if(!confirmed)return;
+    const sub=data.firmenname?data.firmenname.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,""):"firmenname";
+    let stopped=false;
+    const check=async()=>{try{const r=await fetch(`/s/${sub}`,{method:"HEAD"});return r.ok;}catch(_){return false;}};
+    (async()=>{
+      if(await check()){if(!stopped)setOrderHtmlReady(true);return;}
+      const iv=setInterval(async()=>{
+        if(stopped){clearInterval(iv);return;}
+        if(await check()){clearInterval(iv);if(!stopped)setOrderHtmlReady(true);}
+      },3000);
+      // Nach 90s nicht mehr warten — iFrame trotzdem zeigen, evtl 404 aber besser als ewig blockieren
+      setTimeout(()=>{clearInterval(iv);if(!stopped)setOrderHtmlReady(true);},90000);
+    })();
+    return()=>{stopped=true;};
+  },[confirmed,data.firmenname]);
   const pwErr=pwTouched&&pw.length>0&&pw.length<8?"Mindestens 8 Zeichen":"";
   const pw2Err=pw2Touched&&pw2&&pw!==pw2?"Passwörter stimmen nicht überein":"";
   const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail);
@@ -831,7 +849,7 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
               In neuem Tab öffnen
             </a>
           </div>
-          <iframe src={`/s/${sub}`} title="Ihre Website" style={{display:"block",width:"100%",height:580,border:"none",background:"#fff"}} loading="lazy"/>
+          {orderHtmlReady?<iframe src={`/s/${sub}`} title="Ihre Website" style={{display:"block",width:"100%",height:580,border:"none",background:"#fff"}} loading="lazy"/>:<div style={{height:580,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:14,background:"#fafafa"}}><div style={{width:36,height:36,border:`3px solid ${T.bg3}`,borderTopColor:T.dark,borderRadius:"50%",animation:"sb-rotate 1s linear infinite"}}/><div style={{fontSize:".88rem",color:T.textMuted,fontWeight:500}}>Letzte Schritte werden abgeschlossen…</div><div style={{fontSize:".75rem",color:T.textMuted}}>(Vorschau erscheint in wenigen Sekunden)</div></div>}
         </div>
         {/* Next steps */}
         <div className="q-split">
@@ -1924,6 +1942,7 @@ function Portal({session,onLogout}){
 .pt-sb-site{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
 .pt-sb-dot{width:7px;height:7px;border-radius:50%;background:${T.greenBright};flex-shrink:0;animation:sb-blink 2.5s ease-in-out infinite}
 @keyframes sb-blink{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes sb-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .pt-sb-url{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}
 .pt-sb-nav::-webkit-scrollbar{display:none}
@@ -3539,7 +3558,8 @@ function BuildScreen({session,setOrder}){
     {/* Timeout-Hinweis */}
     {!buildError&&buildElapsed>180&&<div style={{marginTop:24,padding:"16px 20px",background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:T.rSm,textAlign:"center"}}>
       <div style={{fontWeight:700,color:T.amberText,fontSize:".85rem",marginBottom:4}}>Das dauert länger als erwartet</div>
-      <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.5}}>Die Generierung läuft noch. Bitte lassen Sie diese Seite geöffnet oder kommen Sie später zurück.</div>
+      <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.5,marginBottom:12}}>Die Generierung läuft noch. Sie können die Seite aktualisieren — Ihr Fortschritt bleibt gespeichert.</div>
+      <button onClick={()=>window.location.reload()} style={{padding:"8px 18px",background:T.amberText,color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Seite neu laden</button>
     </div>}
     <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
   </div>);

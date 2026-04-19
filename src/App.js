@@ -611,13 +611,14 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
     try{await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:orderId})});}catch(e){console.error("start-build:",e);}
     /* Auto-Login nach signUp (kein E-Mail-Bestätigung nötig) */
     try{await supabase.auth.signInWithPassword({email:loginEmail,password:pw});}catch(_){}
-    orderInProgressRef.current=false;
     setSaving(false);
     localStorage.setItem("sr_pending_email",loginEmail);
     setBuildPhase(0);
     setBuilding(true);
-    // Simulierter Phasen-Timer (~18s), parallel laeuft echter Build
-    setTimeout(()=>{setBuilding(false);setConfirmed(true);},18000);
+    // Simulierter Phasen-Timer (~18s), parallel laeuft echter Build.
+    // orderInProgressRef bleibt true bis Animation fertig — verhindert,
+    // dass auth-listener vorzeitig zum Portal navigiert.
+    setTimeout(()=>{setBuilding(false);setConfirmed(true);orderInProgressRef.current=false;},18000);
   };
   const resendEmail=async()=>{
     if(!supabase||resending)return;
@@ -1568,8 +1569,8 @@ function Portal({session,onLogout}){
   const[dragOverAbout,setDragOverAbout]=useState(false);
 
   useEffect(()=>{
-    if(!supabase||!session?.user?.email)return;
-    supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1)
+    if(!supabase||!session?.user?.id)return;
+    supabase.from("orders").select("*").eq("user_id",session.user.id).order("created_at",{ascending:false}).limit(1)
       .then(({data})=>{if(data&&data.length>0){
         setOrder(data[0]);
         originalOrderRef.current=JSON.parse(JSON.stringify(data[0]));
@@ -3498,7 +3499,7 @@ function BuildScreen({session,setOrder}){
   useEffect(()=>{
     if(buildElapsed>0&&buildElapsed%5===0){
       (async()=>{
-        const{data}=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
+        const{data}=await supabase.from("orders").select("*").eq("user_id",session.user.id).order("created_at",{ascending:false}).limit(1);
         if(data&&data[0]){
           if(data[0].status!=="pending"){setOrder(data[0]);return;}
           if(data[0].last_error)setBuildError(data[0].last_error);
@@ -3533,7 +3534,7 @@ function BuildScreen({session,setOrder}){
     {buildError&&<div style={{marginTop:24,padding:"16px 20px",background:T.redLight,border:"1px solid #fca5a5",borderRadius:T.rSm,textAlign:"center"}}>
       <div style={{fontWeight:700,color:T.red,fontSize:".88rem",marginBottom:6}}>Fehler bei der Generierung</div>
       <div style={{fontSize:".8rem",color:"#7f1d1d",lineHeight:1.5,marginBottom:12}}>{buildError}</div>
-      <button onClick={async()=>{setBuildError(null);setBuildElapsed(0);try{const{data}=await supabase.from("orders").select("id").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);if(data?.[0])await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:data[0].id})});}catch(_){}}} style={{padding:"10px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Erneut versuchen</button>
+      <button onClick={async()=>{setBuildError(null);setBuildElapsed(0);try{const{data}=await supabase.from("orders").select("id").eq("user_id",session.user.id).order("created_at",{ascending:false}).limit(1);if(data?.[0])await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:data[0].id})});}catch(_){}}} style={{padding:"10px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Erneut versuchen</button>
     </div>}
     {/* Timeout-Hinweis */}
     {!buildError&&buildElapsed>180&&<div style={{marginTop:24,padding:"16px 20px",background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:T.rSm,textAlign:"center"}}>
@@ -3585,9 +3586,9 @@ export default function App(){
       setSession(session);
       if(session&&!orderInProgressRef.current){setPageRaw("portal");navigate("portal");}
       else if(session&&orderInProgressRef.current){
-        // Warte bis Order-Insert fertig, dann wechseln
+        // Warte bis Build-Animation fertig (~18s), dann wechseln
         const wait=setInterval(()=>{if(!orderInProgressRef.current){clearInterval(wait);setPageRaw("portal");navigate("portal");}},200);
-        setTimeout(()=>clearInterval(wait),15000);
+        setTimeout(()=>clearInterval(wait),25000);
       }
     });
     return()=>{subscription.unsubscribe();window.removeEventListener("popstate",onPop);};

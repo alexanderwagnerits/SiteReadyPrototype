@@ -512,7 +512,7 @@ function LandingPage({onStart,onPortal}){
         <div className="lp-footer-cols" style={{display:"flex",gap:56}}>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Produkt</div>
-            {[{l:"Fragebogen starten",a:onStart},{l:"Preise",a:()=>document.getElementById("preise")?.scrollIntoView({behavior:"smooth"})},{l:"Kunden-Portal",a:onPortal}].map(({l,a})=><a key={l} href="#" onClick={e=>{e.preventDefault();a();}} style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:12,transition:"color .2s"}} onMouseEnter={e=>e.target.style.color=T.dark} onMouseLeave={e=>e.target.style.color=T.textMuted}>{l}</a>)}
+            {[{l:"Fragebogen starten",a:onStart},{l:"Preise",a:()=>document.getElementById("preise")?.scrollIntoView({behavior:"smooth"})},{l:"Kunden-Portal",a:onPortal}].map(({l,a})=><button key={l} type="button" onClick={a} style={{display:"block",fontSize:".85rem",color:T.textMuted,textDecoration:"none",marginBottom:12,transition:"color .2s",border:"none",background:"none",padding:0,cursor:"pointer",fontFamily:"inherit",textAlign:"left"}} onMouseEnter={e=>e.target.style.color=T.dark} onMouseLeave={e=>e.target.style.color=T.textMuted}>{l}</button>)}
           </div>
           <div>
             <div style={{fontSize:".75rem",fontWeight:700,color:T.dark,textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Kontakt</div>
@@ -1026,7 +1026,7 @@ const qCss=`
 function Questionnaire({data,setData,onComplete,onBack}){
   const SECS=[{id:"start",label:"Start",icon:<><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></>},{id:"grunddaten",label:"Grunddaten",icon:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>},{id:"leistungen",label:"Leistungen",icon:<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>},{id:"kontakt",label:"Kontakt",icon:<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>},{id:"impressum",label:"Impressum",icon:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>},{id:"design",label:"Design",icon:<><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>},{id:"fertig",label:"Fertig",icon:<polyline points="20 6 9 17 4 12"/>}];
   const[step,setStep]=useState(0);
-  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importExtras,setImportExtras]=useState({});const[importResult,setImportResult]=useState(null);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.accentColor?.toUpperCase()||"");const[showAccentPicker,setShowAccentPicker]=useState(!!data.accentColor);const[importPhase,setImportPhase]=useState("");
+  const[importUrl,setImportUrl]=useState("");const[importLoading,setImportLoading]=useState(false);const[importErr,setImportErr]=useState("");const[importConfirm,setImportConfirm]=useState(false);const[importResult,setImportResult]=useState(null);const[impressumConfirm,setImpressumConfirm]=useState(false);const[hexInput,setHexInput]=useState(data.accentColor?.toUpperCase()||"");const[showAccentPicker,setShowAccentPicker]=useState(!!data.accentColor);const[importPhase,setImportPhase]=useState("");
   const[importSeconds,setImportSeconds]=useState(0);
   const doImport=async()=>{if(!importUrl.trim())return;setImportLoading(true);setImportErr("");setImportSeconds(0);
     const isGoogle=/google\.(com|at|de|ch)\/(maps|place)|goo\.gl/i.test(importUrl);
@@ -1036,7 +1036,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
     const tick=setInterval(()=>setImportSeconds(s=>s+1),1000);
     try{const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),120000);
     const r=await fetch("/api/import-website",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:importUrl}),signal:ctrl.signal});clearTimeout(timeout);
-    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{accentColor:ensureContrast(j.brand_color)}:{}),...(j.downloads?.length?{downloads:j.downloads}:{})}));const meta=j._meta||{};const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{},import_tokens_in:meta.import_tokens_in||0,import_tokens_out:meta.import_tokens_out||0,import_cost_eur:meta.import_cost_eur||0,firecrawl_credits:meta.firecrawl_credits||0};setImportExtras(extras);setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
+    const j=await r.json();if(j.error){setImportErr(j.error);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);return;}const b=j.branche?BRANCHEN.find(x=>x.value===j.branche):null;const allLeistungen=Array.isArray(j.leistungen)?j.leistungen:[];const hasBrandColor=!!j.brand_color;setData(d=>({...d,firmenname:j.firmenname||d.firmenname,telefon:j.telefon||d.telefon,email:j.email||d.email,plz:j.plz||d.plz,ort:j.ort||d.ort,adresse:j.adresse||d.adresse,kurzbeschreibung:j.kurzbeschreibung||d.kurzbeschreibung,bundesland:j.bundesland||d.bundesland,unternehmensform:j.unternehmensform||d.unternehmensform,uid:j.uid||d.uid,firmenbuchnummer:j.firmenbuchnummer||d.firmenbuchnummer,gisazahl:j.gisazahl||d.gisazahl,firmenbuchgericht:j.firmenbuchgericht||d.firmenbuchgericht,facebook:j.facebook||d.facebook,instagram:j.instagram||d.instagram,linkedin:j.linkedin||d.linkedin,tiktok:j.tiktok||d.tiktok,...(b?{branche:b.value,brancheLabel:b.label,stil:b.stil,leistungen:allLeistungen.length>0?allLeistungen:d.leistungen,extraLeistung:""}:{leistungen:allLeistungen.length>0?allLeistungen:d.leistungen}),oeffnungszeiten:j.oeffnungszeiten_import?"custom":d.oeffnungszeiten,oeffnungszeitenCustom:j.oeffnungszeiten_import||d.oeffnungszeitenCustom,whatsapp:j.whatsapp||d.whatsapp,buchungslink:j.buchungslink||d.buchungslink,...(j.merkmale||{}),...(hasBrandColor?{accentColor:ensureContrast(j.brand_color)}:{}),...(j.downloads?.length?{downloads:j.downloads}:{})}));const meta=j._meta||{};const extras={spezialisierung:j.spezialisierung||"",gut_zu_wissen:j.gut_zu_wissen||"",bewertungen:j.bewertungen||[],faq:j.faq||[],fakten:j.fakten||[],partner:j.partner||[],team:j.team||[],ablauf_schritte:j.ablauf_schritte||[],leistungen_beschreibungen:j.leistungen_beschreibungen||{},sections_visible:j.sections_visible||{},varianten_cache:j.varianten_cache||{},import_tokens_in:meta.import_tokens_in||0,import_tokens_out:meta.import_tokens_out||0,import_cost_eur:meta.import_cost_eur||0,firecrawl_credits:meta.firecrawl_credits||0};setData(d=>({...d,importExtras:extras}));setImportResult(j);setImportLoading(false);setImportPhase("");timers.forEach(clearTimeout);clearInterval(tick);
     }catch(e){timers.forEach(clearTimeout);clearInterval(tick);setImportPhase("");setImportLoading(false);if(e.name==="AbortError")setImportErr("Der Import hat zu lange gedauert. Die Website ist möglicherweise nicht erreichbar oder zu komplex. Sie können die Daten manuell eingeben oder uns unter support@siteready.at melden — wir schauen uns das Problem an.");else setImportErr("Verbindungsfehler — bitte versuchen Sie es erneut oder melden Sie das Problem unter support@siteready.at");}};
   const up=useCallback(k=>v=>setData(d=>({...d,[k]:v})),[setData]);
   const go=n=>{setStep(n);setTimeout(()=>{const sec=document.getElementById("q-sec-"+n);if(sec){const mb=sec.querySelector(".q-mb");if(mb)mb.scrollTop=0;const inp=sec.querySelector("input:not([type=checkbox]):not([type=color]),textarea,select");if(inp&&n>0)inp.focus()}},100)};
@@ -1058,7 +1058,6 @@ function Questionnaire({data,setData,onComplete,onBack}){
   const sv3=!!(data.adresse?.trim()&&data.plz?.trim()&&data.ort?.trim()&&data.telefon?.trim()&&data.email?.trim()&&data.oeffnungszeiten);
   const sv4=legalOk&&impressumConfirm;
   const allValid=sv1&&sv2&&sv3&&sv4;
-  const svArr=[true,sv1,sv2,sv3,sv4,true,allValid];
   const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
   const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>{"›"}</span> <b>{bc}</b>{importResult&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,verticalAlign:"middle"}}>importiert — bitte prüfen</span>}</div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
   const missingHint=(stepN)=>{const m=[];if(stepN===1){if(!data.firmenname?.trim())m.push("Firmenname");if(!data.branche)m.push("Branche");if(!data.bundesland)m.push("Bundesland");if(!data.kurzbeschreibung?.trim())m.push("Kurzbeschreibung");}else if(stepN===2){if(!(data.leistungen?.length>0||data.extraLeistung?.trim()))m.push("mind. 1 Leistung");}else if(stepN===3){if(!data.adresse?.trim())m.push("Adresse");if(!data.plz?.trim())m.push("PLZ");if(!data.ort?.trim())m.push("Ort");if(!data.telefon?.trim())m.push("Telefon");if(!data.email?.trim())m.push("E-Mail");if(!data.oeffnungszeiten)m.push("Öffnungszeiten");}else if(stepN===4){if(!legalOk)m.push("Impressum-Angaben");if(!impressumConfirm)m.push("Bestätigung");}return m;};
@@ -1133,7 +1132,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Zusätzlich übernommen <span style={{fontWeight:400,textTransform:"none",letterSpacing:0}}>— im Portal bearbeitbar</span></div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}><CheckRow items={portalChecks} color={T.accent}/></div>
             </div>}
-            {formChecks.length===0&&portalChecks.length===0&&<div style={{textAlign:"left",background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px",marginBottom:12,fontSize:".85rem",color:T.textMuted,textAlign:"center"}}>Keine Daten erkannt. Bitte geben Sie die Daten manuell ein.</div>}
+            {formChecks.length===0&&portalChecks.length===0&&<div style={{background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"20px",marginBottom:12,fontSize:".85rem",color:T.textMuted,textAlign:"center"}}>Keine Daten erkannt. Bitte geben Sie die Daten manuell ein.</div>}
             <div style={{fontSize:".82rem",color:T.textMuted,marginBottom:20,lineHeight:1.5}}>{formChecks.length>0?"Bitte prüfen Sie die Angaben in den nächsten Schritten.":"Bitte geben Sie Ihre Daten in den nächsten Schritten ein."}</div>
             <button className="q-btn-next" onClick={()=>go(1)} style={{width:"100%",justifyContent:"center",padding:"14px 28px",fontSize:".95rem"}}>{formChecks.length>0?"Angaben prüfen":"Weiter"} {chevron}</button>
           </div>;
@@ -1469,7 +1468,6 @@ function PortalLogin({onBack}){
 
 /* ═══ CROP HELPERS ═══ */
 const CROP_ASPECTS={hero:16/9,logo:0,leist1:1,leist2:1,leist3:1,leist4:1,foto1:3/2,foto2:3/2,foto3:3/2,foto4:3/2,foto5:3/2,about1:3/2,about2:3/2,about3:3/2,about4:3/2,about5:3/2,about6:3/2,about7:3/2,about8:3/2};
-const CROP_LABELS={hero:"Titelbild (Querformat)",logo:"Logo",leist1:"Leistungsfoto",leist2:"Leistungsfoto",leist3:"Leistungsfoto",leist4:"Leistungsfoto"};
 // Team photos use key like team_0, team_1 etc
 const getCropAspect=(key)=>key.startsWith("team_")?1:(CROP_ASPECTS[key]??3/2);
 
@@ -1554,12 +1552,9 @@ function Portal({session,onLogout}){
   const[emailSaving,setEmailSaving]=useState(false);
   const[emailSent,setEmailSent]=useState(false);
   const[emailErr,setEmailErr]=useState("");
-  const[onboardSaving,setOnboardSaving]=useState(false);
   const[showPlanModal,setShowPlanModal]=useState(false);
   const[subscribing,setSubscribing]=useState(false);
   const[toastMsg,setToastMsg]=useState(null);
-  const[gUrl,setGUrl]=useState("");
-  const[gSaved,setGSaved]=useState(false);
   const[deleting,setDeleting]=useState({});
   const[impressumConfirmOpen,setImpressumConfirmOpen]=useState(false);
   const[impressumChecked,setImpressumChecked]=useState(false);
@@ -1578,7 +1573,6 @@ function Portal({session,onLogout}){
       .then(({data})=>{if(data&&data.length>0){
         setOrder(data[0]);
         originalOrderRef.current=JSON.parse(JSON.stringify(data[0]));
-        if(data[0].google_maps_url){setGUrl(data[0].google_maps_url);setGSaved(true);}
         // Assets aus url_* Spalten laden (keine HEAD-Requests noetig)
         const o=data[0];const urls={};
         if(o.url_logo)urls.logo=o.url_logo+"?t="+Date.now();
@@ -1743,27 +1737,9 @@ function Portal({session,onLogout}){
     setDeleting(d=>({...d,[key]:false}));
   };
 
-  const startBuild=async(withFotos)=>{
-    if(!supabase||!session)return;
-    setOnboardSaving(true);
-    const{data:{session:s}}=await supabase.auth.getSession();
-    const token=s?.access_token;
-    try{
-      const r=await fetch("/api/start-build",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-        body:JSON.stringify({fotos:withFotos}),
-      });
-      const j=await r.json();
-      if(j.ok||r.ok)setOrder(o=>({...o,fotos:withFotos,regen_requested:false,status:"in_arbeit"}));
-    }catch(_){}
-    setOnboardSaving(false);
-  };
-
   const subscribe=async(plan)=>{
     if(!order||!supabase)return;
     setSubscribing(true);
-    const{data:{session:s}}=await supabase.auth.getSession();
     const resp=await fetch("/api/create-checkout",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -1787,6 +1763,7 @@ function Portal({session,onLogout}){
     const j=await r.json();
     setInvoices(j.charges||[]);
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{if(page==="rechnungen")loadInvoices();},[page]);
 
   const saveImpressum=async()=>{
@@ -1906,18 +1883,6 @@ function Portal({session,onLogout}){
   const wizardTotal=wizardSteps.length;
   const wizardAllDone=wizardDoneCount>=wizardTotal&&wizardOptional.every(s=>s.done);
   const wizardCurrentIdx=wizardSteps.findIndex(s=>!s.done);
-  /* legacy compat */
-  const astItems=order?[
-    {label:"Logo hochladen",done:!!assetUrls.logo,pts:20,page:"hero"},
-    {label:"Grunddaten ausfüllen",done:!!(order.firmenname&&order.kurzbeschreibung),pts:15,page:"hero"},
-    {label:"Leistungen hinzufügen",done:!!(order.leistungen?.length>0),pts:20,page:"leistungen"},
-    {label:"Kontakt & Adresse",done:!!(order.adresse&&order.telefon),pts:15,page:"kontakt"},
-    {label:"Titelbild hochladen",done:!!(assetUrls.hero||assetUrls.foto1),pts:15,page:"hero"},
-    {label:"Über uns Text",done:!!order.text_ueber_uns,pts:10,page:"ueberuns"},
-    {label:"Impressum ausfüllen",done:!!(order.unternehmensform||order.uid_nummer),pts:5,page:"impressum"},
-  ]:[];
-  const astScore=astItems.filter(i=>!i.optional).reduce((s,i)=>s+(i.done?i.pts:0),0);
-  const astDone=wizardAllDone;
   // ── Varianten-Auswahl Komponente ──
   // Varianten-Hint: zeigt die automatisch berechnete Variante an
   const VariantenHint=({label,value})=>value?<div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",background:T.bg2,borderRadius:T.rSm,fontSize:".72rem",color:T.textMuted,marginBottom:16}}>
@@ -3469,7 +3434,6 @@ function Portal({session,onLogout}){
       <div className="pt-ast-scroll">
         {wizardSteps.map((step,idx)=>{
           const isCurrent=idx===wizardCurrentIdx;
-          const isPending=!step.done&&!isCurrent;
           const isLast=idx===wizardSteps.length-1;
           return(<div key={idx} className="pt-wiz-step">
             {!isLast&&<div className={`pt-wiz-line ${step.done?"done":isCurrent?"current":"pending"}`}/>}
@@ -3541,7 +3505,7 @@ function BuildScreen({session,setOrder}){
         }
       })();
     }
-  },[buildElapsed]);
+  },[buildElapsed]); // eslint-disable-line react-hooks/exhaustive-deps
   let acc=0;let activeIdx=0;
   for(let i=0;i<BUILD_PHASES.length;i++){acc+=BUILD_PHASES[i].dur;if(buildElapsed<acc){activeIdx=i;break;}if(i===BUILD_PHASES.length-1)activeIdx=i;}
   const progressPct=Math.min((buildElapsed/totalDur)*100,95);

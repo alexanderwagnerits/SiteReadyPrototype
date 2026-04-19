@@ -87,15 +87,12 @@ function Admin({adminKey}){
   const[diagRunning,setDiagRunning]=useState(false);
   /* Error Logs */
   const[errorLogs,setErrorLogs]=useState([]);
-  const[errorLogsLoading,setErrorLogsLoading]=useState(false);
   const fetchErrorLogs=async()=>{
     if(!supabase)return;
-    setErrorLogsLoading(true);
     try{
       const{data}=await supabase.from("error_logs").select("*").order("created_at",{ascending:false}).limit(50);
       if(data)setErrorLogs(data);
     }catch(e){/* silent */}
-    setErrorLogsLoading(false);
   };
   const clearErrorLogs=async()=>{
     if(!supabase)return;
@@ -103,6 +100,7 @@ function Admin({adminKey}){
     setErrorLogs([]);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{load();checkSystem();},[]);
 
   const load=async()=>{
@@ -250,7 +248,9 @@ function Admin({adminKey}){
       });
     }catch(e){setExtStatus({anthropic:false,cloudflare:false,supabase:false,stripe:false,api_keys:{}});}
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{if(tab==="system"){checkSystem();fetchExtStatus();fetchErrorLogs();const iv=setInterval(()=>{checkSystem();fetchExtStatus();fetchErrorLogs();},60000);return()=>clearInterval(iv);}},[tab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{
     if(tab==="sites"){
       const run=()=>{orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));setHealthCountdown(60);};
@@ -259,9 +259,11 @@ function Admin({adminKey}){
       const cd=setInterval(()=>setHealthCountdown(c=>c>0?c-1:0),1000);
       return()=>{clearInterval(iv);clearInterval(cd);};
     }
-  },[tab]);
+  },[tab]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{if(tab==="docs")loadDocs();},[tab]);
   useEffect(()=>{setEditKunde(null);setDiagReport(null);},[sel]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{if(sel?.id)loadLogs(sel.id);},[sel?.id]);
 
   const loadDocs=async()=>{
@@ -280,9 +282,11 @@ function Admin({adminKey}){
     setDocs(ds=>ds.map(d=>d.id===id?{...d,...body}:d));
     setDocEditing(false);setDocSaving(false);
   };
+  // eslint-disable-next-line no-unused-vars
   const newDoc=()=>{
     setSelDocId(null);setDocEditTitle("Neue Sektion");setDocEditContent("");setDocEditing(true);
   };
+  // eslint-disable-next-line no-unused-vars
   const deleteDoc=async(id)=>{
     if(!window.confirm("Sektion loeschen?"))return;
     await fetch(`/api/admin-docs?key=${adminKey}`,{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
@@ -370,6 +374,7 @@ function Admin({adminKey}){
     setDiagRunning(false);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const analyzeWebsite=async(order)=>{
     const url=`https://sitereadyprototype.pages.dev/s/${order.subdomain}`;
     const checks={seo:[],inhalt:[],technik:[],accessibility:[]};
@@ -400,7 +405,7 @@ function Admin({adminKey}){
     const imgsNoAlt=[...imgs].filter(i=>!i.getAttribute("alt"));
     checks.seo.push({label:"Bilder mit Alt-Text",ok:imgsNoAlt.length===0,detail:imgs.length===0?"Keine Bilder":`${imgs.length-imgsNoAlt.length}/${imgs.length} haben Alt-Text`,severity:imgsNoAlt.length===0?"ok":"warn"});
     /* Inhalt */
-    const hasPhone=html.includes("tel:")||/\+?\d[\d\s\-\/]{6,}/.test(html);
+    const hasPhone=html.includes("tel:")||/\+?\d[\d\s\-/]{6,}/.test(html);
     checks.inhalt.push({label:"Telefonnummer vorhanden",ok:hasPhone,detail:hasPhone?"Gefunden":"Keine Telefonnummer erkannt",severity:hasPhone?"ok":"warn"});
     const hasEmail=html.includes("mailto:")||/[\w.-]+@[\w.-]+\.\w{2,}/.test(html);
     checks.inhalt.push({label:"E-Mail-Adresse vorhanden",ok:hasEmail,detail:hasEmail?"Gefunden":"Keine E-Mail erkannt",severity:hasEmail?"ok":"warn"});
@@ -1287,7 +1292,6 @@ function Admin({adminKey}){
             {/* Mittlere Spalte: Aktionen */}
             {(()=>{
               const cardTitle=(label)=><div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>{label}</div>;
-              const card=(children)=><div style={{padding:"16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>{children}</div>;
               const secStyle={padding:"14px 16px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`};
               return(<div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:12,borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
                 {/* Links */}

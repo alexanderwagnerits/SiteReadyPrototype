@@ -3593,7 +3593,7 @@ export default function App(){
     return()=>{subscription.unsubscribe();window.removeEventListener("popstate",onPop);};
   },[]);
 
-  if(page==="portal"&&session)return<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing")}}/>;
+  if(page==="portal")return session?<Portal session={session} onLogout={()=>{supabase.auth.signOut();setSession(null);setPage("landing")}}/>:<PortalLogin onBack={()=>setPage("landing")}/>;
   if(page==="portal-login")return<PortalLogin onBack={()=>setPage("landing")}/>;
 
   // Admin Dashboard (key-geschützt)

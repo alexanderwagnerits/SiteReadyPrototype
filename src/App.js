@@ -1579,6 +1579,8 @@ function Portal({session,onLogout}){
   const[impressumChecked,setImpressumChecked]=useState(false);
   const[wizardOpen,setWizardOpen]=useState(()=>window.innerWidth>=768);
   const[ptSbOpen,setPtSbOpen]=useState(false);
+  const[orderLoadError,setOrderLoadError]=useState(null);
+  const[orderLoadAttempts,setOrderLoadAttempts]=useState(0);
   const toastTimer=useRef(null);
   const showToast=(msg)=>{if(toastTimer.current)clearTimeout(toastTimer.current);setToastMsg(msg);const isError=/fehl|error|nicht|problem/i.test(msg);toastTimer.current=setTimeout(()=>setToastMsg(null),isError?5000:2500);};
   const[confirmDel,setConfirmDel]=useState(null);
@@ -1588,34 +1590,43 @@ function Portal({session,onLogout}){
 
   useEffect(()=>{
     if(!supabase||!session?.user?.id)return;
-    supabase.from("orders").select("*").eq("user_id",session.user.id).order("created_at",{ascending:false}).limit(1)
-      .then(({data})=>{if(data&&data.length>0){
-        setOrder(data[0]);
-        originalOrderRef.current=JSON.parse(JSON.stringify(data[0]));
-        // Assets aus url_* Spalten laden (keine HEAD-Requests noetig)
-        const o=data[0];const urls={};
-        if(o.url_logo)urls.logo=o.url_logo+"?t="+Date.now();
-        if(o.url_hero)urls.hero=o.url_hero+"?t="+Date.now();
-        if(o.url_foto1)urls.foto1=o.url_foto1+"?t="+Date.now();
-        if(o.url_foto2)urls.foto2=o.url_foto2+"?t="+Date.now();
-        if(o.url_foto3)urls.foto3=o.url_foto3+"?t="+Date.now();
-        if(o.url_foto4)urls.foto4=o.url_foto4+"?t="+Date.now();
-        if(o.url_foto5)urls.foto5=o.url_foto5+"?t="+Date.now();
-        if(o.url_leist1)urls.leist1=o.url_leist1+"?t="+Date.now();
-        if(o.url_leist2)urls.leist2=o.url_leist2+"?t="+Date.now();
-        if(o.url_leist3)urls.leist3=o.url_leist3+"?t="+Date.now();
-        if(o.url_leist4)urls.leist4=o.url_leist4+"?t="+Date.now();
-        if(o.url_about1)urls.about1=o.url_about1+"?t="+Date.now();
-        if(o.url_about2)urls.about2=o.url_about2+"?t="+Date.now();
-        if(o.url_about3)urls.about3=o.url_about3+"?t="+Date.now();
-        if(o.url_about4)urls.about4=o.url_about4+"?t="+Date.now();
-        if(o.url_about5)urls.about5=o.url_about5+"?t="+Date.now();
-        if(o.url_about6)urls.about6=o.url_about6+"?t="+Date.now();
-        if(o.url_about7)urls.about7=o.url_about7+"?t="+Date.now();
-        if(o.url_about8)urls.about8=o.url_about8+"?t="+Date.now();
-        if(o.url_preisliste)urls.preisliste=o.url_preisliste+"?t="+Date.now();
-        setAssetUrls(urls);
-      }});
+    let stopped=false;
+    const applyOrder=(row)=>{
+      setOrder(row);
+      originalOrderRef.current=JSON.parse(JSON.stringify(row));
+      const urls={};
+      const keys=["logo","hero","foto1","foto2","foto3","foto4","foto5","leist1","leist2","leist3","leist4","about1","about2","about3","about4","about5","about6","about7","about8","preisliste"];
+      keys.forEach(k=>{const col="url_"+k;if(row[col])urls[k]=row[col]+"?t="+Date.now();});
+      setAssetUrls(urls);
+    };
+    const fetchOrder=async(attempt)=>{
+      if(stopped)return;
+      setOrderLoadAttempts(attempt);
+      // 1. Primaer: per user_id (sollte nach RLS-Migration immer matchen)
+      const res=await supabase.from("orders").select("*").eq("user_id",session.user.id).order("created_at",{ascending:false}).limit(1);
+      if(stopped)return;
+      if(res.data&&res.data.length>0){applyOrder(res.data[0]);setOrderLoadError(null);return true;}
+      // 2. Fallback: per email (falls user_id-Spalte noch null ist)
+      if(session.user.email){
+        const r2=await supabase.from("orders").select("*").eq("email",session.user.email).order("created_at",{ascending:false}).limit(1);
+        if(stopped)return;
+        if(r2.data&&r2.data.length>0){applyOrder(r2.data[0]);setOrderLoadError(null);return true;}
+      }
+      // 3. Fehler merken (fuer Diagnose/Error-State)
+      const err=res.error||{};
+      setOrderLoadError({message:err.message||"Keine Bestellung gefunden",code:err.code||null,hint:err.hint||null});
+      try{console.error("Portal load: keine Order gefunden",{attempt,userId:session.user.id,email:session.user.email,error:res.error});}catch(_){}
+      return false;
+    };
+    (async()=>{
+      // Initial + bis zu 4 Retries mit Backoff (2s, 4s, 8s, 15s) gegen Timing/Propagation
+      for(let i=1;i<=5&&!stopped;i++){
+        const ok=await fetchOrder(i);
+        if(ok||stopped)return;
+        if(i<5){await new Promise(r=>setTimeout(r,[2000,4000,8000,15000][i-1]));}
+      }
+    })();
+    return()=>{stopped=true;};
   },[session]);
 
   const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));
@@ -2153,12 +2164,27 @@ function Portal({session,onLogout}){
     </aside>
     {/* Main */}
     <main className="pt-main">
-      {!order&&<div style={{padding:"40px 0"}}>
+      {!order&&orderLoadAttempts<5&&<div style={{padding:"40px 0"}}>
         {[1,2,3].map(i=><div key={i} style={{marginBottom:24}}>
           <div style={{height:14,width:i===1?"40%":"60%",background:T.bg3,borderRadius:6,marginBottom:12,animation:"pulse 1.5s ease-in-out infinite"}}/>
           <div style={{height:48,background:T.bg3,borderRadius:T.rSm,animation:"pulse 1.5s ease-in-out infinite"}}/>
         </div>)}
         <style>{`@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+      </div>}
+      {!order&&orderLoadAttempts>=5&&<div style={{padding:"40px 0",maxWidth:560}}>
+        <div style={{background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.r,padding:"28px 32px",boxShadow:T.sh1}}>
+          <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:8}}>Bestellung konnte nicht geladen werden</div>
+          <div style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,marginBottom:16}}>
+            Wir konnten keine Bestellung fuer <strong>{session?.user?.email}</strong> finden. Das kann passieren, wenn die Login-E-Mail von der Firmen-E-Mail im Fragebogen abweicht.
+          </div>
+          {orderLoadError?.message&&<div style={{fontSize:".75rem",color:T.textMuted,fontFamily:T.mono,background:T.bg,border:`1px solid ${T.bg3}`,borderRadius:T.rSm,padding:"10px 12px",marginBottom:16,wordBreak:"break-word"}}>
+            {orderLoadError.message}{orderLoadError.code?` (${orderLoadError.code})`:""}
+          </div>}
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            <button onClick={()=>window.location.reload()} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",fontWeight:700,fontSize:".85rem",fontFamily:T.font,cursor:"pointer"}}>Seite neu laden</button>
+            <a href="mailto:support@siteready.at?subject=Portal%20zeigt%20keine%20Bestellung" style={{padding:"10px 20px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.dark,fontWeight:700,fontSize:".85rem",fontFamily:T.font,cursor:"pointer",textDecoration:"none"}}>Support kontaktieren</a>
+          </div>
+        </div>
       </div>}
       {order&&order?.status!=="pending"&&<>
         <div className="pt-mh">
@@ -2306,7 +2332,7 @@ function Portal({session,onLogout}){
       </>)}
 
       {/* Tab: Website & Extras (Inhalte-Unterseiten) */}
-      {(tab==="website"||tab==="extras")&&page!=="overview"&&(!order?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:<>
+      {(tab==="website"||tab==="extras")&&page!=="overview"&&(!order?(orderLoadAttempts<5?<div style={{background:"#fff",borderRadius:T.r,padding:"28px 32px",border:`1px solid ${T.bg3}`,color:T.textMuted,fontSize:".9rem"}}>Bestellung wird geladen...</div>:null):<>
         {/* Aktuelles / News */}
         {page==="aktuelles"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh2}}>
           <SectionHeader label="Aktuelles" desc="Kurzfristige Infos wie Betriebsurlaub, Aktionen oder News — erscheint als Banner auf Ihrer Website."/>

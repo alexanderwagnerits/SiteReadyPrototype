@@ -1950,7 +1950,6 @@ function Portal({session,onLogout}){
       // FAQ braucht Frage UND Antwort — sonst auf Website nicht sichtbar
       const complete=!!order.faq?.some(f=>f.frage&&f.antwort);
       const incomplete=!!order.faq?.some(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort));
-      const hidden=isHidden("faq");
       if(incomplete&&!complete)return{
         label:"FAQ — Antwort fehlt",
         desc:"Sie haben eine Frage ohne Antwort (oder umgekehrt). FAQs werden nur angezeigt wenn beides ausgefuellt ist.",
@@ -1964,7 +1963,6 @@ function Portal({session,onLogout}){
     (()=>{
       // Zahlen & Fakten: Website zeigt erst ab 2 Eintraegen mit Zahl
       const validCount=(order.fakten||[]).filter(f=>f&&f.zahl).length;
-      const hidden=isHidden("fakten");
       if(validCount===1){return{
         label:"Zahlen & Fakten — noch 1",
         desc:"Erst ab 2 Eintraegen wird die Section auf der Website gezeigt. Bitte einen weiteren hinzufuegen.",
@@ -1978,7 +1976,6 @@ function Portal({session,onLogout}){
     (()=>{
       const withLogo=!!order.partner?.some(p=>p.url_logo);
       const withNameNoLogo=!!order.partner?.some(p=>p.name&&!p.url_logo);
-      const hidden=isHidden("partner");
       if(withNameNoLogo&&!withLogo){return{
         label:"Referenzen — Logos fehlen",
         desc:"Sie haben Eintraege ohne Logo. Ohne Logo werden diese auf der Website nicht angezeigt.",

@@ -285,11 +285,27 @@ export async function onRequestGet({params, env}) {
 
     let teamGrid;
     const n = teamMembers.length;
-    if (n <= 2) {
-      // 1-2: Große Avatare (120px), 2-spaltig zentriert
-      const cols = n === 1 ? "max-content" : "1fr 1fr";
-      const maxW = n === 1 ? ";max-width:320px;margin:0 auto" : "";
-      teamGrid = `<div style="display:grid;grid-template-columns:${cols};gap:24px${maxW}">${teamMembers.map((m, i) => makeCard(m, i, 120)).join("")}</div>`;
+    const teamLabel = n === 1 ? "Ihr Ansprechpartner" : "Unser Team";
+    if (n === 1) {
+      // 1 Person: horizontale "Inhaber-Karte" — Avatar links, Text rechts.
+      // Nicht als einsame zentrierte Karte im Void, sondern als natuerliches
+      // Vorstellungs-Element.
+      const m = teamMembers[0];
+      const avatar = makeAvatar(m, 0, 140);
+      const card = `<div class="sr-team-solo" style="display:flex;gap:28px;align-items:center;max-width:620px;margin:0 auto;padding:28px;background:rgba(255,255,255,.05);border-radius:${cardR};border:1px solid rgba(255,255,255,.08)">` +
+        `<div style="flex-shrink:0">${avatar}</div>` +
+        `<div style="flex:1;min-width:0">` +
+          `<div style="font-weight:${nameWeight};font-size:1.3rem;color:#fff;line-height:1.25;letter-spacing:-.01em">${esc(m.name)}</div>` +
+          (m.rolle ? `<div style="font-size:.88rem;color:rgba(255,255,255,.55);margin-top:6px;font-weight:500">${esc(m.rolle)}</div>` : "") +
+          (m.beschreibung ? `<div style="font-size:.85rem;color:rgba(255,255,255,.55);margin-top:12px;line-height:1.6">${esc(m.beschreibung)}</div>` : "") +
+          (m.email ? `<div style="margin-top:12px"><a href="mailto:${esc(m.email)}" style="font-size:.82rem;color:rgba(255,255,255,.6);text-decoration:none;display:inline-flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${esc(m.email)}</a></div>` : "") +
+        `</div>` +
+      `</div>` +
+      `<style>@media(max-width:560px){.sr-team-solo{flex-direction:column;text-align:center;gap:18px;padding:24px 20px!important}}</style>`;
+      teamGrid = card;
+    } else if (n === 2) {
+      // 2: Große Avatare (120px), 2-spaltig zentriert
+      teamGrid = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">${teamMembers.map((m, i) => makeCard(m, i, 120)).join("")}</div>`;
     } else if (n === 3) {
       // 3: Dreispaltig, 100px Avatare
       teamGrid = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">${teamMembers.map((m, i) => makeCard(m, i, 100)).join("")}</div>`;
@@ -299,7 +315,7 @@ export async function onRequestGet({params, env}) {
       teamGrid = `<div style="display:grid;grid-template-columns:${cols};gap:16px">${teamMembers.map((m, i) => makeCard(m, i, 80)).join("")}</div>`;
     }
 
-    const teamBlock = `<div style="margin-top:48px;padding-top:40px;border-top:1px solid rgba(255,255,255,.1)"><div style="margin-bottom:24px"><div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.4);margin-bottom:8px">Unser Team</div></div>${teamGrid}${berufsregNr}</div>`;
+    const teamBlock = `<div style="margin-top:48px;padding-top:40px;border-top:1px solid rgba(255,255,255,.1)"><div style="margin-bottom:24px"><div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.4);margin-bottom:8px">${teamLabel}</div></div>${teamGrid}${berufsregNr}</div>`;
     html = html.replace("<!-- TEAM -->", teamBlock);
   } else {
     html = html.replace("<!-- TEAM -->", berufsregNr ? `<div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)">${berufsregNr}</div>` : "");

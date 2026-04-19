@@ -40,9 +40,9 @@ a,button,input,select,textarea{touch-action:manipulation}
 .stil-modern{--text:#18181b;--textMuted:#71717a;--fontHeading:'Space Grotesk','Plus Jakarta Sans',system-ui,sans-serif;--maxW:1140px;--sectionY:100px}
 .stil-elegant{--text:#2c2620;--textMuted:#6b6058;--white:#fdfbf7;--fontHeading:'Cormorant Garamond',Georgia,serif;--maxW:1060px;--sectionY:100px}
 
-html{scroll-behavior:smooth;scroll-padding-top:80px}
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:hidden}
 h1,h2,h3,.s-h2{font-family:var(--fontHeading)}
-body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;-webkit-font-smoothing:antialiased;background:var(--white)}
+body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;-webkit-font-smoothing:antialiased;background:var(--white);overflow-x:hidden;max-width:100vw}
 .stil-elegant body,.stil-elegant{line-height:1.8;letter-spacing:-.01em}
 img{max-width:100%;display:block}
 a{color:inherit}
@@ -273,7 +273,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-elegant .ablauf-step h4{font-weight:500}
 .stil-elegant .ablauf-step p{font-size:.8rem}
 
-@media(max-width:768px){.ablauf-steps{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.ablauf-steps{grid-template-columns:1fr 1fr}.sr-ablauf-h{flex-direction:column;align-items:stretch!important}.sr-ablauf-h>div{min-width:0!important;max-width:100%}.sr-ablauf-arrow{transform:rotate(90deg);align-self:center;padding-top:0!important}}
 @media(max-width:480px){.ablauf-steps{grid-template-columns:1fr}}
 
 /* ═══════════════════════════════════════════════════════

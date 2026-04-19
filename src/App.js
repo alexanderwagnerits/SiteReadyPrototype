@@ -1812,7 +1812,7 @@ function Portal({session,onLogout}){
     showToast("Impressum gespeichert");
   };
 
-  const isAiGen=(field)=>Array.isArray(order?.ai_generated)&&order.ai_generated.includes(field);
+  const isAiGen=(field)=>Array.isArray(order?.ai_generated)&&(order.ai_generated.includes(field)||order.ai_generated.includes(field+"_poliert"));
   const SectionHeader=({label,desc,aiField,onRemove})=>(
     <div style={{marginBottom:desc?12:16,paddingBottom:desc?10:14,borderBottom:`1px solid ${T.bg3}`}}>
       {aiField&&isAiGen(aiField)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}>
@@ -2704,7 +2704,7 @@ function Portal({session,onLogout}){
         </div>}
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website."/>
+          <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
           {!(order.sections_visible?.faq)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           {(order.faq||[]).map((f,i)=><div key={i} className="pt-faq-row" style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
             <div style={{display:"flex",flexDirection:"column",gap:6}}>

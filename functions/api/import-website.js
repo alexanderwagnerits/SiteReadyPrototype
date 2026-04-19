@@ -526,17 +526,40 @@ JSON-Felder:
 - whatsapp: WhatsApp-Nummer falls erwaehnt (Format: +43...)
 - buchungslink: URL zum Online-Terminbuchungssystem falls vorhanden
 
-=== RECHTLICHES (aus Impressum — ALLES was du findest) ===
-- unternehmensform: NUR: eu/einzelunternehmen/gmbh/og/kg/ag/verein/gesnbr
-- uid: ATU...
-- firmenbuchnummer: FN...
-- firmenbuchgericht: z.B. HG Wien, LG Linz
-- gisazahl: Nur Ziffern
-- geschaeftsfuehrer: Name(n) der Geschäftsführer
-- gesellschafter: Name(n) der Gesellschafter falls angegeben
-- unternehmensgegenstand: Gewerbebezeichnung falls im Impressum
-- kammer_berufsrecht: Kammerzugehörigkeit (z.B. WKO, Ärztekammer)
-- aufsichtsbehoerde: Aufsichtsbehörde falls angegeben
+=== RECHTLICHES (STRICT MODE — NIEMALS RATEN) ===
+WICHTIG: Bei Rechts-Angaben gilt: lieber LEER als FALSCH. Haftungsfragen!
+Uebernimm einen Wert NUR wenn er WORTWOERTLICH oder in EINDEUTIGER Form
+auf der Quellseite steht. NIEMALS aus Kontext, Branche oder Firmenname
+ableiten.
+
+- unternehmensform: NUR wenn explizit oder zwingend ableitbar:
+  * "GmbH", "Gesellschaft mit beschraenkter Haftung" im Firmennamen oder Impressum -> "gmbh"
+  * "OG" oder "Offene Gesellschaft" -> "og"
+  * "KG" oder "Kommanditgesellschaft" -> "kg"
+  * "AG" oder "Aktiengesellschaft" -> "ag"
+  * "e.U." oder "eingetragenes Einzelunternehmen" -> "eu"
+  * "Verein" + ZVR-Zahl angegeben -> "verein"
+  * "GesnbR", "Gesellschaft nach buergerlichem Recht" -> "gesnbr"
+  * Firmenbuchnummer (FN ...) angegeben aber kein klarer Suffix -> "eu" (eingetragen)
+  * SONST: LEER LASSEN (auch wenn 1 Person erkennbar — Einzelunternehmen
+    NICHT defaulten, der Nutzer waehlt das selbst)
+
+- uid: NUR wenn "ATU..." explizit steht. Sonst leer.
+- firmenbuchnummer: NUR wenn "FN ..." explizit steht. Sonst leer.
+- firmenbuchgericht: NUR wenn explizit (z.B. "HG Wien", "LG Linz"). Sonst leer.
+- gisazahl: NUR wenn explizit "GISA ..." steht. Sonst leer.
+- geschaeftsfuehrer: NUR wenn unter Heading "Geschaeftsfuehrer" oder
+  "Geschaeftsfuehrung" gelistet. NICHT mit Inhaber/Gruender verwechseln.
+- gesellschafter: NUR wenn explizit als "Gesellschafter" gelistet.
+- vorstand/aufsichtsrat: NUR bei AG, NUR wenn explizit gelistet.
+- vertretungsorgane: NUR bei Verein, NUR wenn explizit (z.B. "Obmann: ...").
+- zvr_zahl: NUR wenn "ZVR ..." explizit steht.
+- unternehmensgegenstand: NUR wenn unter Heading "Unternehmensgegenstand"
+  oder "Geschaeftszweck" oder "Gewerbe" explizit angegeben. NICHT aus
+  Branche oder Leistungsbeschreibung raten.
+- kammer_berufsrecht: NUR wenn explizit "Mitglied der ..." oder
+  "Kammer ..." steht.
+- aufsichtsbehoerde: NUR wenn explizit angegeben.
 
 === BRANCHE & LEISTUNGEN ===
 - branche: NUR einer dieser Werte:

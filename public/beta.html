@@ -118,8 +118,8 @@
     <p>SiteReady erstellt automatisch professionelle Websites für Kleinbetriebe in Österreich — in wenigen Minuten, ohne Vorkenntnisse. Wir brauchen dein ehrliches Feedback.</p>
     <div class="hero-stats">
       <span class="hero-stat"><strong>~10 Min</strong> dauert der Test</span>
-      <span class="hero-stat"><strong>70+</strong> Branchen</span>
-      <span class="hero-stat"><strong>0 EUR</strong> Kosten</span>
+      <span class="hero-stat"><strong>85</strong> Branchen</span>
+      <span class="hero-stat"><strong>0 €</strong> Kosten</span>
     </div>
   </div>
 </div>
@@ -166,8 +166,8 @@
       <div class="step">
         <div class="step-num">02</div>
         <div>
-          <strong>Account erstellen &amp; bezahlen</strong>
-          <span>Registriere dich und verwende die <strong>Test-Kreditkarte</strong> unten — du wirst nicht belastet. Danach ist deine Website sofort live.</span>
+          <strong>Konto anlegen — keine Zahlung nötig</strong>
+          <span>Registriere dich mit deiner E-Mail. 14 Tage kostenloser Test-Zeitraum, ohne Kreditkarte. Danach ist deine Website sofort live.</span>
         </div>
       </div>
 
@@ -175,33 +175,9 @@
         <div class="step-num">03</div>
         <div>
           <strong>Portal erkunden &amp; Ergebnis ansehen</strong>
-          <span>Logge dich ins Self-Service-Portal ein. Lade ein Logo oder Fotos hoch, ändere Texte. Öffne deine fertige Website und bewerte das Ergebnis.</span>
+          <span>Logge dich ins Portal ein. Lade ein Logo oder Fotos hoch, ändere Texte. Öffne deine fertige Website und bewerte das Ergebnis.</span>
         </div>
       </div>
-    </div>
-
-    <!-- Credit card -->
-    <div class="cc-card">
-      <div class="cc-label">Test-Kreditkarte (kein echtes Geld)</div>
-      <div class="cc-row">
-        <div class="cc-field">
-          <label>Kartennummer</label>
-          <span>4242 4242 4242 4242</span>
-        </div>
-        <div class="cc-field">
-          <label>Ablaufdatum</label>
-          <span>12 / 28</span>
-        </div>
-        <div class="cc-field">
-          <label>CVC</label>
-          <span>123</span>
-        </div>
-        <div class="cc-field">
-          <label>PLZ</label>
-          <span>12345</span>
-        </div>
-      </div>
-      <div class="cc-hint">Stripe-Testmodus — echte Karten werden nicht akzeptiert.</div>
     </div>
 
     <div class="divider"></div>
@@ -233,6 +209,21 @@
           </div>
         </div>
 
+        <!-- Logo-Bewertung (Branding-Idee fuer das Live-Produkt) -->
+        <div class="stars-wrap" style="background:#fff;border:1px solid #e5e7eb">
+          <span class="stars-label">Wir prüfen einen neuen Markennamen — wie findest du dieses Logo?</span>
+          <div style="display:flex;align-items:center;justify-content:center;background:#f9fafb;border-radius:8px;padding:24px 16px;margin:8px 0 14px;border:1px solid #f0f1f3">
+            <img src="/instantpage-logo.png" alt="instantpage.at" style="max-height:48px;max-width:280px;width:auto;height:auto;display:block"/>
+          </div>
+          <div class="stars" id="logo-stars">
+            <button class="star logo-star" data-val="1" type="button">&#9733;</button>
+            <button class="star logo-star" data-val="2" type="button">&#9733;</button>
+            <button class="star logo-star" data-val="3" type="button">&#9733;</button>
+            <button class="star logo-star" data-val="4" type="button">&#9733;</button>
+            <button class="star logo-star" data-val="5" type="button">&#9733;</button>
+          </div>
+        </div>
+
         <!-- Fragebogen-Erlebnis als Buttons -->
         <div class="field">
           <label>Wie war das Ausfüllen?</label>
@@ -245,7 +236,7 @@
 
         <!-- Preis -->
         <div class="field">
-          <label>Würdest du als Selbstständiger 20 EUR/Monat dafür zahlen?</label>
+          <label>Würdest du dafür 25 € pro Monat zahlen?</label>
           <div id="price-btns" style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" class="price-opt" data-val="nein" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Nein, zu teuer</button>
             <button type="button" class="price-opt" data-val="ja" onclick="selectPrice(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Ja, fairer Preis</button>
@@ -255,7 +246,7 @@
 
         <!-- Differenzierung -->
         <div class="field">
-          <label>Hebt sich SiteReady von Wix, Jimdo oder Squarespace ab?</label>
+          <label>Hebt sich SiteReady von ähnlichen Tools wie Wix, Jimdo oder onepage.io ab?</label>
           <div id="diff-btns" style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" class="diff-opt" data-val="gleich" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Sieht gleich aus</button>
             <button type="button" class="diff-opt" data-val="etwas" onclick="selectDiff(this)" style="padding:10px 20px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#555;cursor:pointer;transition:all .15s;min-height:44px">Etwas anders</button>
@@ -270,13 +261,8 @@
         </div>
 
         <div class="field">
-          <label>Was würdest du ändern oder vermisst du etwas?</label>
-          <textarea id="f-sonstiges" placeholder="Ideen, Wünsche, Anmerkungen ..."></textarea>
-        </div>
-
-        <div class="field">
-          <label>Welche Funktion würde SiteReady noch besser machen?</label>
-          <textarea id="f-feature" placeholder="z.B. Online-Terminbuchung, Google Bewertungen einbinden, Newsletter ..."></textarea>
+          <label>Was vermisst du? Welche Funktionen wünschst du dir?</label>
+          <textarea id="f-feature" placeholder="z.B. Online-Termine, Google Bewertungen, Newsletter, Mehrsprachig ..."></textarea>
         </div>
 
         <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Feedback absenden</button>
@@ -304,6 +290,7 @@
   const SUPABASE_KEY = "sb_publishable_u1yaQuqOp0qNhJHdiOU7Tw_hzTr0-MG";
 
   let rating = 0;
+  let logoRating = 0;
   let flowAnswer = "";
   let priceAnswer = "";
   let diffAnswer = "";
@@ -320,20 +307,24 @@
   function selectPrice(btn) { selectOpt(btn, "price-opt", v => priceAnswer = v); }
   function selectDiff(btn) { selectOpt(btn, "diff-opt", v => diffAnswer = v); }
 
-  const stars = document.querySelectorAll(".star");
-  stars.forEach(star => {
-    star.addEventListener("click", () => {
-      rating = parseInt(star.dataset.val);
-      stars.forEach((s, i) => s.classList.toggle("active", i < rating));
+  function bindStars(containerId, getRating, setRating) {
+    const stars = document.querySelectorAll("#" + containerId + " .star");
+    stars.forEach(star => {
+      star.addEventListener("click", () => {
+        setRating(parseInt(star.dataset.val));
+        stars.forEach((s, i) => s.classList.toggle("active", i < getRating()));
+      });
+      star.addEventListener("mouseenter", () => {
+        const val = parseInt(star.dataset.val);
+        stars.forEach((s, i) => s.classList.toggle("active", i < val));
+      });
+      star.addEventListener("mouseleave", () => {
+        stars.forEach((s, i) => s.classList.toggle("active", i < getRating()));
+      });
     });
-    star.addEventListener("mouseenter", () => {
-      const val = parseInt(star.dataset.val);
-      stars.forEach((s, i) => s.classList.toggle("active", i < val));
-    });
-    star.addEventListener("mouseleave", () => {
-      stars.forEach((s, i) => s.classList.toggle("active", i < rating));
-    });
-  });
+  }
+  bindStars("stars", () => rating, v => rating = v);
+  bindStars("logo-stars", () => logoRating, v => logoRating = v);
 
   async function submitFeedback() {
     const name = document.getElementById("f-name").value.trim();
@@ -348,11 +339,11 @@
       name,
       beruf: document.getElementById("f-beruf").value.trim() || null,
       rating,
+      logo_rating: logoRating || null,
       fragebogen_erlebnis: flowAnswer || null,
       preis_bewertung: priceAnswer || null,
       differenzierung: diffAnswer || null,
       was_schlecht: document.getElementById("f-schlecht").value.trim() || null,
-      sonstiges: document.getElementById("f-sonstiges").value.trim() || null,
       feature_wunsch: document.getElementById("f-feature").value.trim() || null,
       created_at: new Date().toISOString()
     };

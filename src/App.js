@@ -1946,21 +1946,49 @@ function Portal({session,onLogout}){
     {label:order.bewertungen?.some(b=>b.text)?(isAiGen("bewertungen")?aiTag+"Bewertungen prüfen":"Bewertungen prüfen"):"Kundenbewertungen hinzufügen",
      desc:order.bewertungen?.some(b=>b.text)?"Prüfen Sie die übernommenen Bewertungen.":"Echte Kundenstimmen steigern das Vertrauen.",
      done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
-    sectionStep({visKey:"faq",page:"faq",
-      hasData:!!order.faq?.some(f=>f.frage),isAi:isAiGen("faq"),
-      labelDone:"FAQ prüfen",labelAdd:"FAQ hinzufügen",
-      descDone:"Prüfen Sie die häufig gestellten Fragen.",
-      descAdd:"Beantworten Sie häufige Kundenfragen direkt auf Ihrer Website."}),
-    sectionStep({visKey:"fakten",page:"fakten",
-      hasData:!!order.fakten?.some(f=>f.zahl),
-      labelDone:"Zahlen & Fakten prüfen",labelAdd:"Zahlen & Fakten hinzufügen",
-      descDone:"Prüfen Sie die übernommenen Zahlen.",
-      descAdd:`z.B. „15+ Jahre Erfahrung" – beeindruckt Besucher.`}),
-    sectionStep({visKey:"partner",page:"partner",
-      hasData:!!order.partner?.some(p=>p.name),
-      labelDone:"Referenzen prüfen",labelAdd:"Referenzen hinzufügen",
-      descDone:"Prüfen Sie Kunden, Partner und Zertifikate.",
-      descAdd:"Kunden, Partner oder Zertifikate — zeigen Sie, wer Ihnen vertraut."}),
+    (()=>{
+      // FAQ braucht Frage UND Antwort — sonst auf Website nicht sichtbar
+      const complete=!!order.faq?.some(f=>f.frage&&f.antwort);
+      const incomplete=!!order.faq?.some(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort));
+      const hidden=isHidden("faq");
+      if(incomplete&&!complete)return{
+        label:"FAQ — Antwort fehlt",
+        desc:"Sie haben eine Frage ohne Antwort (oder umgekehrt). FAQs werden nur angezeigt wenn beides ausgefuellt ist.",
+        done:false,page:"faq",warn:true};
+      return sectionStep({visKey:"faq",page:"faq",
+        hasData:complete,isAi:isAiGen("faq"),
+        labelDone:"FAQ prüfen",labelAdd:"FAQ hinzufügen",
+        descDone:incomplete?"Einige FAQs sind unvollstaendig und werden nicht angezeigt.":"Prüfen Sie die häufig gestellten Fragen.",
+        descAdd:"Beantworten Sie häufige Kundenfragen direkt auf Ihrer Website."});
+    })(),
+    (()=>{
+      // Zahlen & Fakten: Website zeigt erst ab 2 Eintraegen mit Zahl
+      const validCount=(order.fakten||[]).filter(f=>f&&f.zahl).length;
+      const hidden=isHidden("fakten");
+      if(validCount===1){return{
+        label:"Zahlen & Fakten — noch 1",
+        desc:"Erst ab 2 Eintraegen wird die Section auf der Website gezeigt. Bitte einen weiteren hinzufuegen.",
+        done:false,page:"fakten",warn:true};}
+      return sectionStep({visKey:"fakten",page:"fakten",
+        hasData:validCount>=2,
+        labelDone:"Zahlen & Fakten prüfen",labelAdd:"Zahlen & Fakten hinzufügen",
+        descDone:"Prüfen Sie die übernommenen Zahlen.",
+        descAdd:`z.B. „15+ Jahre Erfahrung" – beeindruckt Besucher.`});
+    })(),
+    (()=>{
+      const withLogo=!!order.partner?.some(p=>p.url_logo);
+      const withNameNoLogo=!!order.partner?.some(p=>p.name&&!p.url_logo);
+      const hidden=isHidden("partner");
+      if(withNameNoLogo&&!withLogo){return{
+        label:"Referenzen — Logos fehlen",
+        desc:"Sie haben Eintraege ohne Logo. Ohne Logo werden diese auf der Website nicht angezeigt.",
+        done:false,page:"partner",warn:true};}
+      return sectionStep({visKey:"partner",page:"partner",
+        hasData:withLogo,
+        labelDone:"Referenzen prüfen",labelAdd:"Referenzen hinzufügen",
+        descDone:withNameNoLogo?"Einige Eintraege haben noch kein Logo und werden nicht angezeigt.":"Prüfen Sie Kunden, Partner und Zertifikate.",
+        descAdd:"Kunden, Partner oder Zertifikate — mit Logo zeigen Sie, wer Ihnen vertraut."});
+    })(),
     {label:(order.facebook||order.instagram||order.linkedin||order.tiktok)?"Social Media prüfen":"Social Media Profile angeben",
      desc:"Ihre Profile erscheinen als Icons auf der Website.",
      done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
@@ -2740,7 +2768,11 @@ function Portal({session,onLogout}){
           <button onClick={()=>{const a=[...(order.team_members||[]),{name:"",rolle:"",foto:""}];upOrder("team_members")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Teammitglied hinzufügen"}</button>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <SectionHeader label="Ablauf" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Erscheint als eigene Section auf der Website." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
+          <SectionHeader label="Ablauf" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Mindestens 2 Schritte mit Titel, sonst wird die Section nicht angezeigt." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
+          {(()=>{const validCount=(order.ablauf_schritte||[]).filter(s=>s&&s.titel).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>Sie haben nur 1 Schritt — der Ablauf wird erst ab 2 Schritten auf der Website angezeigt.</div>
+          </div>})()}
           {!(order.ablauf_schritte||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Ablaufschritte hinzugefügt.</div>}
           {(order.ablauf_schritte||[]).map((s,i)=>(
             <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
@@ -2774,13 +2806,17 @@ function Portal({session,onLogout}){
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
           {order.sections_visible?.faq===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
-          {(order.faq||[]).map((f,i)=><div key={i} className="pt-faq-row" style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
+          {(()=>{const incompleteCount=(order.faq||[]).filter(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort)).length;return incompleteCount>0&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>{incompleteCount===1?"1 Eintrag hat":`${incompleteCount} Eintraege haben`} Frage oder Antwort leer — wird auf der Website nicht angezeigt.</div>
+          </div>})()}
+          {(order.faq||[]).map((f,i)=>{const incomplete=(f.frage&&!f.antwort)||(!f.frage&&f.antwort);return<div key={i} className="pt-faq-row" style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0,padding:incomplete?"8px":0,border:incomplete?`1.5px solid #fca5a5`:"none",borderRadius:incomplete?T.rSm:0,background:incomplete?"#fef3f2":"transparent"}}>
             <div style={{display:"flex",flexDirection:"column",gap:6}}>
               <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
               <textarea value={f.antwort||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],antwort:e.target.value};upOrder("faq")(arr);}} placeholder="Antwort" rows={2} style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,resize:"vertical"}}/>
             </div>
             <button onClick={()=>askDelete("Frage",()=>{const arr=[...(order.faq||[])];arr.splice(i,1);upOrder("faq")(arr);})} style={{marginTop:8,width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"×"}</button>
-          </div>)}
+          </div>})}
           {!(order.faq||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Fragen hinzugefügt.</div>}
           <div style={{display:"flex",gap:8,marginTop:12}}>
             <button onClick={()=>{const arr=[...(order.faq||[]),{frage:"",antwort:""}];upOrder("faq")(arr);}} style={{flex:1,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Frage hinzufügen</button>
@@ -2799,8 +2835,12 @@ function Portal({session,onLogout}){
 
         {/* ── Zahlen & Fakten Seite ── */}
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Maximal 4 Einträge."/>
+          <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Mindestens 2 Eintraege, maximal 4."/>
           {order.sections_visible?.fakten===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {(()=>{const validCount=(order.fakten||[]).filter(f=>f&&f.zahl).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>Sie haben nur 1 Fakt — die Section wird erst ab 2 Eintraegen auf der Website angezeigt.</div>
+          </div>})()}
           <div className="pt-fakten-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
               <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
@@ -2814,22 +2854,28 @@ function Portal({session,onLogout}){
 
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft."/>
+          <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Ein Logo ist Pflicht, nur der Name wird nicht auf der Website angezeigt."/>
           {order.sections_visible?.partner===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
-          {(order.partner||[]).map((p,i)=><div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,alignItems:"center"}}>
+          {(()=>{const withoutLogo=(order.partner||[]).filter(p=>p&&p.name&&!p.url_logo).length;return withoutLogo>0&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>{withoutLogo===1?"Ein Eintrag hat":`${withoutLogo} Eintraege haben`} kein Logo und wird auf der Website nicht angezeigt. Bitte Logo hochladen oder Eintrag entfernen.</div>
+          </div>})()}
+          {(order.partner||[]).map((p,i)=>{const missingLogo=!!p.name&&!p.url_logo;return<div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${missingLogo?"#fca5a5":T.bg3}`,borderRadius:T.rSm,background:missingLogo?"#fef3f2":T.bg,alignItems:"center"}}>
             {/* Logo-Vorschau oder Upload */}
-            <div style={{width:56,height:56,borderRadius:T.rSm,border:`1.5px dashed ${T.bg3}`,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()}>
+            <div style={{width:56,height:56,borderRadius:T.rSm,border:`1.5px dashed ${missingLogo?"#fca5a5":T.bg3}`,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()} title={p.url_logo?"Logo ersetzen":"Logo hochladen"}>
               {p.url_logo
                 ? <img src={p.url_logo} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>
-                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>}
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={missingLogo?"#ef4444":T.textMuted} strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>}
               <input id={`ref-upload-${i}`} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{if(e.target.files?.[0])upload(`ref_${i}`,e.target.files[0]);}}/>
             </div>
             <div style={{flex:1,display:"flex",flexDirection:"column",gap:4}}>
               <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. Red Bull, WKO, TÜV, Ärztekammer" style={{padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
-              {uploading[`ref_${i}`]&&<div style={{fontSize:".72rem",color:T.accent}}>Logo wird hochgeladen...</div>}
+              {uploading[`ref_${i}`]?<div style={{fontSize:".72rem",color:T.accent}}>Logo wird hochgeladen...</div>
+                :missingLogo?<button onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()} style={{fontSize:".72rem",color:"#ef4444",fontWeight:700,background:"none",border:"none",padding:0,cursor:"pointer",textAlign:"left",textDecoration:"underline"}}>Logo fehlt — jetzt hochladen</button>
+                :null}
             </div>
             <button onClick={()=>askDelete("Eintrag",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
-          </div>)}
+          </div>})}
           {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen.</div>}
           <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>
         </div>}

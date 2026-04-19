@@ -1632,9 +1632,11 @@ function Portal({session,onLogout}){
   const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));
   const isDirty=order&&originalOrderRef.current&&JSON.stringify(order)!==JSON.stringify(originalOrderRef.current);
   useEffect(()=>{const h=e=>{if(isDirty){e.preventDefault();e.returnValue="";}};window.addEventListener("beforeunload",h);return()=>window.removeEventListener("beforeunload",h);},[isDirty]);
+  const[saveError,setSaveError]=useState(null);
   const saveAll=async()=>{
     if(!order||!supabase)return;
     setSaving(true);
+    setSaveError(null);
     const{error}=await supabase.from("orders").update({
       firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet,
       adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,
@@ -1681,10 +1683,14 @@ function Portal({session,onLogout}){
       foto_credit:order.foto_credit||null,foto_rights_confirmed:order.foto_rights_confirmed||false,
     }).eq("id",order.id);
     setSaving(false);
-    if(!error){
-      originalOrderRef.current=JSON.parse(JSON.stringify(order));
-      showToast("Gespeichert");
+    if(error){
+      setSaveError(error.message||"Unbekannter Fehler");
+      showToast("Speichern fehlgeschlagen — bitte erneut versuchen");
+      try{await supabase.from("error_logs").insert({source:"save_all_error",message:error.message});}catch(_){}
+      return;
     }
+    originalOrderRef.current=JSON.parse(JSON.stringify(order));
+    showToast("Gespeichert");
   };
   const discardChanges=()=>{
     if(originalOrderRef.current)setOrder(JSON.parse(JSON.stringify(originalOrderRef.current)));
@@ -1706,17 +1712,44 @@ function Portal({session,onLogout}){
       setAssetUrls(u=>({...u,[key]:bustedUrl}));
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",about5:"url_about5",about6:"url_about6",about7:"url_about7",about8:"url_about8",preisliste:"url_preisliste"};
       const col=colMap[key];
-      // Partner-Logo: key = "ref_0", "ref_1" etc. → URL in partner Array speichern
+      // Partner-Logo: key = "ref_0", "ref_1" etc. → URL in partner Array + DB speichern
       if(key.startsWith("ref_")){
         const idx=parseInt(key.split("_")[1]);
         const arr=[...(order.partner||[])];
-        if(arr[idx]){arr[idx]={...arr[idx],url_logo:bustedUrl};upOrder("partner")(arr);}
+        if(arr[idx]){
+          arr[idx]={...arr[idx],url_logo:bustedUrl};
+          if(order?.id){
+            const{error:upErr}=await supabase.from("orders").update({partner:arr}).eq("id",order.id);
+            if(upErr){
+              showToast("Logo gespeichert, aber DB-Update fehlgeschlagen");
+              try{await supabase.from("error_logs").insert({source:"partner_logo_update_error",message:upErr.message});}catch(_){}
+            }else{
+              // Local State + originalOrderRef syncen damit kein false "Ungespeicherte Aenderungen"
+              setOrder(o=>{const no={...o,partner:arr};if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,partner:arr};return no;});
+            }
+          }else{
+            upOrder("partner")(arr);
+          }
+        }
       } else if(col&&order?.id){
         const updatePayload={[col]:bustedUrl};
         if(key==="hero"&&order.hero_is_placeholder) updatePayload.hero_is_placeholder=false;
         const{error:upErr}=await supabase.from("orders").update(updatePayload).eq("id",order.id);
-        if(upErr)try{await supabase.from("error_logs").insert({source:"url_update_error",message:upErr.message});}catch(_){}
-        if(key==="hero"&&order.hero_is_placeholder) setOrder(o=>({...o,hero_is_placeholder:false}));
+        if(upErr){
+          showToast("Bild gespeichert, aber URL-Update fehlgeschlagen");
+          try{await supabase.from("error_logs").insert({source:"url_update_error",message:upErr.message});}catch(_){}
+        }else{
+          // Local order state + originalOrderRef mit neuer URL syncen
+          setOrder(o=>{
+            const no={...o,[col]:bustedUrl};
+            if(key==="hero"&&o.hero_is_placeholder)no.hero_is_placeholder=false;
+            if(originalOrderRef.current){
+              originalOrderRef.current={...originalOrderRef.current,[col]:bustedUrl};
+              if(key==="hero"&&originalOrderRef.current.hero_is_placeholder)originalOrderRef.current.hero_is_placeholder=false;
+            }
+            return no;
+          });
+        }
       }
       showToast(key==="logo"?"Logo hochgeladen!":key==="preisliste"?"Preisliste hochgeladen!":"Foto hochgeladen!");
     }catch(e){showToast("Fehler: "+e.message);}
@@ -2225,16 +2258,22 @@ function Portal({session,onLogout}){
       </>}
       <div className="pt-mb">
       {isDirty&&(
-        <div className="pt-save-bar" style={{position:"sticky",top:0,zIndex:10,display:"flex",alignItems:"center",justifyContent:"space-between",
-          padding:"12px 20px",background:"#111",borderRadius:T.rSm,boxShadow:"0 4px 16px rgba(0,0,0,.15)",marginBottom:12}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:6,height:6,borderRadius:"50%",background:T.amber}}/>
-            <span style={{fontSize:".88rem",fontWeight:600,color:"#fff"}}>Ungespeicherte Änderungen</span>
+        <div className="pt-save-bar" style={{position:"sticky",top:0,zIndex:10,display:"flex",flexDirection:"column",gap:saveError?8:0,
+          padding:"12px 20px",background:saveError?"#991b1b":"#111",borderRadius:T.rSm,boxShadow:"0 4px 16px rgba(0,0,0,.15)",marginBottom:12}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:saveError?"#fca5a5":T.amber}}/>
+              <span style={{fontSize:".88rem",fontWeight:600,color:"#fff"}}>{saveError?"Speichern fehlgeschlagen":"Ungespeicherte Änderungen"}</span>
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={discardChanges} style={{padding:"7px 16px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.7)",cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Verwerfen</button>
+              <button onClick={saveAll} disabled={saving} style={{padding:"7px 20px",border:"none",borderRadius:T.rSm,background:"#fff",color:"#111",cursor:saving?"wait":"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":saveError?"Erneut versuchen":"Speichern"}</button>
+            </div>
           </div>
-          <div style={{display:"flex",gap:8}}>
-            <button onClick={discardChanges} style={{padding:"7px 16px",border:"1.5px solid rgba(255,255,255,.2)",borderRadius:T.rSm,background:"transparent",color:"rgba(255,255,255,.7)",cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Verwerfen</button>
-            <button onClick={saveAll} disabled={saving} style={{padding:"7px 20px",border:"none",borderRadius:T.rSm,background:"#fff",color:"#111",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Speichern"}</button>
-          </div>
+          {saveError&&<div style={{fontSize:".75rem",color:"rgba(255,255,255,.8)",lineHeight:1.5,paddingLeft:14}}>
+            {saveError.length>180?saveError.slice(0,180)+"…":saveError}
+            <span style={{opacity:.7,marginLeft:6}}>— Ihre Änderungen bleiben erhalten, bitte erneut klicken.</span>
+          </div>}
         </div>
       )}
       {/* Trial-Banner */}
@@ -2375,7 +2414,7 @@ function Portal({session,onLogout}){
             <div style={{fontSize:".8rem",color:T.textMuted}}>Aktionen, Urlaub oder News — erscheint als Banner auf Ihrer Website.</div>
           </div>):(
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(a)=>{await supabase.from("orders").update({announcements:a}).eq("id",order.id);setToastMsg("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
+            {(order.announcements||[]).map((ann,i)=>{const saveAnn=async(a)=>{const{error}=await supabase.from("orders").update({announcements:a}).eq("id",order.id);if(error){showToast("Speichern fehlgeschlagen: "+error.message);try{await supabase.from("error_logs").insert({source:"announcements_save_error",message:error.message});}catch(_){}return;}if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,announcements:a};showToast("Gespeichert");};return<div key={ann.id||i} style={{border:`1.5px solid ${ann.active?T.accent+"33":T.bg3}`,borderRadius:T.rSm,padding:"14px 16px",background:ann.active?"#fff":T.bg}}>
               <div style={{marginBottom:10}}>
                 <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",color:T.textMuted,marginBottom:4}}>Text</div>
                 <input value={ann.text} placeholder="z.B. Betriebsurlaub 1.–15. August" onChange={e=>{const a=[...(order.announcements||[])];a[i]={...a[i],text:e.target.value};setOrder(o=>({...o,announcements:a}));}} onBlur={()=>{const a=[...(order.announcements||[])];saveAnn(a);}} style={{width:"100%",padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".85rem",fontFamily:T.font,color:T.dark,outline:"none",minHeight:40,boxSizing:"border-box"}}/>
@@ -2438,7 +2477,7 @@ function Portal({session,onLogout}){
                   {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
                 </label>
-                {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"×"}</button>}
+                {url&&<button onClick={()=>askDelete(a.label||"Bild",()=>deleteAsset(a.key))} disabled={deleting[a.key]} title="Bild entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"×"}</button>}
               </div>
             </div>
             {url&&(<div style={{marginBottom:12}}>
@@ -2481,7 +2520,7 @@ function Portal({session,onLogout}){
                   {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
                 </label>
-                {url&&<button onClick={()=>deleteAsset("hero")} disabled={deleting["hero"]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"×"}</button>}
+                {url&&<button onClick={()=>askDelete("Titelbild",()=>deleteAsset("hero"))} disabled={deleting["hero"]} title="Titelbild entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"×"}</button>}
               </div>
             </div>
             {url&&<>
@@ -3256,7 +3295,7 @@ function Portal({session,onLogout}){
                   {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
                 </label>
-                {url&&<button onClick={()=>deleteAsset(a.key)} disabled={deleting[a.key]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"×"}</button>}
+                {url&&<button onClick={()=>askDelete(a.label||"Bild",()=>deleteAsset(a.key))} disabled={deleting[a.key]} title="Bild entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"×"}</button>}
               </div>
             </div>
             {url&&(<div style={{marginBottom:12}}>
@@ -3299,7 +3338,7 @@ function Portal({session,onLogout}){
                   {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
                 </label>
-                {url&&<button onClick={()=>deleteAsset("hero")} disabled={deleting["hero"]} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"×"}</button>}
+                {url&&<button onClick={()=>askDelete("Titelbild",()=>deleteAsset("hero"))} disabled={deleting["hero"]} title="Titelbild entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"×"}</button>}
               </div>
             </div>
             {url&&<>
@@ -3351,7 +3390,7 @@ function Portal({session,onLogout}){
                     {busy?"...":url?"Ersetzen":"Hochladen"}
                     <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(k,e.target.files[0]);}}/>
                   </label>
-                  {url&&<button onClick={()=>deleteAsset(k)} disabled={deleting[k]} style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"×"}</button>}
+                  {url&&<button onClick={()=>askDelete("Bild",()=>deleteAsset(k))} disabled={deleting[k]} title="Bild entfernen" style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"×"}</button>}
                 </div>
               </div>
             );})}
@@ -3376,7 +3415,7 @@ function Portal({session,onLogout}){
                   {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
                   <input type="file" accept="image/*,.pdf" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("preisliste",e.target.files[0]);}}/>
                 </label>
-                {url&&<button onClick={()=>deleteAsset("preisliste")} disabled={deleting.preisliste} style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting.preisliste?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting.preisliste?"...":"×"}</button>}
+                {url&&<button onClick={()=>askDelete("Preisliste",()=>deleteAsset("preisliste"))} disabled={deleting.preisliste} title="Preisliste entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting.preisliste?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting.preisliste?"...":"×"}</button>}
               </div>
             </div>
             {url&&<div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:T.greenLight,borderRadius:T.rSm,border:`1px solid rgba(22,163,74,.15)`}}>

@@ -7,12 +7,26 @@ const STIL_CONFIG = {
   traditional:  {p:"#020826",a:"#7a6844",bg:"#f9f4ef",s:"#eaddcf",t:"#2c2620",tm:"#6b6058",font:"Inter",fontHeading:"Cormorant Garamond",url:"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap",r:"2px"},
 };
 
+// Branchen mit eigener Standes-/Berufskammer (statt WKO)
+const BRANCHEN_KAMMER = {
+  arzt: "Österreichische Ärztekammer",
+  zahnarzt: "Österreichische Zahnärztekammer",
+  tierarzt: "Österreichische Tierärztekammer",
+  apotheke: "Österreichische Apothekerkammer",
+  rechtsanwalt: "Österreichische Rechtsanwaltskammer",
+  notar: "Österreichische Notariatskammer",
+  steuerberater: "Kammer der Steuerberater und Wirtschaftsprüfer",
+  architekt: "Bundeskammer der ZiviltechnikerInnen",
+};
+
 function buildImpressumRows(o) {
   const uf = o.unternehmensform || "";
   const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
   const firmaVoll = o.firmenname + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
   const sitz = [o.plz, o.ort].filter(Boolean).join(" ");
   const adresse = [o.adresse, sitz].filter(Boolean).join(", ");
+  // Fallback fuer Unternehmensgegenstand: Branche-Label wenn nicht explizit angegeben
+  const ugFallback = o.unternehmensgegenstand || o.branche_label || "";
   const rows = [];
   const add = (l, v) => { if (v && String(v).trim()) rows.push([l, String(v).trim()]); };
 
@@ -20,24 +34,28 @@ function buildImpressumRows(o) {
 
   if (uf === "einzelunternehmen") {
     add("Inhaber", o.firmenname); add("Anschrift", adresse);
-    add("Unternehmensgegenstand", o.unternehmensgegenstand);
+    add("Unternehmensgegenstand", ugFallback);
   } else if (uf === "eu") {
     add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
     add("Firmenbuchgericht", o.firmenbuchgericht);
+    add("Unternehmensgegenstand", ugFallback);
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "gmbh") {
     add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
     add("Firmenbuchgericht", o.firmenbuchgericht);
     add("Geschäftsführer", o.geschaeftsfuehrer);
+    add("Unternehmensgegenstand", ugFallback);
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "og" || uf === "kg") {
     add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
     add("Firmenbuchgericht", o.firmenbuchgericht);
+    add("Unternehmensgegenstand", ugFallback);
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "ag") {
     add("Anschrift", adresse); add("Firmenbuchnummer", o.firmenbuchnummer);
     add("Firmenbuchgericht", o.firmenbuchgericht);
     add("Vorstand", o.vorstand); add("Aufsichtsrat", o.aufsichtsrat);
+    add("Unternehmensgegenstand", ugFallback);
     if (o.liquidation) add("Hinweis", "Gesellschaft in Liquidation");
   } else if (uf === "verein") {
     add("Vereinsname", o.firmenname); add("Anschrift", adresse);
@@ -45,10 +63,11 @@ function buildImpressumRows(o) {
     add("Vertretungsbefugte Organe", o.vertretungsorgane);
   } else if (uf === "gesnbr") {
     add("Bezeichnung", o.firmenname); add("Anschrift", adresse);
-    add("Unternehmensgegenstand", o.unternehmensgegenstand);
+    add("Unternehmensgegenstand", ugFallback);
     add("Gesellschafter", o.gesellschafter);
   } else {
     add("Anschrift", adresse);
+    add("Unternehmensgegenstand", ugFallback);
   }
 
   add("Telefon", o.telefon); add("E-Mail", o.email);
@@ -67,8 +86,10 @@ function buildImpressumRows(o) {
   }
   if (o.kammer_berufsrecht) {
     add("Kammer / Berufsrecht", o.kammer_berufsrecht);
-  } else if (uf !== "verein" && uf !== "gesnbr" && uf !== "einzelunternehmen") {
-    add("Mitglied der", "Wirtschaftskammer Österreich");
+  } else if (uf !== "verein" && uf !== "gesnbr") {
+    // Standes-/Berufskammer aus Branche, sonst WKO als Default
+    const kammer = BRANCHEN_KAMMER[o.branche] || "Wirtschaftskammer Österreich";
+    add("Mitglied der", kammer);
     add("Berufsrecht", "Gewerbeordnung (www.ris.bka.gv.at)");
   }
   return {rows, firmaVoll, adresse};

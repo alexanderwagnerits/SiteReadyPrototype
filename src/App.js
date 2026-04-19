@@ -1856,8 +1856,27 @@ function Portal({session,onLogout}){
     medien:!!(assetUrls.logo||assetUrls.hero),
     impressum:!!(order.unternehmensform||order.uid_nummer),
   }:{};
-  // Wizard: Labels passen sich an Datenquelle an (AI/Import/manuell/leer)
+  // Wizard: Labels passen den Daten-Stand UND den Sichtbarkeits-Stand der Kunden-
+  // Website wider. Default-sichtbare Bereiche (FAQ, Fakten, Partner, Galerie)
+  // werden per sv.X === false explizit ausgeblendet.
   const aiTag="✨ ";
+  const sv=order?.sections_visible||{};
+  const isHidden=(key)=>sv[key]===false;
+  // Section-Step Helper: zeigt abhaengig von Daten/Sichtbarkeit die richtige
+  // Aktion. Gibt null zurueck wenn Section hidden und keine Daten da sind
+  // (dann ist der Punkt irrelevant).
+  const sectionStep=({visKey,page,hasData,labelDone,labelAdd,descDone,descAdd,isAi})=>{
+    const hidden=isHidden(visKey);
+    if(hasData&&hidden)return{
+      label:labelDone+" — ausgeblendet",
+      desc:`Sie haben Inhalte eingetragen, aber der Bereich wird auf der Website nicht angezeigt. Auf der Design-Seite wieder aktivieren.`,
+      done:false,page:"design",warn:true};
+    if(hasData)return{
+      label:isAi?aiTag+labelDone:labelDone,
+      desc:descDone,done:true,page};
+    if(hidden)return null;
+    return{label:labelAdd,desc:descAdd,done:false,page};
+  };
   const wizardSteps=order?[
     {label:assetUrls.logo?"Logo prüfen":"Logo hochladen",
      desc:assetUrls.logo?"Ihr Logo wurde übernommen. Prüfen Sie ob es korrekt angezeigt wird.":"Ihr Firmenlogo erscheint oben links auf der Website. Idealerweise als PNG mit transparentem Hintergrund.",
@@ -1885,8 +1904,8 @@ function Portal({session,onLogout}){
     {label:"Design anpassen",
      desc:"Stil, Farben und Schriftart nicht zufrieden? Hier können Sie alles ändern — sofort live.",
      done:!!(order.custom_color||order.custom_font||order.custom_accent),page:"design"},
-    {label:"Betriebsfotos hochladen",
-     desc:"Professionelle Fotos sind der größte Hebel für mehr Anfragen.",
+    {label:(assetUrls.foto2||assetUrls.foto3)?"Betriebsfotos prüfen":"Betriebsfotos hochladen",
+     desc:(assetUrls.foto2||assetUrls.foto3)?"Ihre Fotos sind auf der Website sichtbar.":"Professionelle Fotos sind der größte Hebel für mehr Anfragen.",
      done:!!(assetUrls.foto2||assetUrls.foto3),page:"ueberuns"},
     {label:order.team_members?.some(m=>m.name)?"Team prüfen":"Team vorstellen",
      desc:order.team_members?.some(m=>m.name)?"Teammitglieder wurden übernommen. Prüfen Sie Namen und Rollen.":"Zeigen Sie Ihr Team — das schafft Vertrauen.",
@@ -1894,15 +1913,21 @@ function Portal({session,onLogout}){
     {label:order.bewertungen?.some(b=>b.text)?(isAiGen("bewertungen")?aiTag+"Bewertungen prüfen":"Bewertungen prüfen"):"Kundenbewertungen hinzufügen",
      desc:order.bewertungen?.some(b=>b.text)?"Prüfen Sie die übernommenen Bewertungen.":"Echte Kundenstimmen steigern das Vertrauen.",
      done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
-    {label:order.faq?.some(f=>f.frage)?(isAiGen("faq")?aiTag+"FAQ prüfen":"FAQ prüfen"):"FAQ hinzufügen",
-     desc:order.faq?.some(f=>f.frage)?"Prüfen Sie die häufig gestellten Fragen.":"Beantworten Sie häufige Kundenfragen direkt auf Ihrer Website.",
-     done:!!(order.faq?.some(f=>f.frage)),page:"faq"},
-    {label:order.fakten?.some(f=>f.zahl)?"Zahlen & Fakten prüfen":"Zahlen & Fakten hinzufügen",
-     desc:order.fakten?.some(f=>f.zahl)?"Prüfen Sie die übernommenen Zahlen.":`z.B. „15+ Jahre Erfahrung" – beeindruckt Besucher.`,
-     done:!!(order.fakten?.some(f=>f.zahl)),page:"fakten"},
-    {label:order.partner?.some(p=>p.name)?"Referenzen prüfen":"Referenzen hinzufügen",
-     desc:order.partner?.some(p=>p.name)?"Prüfen Sie Kunden, Partner und Zertifikate.":"Kunden, Partner oder Zertifikate — zeigen Sie, wer Ihnen vertraut.",
-     done:!!(order.partner?.some(p=>p.name)),page:"partner"},
+    sectionStep({visKey:"faq",page:"faq",
+      hasData:!!order.faq?.some(f=>f.frage),isAi:isAiGen("faq"),
+      labelDone:"FAQ prüfen",labelAdd:"FAQ hinzufügen",
+      descDone:"Prüfen Sie die häufig gestellten Fragen.",
+      descAdd:"Beantworten Sie häufige Kundenfragen direkt auf Ihrer Website."}),
+    sectionStep({visKey:"fakten",page:"fakten",
+      hasData:!!order.fakten?.some(f=>f.zahl),
+      labelDone:"Zahlen & Fakten prüfen",labelAdd:"Zahlen & Fakten hinzufügen",
+      descDone:"Prüfen Sie die übernommenen Zahlen.",
+      descAdd:`z.B. „15+ Jahre Erfahrung" – beeindruckt Besucher.`}),
+    sectionStep({visKey:"partner",page:"partner",
+      hasData:!!order.partner?.some(p=>p.name),
+      labelDone:"Referenzen prüfen",labelAdd:"Referenzen hinzufügen",
+      descDone:"Prüfen Sie Kunden, Partner und Zertifikate.",
+      descAdd:"Kunden, Partner oder Zertifikate — zeigen Sie, wer Ihnen vertraut."}),
     {label:(order.facebook||order.instagram||order.linkedin||order.tiktok)?"Social Media prüfen":"Social Media Profile angeben",
      desc:"Ihre Profile erscheinen als Icons auf der Website.",
      done:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),page:"social"},
@@ -1912,7 +1937,7 @@ function Portal({session,onLogout}){
     {label:"WhatsApp-Button aktivieren",
      desc:"Kunden können Sie direkt über WhatsApp kontaktieren.",
      done:!!order.whatsapp,page:"kontakt"},
-  ]:[];
+  ].filter(Boolean):[];
   const wizardDoneCount=wizardSteps.filter(s=>s.done).length;
   const wizardTotal=wizardSteps.length;
   const wizardAllDone=wizardDoneCount>=wizardTotal&&wizardOptional.every(s=>s.done);
@@ -3502,16 +3527,18 @@ function Portal({session,onLogout}){
         {wizardOptional.length>0&&<>
           <div style={{fontSize:".68rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"14px 0 6px"}}>Optional</div>
           {wizardOptional.map((item,idx)=>{
-            const needsReview=!item.done&&item.label.includes("prüfen");
+            const needsReview=!item.done&&item.label.includes("prüfen")&&!item.warn;
             return <div key={idx}>
               <button className="pt-ast-item" onClick={()=>nav(item.page)} style={{paddingLeft:0}}>
-                <div className={`pt-ast-ck${item.done?" done":""}`}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div className={`pt-ast-ck${item.done?" done":""}`} style={item.warn?{background:T.amberLight,borderColor:T.amberBorder}:undefined}>
+                  {item.warn
+                    ?<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="3"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    :<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
-                <span className={`pt-ast-label${item.done?" done":""}`}>{item.label}</span>
+                <span className={`pt-ast-label${item.done?" done":""}`} style={item.warn?{color:T.amberText,fontWeight:600}:undefined}>{item.label}</span>
                 {needsReview&&<span style={{fontSize:".6rem",padding:"1px 6px",borderRadius:100,background:T.amberLight,color:T.amberText,fontWeight:600,marginLeft:4,flexShrink:0}}>prüfen</span>}
               </button>
-              {needsReview&&item.desc&&<div style={{paddingLeft:28,marginTop:-4,marginBottom:8,fontSize:".75rem",color:T.textMuted,lineHeight:1.5}}>{item.desc}</div>}
+              {(needsReview||item.warn)&&item.desc&&<div style={{paddingLeft:28,marginTop:-4,marginBottom:8,fontSize:".75rem",color:item.warn?T.amberText:T.textMuted,lineHeight:1.5}}>{item.desc}</div>}
             </div>;
           })}
         </>}

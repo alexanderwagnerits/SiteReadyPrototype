@@ -1596,7 +1596,7 @@ function Portal({session,onLogout}){
       originalOrderRef.current=JSON.parse(JSON.stringify(row));
       const urls={};
       const keys=["logo","hero","foto1","foto2","foto3","foto4","foto5","leist1","leist2","leist3","leist4","about1","about2","about3","about4","about5","about6","about7","about8","preisliste"];
-      keys.forEach(k=>{const col="url_"+k;if(row[col])urls[k]=row[col]+"?t="+Date.now();});
+      keys.forEach(k=>{const col="url_"+k;if(row[col])urls[k]=row[col]+(row[col].includes("?")?"&":"?")+"t="+Date.now();});
       setAssetUrls(urls);
     };
     const fetchOrder=async(attempt)=>{
@@ -1699,16 +1699,20 @@ function Portal({session,onLogout}){
       const{error}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});
       if(error){showToast("Upload fehlgeschlagen: "+error.message);setUploading(u=>({...u,[key]:false}));return;}
       const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
-      setAssetUrls(u=>({...u,[key]:data.publicUrl+"?t="+Date.now()}));
+      // Cache-Buster muss auch in der DB-URL landen — sonst zeigt die Kunden-Website
+      // das gecachte alte Bild, weil Supabase Storage bei upsert:true denselben Pfad
+      // behaelt und die Public-URL daher identisch bleibt.
+      const bustedUrl=data.publicUrl+"?v="+Date.now();
+      setAssetUrls(u=>({...u,[key]:bustedUrl}));
       const colMap={logo:"url_logo",hero:"url_hero",foto1:"url_foto1",foto2:"url_foto2",foto3:"url_foto3",foto4:"url_foto4",foto5:"url_foto5",leist1:"url_leist1",leist2:"url_leist2",leist3:"url_leist3",leist4:"url_leist4",about1:"url_about1",about2:"url_about2",about3:"url_about3",about4:"url_about4",about5:"url_about5",about6:"url_about6",about7:"url_about7",about8:"url_about8",preisliste:"url_preisliste"};
       const col=colMap[key];
       // Partner-Logo: key = "ref_0", "ref_1" etc. → URL in partner Array speichern
       if(key.startsWith("ref_")){
         const idx=parseInt(key.split("_")[1]);
         const arr=[...(order.partner||[])];
-        if(arr[idx]){arr[idx]={...arr[idx],url_logo:data.publicUrl+"?t="+Date.now()};upOrder("partner")(arr);}
+        if(arr[idx]){arr[idx]={...arr[idx],url_logo:bustedUrl};upOrder("partner")(arr);}
       } else if(col&&order?.id){
-        const updatePayload={[col]:data.publicUrl};
+        const updatePayload={[col]:bustedUrl};
         if(key==="hero"&&order.hero_is_placeholder) updatePayload.hero_is_placeholder=false;
         const{error:upErr}=await supabase.from("orders").update(updatePayload).eq("id",order.id);
         if(upErr)try{await supabase.from("error_logs").insert({source:"url_update_error",message:upErr.message});}catch(_){}
@@ -2705,7 +2709,7 @@ function Portal({session,onLogout}){
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
-          {!(order.sections_visible?.faq)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {order.sections_visible?.faq===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           {(order.faq||[]).map((f,i)=><div key={i} className="pt-faq-row" style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,alignItems:"start",marginTop:i?12:0}}>
             <div style={{display:"flex",flexDirection:"column",gap:6}}>
               <input value={f.frage||""} onChange={e=>{const arr=[...(order.faq||[])];arr[i]={...arr[i],frage:e.target.value};upOrder("faq")(arr);}} placeholder="Frage" style={{padding:"8px 12px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,fontWeight:600}}/>
@@ -2732,7 +2736,7 @@ function Portal({session,onLogout}){
         {/* ── Zahlen & Fakten Seite ── */}
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Maximal 4 Einträge."/>
-          {!(order.sections_visible?.fakten)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {order.sections_visible?.fakten===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           <div className="pt-fakten-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {(order.fakten||[]).map((f,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"10px 12px",background:T.bg,borderRadius:T.rSm}}>
               <input value={f.zahl||""} onChange={e=>{const arr=[...(order.fakten||[])];arr[i]={...arr[i],zahl:e.target.value};upOrder("fakten")(arr);}} placeholder="15+" style={{width:60,padding:"6px 8px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".88rem",fontFamily:T.mono,fontWeight:700,textAlign:"center",background:"#fff"}}/>
@@ -2747,7 +2751,7 @@ function Portal({session,onLogout}){
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft."/>
-          {!(order.sections_visible?.partner)&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          {order.sections_visible?.partner===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
           {(order.partner||[]).map((p,i)=><div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,alignItems:"center"}}>
             {/* Logo-Vorschau oder Upload */}
             <div style={{width:56,height:56,borderRadius:T.rSm,border:`1.5px dashed ${T.bg3}`,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()}>
@@ -2906,27 +2910,27 @@ function Portal({session,onLogout}){
                   <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zusätzliche Bereiche</div>
                   <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Schalten Sie Bereiche ein oder aus. Inhalte bearbeiten Sie auf der jeweiligen Seite.</div>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.faq?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Häufige Fragen (FAQ)" checked={!!(order.sections_visible&&order.sections_visible.faq)} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten"/>
-                      {order.sections_visible?.faq&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                    <div style={{border:`1.5px solid ${order.sections_visible?.faq!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Häufige Fragen (FAQ)" checked={order.sections_visible?.faq!==false} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten"/>
+                      {order.sections_visible?.faq!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
                         <button onClick={()=>nav("faq")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
                     </div>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.fakten?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Zahlen & Fakten" checked={!!(order.sections_visible&&order.sections_visible.fakten)} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc={`z.B. „15+ Jahre Erfahrung"`}/>
-                      {order.sections_visible?.fakten&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                    <div style={{border:`1.5px solid ${order.sections_visible?.fakten!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Zahlen & Fakten" checked={order.sections_visible?.fakten!==false} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc={`z.B. „15+ Jahre Erfahrung"`}/>
+                      {order.sections_visible?.fakten!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
                         <button onClick={()=>nav("fakten")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
                     </div>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.partner?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Partner & Zertifikate" checked={!!(order.sections_visible&&order.sections_visible.partner)} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc="Logos von Partnern oder Zertifizierungen"/>
-                      {order.sections_visible?.partner&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                    <div style={{border:`1.5px solid ${order.sections_visible?.partner!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Partner & Zertifikate" checked={order.sections_visible?.partner!==false} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc="Logos von Partnern oder Zertifizierungen"/>
+                      {order.sections_visible?.partner!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
                         <button onClick={()=>nav("partner")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
                       </div>}
                     </div>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.galerie?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Fotogalerie" checked={!!(order.sections_visible&&order.sections_visible.galerie)} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
-                      {order.sections_visible?.galerie&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
+                    <div style={{border:`1.5px solid ${order.sections_visible?.galerie!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
+                      <Toggle label="Fotogalerie" checked={order.sections_visible?.galerie!==false} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
+                      {order.sections_visible?.galerie!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
                         <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Fotos verwalten &rarr;</button>
                       </div>}
                     </div>

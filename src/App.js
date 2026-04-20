@@ -1579,6 +1579,8 @@ function Portal({session,onLogout}){
   const[order,setOrder]=useState(null);
   const originalOrderRef=useRef(null);
   const[saving,setSaving]=useState(false);
+  const[lastSavedAt,setLastSavedAt]=useState(null);
+  const[savedNowKey,setSavedNowKey]=useState(0);
   const[uploading,setUploading]=useState({});
   const[faqGenerating,setFaqGenerating]=useState(false);
   const[assetUrls,setAssetUrls]=useState({});
@@ -1721,8 +1723,26 @@ function Portal({session,onLogout}){
       return;
     }
     originalOrderRef.current=JSON.parse(JSON.stringify(order));
+    setLastSavedAt(Date.now());
+    setSavedNowKey(k=>k+1);
     if(!silent)showToast("Gespeichert");
   };
+
+  // Relative Zeit fuer Save-Indicator: "vor 5s" / "vor 1m" / "vor 3min"
+  const[savedAgo,setSavedAgo]=useState("");
+  useEffect(()=>{
+    if(!lastSavedAt){setSavedAgo("");return;}
+    const update=()=>{
+      const diff=Math.floor((Date.now()-lastSavedAt)/1000);
+      if(diff<3)setSavedAgo("Eben gespeichert");
+      else if(diff<60)setSavedAgo(`Gespeichert vor ${diff}s`);
+      else if(diff<3600)setSavedAgo(`Gespeichert vor ${Math.floor(diff/60)}min`);
+      else setSavedAgo("Gespeichert");
+    };
+    update();
+    const i=setInterval(update,5000);
+    return ()=>clearInterval(i);
+  },[lastSavedAt,savedNowKey]);
 
   // Auto-Save: bei Aenderungen debounced (1.5s Inaktivitaet) speichern
   // Ohne Toast (silent=true), damit kein Gespam. Manueller Save-Button bleibt erhalten.
@@ -1736,6 +1756,42 @@ function Portal({session,onLogout}){
 
   const discardChanges=()=>{
     if(originalOrderRef.current)setOrder(JSON.parse(JSON.stringify(originalOrderRef.current)));
+  };
+
+  // Felder pro Portal-Section — fuer selektives Undo ("Diese Seite zuruecksetzen")
+  const PAGE_FIELDS={
+    hero:["firmenname","kurzbeschreibung","foto_credit"],
+    grunddaten:["firmenname","kurzbeschreibung","einsatzgebiet"],
+    leistungen:["leistungen","extra_leistung","leistungen_beschreibungen","leistungen_preise","leistungen_fotos","cta_headline","cta_text"],
+    ueberuns:["text_ueber_uns","text_vorteile","team_members","gut_zu_wissen","ablauf_schritte","bewertungen"],
+    kontakt:["adresse","plz","ort","telefon","whatsapp","buchungslink","oeffnungszeiten","oeffnungszeiten_custom","kontakt_formular","terminvereinbarung","erstgespraech_gratis","online_beratung","hausbesuche","barrierefrei","parkplaetze","kartenzahlung","gastgarten","takeaway","lieferservice"],
+    design:["stil","custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius","varianten_cache"],
+    faq:["faq"],
+    fakten:["fakten"],
+    partner:["partner"],
+    social:["facebook","instagram","linkedin","tiktok"],
+    branchenfeatures:["notdienst","meisterbetrieb","kostenvoranschlag","zertifiziert","kassenvertrag","spezialisierung","berufsregister_nr","foerderungsberatung","ratenzahlung","gutscheine"],
+    impressum:["unternehmensform","vorname","nachname","firmenbuchnummer","firmenbuchgericht","uid_nummer","gisazahl","zvr_zahl","vertretungsorgane","geschaeftsfuehrer","vorstand","aufsichtsrat","gesellschafter","unternehmensgegenstand","liquidation","kammer_berufsrecht","aufsichtsbehoerde"],
+    aktuelles:["announcements"],
+  };
+  // true wenn sich in der aktuellen Section etwas geaendert hat
+  const sectionIsDirty=(()=>{
+    if(!order||!originalOrderRef.current)return false;
+    const fields=PAGE_FIELDS[page];
+    if(!fields)return false;
+    return fields.some(f=>JSON.stringify(order[f])!==JSON.stringify(originalOrderRef.current[f]));
+  })();
+  // Nur die Felder der aktuellen Section zuruecksetzen
+  const revertSection=()=>{
+    if(!originalOrderRef.current)return;
+    const fields=PAGE_FIELDS[page];
+    if(!fields)return;
+    setOrder(o=>{
+      const no={...o};
+      fields.forEach(f=>{no[f]=originalOrderRef.current[f];});
+      return no;
+    });
+    showToast("Seite zurückgesetzt");
   };
 
   const uploadBlob=async(key,blob)=>{
@@ -2409,8 +2465,27 @@ function Portal({session,onLogout}){
       {order&&order?.status!=="pending"&&<>
         <div className="pt-mh">
           {pm.bc&&<div className="pt-bc">{pm.bc} <b>›</b> {pm.title}</div>}
-          <div className="pt-mh-title">{pm.title}</div>
-          {pm.sub&&<div className="pt-mh-sub">{pm.sub}</div>}
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+            <div style={{flex:"1 1 auto",minWidth:0}}>
+              <div className="pt-mh-title">{pm.title}</div>
+              {pm.sub&&<div className="pt-mh-sub">{pm.sub}</div>}
+            </div>
+            <div style={{flex:"0 0 auto",display:"inline-flex",alignItems:"center",gap:8,marginTop:4,flexWrap:"wrap"}}>
+              {/* Undo-Button pro Section */}
+              {sectionIsDirty&&PAGE_FIELDS[page]&&<button onClick={()=>askDelete("Änderungen auf dieser Seite",revertSection)} title="Nur die Änderungen auf dieser Seite zurücksetzen" style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",background:"#fff",color:T.textSub,border:`1.5px solid ${T.bg3}`,borderRadius:100,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                Seite zurücksetzen
+              </button>}
+              {/* Save-Indicator: zeigt gespeicherten Zustand oder "Speichert..." */}
+              {order&&(saving||savedAgo)&&<div style={{display:"inline-flex",alignItems:"center",gap:7,fontSize:".78rem",fontWeight:600,color:saving?T.amber:T.green,padding:"6px 12px",background:saving?T.amberLight:T.greenLight,border:`1px solid ${saving?T.amberBorder:T.greenBorder}`,borderRadius:100,whiteSpace:"nowrap"}}>
+                {saving?<>
+                  <span style={{width:8,height:8,borderRadius:"50%",border:`2px solid ${T.amber}`,borderRightColor:"transparent",display:"inline-block",animation:"sb-rotate .8s linear infinite"}}/>Speichert...
+                </>:<>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>{savedAgo}
+                </>}
+              </div>}
+            </div>
+          </div>
         </div>
         <div className="pt-mh-line"/>
       </>}
@@ -2615,8 +2690,8 @@ function Portal({session,onLogout}){
         </div>}
         {page==="grunddaten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Grunddaten" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
-          <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
-          <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
+          <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname" required/>
+          <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2} required/>
           <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung" help="Die Region, in der Sie tätig sind. Wird unter dem Firmennamen angezeigt und hilft Google, Sie bei lokalen Suchanfragen zu finden."/>
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
@@ -2723,8 +2798,8 @@ function Portal({session,onLogout}){
           {/* Grunddaten fields */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Firmenname & Beschreibung" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
-            <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
-            <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
+            <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname" required/>
+            <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2} required/>
             <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung" help="Die Region, in der Sie tätig sind. Wird unter dem Firmennamen angezeigt und hilft Google, Sie bei lokalen Suchanfragen zu finden."/>
           </div>
         </>}
@@ -2773,11 +2848,11 @@ function Portal({session,onLogout}){
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Adresse & Kontakt" desc="Ihre Adresse und Telefonnummer werden auf der Website angezeigt und sind über Google Maps auffindbar."/>
-            <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1" hint="Wird auf der Website und für Google Maps verwendet"/>
+            <Field label="Straße & Hausnummer" value={order.adresse||""} onChange={upOrder("adresse")} placeholder="Hauptstrasse 1" hint="Wird auf der Website und für Google Maps verwendet" required/>
             <div className="pt-addr-grid" style={{display:"grid",gridTemplateColumns:"100px 1fr 1fr",gap:12}}>
               <Field label="PLZ" value={order.plz||""} onChange={upOrder("plz")} placeholder="1010"/>
               <Field label="Ort" value={order.ort||""} onChange={upOrder("ort")} placeholder="Wien"/>
-              <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78" hint="Wird als klickbarer Anruf-Button angezeigt" validate={VALIDATORS.tel}/>
+              <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78" hint="Wird als klickbarer Anruf-Button angezeigt" validate={VALIDATORS.tel} required/>
             </div>
             <Field label="WhatsApp-Nummer" value={order.whatsapp||""} onChange={upOrder("whatsapp")} placeholder="+43 664 123 45 67" hint="Wenn ausgefüllt, erscheint ein WhatsApp-Button auf Ihrer Website. Leer lassen = kein Button." validate={VALIDATORS.tel}/>
             <div style={{paddingTop:16,borderTop:`1px solid ${T.bg3}`,marginTop:8}}>
@@ -2900,7 +2975,7 @@ function Portal({session,onLogout}){
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Über uns & Vorteile" desc="Ihr persönlicher Vorstellungstext und Ihre Stärken. Der Text wurde automatisch erstellt — Sie können ihn jederzeit anpassen." aiField="text_ueber_uns"/>
-          <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"}/>
+          <Field label={"Über uns"} value={order.text_ueber_uns||""} onChange={upOrder("text_ueber_uns")} rows={3} hint={"Kurzer Vorstellungstext im Über-uns Bereich"} required/>
           <div style={{marginBottom:4,marginTop:4,fontSize:".78rem",fontWeight:700,color:T.textSub,letterSpacing:".03em"}}>{"Vorteile (werden als Liste angezeigt)"}</div>
           {isAiGen("text_vorteile")&&(order.text_vorteile||[]).some(v=>v)&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"8px 12px",background:T.amberLight,borderRadius:T.rSm,border:`1px solid ${T.amberBorder}`}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style={{fontSize:".78rem",fontWeight:600,color:T.amberText}}>Automatisch erstellt — bitte prüfen</span></div>}
           {[0,1,2,3].map(i=>{const ph=["z.B. Über 10 Jahre Erfahrung","z.B. Persönliche Beratung","z.B. Faire Preise","z.B. Flexible Termine"][i];return<Field key={i} label={`Vorteil ${i+1}`} value={(order.text_vorteile||[])[i]||""} onChange={val=>{const a=[...(order.text_vorteile||["","","",""])];a[i]=val;upOrder("text_vorteile")(a);}} placeholder={ph}/>})}

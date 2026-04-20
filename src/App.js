@@ -1928,7 +1928,7 @@ function Portal({session,onLogout}){
     social:!!(order.facebook||order.instagram||order.linkedin||order.tiktok),
     faq:!!order.faq?.some(f=>f.frage&&f.antwort),
     fakten:(order.fakten||[]).filter(f=>f&&f.zahl).length>=2,
-    partner:!!order.partner?.some(p=>p.name&&p.url_logo),
+    partner:!!order.partner?.some(p=>p&&p.name),
     design:true,
     medien:!!(assetUrls.logo||assetUrls.hero),
     impressum:!!(order.unternehmensform||order.uid_nummer),
@@ -2916,31 +2916,27 @@ function Portal({session,onLogout}){
 
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Ein Logo ist Pflicht, nur der Name wird nicht auf der Website angezeigt."/>
+          <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Logo und Link sind optional."/>
           <VisibilityToggle field="partner" labelOn="Referenzen erscheinen auf Ihrer Website" labelOff="Referenzen werden nicht angezeigt"/>
           <div style={{opacity:order.sections_visible?.partner===false?0.55:1,transition:"opacity .2s"}}>
-          {(()=>{const withoutLogo=(order.partner||[]).filter(p=>p&&p.name&&!p.url_logo).length;return withoutLogo>0&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <div>{withoutLogo===1?"Ein Eintrag hat":`${withoutLogo} Eintraege haben`} kein Logo und wird auf der Website nicht angezeigt. Bitte Logo hochladen oder Eintrag entfernen.</div>
-          </div>})()}
-          {(order.partner||[]).map((p,i)=>{const missingLogo=!!p.name&&!p.url_logo;return<div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${missingLogo?T.amberBorder:T.bg3}`,borderRadius:T.rSm,background:missingLogo?T.amberLight:T.bg,alignItems:"center"}}>
-            {/* Logo-Vorschau oder Upload */}
-            <div style={{width:56,height:56,borderRadius:T.rSm,border:`1.5px dashed ${missingLogo?T.amberBorder:T.bg3}`,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()} title={p.url_logo?"Logo ersetzen":"Logo hochladen"}>
+          {(order.partner||[]).map((p,i)=>(<div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,alignItems:"center"}}>
+            {/* Logo-Vorschau oder Upload (optional) */}
+            <div style={{width:56,height:56,borderRadius:T.rSm,border:`1.5px dashed ${T.bg3}`,background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()} title={p.url_logo?"Logo ersetzen":"Logo hochladen (optional)"}>
               {p.url_logo
                 ? <img src={p.url_logo} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>
-                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={missingLogo?T.amberText:T.textMuted} strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>}
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>}
               <input id={`ref-upload-${i}`} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{if(e.target.files?.[0])upload(`ref_${i}`,e.target.files[0]);}}/>
             </div>
-            <div style={{flex:1,display:"flex",flexDirection:"column",gap:4}}>
+            <div style={{flex:1,display:"flex",flexDirection:"column",gap:6}}>
               <input value={p.name||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],name:e.target.value};upOrder("partner")(arr);}} placeholder="z.B. Red Bull, WKO, TÜV, Ärztekammer" style={{padding:"7px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,background:"#fff"}}/>
-              {uploading[`ref_${i}`]?<div style={{fontSize:".72rem",color:T.accent}}>Logo wird hochgeladen...</div>
-                :missingLogo?<button onClick={()=>document.getElementById(`ref-upload-${i}`)?.click()} style={{fontSize:".72rem",color:T.amberText,fontWeight:700,background:"none",border:"none",padding:0,cursor:"pointer",textAlign:"left",textDecoration:"underline"}}>Logo fehlt — jetzt hochladen</button>
-                :null}
+              <input value={p.link||""} onChange={e=>{const arr=[...(order.partner||[])];arr[i]={...arr[i],link:e.target.value};upOrder("partner")(arr);}} placeholder="Link (optional, z.B. https://...)" style={{padding:"6px 10px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".76rem",fontFamily:T.font,background:"#fff",color:T.textSub}}/>
+              {uploading[`ref_${i}`]&&<div style={{fontSize:".72rem",color:T.accent}}>Logo wird hochgeladen...</div>}
             </div>
             <button onClick={()=>askDelete("Eintrag",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
-          </div>})}
+          </div>))}
           {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen.</div>}
           <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>
+          <div style={{fontSize:".72rem",color:T.textMuted,marginTop:10,lineHeight:1.5}}>Einträge mit Logo erscheinen als Logo-Grid. Einträge ohne Logo werden als dezente Text-Zeile darunter angezeigt.</div>
           </div>
         </div>}
 

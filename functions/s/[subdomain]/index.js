@@ -617,7 +617,8 @@ export async function onRequestGet({params, env}) {
   const faktenItems = Array.isArray(o.fakten) ? o.fakten.filter(f => f && f.zahl) : [];
   const showFakten = sv.fakten !== false && faktenItems.length >= 2;
   const partnerItems = Array.isArray(o.partner) ? o.partner.filter(p => p && p.url_logo) : [];
-  const showPartner = sv.partner !== false && partnerItems.length > 0;
+  const partnerTextItems = Array.isArray(o.partner) ? o.partner.filter(p => p && p.name && !p.url_logo) : [];
+  const showPartner = sv.partner !== false && (partnerItems.length > 0 || partnerTextItems.length > 0);
 
   // FAQ — Haeufig gestellte Fragen
   const faqItems = Array.isArray(o.faq) ? o.faq.filter(f => f && f.frage && f.antwort) : [];
@@ -691,35 +692,54 @@ export async function onRequestGet({params, env}) {
     html = html.replace("<!-- FAKTEN -->", "");
   }
 
-  // Vertrauen & Referenzen — nur mit Logos sichtbar
+  // Vertrauen & Referenzen — Logos + optionale Text-Einträge
   if (showPartner && html.includes("<!-- PARTNER -->")) {
     const pVariant = v.partner; // "gross" | "einzeilig" | "zweizeilig"
     const refCount = partnerItems.filter(p => p.typ === "referenz").length;
     const labelText = refCount > partnerItems.length / 2 ? "Vertrauen &amp; Referenzen" : "Partner &amp; Zertifizierungen";
 
-    let partnerContent;
-    if (pVariant === "gross") {
-      // 1-2 Logos: groß, zentriert
-      const items = partnerItems.slice(0, 2).map(p =>
-        `<div style="display:flex;align-items:center;justify-content:center;padding:20px 40px"><img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:64px;width:auto;max-width:200px;object-fit:contain;opacity:.6;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover"></div>`
-      ).join("");
-      partnerContent = `<div style="display:flex;justify-content:center;align-items:center;gap:40px">${items}</div>`;
-    } else if (pVariant === "einzeilig") {
-      // 3-4 Logos: normal, eine Zeile
-      const items = partnerItems.slice(0, 4).map(p =>
-        `<div style="display:flex;align-items:center;justify-content:center;padding:16px 28px"><img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:40px;width:auto;max-width:140px;object-fit:contain;opacity:.5;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover"></div>`
-      ).join("");
-      partnerContent = `<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${items}</div>`;
-    } else {
-      // 5-8 Logos: 2 Zeilen (4er Grid)
-      const items = partnerItems.slice(0, 8).map(p =>
-        `<div style="display:flex;align-items:center;justify-content:center;padding:14px 20px"><img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:36px;width:auto;max-width:120px;object-fit:contain;opacity:.5;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover"></div>`
-      ).join("");
-      partnerContent = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;justify-items:center">${items}</div>` +
-        `<style>@media(max-width:768px){.sec-partner [style*="grid-template-columns"]{grid-template-columns:repeat(2,1fr)!important}}</style>`;
+    // Helper: Logo optional in <a> wickeln wenn Link vorhanden
+    const wrapLogo = (p, imgHtml) => p.link
+      ? `<a href="${esc(p.link)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(p.name) || "Partner"}" style="display:flex;align-items:center;justify-content:center">${imgHtml}</a>`
+      : imgHtml;
+
+    let partnerContent = "";
+    if (partnerItems.length > 0) {
+      if (pVariant === "gross") {
+        const items = partnerItems.slice(0, 2).map(p => {
+          const img = `<img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:64px;width:auto;max-width:200px;object-fit:contain;opacity:.6;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover">`;
+          return `<div style="display:flex;align-items:center;justify-content:center;padding:20px 40px">${wrapLogo(p, img)}</div>`;
+        }).join("");
+        partnerContent = `<div style="display:flex;justify-content:center;align-items:center;gap:40px">${items}</div>`;
+      } else if (pVariant === "einzeilig") {
+        const items = partnerItems.slice(0, 4).map(p => {
+          const img = `<img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:40px;width:auto;max-width:140px;object-fit:contain;opacity:.5;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover">`;
+          return `<div style="display:flex;align-items:center;justify-content:center;padding:16px 28px">${wrapLogo(p, img)}</div>`;
+        }).join("");
+        partnerContent = `<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px">${items}</div>`;
+      } else {
+        const items = partnerItems.slice(0, 8).map(p => {
+          const img = `<img src="${p.url_logo}" alt="${esc(p.name) || ""}" loading="lazy" style="height:36px;width:auto;max-width:120px;object-fit:contain;opacity:.5;filter:grayscale(100%);transition:opacity .3s,filter .3s" class="sr-partner-hover">`;
+          return `<div style="display:flex;align-items:center;justify-content:center;padding:14px 20px">${wrapLogo(p, img)}</div>`;
+        }).join("");
+        partnerContent = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;justify-items:center">${items}</div>` +
+          `<style>@media(max-width:768px){.sec-partner [style*="grid-template-columns"]{grid-template-columns:repeat(2,1fr)!important}}</style>`;
+      }
     }
 
-    const section = `<section class="sec-partner sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div>${partnerContent}</div></section>`;
+    // Text-Einträge (ohne Logo): dezente Zeile mit Separator
+    let textRow = "";
+    if (partnerTextItems.length > 0) {
+      const parts = partnerTextItems.slice(0, 12).map(p => p.link
+        ? `<a href="${esc(p.link)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px">${esc(p.name)}</a>`
+        : esc(p.name)
+      );
+      const separator = ` <span style="opacity:.4;margin:0 6px">·</span> `;
+      const marginTop = partnerItems.length > 0 ? "margin-top:32px;padding-top:24px;border-top:1px solid rgba(0,0,0,.06)" : "";
+      textRow = `<div style="text-align:center;font-size:.85rem;color:var(--text-muted);opacity:.75;line-height:1.8;${marginTop}">${parts.join(separator)}</div>`;
+    }
+
+    const section = `<section class="sec-partner sr-fade sr-alt-bg" style="padding:80px 0"><div class="w"><div style="text-align:center;margin-bottom:32px">${sectionLabel(labelText)}${sectionH2("Wer uns vertraut")}</div>${partnerContent}${textRow}</div></section>`;
     html = html.replace("<!-- PARTNER -->", section);
   } else {
     html = html.replace("<!-- PARTNER -->", "");

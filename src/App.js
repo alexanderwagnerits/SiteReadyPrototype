@@ -2674,7 +2674,7 @@ function Portal({session,onLogout}){
             <div style={{paddingTop:16,borderTop:`1px solid ${T.bg3}`,marginTop:8}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Schwebender Kontakt-Button</div>
               <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:10,lineHeight:1.5}}>Runder Button unten rechts auf Ihrer Website. Verwendet WhatsApp → Buchungslink → Telefon in dieser Reihenfolge.</div>
-              <VisibilityToggle field="sticky_cta" labelOn="Schwebender Button wird angezeigt" labelOff="Schwebender Button ist ausgeblendet"/>
+              <VisibilityToggle field="sticky_cta" labelOn="Schwebender Button erscheint auf Ihrer Website" labelOff="Schwebender Button wird nicht angezeigt"/>
             </div>
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2777,7 +2777,7 @@ function Portal({session,onLogout}){
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader label="CTA-Block" desc="Aufruf zum Handeln — erscheint auf der Website direkt nach den Leistungen." aiField="cta_block" onRemove={async()=>{const newAi=(order.ai_generated||[]).filter(f=>f!=="cta_block");await supabase.from("orders").update({cta_headline:null,cta_text:null,ai_generated:newAi}).eq("id",order.id);setOrder(o=>({...o,cta_headline:"",cta_text:"",ai_generated:newAi}));if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,cta_headline:"",cta_text:"",ai_generated:newAi};showToast("CTA-Text entfernt");}}/>
-          <VisibilityToggle field="cta_block" labelOn="CTA-Block erscheint nach den Leistungen" labelOff="CTA-Block wird nicht angezeigt"/>
+          <VisibilityToggle field="cta_block" labelOn="CTA-Block erscheint auf Ihrer Website" labelOff="CTA-Block wird nicht angezeigt"/>
           {(()=>{const def=getCtaDefault(order.branche);return(
           <div style={{opacity:order.sections_visible?.cta_block===false?0.55:1,transition:"opacity .2s"}}>
             <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder={def.h}/>
@@ -2859,7 +2859,7 @@ function Portal({session,onLogout}){
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
-          <VisibilityToggle field="faq" labelOn="FAQ-Bereich erscheint auf Ihrer Website" labelOff="FAQ-Bereich wird nicht angezeigt"/>
+          <VisibilityToggle field="faq" labelOn="FAQ erscheint auf Ihrer Website" labelOff="FAQ wird nicht angezeigt"/>
           <div style={{opacity:order.sections_visible?.faq===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const incompleteCount=(order.faq||[]).filter(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort)).length;return incompleteCount>0&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -2913,7 +2913,7 @@ function Portal({session,onLogout}){
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Ein Logo ist Pflicht, nur der Name wird nicht auf der Website angezeigt."/>
-          <VisibilityToggle field="partner" labelOn="Referenzen-Bereich erscheint auf Ihrer Website" labelOff="Referenzen-Bereich wird nicht angezeigt"/>
+          <VisibilityToggle field="partner" labelOn="Referenzen erscheinen auf Ihrer Website" labelOff="Referenzen werden nicht angezeigt"/>
           <div style={{opacity:order.sections_visible?.partner===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const withoutLogo=(order.partner||[]).filter(p=>p&&p.name&&!p.url_logo).length;return withoutLogo>0&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -3543,7 +3543,8 @@ function Portal({session,onLogout}){
                 <input type="file" accept="image/*" multiple disabled={uploading.galerie} style={{display:"none"}} onChange={e=>{if(e.target.files?.length){uploadGalerie(e.target.files);e.target.value="";}}}/>
               </label>}
             </div>
-            <div style={{marginTop:12}}><VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt"/></div>
+            <div style={{marginTop:16}}/>
+            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt"/>
             <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
               {items.length>0?<>
                 <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} / {maxItems} {items.length===1?"Foto":"Fotos"}</div>

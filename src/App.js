@@ -1708,6 +1708,7 @@ function Portal({session,onLogout}){
     if(!isDirty||saving)return;
     const t=setTimeout(()=>{saveAll(true);},1500);
     return ()=>clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[order,isDirty,saving,supabase]);
 
   const discardChanges=()=>{

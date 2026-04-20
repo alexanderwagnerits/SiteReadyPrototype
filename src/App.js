@@ -9,6 +9,7 @@ import {
   BUNDESLAENDER, OEFFNUNGSZEITEN, UNTERNEHMENSFORMEN,
   STYLES_MAP, ACCENT_PRESETS,
   ensureContrast, contrastRatioVsWhite, buildPaletteFromAccent, suggestPalettesFromAccent,
+  getCtaDefault,
   INIT,
 } from "./data";
 import { CTA, CTA_G, CTA_L, T, LP_FONT, css } from "./theme";
@@ -2654,6 +2655,11 @@ function Portal({session,onLogout}){
               <Field label="Telefon" value={order.telefon||""} onChange={upOrder("telefon")} placeholder="+43 1 234 56 78" hint="Wird als klickbarer Anruf-Button angezeigt"/>
             </div>
             <Field label="WhatsApp-Nummer" value={order.whatsapp||""} onChange={upOrder("whatsapp")} placeholder="+43 664 123 45 67" hint="Wenn ausgefüllt, erscheint ein WhatsApp-Button auf Ihrer Website. Leer lassen = kein Button."/>
+            <div style={{paddingTop:16,borderTop:`1px solid ${T.bg3}`,marginTop:8}}>
+              <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Schwebender Kontakt-Button</div>
+              <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:10,lineHeight:1.5}}>Runder Button unten rechts auf Ihrer Website. Verwendet WhatsApp → Buchungslink → Telefon in dieser Reihenfolge.</div>
+              <VisibilityToggle field="sticky_cta" labelOn="Schwebender Button wird angezeigt" labelOff="Schwebender Button ist ausgeblendet"/>
+            </div>
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Öffnungszeiten & Formular" desc="Öffnungszeiten, Hinweise und Kontaktformular-Einstellungen."/>
@@ -2756,11 +2762,18 @@ function Portal({session,onLogout}){
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader label="CTA-Block" desc="Aufruf zum Handeln — erscheint auf der Website direkt nach den Leistungen."/>
           <VisibilityToggle field="cta_block" labelOn="CTA-Block erscheint nach den Leistungen" labelOff="CTA-Block wird nicht angezeigt"/>
+          {(()=>{const def=getCtaDefault(order.branche);const usingDefault=!order.cta_headline&&!order.cta_text;return(
           <div style={{opacity:order.sections_visible?.cta_block===false?0.55:1,transition:"opacity .2s"}}>
-            <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder="z.B. Bereit für Ihren Termin?"/>
-            <Field label="Text" value={order.cta_text||""} onChange={upOrder("cta_text")} placeholder="z.B. Wir freuen uns auf Ihren Besuch."/>
-            <div style={{fontSize:".72rem",color:T.textMuted}}>Leer lassen für branchenspezifischen Standard-Text</div>
+            {usingDefault&&<div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,marginBottom:12,fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>
+              <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:4}}>Aktuell auf der Website</div>
+              <div style={{fontWeight:700,color:T.dark}}>{def.h}</div>
+              <div style={{color:T.textMuted,marginTop:2}}>{def.t}</div>
+            </div>}
+            <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder={def.h}/>
+            <Field label="Text" value={order.cta_text||""} onChange={upOrder("cta_text")} placeholder={def.t}/>
+            <div style={{fontSize:".72rem",color:T.textMuted}}>Felder leer = branchenspezifischer Standard-Text wird verwendet.</div>
           </div>
+          );})()}
         </div>
         </>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
@@ -2797,6 +2810,8 @@ function Portal({session,onLogout}){
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader label="Ablauf" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Mindestens 2 Schritte mit Titel, sonst wird die Section nicht angezeigt." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
+          <VisibilityToggle field="ablauf" labelOn="Ablauf erscheint auf Ihrer Website" labelOff="Ablauf wird nicht angezeigt"/>
+          <div style={{opacity:order.sections_visible?.ablauf===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const validCount=(order.ablauf_schritte||[]).filter(s=>s&&s.titel).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>Sie haben nur 1 Schritt — der Ablauf wird erst ab 2 Schritten auf der Website angezeigt.</div>
@@ -2813,6 +2828,7 @@ function Portal({session,onLogout}){
             </div>
           ))}
           {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
+          </div>
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <VariantenHint label="Bewertungen-Variante" value={order?.varianten_cache?.bewertungen}/>
@@ -3466,20 +3482,68 @@ function Portal({session,onLogout}){
           </div>
         );})()}
         {/* Fotogalerie */}
-        {(()=>{const items=Array.isArray(order?.galerie)?order.galerie.filter(g=>g&&g.url):[];return(
+        {(()=>{const items=Array.isArray(order?.galerie)?order.galerie.filter(g=>g&&g.url):[];const maxItems=12;const canAdd=items.length<maxItems;const uploadGalerie=async(files)=>{
+          if(!session?.user?.id||!supabase){showToast("Nicht eingeloggt");return;}
+          const imageFiles=Array.from(files).filter(f=>f.type.startsWith("image/"));
+          if(!imageFiles.length){showToast("Nur Bilddateien möglich");return;}
+          const free=maxItems-items.length;
+          const toUpload=imageFiles.slice(0,free);
+          const skipped=imageFiles.length-toUpload.length;
+          setUploading(u=>({...u,galerie:true}));
+          try{
+            const newItems=[...items];
+            for(const file of toUpload){
+              const ts=Date.now()+Math.floor(Math.random()*1000);
+              const extMap={"image/png":"png","image/webp":"webp","image/gif":"gif"};
+              const ext=extMap[file.type]||"jpg";
+              const path=`${session.user.id}/galerie_${ts}.${ext}`;
+              const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:false,contentType:file.type||"image/jpeg"});
+              if(error){showToast("Upload fehlgeschlagen: "+error.message);continue;}
+              const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
+              newItems.push({url:data.publicUrl+"?v="+ts,path});
+            }
+            await supabase.from("orders").update({galerie:newItems}).eq("id",order.id);
+            setOrder(o=>({...o,galerie:newItems}));
+            if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,galerie:newItems};
+            showToast(skipped>0?`${toUpload.length} hochgeladen, ${skipped} übersprungen (max ${maxItems})`:`${toUpload.length} Foto${toUpload.length===1?"":"s"} hochgeladen`);
+          }catch(e){showToast("Fehler: "+e.message);}
+          setUploading(u=>({...u,galerie:false}));
+        };
+        const deleteGalerieItem=async(idx)=>{
+          const item=items[idx];if(!item)return;
+          askDelete("Foto",async()=>{
+            const newItems=items.filter((_,i)=>i!==idx);
+            if(item.path){try{await supabase.storage.from("customer-assets").remove([item.path]);}catch(_){}}
+            await supabase.from("orders").update({galerie:newItems}).eq("id",order.id);
+            setOrder(o=>({...o,galerie:newItems}));
+            if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,galerie:newItems};
+            showToast("Foto entfernt");
+          });
+        };
+        return(
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
-            <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:12}}>Eigener Galerie-Bereich auf der Website. Fotos werden aktuell nur beim Website-Import übernommen.</div>
-            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt"/>
+            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,marginBottom:4,flexWrap:"wrap"}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>Eigener Galerie-Bereich auf der Website. Bis zu {maxItems} Fotos.</div>
+              </div>
+              {canAdd&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:uploading.galerie?"wait":"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                {uploading.galerie?"Lädt...":"Fotos hinzufügen"}
+                <input type="file" accept="image/*" multiple disabled={uploading.galerie} style={{display:"none"}} onChange={e=>{if(e.target.files?.length){uploadGalerie(e.target.files);e.target.value="";}}}/>
+              </label>}
+            </div>
+            <div style={{marginTop:12}}><VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt"/></div>
             <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
               {items.length>0?<>
-                <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} {items.length===1?"Foto":"Fotos"} aus Website-Import</div>
+                <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} / {maxItems} {items.length===1?"Foto":"Fotos"}</div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
-                  {items.slice(0,12).map((g,i)=><div key={i} style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000"}}>
+                  {items.map((g,i)=><div key={i} style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000",position:"relative"}}>
                     <img src={g.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                    <button onClick={()=>deleteGalerieItem(i)} title="Foto entfernen" style={{position:"absolute",top:6,right:6,width:24,height:24,border:"none",borderRadius:"50%",background:"rgba(0,0,0,.6)",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{"×"}</button>
                   </div>)}
                 </div>
-              </>:<div style={{padding:"20px 16px",background:T.bg,borderRadius:T.rSm,textAlign:"center",fontSize:".78rem",color:T.textMuted}}>Keine Galerie-Fotos vorhanden. Beim nächsten Website-Import werden Fotos übernommen.</div>}
+              </>:<div style={{padding:"20px 16px",background:T.bg,borderRadius:T.rSm,textAlign:"center",fontSize:".78rem",color:T.textMuted}}>Noch keine Galerie-Fotos. Klicken Sie oben auf „Fotos hinzufügen".</div>}
             </div>
           </div>
         );})()}

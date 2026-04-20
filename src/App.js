@@ -1873,6 +1873,18 @@ function Portal({session,onLogout}){
     </div>
   );
 
+  const VisibilityToggle=({field,labelOn,labelOff})=>{const visible=order?.sections_visible?.[field]!==false;return(
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"10px 14px",background:visible?T.bg:T.amberLight,border:`1.5px solid ${visible?T.bg3:T.amberBorder}`,borderRadius:T.rSm,marginBottom:16}}>
+      <div style={{fontSize:".82rem",color:visible?T.textSub:T.amberText,lineHeight:1.4}}>
+        <strong style={{fontWeight:700}}>{visible?"Wird auf der Website angezeigt":"Ausgeblendet"}</strong>
+        <span style={{marginLeft:8,color:visible?T.textMuted:T.amberText,fontSize:".78rem"}}>{visible?labelOn:labelOff}</span>
+      </div>
+      <button onClick={()=>{const sv={...(order?.sections_visible||{}),[field]:!visible};upOrder("sections_visible")(sv);}} aria-label={visible?"Bereich ausblenden":"Bereich anzeigen"} style={{width:42,height:24,borderRadius:12,background:visible?T.accent:T.bg3,border:"none",cursor:"pointer",position:"relative",flexShrink:0,padding:0}}>
+        <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:visible?20:2,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.15)"}}/>
+      </button>
+    </div>
+  );};
+
   const InfoRow=({label,value})=>(
     <div className="pt-info-row" style={{display:"grid",gridTemplateColumns:"160px 1fr",padding:"11px 0",borderBottom:`1px solid ${T.bg3}`}}>
       <span style={{fontSize:".88rem",color:T.textMuted,fontWeight:500}}>{label}</span>
@@ -2811,7 +2823,7 @@ function Portal({session,onLogout}){
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
-          {order.sections_visible?.faq===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),faq:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          <VisibilityToggle field="faq" labelOn="FAQ-Bereich erscheint auf Ihrer Website" labelOff="FAQ-Bereich wird nicht angezeigt"/>
           {(()=>{const incompleteCount=(order.faq||[]).filter(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort)).length;return incompleteCount>0&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>{incompleteCount===1?"1 Eintrag hat":`${incompleteCount} Eintraege haben`} Frage oder Antwort leer — wird auf der Website nicht angezeigt.</div>
@@ -2842,7 +2854,7 @@ function Portal({session,onLogout}){
         {/* ── Zahlen & Fakten Seite ── */}
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Mindestens 2 Eintraege, maximal 4."/>
-          {order.sections_visible?.fakten===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),fakten:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          <VisibilityToggle field="fakten" labelOn="Zahlen & Fakten erscheinen auf Ihrer Website" labelOff="Zahlen & Fakten werden nicht angezeigt"/>
           {(()=>{const validCount=(order.fakten||[]).filter(f=>f&&f.zahl).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>Sie haben nur 1 Fakt — die Section wird erst ab 2 Eintraegen auf der Website angezeigt.</div>
@@ -2861,7 +2873,7 @@ function Portal({session,onLogout}){
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Ein Logo ist Pflicht, nur der Name wird nicht auf der Website angezeigt."/>
-          {order.sections_visible?.partner===false&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText}}>Dieser Bereich ist aktuell ausgeblendet. <button onClick={()=>{const sv={...(order.sections_visible||{}),partner:true};upOrder("sections_visible")(sv);}} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".82rem",padding:0}}>Jetzt aktivieren</button></div>}
+          <VisibilityToggle field="partner" labelOn="Referenzen-Bereich erscheint auf Ihrer Website" labelOff="Referenzen-Bereich wird nicht angezeigt"/>
           {(()=>{const withoutLogo=(order.partner||[]).filter(p=>p&&p.name&&!p.url_logo).length;return withoutLogo>0&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>{withoutLogo===1?"Ein Eintrag hat":`${withoutLogo} Eintraege haben`} kein Logo und wird auf der Website nicht angezeigt. Bitte Logo hochladen oder Eintrag entfernen.</div>
@@ -3026,29 +3038,8 @@ function Portal({session,onLogout}){
                   <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zusätzliche Bereiche</div>
                   <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Schalten Sie Bereiche ein oder aus. Inhalte bearbeiten Sie auf der jeweiligen Seite.</div>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.faq!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Häufige Fragen (FAQ)" checked={order.sections_visible?.faq!==false} onChange={v=>{const sv={...(order.sections_visible||{}),faq:v};upOrder("sections_visible")(sv);}} desc="Fragen und Antworten"/>
-                      {order.sections_visible?.faq!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
-                        <button onClick={()=>nav("faq")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
-                      </div>}
-                    </div>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.fakten!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Zahlen & Fakten" checked={order.sections_visible?.fakten!==false} onChange={v=>{const sv={...(order.sections_visible||{}),fakten:v};upOrder("sections_visible")(sv);}} desc={`z.B. „15+ Jahre Erfahrung"`}/>
-                      {order.sections_visible?.fakten!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
-                        <button onClick={()=>nav("fakten")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
-                      </div>}
-                    </div>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.partner!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Partner & Zertifikate" checked={order.sections_visible?.partner!==false} onChange={v=>{const sv={...(order.sections_visible||{}),partner:v};upOrder("sections_visible")(sv);}} desc="Logos von Partnern oder Zertifizierungen"/>
-                      {order.sections_visible?.partner!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
-                        <button onClick={()=>nav("partner")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Inhalte bearbeiten &rarr;</button>
-                      </div>}
-                    </div>
                     <div style={{border:`1.5px solid ${order.sections_visible?.galerie!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
                       <Toggle label="Fotogalerie" checked={order.sections_visible?.galerie!==false} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
-                      {order.sections_visible?.galerie!==false&&<div style={{padding:"8px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg}}>
-                        <button onClick={()=>nav("medien")} style={{color:T.accent,fontWeight:600,background:"none",border:"none",cursor:"pointer",fontFamily:T.font,fontSize:".78rem",padding:0}}>Fotos verwalten &rarr;</button>
-                      </div>}
                     </div>
                     <div style={{border:`1.5px solid ${order.sections_visible?.cta_block!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
                       <Toggle label="CTA-Block" checked={order.sections_visible?.cta_block!==false} onChange={v=>{const sv={...(order.sections_visible||{}),cta_block:v};upOrder("sections_visible")(sv);}} desc="Aufruf zum Handeln zwischen Leistungen und Über uns"/>

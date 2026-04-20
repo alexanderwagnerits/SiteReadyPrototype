@@ -938,6 +938,15 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
 
 /* ═══ FORM COMPONENTS (unified light premium) ═══ */
 // Input-Validatoren (zentral — fuer Field.validate Prop)
+// HelpTip: kleines "?"-Icon mit Hover/Click-Tooltip fuer Fachbegriffe
+function HelpTip({text}){
+  const[open,setOpen]=useState(false);
+  return(<span style={{position:"relative",display:"inline-flex",verticalAlign:"middle",marginLeft:5}}>
+    <button type="button" onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} onMouseEnter={()=>setOpen(true)} onMouseLeave={()=>setOpen(false)} onBlur={()=>setOpen(false)} aria-label="Hilfe" style={{width:16,height:16,borderRadius:"50%",border:"none",background:"#e7e9e9",color:"#71717a",fontSize:11,fontWeight:700,cursor:"help",padding:0,display:"inline-flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>?</button>
+    {open&&<span role="tooltip" style={{position:"absolute",bottom:"calc(100% + 8px)",left:"50%",transform:"translateX(-50%)",background:"#18181b",color:"#fff",padding:"9px 12px",borderRadius:6,fontSize:".78rem",lineHeight:1.45,width:240,zIndex:70,boxShadow:"0 6px 20px rgba(0,0,0,.25)",fontWeight:400,whiteSpace:"normal",pointerEvents:"none"}}>{text}</span>}
+  </span>);
+}
+
 // Zielgruppen-Wort pro Branche (Gaeste fuer Gastro, Patienten fuer Gesundheit, etc.)
 const ZIELGRUPPE_WORT={
   restaurant:"Gäste",cafe:"Gäste",baeckerei:"Kunden",catering:"Gäste",bar:"Gäste",heuriger:"Gäste",imbiss:"Gäste",fleischerei:"Kunden",pizzeria:"Gäste",eissalon:"Gäste",vinothek:"Gäste",winzer:"Kunden",
@@ -953,7 +962,7 @@ const VALIDATORS={
   url:v=>!v||/^https?:\/\/[^\s]+\.[^\s]+/.test(v.trim())?null:"Bitte vollständigen Link eingeben (mit https://)",
   email:v=>!v||/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())?null:"Bitte gültige E-Mail-Adresse eingeben",
 };
-function Field({label,value,onChange,placeholder,type="text",rows,hint,required,onBlur:onBlurProp,validate}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const requiredErr=required&&touched&&!value?.trim();const validateErr=touched&&!requiredErr&&validate&&value?validate(value):null;const err=!!(requiredErr||validateErr);const errMsg=requiredErr?"Pflichtfeld":validateErr;const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";const base={width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".92rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44};const handleBlur=()=>{setF(false);setTouched(true);if(onBlurProp)onBlurProp();};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".85rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,transition:"color .2s",letterSpacing:".02em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label>{rows?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows} onFocus={()=>setF(true)} onBlur={handleBlur} style={{...base,resize:"vertical",lineHeight:1.5}}/>:<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={handleBlur} style={base}/>}{err?<div style={{marginTop:4,fontSize:".82rem",color:T.red}}>{errMsg}</div>:hint&&<div style={{marginTop:5,fontSize:".82rem",color:T.textMuted}}>{hint}</div>}</div>)}
+function Field({label,value,onChange,placeholder,type="text",rows,hint,required,onBlur:onBlurProp,validate,help}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const requiredErr=required&&touched&&!value?.trim();const validateErr=touched&&!requiredErr&&validate&&value?validate(value):null;const err=!!(requiredErr||validateErr);const errMsg=requiredErr?"Pflichtfeld":validateErr;const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";const base={width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".92rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44};const handleBlur=()=>{setF(false);setTouched(true);if(onBlurProp)onBlurProp();};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".85rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,transition:"color .2s",letterSpacing:".02em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}{help&&<HelpTip text={help}/>}</label>{rows?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows} onFocus={()=>setF(true)} onBlur={handleBlur} style={{...base,resize:"vertical",lineHeight:1.5}}/>:<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={handleBlur} style={base}/>}{err?<div style={{marginTop:4,fontSize:".82rem",color:T.red}}>{errMsg}</div>:hint&&<div style={{marginTop:5,fontSize:".82rem",color:T.textMuted}}>{hint}</div>}</div>)}
 
 function Dropdown({label,value,onChange,options,placeholder,hint,required}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const err=required&&touched&&!value;const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".85rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,letterSpacing:".02em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label><select aria-label={label} value={value} onChange={e=>onChange(e.target.value)} onFocus={()=>setF(true)} onBlur={()=>{setF(false);setTouched(true);}} style={{width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".92rem",fontFamily:T.font,background:T.white,color:value?T.dark:T.textMuted,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",cursor:"pointer",appearance:"none",minHeight:44,backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%238b919e' stroke-width='1.5'/%3E%3C/svg%3E\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 16px center"}}><option value="" disabled>{placeholder||"Bitte wählen"}</option>{options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>{err?<div style={{marginTop:4,fontSize:".82rem",color:T.red}}>Pflichtfeld</div>:hint&&<div style={{marginTop:5,fontSize:".82rem",color:T.textMuted}}>{hint}</div>}</div>)}
 function Combobox({label,value,onChange,options,placeholder,hint,required}){
@@ -1597,6 +1606,10 @@ function Portal({session,onLogout}){
   const[wizardOpen,setWizardOpen]=useState(()=>window.innerWidth>=768);
   const[ptSbOpen,setPtSbOpen]=useState(false);
   const[ptWizOpen,setPtWizOpen]=useState(false);
+  // Welcome-Tour: zeigt sich beim allerersten Portal-Besuch (localStorage-Flag)
+  const[welcomeOpen,setWelcomeOpen]=useState(()=>{try{return !localStorage.getItem("sr_welcome_seen");}catch(_){return false;}});
+  const[welcomeStep,setWelcomeStep]=useState(0);
+  const closeWelcome=()=>{try{localStorage.setItem("sr_welcome_seen","1");}catch(_){}setWelcomeOpen(false);};
   const[orderLoadError,setOrderLoadError]=useState(null);
   const[orderLoadAttempts,setOrderLoadAttempts]=useState(0);
   const toastTimer=useRef(null);
@@ -2604,7 +2617,7 @@ function Portal({session,onLogout}){
           <SectionHeader label="Grunddaten" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
           <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
           <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
-          <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
+          <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung" help="Die Region, in der Sie tätig sind. Wird unter dem Firmennamen angezeigt und hilft Google, Sie bei lokalen Suchanfragen zu finden."/>
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
         {page==="hero"&&<>
@@ -2712,7 +2725,7 @@ function Portal({session,onLogout}){
             <SectionHeader label="Firmenname & Beschreibung" desc="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website und in Google-Suchergebnissen."/>
             <Field label="Firmenname" value={order.firmenname||""} onChange={upOrder("firmenname")} placeholder="Firmenname"/>
             <Field label="Kurzbeschreibung" value={order.kurzbeschreibung||""} onChange={upOrder("kurzbeschreibung")} placeholder="Kurze Beschreibung" rows={2}/>
-            <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung"/>
+            <Field label="Einsatzgebiet" value={order.einsatzgebiet||""} onChange={upOrder("einsatzgebiet")} placeholder="Wien & Umgebung" help="Die Region, in der Sie tätig sind. Wird unter dem Firmennamen angezeigt und hilft Google, Sie bei lokalen Suchanfragen zu finden."/>
           </div>
         </>}
         {page==="impressum"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -2726,14 +2739,14 @@ function Portal({session,onLogout}){
             </div>}
             {uf==="gesnbr"&&<Field label="Gesellschafter" value={order.gesellschafter||""} onChange={upOrder("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
             {hasFB&&<div className="pt-impres-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a"/>
+              <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a" help="Die Firmenbuchnummer finden Sie im Firmenbuchauszug. Format z.B. FN 123456a. Pflicht für GmbH, AG, OG, KG und e.U."/>
               <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="HG Wien"/>
             </div>}
             {uf==="gmbh"&&<Field label="Geschäftsführer" value={order.geschaeftsfuehrer||""} onChange={upOrder("geschaeftsfuehrer")} placeholder="Vor- und Nachname" hint="Für das Impressum"/>}
             {uf==="ag"&&<><Field label="Vorstand" value={order.vorstand||""} onChange={upOrder("vorstand")} placeholder="Vor- und Nachname"/><Field label="Aufsichtsrat" value={order.aufsichtsrat||""} onChange={upOrder("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
-            {uf==="verein"&&<><Field label="ZVR-Zahl" value={order.zvr_zahl||""} onChange={upOrder("zvr_zahl")} placeholder="z.B. 123456789"/><Field label="Vertretungsbefugte Organe" value={order.vertretungsorgane||""} onChange={upOrder("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2}/></>}
-            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional"/>
-            <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678" hint="Optional"/>
+            {uf==="verein"&&<><Field label="ZVR-Zahl" value={order.zvr_zahl||""} onChange={upOrder("zvr_zahl")} placeholder="z.B. 123456789" help="Die ZVR-Zahl (Zentrales Vereinsregister) wird vom BMI vergeben. Online nachschlagen: vereinsregister.at"/><Field label="Vertretungsbefugte Organe" value={order.vertretungsorgane||""} onChange={upOrder("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2} help="Personen die den Verein rechtlich vertreten (z.B. Obmann, Kassier, Schriftführer) mit Namen."/></>}
+            <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional" help="Die UID-Nummer (Umsatzsteuer-Identifikation) beginnt mit ATU gefolgt von 8 Ziffern. Nur falls Sie umsatzsteuerpflichtig sind."/>
+            <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678" hint="Optional" help="Die GISA-Zahl ist Ihre Gewerberegister-Nummer. Sie steht im Gewerbeschein. Format z.B. GISA 12345678."/>
             <div style={{marginTop:16}}>
               <button onClick={()=>setImpressumConfirmOpen(true)} disabled={saving} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Impressum speichern"}</button>
             </div>
@@ -3878,6 +3891,38 @@ function Portal({session,onLogout}){
         </div>
       </div>
     </>}
+    {/* Welcome-Tour beim ersten Besuch */}
+    {welcomeOpen&&order&&(()=>{
+      const slides=[
+        {emoji:"👋",title:"Willkommen in Ihrem Portal",desc:"Hier pflegen Sie alle Inhalte Ihrer Website. Jede Änderung ist sofort live.",hint:"Links die Navigation, rechts Ihr Fortschritt."},
+        {emoji:"✏️",title:"So bearbeiten Sie Ihre Website",desc:"Klicken Sie links auf einen Bereich wie Titelbild oder Leistungen. Alle Änderungen speichern sich automatisch.",hint:"Der orangene Punkt zeigt, wo noch Pflicht-Angaben fehlen."},
+        {emoji:"🚀",title:"Einrichtungsassistent hilft",desc:"Rechts sehen Sie, was noch zu tun ist. Die Karte Jetzt dran auf der Übersicht zeigt immer Ihren nächsten Schritt.",hint:"Schritt für Schritt zur fertigen Website."},
+      ];
+      const s=slides[welcomeStep];
+      const isLast=welcomeStep===slides.length-1;
+      return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20,animation:"srfadein .25s ease"}}>
+        <style>{`@keyframes srfadein{from{opacity:0}to{opacity:1}}`}</style>
+        <div style={{background:"#fff",borderRadius:16,padding:"32px 32px 24px",maxWidth:460,width:"100%",boxShadow:"0 20px 60px rgba(0,0,0,.3)",position:"relative"}}>
+          <button onClick={closeWelcome} aria-label="Schließen" style={{position:"absolute",top:14,right:14,background:"none",border:"none",cursor:"pointer",color:T.textMuted,padding:6,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div style={{fontSize:"3rem",lineHeight:1,marginBottom:18,textAlign:"center"}}>{s.emoji}</div>
+          <h2 style={{fontSize:"1.4rem",fontWeight:800,color:T.dark,margin:"0 0 10px",letterSpacing:"-.02em",textAlign:"center"}}>{s.title}</h2>
+          <p style={{fontSize:".95rem",color:T.textSub,lineHeight:1.6,margin:"0 0 10px",textAlign:"center"}}>{s.desc}</p>
+          <div style={{fontSize:".82rem",color:T.textMuted,textAlign:"center",marginBottom:24,fontStyle:"italic"}}>{s.hint}</div>
+          {/* Dots */}
+          <div style={{display:"flex",justifyContent:"center",gap:7,marginBottom:22}}>
+            {slides.map((_,i)=><div key={i} style={{width:i===welcomeStep?20:7,height:7,borderRadius:100,background:i===welcomeStep?T.accent:T.bg3,transition:"width .25s"}}/>)}
+          </div>
+          <div style={{display:"flex",gap:10}}>
+            {welcomeStep>0&&<button onClick={()=>setWelcomeStep(welcomeStep-1)} style={{flex:"0 0 auto",padding:"11px 18px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".88rem",fontWeight:600,fontFamily:T.font}}>Zurück</button>}
+            <button onClick={closeWelcome} style={{flex:"0 0 auto",padding:"11px 14px",border:"none",background:"none",color:T.textMuted,cursor:"pointer",fontSize:".82rem",fontFamily:T.font}}>Überspringen</button>
+            <div style={{flex:1}}/>
+            <button onClick={()=>isLast?closeWelcome():setWelcomeStep(welcomeStep+1)} style={{padding:"11px 22px",border:"none",borderRadius:T.rSm,background:T.accent,color:"#fff",cursor:"pointer",fontSize:".9rem",fontWeight:700,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:8}}>{isLast?"Los geht's":"Weiter"} <span>{"→"}</span></button>
+          </div>
+        </div>
+      </div>);
+    })()}
   </div>);
 }
 

@@ -201,7 +201,7 @@ export async function onRequestGet({params, env}) {
     }
   } else if (o.url_hero) {
     // Standard + full: Hintergrundbild — Text zentriert (nicht flex-end, sieht bei KMU besser aus)
-    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.6) 0%,rgba(0,0,0,.5) 40%,rgba(0,0,0,.75) 100%),url('${o.url_hero}') center/cover no-repeat!important;align-items:center!important}` +
+    const heroStyle = `<style>#sr-hero,#hero,section.hero{background:linear-gradient(to bottom,rgba(0,0,0,.72) 0%,rgba(0,0,0,.62) 40%,rgba(0,0,0,.85) 100%),url('${o.url_hero}') center/cover no-repeat!important;align-items:center!important}` +
       `#sr-hero h1,#hero h1{text-shadow:0 4px 24px rgba(0,0,0,.7),0 1px 4px rgba(0,0,0,.5)}` +
       `#sr-hero .hero-sub,#sr-hero .hero-desc,#sr-hero .hero-badge{text-shadow:0 2px 12px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.4)}` +
       `#sr-hero .hero-btns .btn{text-shadow:none}` +
@@ -605,7 +605,11 @@ export async function onRequestGet({params, env}) {
     const ctaDef = ctaBranch[o.branche] || ctaGroupDefaults[brGruppe] || {h:"Wir freuen uns auf Sie", t:"Kontaktieren Sie uns — wir sind für Sie da."};
     const ctaH = esc(o.cta_headline || ctaDef.h);
     const ctaT = esc(o.cta_text || ctaDef.t);
-    const ctaBlock = `<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">${ctaH}</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">${ctaT}</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
+    // Branchen-/Hero-Bild als atmosphaerischer Background mit starkem Overlay
+    const ctaBgStyle = o.url_hero
+      ? `padding:120px 0;background-image:linear-gradient(rgba(10,10,10,.88),rgba(10,10,10,.88)),url('${o.url_hero}');background-size:cover;background-position:center;background-repeat:no-repeat;color:#fff;text-align:center`
+      : `padding:80px 0;background:var(--accent);color:#fff;text-align:center`;
+    const ctaBlock = `<section class="sec-cta-block sr-fade" style="${ctaBgStyle}"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:${ctaH2Weight};margin-bottom:8px;color:#fff">${ctaH}</h2><p style="font-size:.9rem;opacity:${ctaPOpacity};margin-bottom:24px">${ctaT}</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:${ctaBtnR};padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block${ctaBtnShadow}">Jetzt Kontakt aufnehmen</a></div></section>`;
     html = html.replace("<!-- CTA_BLOCK -->", ctaBlock);
   } else {
     html = html.replace("<!-- CTA_BLOCK -->", "");

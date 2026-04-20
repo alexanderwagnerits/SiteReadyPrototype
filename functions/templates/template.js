@@ -40,9 +40,9 @@ a,button,input,select,textarea{touch-action:manipulation}
 .stil-modern{--text:#18181b;--textMuted:#71717a;--fontHeading:'Space Grotesk','Plus Jakarta Sans',system-ui,sans-serif;--maxW:1140px;--sectionY:100px}
 .stil-elegant{--text:#2c2620;--textMuted:#6b6058;--white:#fdfbf7;--fontHeading:'Cormorant Garamond',Georgia,serif;--maxW:1060px;--sectionY:100px}
 
-html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:hidden}
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
 h1,h2,h3,.s-h2{font-family:var(--fontHeading)}
-body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;-webkit-font-smoothing:antialiased;background:var(--white);overflow-x:hidden;max-width:100vw}
+body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;-webkit-font-smoothing:antialiased;background:var(--white);overflow-x:clip;max-width:100vw}
 .stil-elegant body,.stil-elegant{line-height:1.8;letter-spacing:-.01em}
 img{max-width:100%;display:block}
 a{color:inherit}
@@ -68,6 +68,70 @@ a{color:inherit}
 .stil-elegant .fade-up,.stil-elegant .sr-fade{transform:translateY(12px);transition-duration:.8s}
 @media(prefers-reduced-motion:reduce){.fade-up,.sr-fade{opacity:1;transform:none;transition:none}.sr-grain::after{animation:none}}
 @media(max-width:768px){.sr-grain::after{animation:none}}
+
+/* Button-Hover: Pfeil-Slide */
+.btn{position:relative;transition:transform .28s cubic-bezier(.22,1,.36,1),box-shadow .28s cubic-bezier(.22,1,.36,1)}
+.btn::after{content:"\\2192";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s cubic-bezier(.22,1,.36,1),transform .28s cubic-bezier(.22,1,.36,1),margin-left .28s cubic-bezier(.22,1,.36,1);font-weight:600}
+.btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+@media(prefers-reduced-motion:reduce){.btn,.btn::after{transition:none}.btn:hover{transform:none}}
+
+/* Ablauf: Steps nacheinander einblenden */
+.sr-ablauf-h > div:not(.sr-ablauf-arrow){opacity:0;transform:translateY(14px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+.sr-ablauf-h > div:not(.sr-ablauf-arrow) > div:first-child{transform:scale(.2);transition:transform .65s cubic-bezier(.34,1.56,.64,1)}
+.sr-ablauf-h.sr-ablauf-play > div:not(.sr-ablauf-arrow){opacity:1;transform:none}
+.sr-ablauf-h.sr-ablauf-play > div:not(.sr-ablauf-arrow) > div:first-child{transform:scale(1)}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(1){transition-delay:0ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(3){transition-delay:190ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(5){transition-delay:380ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(7){transition-delay:570ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(1) > div:first-child{transition-delay:110ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(3) > div:first-child{transition-delay:300ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(5) > div:first-child{transition-delay:490ms}
+.sr-ablauf-h.sr-ablauf-play > div:nth-child(7) > div:first-child{transition-delay:680ms}
+.sr-ablauf-h .sr-ablauf-arrow{opacity:0;transition:opacity .45s ease}
+.sr-ablauf-h.sr-ablauf-play .sr-ablauf-arrow:nth-child(2){transition-delay:240ms;opacity:1}
+.sr-ablauf-h.sr-ablauf-play .sr-ablauf-arrow:nth-child(4){transition-delay:430ms;opacity:1}
+.sr-ablauf-h.sr-ablauf-play .sr-ablauf-arrow:nth-child(6){transition-delay:620ms;opacity:1}
+@media(prefers-reduced-motion:reduce){.sr-ablauf-h *{opacity:1 !important;transform:none !important;transition:none !important}}
+
+/* Ueber-uns Vorteile: staggered reveal + Check-Kreis Pop */
+.ueber-vorteile > div{opacity:0;transform:translateX(-10px);transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1)}
+.ueber-vorteile > div > div:first-child{transform:scale(.2);transition:transform .55s cubic-bezier(.34,1.56,.64,1)}
+.ueber-vorteile.ueber-vorteile-play > div{opacity:1;transform:none}
+.ueber-vorteile.ueber-vorteile-play > div > div:first-child{transform:scale(1)}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(1){transition-delay:0ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(2){transition-delay:120ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(3){transition-delay:240ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(4){transition-delay:360ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(5){transition-delay:480ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(6){transition-delay:600ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(7){transition-delay:720ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(8){transition-delay:840ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(1) > div:first-child{transition-delay:70ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(2) > div:first-child{transition-delay:190ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(3) > div:first-child{transition-delay:310ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(4) > div:first-child{transition-delay:430ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(5) > div:first-child{transition-delay:550ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(6) > div:first-child{transition-delay:670ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(7) > div:first-child{transition-delay:790ms}
+.ueber-vorteile.ueber-vorteile-play > div:nth-child(8) > div:first-child{transition-delay:910ms}
+@media(prefers-reduced-motion:reduce){.ueber-vorteile *{opacity:1 !important;transform:none !important;transition:none !important}}
+
+/* Hero Content Staggered Reveal (Pageload) */
+.hero-sub,.hero h1,.hero-accent-line,.hero-desc,.hero-btns,.hero-split-img{opacity:0;transform:translateY(14px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+body.hero-play .hero-sub{opacity:1;transform:none;transition-delay:0ms}
+body.hero-play .hero h1{opacity:1;transform:none;transition-delay:110ms}
+body.hero-play .hero-accent-line{opacity:1;transform:none;transition-delay:220ms}
+body.hero-play .hero-desc{opacity:1;transform:none;transition-delay:330ms}
+body.hero-play .hero-btns{opacity:1;transform:none;transition-delay:440ms}
+body.hero-play .hero-split-img{opacity:1;transform:none;transition-delay:180ms}
+@media(prefers-reduced-motion:reduce){.hero-sub,.hero h1,.hero-accent-line,.hero-desc,.hero-btns,.hero-split-img{opacity:1 !important;transform:none !important;transition:none !important}}
+
+/* Nav-Scroll-Glass */
+#sitenav{transition:background .35s cubic-bezier(.22,1,.36,1),backdrop-filter .35s cubic-bezier(.22,1,.36,1),-webkit-backdrop-filter .35s cubic-bezier(.22,1,.36,1),box-shadow .35s cubic-bezier(.22,1,.36,1)}
+body.nav-scrolled #sitenav{background:color-mix(in srgb,var(--primary) 88%,transparent) !important;-webkit-backdrop-filter:blur(12px) saturate(140%);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 22px rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.08)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){body.nav-scrolled #sitenav{background:var(--primary) !important}}
 
 /* Grain-Overlay fuer Tiefe (Hero, About) */
 .sr-grain::after{content:'';position:absolute;inset:-50%;width:200%;height:200%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");background-repeat:repeat;pointer-events:none;z-index:0;opacity:.5;animation:sr-grain 8s steps(8) infinite}
@@ -852,6 +916,18 @@ var d=1200,st=performance.now();
 function tick(now){var p=Math.min((now-st)/d,1);p=1-Math.pow(1-p,3);el.textContent=Math.round(v*p)+s;if(p<1)requestAnimationFrame(tick)}
 requestAnimationFrame(tick)})}})},{threshold:.3});
 document.querySelectorAll('.ueber-stats').forEach(function(s){so.observe(s)});
+
+/* Ablauf: Steps staggered Reveal */
+var ablauf=document.querySelectorAll('.sr-ablauf-h');if(ablauf.length){var ioAbl=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-ablauf-play');ioAbl.unobserve(i.target)}})},{threshold:.25});ablauf.forEach(function(el){ioAbl.observe(el)})}
+
+/* Ueber-uns Vorteile: staggered Reveal */
+var vort=document.querySelectorAll('.ueber-vorteile');if(vort.length){var ioVor=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('ueber-vorteile-play');ioVor.unobserve(i.target)}})},{threshold:.2});vort.forEach(function(el){ioVor.observe(el)})}
+
+/* Hero Pageload Stagger */
+requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('hero-play')})});
+
+/* Nav-Scroll-Glass */
+var navEl=document.getElementById('sitenav');if(navEl){var onScrollNav=function(){document.body.classList.toggle('nav-scrolled',window.scrollY>40)};window.addEventListener('scroll',onScrollNav,{passive:true});onScrollNav()}
 
 })();</script>
 </body>

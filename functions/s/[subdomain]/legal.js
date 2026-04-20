@@ -360,8 +360,14 @@ ${missingBanner}<table>${tRows}</table>
 <h2>Urheberrecht</h2>
 <p>Die Inhalte dieser Website unterliegen dem österreichischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Betreibers.</p>
 
-${o.foto_credit ? `<h2>Bildnachweis</h2>
-<p>${esc(o.foto_credit)}</p>` : ""}
+${(() => {
+  // Bildnachweis automatisch: User-Credit + Unsplash falls Stock-Bild verwendet
+  const usesUnsplash = o.url_hero && /images\.unsplash\.com/i.test(o.url_hero);
+  const lines = [];
+  if (o.foto_credit) lines.push(esc(o.foto_credit));
+  if (usesUnsplash) lines.push('Titelbild: Unsplash (<a href="https://unsplash.com" rel="noopener">unsplash.com</a>)');
+  return lines.length ? `<h2>Bildnachweis</h2>\n<p>${lines.join("<br>")}</p>` : "";
+})()}
 
 <p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;
   } else {

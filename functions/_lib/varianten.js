@@ -11,18 +11,13 @@ function berechneVarianten(data) {
 
   // ── Hero ──
   // url_hero (Upload/Import) oder hero_image (Legacy)
+  // fullscreen = Default fuer alle Stile (wenn Bild da)
+  // minimal = Fallback wenn kein Bild
+  // split = nur via hero_override (Opt-in im Portal)
   const hatHeroBild = !!(d.url_hero || d.hero_image);
   let hero = d.hero_override || null;
   if (!hero) {
-    if (!hatHeroBild) {
-      hero = "minimal";
-    } else if (stil === "elegant") {
-      hero = "fullscreen";
-    } else if (stil === "modern") {
-      hero = "split";
-    } else {
-      hero = "fullscreen";
-    }
+    hero = hatHeroBild ? "fullscreen" : "minimal";
   }
 
   // ── Leistungen ──

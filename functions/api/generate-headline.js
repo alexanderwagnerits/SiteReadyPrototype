@@ -23,9 +23,9 @@ export async function onRequestPost({request, env}) {
     const {order_id} = body;
     if (!order_id) return Response.json({error: "order_id fehlt"}, {status: 400});
 
-    // 3. Order laden und pruefen ob sie dem User gehoert
+    // 3. Order laden und pruefen ob sie dem User gehoert (user_id-Match oder Fallback email)
     const r = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}&select=firmenname,branche,einsatzgebiet,leistungen,kurzbeschreibung,email,text_vorteile`,
+      `${env.SUPABASE_URL}/rest/v1/orders?id=eq.${order_id}&select=firmenname,branche,einsatzgebiet,leistungen,kurzbeschreibung,email,user_id,text_vorteile`,
       {headers: {"apikey": env.SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${env.SUPABASE_SERVICE_KEY}`}}
     );
     if (!r.ok) return Response.json({error: "DB-Fehler"}, {status: 502});
@@ -33,7 +33,9 @@ export async function onRequestPost({request, env}) {
     if (!rows.length) return Response.json({error: "Order nicht gefunden"}, {status: 404});
     const o = rows[0];
 
-    if (o.email !== user.email) return Response.json({error: "Nicht autorisiert"}, {status: 403});
+    const ownsByUserId = o.user_id && user.id && o.user_id === user.id;
+    const ownsByEmail = o.email && user.email && String(o.email).toLowerCase() === String(user.email).toLowerCase();
+    if (!ownsByUserId && !ownsByEmail) return Response.json({error: "Nicht autorisiert"}, {status: 403});
 
     // 4. Headline per Claude generieren
     const sanitize = (s) => String(s || "").slice(0, 500);

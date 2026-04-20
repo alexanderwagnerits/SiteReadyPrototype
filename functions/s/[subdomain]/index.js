@@ -220,6 +220,18 @@ export async function onRequestGet({params, env}) {
     html = html.replace('</head>', heroStyle + '</head>');
   }
 
+  // Hero-H1 serve-time: wenn hero_headline gesetzt, ersetzt sie den Firmennamen als H1
+  // und der Firmenname wandert klein in die Sub-Zeile. Aendert sich der Kunde im Portal
+  // live, ohne dass die Order neu generiert werden muss.
+  if (o.hero_headline && String(o.hero_headline).trim()) {
+    const headline = esc(String(o.hero_headline).trim());
+    const firmenSub = o.firmenname ? `<strong style="color:inherit;font-weight:700">${esc(o.firmenname)}</strong> · ` : "";
+    // H1 ersetzen (section.hero <h1>...</h1>)
+    html = html.replace(/(<section class="hero[^"]*"[^>]*id="sr-hero"[\s\S]*?)<h1>[\s\S]*?<\/h1>/, `$1<h1>${headline}</h1>`);
+    // Sub-Zeile: Firmenname als Prefix einfuegen (nur wenn noch nicht da)
+    html = html.replace(/(<p class="hero-sub">)(?!<strong)/, `$1${firmenSub}`);
+  }
+
 
   // Maps-Placeholder serve-time ersetzen (falls Claude einen Platzhalter generiert hat)
   const mapsAddr = [o.adresse, o.plz, o.ort].filter(Boolean).join(", ");

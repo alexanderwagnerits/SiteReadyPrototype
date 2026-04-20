@@ -732,6 +732,7 @@ footer{padding:16px 0!important}
 export function buildTemplate(data) {
   const {
     firmenname, brancheLabel, einsatzgebiet, kurzbeschreibung,
+    heroHeadline,
     ctaPrimary, ctaPrimaryHref, ctaSecondary,
     leistungenIntro, preislisteHtml,
     ueberUnsText, vorteileHtml, oeffnungszeiten,
@@ -743,6 +744,11 @@ export function buildTemplate(data) {
     borderRadius, borderRadiusLg,
     stil,
   } = data;
+
+  // Hero-H1: wenn heroHeadline vorhanden -> Wertversprechen, Firmenname klein als Sub
+  // sonst Firmenname (Fallback fuer alte Orders + wenn kein Headline generiert)
+  const heroH1 = heroHeadline && heroHeadline.trim() ? heroHeadline.trim() : firmenname;
+  const showFirmenSub = !!(heroHeadline && heroHeadline.trim());
 
   const stilClass = `stil-${stil || "klassisch"}`;
 
@@ -774,8 +780,8 @@ ${buildCss(data)}
 <main id="main">
 <section class="hero sr-grain" id="sr-hero">
 <div class="hero-inner">
-<p class="hero-sub">${brancheLabel}${einsatzgebiet ? ` · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}</p>
-<h1>${firmenname}</h1>
+<p class="hero-sub">${showFirmenSub ? `<strong style="color:inherit;font-weight:700">${firmenname}</strong> · ` : ""}${brancheLabel}${einsatzgebiet ? ` · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}</p>
+<h1>${heroH1}</h1>
 <span class="hero-accent-line"></span>
 <p class="hero-desc">${kurzbeschreibung}</p>
 <div class="hero-btns">

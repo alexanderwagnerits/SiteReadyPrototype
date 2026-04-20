@@ -519,6 +519,7 @@ Nutze die BESONDERHEITEN aktiv als Verkaufsargumente in Vorteilen und Texten.
 
 JSON-FORMAT (nur diese Felder, keine zusätzlichen):
 {
+  "hero_headline": "Kernbotschaft für den Hero — 4-8 Wörter, Nutzen/Versprechen, KEIN Firmenname, KEIN Branchen-Generic wie 'Ihr Experte für...'. Beispiele: 'Frische Wurstwaren seit 1962', 'Ihre Gesundheit in guten Händen', 'Zuverlässig. Schnell. Persönlich.'",
   "leistungen_beschreibungen": {"<Leistungsname>":"[2 kurze Sätze, max 25 Wörter]"},
   "text_ueber_uns": "4-5 Sätze über den Betrieb. Konkret, authentisch, nicht austauschbar.",
   "text_vorteile": ["Vorteil 1","Vorteil 2","Vorteil 3","Vorteil 4","Vorteil 5"],
@@ -652,11 +653,15 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
   /* ═══ TEMPLATE BEFUELLEN ═══ */
   const { buildTemplate } = await import("../templates/template.js");
 
+  // Hero-Headline: User-Override > Claude-Generierung > leer (Fallback = Firmenname im Template)
+  const heroHeadline = (o.hero_headline && o.hero_headline.trim()) || texts.hero_headline || "";
+
   let html = buildTemplate({
     firmenname: o.firmenname,
     brancheLabel: heroLabel,
     einsatzgebiet: o.einsatzgebiet || o.bundesland || "Österreich",
     kurzbeschreibung: o.kurzbeschreibung || "",
+    heroHeadline,
     ctaPrimary,
     ctaPrimaryHref,
     ctaSecondary,
@@ -954,6 +959,8 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
   const savePayload = {
     website_html: html, subdomain: sub, status: o.status === "live" ? "live" : "trial",
     tokens_in: tokIn, tokens_out: tokOut, cost_eur: costEur, last_error: null,
+    // Hero-Headline: User-Edit behalten, sonst Claude-Generierung uebernehmen
+    ...(!o.hero_headline && texts.hero_headline ? {hero_headline: texts.hero_headline} : {}),
     // Ueber-uns: KI-polierte Version speichern (Prompt nutzt Import als Grundlage)
     ...(texts.text_ueber_uns ? {text_ueber_uns: texts.text_ueber_uns} : {}),
     ...(texts.text_vorteile ? {text_vorteile: texts.text_vorteile} : {}),
@@ -988,7 +995,7 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
       body: JSON.stringify({
         quality_score: qualityScore, quality_issues: qIssues.length > 0 ? qIssues : null, quality_fixed: qFixed || null,
         varianten_cache: variantenCache,
-        ai_generated: [hasImportedText?"text_ueber_uns_poliert":"text_ueber_uns","text_vorteile","kontakt_cta",...(!o.leistungen_beschreibungen||!Object.keys(o.leistungen_beschreibungen).length?["leistungen_beschreibungen"]:[]),...(!hasImportedAblauf?["ablauf_schritte"]:[]),...(!hasImportedGzw?["gut_zu_wissen"]:[]),...(!hasImportedFaq&&texts.faq?.length?["faq"]:[])],
+        ai_generated: [hasImportedText?"text_ueber_uns_poliert":"text_ueber_uns","text_vorteile","kontakt_cta",...(!o.leistungen_beschreibungen||!Object.keys(o.leistungen_beschreibungen).length?["leistungen_beschreibungen"]:[]),...(!hasImportedAblauf?["ablauf_schritte"]:[]),...(!hasImportedGzw?["gut_zu_wissen"]:[]),...(!hasImportedFaq&&texts.faq?.length?["faq"]:[]),...(!o.hero_headline&&texts.hero_headline?["hero_headline"]:[])],
       }),
     });
   } catch(_) { /* Spalten existieren evtl. noch nicht — kein Blocker */ }

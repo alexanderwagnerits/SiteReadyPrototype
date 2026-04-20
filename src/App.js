@@ -1672,7 +1672,7 @@ function Portal({session,onLogout}){
     setSaving(true);
     setSaveError(null);
     const{error}=await supabase.from("orders").update({
-      firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet,
+      firmenname:order.firmenname,kurzbeschreibung:order.kurzbeschreibung,einsatzgebiet:order.einsatzgebiet,hero_headline:order.hero_headline||null,
       adresse:order.adresse,plz:order.plz,ort:order.ort,telefon:order.telefon,
       oeffnungszeiten:order.oeffnungszeiten,oeffnungszeiten_custom:order.oeffnungszeiten_custom,
       kontakt_formular:order.kontakt_formular||null,gut_zu_wissen:order.gut_zu_wissen||null,
@@ -1761,7 +1761,7 @@ function Portal({session,onLogout}){
 
   // Felder pro Portal-Section — fuer selektives Undo ("Diese Seite zuruecksetzen")
   const PAGE_FIELDS={
-    hero:["firmenname","kurzbeschreibung","foto_credit"],
+    hero:["firmenname","kurzbeschreibung","foto_credit","hero_headline","varianten_cache"],
     grunddaten:["firmenname","kurzbeschreibung","einsatzgebiet"],
     leistungen:["leistungen","extra_leistung","leistungen_beschreibungen","leistungen_preise","leistungen_fotos","cta_headline","cta_text"],
     ueberuns:["text_ueber_uns","text_vorteile","team_members","gut_zu_wissen","ablauf_schritte","bewertungen"],
@@ -2712,6 +2712,24 @@ function Portal({session,onLogout}){
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
         {page==="hero"&&<>
+          {/* Hero-Headline — der grosse Satz oben auf der Website */}
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
+            <SectionHeader label="Hero-Überschrift" desc="Der große Satz ganz oben auf Ihrer Website. Meist ein Slogan oder Kernversprechen — nicht der Firmenname (der erscheint automatisch klein darunter)." aiField="hero_headline"/>
+            <Field label="Überschrift" value={order.hero_headline||""} onChange={upOrder("hero_headline")} placeholder={(ZIELGRUPPE_WORT[order.branche]?`Ihr ${ZIELGRUPPE_WORT[order.branche].replace(/en$|e$/,"")}-Versprechen`:"z. B. Ihr zuverlässiger Partner seit 1990")} rows={2} hint="Leer lassen, dann wird der Firmenname als Überschrift verwendet." help="5-8 Wörter Kernbotschaft der Website. Typische Struktur: 'Nutzen + Branche + Zeit/Ort' — z.B. 'Frische Wurstwaren seit 1962' oder 'Zuverlässige Elektrik in Wien'."/>
+            <button onClick={async()=>{
+              if(!session)return;
+              showToast("Neue Überschrift wird generiert...");
+              try{
+                const res=await fetch("/api/generate-headline",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},body:JSON.stringify({order_id:order.id})});
+                const data=await res.json();
+                if(data.hero_headline){upOrder("hero_headline")(data.hero_headline);showToast("Vorschlag übernommen");}
+                else showToast("Fehler: "+(data.error||"unbekannt"));
+              }catch(e){showToast("Fehler: "+e.message);}
+            }} style={{marginTop:4,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:6}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              ✨ Neuen Vorschlag generieren
+            </button>
+          </div>
           {/* Hero-Layout Auswahl */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
             <div style={{fontWeight:700,fontSize:".82rem",color:T.dark,marginBottom:4}}>Hero-Layout</div>

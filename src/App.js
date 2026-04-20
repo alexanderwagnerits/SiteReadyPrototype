@@ -1843,6 +1843,22 @@ function Portal({session,onLogout}){
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{if(page==="rechnungen")loadInvoices();},[page]);
 
+  // Einmalig: CTA-Block mit branchenspezifischem Default befuellen, wenn Felder leer und noch nie angefasst
+  useEffect(()=>{
+    if(!order?.id||!order.branche||!supabase)return;
+    const hasCta=order.cta_headline||order.cta_text;
+    const ctaAiFlagged=(order.ai_generated||[]).includes("cta_block");
+    if(hasCta||ctaAiFlagged)return;
+    const def=getCtaDefault(order.branche);
+    const newAi=[...(order.ai_generated||[]),"cta_block"];
+    supabase.from("orders").update({cta_headline:def.h,cta_text:def.t,ai_generated:newAi}).eq("id",order.id).then(({error})=>{
+      if(error)return;
+      setOrder(o=>({...o,cta_headline:def.h,cta_text:def.t,ai_generated:newAi}));
+      if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,cta_headline:def.h,cta_text:def.t,ai_generated:newAi};
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[order?.id]);
+
   const saveImpressum=async()=>{
     if(!order||!supabase)return;
     setSaving(true);
@@ -2760,18 +2776,12 @@ function Portal({session,onLogout}){
             </div>
         </div>
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
-          <SectionHeader label="CTA-Block" desc="Aufruf zum Handeln — erscheint auf der Website direkt nach den Leistungen."/>
+          <SectionHeader label="CTA-Block" desc="Aufruf zum Handeln — erscheint auf der Website direkt nach den Leistungen." aiField="cta_block" onRemove={async()=>{const newAi=(order.ai_generated||[]).filter(f=>f!=="cta_block");await supabase.from("orders").update({cta_headline:null,cta_text:null,ai_generated:newAi}).eq("id",order.id);setOrder(o=>({...o,cta_headline:"",cta_text:"",ai_generated:newAi}));if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,cta_headline:"",cta_text:"",ai_generated:newAi};showToast("CTA-Text entfernt");}}/>
           <VisibilityToggle field="cta_block" labelOn="CTA-Block erscheint nach den Leistungen" labelOff="CTA-Block wird nicht angezeigt"/>
-          {(()=>{const def=getCtaDefault(order.branche);const usingDefault=!order.cta_headline&&!order.cta_text;return(
+          {(()=>{const def=getCtaDefault(order.branche);return(
           <div style={{opacity:order.sections_visible?.cta_block===false?0.55:1,transition:"opacity .2s"}}>
-            {usingDefault&&<div style={{padding:"10px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`,marginBottom:12,fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>
-              <div style={{fontSize:".7rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:4}}>Aktuell auf der Website</div>
-              <div style={{fontWeight:700,color:T.dark}}>{def.h}</div>
-              <div style={{color:T.textMuted,marginTop:2}}>{def.t}</div>
-            </div>}
             <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder={def.h}/>
             <Field label="Text" value={order.cta_text||""} onChange={upOrder("cta_text")} placeholder={def.t}/>
-            <div style={{fontSize:".72rem",color:T.textMuted}}>Felder leer = branchenspezifischer Standard-Text wird verwendet.</div>
           </div>
           );})()}
         </div>

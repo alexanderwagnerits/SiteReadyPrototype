@@ -1586,6 +1586,7 @@ function Portal({session,onLogout}){
   const[impressumChecked,setImpressumChecked]=useState(false);
   const[wizardOpen,setWizardOpen]=useState(()=>window.innerWidth>=768);
   const[ptSbOpen,setPtSbOpen]=useState(false);
+  const[ptWizOpen,setPtWizOpen]=useState(false);
   const[orderLoadError,setOrderLoadError]=useState(null);
   const[orderLoadAttempts,setOrderLoadAttempts]=useState(0);
   const toastTimer=useRef(null);
@@ -2191,6 +2192,42 @@ function Portal({session,onLogout}){
 .pt-mob-hamburger:active{background:rgba(255,255,255,.1)}
 .pt-mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
 .pt-mob-overlay.open{display:block}
+
+/* Floating Wizard-Pill + Bottom-Sheet (Tablet & Mobile) */
+.pt-wiz-pill{display:none;position:fixed;right:16px;bottom:16px;z-index:95;background:#111;color:#fff;border:none;border-radius:100px;padding:11px 18px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.22);gap:10px;align-items:center;transition:transform .15s}
+.pt-wiz-pill:active{transform:scale(.97)}
+.pt-wiz-pill-ring{width:22px;height:22px;border-radius:50%;background:conic-gradient(${T.greenBright} calc(var(--p)*1%),rgba(255,255,255,.15) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pt-wiz-pill-ring::after{content:"";width:16px;height:16px;border-radius:50%;background:#111}
+.pt-wiz-pill-cnt{position:absolute;font-size:.6rem;font-weight:800;color:#fff;z-index:1}
+.pt-wiz-sheet-bd{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:98;opacity:0;transition:opacity .25s}
+.pt-wiz-sheet-bd.open{display:block;opacity:1}
+.pt-wiz-sheet{position:fixed;left:0;right:0;bottom:0;z-index:99;background:#fff;border-radius:18px 18px 0 0;max-height:78vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .28s cubic-bezier(.22,1,.36,1);box-shadow:0 -12px 40px rgba(0,0,0,.18)}
+.pt-wiz-sheet.open{transform:translateY(0)}
+.pt-wiz-sheet-handle{padding:10px 0 6px;display:flex;justify-content:center;flex-shrink:0}
+.pt-wiz-sheet-handle span{width:36px;height:4px;border-radius:100px;background:#E0E0DB}
+.pt-wiz-sheet-h{padding:6px 20px 14px;border-bottom:1px solid #E0E0DB;flex-shrink:0}
+.pt-wiz-sheet-h-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pt-wiz-sheet-title{font-size:.92rem;font-weight:800;color:#111;letter-spacing:-.01em}
+.pt-wiz-sheet-close{background:none;border:none;padding:6px;margin:-6px;cursor:pointer;color:#6B7280;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.pt-wiz-sheet-close:hover{background:#F5F5F2}
+.pt-wiz-sheet-sub{font-size:.75rem;color:#6B7280;margin-bottom:8px}
+.pt-wiz-sheet-bar{height:6px;background:#E0E0DB;border-radius:100px;overflow:hidden}
+.pt-wiz-sheet-bar>div{height:100%;background:${T.greenBright};border-radius:100px;transition:width .4s ease}
+.pt-wiz-sheet-body{flex:1;overflow-y:auto;padding:12px 16px 24px;-webkit-overflow-scrolling:touch}
+
+@media(max-width:1023px){
+  .pt-layout{flex-direction:column}
+  .pt-sb{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease;width:280px}
+  .pt-sb.pt-sb-open{transform:translateX(0)}
+  .pt-mob-topbar{display:flex}
+  .pt-ast{display:none}
+  .pt-wiz-pill{display:inline-flex}
+  .pt-mh{padding:20px 20px 0}
+  .pt-mh-line{margin:16px 20px 0}
+  .pt-mb{padding:16px 20px 80px}
+  .pt-hbtns{flex-wrap:wrap}
+}
+
 @media(max-width:767px){
   .pt-layout{flex-direction:column}
   .pt-sb{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
@@ -3732,6 +3769,64 @@ function Portal({session,onLogout}){
         <div className="pt-wiz-cbadge">{wizardDoneCount} von {wizardTotal}</div>
       </div>}
     </aside>}
+    {/* Floating Progress-Pill + Bottom-Sheet (Tablet & Mobile) */}
+    {!wizardAllDone&&order&&<>
+      <button className="pt-wiz-pill" onClick={()=>setPtWizOpen(true)} aria-label="Einrichtungsassistent öffnen" style={{"--p":Math.round(wizardDoneCount/wizardTotal*100)}}>
+        <span className="pt-wiz-pill-ring"><span className="pt-wiz-pill-cnt">{wizardDoneCount}</span></span>
+        <span>{wizardDoneCount}/{wizardTotal} erledigt</span>
+      </button>
+      <div className={`pt-wiz-sheet-bd${ptWizOpen?" open":""}`} onClick={()=>setPtWizOpen(false)}/>
+      <div className={`pt-wiz-sheet${ptWizOpen?" open":""}`} role="dialog" aria-label="Einrichtungsassistent">
+        <div className="pt-wiz-sheet-handle" onClick={()=>setPtWizOpen(false)}><span/></div>
+        <div className="pt-wiz-sheet-h">
+          <div className="pt-wiz-sheet-h-top">
+            <div className="pt-wiz-sheet-title">Einrichtungsassistent</div>
+            <button className="pt-wiz-sheet-close" onClick={()=>setPtWizOpen(false)} aria-label="Schließen">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div className="pt-wiz-sheet-sub">{wizardDoneCount} von {wizardTotal} Pflichtschritten erledigt</div>
+          <div className="pt-wiz-sheet-bar"><div style={{width:`${Math.round(wizardDoneCount/wizardTotal*100)}%`}}/></div>
+        </div>
+        <div className="pt-wiz-sheet-body">
+          {wizardSteps.map((step,idx)=>{
+            const isCurrent=idx===wizardCurrentIdx;
+            const isLast=idx===wizardSteps.length-1;
+            return(<div key={idx} className="pt-wiz-step">
+              {!isLast&&<div className={`pt-wiz-line ${step.done?"done":isCurrent?"current":"pending"}`}/>}
+              <button className="pt-ast-item" onClick={()=>{setPtWizOpen(false);nav(step.page);}} style={{paddingLeft:0}}>
+                <div className={`pt-wiz-num ${step.done?"done":isCurrent?"current":"pending"}`}>
+                  {step.done?<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>:<span>{idx+1}</span>}
+                </div>
+                <span style={{fontSize:".88rem",fontWeight:isCurrent?700:500,color:step.done?"#9CA3AF":isCurrent?"#111":"#6B7280"}}>{step.label}</span>
+              </button>
+              {isCurrent&&<div className="pt-wiz-curr">
+                <div className="pt-wiz-curr-desc">{step.desc}</div>
+                <button className="pt-wiz-curr-btn" onClick={()=>{setPtWizOpen(false);nav(step.page);}}>Jetzt ausfüllen {"→"}</button>
+              </div>}
+            </div>);
+          })}
+          {wizardOptional.length>0&&<>
+            <div style={{fontSize:".7rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:".08em",padding:"18px 0 8px"}}>Optional</div>
+            {wizardOptional.map((item,idx)=>{
+              const needsReview=!item.done&&item.label.includes("prüfen")&&!item.warn;
+              return <div key={idx}>
+                <button className="pt-ast-item" onClick={()=>{setPtWizOpen(false);nav(item.page);}} style={{paddingLeft:0}}>
+                  <div className={`pt-ast-ck${item.done?" done":""}`} style={item.warn?{background:T.amberLight,borderColor:T.amberBorder}:undefined}>
+                    {item.warn
+                      ?<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="3"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      :<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                  </div>
+                  <span className={`pt-ast-label${item.done?" done":""}`} style={item.warn?{color:T.amberText,fontWeight:600}:undefined}>{item.label}</span>
+                  {needsReview&&<span style={{fontSize:".62rem",padding:"1px 6px",borderRadius:100,background:T.amberLight,color:T.amberText,fontWeight:600,marginLeft:4,flexShrink:0}}>prüfen</span>}
+                </button>
+                {(needsReview||item.warn)&&item.desc&&<div style={{paddingLeft:28,marginTop:-4,marginBottom:10,fontSize:".78rem",color:item.warn?T.amberText:T.textMuted,lineHeight:1.5}}>{item.desc}</div>}
+              </div>;
+            })}
+          </>}
+        </div>
+      </div>
+    </>}
   </div>);
 }
 

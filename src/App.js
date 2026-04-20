@@ -1620,6 +1620,7 @@ function Portal({session,onLogout}){
   const askDelete=(label,onConfirm)=>setConfirmDel({label,onConfirm});
   const[cropData,setCropData]=useState(null);
   const[dragOverAbout,setDragOverAbout]=useState(false);
+  const[dragOverGalerie,setDragOverGalerie]=useState(false);
 
   useEffect(()=>{
     if(!supabase||!session?.user?.id)return;
@@ -1797,6 +1798,11 @@ function Portal({session,onLogout}){
   const uploadBlob=async(key,blob)=>{
     if(!session?.user?.id){showToast("Nicht eingeloggt — bitte neu anmelden");return;}
     if(!supabase){showToast("Verbindungsfehler");return;}
+    // Upload-Validierung: Max-Size + Whitelist
+    const MAX_SIZE=10*1024*1024; // 10 MB
+    const ALLOWED=["image/png","image/jpeg","image/jpg","image/webp","image/svg+xml","image/gif","application/pdf"];
+    if(blob?.size>MAX_SIZE){showToast("Datei zu gross (max. 10 MB)");return;}
+    if(blob?.type&&!ALLOWED.includes(blob.type)){showToast("Format nicht unterstützt (nur JPG/PNG/WebP/SVG/PDF)");return;}
     setUploading(u=>({...u,[key]:true}));
     try{
       // Format aus Blob-Type ableiten — Logos bleiben PNG/SVG/WebP (Transparenz!)
@@ -2318,6 +2324,11 @@ function Portal({session,onLogout}){
   .pt-mh-line{margin:16px 20px 0}
   .pt-mb{padding:16px 20px 80px}
   .pt-hbtns{flex-wrap:wrap}
+  /* Design-Bereich: 3-spaltige Grids auf 2, auf Mobile auf 1 */
+  .pt-stil-grid,.pt-color-grid,.pt-font-grid{grid-template-columns:1fr 1fr !important}
+}
+@media(max-width:640px){
+  .pt-stil-grid,.pt-color-grid,.pt-font-grid,.pt-addr-grid,.pt-logo-preview,.pt-impres-grid,.pt-fakten-grid,.pt-about-grid{grid-template-columns:1fr !important}
 }
 
 @media(max-width:767px){
@@ -2484,6 +2495,11 @@ function Portal({session,onLogout}){
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>{savedAgo}
                 </>}
               </div>}
+              {/* Preview-Link: immer erreichbar, auch wenn Kunde auf einer Unterseite ist */}
+              {order&&sub&&<a href={`https://sitereadyprototype.pages.dev/s/${sub}`} target="_blank" rel="noreferrer" title="Ihre Website im neuen Tab öffnen" style={{display:"inline-flex",alignItems:"center",gap:7,fontSize:".78rem",fontWeight:700,color:"#fff",padding:"6px 14px",background:"#111",borderRadius:100,textDecoration:"none",whiteSpace:"nowrap"}}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Website ansehen
+              </a>}
             </div>
           </div>
         </div>
@@ -3171,7 +3187,7 @@ function Portal({session,onLogout}){
               {/* Stil wechseln */}
               <div style={{marginBottom:24}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
                   {Object.entries(STYLES_MAP).map(([key,st])=>{const active=order.stil===key;return<button key={key} onClick={()=>{upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));}} style={{padding:"14px 16px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
                     <div style={{width:28,height:28,borderRadius:6,background:st.heroGradient,marginBottom:10}}/>
                     <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{st.label}</div>
@@ -3723,7 +3739,11 @@ function Portal({session,onLogout}){
           });
         };
         return(
-          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+          <div
+            style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${dragOverGalerie?T.accent:T.bg3}`,boxShadow:T.sh1,transition:"border-color .15s",position:"relative"}}
+            onDragOver={canAdd?e=>{e.preventDefault();if(!dragOverGalerie)setDragOverGalerie(true);}:undefined}
+            onDragLeave={canAdd?e=>{if(!e.currentTarget.contains(e.relatedTarget))setDragOverGalerie(false);}:undefined}
+            onDrop={canAdd?e=>{e.preventDefault();setDragOverGalerie(false);if(e.dataTransfer.files?.length)uploadGalerie(e.dataTransfer.files);}:undefined}>
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,marginBottom:4,flexWrap:"wrap"}}>
               <div>
                 <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
@@ -3746,8 +3766,15 @@ function Portal({session,onLogout}){
                     <button onClick={()=>deleteGalerieItem(i)} title="Foto entfernen" style={{position:"absolute",top:6,right:6,width:24,height:24,border:"none",borderRadius:"50%",background:"rgba(0,0,0,.6)",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{"×"}</button>
                   </div>)}
                 </div>
-              </>:<div style={{padding:"20px 16px",background:T.bg,borderRadius:T.rSm,textAlign:"center",fontSize:".78rem",color:T.textMuted}}>Noch keine Galerie-Fotos. Klicken Sie oben auf „Fotos hinzufügen".</div>}
+              </>:<div style={{padding:"28px 20px",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+                <div style={{fontSize:"1.8rem",marginBottom:8}}>📷</div>
+                <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Fotos</div>
+                <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Klicken Sie oben auf „Fotos hinzufügen" oder ziehen Sie Bilder direkt hierher.</div>
+              </div>}
             </div>
+            {dragOverGalerie&&<div style={{position:"absolute",inset:0,background:"rgba(143,163,184,.12)",borderRadius:T.r,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",border:`2.5px dashed ${T.accent}`}}>
+              <div style={{fontSize:".9rem",fontWeight:700,color:T.accent,background:"#fff",padding:"10px 16px",borderRadius:T.rSm}}>Hier loslassen zum Hochladen</div>
+            </div>}
           </div>
         );})()}
       </div>)}

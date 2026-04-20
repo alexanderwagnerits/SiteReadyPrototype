@@ -43,6 +43,17 @@ export async function onRequestGet({params, env}) {
   let html = rows[0].website_html;
   const o = rows[0];
 
+  // Branche -> Gruppe (fuer Labels, CTA-Texte, etc.)
+  const BRANCHE_ZU_GRUPPE = {
+    elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",baumeister:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",fahrradwerkstatt:"handwerk",erdbau:"handwerk",
+    friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",
+    restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",winzer:"gastro",
+    arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",heilpraktiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",osteopath:"gesundheit",lebensberater:"gesundheit",
+    steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",unternehmensberater:"dienstleistung",dolmetscher:"dienstleistung",druckerei:"dienstleistung",sicherheitsdienst:"dienstleistung",
+    fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",coach:"bildung",
+  };
+  const brGruppeGlobal = BRANCHE_ZU_GRUPPE[o.branche] || "";
+
   // ── Indexing-Flip: nur Live-Kunden werden indexiert, Trial/Beta bleibt noindex ──
   if (o.status === "live") {
     html = html.replace(
@@ -485,15 +496,8 @@ export async function onRequestGet({params, env}) {
     const ctaBtnShadow = isModern ? ";box-shadow:0 4px 16px rgba(0,0,0,.15)" : "";
     const ctaH2Weight = isElegant ? "500" : "800";
     const ctaPOpacity = isElegant ? ".5" : ".7";
-    // Branchenspezifische CTA-Texte (Kunde kann im Portal überschreiben)
-    const brGruppe = {
-      elektro:"handwerk",installateur:"handwerk",maler:"handwerk",tischler:"handwerk",fliesenleger:"handwerk",schlosser:"handwerk",dachdecker:"handwerk",zimmerei:"handwerk",maurer:"handwerk",bodenleger:"handwerk",glaser:"handwerk",gaertner:"handwerk",klima:"handwerk",reinigung:"handwerk",baumeister:"handwerk",kfz:"handwerk",aufsperrdienst:"handwerk",hafner:"handwerk",raumausstatter:"handwerk",goldschmied:"handwerk",schneider:"handwerk",rauchfangkehrer:"handwerk",schaedlingsbekaempfung:"handwerk",fahrradwerkstatt:"handwerk",erdbau:"handwerk",
-      friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",hundesalon:"kosmetik",
-      restaurant:"gastro",cafe:"gastro",baeckerei:"gastro",catering:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",fleischerei:"gastro",winzer:"gastro",
-      arzt:"gesundheit",zahnarzt:"gesundheit",physiotherapie:"gesundheit",psychotherapie:"gesundheit",tierarzt:"gesundheit",apotheke:"gesundheit",optiker:"gesundheit",heilpraktiker:"gesundheit",ergotherapie:"gesundheit",logopaedie:"gesundheit",energetiker:"gesundheit",hebamme:"gesundheit",diaetologe:"gesundheit",hoerakustiker:"gesundheit",zahntechnik:"gesundheit",heilmasseur:"gesundheit",osteopath:"gesundheit",lebensberater:"gesundheit",
-      steuerberater:"dienstleistung",rechtsanwalt:"dienstleistung",fotograf:"dienstleistung",versicherung:"dienstleistung",immobilien:"dienstleistung",hausverwaltung:"dienstleistung",umzug:"dienstleistung",eventplanung:"dienstleistung",florist:"dienstleistung",architekt:"dienstleistung",it_service:"dienstleistung",werbeagentur:"dienstleistung",bestattung:"dienstleistung",notar:"dienstleistung",finanzberater:"dienstleistung",reisebuero:"dienstleistung",innenarchitekt:"dienstleistung",textilreinigung:"dienstleistung",unternehmensberater:"dienstleistung",dolmetscher:"dienstleistung",druckerei:"dienstleistung",sicherheitsdienst:"dienstleistung",
-      fahrschule:"bildung",nachhilfe:"bildung",musikschule:"bildung",trainer:"bildung",yoga:"bildung",hundeschule:"bildung",tanzschule:"bildung",reitschule:"bildung",schwimmschule:"bildung",coach:"bildung",
-    }[o.branche] || "";
+    // Branchengruppe fuer CTA-Text-Defaults
+    const brGruppe = brGruppeGlobal;
     const ctaBranch = {
       // Handwerk
       elektro:               {h:"Strom-Probleme? Wir helfen sofort",          t:"Sichere Elektroinstallationen vom Fachbetrieb — jetzt anfragen."},
@@ -699,8 +703,21 @@ export async function onRequestGet({params, env}) {
   // Vertrauen & Referenzen — Logos + optionale Text-Einträge
   if (showPartner && html.includes("<!-- PARTNER -->")) {
     const pVariant = v.partner; // "gross" | "einzeilig" | "zweizeilig"
-    const refCount = partnerItems.filter(p => p.typ === "referenz").length;
-    const labelText = refCount > partnerItems.length / 2 ? "Vertrauen &amp; Referenzen" : "Partner &amp; Zertifizierungen";
+    // Label je nach Branchengruppe — passt Tonalitaet an (Handwerk vs. Gastro vs. Gesundheit etc.)
+    const PARTNER_LABEL = {
+      handwerk:       "Partner &amp; Zertifikate",
+      gastro:         "Lieferanten &amp; Auszeichnungen",
+      gesundheit:     "Kassen &amp; Fachgesellschaften",
+      kosmetik:       "Marken &amp; Zertifikate",
+      dienstleistung: "Kunden &amp; Partner",
+      bildung:        "Partner &amp; Kooperationen",
+      handel:         "Marken &amp; Lieferanten",
+      tourismus:      "Partner &amp; Auszeichnungen",
+      kultur:         "Foerderer &amp; Partner",
+      mobilitaet:     "Partner &amp; Zertifikate",
+      agrar:          "Abnehmer &amp; Partner",
+    };
+    const labelText = PARTNER_LABEL[brGruppeGlobal] || "Partner &amp; Referenzen";
 
     // Helper: Logo optional in <a> wickeln wenn Link vorhanden
     const wrapLogo = (p, imgHtml) => p.link

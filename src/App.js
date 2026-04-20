@@ -938,6 +938,16 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
 
 /* ═══ FORM COMPONENTS (unified light premium) ═══ */
 // Input-Validatoren (zentral — fuer Field.validate Prop)
+// Zielgruppen-Wort pro Branche (Gaeste fuer Gastro, Patienten fuer Gesundheit, etc.)
+const ZIELGRUPPE_WORT={
+  restaurant:"Gäste",cafe:"Gäste",baeckerei:"Kunden",catering:"Gäste",bar:"Gäste",heuriger:"Gäste",imbiss:"Gäste",fleischerei:"Kunden",pizzeria:"Gäste",eissalon:"Gäste",vinothek:"Gäste",winzer:"Kunden",
+  arzt:"Patienten",zahnarzt:"Patienten",physiotherapie:"Patienten",psychotherapie:"Klienten",tierarzt:"Patienten",ergotherapie:"Patienten",logopaedie:"Patienten",hebamme:"Patientinnen",heilmasseur:"Klienten",osteopath:"Patienten",heilpraktiker:"Klienten",energetiker:"Klienten",lebensberater:"Klienten",
+  rechtsanwalt:"Mandanten",notar:"Mandanten",steuerberater:"Mandanten",finanzberater:"Klienten",unternehmensberater:"Klienten",
+  fahrschule:"Fahrschüler",nachhilfe:"Schüler",musikschule:"Schüler",yoga:"Teilnehmer",tanzschule:"Teilnehmer",reitschule:"Reiter",schwimmschule:"Schwimmer",coach:"Klienten",trainer:"Teilnehmer",hundeschule:"Hundehalter",
+  immobilien:"Klienten",hausverwaltung:"Eigentümer",versicherung:"Kunden",
+};
+const kundenWort=branche=>ZIELGRUPPE_WORT[branche]||"Kunden";
+
 const VALIDATORS={
   tel:v=>!v||/^[+\d][+\d\s()\-./]{4,}$/.test(v.trim())?null:"Bitte gültige Telefonnummer (z. B. +43 1 234 56 78)",
   url:v=>!v||/^https?:\/\/[^\s]+\.[^\s]+/.test(v.trim())?null:"Bitte vollständigen Link eingeben (mit https://)",
@@ -1949,7 +1959,16 @@ function Portal({session,onLogout}){
     partner:!!order.partner?.some(p=>p&&p.name),
     design:true,
     medien:!!(assetUrls.logo||assetUrls.hero),
-    impressum:!!(order.unternehmensform||order.uid_nummer),
+    impressum:(()=>{
+      if(!order.unternehmensform)return false;
+      const uf=order.unternehmensform;
+      // Verein: ZVR-Zahl ist Pflicht
+      if(uf==="verein")return !!(order.zvr_zahl&&order.vertretungsorgane);
+      // Firmenbuch-Formen: Firmenbuchnummer Pflicht
+      if(["eu","gmbh","og","kg","ag"].includes(uf))return !!(order.firmenbuchnummer&&order.firmenbuchgericht);
+      // Einzelperson/andere: mindestens Vorname+Nachname
+      return !!(order.vorname&&order.nachname);
+    })(),
   }:{};
   // Wizard: Labels passen den Daten-Stand UND den Sichtbarkeits-Stand der Kunden-
   // Website wider. Default-sichtbare Bereiche (FAQ, Fakten, Partner, Galerie)
@@ -1982,9 +2001,9 @@ function Portal({session,onLogout}){
     {label:"Firmenname & Beschreibung prüfen",
      desc:"Diese Texte stehen ganz oben auf Ihrer Website. Bitte prüfen und bei Bedarf anpassen.",
      done:!!(order.firmenname&&order.kurzbeschreibung),page:"hero"},
-    {label:(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag)?"Merkmale prüfen":"Merkmale angeben",
+    {label:(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag||order.spezialisierung)?"Besonderheiten prüfen":"Besonderheiten angeben",
      desc:(order.notdienst||order.meisterbetrieb)?"Ihre Merkmale wurden übernommen. Prüfen Sie ob alles stimmt.":"Sind Sie Meisterbetrieb? Bieten Sie Notdienst oder kostenlosen Kostenvoranschlag? Diese Angaben erscheinen als Badges.",
-     done:!!(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag),page:"branchenfeatures"},
+     done:!!(order.notdienst||order.meisterbetrieb||order.kostenvoranschlag||order.zertifiziert||order.kassenvertrag||order.spezialisierung),page:"branchenfeatures"},
     {label:isAiGen("leistungen_beschreibungen")?aiTag+"Leistungstexte prüfen":"Leistungen prüfen",
      desc:isAiGen("leistungen_beschreibungen")?"Wir haben Beschreibungen für Ihre Leistungen erstellt. Bitte lesen Sie diese durch und passen Sie sie an. Sie können auch Preise und Fotos ergänzen.":"Ihre Leistungen werden als Karten auf der Website angezeigt. Prüfen Sie die Texte und ergänzen Sie Preise oder Fotos.",
      done:!!(order.leistungen?.length>0),page:"leistungen"},
@@ -1992,8 +2011,11 @@ function Portal({session,onLogout}){
      desc:isAiGen("text_ueber_uns")?"Der Vorstellungstext wurde automatisch erstellt. Lesen Sie ihn durch und machen Sie ihn persönlicher. Hier können Sie auch Ihr Team und Fotos hinzufügen.":"Über-uns Text und Vorteile prüfen. Hier können Sie auch Ihr Team und Fotos hinzufügen.",
      done:!!order.text_ueber_uns,page:"ueberuns"},
     {label:"Kontaktdaten prüfen",
-     desc:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps.",
+     desc:"Adresse und Telefon erscheinen im Kontaktbereich und in Google Maps.",
      done:!!(order.adresse&&order.telefon),page:"kontakt"},
+    {label:order.oeffnungszeiten||order.oeffnungszeiten_custom?"Öffnungszeiten prüfen":"Öffnungszeiten angeben",
+     desc:"Wann sind Sie erreichbar? Erscheinen prominent im Kontaktbereich — entscheidend für Anrufe.",
+     done:!!(order.oeffnungszeiten||order.oeffnungszeiten_custom),page:"kontakt"},
   ]:[];
   const wizardOptional=order?[
     {label:"Design anpassen",
@@ -2932,7 +2954,7 @@ function Portal({session,onLogout}){
         </div>}
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
+          <SectionHeader label="Häufige Fragen" desc={`Fragen und Antworten, die Ihre ${kundenWort(order.branche)} häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website.`} aiField="faq"/>
           <VisibilityToggle field="faq" labelOn="FAQ erscheint auf Ihrer Website" labelOff="FAQ wird nicht angezeigt"/>
           <div style={{opacity:order.sections_visible?.faq===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const incompleteCount=(order.faq||[]).filter(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort)).length;return incompleteCount>0&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
@@ -2949,7 +2971,7 @@ function Portal({session,onLogout}){
           {!(order.faq||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
             <div style={{fontSize:"1.8rem",marginBottom:8}}>❓</div>
             <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Fragen</div>
-            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Beantworten Sie die Fragen, die Ihre Kunden immer wieder stellen — spart Telefonate und bringt Vertrauen.</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Beantworten Sie die Fragen, die Ihre {kundenWort(order.branche)} immer wieder stellen — spart Telefonate und bringt Vertrauen.</div>
           </div>}
           <div style={{display:"flex",gap:8,marginTop:12}}>
             <button onClick={()=>{const arr=[...(order.faq||[]),{frage:"",antwort:""}];upOrder("faq")(arr);}} style={{flex:1,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Frage hinzufügen</button>

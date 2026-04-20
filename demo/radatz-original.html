@@ -1,17 +1,23 @@
-/**
- * SiteReady — Unified Template v2
- * Rewritten to match finalized Stil-Mockups (Klassisch/Modern/Elegant).
- * One template, 3 styles via CSS class on <body>.
- * Style is applied serve-time via <body class="stil-{name}">.
- */
-
-export function buildCss(data) {
-  const {
-    primary, accent, bg, sep,
-    borderRadius, borderRadiusLg, fontFamily,
-  } = data;
-
-  return `<style>
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Seit 1962 beliefert das Familienunternehmen Radatz die Wienerinnen und Wiener mit etwas, das man nicht kopieren kann: den guten Geschmack Wiens. Guter Gesc">
+<meta property="og:title" content="Radatz GmbH. – Fleischerei in Wien">
+<meta property="og:description" content="Seit 1962 beliefert das Familienunternehmen Radatz die Wienerinnen und Wiener mit etwas, das man nicht kopieren kann: den guten Geschmack Wiens. Guter Gesc">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sitereadyprototype.pages.dev/s/radatz-gmbh">
+<meta property="og:image" content="https://brulvtqeazkgcxkimdve.supabase.co/storage/v1/object/public/customer-assets/placeholders/10615d4c-34ac-44fc-a5b2-8ca192341a1a/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://sitereadyprototype.pages.dev/s/radatz-gmbh">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"></noscript>
+<title>Radatz GmbH. – Fleischerei in Wien</title>
+<style>
 
 /* ═══════════════════════════════════════════════════════
    RESET & BASE
@@ -19,16 +25,16 @@ export function buildCss(data) {
 *{margin:0;padding:0;box-sizing:border-box}
 a,button,input,select,textarea{touch-action:manipulation}
 :root{
---primary:${primary};
---accent:${accent};
---bg:${bg};
---sep:${sep};
+--primary:#191e1f;
+--accent:#0E7490;
+--bg:#f9fafa;
+--sep:#e7e9e9;
 --text:#1e293b;
 --textMuted:#475569;
 --white:#fffffe;
---r:${borderRadius || "4px"};
---rLg:${borderRadiusLg || "6px"};
---font:${fontFamily || "'Inter',system-ui,-apple-system,sans-serif"};
+--r:12px;
+--rLg:16px;
+--font:'Plus Jakarta Sans',system-ui,sans-serif;
 --fontHeading:var(--font);
 --mono:'JetBrains Mono',monospace;
 --maxW:1100px;
@@ -40,9 +46,9 @@ a,button,input,select,textarea{touch-action:manipulation}
 .stil-modern{--text:#18181b;--textMuted:#71717a;--fontHeading:'Space Grotesk','Plus Jakarta Sans',system-ui,sans-serif;--maxW:1140px;--sectionY:100px}
 .stil-elegant{--text:#2c2620;--textMuted:#6b6058;--white:#fdfbf7;--fontHeading:'Cormorant Garamond',Georgia,serif;--maxW:1060px;--sectionY:100px}
 
-html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:hidden}
 h1,h2,h3,.s-h2{font-family:var(--fontHeading)}
-body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;-webkit-font-smoothing:antialiased;background:var(--white);overflow-x:clip;max-width:100vw}
+body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;-webkit-font-smoothing:antialiased;background:var(--white);overflow-x:hidden;max-width:100vw}
 .stil-elegant body,.stil-elegant{line-height:1.8;letter-spacing:-.01em}
 img{max-width:100%;display:block}
 a{color:inherit}
@@ -68,70 +74,6 @@ a{color:inherit}
 .stil-elegant .fade-up,.stil-elegant .sr-fade{transform:translateY(12px);transition-duration:.8s}
 @media(prefers-reduced-motion:reduce){.fade-up,.sr-fade{opacity:1;transform:none;transition:none}.sr-grain::after{animation:none}}
 @media(max-width:768px){.sr-grain::after{animation:none}}
-
-/* Button-Hover: Pfeil-Slide */
-.btn{position:relative;transition:transform .28s cubic-bezier(.22,1,.36,1),box-shadow .28s cubic-bezier(.22,1,.36,1)}
-.btn::after{content:"\\2192";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s cubic-bezier(.22,1,.36,1),transform .28s cubic-bezier(.22,1,.36,1),margin-left .28s cubic-bezier(.22,1,.36,1);font-weight:600}
-.btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
-.btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
-@media(prefers-reduced-motion:reduce){.btn,.btn::after{transition:none}.btn:hover{transform:none}}
-
-/* Ablauf: Steps nacheinander einblenden */
-.sr-ablauf-h > div:not(.sr-ablauf-arrow){opacity:0;transform:translateY(14px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
-.sr-ablauf-h > div:not(.sr-ablauf-arrow) > div:first-child{transform:scale(.2);transition:transform .65s cubic-bezier(.34,1.56,.64,1)}
-.sr-ablauf-h.sr-ablauf-play > div:not(.sr-ablauf-arrow){opacity:1;transform:none}
-.sr-ablauf-h.sr-ablauf-play > div:not(.sr-ablauf-arrow) > div:first-child{transform:scale(1)}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(1){transition-delay:0ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(3){transition-delay:190ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(5){transition-delay:380ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(7){transition-delay:570ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(1) > div:first-child{transition-delay:110ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(3) > div:first-child{transition-delay:300ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(5) > div:first-child{transition-delay:490ms}
-.sr-ablauf-h.sr-ablauf-play > div:nth-child(7) > div:first-child{transition-delay:680ms}
-.sr-ablauf-h .sr-ablauf-arrow{opacity:0;transition:opacity .45s ease}
-.sr-ablauf-h.sr-ablauf-play .sr-ablauf-arrow:nth-child(2){transition-delay:240ms;opacity:1}
-.sr-ablauf-h.sr-ablauf-play .sr-ablauf-arrow:nth-child(4){transition-delay:430ms;opacity:1}
-.sr-ablauf-h.sr-ablauf-play .sr-ablauf-arrow:nth-child(6){transition-delay:620ms;opacity:1}
-@media(prefers-reduced-motion:reduce){.sr-ablauf-h *{opacity:1 !important;transform:none !important;transition:none !important}}
-
-/* Ueber-uns Vorteile: staggered reveal + Check-Kreis Pop */
-.ueber-vorteile > div{opacity:0;transform:translateX(-10px);transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1)}
-.ueber-vorteile > div > div:first-child{transform:scale(.2);transition:transform .55s cubic-bezier(.34,1.56,.64,1)}
-.ueber-vorteile.ueber-vorteile-play > div{opacity:1;transform:none}
-.ueber-vorteile.ueber-vorteile-play > div > div:first-child{transform:scale(1)}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(1){transition-delay:0ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(2){transition-delay:120ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(3){transition-delay:240ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(4){transition-delay:360ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(5){transition-delay:480ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(6){transition-delay:600ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(7){transition-delay:720ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(8){transition-delay:840ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(1) > div:first-child{transition-delay:70ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(2) > div:first-child{transition-delay:190ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(3) > div:first-child{transition-delay:310ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(4) > div:first-child{transition-delay:430ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(5) > div:first-child{transition-delay:550ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(6) > div:first-child{transition-delay:670ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(7) > div:first-child{transition-delay:790ms}
-.ueber-vorteile.ueber-vorteile-play > div:nth-child(8) > div:first-child{transition-delay:910ms}
-@media(prefers-reduced-motion:reduce){.ueber-vorteile *{opacity:1 !important;transform:none !important;transition:none !important}}
-
-/* Hero Content Staggered Reveal (Pageload) */
-.hero-sub,.hero h1,.hero-accent-line,.hero-desc,.hero-btns,.hero-split-img{opacity:0;transform:translateY(14px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
-body.hero-play .hero-sub{opacity:1;transform:none;transition-delay:0ms}
-body.hero-play .hero h1{opacity:1;transform:none;transition-delay:110ms}
-body.hero-play .hero-accent-line{opacity:1;transform:none;transition-delay:220ms}
-body.hero-play .hero-desc{opacity:1;transform:none;transition-delay:330ms}
-body.hero-play .hero-btns{opacity:1;transform:none;transition-delay:440ms}
-body.hero-play .hero-split-img{opacity:1;transform:none;transition-delay:180ms}
-@media(prefers-reduced-motion:reduce){.hero-sub,.hero h1,.hero-accent-line,.hero-desc,.hero-btns,.hero-split-img{opacity:1 !important;transform:none !important;transition:none !important}}
-
-/* Nav-Scroll-Glass */
-#sitenav{transition:background .35s cubic-bezier(.22,1,.36,1),backdrop-filter .35s cubic-bezier(.22,1,.36,1),-webkit-backdrop-filter .35s cubic-bezier(.22,1,.36,1),box-shadow .35s cubic-bezier(.22,1,.36,1)}
-body.nav-scrolled #sitenav{background:color-mix(in srgb,var(--primary) 88%,transparent) !important;-webkit-backdrop-filter:blur(12px) saturate(140%);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 22px rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.08)}
-@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){body.nav-scrolled #sitenav{background:var(--primary) !important}}
 
 /* Grain-Overlay fuer Tiefe (Hero, About) */
 .sr-grain::after{content:'';position:absolute;inset:-50%;width:200%;height:200%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");background-repeat:repeat;pointer-events:none;z-index:0;opacity:.5;animation:sr-grain 8s steps(8) infinite}
@@ -363,7 +305,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-modern .ueber h2{font-size:clamp(1.5rem,3vw,2.2rem)}
 .stil-modern .ueber-vorteile{gap:14px}
 .stil-modern .ueber-vorteile li{padding-left:28px}
-.stil-modern .ueber-vorteile li::before{content:'\\2713';width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;top:0;left:0}
+.stil-modern .ueber-vorteile li::before{content:'\2713';width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;top:0;left:0}
 
 /* About — Elegant: Dash-Separatoren */
 .stil-elegant .ueber h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:500;letter-spacing:-.02em}
@@ -371,7 +313,7 @@ body:not(.stil-modern):not(.stil-elegant) .hero::after{content:'';position:absol
 .stil-elegant .ueber-vorteile{gap:0}
 .stil-elegant .ueber-vorteile li{font-weight:400;opacity:.85;padding:14px 0 14px 24px;border-top:1px solid rgba(255,255,255,.08)}
 .stil-elegant .ueber-vorteile li:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
-.stil-elegant .ueber-vorteile li::before{content:'\\2013';position:absolute;left:0;top:14px;width:auto;height:auto;background:none;color:rgba(255,255,255,.5);font-weight:500;border-radius:0}
+.stil-elegant .ueber-vorteile li::before{content:'\2013';position:absolute;left:0;top:14px;width:auto;height:auto;background:none;color:rgba(255,255,255,.5);font-weight:500;border-radius:0}
 .stil-elegant .ueber-stat-num{font-weight:300}
 .stil-elegant .ueber-stat-label{font-size:.7rem;letter-spacing:.12em}
 
@@ -726,116 +668,191 @@ footer{padding:16px 0!important}
 .ft-grid{gap:16px!important}
 }
 </style>
-`;
+
+
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LocalBusiness","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business","name":"Radatz GmbH.","description":"Seit 1962 beliefert das Familienunternehmen Radatz die Wienerinnen und Wiener mit etwas, das man nicht kopieren kann: den guten Geschmack Wiens. Guter Gesc","url":"https://sitereadyprototype.pages.dev/s/radatz-gmbh","address":{"@type":"PostalAddress","streetAddress":"Radatzweg 1","postalCode":"1010","addressLocality":"Wien","addressCountry":"AT"},"telephone":"+431 666 66 666","email":"kaisekrainer@radatz.at","areaServed":"Wien","openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"12:00"}],"sameAs":["https://facebook.com/radatzgmbh","https://instagram.com/radatz","https://linkedin.com/company/radatz","https://tiktok.com/@radatz"],"makesOffer":[{"@type":"Offer","itemOffered":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-1"}},{"@type":"Offer","itemOffered":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-2"}},{"@type":"Offer","itemOffered":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-3"}},{"@type":"Offer","itemOffered":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-4"}},{"@type":"Offer","itemOffered":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-5"}},{"@type":"Offer","itemOffered":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-6"}}]},{"@type":"Service","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-1","name":"Frischfleisch","description":"Täglich frisch aufgeschnitten und verkaufsfertig. Vom Rind, Schwein und Geflügel – direkt aus der Auslage.","provider":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business"},"areaServed":"Wien"},{"@type":"Service","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-2","name":"Wurst & Aufschnitt","description":"Klassische Wiener Wurstwaren nach bewährten Rezepturen. Ein echter Radatz gehört einfach dazu.","provider":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business"},"areaServed":"Wien"},{"@type":"Service","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-3","name":"Catering & Partyplatten","description":"Fertig angerichtete Platten für Ihr Fest – entspannt bestellen, beeindruckend servieren.","provider":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business"},"areaServed":"Wien"},{"@type":"Service","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-4","name":"Grillspezialitäten","description":"Marinierte Spieße, Würstel und Grillsteaks – für den perfekten Abend am Rost.","provider":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business"},"areaServed":"Wien"},{"@type":"Service","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-5","name":"Regionale Produkte","description":"Ausgewählte Produkte aus österreichischer Landwirtschaft, direkt ins Regal der Filiale.","provider":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business"},"areaServed":"Wien"},{"@type":"Service","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#service-6","name":"Vorbestellung","description":"Größere Mengen oder besondere Wünsche einfach vorab bestellen – wir richten alles bereit.","provider":{"@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#business"},"areaServed":"Wien"},{"@type":"FAQPage","@id":"https://sitereadyprototype.pages.dev/s/radatz-gmbh#faq","mainEntity":[{"@type":"Question","name":"Kann ich Partyplatten und Catering vorbestellen?","acceptedAnswer":{"@type":"Answer","text":"Ja, Partyplatten können direkt in der Filiale vorbestellt werden. Bitte mindestens 2 Tage im Voraus anfragen, damit alles frisch vorbereitet wird."}},{"@type":"Question","name":"Woher kommt das Fleisch bei Radatz?","acceptedAnswer":{"@type":"Answer","text":"Radatz bezieht einen Großteil seiner Rohstoffe aus österreichischer Landwirtschaft. Regionale Herkunft ist ein fester Bestandteil unseres Sortiments."}},{"@type":"Question","name":"Gibt es saisonale Grillspezialitäten?","acceptedAnswer":{"@type":"Answer","text":"Ja, das Grillsortiment wechselt je nach Jahreszeit. In der Grillsaison finden Sie eine besonders breite Auswahl an Marinaden, Spießen und Würsteln."}},{"@type":"Question","name":"Sind die Wurstwaren glutenfrei oder für besondere Ernährungsformen geeignet?","acceptedAnswer":{"@type":"Answer","text":"Das variiert je nach Produkt. Für genaue Zutatenangaben wenden Sie sich bitte direkt an das Filialpersonal."}},{"@type":"Question","name":"Wie finde ich die nächste Radatz-Filiale?","acceptedAnswer":{"@type":"Answer","text":"Alle Filialstandorte in Wien finden Sie auf der Radatz-Website. Die meisten Filialen sind auch samstags geöffnet."}}]}]}</script>
+<style>@media(max-width:768px){.sr-nav-logo{height:36px!important;max-width:200px!important}}</style><style>.hero{align-items:center!important}.hero-split-img{margin-top:24px;border-radius:16px;overflow:hidden}.hero-split-img img{width:100%;display:block;border-radius:16px;aspect-ratio:16/9;object-fit:cover}@media(min-width:900px){.hero-inner{display:grid!important;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;padding-top:100px!important;padding-bottom:64px!important}.hero-split-text{grid-column:1}.hero-split-img{grid-column:2;margin-top:0;border-radius:16px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.25)}.hero-split-img img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:16px}.hero h1{font-size:clamp(2.2rem,4vw,3.2rem)!important}}@media(min-width:1200px){.hero-split-img img{aspect-ratio:3/2}}</style><style>.sr-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}@media(max-width:768px){.sr-faq-grid{grid-template-columns:1fr}}</style><style>
+/* CSS Hover-Effekte (statt inline JS — funktioniert auch auf Touch/Keyboard) */
+.sr-card-hover{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease}
+.sr-card-hover:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06)}
+.sr-img-hover{transition:transform .3s}
+.sr-img-hover:hover{transform:scale(1.03)}
+.sr-partner-hover{transition:opacity .2s,filter .2s}
+.sr-partner-hover:hover{opacity:1!important;filter:none!important}
+.sr-social-icon:hover{background:rgba(255,255,255,.25)!important}
+.hero{min-height:92vh;min-height:92svh}
+@media(max-width:768px){
+/* Bewertungen: 3col → 1col */
+.sec-bew-grid{grid-template-columns:1fr!important}
+/* Fakten: bis zu 4col → 2col */
+.sec-fakten [style*="grid-template-columns"]{grid-template-columns:repeat(2,1fr)!important}
+/* Galerie: 3col → 2col */
+.sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
+/* Ablauf horizontal: Arrows verstecken, vertikal stapeln */
+.sr-ablauf-h{flex-direction:column!important;gap:24px!important;align-items:center!important}
+.sr-ablauf-h>div:not(.sr-ablauf-arrow){width:100%!important;max-width:320px}
+.sr-ablauf-h .sr-ablauf-arrow{display:none!important}
+/* Ausfuehrliche Leistungen: Foto-Grid → Stack */
+.sr-leist-grid [style*="grid-template-columns:160px"]{grid-template-columns:1fr!important}
+/* Kompakt Leistungen: 4col → 2col */
+.sr-leist-grid[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}
+/* Kontakt kompakt Cards: 2col → 1col */
+.kontakt .kontakt-grid>div:first-child{grid-template-columns:1fr!important}
+/* Team-Fokus: bis zu 4col → 2col */
+.sr-team-fokus{grid-template-columns:repeat(2,1fr)!important}
+/* Section-Padding verkleinern */
+.sec-faq,.sec-galerie{padding:56px 0!important}
+.sec-fakten,.sec-cta-block{padding:44px 0!important}
+/* Leistungen + Ueber + Kontakt */
+.leist,.ueber,.kontakt{padding:56px 0!important}
 }
-
-export function buildTemplate(data) {
-  const {
-    firmenname, brancheLabel, einsatzgebiet, kurzbeschreibung,
-    heroHeadline,
-    ctaPrimary, ctaPrimaryHref, ctaSecondary,
-    leistungenIntro, preislisteHtml,
-    ueberUnsText, vorteileHtml, oeffnungszeiten,
-    adresseVoll, telDisplay, telHref, email,
-    socialHtml, buchungslinkHtml,
-    metaTitle, metaDesc, siteUrl, fontUrl, fontFamily,
-    primary, accent, bg, sep,
-    kontaktCtaHeadline, kontaktCtaText,
-    borderRadius, borderRadiusLg,
-    stil,
-  } = data;
-
-  // Hero-H1: wenn heroHeadline vorhanden -> Wertversprechen, Firmenname klein als Sub
-  // sonst Firmenname (Fallback fuer alte Orders + wenn kein Headline generiert)
-  const heroH1 = heroHeadline && heroHeadline.trim() ? heroHeadline.trim() : firmenname;
-  const showFirmenSub = !!(heroHeadline && heroHeadline.trim());
-
-  const stilClass = `stil-${stil || "klassisch"}`;
-
-  return `<!DOCTYPE html>
-<html lang="de-AT">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<meta name="description" content="${metaDesc}">
-<meta property="og:title" content="${metaTitle}">
-<meta property="og:description" content="${metaDesc}">
-<meta property="og:type" content="website">
-<meta property="og:url" content="${siteUrl}">
-<meta property="og:image" content="{{OG_IMAGE}}">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="${siteUrl}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${fontUrl}" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="${fontUrl}"></noscript>
-<title>${metaTitle}</title>
-${buildCss(data)}
-</head>
-<body class="${stilClass}">
+@media(max-width:640px){
+.sr-foto-grid{grid-template-columns:1fr 1fr!important}
+.sr-leist-grid{grid-template-columns:1fr!important}
+.sr-leist-grid div p{font-size:.88rem!important;line-height:1.65!important}
+.sr-leist-grid div h3{font-size:.92rem!important}
+.kontakt-form-wrap{margin-bottom:24px}
+/* Fakten: 2col bleibt */
+.sec-fakten [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
+/* Galerie: 2col → 1col */
+.sec-galerie [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+/* Kontakt-Infos Badges: Wrap erlauben */
+.kontakt-infos{gap:6px!important}
+.kontakt-info-item{font-size:.75rem!important;padding:6px 10px!important}
+}
+@media(max-width:480px){
+/* Fakten: 2col → 1col bei sehr schmal + langen Labels */
+.sec-fakten [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+/* Team kompakt: 2col → 1col */
+.sr-team-fokus{grid-template-columns:1fr!important}
+/* Floating CTA kleiner */
+.sr-float-cta{width:52px!important;height:52px!important;font-size:.7rem!important}
+.sr-float-cta svg{width:20px!important;height:20px!important}
+}
+</style><style>.sr-float-cta{position:fixed;bottom:24px;right:24px;z-index:900;width:56px;height:56px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.18);transition:transform .2s,box-shadow .2s,opacity .3s;text-decoration:none;opacity:0;pointer-events:none}.sr-float-cta.visible{opacity:1;pointer-events:auto}.sr-float-cta:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(0,0,0,.25)}@media(max-width:768px){.sr-float-cta{bottom:20px;right:16px;width:52px;height:52px}}</style></head>
+<body class="stil-modern">
 <a href="#leistungen" class="sr-skip">Zum Inhalt springen</a>
-<!-- NAV -->
+<style>
+#sitenav{position:sticky;top:0;z-index:1000;background:var(--primary);transition:box-shadow .3s ease,background .3s ease}
+#sitenav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.18)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:80px;display:flex;align-items:center;justify-content:space-between;transition:height .3s ease}
+#sitenav.scrolled .nav-inner{height:56px}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-link{color:rgba(255,255,255,.85);text-decoration:none;font-size:.88rem;font-weight:500;transition:opacity .2s;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
+.nav-link:hover{opacity:.7}
+.nav-cta{background:var(--accent);color:#fff!important;padding:11px 22px;border-radius:8px;font-weight:700;font-size:.85rem;white-space:nowrap;transition:all .25s;display:inline-flex;align-items:center;min-height:44px}
+.nav-cta:hover{opacity:.85!important}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;min-width:44px;min-height:44px;align-items:center;justify-content:center}
+.hbg-bar{width:24px;height:2px;background:rgba(255,255,255,.9);border-radius:2px;transition:transform .3s ease,opacity .3s ease}
+.hbg.open .hbg-bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hbg.open .hbg-bar:nth-child(2){opacity:0}
+.hbg.open .hbg-bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mob-menu{position:fixed;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:8px 24px 20px;z-index:999;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.mob-menu.open{opacity:1;transform:translateY(0);pointer-events:auto}
+.mob-bd{position:fixed;inset:0;top:68px;background:rgba(0,0,0,.32);z-index:998;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.mob-bd.open{opacity:1;pointer-events:auto}
+.mob-link{display:block;padding:14px 0;font-size:1rem;font-weight:600;color:var(--primary);text-decoration:none;border-bottom:1px solid #f1f5f9}
+.mob-cta{display:block;margin-top:12px;background:var(--accent);color:#fff;text-align:center;padding:15px;border-radius:8px;font-weight:700;font-size:1rem;text-decoration:none}
+@media(max-width:768px){.nav-links{display:none}.hbg{display:flex}}
+</style>
+<nav id="sitenav">
+<div class="nav-inner">
+<a href="#" id="site-nav-logo" class="nav-logo" style="font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-.02em"><img src="https://brulvtqeazkgcxkimdve.supabase.co/storage/v1/object/public/customer-assets/1fc5b83c-614a-4a3b-9068-24cedeb55c8b/logo.png?v=1776701987903" alt="Radatz GmbH. Logo" loading="eager" class="sr-nav-logo" style="height:48px;width:auto;object-fit:contain;display:block;max-width:280px"></a>
+<div class="nav-links">
+<a href="#leistungen" class="nav-link">Leistungen</a>
+<a href="#ueber-uns" class="nav-link">Über uns</a>
+<a href="#kontakt" class="nav-link">Kontakt</a>
+<a href="tel:+43166666666" class="nav-link nav-cta">+431 666 66 666</a>
+</div>
+<button class="hbg" id="hbg" aria-label="Menu">
+<span class="hbg-bar"></span><span class="hbg-bar"></span><span class="hbg-bar"></span>
+</button>
+</div>
+<div class="mob-bd" id="mob-bd"></div>
+<div class="mob-menu" id="mob-menu">
+<a href="#leistungen" class="mob-link">Leistungen</a>
+<a href="#ueber-uns" class="mob-link">Über uns</a>
+<a href="#kontakt" class="mob-link">Kontakt</a>
+<a href="tel:+43166666666" class="mob-cta">+431 666 66 666 &mdash; Jetzt anrufen</a>
+</div>
+</nav>
+<script>
+(function(){
+var nav=document.getElementById('sitenav');
+var btn=document.getElementById('hbg');
+var mob=document.getElementById('mob-menu');
+var bd=document.getElementById('mob-bd');
+var open=false;
+function toggle(v){open=typeof v==='boolean'?v:!open;if(open){mob.classList.add('open');bd.classList.add('open');document.body.style.overflow='hidden';}else{mob.classList.remove('open');bd.classList.remove('open');document.body.style.overflow='';}btn.setAttribute('aria-expanded',open?'true':'false');if(open)btn.classList.add('open');else btn.classList.remove('open');}
+btn.addEventListener('click',function(){toggle();});
+bd.addEventListener('click',function(){toggle(false);});
+document.querySelectorAll('.mob-link,.mob-cta').forEach(function(a){a.addEventListener('click',function(){toggle(false);});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&open)toggle(false);});
+var sc=false;window.addEventListener('scroll',function(){var s=window.scrollY>60;if(s!==sc){sc=s;if(s)nav.classList.add('scrolled');else nav.classList.remove('scrolled');}},{passive:true});
+})();
+</script>
 
 <main id="main">
 <section class="hero sr-grain" id="sr-hero">
-<div class="hero-inner">
-<p class="hero-sub">${showFirmenSub ? `<strong style="color:inherit;font-weight:700">${firmenname}</strong>${einsatzgebiet ? ` · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}` : `${brancheLabel}${einsatzgebiet ? ` · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}`}</p>
-<h1>${heroH1}</h1>
+<div class="hero-inner"><div class="hero-split-text">
+<p class="hero-sub">Fleischerei · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Wien</span></p>
+<h1>Radatz GmbH.</h1>
 <span class="hero-accent-line"></span>
-<p class="hero-desc">${kurzbeschreibung}</p>
+<p class="hero-desc">Seit 1962 beliefert das Familienunternehmen Radatz die Wienerinnen und Wiener mit etwas, das man nicht kopieren kann: den guten Geschmack Wiens. Guter Geschmack hat bei Radatz nämlich viel mit Menschlichkeit und Gemeinschaft zu tun. Radatz ist eine große Familie von Menschen, für die gutes Essen mehr ist als Nahrung. Genuss und Lebensfreude sind für uns ein wesentlicher Ausdruck der Kultur unserer Stadt. 
+
+</p>
 <div class="hero-btns">
-<a href="${ctaPrimaryHref}" class="btn btn-accent">${ctaPrimary}</a>
-<a href="#leistungen" class="btn btn-ghost">${ctaSecondary}</a>
+<a href="tel:+43166666666" class="btn btn-accent">Vorbestellen</a>
+<a href="#leistungen" class="btn btn-ghost">Leistungen ansehen</a>
 </div>
-</div>
+</div><div class="hero-split-img"><img src="https://brulvtqeazkgcxkimdve.supabase.co/storage/v1/object/public/customer-assets/placeholders/10615d4c-34ac-44fc-a5b2-8ca192341a1a/hero.jpg" alt="Radatz GmbH." style="width:100%;display:block" fetchpriority="high"/></div></div>
 </section>
 
-<!-- TRUST -->
 
-<section class="leist" id="leistungen">
+
+<section class="leist" style="background:var(--bg)" id="leistungen">
 <div class="w">
 <div class="leist-head fade-up">
 <div class="leist-label">Leistungen</div>
 <h2>Was wir für Sie tun</h2>
-<p class="leist-intro">${leistungenIntro}</p>
+<p class="leist-intro">Von der Semmel mit Aufschnitt bis zur Grillplatte fürs große Fest – das ist Radatz.</p>
 </div>
-<!-- LEISTUNGEN -->
-${preislisteHtml}
-<!-- LEIST_FOTOS -->
+<div class="sr-leist-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"><div class="sr-fade sr-card-hover" style="border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden"><div style="padding:24px 26px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">Frischfleisch</h3><p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">Täglich frisch aufgeschnitten und verkaufsfertig. Vom Rind, Schwein und Geflügel – direkt aus der Auslage.</p></div></div><div class="sr-fade sr-card-hover" style="border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden"><div style="padding:24px 26px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">Wurst &amp; Aufschnitt</h3><p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">Klassische Wiener Wurstwaren nach bewährten Rezepturen. Ein echter Radatz gehört einfach dazu.</p></div></div><div class="sr-fade sr-card-hover" style="border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden"><div style="padding:24px 26px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">Catering &amp; Partyplatten</h3><p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">Fertig angerichtete Platten für Ihr Fest – entspannt bestellen, beeindruckend servieren.</p></div></div><div class="sr-fade sr-card-hover" style="border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden"><div style="padding:24px 26px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">Grillspezialitäten</h3><p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">Marinierte Spieße, Würstel und Grillsteaks – für den perfekten Abend am Rost.</p></div></div><div class="sr-fade sr-card-hover" style="border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden"><div style="padding:24px 26px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">Regionale Produkte</h3><p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">Ausgewählte Produkte aus österreichischer Landwirtschaft, direkt ins Regal der Filiale.</p></div></div><div class="sr-fade sr-card-hover" style="border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.07);background:#fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;overflow:hidden"><div style="padding:24px 26px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="color:var(--primary,#0f2b5b);font-weight:800;margin:0 0 10px;font-size:1.08rem;letter-spacing:-.02em;line-height:1.3">Vorbestellung</h3><p style="color:var(--textMuted,#64748b);margin:0;font-size:.95rem;line-height:1.7">Größere Mengen oder besondere Wünsche einfach vorab bestellen – wir richten alles bereit.</p></div></div></div>
+
+
 </div>
 </section>
 
-<!-- CTA_BLOCK -->
+<section class="sec-cta-block sr-fade" style="padding:80px 0;background:var(--accent);color:#fff;text-align:center"><div class="w"><h2 style="font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:8px;color:#fff">Qualität, die man schmeckt</h2><p style="font-size:.9rem;opacity:.7;margin-bottom:24px">Frisches Fleisch und Wurstwaren — besuchen Sie uns.</p><a href="#kontakt" class="btn" style="background:#fff;color:var(--accent);font-weight:700;border-radius:100px;padding:14px 36px;font-size:.95rem;text-decoration:none;display:inline-block;box-shadow:0 4px 16px rgba(0,0,0,.15)">Jetzt Kontakt aufnehmen</a></div></section>
 
-<!-- ABLAUF -->
+<section class="sr-fade" style="padding:80px 0;background:var(--bg,#f8fafc)"><div class="w"><div style="text-align:center;margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 8%,transparent);padding:6px 14px;border-radius:100px">So läuft es ab</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Ihr Weg zu uns</h2></div><div class="sr-ablauf-h" style="display:flex;align-items:flex-start;justify-content:center;gap:16px;flex-wrap:wrap"><div style="flex:1;text-align:center;min-width:140px"><div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">1</div><div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">Filiale aufsuchen</div><div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">Besuchen Sie eine Radatz-Filiale in Ihrer Nähe.</div></div><div class="sr-ablauf-arrow" style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div style="flex:1;text-align:center;min-width:140px"><div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">2</div><div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">Beraten lassen</div><div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">Unser Personal hilft bei der Auswahl und gibt Empfehlungen.</div></div><div class="sr-ablauf-arrow" style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div style="flex:1;text-align:center;min-width:140px"><div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">3</div><div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">Vorbestellen bei Bedarf</div><div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">Größere Mengen einfach vorab telefonisch oder persönlich anmelden.</div></div><div class="sr-ablauf-arrow" style="flex-shrink:0;display:flex;align-items:flex-start;padding-top:18px;color:var(--sep,#e2e8f0)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div style="flex:1;text-align:center;min-width:140px"><div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.92rem;margin:0 auto 12px">4</div><div style="font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:6px">Abholen &amp; genießen</div><div style="font-size:.82rem;color:var(--textMuted,#64748b);line-height:1.6">Alles liegt fertig bereit – zum Mitnehmen und sofort Genießen.</div></div></div></div></section>
 
 <section class="ueber sr-grain" id="ueber-uns">
 <div class="w">
-<div class="ueber-grid">
+<div class="ueber-grid ueber-single">
 <div class="fade-up">
 <div class="sec-label">Über uns</div>
-<h2>Über ${firmenname}</h2>
-<p class="ueber-text">{{UEBER_UNS_TEXT}}</p>
-<ul class="ueber-vorteile">{{VORTEILE}}</ul>
+<h2>Über Radatz GmbH.</h2>
+<p class="ueber-text">Seit 1962 ist Radatz ein fester Teil des Wiener Alltags – in den Grätzln, auf den Märkten, bei Festen und am Mittagstisch. Als Familienunternehmen stehen wir dafür, dass gutes Essen die Menschen zusammenbringt. Unsere Wurstwaren und Fleischspezialitäten entstehen nach Rezepturen, die Wien schmecken lassen. Wir kennen unsere Kundschaft seit Generationen und wissen, was auf den Tisch gehört. Radatz ist kein Konzern – sondern ein Stück Wien.</p>
+<ul class="ueber-vorteile"><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div><span style="padding-top:8px">Familienbetrieb seit 1962</span></div><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div><span style="padding-top:8px">Typisch Wiener Rezepturen</span></div><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div><span style="padding-top:8px">Tägliche Frischware</span></div><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div><span style="padding-top:8px">Vorbestellung für Feste</span></div><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:700">&#10003;</div><span style="padding-top:8px">Regionale Herkunft der Rohstoffe</span></div></ul>
 </div>
-<!-- ABOUT_FOTOS -->
+
 </div>
-<!-- TEAM -->
+
 </div>
 </section>
 
-<!-- FAKTEN -->
 
-<!-- GALERIE -->
 
-<!-- PARTNER -->
 
-<!-- BEWERTUNGEN -->
 
-<!-- FAQ -->
 
-<section class="kontakt" id="kontakt">
+
+
+
+<section class="sec-faq sr-fade " style="background:var(--bg);padding:100px 0"><div class="w"><div style="margin-bottom:40px"><div style="display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;background:color-mix(in srgb,var(--accent) 8%,transparent);padding:6px 14px;border-radius:100px">FAQ</div><h2 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em">Häufig gestellte Fragen</h2></div><div class="sr-faq-grid"><div style="border-bottom:1px solid var(--sep)"><button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a0" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">Kann ich Partyplatten und Catering vorbestellen?</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button><div id="sr-faq-a0" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0"><p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">Ja, Partyplatten können direkt in der Filiale vorbestellt werden. Bitte mindestens 2 Tage im Voraus anfragen, damit alles frisch vorbereitet wird.</p></div></div><div style="border-bottom:1px solid var(--sep)"><button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a1" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">Woher kommt das Fleisch bei Radatz?</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button><div id="sr-faq-a1" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0"><p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">Radatz bezieht einen Großteil seiner Rohstoffe aus österreichischer Landwirtschaft. Regionale Herkunft ist ein fester Bestandteil unseres Sortiments.</p></div></div><div style="border-bottom:1px solid var(--sep)"><button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a2" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">Gibt es saisonale Grillspezialitäten?</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button><div id="sr-faq-a2" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0"><p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">Ja, das Grillsortiment wechselt je nach Jahreszeit. In der Grillsaison finden Sie eine besonders breite Auswahl an Marinaden, Spießen und Würsteln.</p></div></div><div style="border-bottom:1px solid var(--sep)"><button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a3" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">Sind die Wurstwaren glutenfrei oder für besondere Ernährungsformen geeignet?</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button><div id="sr-faq-a3" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0"><p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">Das variiert je nach Produkt. Für genaue Zutatenangaben wenden Sie sich bitte direkt an das Filialpersonal.</p></div></div><div style="border-bottom:1px solid var(--sep)"><button class="sr-faq-btn" aria-expanded="false" aria-controls="sr-faq-a4" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 0;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:700;color:var(--primary);text-align:left;line-height:1.5"><span style="flex:1">Wie finde ich die nächste Radatz-Filiale?</span><span class="sr-faq-icon" style="font-size:1.2rem;color:var(--accent);font-weight:300;margin-left:16px;flex-shrink:0">+</span></button><div id="sr-faq-a4" role="region" class="sr-faq-answer" style="max-height:0;overflow:hidden;transition:max-height .3s ease,padding-bottom .3s ease;padding-bottom:0"><p style="font-size:.88rem;color:var(--textMuted);line-height:1.8;margin:0;padding-right:32px">Alle Filialstandorte in Wien finden Sie auf der Radatz-Website. Die meisten Filialen sind auch samstags geöffnet.</p></div></div></div></div></section>
+
+<section class="kontakt" style="background:#fff" id="kontakt">
 <div class="w">
 <div class="kontakt-grid">
 <div class="fade-up">
@@ -843,36 +860,75 @@ ${preislisteHtml}
 <h2>So erreichen Sie uns</h2>
 <div class="kontakt-item">
 <div class="kontakt-item-label">Adresse</div>
-<div class="kontakt-item-value">{{ADRESSE_VOLL}}</div>
+<div class="kontakt-item-value">Radatzweg 1, 1010 Wien</div>
 </div>
 <div class="kontakt-item">
 <div class="kontakt-item-label">Telefon</div>
-<a href="{{TEL_HREF}}" class="kontakt-tel">{{TEL_DISPLAY}}</a>
+<a href="tel:+43166666666" class="kontakt-tel">+431 666 66 666</a>
 </div>
 <div class="kontakt-item">
 <div class="kontakt-item-label">E-Mail</div>
-<a href="mailto:{{EMAIL}}" class="kontakt-email">{{EMAIL}}</a>
+<a href="mailto:kaisekrainer@radatz.at" class="kontakt-email">kaisekrainer@radatz.at</a>
 </div>
 <div class="kontakt-item">
 <div class="kontakt-item-label">Öffnungszeiten</div>
-<div class="kontakt-item-value">{{OEFFNUNGSZEITEN}}</div>
+<div class="kontakt-item-value">Mo–Sa 8:00–12:00</div>
 </div>
-${socialHtml}
+<div class="kontakt-social"><a href="https://facebook.com/radatzgmbh" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="https://instagram.com/radatz" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a><a href="https://linkedin.com/company/radatz" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a><a href="https://tiktok.com/@radatz" target="_blank" rel="noopener" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77 0 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 1 0 5.55 6.29V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75c-.34 0-.68-.03-1.02-.06z"/></svg></a></div>
 </div>
-<div class="fade-up"><!-- MAPS --></div>
+<div class="fade-up"><div style="border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.10);height:100%;min-height:360px"><iframe src="https://maps.google.com/maps?q=Radatzweg%201%2C%201010%2C%20Wien%2C%20%C3%96sterreich&output=embed&hl=de&z=15" width="100%" height="100%" style="border:0;display:block;min-height:360px" allowfullscreen loading="lazy" title="Standort"></iframe></div></div>
 </div>
-<!-- KONTAKT_INFOS -->
+<div style="margin-top:20px;padding-top:16px"><div style="margin-top:0;padding-top:0"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:10px">Gut zu wissen</div><div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text);line-height:1.55"><div class="kontakt-info-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><span>Partyplatten und größere Bestellungen bitte mindestens 2 Tage im Voraus aufgeben.</span></div><div style="display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text);line-height:1.55"><div class="kontakt-info-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><span>Vorbestellungen können direkt in der jeweiligen Filiale aufgegeben werden.</span></div><div style="display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text);line-height:1.55"><div class="kontakt-info-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><span>Aktuelle Öffnungszeiten und Filialadressen finden Sie auf der Radatz-Website.</span></div></div></div></div>
 <div class="kontakt-form-wrap">
-<!-- KONTAKT_FORM -->
+<div class="k-form"><h3>Reservierung anfragen</h3><div id="sr-form-wrap"><form id="sr-kf"><div class="k-form-row"><div><label for="sr-kf-name"><span>Name *</span></label><input id="sr-kf-name" name="name" required aria-required="true" type="text" placeholder="Ihr Name" autocomplete="name"></div><div><label for="sr-kf-email"><span>E-Mail *</span></label><input id="sr-kf-email" name="email" required aria-required="true" type="email" placeholder="ihre@email.at" autocomplete="email" inputmode="email"></div><div><label for="sr-kf-tel"><span>Telefon</span></label><input id="sr-kf-tel" name="tel" type="tel" placeholder="+43 ..." autocomplete="tel" inputmode="tel"></div></div><div class="k-form-row"><div><label for="sr-kf-date"><span>Datum</span></label><input id="sr-kf-date" name="datum" type="date" autocomplete="off"></div><div><label for="sr-kf-time"><span>Uhrzeit</span></label><input id="sr-kf-time" name="uhrzeit" type="time" autocomplete="off"></div><div><label for="sr-kf-persons"><span>Personen</span></label><input id="sr-kf-persons" name="personen" type="number" min="1" max="50" placeholder="2" inputmode="numeric" autocomplete="off"></div></div><div class="k-form-field"><label for="sr-kf-msg"><span>Anmerkungen *</span></label><textarea id="sr-kf-msg" name="message" required aria-required="true" rows="5" placeholder="z.B. Allergien, Kinderhochstuhl, besondere Wünsche..."></textarea></div><button type="submit" id="sr-kf-btn"><span class="kf-spinner" aria-hidden="true"></span><span class="kf-label">Reservierung anfragen</span></button></form></div><div id="sr-form-ok" class="k-form-ok" role="status" aria-live="polite"><div class="k-form-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h4>Vielen Dank!</h4><p>Wir haben Ihre Reservierungsanfrage erhalten und bestätigen diese so rasch wie möglich.</p><p style="font-size:.75rem;color:#94a3b8;margin-top:12px">Hinweis: Im Testbetrieb wird diese Nachricht nicht zugestellt. Das Formular ist eine Vorschau.</p></div><script>(function(){var f=document.getElementById('sr-kf');if(!f)return;f.addEventListener('submit',function(e){e.preventDefault();if(!f.checkValidity()){f.reportValidity();return;}var btn=document.getElementById('sr-kf-btn');btn.classList.add('loading');btn.disabled=true;setTimeout(function(){var wrap=document.getElementById('sr-form-wrap');var ok=document.getElementById('sr-form-ok');wrap.classList.add('fading');setTimeout(function(){wrap.style.display='none';ok.classList.add('visible');ok.scrollIntoView({behavior:'smooth',block:'center'});},320);},850);});})();</script></div>
 </div>
 </div>
 </section>
 
-${buchungslinkHtml}
+
 
 </main>
 
-<!-- FOOTER -->
+<footer style="background:var(--primary);color:#fff;padding:56px 0 0;font-family:inherit">
+<div style="max-width:1200px;margin:0 auto;padding:0 24px">
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;padding-bottom:48px" class="ft-grid">
+<div>
+<div style="font-weight:800;font-size:1.05rem;margin-bottom:12px;letter-spacing:-.01em">Radatz GmbH.</div>
+<p style="opacity:.65;line-height:1.75;font-size:.85rem;margin-bottom:16px;max-width:280px">Seit 1962 beliefert das Familienunternehmen Radatz die Wienerinnen und Wiener mit etwas, das man nicht kopieren kann: den guten Geschmack Wiens. Guter Geschmack hat bei Radatz nämlich viel mit Menschlichkeit und Gemeinschaft zu tun. Radatz ist eine große Familie von Menschen, für die gutes Essen mehr ist als Nahrung. Genuss und Lebensfreude sind für uns ein wesentlicher Ausdruck der Kultur unserer Stadt. 
+
+</p>
+<a href="tel:+43166666666" style="color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;opacity:.9">+431 666 66 666</a>
+<div style="display:flex;gap:12px;margin-top:16px"><a href="https://facebook.com/radatzgmbh" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="https://instagram.com/radatz" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a><a href="https://linkedin.com/company/radatz" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a><a href="https://tiktok.com/@radatz" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></a></div>
+</div>
+<div>
+<div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Navigation</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<a href="#leistungen" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Leistungen</a>
+<a href="#ueber-uns" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Über uns</a>
+<a href="#kontakt" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Kontakt</a>
+<a href="/s/radatz-gmbh/impressum" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Impressum</a>
+<a href="/s/radatz-gmbh/datenschutz" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem">Datenschutz</a>
+</div>
+</div>
+<div>
+<div style="font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;opacity:.45;margin-bottom:16px">Kontakt</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:.88rem;color:rgba(255,255,255,.7)">
+<span>Radatzweg 1, 1010 Wien</span>
+<a href="tel:+43166666666" style="color:rgba(255,255,255,.85);text-decoration:none;font-weight:600">+431 666 66 666</a>
+<a href="mailto:kaisekrainer@radatz.at" style="color:rgba(255,255,255,.7);text-decoration:none">kaisekrainer@radatz.at</a>
+</div>
+</div>
+</div>
+<div style="border-top:1px solid rgba(255,255,255,.1);padding:20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+<span style="opacity:.4;font-size:.78rem">&copy; 2026 Radatz GmbH.</span>
+<div style="display:flex;gap:20px">
+<a href="/s/radatz-gmbh/impressum" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Impressum</a>
+<a href="/s/radatz-gmbh/datenschutz" style="opacity:.4;font-size:.78rem;color:#fff;text-decoration:none">Datenschutz</a>
+</div>
+</div>
+</div>
+</footer>
+<style>@media(max-width:900px){.ft-grid{grid-template-columns:1fr 1fr!important}}@media(max-width:540px){.ft-grid{grid-template-columns:1fr!important}}@media(max-width:768px){footer a{padding:8px 0!important;display:inline-block}footer .ft-grid>div>div[style*="flex-direction:column"] a{padding:10px 0!important}}</style>
 
 <div class="lb" id="sr-lb" role="dialog" aria-modal="true" aria-label="Bild vergrößert" onclick="if(event.target===this)this.classList.remove('open')"><button class="lb-prev" aria-label="Vorheriges Bild" onclick="event.stopPropagation();window._lbNav(-1)">&#8249;</button><img id="sr-lb-img" src="" alt=""/><button class="lb-next" aria-label="Nächstes Bild" onclick="event.stopPropagation();window._lbNav(1)">&#8250;</button><button class="lb-x" aria-label="Schließen" onclick="event.stopPropagation();document.getElementById('sr-lb').classList.remove('open')">×</button></div>
 <script>(function(){
@@ -899,7 +955,7 @@ var open=a.classList.contains('open');
 /* Alle schliessen */
 document.querySelectorAll('.faq-a.open').forEach(function(el){el.classList.remove('open')});
 document.querySelectorAll('.faq-toggle').forEach(function(el){el.textContent='+'});
-if(!open){a.classList.add('open');var t=btn.querySelector('.faq-toggle');if(t)t.textContent='\\u2212'}
+if(!open){a.classList.add('open');var t=btn.querySelector('.faq-toggle');if(t)t.textContent='\u2212'}
 });
 
 /* Lightbox mit Navigation + Focus-Trap */
@@ -923,19 +979,10 @@ function tick(now){var p=Math.min((now-st)/d,1);p=1-Math.pow(1-p,3);el.textConte
 requestAnimationFrame(tick)})}})},{threshold:.3});
 document.querySelectorAll('.ueber-stats').forEach(function(s){so.observe(s)});
 
-/* Ablauf: Steps staggered Reveal */
-var ablauf=document.querySelectorAll('.sr-ablauf-h');if(ablauf.length){var ioAbl=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-ablauf-play');ioAbl.unobserve(i.target)}})},{threshold:.25});ablauf.forEach(function(el){ioAbl.observe(el)})}
-
-/* Ueber-uns Vorteile: staggered Reveal */
-var vort=document.querySelectorAll('.ueber-vorteile');if(vort.length){var ioVor=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('ueber-vorteile-play');ioVor.unobserve(i.target)}})},{threshold:.2});vort.forEach(function(el){ioVor.observe(el)})}
-
-/* Hero Pageload Stagger */
-requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('hero-play')})});
-
-/* Nav-Scroll-Glass */
-var navEl=document.getElementById('sitenav');if(navEl){var onScrollNav=function(){document.body.classList.toggle('nav-scrolled',window.scrollY>40)};window.addEventListener('scroll',onScrollNav,{passive:true});onScrollNav()}
-
 })();</script>
+<script>(function(){var ls=document.querySelectorAll('.nav-link[href^="#"]');var ss=[].map.call(ls,function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);function u(){var y=window.scrollY+100;var c=ss.reduce(function(a,s){return s.offsetTop<=y?s:a},ss[0]);ls.forEach(function(l){var a=c&&'#'+c.id===l.getAttribute('href');l.style.opacity=a?'1':'';l.style.fontWeight=a?'700':'';});}window.addEventListener('scroll',u,{passive:true});u();})();</script>
+<script>(function(){document.querySelectorAll('.sr-faq-btn').forEach(function(btn){btn.addEventListener('click',function(){var a=btn.nextElementSibling;var open=a.style.maxHeight!=='0px';a.style.maxHeight=open?'0px':a.scrollHeight+'px';a.style.paddingBottom=open?'0':'16px';btn.querySelector('.sr-faq-icon').textContent=open?'+':'\u2212';btn.setAttribute('aria-expanded',open?'false':'true');});});})();</script>
+<style>:root{--primary:#191e1f;--accent:#0E7490;--bg:#f9fafa;--sep:#e7e9e9;--text:#18181b;--textMuted:#71717a}.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%)!important}.stil-modern .hero{background:var(--primary)!important}.stil-elegant .hero{background:linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,#000) 100%)!important}#sitenav{background:var(--primary)!important}</style>
+<a href="tel:+43166666666"  class="sr-float-cta" aria-label="Anrufen"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></a><script>(function(){var b=document.querySelector('.sr-float-cta');if(b){var h=document.querySelector('.hero');window.addEventListener('scroll',function(){b.classList.toggle('visible',window.scrollY>(h?h.offsetHeight-100:300))},{passive:true})}})();</script>
 </body>
-</html>`;
-}
+</html>

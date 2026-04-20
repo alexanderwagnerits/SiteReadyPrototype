@@ -2072,20 +2072,20 @@ function Portal({session,onLogout}){
 
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
-    hero:{title:"Header & Hero",sub:"Logo, Firmenname, Kurzbeschreibung und Titelbild — der erste Eindruck Ihrer Website"},
-    grunddaten:{title:"Grunddaten",sub:"Firmenname, Kurzbeschreibung und Einsatzgebiet Ihres Unternehmens"},
+    hero:{title:"Titelbild & Kopfbereich",sub:"Logo, Firmenname, Kurzbeschreibung und Titelbild — der erste Eindruck Ihrer Website"},
+    grunddaten:{title:"Grunddaten",sub:"Firmenname und Einsatzgebiet – erscheinen im Titelbereich und in der Google-Suche"},
     leistungen:{title:"Leistungen",sub:"Diese Leistungen erscheinen als Karten auf Ihrer Website – mit Beschreibung und Preis"},
     kontakt:{title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps"},
-    ueberuns:{title:"Über uns",sub:"Vorstellungstext, Team und Ablauf – alles was Ihre Kunden über Sie wissen sollten"},
-    social:{title:"Social Media",sub:"Ihre Profile erscheinen als Icons auf Ihrer Website"},
+    ueberuns:{title:"Über uns",sub:"Erscheint im mittleren Bereich – Ihre Vorstellung, Vorteile, Team und Ablauf"},
+    social:{title:"Social Media",sub:"Ihre Profile erscheinen als Icons im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
     faq:{title:"Häufige Fragen",sub:"Fragen und Antworten, die auf Ihrer Website als aufklappbarer FAQ-Bereich erscheinen"},
-    fakten:{title:"Zahlen & Fakten",sub:"Beeindruckende Zahlen über Ihren Betrieb – z.B. Jahre Erfahrung oder Kundenzahl"},
-    partner:{title:"Partner & Zertifikate",sub:"Logos und Namen von Partnern, Verbänden oder Zertifizierungen"},
-    branchenfeatures:{title:"Merkmale",sub:"Was zeichnet Ihren Betrieb aus? Diese Angaben erscheinen als Badges auf Ihrer Website."},
+    fakten:{title:"Zahlen",sub:"Erscheinen als Counter-Zeile auf der Website – z.B. Jahre Erfahrung oder Kundenzahl"},
+    partner:{title:"Vertrauen & Referenzen",sub:"Erscheinen als Logo-Reihe im unteren Drittel – Kunden, Partner oder Zertifikate"},
+    branchenfeatures:{title:"Besonderheiten",sub:"Was zeichnet Sie aus? Erscheinen als kleine Auszeichnungen (Badges) direkt unter dem Titelbild."},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
-    medien:{title:"Fotos & Medien",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Header-Foto"},
+    medien:{title:"Fotos",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Titelbild"},
     teilen:{title:"Teilen & QR-Code",sub:"QR-Code, Visitenkarte und Firmen-Flyer für Ihre Website"},
     seo:{title:"SEO, Google & Domain",sub:"Suchmaschinenoptimierung und eigene Domain für Ihre Website"},
     rechnungen:{title:"Rechnungen",sub:"Ihre Zahlungsübersicht und Abonnement-Verwaltung"},
@@ -2286,23 +2286,25 @@ function Portal({session,onLogout}){
           Übersicht
         </button>
         {[
-          ["hero","Header & Hero",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`],
-          ["branchenfeatures","Merkmale",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`],
+          ["hero","Titelbild",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`],
+          ["branchenfeatures","Besonderheiten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`],
           ["leistungen","Leistungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`],
           ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`],
           ["kontakt","Kontakt",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`],
           ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`],
-          ["faq","FAQ",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`],
-          ["fakten","Zahlen & Fakten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`],
+          ["faq","Häufige Fragen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`],
+          ["fakten","Zahlen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`],
           ["partner","Referenzen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`],
           ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`],
-        ].map(([p,label,iconSvg])=>(
-          <button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
+        ].map(([p,label,iconSvg])=>{
+          const isRequired=["hero","branchenfeatures","leistungen","ueberuns","kontakt"].includes(p);
+          const isDone=comp[p]===true;
+          return(<button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
             {label}
-            {comp[p]===true&&<span className="pt-done"/>}
-          </button>
-        ))}
+            {isDone?<span className="pt-done"/>:isRequired?<span className="pt-comp" title="Pflicht – noch nicht ausgefüllt"/>:null}
+          </button>);
+        })}
         <div className="pt-sb-grp">Extras</div>
         <button className={`pt-ni${page==="aktuelles"?" pactive":""}`} onClick={()=>nav("aktuelles")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
@@ -2474,6 +2476,20 @@ function Portal({session,onLogout}){
             </button>
           </div>
         </div>
+        {/* "Jetzt dran" — prominenter naechster Pflicht-Schritt */}
+        {wizardCurrentIdx>=0&&!wizardAllDone&&(()=>{
+          const step=wizardSteps[wizardCurrentIdx];
+          if(!step)return null;
+          return(<div style={{background:"#fff",borderRadius:T.r,border:`2px solid ${T.accent}`,padding:"22px 26px",boxShadow:"0 2px 12px rgba(143,163,184,.12)",display:"flex",alignItems:"center",gap:18,flexWrap:"wrap"}}>
+            <div style={{width:48,height:48,borderRadius:"50%",background:T.accent,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"1.05rem",fontWeight:800}}>{wizardCurrentIdx+1}</div>
+            <div style={{flex:"1 1 240px",minWidth:0}}>
+              <div style={{fontSize:".68rem",fontWeight:700,color:T.accent,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Jetzt dran &middot; Schritt {wizardCurrentIdx+1} von {wizardTotal}</div>
+              <div style={{fontSize:"1.02rem",fontWeight:700,color:T.dark,marginBottom:3,letterSpacing:"-.01em"}}>{step.label}</div>
+              {step.desc&&<div style={{fontSize:".85rem",color:T.textMuted,lineHeight:1.5}}>{step.desc}</div>}
+            </div>
+            <button onClick={()=>nav(step.page)} style={{padding:"12px 24px",background:T.accent,color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontSize:".9rem",fontWeight:700,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:8,flexShrink:0,transition:"transform .15s,box-shadow .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(.98)"} onMouseUp={e=>e.currentTarget.style.transform=""} onMouseLeave={e=>e.currentTarget.style.transform=""}>Ausfüllen <span style={{fontSize:"1.1em"}}>{"→"}</span></button>
+          </div>);
+        })()}
         {(()=>{
           const hasPL=getBrancheFeatures(order?.branche).includes("preisliste");
           const tips=[
@@ -2930,7 +2946,11 @@ function Portal({session,onLogout}){
             </div>
             <button onClick={()=>askDelete("Frage",()=>{const arr=[...(order.faq||[])];arr.splice(i,1);upOrder("faq")(arr);})} style={{marginTop:8,width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"×"}</button>
           </div>})}
-          {!(order.faq||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Fragen hinzugefügt.</div>}
+          {!(order.faq||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:8}}>❓</div>
+            <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Fragen</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Beantworten Sie die Fragen, die Ihre Kunden immer wieder stellen — spart Telefonate und bringt Vertrauen.</div>
+          </div>}
           <div style={{display:"flex",gap:8,marginTop:12}}>
             <button onClick={()=>{const arr=[...(order.faq||[]),{frage:"",antwort:""}];upOrder("faq")(arr);}} style={{flex:1,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>+ Frage hinzufügen</button>
             <button disabled={faqGenerating} onClick={async()=>{
@@ -2963,7 +2983,11 @@ function Portal({session,onLogout}){
               <button onClick={()=>askDelete("Fakt",()=>{const arr=[...(order.fakten||[])];arr.splice(i,1);upOrder("fakten")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center"}}>{"×"}</button>
             </div>)}
           </div>
-          {!(order.fakten||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Fakten hinzugefügt.</div>}
+          {!(order.fakten||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:8}}>📊</div>
+            <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Zahlen</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Beeindruckende Zahlen schaffen Vertrauen — z.B. „25 Jahre Erfahrung" oder „500 zufriedene Kunden". Mindestens 2 Einträge werden angezeigt.</div>
+          </div>}
           {(order.fakten||[]).length<4&&<button onClick={()=>{const arr=[...(order.fakten||[]),{zahl:"",label:""}];upOrder("fakten")(arr);}} style={{marginTop:8,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Fakt hinzufügen {(order.fakten||[]).length>0?`(${(order.fakten||[]).length}/4)`:""}</button>}
           </div>
         </div>}
@@ -2988,8 +3012,12 @@ function Portal({session,onLogout}){
             </div>
             <button onClick={()=>askDelete("Eintrag",()=>{const arr=[...(order.partner||[])];arr.splice(i,1);upOrder("partner")(arr);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
           </div>))}
-          {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen.</div>}
-          <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>
+          {!(order.partner||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:8}}>🤝</div>
+            <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Einträge</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen. Einträge mit Logo erscheinen besonders prominent.</div>
+          </div>}
+          <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"10px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>
           <div style={{fontSize:".72rem",color:T.textMuted,marginTop:10,lineHeight:1.5}}>Einträge mit Logo erscheinen als Logo-Grid. Einträge ohne Logo werden als dezente Text-Zeile darunter angezeigt.</div>
           </div>
         </div>}

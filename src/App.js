@@ -1634,7 +1634,7 @@ function Portal({session,onLogout}){
   const isDirty=order&&originalOrderRef.current&&JSON.stringify(order)!==JSON.stringify(originalOrderRef.current);
   useEffect(()=>{const h=e=>{if(isDirty){e.preventDefault();e.returnValue="";}};window.addEventListener("beforeunload",h);return()=>window.removeEventListener("beforeunload",h);},[isDirty]);
   const[saveError,setSaveError]=useState(null);
-  const saveAll=async()=>{
+  const saveAll=async(silent=false)=>{
     if(!order||!supabase)return;
     setSaving(true);
     setSaveError(null);
@@ -1686,13 +1686,23 @@ function Portal({session,onLogout}){
     setSaving(false);
     if(error){
       setSaveError(error.message||"Unbekannter Fehler");
-      showToast("Speichern fehlgeschlagen — bitte erneut versuchen");
+      if(!silent)showToast("Speichern fehlgeschlagen — bitte erneut versuchen");
       try{await supabase.from("error_logs").insert({source:"save_all_error",message:error.message});}catch(_){}
       return;
     }
     originalOrderRef.current=JSON.parse(JSON.stringify(order));
-    showToast("Gespeichert");
+    if(!silent)showToast("Gespeichert");
   };
+
+  // Auto-Save: bei Aenderungen debounced (1.5s Inaktivitaet) speichern
+  // Ohne Toast (silent=true), damit kein Gespam. Manueller Save-Button bleibt erhalten.
+  useEffect(()=>{
+    if(!order||!originalOrderRef.current||!supabase)return;
+    if(!isDirty||saving)return;
+    const t=setTimeout(()=>{saveAll(true);},1500);
+    return ()=>clearTimeout(t);
+  },[order,isDirty,saving,supabase]);
+
   const discardChanges=()=>{
     if(originalOrderRef.current)setOrder(JSON.parse(JSON.stringify(originalOrderRef.current)));
   };

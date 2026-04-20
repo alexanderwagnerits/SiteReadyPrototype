@@ -1333,6 +1333,17 @@ export async function onRequestGet({params, env}) {
     html = html.replace(/<style>[\s\S]*?<\/style>/, freshCss);
   } catch(e) { console.error("buildCss serve-time: fehlgeschlagen", e.message); }
 
+  // ── Animations-JS serve-time injecten (neue Animationen greifen auch bei alten Orders) ──
+  // Das alte Main-Script steckt im gespeicherten website_html und wird bei Template-Updates
+  // nicht mitgezogen. Darum werden Ablauf/Vorteile/Hero-Pageload/Nav-Glass hier injiziert.
+  const animJs = `<script>(function(){if(!('IntersectionObserver' in window))return;` +
+    `var ablauf=document.querySelectorAll('.sr-ablauf-h');if(ablauf.length){var ioA=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('sr-ablauf-play');ioA.unobserve(i.target)}})},{threshold:.25});ablauf.forEach(function(el){ioA.observe(el)})}` +
+    `var vort=document.querySelectorAll('.ueber-vorteile');if(vort.length){var ioV=new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('ueber-vorteile-play');ioV.unobserve(i.target)}})},{threshold:.2});vort.forEach(function(el){ioV.observe(el)})}` +
+    `requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('hero-play')})});` +
+    `var nv=document.getElementById('sitenav');if(nv){var onS=function(){document.body.classList.toggle('nav-scrolled',window.scrollY>40)};window.addEventListener('scroll',onS,{passive:true});onS()}` +
+    `})();</script>`;
+  html = html.replace("</body>", animJs + "\n</body>");
+
   // Style-Override am Ende des body (damit es ALLE vorherigen :root ueberschreibt)
   const heroOverride = `.hero{background:linear-gradient(160deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 72%,#000) 55%,color-mix(in srgb,var(--primary) 85%,var(--accent)) 100%)!important}` +
     `.stil-modern .hero{background:var(--primary)!important}` +

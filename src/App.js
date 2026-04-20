@@ -2685,7 +2685,7 @@ function Portal({session,onLogout}){
             </>;})()}
           </div>
         </>}
-        {page==="leistungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+        {page==="leistungen"&&<><div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Leistungen" desc="Ihre Leistungen werden mit Bild, Beschreibung und Preis auf der Website angezeigt. Detaillierte Angaben führen zu mehr Anfragen." aiField="leistungen_beschreibungen"/>
             {(order.leistungen||[]).length>0&&<div style={{marginBottom:20}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>{"Reihenfolge & Beschreibung"}</div>
@@ -2752,7 +2752,17 @@ function Portal({session,onLogout}){
               ))}
               {(order.downloads||[]).length<3&&<button onClick={()=>{const arr=[...(order.downloads||[]),{label:"",url:""}];upOrder("downloads")(arr);}} style={{padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Download hinzufügen"}</button>}
             </div>
-        </div>}
+        </div>
+        <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
+          <SectionHeader label="CTA-Block" desc="Aufruf zum Handeln — erscheint auf der Website direkt nach den Leistungen."/>
+          <VisibilityToggle field="cta_block" labelOn="CTA-Block erscheint nach den Leistungen" labelOff="CTA-Block wird nicht angezeigt"/>
+          <div style={{opacity:order.sections_visible?.cta_block===false?0.55:1,transition:"opacity .2s"}}>
+            <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder="z.B. Bereit für Ihren Termin?"/>
+            <Field label="Text" value={order.cta_text||""} onChange={upOrder("cta_text")} placeholder="z.B. Wir freuen uns auf Ihren Besuch."/>
+            <div style={{fontSize:".72rem",color:T.textMuted}}>Leer lassen für branchenspezifischen Standard-Text</div>
+          </div>
+        </div>
+        </>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
             <VariantenHint label="Team-Variante" value={order?.varianten_cache?.team}/>
         </div>}
@@ -2824,6 +2834,7 @@ function Portal({session,onLogout}){
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen (FAQ)" desc="Fragen und Antworten, die Ihre Kunden häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website." aiField="faq"/>
           <VisibilityToggle field="faq" labelOn="FAQ-Bereich erscheint auf Ihrer Website" labelOff="FAQ-Bereich wird nicht angezeigt"/>
+          <div style={{opacity:order.sections_visible?.faq===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const incompleteCount=(order.faq||[]).filter(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort)).length;return incompleteCount>0&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>{incompleteCount===1?"1 Eintrag hat":`${incompleteCount} Eintraege haben`} Frage oder Antwort leer — wird auf der Website nicht angezeigt.</div>
@@ -2849,12 +2860,14 @@ function Portal({session,onLogout}){
               setFaqGenerating(false);
             }} style={{padding:"8px 16px",border:"none",borderRadius:T.rSm,background:faqGenerating?T.bg3:T.dark,color:"#fff",cursor:faqGenerating?"wait":"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>{faqGenerating?"Generiert...":"Automatisch generieren"}</button>
           </div>
+          </div>
         </div>}
 
         {/* ── Zahlen & Fakten Seite ── */}
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Mindestens 2 Eintraege, maximal 4."/>
           <VisibilityToggle field="fakten" labelOn="Zahlen & Fakten erscheinen auf Ihrer Website" labelOff="Zahlen & Fakten werden nicht angezeigt"/>
+          <div style={{opacity:order.sections_visible?.fakten===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const validCount=(order.fakten||[]).filter(f=>f&&f.zahl).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>Sie haben nur 1 Fakt — die Section wird erst ab 2 Eintraegen auf der Website angezeigt.</div>
@@ -2868,12 +2881,14 @@ function Portal({session,onLogout}){
           </div>
           {!(order.fakten||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Fakten hinzugefügt.</div>}
           {(order.fakten||[]).length<4&&<button onClick={()=>{const arr=[...(order.fakten||[]),{zahl:"",label:""}];upOrder("fakten")(arr);}} style={{marginTop:8,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Fakt hinzufügen {(order.fakten||[]).length>0?`(${(order.fakten||[]).length}/4)`:""}</button>}
+          </div>
         </div>}
 
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Ein Logo ist Pflicht, nur der Name wird nicht auf der Website angezeigt."/>
           <VisibilityToggle field="partner" labelOn="Referenzen-Bereich erscheint auf Ihrer Website" labelOff="Referenzen-Bereich wird nicht angezeigt"/>
+          <div style={{opacity:order.sections_visible?.partner===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const withoutLogo=(order.partner||[]).filter(p=>p&&p.name&&!p.url_logo).length;return withoutLogo>0&&<div style={{padding:"12px 16px",background:T.amberLight,borderRadius:T.rSm,marginBottom:16,fontSize:".82rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>{withoutLogo===1?"Ein Eintrag hat":`${withoutLogo} Eintraege haben`} kein Logo und wird auf der Website nicht angezeigt. Bitte Logo hochladen oder Eintrag entfernen.</div>
@@ -2896,6 +2911,7 @@ function Portal({session,onLogout}){
           </div>})}
           {!(order.partner||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Zeigen Sie, wer Ihnen vertraut — Kunden, Partner oder Zertifizierungen.</div>}
           <button onClick={()=>{const arr=[...(order.partner||[]),{name:""}];upOrder("partner")(arr);}} style={{marginTop:10,padding:"8px 14px",border:`1.5px dashed ${T.bg3}`,borderRadius:T.rSm,background:"none",color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>+ Eintrag hinzufügen</button>
+          </div>
         </div>}
 
         {page==="design"&&(()=>{
@@ -3028,32 +3044,6 @@ function Portal({session,onLogout}){
               </div>}
           </div>
 
-          {/* ── Seitenaufbau ── */}
-          <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <SectionHeader label="Seitenaufbau" desc="Wie viel soll Ihre Website zeigen? Wählen Sie einen Aufbau — Sie können jederzeit wechseln."/>
-            {(()=>{
-              return<>
-                {/* Bereiche ein-/ausschalten */}
-                <div>
-                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Zusätzliche Bereiche</div>
-                  <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:12}}>Schalten Sie Bereiche ein oder aus. Inhalte bearbeiten Sie auf der jeweiligen Seite.</div>
-                  <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.galerie!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="Fotogalerie" checked={order.sections_visible?.galerie!==false} onChange={v=>{const sv={...(order.sections_visible||{}),galerie:v};upOrder("sections_visible")(sv);}} desc="Fotos von Ihrer Arbeit oder Ihrem Betrieb"/>
-                    </div>
-                    <div style={{border:`1.5px solid ${order.sections_visible?.cta_block!==false?T.accent+"33":T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
-                      <Toggle label="CTA-Block" checked={order.sections_visible?.cta_block!==false} onChange={v=>{const sv={...(order.sections_visible||{}),cta_block:v};upOrder("sections_visible")(sv);}} desc="Aufruf zum Handeln zwischen Leistungen und Über uns"/>
-                      {order.sections_visible?.cta_block!==false&&<div style={{padding:"12px 16px",borderTop:`1px solid ${T.bg3}`,background:T.bg,display:"flex",flexDirection:"column",gap:8}}>
-                        <Field label="Headline" value={order.cta_headline||""} onChange={upOrder("cta_headline")} placeholder="z.B. Bereit für Ihren Termin?"/>
-                        <Field label="Text" value={order.cta_text||""} onChange={upOrder("cta_text")} placeholder="z.B. Wir freuen uns auf Ihren Besuch."/>
-                        <div style={{fontSize:".72rem",color:T.textMuted}}>Leer lassen für branchenspezifischen Standard-Text</div>
-                      </div>}
-                    </div>
-                  </div>
-                </div>
-              </>;
-            })()}
-          </div>
         </div>;})()}
         {page==="branchenfeatures"&&(()=>{const ft=getBrancheFeatures(order.branche);return<>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -3473,6 +3463,24 @@ function Portal({session,onLogout}){
               <div style={{fontSize:"1.6rem",marginBottom:4}}>📄</div>
               <div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Preisliste hochgeladen</div>
             </div>}
+          </div>
+        );})()}
+        {/* Fotogalerie */}
+        {(()=>{const items=Array.isArray(order?.galerie)?order.galerie.filter(g=>g&&g.url):[];return(
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
+            <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+            <div style={{fontSize:".78rem",color:T.textMuted,marginBottom:12}}>Eigener Galerie-Bereich auf der Website. Fotos werden aktuell nur beim Website-Import übernommen.</div>
+            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt"/>
+            <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
+              {items.length>0?<>
+                <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} {items.length===1?"Foto":"Fotos"} aus Website-Import</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+                  {items.slice(0,12).map((g,i)=><div key={i} style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000"}}>
+                    <img src={g.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                  </div>)}
+                </div>
+              </>:<div style={{padding:"20px 16px",background:T.bg,borderRadius:T.rSm,textAlign:"center",fontSize:".78rem",color:T.textMuted}}>Keine Galerie-Fotos vorhanden. Beim nächsten Website-Import werden Fotos übernommen.</div>}
+            </div>
           </div>
         );})()}
       </div>)}

@@ -1368,8 +1368,15 @@ export async function onRequestGet({params, env, request}) {
     fontLinks.push(`<link rel="stylesheet" href="${FONT_URLS[o.custom_font]}">`);
     customDesign.push(`--font:${FONT_FAMILIES[o.custom_font]}`);
   }
+  // Stil-Heading-Fonts: immer mitladen, sonst Fallback auf Georgia/system-ui
+  // statt der Stil-typischen Serif/Display-Font. Das --fontHeading im Template
+  // referenziert sie bereits, hier wird die Font-Datei selbst sichergestellt.
   if (currentStil === "elegant") {
     fontLinks.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap">`);
+  } else if (currentStil === "klassisch") {
+    fontLinks.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap">`);
+  } else if (currentStil === "modern") {
+    fontLinks.push(`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">`);
   }
   if (fontLinks.length > 0) {
     html = html.replace("</head>", fontLinks.join("\n") + "\n</head>");

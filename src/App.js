@@ -1605,6 +1605,7 @@ function Portal({session,onLogout}){
   const[toastMsg,setToastMsg]=useState(null);
   const[deleting,setDeleting]=useState({});
   const[impressumConfirmOpen,setImpressumConfirmOpen]=useState(false);
+  const[stilPreview,setStilPreview]=useState(null); // null = aktueller Stil, sonst Stil-Preview ohne Save
   const[impressumChecked,setImpressumChecked]=useState(false);
   const[wizardOpen,setWizardOpen]=useState(()=>window.innerWidth>=768);
   const[ptSbOpen,setPtSbOpen]=useState(false);
@@ -3236,13 +3237,43 @@ function Portal({session,onLogout}){
               <div style={{marginBottom:24}}>
                 <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
                 <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-                  {Object.entries(STYLES_MAP).map(([key,st])=>{const active=order.stil===key;return<button key={key} onClick={()=>{upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));}} style={{padding:"14px 16px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
+                  {Object.entries(STYLES_MAP).map(([key,st])=>{const active=order.stil===key;return<button key={key} onClick={()=>{upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));setStilPreview(null);}} style={{padding:"14px 16px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
                     <div style={{width:28,height:28,borderRadius:6,background:st.heroGradient,marginBottom:10}}/>
                     <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{st.label}</div>
                     <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.5,marginTop:2}}>{st.desc}</div>
                     {active&&<div style={{position:"absolute",top:8,right:8,width:18,height:18,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800}}>{"✓"}</div>}
                   </button>})}
                 </div>
+              </div>
+
+              {/* Stil-Vorschau: iframe zeigt die eigene Seite in wechselndem Stil.
+                  Wechsel wirkt nur im Preview (URL-Parameter) — bis "Übernehmen" geklickt wird. */}
+              <div style={{marginBottom:24,padding:"16px 18px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                  <div>
+                    <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:2}}>Vorschau — Ihre Seite in allen Stilen</div>
+                    <div style={{fontSize:".74rem",color:T.textMuted,lineHeight:1.5}}>Wechseln Sie zwischen den drei Stilen ohne etwas zu speichern. Ihre Inhalte bleiben gleich.</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
+                  {Object.entries(STYLES_MAP).map(([key,st])=>{const isShown=(stilPreview||order.stil)===key;return<button key={key} onClick={()=>setStilPreview(key)} style={{padding:"8px 16px",border:isShown?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:100,background:isShown?"#fff":T.bg,cursor:"pointer",fontSize:".8rem",fontWeight:isShown?700:500,color:isShown?T.dark:T.textMuted,fontFamily:T.font,transition:"all .15s"}}>{st.label}</button>})}
+                </div>
+                <div style={{position:"relative",borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`,background:"#fff",aspectRatio:"16/10",maxHeight:560}}>
+                  <iframe
+                    key={(stilPreview||order.stil)+"|"+sub}
+                    src={`/s/${sub}?preview=${stilPreview||order.stil||"klassisch"}`}
+                    title="Stil-Vorschau"
+                    style={{width:"100%",height:"100%",border:"none",display:"block"}}
+                    loading="lazy"
+                  />
+                </div>
+                {stilPreview&&stilPreview!==order.stil&&<div style={{marginTop:10,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
+                  <div style={{fontSize:".78rem",color:T.textMuted}}>Vorschau: <strong style={{color:T.dark}}>{STYLES_MAP[stilPreview]?.label}</strong> — nicht gespeichert.</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <button onClick={()=>setStilPreview(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
+                    <button onClick={()=>{const key=stilPreview;upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));setStilPreview(null);showToast("Stil übernommen — wird gespeichert");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Diesen Stil übernehmen</button>
+                  </div>
+                </div>}
               </div>
 
               {/* Akzentfarbe */}

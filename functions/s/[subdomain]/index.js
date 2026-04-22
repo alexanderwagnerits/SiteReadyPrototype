@@ -11,9 +11,16 @@ function buildSocialIcons(o) {
   return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s">${s.icon}</a>`).join("")}</div>`;
 }
 
-export async function onRequestGet({params, env}) {
+export async function onRequestGet({params, env, request}) {
   const subdomain = params.subdomain;
   if (!subdomain) return new Response("Not Found", {status: 404});
+
+  // Preview-Mode: ?preview=<stil> erlaubt temporaeren Stil-Wechsel ohne DB-Save.
+  // Wird vom Portal (Design-Tab) per iframe genutzt — Kunde sieht seine Seite in
+  // anderem Stil bevor er ihn dauerhaft uebernimmt.
+  const url = new URL(request.url);
+  const previewStil = url.searchParams.get("preview");
+  const isPreview = ["klassisch","modern","elegant"].includes(previewStil);
 
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=*`,
@@ -42,6 +49,25 @@ export async function onRequestGet({params, env}) {
 
   let html = rows[0].website_html;
   const o = rows[0];
+
+  // ── Preview-Mode: Stil serve-time ueberschreiben ──
+  // Erlaubt dem Portal, die Kundenseite in anderem Stil anzuzeigen ohne DB-Save.
+  // Schreibt body-class, laedt alle Stil-Fonts, erzwingt noindex.
+  if (isPreview) {
+    o.stil = previewStil;
+    html = html.replace(/<body class="stil-[a-z]+"/, `<body class="stil-${previewStil}"`);
+    // Alle drei Stil-Fontsets laden (Inter + Merriweather + Plus Jakarta + Space Grotesk + Cormorant)
+    const PREVIEW_FONTS = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Merriweather:wght@400;700;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap";
+    html = html.replace(
+      /<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]*"/g,
+      `<link rel="stylesheet" href="${PREVIEW_FONTS}"`
+    );
+    // noindex erzwingen (Preview-URLs nicht in Google)
+    html = html.replace(
+      /<meta name="robots" content="[^"]*">/,
+      '<meta name="robots" content="noindex,nofollow">'
+    );
+  }
 
   // Branche -> Gruppe (fuer Labels, CTA-Texte, etc.)
   const BRANCHE_ZU_GRUPPE = {

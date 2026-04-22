@@ -3340,67 +3340,51 @@ function Portal({session,onLogout}){
                   <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Stil</div>
                   <button onClick={()=>setStilPreviewFullscreen(true)} style={{background:"none",border:"none",padding:0,color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:4}}>Live-Vorschau <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
                 </div>
+                {/* Stil-Ausschnitte — zeigen nur Hero-Detail mit Typography, Dekoration,
+                    CTA. Keine Full-Mockup-Versuche in Mini-Format — die Typography
+                    (Serif vs Sans-Display vs Serif-Display) wird so sofort erkennbar. */}
                 <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
                   {Object.entries(STYLES_MAP).map(([key,st])=>{
                     const active=order.stil===key;
                     const previewing=stilPreview===key;
                     const isMod=key==="modern",isEle=key==="elegant",isKla=key==="klassisch";
                     const hFont=isMod?"'Space Grotesk','Plus Jakarta Sans',system-ui,sans-serif":isEle?"'Cormorant Garamond',Georgia,serif":"'Merriweather',Georgia,serif";
-                    const radius=isMod?"6px":isEle?"1px":"2px";
-                    const btnRadius=isMod?"999px":isEle?"1px":"3px";
-                    const primary=st.primary||"#0f1a2e";
-                    const accent=st.accent||"#0369a1";
-                    const bg=isEle?"#faf7f2":"#ffffff";
+                    const primary=isMod?"#18181b":isEle?"#1a1410":"#0c2545";
+                    const accent=isMod?"#6366f1":isEle?"#b8935b":"#0369a1";
+                    const btnRadius=isMod?"999px":isEle?"0px":"3px";
                     return<button key={key} onClick={()=>setStilPreview(key)} aria-pressed={previewing||active} title={`${st.label} ansehen`} style={{padding:0,border:active?`2px solid ${T.dark}`:previewing?`2px solid ${T.accent}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",cursor:"pointer",fontFamily:T.font,transition:"all .2s",boxShadow:active||previewing?"0 6px 20px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)",position:"relative",overflow:"hidden",textAlign:"left"}} onMouseOver={e=>{if(!active&&!previewing)e.currentTarget.style.boxShadow="0 4px 14px rgba(0,0,0,.08)";}} onMouseOut={e=>{if(!active&&!previewing)e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.04)";}}>
-                      {/* ── Mini-Browser-Chrome ── */}
-                      <div style={{height:14,background:"#f0efec",borderBottom:"1px solid #e3e2df",display:"flex",alignItems:"center",padding:"0 6px",gap:3}}>
-                        <div style={{width:5,height:5,borderRadius:"50%",background:"#E87356"}}/>
-                        <div style={{width:5,height:5,borderRadius:"50%",background:"#E8BC56"}}/>
-                        <div style={{width:5,height:5,borderRadius:"50%",background:"#6DB176"}}/>
-                      </div>
-                      {/* ── Website-Mockup ── */}
-                      <div style={{background:bg}}>
-                        {/* Nav */}
-                        <div style={{height:18,background:primary,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 8px"}}>
-                          <div style={{width:22,height:5,background:"rgba(255,255,255,.85)",borderRadius:isMod?2:1}}/>
-                          <div style={{display:"flex",gap:4}}>
-                            <div style={{width:10,height:2,background:"rgba(255,255,255,.55)",borderRadius:1}}/>
-                            <div style={{width:10,height:2,background:"rgba(255,255,255,.55)",borderRadius:1}}/>
-                            <div style={{width:14,height:6,background:accent,borderRadius:isMod?999:2}}/>
-                          </div>
+                      {/* ── Hero-Ausschnitt mit grosser Headline + Stil-Dekoration ── */}
+                      <div style={{height:180,background:isMod?`linear-gradient(135deg,${primary} 0%,#1e1b4b 55%,${accent} 120%)`:isEle?`linear-gradient(165deg,${primary} 0%,#0a0605 100%)`:`linear-gradient(150deg,${primary} 0%,#071a33 100%)`,position:"relative",padding:isEle?"28px 20px":"24px 20px",display:"flex",flexDirection:"column",justifyContent:"space-between",overflow:"hidden"}}>
+                        {/* Stil-Dekoration */}
+                        {isMod&&<>
+                          <div style={{position:"absolute",top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:accent,opacity:.4,filter:"blur(26px)",pointerEvents:"none"}}/>
+                          <div style={{position:"absolute",bottom:-25,left:-25,width:80,height:80,borderRadius:"50%",background:"#c084fc",opacity:.25,filter:"blur(22px)",pointerEvents:"none"}}/>
+                        </>}
+                        {isKla&&<div style={{position:"absolute",top:20,right:20,display:"flex",flexDirection:"column",gap:4,pointerEvents:"none"}}>
+                          {[36,24,30].map((w,i)=><div key={i} style={{width:w,height:2,background:accent,opacity:.55}}/>)}
+                        </div>}
+                        {isEle&&<div style={{position:"absolute",top:20,right:20,fontSize:9,fontFamily:hFont,color:accent,letterSpacing:".25em",opacity:.8,pointerEvents:"none"}}>EST. 2018</div>}
+
+                        {/* GROSSE Headline — echte Stil-Font sichtbar */}
+                        <div style={{position:"relative",zIndex:1}}>
+                          <div style={{fontFamily:hFont,fontSize:isMod?40:isEle?46:34,fontWeight:isEle?500:isMod?800:700,color:"#fff",lineHeight:1,letterSpacing:isMod?"-.04em":isEle?"-.015em":"-.01em"}}>Aa</div>
+                          {isEle?<div style={{width:32,height:1,background:accent,margin:"12px 0 10px"}}/>:<div style={{display:"flex",gap:4,marginTop:12,marginBottom:10}}>{[32,20,28].map((w,i)=><div key={i} style={{width:w,height:isMod?3:2,background:accent,borderRadius:isMod?100:0,opacity:isKla?.85:1}}/>)}</div>}
+                          <div style={{fontFamily:hFont,fontSize:isEle?12:11,color:"rgba(255,255,255,.72)",letterSpacing:isEle?".04em":".01em",fontWeight:isEle?400:500}}>{isKla?"Seriös. Strukturiert.":isMod?"Dynamisch. Modern.":"Zurückhaltend. Premium."}</div>
                         </div>
-                        {/* Hero */}
-                        <div style={{height:95,background:isMod?`linear-gradient(135deg,${primary} 0%,color-mix(in srgb,${primary} 70%,#000) 60%,color-mix(in srgb,${primary} 80%,${accent}) 100%)`:isEle?`linear-gradient(160deg,${primary} 0%,color-mix(in srgb,${primary} 70%,#000) 100%)`:`linear-gradient(150deg,${primary} 0%,color-mix(in srgb,${primary} 75%,#000) 100%)`,position:"relative",padding:"14px 12px 10px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
-                          {isMod&&<div style={{position:"absolute",top:-10,right:-10,width:60,height:60,borderRadius:"50%",background:accent,opacity:.25,filter:"blur(14px)",pointerEvents:"none"}}/>}
-                          <div>
-                            <div style={{fontFamily:hFont,fontSize:isEle?19:isMod?17:15,fontWeight:isEle?500:isMod?700:700,color:"#fff",lineHeight:1,letterSpacing:isMod?"-.03em":isEle?"-.01em":"0",marginBottom:4}}>Aa</div>
-                            {isEle?<div style={{width:16,height:1,background:accent,opacity:.7,margin:"3px 0 5px"}}/>:<div style={{display:"flex",gap:2,marginTop:3,marginBottom:5}}>{[22,14,18].map((w,i)=><div key={i} style={{width:w,height:2,background:accent,opacity:isKla?.8:1,borderRadius:isMod?100:0}}/>)}</div>}
-                            <div style={{width:"65%",height:2,background:"rgba(255,255,255,.4)",borderRadius:1,marginBottom:3}}/>
-                            <div style={{width:"45%",height:2,background:"rgba(255,255,255,.25)",borderRadius:1}}/>
-                          </div>
-                          <div style={{display:"flex",gap:4}}>
-                            <div style={{width:28,height:8,background:accent,borderRadius:btnRadius,boxShadow:isMod?`0 2px 6px color-mix(in srgb,${accent} 40%,transparent)`:"none"}}/>
-                            <div style={{width:22,height:8,background:"transparent",border:isEle?"0.5px solid rgba(255,255,255,.5)":"1px solid rgba(255,255,255,.5)",borderRadius:btnRadius}}/>
-                          </div>
-                        </div>
-                        {/* Section: 3 Mini-Cards */}
-                        <div style={{padding:"8px 8px 10px",background:bg}}>
-                          <div style={{width:"30%",height:3,background:accent,opacity:.85,borderRadius:1,marginBottom:5}}/>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
-                            {[0,1,2].map(i=><div key={i} style={{height:26,background:"#fff",border:isKla?`1px solid #e5e7eb`:isEle?"0.5px solid #eaddcf":"none",borderLeft:isKla?`2px solid ${accent}`:undefined,borderRadius:radius,boxShadow:isMod?"0 1px 4px rgba(0,0,0,.06)":"none",padding:"4px 4px",display:"flex",flexDirection:"column",gap:2,justifyContent:"center"}}>
-                              <div style={{width:"70%",height:2,background:isMod?accent:"#333",opacity:isMod?.8:.5,borderRadius:1}}/>
-                              <div style={{width:"90%",height:1.5,background:"#333",opacity:.2,borderRadius:1}}/>
-                            </div>)}
-                          </div>
+
+                        {/* CTA-Buttons */}
+                        <div style={{display:"flex",gap:6,position:"relative",zIndex:1}}>
+                          <div style={{padding:isEle?"5px 14px":"6px 14px",background:accent,borderRadius:btnRadius,boxShadow:isMod?`0 4px 14px color-mix(in srgb,${accent} 50%,transparent)`:"none",fontSize:9,fontWeight:isEle?500:700,color:"#fff",fontFamily:isEle?hFont:T.font,letterSpacing:isEle?".04em":"0"}}>{isEle?"Kontakt":"Angebot"}</div>
+                          <div style={{padding:isEle?"5px 12px":"6px 12px",background:"transparent",border:isEle?"0.5px solid rgba(255,255,255,.35)":"1px solid rgba(255,255,255,.4)",borderRadius:btnRadius,fontSize:9,fontWeight:500,color:"rgba(255,255,255,.85)",fontFamily:isEle?hFont:T.font,letterSpacing:isEle?".04em":"0"}}>Mehr</div>
                         </div>
                       </div>
                       {/* Label */}
-                      <div style={{padding:"10px 12px 12px",borderTop:`1px solid ${T.bg3}`,background:"#fff"}}>
-                        <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:1}}>{st.label}</div>
-                        <div style={{fontSize:".7rem",color:T.textMuted,lineHeight:1.4}}>{st.desc}</div>
+                      <div style={{padding:"12px 14px 14px",borderTop:`1px solid ${T.bg3}`,background:"#fff"}}>
+                        <div style={{fontSize:".9rem",fontWeight:isEle?600:700,color:T.dark,marginBottom:2,fontFamily:isEle?"'Cormorant Garamond',Georgia,serif":isKla?"'Merriweather',Georgia,serif":T.font,letterSpacing:isMod?"-.01em":isEle?".01em":"0"}}>{st.label}</div>
+                        <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.45}}>{st.desc}</div>
                       </div>
-                      {active&&<div style={{position:"absolute",top:6,right:6,width:22,height:22,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,boxShadow:"0 2px 8px rgba(0,0,0,.35)",zIndex:2}}>{"✓"}</div>}
-                      {!active&&previewing&&<div style={{position:"absolute",top:6,right:6,padding:"3px 8px",borderRadius:100,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,letterSpacing:".05em",zIndex:2}}>VORSCHAU</div>}
+                      {active&&<div style={{position:"absolute",top:8,right:8,width:24,height:24,borderRadius:"50%",background:"#fff",color:T.dark,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,boxShadow:"0 2px 10px rgba(0,0,0,.4)",zIndex:2}}>{"✓"}</div>}
+                      {!active&&previewing&&<div style={{position:"absolute",top:8,right:8,padding:"3px 9px",borderRadius:100,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,letterSpacing:".05em",zIndex:2,boxShadow:"0 2px 8px rgba(0,0,0,.25)"}}>VORSCHAU</div>}
                     </button>
                   })}
                 </div>

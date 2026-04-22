@@ -3333,62 +3333,81 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Design & Farben" desc="Stil und Akzentfarbe sind unabhängig — ändern Sie eins, ohne das andere zu verlieren."/>
 
-              {/* Stil & Vorschau als ein zusammenhaengender Block — Stil-Cards oben,
-                  Live-Preview darunter in kompaktem Browser-Chrome-Rahmen. */}
+              {/* Stil-Auswahl mit echten Mini-Mockups pro Card (Nav + Hero + Section).
+                  Klick aktiviert Preview-State; Vollbild-Modal zeigt die echte Website im Stil. */}
               <div style={{marginBottom:28}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Stil & Vorschau</div>
-
-                {/* Aufgewertete Stil-Cards mit Mini-Mockup (Farbe + Aa-Sample + Akzentlinie) */}
-                <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:14}}>
+                <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:12,gap:10}}>
+                  <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em"}}>Stil</div>
+                  <button onClick={()=>setStilPreviewFullscreen(true)} style={{background:"none",border:"none",padding:0,color:T.accent,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font,display:"inline-flex",alignItems:"center",gap:4}}>Live-Vorschau <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+                </div>
+                <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
                   {Object.entries(STYLES_MAP).map(([key,st])=>{
                     const active=order.stil===key;
                     const previewing=stilPreview===key;
-                    const stilFont=key==="modern"?"'Plus Jakarta Sans',system-ui,sans-serif":key==="elegant"?"'Cormorant Garamond',Georgia,serif":"'Merriweather',Georgia,serif";
-                    const aaWeight=key==="elegant"?500:700;
-                    return<button key={key} onClick={()=>setStilPreview(key)} aria-pressed={previewing||active} style={{padding:0,border:active?`2px solid ${T.dark}`:previewing?`2px solid ${T.accent}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",cursor:"pointer",fontFamily:T.font,transition:"all .2s",boxShadow:active||previewing?"0 4px 14px rgba(0,0,0,.06)":"none",position:"relative",overflow:"hidden"}}>
-                      {/* Mini-Mockup: Gradient-Streifen + Aa-Sample + Akzent-Linie */}
-                      <div style={{height:72,background:st.heroGradient,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                        <div style={{fontFamily:stilFont,fontSize:34,fontWeight:aaWeight,color:"#fff",letterSpacing:key==="modern"?"-.02em":key==="elegant"?"-.01em":"0",lineHeight:1}}>Aa</div>
-                        <div style={{position:"absolute",bottom:10,left:"50%",transform:"translateX(-50%)",width:key==="elegant"?24:key==="modern"?36:28,height:key==="elegant"?1:key==="modern"?3:2,background:st.accent,opacity:key==="elegant"?.7:1,borderRadius:key==="modern"?100:0}}/>
+                    const isMod=key==="modern",isEle=key==="elegant",isKla=key==="klassisch";
+                    const hFont=isMod?"'Space Grotesk','Plus Jakarta Sans',system-ui,sans-serif":isEle?"'Cormorant Garamond',Georgia,serif":"'Merriweather',Georgia,serif";
+                    const radius=isMod?"6px":isEle?"1px":"2px";
+                    const btnRadius=isMod?"999px":isEle?"1px":"3px";
+                    const primary=st.primary||"#0f1a2e";
+                    const accent=st.accent||"#0369a1";
+                    const bg=isEle?"#faf7f2":"#ffffff";
+                    return<button key={key} onClick={()=>setStilPreview(key)} aria-pressed={previewing||active} title={`${st.label} ansehen`} style={{padding:0,border:active?`2px solid ${T.dark}`:previewing?`2px solid ${T.accent}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",cursor:"pointer",fontFamily:T.font,transition:"all .2s",boxShadow:active||previewing?"0 6px 20px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)",position:"relative",overflow:"hidden",textAlign:"left"}} onMouseOver={e=>{if(!active&&!previewing)e.currentTarget.style.boxShadow="0 4px 14px rgba(0,0,0,.08)";}} onMouseOut={e=>{if(!active&&!previewing)e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.04)";}}>
+                      {/* ── Mini-Browser-Chrome ── */}
+                      <div style={{height:14,background:"#f0efec",borderBottom:"1px solid #e3e2df",display:"flex",alignItems:"center",padding:"0 6px",gap:3}}>
+                        <div style={{width:5,height:5,borderRadius:"50%",background:"#E87356"}}/>
+                        <div style={{width:5,height:5,borderRadius:"50%",background:"#E8BC56"}}/>
+                        <div style={{width:5,height:5,borderRadius:"50%",background:"#6DB176"}}/>
                       </div>
-                      <div style={{padding:"12px 14px 14px",textAlign:"left"}}>
-                        <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:2}}>{st.label}</div>
-                        <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.45}}>{st.desc}</div>
+                      {/* ── Website-Mockup ── */}
+                      <div style={{background:bg}}>
+                        {/* Nav */}
+                        <div style={{height:18,background:primary,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 8px"}}>
+                          <div style={{width:22,height:5,background:"rgba(255,255,255,.85)",borderRadius:isMod?2:1}}/>
+                          <div style={{display:"flex",gap:4}}>
+                            <div style={{width:10,height:2,background:"rgba(255,255,255,.55)",borderRadius:1}}/>
+                            <div style={{width:10,height:2,background:"rgba(255,255,255,.55)",borderRadius:1}}/>
+                            <div style={{width:14,height:6,background:accent,borderRadius:isMod?999:2}}/>
+                          </div>
+                        </div>
+                        {/* Hero */}
+                        <div style={{height:95,background:isMod?`linear-gradient(135deg,${primary} 0%,color-mix(in srgb,${primary} 70%,#000) 60%,color-mix(in srgb,${primary} 80%,${accent}) 100%)`:isEle?`linear-gradient(160deg,${primary} 0%,color-mix(in srgb,${primary} 70%,#000) 100%)`:`linear-gradient(150deg,${primary} 0%,color-mix(in srgb,${primary} 75%,#000) 100%)`,position:"relative",padding:"14px 12px 10px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+                          {isMod&&<div style={{position:"absolute",top:-10,right:-10,width:60,height:60,borderRadius:"50%",background:accent,opacity:.25,filter:"blur(14px)",pointerEvents:"none"}}/>}
+                          <div>
+                            <div style={{fontFamily:hFont,fontSize:isEle?19:isMod?17:15,fontWeight:isEle?500:isMod?700:700,color:"#fff",lineHeight:1,letterSpacing:isMod?"-.03em":isEle?"-.01em":"0",marginBottom:4}}>Aa</div>
+                            {isEle?<div style={{width:16,height:1,background:accent,opacity:.7,margin:"3px 0 5px"}}/>:<div style={{display:"flex",gap:2,marginTop:3,marginBottom:5}}>{[22,14,18].map((w,i)=><div key={i} style={{width:w,height:2,background:accent,opacity:isKla?.8:1,borderRadius:isMod?100:0}}/>)}</div>}
+                            <div style={{width:"65%",height:2,background:"rgba(255,255,255,.4)",borderRadius:1,marginBottom:3}}/>
+                            <div style={{width:"45%",height:2,background:"rgba(255,255,255,.25)",borderRadius:1}}/>
+                          </div>
+                          <div style={{display:"flex",gap:4}}>
+                            <div style={{width:28,height:8,background:accent,borderRadius:btnRadius,boxShadow:isMod?`0 2px 6px color-mix(in srgb,${accent} 40%,transparent)`:"none"}}/>
+                            <div style={{width:22,height:8,background:"transparent",border:isEle?"0.5px solid rgba(255,255,255,.5)":"1px solid rgba(255,255,255,.5)",borderRadius:btnRadius}}/>
+                          </div>
+                        </div>
+                        {/* Section: 3 Mini-Cards */}
+                        <div style={{padding:"8px 8px 10px",background:bg}}>
+                          <div style={{width:"30%",height:3,background:accent,opacity:.85,borderRadius:1,marginBottom:5}}/>
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4}}>
+                            {[0,1,2].map(i=><div key={i} style={{height:26,background:"#fff",border:isKla?`1px solid #e5e7eb`:isEle?"0.5px solid #eaddcf":"none",borderLeft:isKla?`2px solid ${accent}`:undefined,borderRadius:radius,boxShadow:isMod?"0 1px 4px rgba(0,0,0,.06)":"none",padding:"4px 4px",display:"flex",flexDirection:"column",gap:2,justifyContent:"center"}}>
+                              <div style={{width:"70%",height:2,background:isMod?accent:"#333",opacity:isMod?.8:.5,borderRadius:1}}/>
+                              <div style={{width:"90%",height:1.5,background:"#333",opacity:.2,borderRadius:1}}/>
+                            </div>)}
+                          </div>
+                        </div>
                       </div>
-                      {active&&<div style={{position:"absolute",top:8,right:8,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,boxShadow:"0 2px 6px rgba(0,0,0,.3)"}}>{"✓"}</div>}
+                      {/* Label */}
+                      <div style={{padding:"10px 12px 12px",borderTop:`1px solid ${T.bg3}`,background:"#fff"}}>
+                        <div style={{fontSize:".82rem",fontWeight:700,color:T.dark,marginBottom:1}}>{st.label}</div>
+                        <div style={{fontSize:".7rem",color:T.textMuted,lineHeight:1.4}}>{st.desc}</div>
+                      </div>
+                      {active&&<div style={{position:"absolute",top:6,right:6,width:22,height:22,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,boxShadow:"0 2px 8px rgba(0,0,0,.35)",zIndex:2}}>{"✓"}</div>}
+                      {!active&&previewing&&<div style={{position:"absolute",top:6,right:6,padding:"3px 8px",borderRadius:100,background:T.accent,color:"#fff",fontSize:".65rem",fontWeight:700,letterSpacing:".05em",zIndex:2}}>VORSCHAU</div>}
                     </button>
                   })}
                 </div>
 
-                {/* Live-Preview mit Browser-Chrome-Rahmen und Fullscreen-Button */}
-                <div style={{position:"relative",borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`,background:"#fff",boxShadow:"0 2px 8px rgba(0,0,0,.04)"}}>
-                  {/* Browser-Chrome */}
-                  <div style={{height:28,background:"#f5f5f2",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",padding:"0 10px",gap:6,position:"relative"}}>
-                    <div style={{display:"flex",gap:5}}>
-                      <div style={{width:8,height:8,borderRadius:"50%",background:"#E87356"}}/>
-                      <div style={{width:8,height:8,borderRadius:"50%",background:"#E8BC56"}}/>
-                      <div style={{width:8,height:8,borderRadius:"50%",background:"#6DB176"}}/>
-                    </div>
-                    <div style={{position:"absolute",left:"50%",transform:"translateX(-50%)",fontSize:".68rem",color:T.textMuted,fontFamily:T.mono,maxWidth:"60%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sub}.siteready.at — {STYLES_MAP[stilPreview||order.stil]?.label}</div>
-                    <button onClick={()=>setStilPreviewFullscreen(true)} aria-label="Vollbild-Vorschau oeffnen" title="Vollbild" style={{position:"absolute",right:6,top:4,background:"none",border:"none",padding:"3px 6px",cursor:"pointer",color:T.textMuted,borderRadius:3,display:"flex",alignItems:"center"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,0,0,.06)"} onMouseOut={e=>e.currentTarget.style.background="none"}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                    </button>
-                  </div>
-                  {/* iframe */}
-                  <div style={{height:340,background:"#fff"}}>
-                    <iframe
-                      key={(stilPreview||order.stil)+"|"+sub}
-                      src={`/s/${sub}?preview=${stilPreview||order.stil||"klassisch"}`}
-                      title="Stil-Vorschau"
-                      style={{width:"100%",height:"100%",border:"none",display:"block"}}
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-
                 {/* Action-Bar: nur sichtbar wenn Preview von aktuellem Stil abweicht */}
-                {stilPreview&&stilPreview!==order.stil&&<div style={{marginTop:10,padding:"10px 14px",background:T.amberLight,border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-                  <div style={{fontSize:".78rem",color:"#78350f"}}>Vorschau: <strong>{STYLES_MAP[stilPreview]?.label}</strong> — noch nicht übernommen</div>
+                {stilPreview&&stilPreview!==order.stil&&<div style={{marginTop:4,padding:"10px 14px",background:T.amberLight,border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
+                  <div style={{fontSize:".78rem",color:"#78350f"}}>Vorschau: <strong>{STYLES_MAP[stilPreview]?.label}</strong> — klicken Sie „Live-Vorschau" um Ihre Seite im neuen Stil zu sehen.</div>
                   <div style={{display:"flex",gap:6}}>
                     <button onClick={()=>setStilPreview(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Zurücksetzen</button>
                     <button onClick={()=>{const key=stilPreview;upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));setStilPreview(null);showToast("Stil übernommen");}} style={{padding:"7px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Übernehmen</button>

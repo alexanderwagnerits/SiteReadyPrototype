@@ -2008,13 +2008,28 @@ function Portal({session,onLogout}){
     </div>
   );
 
-  const VisibilityToggle=({field,labelOn,labelOff})=>{const visible=order?.sections_visible?.[field]!==false;return(
-    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"10px 14px",background:visible?T.bg:T.amberLight,border:`1.5px solid ${visible?T.bg3:T.amberBorder}`,borderRadius:T.rSm,marginBottom:16}}>
-      <div style={{fontSize:".82rem",color:visible?T.textSub:T.amberText,lineHeight:1.4}}>
-        <strong style={{fontWeight:700}}>{visible?"Wird auf der Website angezeigt":"Ausgeblendet"}</strong>
-        <span style={{marginLeft:8,color:visible?T.textMuted:T.amberText,fontSize:".78rem"}}>{visible?labelOn:labelOff}</span>
+  // hasContent: true wenn Section genug Daten fuer Render hat (optional).
+  // Bei fehlenden Daten zeigt der Toggle eine Warnung, selbst wenn "sichtbar" geschaltet.
+  const VisibilityToggle=({field,labelOn,labelOff,hasContent,contentHint})=>{
+    const visible=order?.sections_visible?.[field]!==false;
+    // Wenn hasContent nicht uebergeben wird → kein Content-Check (z.B. cta_block ist immer renderbar)
+    const noData=hasContent===false;
+    const effectiveVisible=visible&&!noData;
+    const bg=!visible?T.amberLight:noData?T.amberLight:T.bg;
+    const border=!visible?T.amberBorder:noData?T.amberBorder:T.bg3;
+    const color=!visible||noData?T.amberText:T.textSub;
+    const subColor=!visible||noData?T.amberText:T.textMuted;
+    let title,subtitle;
+    if(!visible){title="Ausgeblendet";subtitle=labelOff;}
+    else if(noData){title="Aktuell nicht sichtbar";subtitle=contentHint||"Noch keine Eintraege — sobald welche vorhanden sind, erscheint der Bereich.";}
+    else {title="Wird auf der Website angezeigt";subtitle=labelOn;}
+    return(
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"10px 14px",background:bg,border:`1.5px solid ${border}`,borderRadius:T.rSm,marginBottom:16}}>
+      <div style={{fontSize:".82rem",color,lineHeight:1.4}}>
+        <strong style={{fontWeight:700}}>{title}</strong>
+        <span style={{marginLeft:8,color:subColor,fontSize:".78rem"}}>{subtitle}</span>
       </div>
-      <button onClick={()=>{const sv={...(order?.sections_visible||{}),[field]:!visible};upOrder("sections_visible")(sv);}} aria-label={visible?"Bereich ausblenden":"Bereich anzeigen"} style={{width:42,height:24,borderRadius:12,background:visible?T.accent:T.bg3,border:"none",cursor:"pointer",position:"relative",flexShrink:0,padding:0}}>
+      <button onClick={()=>{const sv={...(order?.sections_visible||{}),[field]:!visible};upOrder("sections_visible")(sv);}} aria-label={visible?"Bereich ausblenden":"Bereich anzeigen"} style={{width:42,height:24,borderRadius:12,background:effectiveVisible?T.accent:T.bg3,border:"none",cursor:"pointer",position:"relative",flexShrink:0,padding:0,opacity:noData?.6:1}}>
         <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:visible?20:2,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.15)"}}/>
       </button>
     </div>
@@ -2923,7 +2938,7 @@ function Portal({session,onLogout}){
             <div style={{paddingTop:16,borderTop:`1px solid ${T.bg3}`,marginTop:8}}>
               <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>Schwebender Kontakt-Button</div>
               <div style={{fontSize:".75rem",color:T.textMuted,marginBottom:10,lineHeight:1.5}}>Runder Button unten rechts auf Ihrer Website. Verwendet WhatsApp → Buchungslink → Telefon in dieser Reihenfolge.</div>
-              <VisibilityToggle field="sticky_cta" labelOn="Schwebender Button erscheint auf Ihrer Website" labelOff="Schwebender Button wird nicht angezeigt"/>
+              <VisibilityToggle field="sticky_cta" labelOn="Schwebender Button erscheint auf Ihrer Website" labelOff="Schwebender Button wird nicht angezeigt" hasContent={!!(order.telefon||order.whatsapp||order.buchungslink)} contentHint="Telefon, WhatsApp oder Buchungslink ausfüllen — einer davon ist die Ziel-Aktion des Buttons."/>
             </div>
           </div>
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
@@ -3069,7 +3084,7 @@ function Portal({session,onLogout}){
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader label="Ablauf" desc="Zeigen Sie in 3–5 Schritten wie die Zusammenarbeit mit Ihnen abläuft. Mindestens 2 Schritte mit Titel, sonst wird die Section nicht angezeigt." aiField="ablauf_schritte" onRemove={async()=>{await supabase.from("orders").update({ablauf_schritte:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}).eq("id",order.id);setOrder(o=>({...o,ablauf_schritte:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="ablauf_schritte")}));showToast("Ablauf entfernt");}}/>
-          <VisibilityToggle field="ablauf" labelOn="Ablauf erscheint auf Ihrer Website" labelOff="Ablauf wird nicht angezeigt"/>
+          <VisibilityToggle field="ablauf" labelOn="Ablauf erscheint auf Ihrer Website" labelOff="Ablauf wird nicht angezeigt" hasContent={(order.ablauf_schritte||[]).filter(s=>s&&s.titel).length>=2} contentHint="Mindestens 2 Ablauf-Schritte mit Titel nötig."/>
           <div style={{opacity:order.sections_visible?.ablauf===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const validCount=(order.ablauf_schritte||[]).filter(s=>s&&s.titel).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -3108,7 +3123,7 @@ function Portal({session,onLogout}){
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen" desc={`Fragen und Antworten, die Ihre ${kundenWort(order.branche)} häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website.`} aiField="faq"/>
-          <VisibilityToggle field="faq" labelOn="FAQ erscheint auf Ihrer Website" labelOff="FAQ wird nicht angezeigt"/>
+          <VisibilityToggle field="faq" labelOn="FAQ erscheint auf Ihrer Website" labelOff="FAQ wird nicht angezeigt" hasContent={(order.faq||[]).some(f=>f&&f.frage&&f.antwort)} contentHint="Mindestens eine vollständige Frage + Antwort nötig."/>
           <div style={{opacity:order.sections_visible?.faq===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const incompleteCount=(order.faq||[]).filter(f=>(f.frage&&!f.antwort)||(!f.frage&&f.antwort)).length;return incompleteCount>0&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -3145,7 +3160,7 @@ function Portal({session,onLogout}){
         {/* ── Zahlen & Fakten Seite ── */}
         {page==="fakten"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Zahlen & Fakten" desc="Beeindruckende Zahlen über Ihren Betrieb. Mindestens 2 Eintraege, maximal 4."/>
-          <VisibilityToggle field="fakten" labelOn="Zahlen & Fakten erscheinen auf Ihrer Website" labelOff="Zahlen & Fakten werden nicht angezeigt"/>
+          <VisibilityToggle field="fakten" labelOn="Zahlen & Fakten erscheinen auf Ihrer Website" labelOff="Zahlen & Fakten werden nicht angezeigt" hasContent={(order.fakten||[]).filter(f=>f&&f.zahl).length>=2} contentHint="Mindestens 2 Einträge mit Zahl nötig."/>
           <div style={{opacity:order.sections_visible?.fakten===false?0.55:1,transition:"opacity .2s"}}>
           {(()=>{const validCount=(order.fakten||[]).filter(f=>f&&f.zahl).length;return validCount===1&&<div style={{padding:"10px 14px",background:T.amberLight,borderRadius:T.rSm,marginBottom:12,fontSize:".78rem",color:T.amberText,display:"flex",alignItems:"flex-start",gap:8}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -3170,7 +3185,7 @@ function Portal({session,onLogout}){
         {/* ── Partner & Zertifikate Seite ── */}
         {page==="partner"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Vertrauen & Referenzen" desc="Kunden, Partner, Zertifikate oder Verbände — alles was Vertrauen schafft. Logo und Link sind optional."/>
-          <VisibilityToggle field="partner" labelOn="Referenzen erscheinen auf Ihrer Website" labelOff="Referenzen werden nicht angezeigt"/>
+          <VisibilityToggle field="partner" labelOn="Referenzen erscheinen auf Ihrer Website" labelOff="Referenzen werden nicht angezeigt" hasContent={(order.partner||[]).some(p=>p&&(p.url_logo||p.name))} contentHint="Mindestens ein Referenz-Eintrag (Logo oder Name) nötig."/>
           <div style={{opacity:order.sections_visible?.partner===false?0.55:1,transition:"opacity .2s"}}>
           {(order.partner||[]).map((p,i)=>(<div key={i} style={{marginTop:i?10:0,display:"flex",gap:12,padding:"12px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:T.bg,alignItems:"center"}}>
             {/* Logo-Vorschau oder Upload (optional) */}
@@ -3835,7 +3850,7 @@ function Portal({session,onLogout}){
               </label>}
             </div>
             <div style={{marginTop:16}}/>
-            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt"/>
+            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt" hasContent={(order.galerie||[]).filter(g=>g&&g.url).length>0} contentHint="Mindestens ein Foto in der Galerie nötig."/>
             <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
               {items.length>0?<>
                 <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} / {maxItems} {items.length===1?"Foto":"Fotos"}</div>

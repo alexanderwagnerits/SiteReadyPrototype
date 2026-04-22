@@ -365,8 +365,10 @@ export async function onRequestGet({params, env}) {
   };
 
   // Ablauf-Section — "So laeuft es ab" zwischen Leistungen und Ueber uns
+  // v.ablauf === null (Gastro/Kosmetik): Section per Default aus, ausser User aktiviert explizit.
   const ablaufSteps = Array.isArray(o.ablauf_schritte) ? o.ablauf_schritte.filter(s => s && s.titel) : [];
-  const showAblauf = sv.ablauf !== false && ablaufSteps.length >= 2;
+  const ablaufDefaultOn = v.ablauf !== null;
+  const showAblauf = (sv.ablauf === true || (sv.ablauf !== false && ablaufDefaultOn)) && ablaufSteps.length >= 2;
   if (showAblauf && html.includes("<!-- ABLAUF -->")) {
     let ablaufContent;
     // Stil-spezifische Varianten

@@ -11,25 +11,40 @@ function berechneVarianten(data) {
 
   // ── Hero ──
   // url_hero (Upload/Import) oder hero_image (Legacy)
-  // fullscreen = Default fuer alle Stile (wenn Bild da)
-  // minimal = Fallback wenn kein Bild
-  // split = nur via hero_override (Opt-in im Portal)
-  const hatHeroBild = !!(d.url_hero || d.hero_image);
+  // fullscreen = Default fuer alle Stile (wenn eigenes Bild da)
+  // minimal   = wenn kein Bild ODER Bild ist Platzhalter (verhindert "billig wirkende"
+  //             Stock-Fotos als Fullscreen-Hero)
+  // split     = nur via hero_override (Opt-in im Portal)
+  const hatEigenesHeroBild = !!(d.url_hero || d.hero_image) && !d.hero_is_placeholder;
   let hero = d.hero_override || null;
   if (!hero) {
-    hero = hatHeroBild ? "fullscreen" : "minimal";
+    hero = hatEigenesHeroBild ? "fullscreen" : "minimal";
   }
 
   // ── Leistungen ──
-  const leistungen = Array.isArray(d.leistungen) ? d.leistungen : [];
-  const leistAnzahl = leistungen.length;
-  const leistMitFoto = leistungen.filter(l => l && l.foto).length;
+  // leistungen ist ein String-Array ["Cocktails", ...]. Die Fotos liegen separat
+  // in leistungen_fotos: { "Cocktails": "url", ... }. Vorher wurde l.foto auf
+  // Strings geprueft — immer undefined — editorial-Variante war dead code.
+  const leistAnzahl = Array.isArray(d.leistungen) ? d.leistungen.length : 0;
+  const leistMitFoto = d.leistungen_fotos && typeof d.leistungen_fotos === 'object'
+    ? Object.values(d.leistungen_fotos).filter(Boolean).length
+    : 0;
   const fotoAnteil = leistAnzahl > 0 ? leistMitFoto / leistAnzahl : 0;
   const leist = fotoAnteil >= 0.5 ? 'editorial' : 'grid';
 
   // ── Ablauf ──
-  // Immer horizontal — kompakte Zeile auf Desktop, vertikal auf Mobile
-  const ablauf = 'horizontal';
+  // Bei Gastro + Kosmetik ergibt "Anfrage → Beratung → Umsetzung" keinen Sinn
+  // (man kommt einfach vorbei). Default off — User kann im Portal aktivieren.
+  const GRUPPE = {
+    restaurant:"gastro",cafe:"gastro",bar:"gastro",heuriger:"gastro",imbiss:"gastro",
+    pizzeria:"gastro",eissalon:"gastro",baeckerei:"gastro",fleischerei:"gastro",
+    vinothek:"gastro",winzer:"gastro",catering:"gastro",
+    friseur:"kosmetik",kosmetik:"kosmetik",nagel:"kosmetik",massage:"kosmetik",
+    tattoo:"kosmetik",fusspflege:"kosmetik",permanent_makeup:"kosmetik",
+    hundesalon:"kosmetik",barbershop:"kosmetik",spa:"kosmetik",
+  };
+  const gruppe = GRUPPE[d.branche] || null;
+  const ablauf = (gruppe === 'gastro' || gruppe === 'kosmetik') ? null : 'horizontal';
 
   // ── Bewertungen ──
   const bewAnzahl = Array.isArray(d.bewertungen) ? d.bewertungen.length : 0;

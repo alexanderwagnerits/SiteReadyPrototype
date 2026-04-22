@@ -534,6 +534,20 @@ JSON-FORMAT (nur diese Felder, keine zusätzlichen):
 REGELN für faq:
 - 4-5 branchenspezifische Fragen die Kunden TATSÄCHLICH stellen.
 - Antworten: 1-2 kurze, hilfreiche Sätze. Konkret, nicht ausweichend.
+
+VERBOTENE FAQ-Fragen (zu austauschbar, bei jedem Betrieb gleich):
+- "Welche Zahlungsarten akzeptieren Sie?" / "Kann man mit Karte zahlen?"
+- "Wie kann ich einen Termin vereinbaren?" / "Wie buche ich?"
+- "Wie lange dauert [Leistung]?" / "Wie lange dauert ein Termin?"
+- "Bieten Sie [X] an?" wenn X bereits in LEISTUNGEN steht.
+- "Was kostet [Leistung]?" — wenn Preise nicht angegeben sind. Stattdessen: transparente Preisspanne oder konkreten Unterschiedsfaktor nennen.
+- Fragen die durch ÖFFNUNGSZEITEN, ADRESSE oder LEISTUNGEN direkt beantwortet sind.
+- Generische Höflichkeits-Fragen ("Muss ich einen Termin vereinbaren?" bei einem Friseur der online buchbar ist).
+
+GUTE FAQ-Fragen sind branchen-/betriebsspezifisch und beantworten Dinge,
+die ein Neukunde WIRKLICH vor Besuch/Anruf wissen will — z.B. Spezialfaelle,
+Voraussetzungen, was man mitbringen muss, was nicht geht.
+
 - Beispiele pro Branche:
   - Elektriker: "Wie schnell sind Sie bei einem Notfall vor Ort?" → "In der Regel innerhalb von 30-60 Minuten. Unser Notdienst ist rund um die Uhr erreichbar."
   - Installateur: "Übernehmen Sie Förderanträge für Wärmepumpen?" → "Ja, wir unterstützen Sie bei der Antragstellung für Bundes- und Landesförderungen."
@@ -547,6 +561,12 @@ REGELN für faq:
   - Rechtsanwalt: "Was kostet ein Erstgespräch?" → "Das Erstgespräch dauert 30 Minuten und kostet [Betrag]. Wir besprechen offen, ob wir Ihnen helfen können."
   - Fotograf: "Wann bekomme ich die Bilder?" → "Innerhalb von 2-3 Wochen erhalten Sie die fertig bearbeiteten Bilder per Online-Galerie."
   - Immobilienmakler: "Was kostet die Maklerprovision?" → "Gesetzlich geregelt: max. 3% plus USt. vom Kaufpreis. Details klären wir im Erstgespräch."
+  - Bar: "Ab welchem Alter darf ich rein?" → "Ab 18 Jahren mit gültigem Ausweis. Bei großen Gruppen empfehlen wir eine Reservierung."
+  - Spa/Massage: "Was sollte ich zur Behandlung mitbringen?" → "Nichts — Bademantel, Handtücher und Hausschuhe stellen wir. Bitte 15 Min vorher da sein."
+  - Hundesalon: "Wie lange dauert ein Groomingtermin?" → "Je nach Rasse und Fellzustand 1-3 Stunden. Wir melden uns wenn Ihr Hund abholbereit ist."
+  - IT-Service: "Wie schnell reagiert ihr bei einem Ausfall?" → "SLA-Kunden innerhalb 1h, alle anderen werktags am selben Tag. Remote-Unterstützung ist meist sofort möglich."
+  - Tischler: "Wie lange dauert eine Maßanfertigung?" → "Küche: 6-8 Wochen nach Aufmaß. Einzelmöbel: 3-5 Wochen. Liefertermin steht mit KV fest."
+  - Dachdecker: "Kommen Sie auch für kleine Reparaturen?" → "Ja, wir reparieren auch einzelne Ziegel oder Dachrinnen — Mindestauftrag nach Anfrage."
 
 REGELN für ablauf_schritte:
 - 3-4 branchenspezifische Schritte die zeigen wie die Zusammenarbeit abläuft.

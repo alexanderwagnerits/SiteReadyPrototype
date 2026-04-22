@@ -283,6 +283,41 @@ export const UNTERNEHMENSFORMEN = [
   { value: 'gesnbr', label: 'GesbR' },
 ];
 
+// Pflichtfelder im Impressum je Unternehmensform (ECG § 5 + UGB + MedienG)
+// Adresse/PLZ/Ort/Telefon/E-Mail sind generell Pflicht, werden aber im Kontakt-Tab
+// geprueft (dort required). Hier nur impressum-spezifische Zusatzfelder.
+export const IMPRESSUM_REQUIRED = {
+  einzelunternehmen: ['vorname', 'nachname'],
+  eu:     ['firmenbuchnummer', 'firmenbuchgericht'],
+  gmbh:   ['firmenbuchnummer', 'firmenbuchgericht', 'geschaeftsfuehrer'],
+  ag:     ['firmenbuchnummer', 'firmenbuchgericht', 'vorstand'],
+  og:     ['firmenbuchnummer', 'firmenbuchgericht', 'gesellschafter'],
+  kg:     ['firmenbuchnummer', 'firmenbuchgericht', 'gesellschafter'],
+  gesnbr: ['gesellschafter'],
+  verein: ['zvr_zahl', 'vertretungsorgane'],
+};
+
+export const IMPRESSUM_LABELS = {
+  vorname: 'Vorname Inhaber',
+  nachname: 'Nachname Inhaber',
+  firmenbuchnummer: 'Firmenbuchnummer',
+  firmenbuchgericht: 'Firmenbuchgericht',
+  geschaeftsfuehrer: 'Geschäftsführer',
+  vorstand: 'Vorstand',
+  gesellschafter: 'Gesellschafter',
+  zvr_zahl: 'ZVR-Zahl',
+  vertretungsorgane: 'Vertretungsbefugte Organe',
+};
+
+export function getMissingImpressumFields(order) {
+  if (!order) return [];
+  if (!order.unternehmensform) return [{ key: 'unternehmensform', label: 'Unternehmensform' }];
+  const required = IMPRESSUM_REQUIRED[order.unternehmensform] || [];
+  return required
+    .filter(k => !order[k] || String(order[k]).trim() === '')
+    .map(k => ({ key: k, label: IMPRESSUM_LABELS[k] || k }));
+}
+
 export const STYLES_MAP = {
   klassisch: { label: 'Klassisch', desc: 'Seriös, klar strukturiert', primary: '#094067', accent: '#0369a1', accentSoft: 'rgba(3,105,161,0.07)', bg: '#f4f7fa', cardBg: '#fff', text: '#1e293b', textMuted: '#475569', textLight: '#90b4ce', borderColor: '#d8eefe', font: "'Inter',system-ui,sans-serif", radius: '4px', radiusLg: '6px', heroGradient: 'linear-gradient(160deg,#094067 0%,#062b44 50%,#0a1f42 100%)', heroOverlay: 'radial-gradient(circle at 70% 20%,rgba(3,105,161,0.08) 0%,transparent 60%)', shadow: 'none', badgeBg: '#d8eefe', badgeText: '#094067', btnRadius: '4px', cardBorder: true, cardShadow: false, badgeRadius: '4px', sectionDivider: true, spacing: 'compact' },
   modern:    { label: 'Modern', desc: 'Dynamisch, frisch, mit Akzenten', primary: '#18181b', accent: '#4f46e5', accentSoft: 'rgba(79,70,229,0.07)', bg: '#fafafa', cardBg: '#fff', text: '#18181b', textMuted: '#71717a', textLight: '#a1a1aa', borderColor: '#e4e4e7', font: "'Plus Jakarta Sans',system-ui,sans-serif", radius: '12px', radiusLg: '16px', heroGradient: 'linear-gradient(135deg,#18181b 0%,#1e1b4b 50%,#4f46e5 100%)', heroOverlay: 'radial-gradient(ellipse at 80% 30%,rgba(79,70,229,0.15) 0%,transparent 50%)', shadow: '0 2px 8px rgba(0,0,0,0.06)', badgeBg: '#eef2ff', badgeText: '#4338ca', btnRadius: '100px', cardBorder: false, cardShadow: true, badgeRadius: '100px', sectionDivider: false, spacing: 'airy' },

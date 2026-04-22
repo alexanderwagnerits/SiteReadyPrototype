@@ -7,6 +7,7 @@ import {
   BRANCHEN, GRUPPEN_PALETTEN, BRANCHEN_ACCENTS,
   getBrancheFeatures, getBrancheGruppe,
   BUNDESLAENDER, OEFFNUNGSZEITEN, UNTERNEHMENSFORMEN,
+  IMPRESSUM_REQUIRED, IMPRESSUM_LABELS, getMissingImpressumFields,
   STYLES_MAP, ACCENT_PRESETS,
   ensureContrast, contrastRatioVsWhite, buildPaletteFromAccent, suggestPalettesFromAccent,
   getCtaDefault,
@@ -2838,42 +2839,57 @@ function Portal({session,onLogout}){
           </div>
         </>}
         {page==="impressum"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-          <SectionHeader label="Unternehmen & Impressum"            desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Änderungen erfordern eine Bestätigung."/>
+          <SectionHeader label="Unternehmen & Impressum"            desc="Rechtlich vorgeschriebene Pflichtangaben für Ihre Website. Pflichtfelder sind mit * markiert."/>
           {(()=>{const uf=order.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
+          const required=(IMPRESSUM_REQUIRED[uf]||[]);
+          const req=k=>required.includes(k);
+          const missing=getMissingImpressumFields(order);
           return<>
-            <Dropdown label="Unternehmensform" value={uf||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen"/>
+            <Dropdown label="Unternehmensform" value={uf||""} onChange={upOrder("unternehmensform")} options={UNTERNEHMENSFORMEN} placeholder="Unternehmensform wählen" required/>
             {uf==="einzelunternehmen"&&<div className="pt-impres-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <Field label="Vorname Inhaber" value={order.vorname||""} onChange={upOrder("vorname")} placeholder="Maria"/>
-              <Field label="Nachname Inhaber" value={order.nachname||""} onChange={upOrder("nachname")} placeholder="Muster"/>
+              <Field label="Vorname Inhaber" value={order.vorname||""} onChange={upOrder("vorname")} placeholder="Maria" required={req("vorname")}/>
+              <Field label="Nachname Inhaber" value={order.nachname||""} onChange={upOrder("nachname")} placeholder="Muster" required={req("nachname")}/>
             </div>}
-            {uf==="gesnbr"&&<Field label="Gesellschafter" value={order.gesellschafter||""} onChange={upOrder("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Empfohlen laut WKO"/>}
+            {uf==="gesnbr"&&<Field label="Gesellschafter" value={order.gesellschafter||""} onChange={upOrder("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Pflicht laut WKO" required={req("gesellschafter")}/>}
             {hasFB&&<div className="pt-impres-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a" help="Die Firmenbuchnummer finden Sie im Firmenbuchauszug. Format z.B. FN 123456a. Pflicht für GmbH, AG, OG, KG und e.U."/>
-              <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="HG Wien"/>
+              <Field label="Firmenbuchnummer" value={order.firmenbuchnummer||""} onChange={upOrder("firmenbuchnummer")} placeholder="FN 123456a" help="Die Firmenbuchnummer finden Sie im Firmenbuchauszug. Format z.B. FN 123456a. Pflicht für GmbH, AG, OG, KG und e.U." required={req("firmenbuchnummer")}/>
+              <Field label="Firmenbuchgericht" value={order.firmenbuchgericht||""} onChange={upOrder("firmenbuchgericht")} placeholder="HG Wien" required={req("firmenbuchgericht")}/>
             </div>}
-            {uf==="gmbh"&&<Field label="Geschäftsführer" value={order.geschaeftsfuehrer||""} onChange={upOrder("geschaeftsfuehrer")} placeholder="Vor- und Nachname" hint="Für das Impressum"/>}
-            {uf==="ag"&&<><Field label="Vorstand" value={order.vorstand||""} onChange={upOrder("vorstand")} placeholder="Vor- und Nachname"/><Field label="Aufsichtsrat" value={order.aufsichtsrat||""} onChange={upOrder("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
-            {uf==="verein"&&<><Field label="ZVR-Zahl" value={order.zvr_zahl||""} onChange={upOrder("zvr_zahl")} placeholder="z.B. 123456789" help="Die ZVR-Zahl (Zentrales Vereinsregister) wird vom BMI vergeben. Online nachschlagen: vereinsregister.at"/><Field label="Vertretungsbefugte Organe" value={order.vertretungsorgane||""} onChange={upOrder("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2} help="Personen die den Verein rechtlich vertreten (z.B. Obmann, Kassier, Schriftführer) mit Namen."/></>}
+            {uf==="gmbh"&&<Field label="Geschäftsführer" value={order.geschaeftsfuehrer||""} onChange={upOrder("geschaeftsfuehrer")} placeholder="Vor- und Nachname" hint="Für das Impressum" required={req("geschaeftsfuehrer")}/>}
+            {(uf==="og"||uf==="kg")&&<Field label="Gesellschafter" value={order.gesellschafter||""} onChange={upOrder("gesellschafter")} placeholder="Max Mustermann, Maria Musterfrau" hint="Persönlich haftende Gesellschafter — Pflicht" required={req("gesellschafter")}/>}
+            {uf==="ag"&&<><Field label="Vorstand" value={order.vorstand||""} onChange={upOrder("vorstand")} placeholder="Vor- und Nachname" required={req("vorstand")}/><Field label="Aufsichtsrat" value={order.aufsichtsrat||""} onChange={upOrder("aufsichtsrat")} placeholder="Vor- und Nachname" hint="Optional"/></>}
+            {uf==="verein"&&<><Field label="ZVR-Zahl" value={order.zvr_zahl||""} onChange={upOrder("zvr_zahl")} placeholder="z.B. 123456789" help="Die ZVR-Zahl (Zentrales Vereinsregister) wird vom BMI vergeben. Online nachschlagen: vereinsregister.at" required={req("zvr_zahl")}/><Field label="Vertretungsbefugte Organe" value={order.vertretungsorgane||""} onChange={upOrder("vertretungsorgane")} placeholder="z.B. Obmann: Max Mustermann" rows={2} help="Personen die den Verein rechtlich vertreten (z.B. Obmann, Kassier, Schriftführer) mit Namen." required={req("vertretungsorgane")}/></>}
             <Field label="UID-Nummer" value={order.uid_nummer||""} onChange={upOrder("uid_nummer")} placeholder="ATU12345678" hint="Optional" help="Die UID-Nummer (Umsatzsteuer-Identifikation) beginnt mit ATU gefolgt von 8 Ziffern. Nur falls Sie umsatzsteuerpflichtig sind."/>
             <Field label="GISA-Zahl" value={order.gisazahl||""} onChange={upOrder("gisazahl")} placeholder="GISA 12345678" hint="Optional" help="Die GISA-Zahl ist Ihre Gewerberegister-Nummer. Sie steht im Gewerbeschein. Format z.B. GISA 12345678."/>
+            {missing.length>0&&<div style={{marginTop:16,padding:"12px 14px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:T.rSm}}>
+              <div style={{fontSize:".82rem",fontWeight:700,color:"#78350f",marginBottom:4}}>Pflichtfelder fehlen</div>
+              <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.55}}>Folgende Angaben fehlen noch: <strong>{missing.map(m=>m.label).join(", ")}</strong>. Erst nach Ausfüllen kann das Impressum gespeichert werden.</div>
+            </div>}
             <div style={{marginTop:16}}>
-              <button onClick={()=>setImpressumConfirmOpen(true)} disabled={saving} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Impressum speichern"}</button>
+              <button onClick={()=>setImpressumConfirmOpen(true)} disabled={saving||missing.length>0} title={missing.length>0?"Pflichtfelder ausfuellen":""} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:missing.length>0?"#ccc":T.dark,color:"#fff",cursor:missing.length>0?"not-allowed":"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Impressum speichern"}</button>
             </div>
           </>;})()}
-          {impressumConfirmOpen&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}}>
-            <div style={{background:"#fff",borderRadius:T.r,padding:"32px 28px",maxWidth:440,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
+          {impressumConfirmOpen&&(()=>{const missing=getMissingImpressumFields(order);const required=(IMPRESSUM_REQUIRED[order.unternehmensform]||[]);return<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}} onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}}>
+            <div style={{background:"#fff",borderRadius:T.r,padding:"32px 28px",maxWidth:480,width:"100%",boxShadow:"0 24px 64px rgba(0,0,0,.18)"}} onClick={e=>e.stopPropagation()}>
               <div style={{fontSize:"1.05rem",fontWeight:800,color:T.dark,marginBottom:8}}>Impressum bestätigen</div>
-              <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,margin:"0 0 20px"}}>Falsche Impressum-Angaben können rechtliche Konsequenzen haben. Bitte prüfen Sie alle Felder sorgfältig.</p>
+              <p style={{fontSize:".85rem",color:T.textSub,lineHeight:1.6,margin:"0 0 16px"}}>Falsche Impressum-Angaben können Abmahnungen nach sich ziehen. Bitte Angaben final prüfen:</p>
+              {required.length>0&&<div style={{marginBottom:18,padding:"12px 14px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Pflichtfelder</div>
+                {required.map(k=>{const filled=!missing.find(m=>m.key===k);return<div key={k} style={{display:"flex",alignItems:"center",gap:8,padding:"3px 0",fontSize:".82rem",color:filled?T.dark:"#78350f"}}>
+                  <span style={{width:16,height:16,borderRadius:"50%",background:filled?"#10b981":"#fef3c7",color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".6rem",flexShrink:0,border:filled?"none":"1px solid #fcd34d"}}>{filled?"✓":"!"}</span>
+                  <span>{IMPRESSUM_LABELS[k]||k}</span>
+                </div>;})}
+              </div>}
               <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",marginBottom:24}}>
                 <input type="checkbox" checked={impressumChecked} onChange={e=>setImpressumChecked(e.target.checked)} style={{marginTop:3,flexShrink:0,width:16,height:16,cursor:"pointer"}}/>
-                <span style={{fontSize:".85rem",color:T.dark,lineHeight:1.5}}>Ich bestätige, dass alle Angaben korrekt und vollständig sind.</span>
+                <span style={{fontSize:".85rem",color:T.dark,lineHeight:1.5}}>Ich bestätige, dass alle Angaben korrekt sind und ich rechtlich verantwortlich bin.</span>
               </label>
               <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
                 <button onClick={()=>{setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".85rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-                <button disabled={!impressumChecked} onClick={()=>{saveImpressum();setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:impressumChecked?T.dark:"#ccc",color:"#fff",cursor:impressumChecked?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
+                <button disabled={!impressumChecked||missing.length>0} onClick={()=>{saveImpressum();setImpressumConfirmOpen(false);setImpressumChecked(false);}} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:(impressumChecked&&missing.length===0)?T.dark:"#ccc",color:"#fff",cursor:(impressumChecked&&missing.length===0)?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>Speichern</button>
               </div>
             </div>
-          </div>}
+          </div>;})()}
         </div>}
         {page==="kontakt"&&<>
           {/* Kontakt-Variante */}

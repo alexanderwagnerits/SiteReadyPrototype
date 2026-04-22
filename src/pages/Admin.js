@@ -42,7 +42,14 @@ const DESKTOP_ONLY_TABS=["finanzen","support","system","arch-system","arch-flows
 
 function Admin({adminKey}){
   const[tab,setTab]=useState("start");
-  const[isMobile]=useState(typeof window!=="undefined"&&window.innerWidth<768);
+  const[isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<960);
+  const[drawerOpen,setDrawerOpen]=useState(false);
+  useEffect(()=>{
+    const onResize=()=>setIsMobile(window.innerWidth<960);
+    window.addEventListener("resize",onResize);
+    return()=>window.removeEventListener("resize",onResize);
+  },[]);
+  const selectTab=id=>{setTab(id);setDrawerOpen(false);};
   const[orders,setOrders]=useState([]);
   const[tickets,setTickets]=useState([]);
   const[filter,setFilter]=useState("alle");
@@ -477,10 +484,22 @@ function Admin({adminKey}){
     {id:"docs",label:"Dokumentation",icon:`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`},
   ];
 
+  const currentTab=TABS.find(t=>t.id===tab);
   return(<div style={{minHeight:"100vh",background:T.bg,fontFamily:T.font}}><style>{css}</style>
     <div className="ad-wrap" style={{display:"flex",height:"100vh"}}>
+      {/* Mobile Topbar */}
+      <div className="ad-mob-topbar">
+        <button onClick={()=>setDrawerOpen(true)} aria-label="Menü öffnen" style={{background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",width:40,height:40,borderRadius:8,color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <img src="/logo.png" alt="SiteReady" style={{height:20,filter:"brightness(0) invert(1)",opacity:.88}} onError={e=>{e.currentTarget.style.display="none"}}/>
+        <span style={{fontSize:".68rem",fontWeight:700,color:"#f59e0b",background:"rgba(245,158,11,.12)",padding:"2px 7px",borderRadius:4,letterSpacing:".08em",flexShrink:0}}>ADMIN</span>
+        <span style={{fontSize:".85rem",fontWeight:700,color:"rgba(255,255,255,.82)",marginLeft:"auto",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{currentTab?.label||""}</span>
+      </div>
+      {/* Mobile Drawer Overlay */}
+      <div className={`ad-mob-overlay${drawerOpen?" ad-mob-overlay-open":""}`} onClick={()=>setDrawerOpen(false)}/>
       {/* Sidebar — gleicher Stil wie Kunden-Portal */}
-      <div className="ad-sidebar" style={{width:236,background:T.dark,display:"flex",flexDirection:"column",flexShrink:0,overflow:"hidden"}}>
+      <div className={`ad-sidebar${drawerOpen?" ad-sidebar-open":""}`} style={{width:236,background:T.dark,display:"flex",flexDirection:"column",flexShrink:0,overflow:"hidden"}}>
         <div style={{padding:"22px 18px 18px",borderBottom:"1px solid rgba(255,255,255,.07)"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
             <img src="/logo.png" alt="SiteReady" style={{height:24,filter:"brightness(0) invert(1)",opacity:.88}} onError={e=>{e.currentTarget.style.display="none"}}/>
@@ -494,7 +513,7 @@ function Admin({adminKey}){
         <nav style={{padding:"12px 10px",flex:1,overflowY:"auto"}}>
           {TABS.map(t=><div key={t.id}>
             {t.section&&<div style={{fontSize:".64rem",fontWeight:700,letterSpacing:".09em",textTransform:"uppercase",color:"rgba(255,255,255,.2)",padding:"14px 8px 5px"}}>{t.section}</div>}
-            <button onClick={()=>setTab(t.id)} className={`pt-ni${tab===t.id?" active":""}`} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:8,cursor:"pointer",color:tab===t.id?"#fff":"rgba(255,255,255,.45)",fontSize:".91rem",fontWeight:tab===t.id?600:500,background:tab===t.id?"rgba(255,255,255,.09)":"transparent",border:"none",width:"100%",fontFamily:"inherit",textAlign:"left",transition:"all .12s"}}>
+            <button onClick={()=>selectTab(t.id)} className={`pt-ni${tab===t.id?" active":""}`} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:8,cursor:"pointer",color:tab===t.id?"#fff":"rgba(255,255,255,.45)",fontSize:".91rem",fontWeight:tab===t.id?600:500,background:tab===t.id?"rgba(255,255,255,.09)":"transparent",border:"none",width:"100%",fontFamily:"inherit",textAlign:"left",transition:"all .12s"}}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:tab===t.id?.85:.5}} dangerouslySetInnerHTML={{__html:t.icon}}/>
               <span style={{flex:1}}>{t.label}</span>
               {t.badge&&<span style={{background:"#dc2626",color:"#fff",borderRadius:10,padding:"0 6px",fontSize:".72rem",fontWeight:700,lineHeight:"18px",minWidth:18,textAlign:"center"}}>{t.badge}</span>}
@@ -512,8 +531,8 @@ function Admin({adminKey}){
       {/* Main */}
       <div className="ad-main" style={{flex:1,overflowY:"auto",padding:28,position:"relative"}}>
         {loading&&(()=>{const B=({w,h=14,r=6,mb=0})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${T.bg3} 25%,${T.bg2} 50%,${T.bg3} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite",marginBottom:mb}}/>;return<div style={{display:"flex",flexDirection:"column",gap:16}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>{[0,1,2,3].map(i=><div key={i} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${T.bg3}`}}><B w={80} h={12} mb={8}/><B w={60} h={28} mb={5}/><B w={100} h={11}/></div>)}</div>
-          <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"12px 14px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>{[80,60,50,60,100,60].map((w,i)=><B key={i} w={w} h={11}/>)}</div>{[0,1,2,3,4].map(i=><div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"13px 14px",borderBottom:`1px solid ${T.bg3}`}}>{[120,70,50,70,130,60].map((w,j)=><B key={j} w={w} h={12}/>)}</div>)}</div>
+          <div className="ad-kpi-grid">{[0,1,2,3].map(i=><div key={i} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${T.bg3}`}}><B w={80} h={12} mb={8}/><B w={60} h={28} mb={5}/><B w={100} h={11}/></div>)}</div>
+          <div className="ad-table-wrap" style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"12px 14px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>{[80,60,50,60,100,60].map((w,i)=><B key={i} w={w} h={11}/>)}</div>{[0,1,2,3,4].map(i=><div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"13px 14px",borderBottom:`1px solid ${T.bg3}`}}>{[120,70,50,70,130,60].map((w,j)=><B key={j} w={w} h={12}/>)}</div>)}</div>
         </div>;})()}
         {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"1.4rem",fontWeight:800,color:T.textMuted}}>Desktop</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
         {(!isMobile||!DESKTOP_ONLY_TABS.includes(tab))&&<>
@@ -572,7 +591,7 @@ function Admin({adminKey}){
             </div>}
 
             {/* KPI Row — neutral, monochrom */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <div className="ad-kpi-grid">
               {[
                 {l:"Kunden",v:liveN,s:`${trialN} in Trial`,a:()=>setTab("sites")},
                 {l:"MRR",v:`€${mrr.toFixed(0)}`,s:`${activeOrders.length} Abos`,a:()=>setTab("finanzen")},
@@ -617,7 +636,7 @@ function Admin({adminKey}){
           });
           const ddStyle={padding:"6px 10px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".78rem",fontFamily:T.font,background:"#fff",color:T.dark,cursor:"pointer",outline:"none"};
           return(<div>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,flexWrap:"wrap"}}>
+            <div className="ad-filter-bar" style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,flexWrap:"wrap"}}>
               <h2 style={{fontSize:"1.2rem",fontWeight:800,color:T.dark,margin:0,marginRight:"auto"}}>Sites</h2>
               <div style={{position:"relative"}}>
                 <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{padding:"7px 30px 7px 12px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,outline:"none",width:160,background:"#fff"}}/>
@@ -662,7 +681,7 @@ function Admin({adminKey}){
               </div>
             </div>
             {sf.length===0?<div style={{color:T.textMuted,padding:40,textAlign:"center"}}>Keine Ergebnisse.</div>:
-            <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh2}}>
+            <div className="ad-table-wrap" style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,overflow:"hidden",boxShadow:T.sh2}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:T.bg}}>{["Firma","Prozess","Health","Zahlung","URL",""].map(h=>{
                   if(h==="Health"){const r=8,circ=2*Math.PI*r,pct=healthCountdown/60,dash=circ*pct;return <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:".78rem",fontWeight:700,color:T.textMuted,letterSpacing:".04em",textTransform:"uppercase",borderBottom:`1px solid ${T.bg3}`}}><span style={{display:"inline-flex",alignItems:"center",gap:5}}>Health<svg width={18} height={18} style={{display:"block"}}><circle cx={9} cy={9} r={r} fill="none" stroke={T.bg3} strokeWidth={2}/><circle cx={9} cy={9} r={r} fill="none" stroke={T.accent} strokeWidth={2} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" transform="rotate(-90 9 9)"/><text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={5} fill={T.textMuted} fontFamily="JetBrains Mono,monospace">{healthCountdown}</text></svg></span></th>;}

@@ -99,14 +99,29 @@ export const css = `@import url('https://fonts.googleapis.com/css2?family=DM+San
   .sp-price-row{flex-direction:column!important;align-items:stretch!important}
   .sp-price-row button{width:100%!important}
 }
+.ad-mob-topbar{display:none}
+.ad-mob-overlay{display:none}
+.ad-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media(max-width:960px){
-  .ad-wrap{flex-direction:column!important;height:auto!important;min-height:calc(100vh - 56px)!important}
-  .ad-sidebar{width:100%!important;display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;padding:6px 8px!important;border-right:none!important;border-bottom:1px solid #e8ebf0!important;gap:2px!important}
-  .ad-sidebar button{flex:1;width:auto!important;text-align:center!important;padding:8px 10px!important}
-  .ad-status-sec{display:none!important}
+  .ad-wrap{flex-direction:column!important;height:auto!important;min-height:100vh!important}
+  .ad-sidebar{position:fixed!important;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease;width:260px!important;height:100vh!important}
+  .ad-sidebar.ad-sidebar-open{transform:translateX(0)}
+  .ad-mob-topbar{display:flex!important;position:sticky;top:0;z-index:50;background:${T.dark};padding:10px 14px;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .ad-mob-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
+  .ad-mob-overlay.ad-mob-overlay-open{opacity:1;pointer-events:auto}
   .ad-main{padding:16px!important}
+  .ad-kpi-grid{grid-template-columns:repeat(2,1fr)!important}
+  .ad-filter-bar{flex-direction:column!important;align-items:stretch!important;gap:8px!important}
+  .ad-filter-bar>h2{margin-right:0!important;margin-bottom:4px!important}
+  .ad-filter-bar select,.ad-filter-bar input{width:100%!important}
+  .ad-filter-bar>div{width:100%!important}
+  .ad-table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  .ad-table-wrap table{min-width:640px}
   .sp-incl-grid{grid-template-columns:1fr!important}
   .sp-name-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:560px){
+  .ad-kpi-grid{grid-template-columns:1fr!important}
 }
 @media(max-width:767px){
   .pt-info-row{grid-template-columns:120px 1fr!important}

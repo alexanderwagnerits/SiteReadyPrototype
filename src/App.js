@@ -963,6 +963,45 @@ const VALIDATORS={
   url:v=>!v||/^https?:\/\/[^\s]+\.[^\s]+/.test(v.trim())?null:"Bitte vollständigen Link eingeben (mit https://)",
   email:v=>!v||/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())?null:"Bitte gültige E-Mail-Adresse eingeben",
 };
+
+// Canvas-basierte Luminanz-Analyse fuer Logos — liefert 0 (schwarz) bis 1 (weiss)
+// ueber die NICHT-transparenten Pixel. Null bei CORS-/Load-Fehler.
+function analyzeImageLuminance(url){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.crossOrigin="anonymous";
+    img.onload=()=>{
+      try{
+        const canvas=document.createElement("canvas");
+        const maxDim=64;
+        const r=Math.min(maxDim/img.width,maxDim/img.height,1);
+        canvas.width=Math.max(1,Math.round(img.width*r));
+        canvas.height=Math.max(1,Math.round(img.height*r));
+        const ctx=canvas.getContext("2d",{willReadFrequently:true});
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        let total=0,count=0;
+        for(let i=0;i<data.length;i+=4){
+          if(data[i+3]<40)continue; // transparent uebergehen
+          const rs=data[i]/255,gs=data[i+1]/255,bs=data[i+2]/255;
+          total+=0.2126*rs+0.7152*gs+0.0722*bs;
+          count++;
+        }
+        resolve(count>0?total/count:0.5);
+      }catch(_){resolve(null);}
+    };
+    img.onerror=()=>resolve(null);
+    img.src=url;
+  });
+}
+
+function hexLuminance(hex){
+  if(!hex||!/^#[0-9A-Fa-f]{6}$/.test(hex))return 0.1;
+  const r=parseInt(hex.slice(1,3),16)/255;
+  const g=parseInt(hex.slice(3,5),16)/255;
+  const b=parseInt(hex.slice(5,7),16)/255;
+  return 0.2126*r+0.7152*g+0.0722*b;
+}
 function Field({label,value,onChange,placeholder,type="text",rows,hint,required,onBlur:onBlurProp,validate,help}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const requiredErr=required&&touched&&!value?.trim();const validateErr=touched&&!requiredErr&&validate&&value?validate(value):null;const err=!!(requiredErr||validateErr);const errMsg=requiredErr?"Pflichtfeld":validateErr;const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";const base={width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".92rem",fontFamily:T.font,background:T.white,color:T.dark,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",minHeight:44};const handleBlur=()=>{setF(false);setTouched(true);if(onBlurProp)onBlurProp();};return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".85rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,transition:"color .2s",letterSpacing:".02em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}{help&&<HelpTip text={help}/>}</label>{rows?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows} onFocus={()=>setF(true)} onBlur={handleBlur} style={{...base,resize:"vertical",lineHeight:1.5}}/>:<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} onFocus={()=>setF(true)} onBlur={handleBlur} style={base}/>}{err?<div style={{marginTop:4,fontSize:".82rem",color:T.red}}>{errMsg}</div>:hint&&<div style={{marginTop:5,fontSize:".82rem",color:T.textMuted}}>{hint}</div>}</div>)}
 
 function Dropdown({label,value,onChange,options,placeholder,hint,required}){const[f,setF]=useState(false);const[touched,setTouched]=useState(false);const err=required&&touched&&!value;const border=err?`2px solid ${T.red}`:f?`2px solid ${T.dark}`:`2px solid ${T.bg3}`;const shadow=err?`0 0 0 4px rgba(220,38,38,.1)`:f?`0 0 0 4px rgba(17,17,17,.06)`:"none";return(<div style={{marginBottom:20}}><label style={{display:"block",marginBottom:7,fontSize:".85rem",fontWeight:700,color:err?T.red:f?T.dark:T.textSub,letterSpacing:".02em"}}>{label}{required&&<span style={{color:T.red,marginLeft:3}}>*</span>}</label><select aria-label={label} value={value} onChange={e=>onChange(e.target.value)} onFocus={()=>setF(true)} onBlur={()=>{setF(false);setTouched(true);}} style={{width:"100%",padding:"12px 14px",border,borderRadius:T.rSm,fontSize:".92rem",fontFamily:T.font,background:T.white,color:value?T.dark:T.textMuted,outline:"none",transition:"all .2s, border-color .2s",boxShadow:shadow,boxSizing:"border-box",cursor:"pointer",appearance:"none",minHeight:44,backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%238b919e' stroke-width='1.5'/%3E%3C/svg%3E\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 16px center"}}><option value="" disabled>{placeholder||"Bitte wählen"}</option>{options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>{err?<div style={{marginTop:4,fontSize:".82rem",color:T.red}}>Pflichtfeld</div>:hint&&<div style={{marginTop:5,fontSize:".82rem",color:T.textMuted}}>{hint}</div>}</div>)}
@@ -1606,6 +1645,25 @@ function Portal({session,onLogout}){
   const[deleting,setDeleting]=useState({});
   const[impressumConfirmOpen,setImpressumConfirmOpen]=useState(false);
   const[stilPreview,setStilPreview]=useState(null); // null = aktueller Stil, sonst Stil-Preview ohne Save
+  const[stilPreviewFullscreen,setStilPreviewFullscreen]=useState(false);
+  const[logoContrastIssue,setLogoContrastIssue]=useState(null); // null | "too-dark" | "too-light"
+  // Logo-Kontrast-Check bei Stil/Nav-Farbe-Aenderung oder wenn Logo initial geladen wird.
+  // Der Check im uploadBlob deckt nur den Moment des Uploads ab — hier fuer bestehende Logos.
+  const logoUrlForCheck=order?.url_logo;
+  const navHexForCheck=order?.custom_color;
+  useEffect(()=>{
+    if(!logoUrlForCheck){setLogoContrastIssue(null);return;}
+    let cancelled=false;
+    (async()=>{
+      const logoL=await analyzeImageLuminance(logoUrlForCheck);
+      if(cancelled||logoL===null)return;
+      const navL=hexLuminance(navHexForCheck||"#0f1a2e");
+      const ratio=(Math.max(logoL,navL)+0.05)/(Math.min(logoL,navL)+0.05);
+      if(ratio<2.5)setLogoContrastIssue(logoL<0.35?"too-dark":"too-light");
+      else setLogoContrastIssue(null);
+    })();
+    return()=>{cancelled=true;};
+  },[logoUrlForCheck,navHexForCheck]);
   const[impressumChecked,setImpressumChecked]=useState(false);
   const[wizardOpen,setWizardOpen]=useState(()=>window.innerWidth>=768);
   const[ptSbOpen,setPtSbOpen]=useState(false);
@@ -1877,6 +1935,24 @@ function Portal({session,onLogout}){
         }
       }
       showToast(key==="logo"?"Logo hochgeladen!":key==="preisliste"?"Preisliste hochgeladen!":"Foto hochgeladen!");
+      // Logo-Kontrast-Check: wenn Logo-Luminanz zu nah am Nav-Hintergrund liegt,
+      // sichtbarkeitswarnung setzen. Nav nutzt order.custom_color (primary).
+      if(key==="logo"){
+        try{
+          const logoL=await analyzeImageLuminance(bustedUrl);
+          if(logoL!==null){
+            const navHex=order?.custom_color||STYLES_MAP[order?.stil||"klassisch"]?.primary||"#0f1a2e";
+            const navL=hexLuminance(navHex);
+            // WCAG non-text contrast ratio
+            const ratio=(Math.max(logoL,navL)+0.05)/(Math.min(logoL,navL)+0.05);
+            if(ratio<2.5){
+              setLogoContrastIssue(logoL<0.35?"too-dark":"too-light");
+            }else{
+              setLogoContrastIssue(null);
+            }
+          }
+        }catch(_){setLogoContrastIssue(null);}
+      }
     }catch(e){showToast("Fehler: "+e.message);}
     setUploading(u=>({...u,[key]:false}));
   };
@@ -2796,7 +2872,7 @@ function Portal({session,onLogout}){
               <div className="pt-logo-preview" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 <div>
                   <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
-                  <div style={{background:"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
+                  <div style={{background:order?.custom_color||"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
                     <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
                   </div>
                 </div>
@@ -2807,6 +2883,15 @@ function Portal({session,onLogout}){
                   </div>
                 </div>
               </div>
+              {logoContrastIssue&&<div style={{marginTop:10,padding:"12px 14px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:T.rSm}}>
+                <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,marginTop:1}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:".82rem",fontWeight:700,color:"#78350f",marginBottom:3}}>Logo schwer sichtbar auf der Navigation</div>
+                    <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.55}}>{logoContrastIssue==="too-dark"?"Ihr Logo ist dunkel und verschwindet auf dem dunklen Navigationshintergrund (siehe linke Vorschau).":"Ihr Logo ist sehr hell und geht auf dem hellen Hintergrund unter."} Bitte laden Sie eine Version mit ausreichendem Kontrast hoch — die meisten Designer liefern Logo-Varianten für helle UND dunkle Hintergründe.</div>
+                  </div>
+                </div>
+              </div>}
             </div>)}
             {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.bg3} strokeWidth="1.5" style={{marginBottom:8}}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
@@ -3248,48 +3333,91 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <SectionHeader label="Design & Farben" desc="Stil und Akzentfarbe sind unabhängig — ändern Sie eins, ohne das andere zu verlieren."/>
 
-              {/* Stil wechseln */}
-              <div style={{marginBottom:24}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>Stil</div>
-                <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-                  {Object.entries(STYLES_MAP).map(([key,st])=>{const active=order.stil===key;return<button key={key} onClick={()=>{upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));setStilPreview(null);}} style={{padding:"14px 16px",border:active?`2.5px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:active?T.white:"#fff",cursor:"pointer",textAlign:"left",fontFamily:T.font,transition:"all .15s",boxShadow:active?T.sh2:"none",position:"relative"}}>
-                    <div style={{width:28,height:28,borderRadius:6,background:st.heroGradient,marginBottom:10}}/>
-                    <div style={{fontSize:".85rem",fontWeight:700,color:T.dark}}>{st.label}</div>
-                    <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.5,marginTop:2}}>{st.desc}</div>
-                    {active&&<div style={{position:"absolute",top:8,right:8,width:18,height:18,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800}}>{"✓"}</div>}
-                  </button>})}
-                </div>
-              </div>
+              {/* Stil & Vorschau als ein zusammenhaengender Block — Stil-Cards oben,
+                  Live-Preview darunter in kompaktem Browser-Chrome-Rahmen. */}
+              <div style={{marginBottom:28}}>
+                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>Stil & Vorschau</div>
 
-              {/* Stil-Vorschau: iframe zeigt die eigene Seite in wechselndem Stil.
-                  Wechsel wirkt nur im Preview (URL-Parameter) — bis "Übernehmen" geklickt wird. */}
-              <div style={{marginBottom:24,padding:"16px 18px",background:T.bg,borderRadius:T.rSm,border:`1px solid ${T.bg3}`}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,marginBottom:12}}>
-                  <div>
-                    <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:2}}>Vorschau — Ihre Seite in allen Stilen</div>
-                    <div style={{fontSize:".74rem",color:T.textMuted,lineHeight:1.5}}>Wechseln Sie zwischen den drei Stilen ohne etwas zu speichern. Ihre Inhalte bleiben gleich.</div>
+                {/* Aufgewertete Stil-Cards mit Mini-Mockup (Farbe + Aa-Sample + Akzentlinie) */}
+                <div className="pt-stil-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:14}}>
+                  {Object.entries(STYLES_MAP).map(([key,st])=>{
+                    const active=order.stil===key;
+                    const previewing=stilPreview===key;
+                    const stilFont=key==="modern"?"'Plus Jakarta Sans',system-ui,sans-serif":key==="elegant"?"'Cormorant Garamond',Georgia,serif":"'Merriweather',Georgia,serif";
+                    const aaWeight=key==="elegant"?500:700;
+                    return<button key={key} onClick={()=>setStilPreview(key)} aria-pressed={previewing||active} style={{padding:0,border:active?`2px solid ${T.dark}`:previewing?`2px solid ${T.accent}`:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",cursor:"pointer",fontFamily:T.font,transition:"all .2s",boxShadow:active||previewing?"0 4px 14px rgba(0,0,0,.06)":"none",position:"relative",overflow:"hidden"}}>
+                      {/* Mini-Mockup: Gradient-Streifen + Aa-Sample + Akzent-Linie */}
+                      <div style={{height:72,background:st.heroGradient,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                        <div style={{fontFamily:stilFont,fontSize:34,fontWeight:aaWeight,color:"#fff",letterSpacing:key==="modern"?"-.02em":key==="elegant"?"-.01em":"0",lineHeight:1}}>Aa</div>
+                        <div style={{position:"absolute",bottom:10,left:"50%",transform:"translateX(-50%)",width:key==="elegant"?24:key==="modern"?36:28,height:key==="elegant"?1:key==="modern"?3:2,background:st.accent,opacity:key==="elegant"?.7:1,borderRadius:key==="modern"?100:0}}/>
+                      </div>
+                      <div style={{padding:"12px 14px 14px",textAlign:"left"}}>
+                        <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:2}}>{st.label}</div>
+                        <div style={{fontSize:".72rem",color:T.textMuted,lineHeight:1.45}}>{st.desc}</div>
+                      </div>
+                      {active&&<div style={{position:"absolute",top:8,right:8,width:20,height:20,borderRadius:"50%",background:T.dark,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,boxShadow:"0 2px 6px rgba(0,0,0,.3)"}}>{"✓"}</div>}
+                    </button>
+                  })}
+                </div>
+
+                {/* Live-Preview mit Browser-Chrome-Rahmen und Fullscreen-Button */}
+                <div style={{position:"relative",borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`,background:"#fff",boxShadow:"0 2px 8px rgba(0,0,0,.04)"}}>
+                  {/* Browser-Chrome */}
+                  <div style={{height:28,background:"#f5f5f2",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",padding:"0 10px",gap:6,position:"relative"}}>
+                    <div style={{display:"flex",gap:5}}>
+                      <div style={{width:8,height:8,borderRadius:"50%",background:"#E87356"}}/>
+                      <div style={{width:8,height:8,borderRadius:"50%",background:"#E8BC56"}}/>
+                      <div style={{width:8,height:8,borderRadius:"50%",background:"#6DB176"}}/>
+                    </div>
+                    <div style={{position:"absolute",left:"50%",transform:"translateX(-50%)",fontSize:".68rem",color:T.textMuted,fontFamily:T.mono,maxWidth:"60%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sub}.siteready.at — {STYLES_MAP[stilPreview||order.stil]?.label}</div>
+                    <button onClick={()=>setStilPreviewFullscreen(true)} aria-label="Vollbild-Vorschau oeffnen" title="Vollbild" style={{position:"absolute",right:6,top:4,background:"none",border:"none",padding:"3px 6px",cursor:"pointer",color:T.textMuted,borderRadius:3,display:"flex",alignItems:"center"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,0,0,.06)"} onMouseOut={e=>e.currentTarget.style.background="none"}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                    </button>
+                  </div>
+                  {/* iframe */}
+                  <div style={{height:340,background:"#fff"}}>
+                    <iframe
+                      key={(stilPreview||order.stil)+"|"+sub}
+                      src={`/s/${sub}?preview=${stilPreview||order.stil||"klassisch"}`}
+                      title="Stil-Vorschau"
+                      style={{width:"100%",height:"100%",border:"none",display:"block"}}
+                      loading="lazy"
+                    />
                   </div>
                 </div>
-                <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
-                  {Object.entries(STYLES_MAP).map(([key,st])=>{const isShown=(stilPreview||order.stil)===key;return<button key={key} onClick={()=>setStilPreview(key)} style={{padding:"8px 16px",border:isShown?`2px solid ${T.dark}`:`1.5px solid ${T.bg3}`,borderRadius:100,background:isShown?"#fff":T.bg,cursor:"pointer",fontSize:".8rem",fontWeight:isShown?700:500,color:isShown?T.dark:T.textMuted,fontFamily:T.font,transition:"all .15s"}}>{st.label}</button>})}
-                </div>
-                <div style={{position:"relative",borderRadius:T.rSm,overflow:"hidden",border:`1px solid ${T.bg3}`,background:"#fff",aspectRatio:"16/10",maxHeight:560}}>
-                  <iframe
-                    key={(stilPreview||order.stil)+"|"+sub}
-                    src={`/s/${sub}?preview=${stilPreview||order.stil||"klassisch"}`}
-                    title="Stil-Vorschau"
-                    style={{width:"100%",height:"100%",border:"none",display:"block"}}
-                    loading="lazy"
-                  />
-                </div>
-                {stilPreview&&stilPreview!==order.stil&&<div style={{marginTop:10,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-                  <div style={{fontSize:".78rem",color:T.textMuted}}>Vorschau: <strong style={{color:T.dark}}>{STYLES_MAP[stilPreview]?.label}</strong> — nicht gespeichert.</div>
+
+                {/* Action-Bar: nur sichtbar wenn Preview von aktuellem Stil abweicht */}
+                {stilPreview&&stilPreview!==order.stil&&<div style={{marginTop:10,padding:"10px 14px",background:T.amberLight,border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
+                  <div style={{fontSize:".78rem",color:"#78350f"}}>Vorschau: <strong>{STYLES_MAP[stilPreview]?.label}</strong> — noch nicht übernommen</div>
                   <div style={{display:"flex",gap:6}}>
-                    <button onClick={()=>setStilPreview(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Abbrechen</button>
-                    <button onClick={()=>{const key=stilPreview;upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));setStilPreview(null);showToast("Stil übernommen — wird gespeichert");}} style={{padding:"7px 14px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Diesen Stil übernehmen</button>
+                    <button onClick={()=>setStilPreview(null)} style={{padding:"7px 14px",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".78rem",fontWeight:600,fontFamily:T.font}}>Zurücksetzen</button>
+                    <button onClick={()=>{const key=stilPreview;upOrder("stil")(key);const acc=order.custom_accent||BRANCHEN_ACCENTS[order.branche]||"#0369A1";const pal=buildPaletteFromAccent(ensureContrast(acc),key);Object.entries(pal).forEach(([k,v])=>upOrder(k)(v));setStilPreview(null);showToast("Stil übernommen");}} style={{padding:"7px 16px",border:"none",borderRadius:T.rSm,background:T.dark,color:"#fff",cursor:"pointer",fontSize:".78rem",fontWeight:700,fontFamily:T.font}}>Übernehmen</button>
                   </div>
                 </div>}
               </div>
+
+              {/* Fullscreen-Overlay fuer Preview */}
+              {stilPreviewFullscreen&&<div onClick={()=>setStilPreviewFullscreen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.72)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:32}}>
+                <div onClick={e=>e.stopPropagation()} style={{width:"100%",height:"100%",maxWidth:1400,background:"#fff",borderRadius:T.rSm,overflow:"hidden",position:"relative",boxShadow:"0 40px 120px rgba(0,0,0,.5)"}}>
+                  <div style={{height:32,background:"#f5f5f2",borderBottom:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",padding:"0 12px",gap:8,position:"relative"}}>
+                    <div style={{display:"flex",gap:6}}>
+                      <div style={{width:10,height:10,borderRadius:"50%",background:"#E87356"}}/>
+                      <div style={{width:10,height:10,borderRadius:"50%",background:"#E8BC56"}}/>
+                      <div style={{width:10,height:10,borderRadius:"50%",background:"#6DB176"}}/>
+                    </div>
+                    <div style={{position:"absolute",left:"50%",transform:"translateX(-50%)",fontSize:".78rem",color:T.textSub,fontFamily:T.mono}}>{sub}.siteready.at — {STYLES_MAP[stilPreview||order.stil]?.label}</div>
+                    <button onClick={()=>setStilPreviewFullscreen(false)} aria-label="Vollbild schliessen" style={{position:"absolute",right:8,background:"none",border:"none",padding:6,cursor:"pointer",color:T.textSub,borderRadius:4,display:"flex"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,0,0,.06)"} onMouseOut={e=>e.currentTarget.style.background="none"}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                  <iframe
+                    key={"fs|"+(stilPreview||order.stil)+"|"+sub}
+                    src={`/s/${sub}?preview=${stilPreview||order.stil||"klassisch"}`}
+                    title="Stil-Vorschau (Vollbild)"
+                    style={{width:"100%",height:"calc(100% - 32px)",border:"none",display:"block"}}
+                  />
+                </div>
+              </div>}
 
               {/* Akzentfarbe */}
               <div style={{marginBottom:24}}>
@@ -3664,7 +3792,7 @@ function Portal({session,onLogout}){
               <div className="pt-logo-preview" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 <div>
                   <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
-                  <div style={{background:"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
+                  <div style={{background:order?.custom_color||"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
                     <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
                   </div>
                 </div>
@@ -3675,6 +3803,15 @@ function Portal({session,onLogout}){
                   </div>
                 </div>
               </div>
+              {logoContrastIssue&&<div style={{marginTop:10,padding:"12px 14px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:T.rSm}}>
+                <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,marginTop:1}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:".82rem",fontWeight:700,color:"#78350f",marginBottom:3}}>Logo schwer sichtbar auf der Navigation</div>
+                    <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.55}}>{logoContrastIssue==="too-dark"?"Ihr Logo ist dunkel und verschwindet auf dem dunklen Navigationshintergrund (siehe linke Vorschau).":"Ihr Logo ist sehr hell und geht auf dem hellen Hintergrund unter."} Bitte laden Sie eine Version mit ausreichendem Kontrast hoch — die meisten Designer liefern Logo-Varianten für helle UND dunkle Hintergründe.</div>
+                  </div>
+                </div>
+              </div>}
             </div>)}
             {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.bg3} strokeWidth="1.5" style={{marginBottom:8}}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>

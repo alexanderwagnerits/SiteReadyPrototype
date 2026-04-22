@@ -350,8 +350,8 @@ export async function generateWebsite(order_id, env) {
   /* Trust-Leiste wird serve-time injiziert (<!-- TRUST --> Placeholder) */
 
 
-  /* ─── Preisliste HTML ─── */
-  const preislisteHtml = preislisteUrl ? `<a href="${preislisteUrl}" target="_blank" class="btn" style="margin-top:24px;background:var(--bg);color:var(--primary);border:1px solid var(--sep)">Preisliste ansehen</a>` : "";
+  /* ─── Preisliste HTML ─── prominenter CTA-Button mit PDF-Icon */
+  const preislisteHtml = preislisteUrl ? `<a href="${preislisteUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:32px;padding:14px 26px;background:var(--accent);color:#fff;border-radius:6px;font-family:var(--font);font-weight:700;font-size:.95rem;letter-spacing:.02em;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.12);transition:transform .15s,box-shadow .15s" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 18px rgba(0,0,0,.18)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(0,0,0,.12)'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg><span>Komplette Preisliste als PDF</span></a>` : "";
 
   /* ─── Social HTML fuer Kontakt ─── */
   const socialSvgs = {

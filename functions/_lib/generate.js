@@ -914,7 +914,8 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
   }
 
   // 3. Pruefen ob kritische Sections vorhanden sind
-  const hasHero = html.includes('class="hero"');
+  // Hero: id-Check (class="hero sr-grain" matcht den alten class="hero" Substring nicht)
+  const hasHero = html.includes('id="sr-hero"');
   const hasLeist = html.includes('id="leistungen"');
   const hasKontakt = html.includes('id="kontakt"');
   const hasNav = html.includes('id="sitenav"');

@@ -71,8 +71,10 @@ export async function onRequestPost(context) {
         await log.error("start-build", {message: "Versuch 1 fehlgeschlagen: " + e1.message, stack: e1.stack});
       }
 
-      // 2. Versuch nach 5 Minuten
-      await new Promise(res => setTimeout(res, 5 * 60 * 1000));
+      // 2. Versuch sofort (10s Abstand). Lange Waits in waitUntil
+      // werden von Cloudflare abgeschnitten — dadurch blieben Orders
+      // frueher in "pending" ohne last_error haengen.
+      await new Promise(res => setTimeout(res, 10 * 1000));
       try {
         await generateWebsite(order.id, env);
         await log.info(order.id, "build_success", {attempt: 2});

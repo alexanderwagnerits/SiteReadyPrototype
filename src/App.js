@@ -4107,8 +4107,11 @@ function BuildScreen({session,setOrder}){
     {/* Timeout-Hinweis */}
     {!buildError&&buildElapsed>180&&<div style={{marginTop:24,padding:"16px 20px",background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:T.rSm,textAlign:"center"}}>
       <div style={{fontWeight:700,color:T.amberText,fontSize:".85rem",marginBottom:4}}>Das dauert länger als erwartet</div>
-      <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.5,marginBottom:12}}>Die Generierung läuft noch. Sie können die Seite aktualisieren — Ihr Fortschritt bleibt gespeichert.</div>
-      <button onClick={()=>window.location.reload()} style={{padding:"8px 18px",background:T.amberText,color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Seite neu laden</button>
+      <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.5,marginBottom:12}}>Die Generierung läuft normalerweise 1-2 Minuten. Falls sie hängt, kannst du sie neu starten — dein Fortschritt bleibt gespeichert.</div>
+      <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+        <button onClick={async()=>{setBuildElapsed(0);try{const{data}=await supabase.from("orders").select("id").eq("user_id",session.user.id).order("created_at",{ascending:false}).limit(1);if(data?.[0])await fetch("/api/start-build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:data[0].id})});}catch(_){}}} style={{padding:"8px 18px",background:T.amberText,color:"#fff",border:"none",borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Erneut generieren</button>
+        <button onClick={()=>window.location.reload()} style={{padding:"8px 18px",background:"#fff",color:T.amberText,border:`1.5px solid ${T.amberText}`,borderRadius:T.rSm,cursor:"pointer",fontWeight:700,fontSize:".82rem",fontFamily:T.font}}>Seite neu laden</button>
+      </div>
     </div>}
     <p style={{textAlign:"center",fontSize:".75rem",color:T.textMuted,marginTop:24}}>Status wird automatisch aktualisiert</p>
   </div>);

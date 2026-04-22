@@ -1665,7 +1665,14 @@ function Portal({session,onLogout}){
   },[session]);
 
   const upOrder=k=>v=>setOrder(o=>({...o,[k]:v}));
-  const isDirty=order&&originalOrderRef.current&&JSON.stringify(order)!==JSON.stringify(originalOrderRef.current);
+  // Impressum-Felder werden NUR via saveImpressum() (Pflichtfeld-Check + Confirm) gespeichert,
+  // NICHT via Auto-Save. dirty-Erkennung trennt: Auto-Save beachtet nur Nicht-Impressum-Felder,
+  // damit der Timer nicht endlos feuert wenn Impressum ungespeichert ist.
+  const IMPRESSUM_FIELDS=["unternehmensform","uid_nummer","firmenbuchnummer","firmenbuchgericht","gisazahl","geschaeftsfuehrer","vorstand","aufsichtsrat","zvr_zahl","vertretungsorgane","gesellschafter","vorname","nachname"];
+  const isFieldDirty=(k)=>order&&originalOrderRef.current&&JSON.stringify(order[k])!==JSON.stringify(originalOrderRef.current[k]);
+  const isImpressumDirty=order&&originalOrderRef.current&&IMPRESSUM_FIELDS.some(isFieldDirty);
+  const isAutoSaveDirty=order&&originalOrderRef.current&&Object.keys(order).some(k=>!IMPRESSUM_FIELDS.includes(k)&&isFieldDirty(k));
+  const isDirty=isAutoSaveDirty||isImpressumDirty;
   useEffect(()=>{const h=e=>{if(isDirty){e.preventDefault();e.returnValue="";}};window.addEventListener("beforeunload",h);return()=>window.removeEventListener("beforeunload",h);},[isDirty]);
   const[saveError,setSaveError]=useState(null);
   const saveAll=async(silent=false)=>{
@@ -1704,12 +1711,11 @@ function Portal({session,onLogout}){
       sections_visible:order.sections_visible||null,
       spezialisierung:order.spezialisierung||null,berufsregister_nr:order.berufsregister_nr||null,
       zertifiziert:order.zertifiziert,ratenzahlung:order.ratenzahlung,gutscheine:order.gutscheine,
-      unternehmensform:order.unternehmensform,uid_nummer:order.uid_nummer,
-      firmenbuchnummer:order.firmenbuchnummer,firmenbuchgericht:order.firmenbuchgericht,
-      gisazahl:order.gisazahl,geschaeftsfuehrer:order.geschaeftsfuehrer,
-      vorstand:order.vorstand,aufsichtsrat:order.aufsichtsrat,
-      zvr_zahl:order.zvr_zahl,vertretungsorgane:order.vertretungsorgane,
-      gesellschafter:order.gesellschafter,vorname:order.vorname,nachname:order.nachname,
+      // Impressum-Felder bewusst ausgenommen: rechtlich sensibel, werden
+      // nur via saveImpressum() (Pflichtfeld-Check + Confirm-Dialog) geschrieben.
+      // unternehmensform, uid_nummer, firmenbuchnummer, firmenbuchgericht,
+      // gisazahl, geschaeftsfuehrer, vorstand, aufsichtsrat, zvr_zahl,
+      // vertretungsorgane, gesellschafter, vorname, nachname.
       cta_headline:order.cta_headline||null,cta_text:order.cta_text||null,
       foerderungsberatung:order.foerderungsberatung,kassenvertrag:order.kassenvertrag||null,
       team_members:order.team_members||null,announcements:order.announcements||null,
@@ -1724,7 +1730,13 @@ function Portal({session,onLogout}){
       try{await supabase.from("error_logs").insert({source:"save_all_error",message:error.message});}catch(_){}
       return;
     }
-    originalOrderRef.current=JSON.parse(JSON.stringify(order));
+    // Sync nur Nicht-Impressum-Felder — sonst waere Impressum nach Auto-Save
+    // faelschlich "clean" (originalOrderRef == order), obwohl DB nicht gepatcht wurde.
+    const synced={...originalOrderRef.current};
+    Object.keys(order).forEach(k=>{
+      if(!IMPRESSUM_FIELDS.includes(k))synced[k]=order[k]==null?order[k]:JSON.parse(JSON.stringify(order[k]));
+    });
+    originalOrderRef.current=synced;
     setLastSavedAt(Date.now());
     setSavedNowKey(k=>k+1);
     if(!silent)showToast("Gespeichert");
@@ -1748,13 +1760,14 @@ function Portal({session,onLogout}){
 
   // Auto-Save: bei Aenderungen debounced (1.5s Inaktivitaet) speichern
   // Ohne Toast (silent=true), damit kein Gespam. Manueller Save-Button bleibt erhalten.
+  // Nutzt isAutoSaveDirty — Impressum-Felder triggern kein Auto-Save (rechtlich sensibel).
   useEffect(()=>{
     if(!order||!originalOrderRef.current||!supabase)return;
-    if(!isDirty||saving)return;
+    if(!isAutoSaveDirty||saving)return;
     const t=setTimeout(()=>{saveAll(true);},1500);
     return ()=>clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[order,isDirty,saving,supabase]);
+  },[order,isAutoSaveDirty,saving,supabase]);
 
   const discardChanges=()=>{
     if(originalOrderRef.current)setOrder(JSON.parse(JSON.stringify(originalOrderRef.current)));
@@ -2865,6 +2878,7 @@ function Portal({session,onLogout}){
               <div style={{fontSize:".82rem",fontWeight:700,color:"#78350f",marginBottom:4}}>Pflichtfelder fehlen</div>
               <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.55}}>Folgende Angaben fehlen noch: <strong>{missing.map(m=>m.label).join(", ")}</strong>. Erst nach Ausfüllen kann das Impressum gespeichert werden.</div>
             </div>}
+            {isImpressumDirty&&missing.length===0&&<div style={{marginTop:16,padding:"10px 14px",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:T.rSm,fontSize:".78rem",color:"#1e40af",lineHeight:1.5}}>Sie haben ungespeicherte Impressum-Änderungen. Auto-Save ist für diese Felder deaktiviert — bitte explizit speichern.</div>}
             <div style={{marginTop:16}}>
               <button onClick={()=>setImpressumConfirmOpen(true)} disabled={saving||missing.length>0} title={missing.length>0?"Pflichtfelder ausfuellen":""} style={{padding:"9px 18px",border:"none",borderRadius:T.rSm,background:missing.length>0?"#ccc":T.dark,color:"#fff",cursor:missing.length>0?"not-allowed":"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font}}>{saving?"Speichert...":"Impressum speichern"}</button>
             </div>

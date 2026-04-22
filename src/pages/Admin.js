@@ -38,17 +38,9 @@ const STATUS_FLOW=["pending","in_arbeit","trial","live"];
 
 function StatusBadge({status}){const c=STATUS_COLORS[status]||T.textMuted;return(<span style={{display:"inline-block",padding:"3px 10px",borderRadius:4,background:c+"22",color:c,fontSize:".72rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}>{STATUS_LABELS[status]||status}</span>);}
 
-const DESKTOP_ONLY_TABS=["finanzen","support","system","arch-system","arch-flows","docs"];
-
 function Admin({adminKey}){
   const[tab,setTab]=useState("start");
-  const[isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<960);
   const[drawerOpen,setDrawerOpen]=useState(false);
-  useEffect(()=>{
-    const onResize=()=>setIsMobile(window.innerWidth<960);
-    window.addEventListener("resize",onResize);
-    return()=>window.removeEventListener("resize",onResize);
-  },[]);
   const selectTab=id=>{setTab(id);setDrawerOpen(false);};
   const[orders,setOrders]=useState([]);
   const[tickets,setTickets]=useState([]);
@@ -534,8 +526,7 @@ function Admin({adminKey}){
           <div className="ad-kpi-grid">{[0,1,2,3].map(i=><div key={i} style={{background:"#fff",borderRadius:T.r,padding:"16px 20px",border:`1px solid ${T.bg3}`}}><B w={80} h={12} mb={8}/><B w={60} h={28} mb={5}/><B w={100} h={11}/></div>)}</div>
           <div className="ad-table-wrap" style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,boxShadow:T.sh2,overflow:"hidden"}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"12px 14px",background:T.bg,borderBottom:`1px solid ${T.bg3}`}}>{[80,60,50,60,100,60].map((w,i)=><B key={i} w={w} h={11}/>)}</div>{[0,1,2,3,4].map(i=><div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 2fr 1fr",gap:0,padding:"13px 14px",borderBottom:`1px solid ${T.bg3}`}}>{[120,70,50,70,130,60].map((w,j)=><B key={j} w={w} h={12}/>)}</div>)}</div>
         </div>;})()}
-        {isMobile&&DESKTOP_ONLY_TABS.includes(tab)&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,padding:"60px 24px",textAlign:"center"}}><div style={{fontSize:"1.4rem",fontWeight:800,color:T.textMuted}}>Desktop</div><div style={{fontWeight:700,fontSize:"1.1rem",color:T.dark}}>Desktop erforderlich</div><div style={{color:T.textMuted,fontSize:".88rem",maxWidth:280,lineHeight:1.6}}>Dieser Bereich ist fuer die Nutzung am Desktop optimiert. Bitte oeffne das Admin-Portal auf einem groesseren Bildschirm.</div></div>}
-        {(!isMobile||!DESKTOP_ONLY_TABS.includes(tab))&&<>
+        <>
         {!loading&&alerts.length>0&&<div style={{marginBottom:20,display:"flex",flexDirection:"column",gap:6}}>
           {alerts.map((a,i)=><div key={i} onClick={a.action?a.action:a.tab?()=>setTab(a.tab):undefined} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:T.rSm,background:a.type==="error"?"#fef2f2":a.type==="warn"?"#fefce8":"#eff6ff",border:`1px solid ${a.type==="error"?"#fecaca":a.type==="warn"?"#fde68a":"#bfdbfe"}`,cursor:(a.action||a.tab)?"pointer":"default"}}>
             <span style={{display:"inline-block",width:8,height:8,borderRadius:"50%",flexShrink:0,background:a.type==="error"?"#dc2626":a.type==="warn"?"#f59e0b":"#3b82f6"}}/>
@@ -867,7 +858,7 @@ function Admin({adminKey}){
           </div>
 
           {/* API-Kontingente */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
+          <div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
             {/* Anthropic */}
             <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${isBilling?T.redBorder:T.bg3}`,padding:"20px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
@@ -986,7 +977,7 @@ function Admin({adminKey}){
             <h2 style={{fontSize:"1.1rem",fontWeight:800,color:T.dark,margin:"0 0 24px"}}>Finanzen</h2>
 
             {/* KPI Row */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16,marginBottom:24}}>
+            <div className="ad-kpi-grid" style={{marginBottom:24}}>
               {[
                 {l:"MRR",v:`€${mrr.toFixed(0)}`,s:`${activeOrders.length} Abos`,warn:false},
                 {l:"Ausgaben/Mo",v:`€${ausgaben.toFixed(2)}`,s:"Stripe + API",warn:false},
@@ -999,7 +990,7 @@ function Admin({adminKey}){
               </div>)}
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
+            <div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
               {/* Einnahmen */}
               <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
                 <div style={{fontSize:".85rem",fontWeight:700,color:T.dark,marginBottom:12}}>Einnahmen</div>
@@ -1031,7 +1022,7 @@ function Admin({adminKey}){
             </div>
 
             {/* Chart + Abo-Status */}
-            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:16}}>
+            <div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:16}}>
               <div style={{background:"#fff",borderRadius:T.r,border:`1px solid ${T.bg3}`,padding:"20px"}}>
                 <div style={{fontSize:".78rem",fontWeight:700,color:T.dark,marginBottom:16}}>Neue Kunden — letzte 6 Monate</div>
                 <svg viewBox="0 0 340 150" style={{width:"100%",overflow:"visible"}}>
@@ -1103,7 +1094,7 @@ function Admin({adminKey}){
               <div style={{padding:"7px 10px",background:T.amberLight,border:`1px solid ${T.amberBorder}`,borderRadius:T.rSm,fontSize:".75rem",color:T.amberText}}>Phase 1 optional (nur wenn Bestandswebsite vorhanden) · Phase 5 noindex bis Production · Phase 7 erst nach Go-Live relevant.</div>
             </div>
             <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:10}}>Technische Flows</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`}}>
                 {ftitle("🚀","Registrierung & Trial-Start")}
                 {fphase("Formular","#3b82f6",<>{fnode("⚛️","React SPA","Wizard · 5 Schritte","#3b82f6")}{farrow}{fnode("👤","Account erstellen","Supabase Auth signUp","#2563eb")}{farrow}{fnode("💾","Supabase","INSERT orders · pending","#2563eb")}</>)}
@@ -1122,7 +1113,7 @@ function Admin({adminKey}){
               </div>
               <div style={{background:T.bg,borderRadius:T.rSm,padding:"16px 18px",border:`1px solid ${T.bg3}`,gridColumn:"1 / -1"}}>
                 {ftitle("🌍","Auslieferung (/s/[subdomain])")}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+                <div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
                   <div>
                     <div style={{fontSize:".8rem",fontWeight:800,color:T.dark,marginBottom:10}}>Website – index.js</div>
                     {fphase("Request","#64748b",<>{fnode("🌐","GET /s/{sub}","Browser oder Bot","#64748b")}{farrow}{fnode("💾","Supabase","order laden","#2563eb")}{farrow}{fnode("✅","Status-Check","200 · 404 · 503","#f97316")}</>)}
@@ -1140,7 +1131,7 @@ function Admin({adminKey}){
         })()}
 
         {/* Tab: Dokumentation */}
-        {tab==="docs"&&(<div style={{display:"flex",gap:0,height:"calc(100vh - 160px)",minHeight:400}}>
+        {tab==="docs"&&(<div className="ad-docs-split" style={{display:"flex",gap:0,height:"calc(100vh - 160px)",minHeight:400}}>
           {/* Linke Spalte: Inhaltsverzeichnis */}
           <div style={{width:220,flexShrink:0,borderRight:`1px solid ${T.bg3}`,overflowY:"auto",background:"#fafbfc"}}>
             <div style={{padding:"14px 12px 8px",borderBottom:`1px solid ${T.bg3}`}}>
@@ -1174,7 +1165,7 @@ function Admin({adminKey}){
               </div>
             </div>
             {docEditing
-              ?<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",flex:1,minHeight:0}}>
+              ?<div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"1fr 1fr",flex:1,minHeight:0}}>
                 <textarea value={docEditContent} onChange={e=>setDocEditContent(e.target.value)} placeholder={"# Titel\n\n## Abschnitt\n\nText hier..."} style={{padding:"20px 24px",border:"none",borderRight:`1px solid ${T.bg3}`,resize:"none",fontFamily:"monospace",fontSize:".83rem",lineHeight:1.65,outline:"none",color:T.dark,background:"#fafbfc"}}/>
                 <div style={{padding:"20px 24px",overflowY:"auto"}} dangerouslySetInnerHTML={{__html:renderMd(docEditContent)}}/>
               </div>
@@ -1184,7 +1175,7 @@ function Admin({adminKey}){
             }
           </div>
         </div>)}
-      </>}
+      </>
       </div>
 
       {/* Detail Drawer */}
@@ -1242,7 +1233,7 @@ function Admin({adminKey}){
             );})}
           </div>}
           {/* Drei Spalten */}
-          <div style={{display:"grid",gridTemplateColumns:"2fr 2fr 1.5fr",gap:0,minHeight:400}}>
+          <div className="ad-stack-m" style={{display:"grid",gridTemplateColumns:"2fr 2fr 1.5fr",gap:0,minHeight:400}}>
             {/* Linke Spalte: Kundendaten */}
             <div style={{padding:"24px 28px",borderRight:`1px solid ${T.bg3}`,overflowY:"auto"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>

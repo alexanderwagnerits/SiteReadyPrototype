@@ -117,6 +117,11 @@ export const css = `@import url('https://fonts.googleapis.com/css2?family=DM+San
   .ad-filter-bar>div{width:100%!important}
   .ad-table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
   .ad-table-wrap table{min-width:640px}
+  .ad-stack-m{grid-template-columns:1fr!important;gap:12px!important}
+  .ad-docs-split{flex-direction:column!important;height:auto!important;min-height:unset!important}
+  .ad-docs-split>div{width:100%!important;max-width:100%!important;border-right:none!important}
+  .ad-docs-split>div:first-child{max-height:220px!important;border-bottom:1px solid ${T.bg3}!important}
+  .ad-docs-split>div:last-child{overflow:visible!important}
   .sp-incl-grid{grid-template-columns:1fr!important}
   .sp-name-grid{grid-template-columns:1fr!important}
 }

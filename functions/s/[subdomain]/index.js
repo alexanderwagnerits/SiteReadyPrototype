@@ -22,22 +22,6 @@ function buildSocialIcons(o) {
   return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s">${SOCIAL_SVGS[s.key]}</a>`).join("")}</div>`;
 }
 
-const ICON_MAIL = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
-const ICON_PIN  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
-
-function buildTopbar(o) {
-  const socials = collectSocials(o);
-  const email = o.email ? `<a href="mailto:${esc(o.email)}" class="tb-link">${ICON_MAIL}<span>${esc(o.email)}</span></a>` : "";
-  const ortLabel = [o.plz, o.ort].filter(Boolean).join(" ");
-  const ort = ortLabel ? `<span class="tb-link tb-static">${ICON_PIN}<span>${esc(ortLabel)}</span></span>` : "";
-  if (!socials.length && !email && !ort) return "";
-  const left = (email || ort) ? `<div class="tb-left">${email}${ort}</div>` : `<div></div>`;
-  const right = socials.length
-    ? `<div class="tb-socials">${socials.map(s => `<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="tb-soc">${SOCIAL_SVGS[s.key]}</a>`).join("")}</div>`
-    : "";
-  return `<div class="topbar"><div class="tb-inner">${left}${right}</div></div>`;
-}
-
 function buildNavSocialsMobile(o) {
   const socials = collectSocials(o);
   if (!socials.length) return "";
@@ -47,20 +31,7 @@ function buildNavSocialsMobile(o) {
   return `<div class="mob-socials">${icons}</div>`;
 }
 
-const TOPBAR_CSS = `
-.topbar{background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.07);font-size:.78rem;color:rgba(255,255,255,.65);font-family:inherit}
-.tb-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:34px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.tb-left{display:flex;align-items:center;gap:20px;min-width:0}
-.tb-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tb-link:hover{color:#fff}
-.tb-static{cursor:default}
-.tb-static:hover{color:rgba(255,255,255,.7)}
-.tb-link svg{flex-shrink:0;opacity:.7}
-.tb-socials{display:flex;align-items:center;gap:2px}
-.tb-soc{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;color:rgba(255,255,255,.6);text-decoration:none;border-radius:6px;transition:color .2s,background .2s}
-.tb-soc:hover{color:#fff;background:rgba(255,255,255,.08)}
-.tb-soc svg{width:15px;height:15px}
-@media(max-width:768px){.topbar{display:none}}
+const MOBILE_SOCIALS_CSS = `
 .mob-socials{display:flex;justify-content:center;gap:18px;padding:18px 0;margin:8px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
 .mob-soc{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--primary);text-decoration:none;border-radius:10px;transition:background .2s}
 .mob-soc:hover{background:#f1f5f9}
@@ -114,17 +85,14 @@ export async function onRequestGet({params, env, request}) {
     if (!o.linkedin)  o.linkedin  = "https://www.linkedin.com/company/wagner-it-solutions";
   }
 
-  // Top-Bar (Email/Adresse links, Socials rechts) + Mobile-Socials im Burger
-  const topbarHtml = buildTopbar(o);
+  // Mobile-Burger-Menu: Social-Icons zwischen Links und CTA
   const navSocialsMobile = buildNavSocialsMobile(o);
-  if (topbarHtml || navSocialsMobile) {
-    html = html.replace("</style>\n<nav id=\"sitenav\">", `${TOPBAR_CSS}</style>\n${topbarHtml}\n<nav id="sitenav">`);
-    if (navSocialsMobile) {
-      if (html.includes('class="mob-cta"')) {
-        html = html.replace(/<a [^>]*class="mob-cta"[^>]*>/, m => navSocialsMobile + m);
-      } else {
-        html = html.replace(/(<\/div>\s*<script>\s*\(function\(\)\{)/, `${navSocialsMobile}$1`);
-      }
+  if (navSocialsMobile) {
+    html = html.replace("</style>\n<nav id=\"sitenav\">", `${MOBILE_SOCIALS_CSS}</style>\n<nav id="sitenav">`);
+    if (html.includes('class="mob-cta"')) {
+      html = html.replace(/<a [^>]*class="mob-cta"[^>]*>/, m => navSocialsMobile + m);
+    } else {
+      html = html.replace(/(<\/div>\s*<script>\s*\(function\(\)\{)/, `${navSocialsMobile}$1`);
     }
   }
 

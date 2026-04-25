@@ -1,15 +1,55 @@
 const { esc, normSocial, OEZ_LABELS } = require("../../_lib/shared");
 
-function buildSocialIcons(o) {
-  const socials = [
-    {url: normSocial(o.facebook),  label:"Facebook",  icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`},
-    {url: normSocial(o.instagram), label:"Instagram", icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`},
-    {url: normSocial(o.linkedin),  label:"LinkedIn",  icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>`},
-    {url: normSocial(o.tiktok),    label:"TikTok",    icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>`},
+const SOCIAL_SVGS = {
+  facebook:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+  instagram: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`,
+  linkedin:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>`,
+  tiktok:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>`
+};
+
+function collectSocials(o) {
+  return [
+    {url: normSocial(o.facebook),  key:"facebook",  label:"Facebook"},
+    {url: normSocial(o.instagram), key:"instagram", label:"Instagram"},
+    {url: normSocial(o.linkedin),  key:"linkedin",  label:"LinkedIn"},
+    {url: normSocial(o.tiktok),    key:"tiktok",    label:"TikTok"}
   ].filter(s => s.url);
-  if (!socials.length) return "";
-  return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s">${s.icon}</a>`).join("")}</div>`;
 }
+
+function buildSocialIcons(o) {
+  const socials = collectSocials(o);
+  if (!socials.length) return "";
+  return `<div style="display:flex;gap:12px;margin-top:16px">${socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="sr-social-icon" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;transition:background .2s">${SOCIAL_SVGS[s.key]}</a>`).join("")}</div>`;
+}
+
+function buildNavSocialsDesktop(o) {
+  const socials = collectSocials(o);
+  if (!socials.length) return "";
+  const icons = socials.map(s =>
+    `<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="nav-soc">${SOCIAL_SVGS[s.key]}</a>`
+  ).join("");
+  return `<div class="nav-socials">${icons}</div>`;
+}
+
+function buildNavSocialsMobile(o) {
+  const socials = collectSocials(o);
+  if (!socials.length) return "";
+  const icons = socials.map(s =>
+    `<a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.label}" class="mob-soc">${SOCIAL_SVGS[s.key]}</a>`
+  ).join("");
+  return `<div class="mob-socials">${icons}</div>`;
+}
+
+const NAV_SOCIALS_CSS = `
+.nav-socials{display:flex;align-items:center;gap:4px;margin-right:4px;padding-right:14px;border-right:1px solid rgba(255,255,255,.18)}
+.nav-soc{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s,transform .2s;border-radius:8px}
+.nav-soc:hover{color:#fff;transform:translateY(-1px)}
+.nav-soc:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:768px){.nav-socials{display:none}}
+.mob-socials{display:flex;justify-content:center;gap:18px;padding:18px 0;margin:8px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
+.mob-soc{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--primary);text-decoration:none;border-radius:10px;transition:background .2s}
+.mob-soc:hover{background:#f1f5f9}
+`;
 
 export async function onRequestGet({params, env, request}) {
   const subdomain = params.subdomain;
@@ -49,6 +89,32 @@ export async function onRequestGet({params, env, request}) {
 
   let html = rows[0].website_html;
   const o = rows[0];
+
+  // ── TEMP Test-Stub: Social-Icons im Nav fuer 1 Subdomain ──
+  // Nur fuer wagner-it-solutions-eu — sobald der Look passt, kommt das
+  // ins Portal als regulaeres Feature.
+  if (subdomain === "wagner-it-solutions-eu") {
+    if (!o.facebook)  o.facebook  = "https://www.facebook.com/wagnerits";
+    if (!o.instagram) o.instagram = "https://www.instagram.com/wagner.its";
+    if (!o.linkedin)  o.linkedin  = "https://www.linkedin.com/company/wagner-it-solutions";
+  }
+
+  // Nav-Socials einbauen wenn vorhanden (Desktop + Mobile + CSS)
+  const navSocialsDesktop = buildNavSocialsDesktop(o);
+  const navSocialsMobile  = buildNavSocialsMobile(o);
+  if (navSocialsDesktop) {
+    html = html.replace("</style>\n<nav id=\"sitenav\">", `${NAV_SOCIALS_CSS}</style>\n<nav id="sitenav">`);
+    if (html.includes('class="nav-link nav-cta"')) {
+      html = html.replace(/<a [^>]*class="nav-link nav-cta"[^>]*>/, m => navSocialsDesktop + m);
+    } else {
+      html = html.replace(/(<\/div>\s*<button class="hbg")/, `${navSocialsDesktop}$1`);
+    }
+    if (html.includes('class="mob-cta"')) {
+      html = html.replace(/<a [^>]*class="mob-cta"[^>]*>/, m => navSocialsMobile + m);
+    } else {
+      html = html.replace(/(<\/div>\s*<script>\s*\(function\(\)\{)/, `${navSocialsMobile}$1`);
+    }
+  }
 
   // ── Preview-Mode: Stil serve-time ueberschreiben ──
   // Erlaubt dem Portal, die Kundenseite in anderem Stil anzuzeigen ohne DB-Save.

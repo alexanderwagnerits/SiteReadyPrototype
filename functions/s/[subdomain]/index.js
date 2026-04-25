@@ -80,15 +80,6 @@ export async function onRequestGet({params, env, request}) {
   let html = rows[0].website_html;
   const o = rows[0];
 
-  // ── TEMP Test-Stub: Social-Icons im Nav fuer 1 Subdomain ──
-  // Nur fuer wagner-it-solutions-eu — sobald der Look passt, kommt das
-  // ins Portal als regulaeres Feature.
-  if (subdomain === "wagner-it-solutions-eu") {
-    if (!o.facebook)  o.facebook  = "https://www.facebook.com/wagnerits";
-    if (!o.instagram) o.instagram = "https://www.instagram.com/wagner.its";
-    if (!o.linkedin)  o.linkedin  = "https://www.linkedin.com/company/wagner-it-solutions";
-  }
-
   // Social-Injects: Mobile-Burger-Icons + groessere Kontakt-Icons (CSS-Override)
   const navSocialsMobile = buildNavSocialsMobile(o);
   if (navSocialsMobile || collectSocials(o).length) {

@@ -31,34 +31,14 @@ function buildNavSocialsMobile(o) {
   return `<div class="mob-socials">${icons}</div>`;
 }
 
-function buildKontaktSocialsCard(o) {
-  const socials = collectSocials(o);
-  if (!socials.length) return "";
-  const tiles = socials.map(s =>
-    `<a href="${s.url}" target="_blank" rel="noopener noreferrer" class="folge-tile">${SOCIAL_SVGS[s.key]}<span>${s.label}</span></a>`
-  ).join("");
-  return `<div class="folge-card">
-<div class="folge-eyebrow">Folge uns</div>
-<h3 class="folge-headline">Bleib in Kontakt</h3>
-<p class="folge-sub">Aktuelle Updates und News auf unseren Social-Media-Kanaelen.</p>
-<div class="folge-tiles">${tiles}</div>
-</div>`;
-}
-
 const SOCIAL_INJECTS_CSS = `
 .mob-socials{display:flex;justify-content:center;gap:18px;padding:18px 0;margin:8px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
 .mob-soc{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--primary);text-decoration:none;border-radius:10px;transition:background .2s}
 .mob-soc:hover{background:#f1f5f9}
-.folge-card{margin-top:28px;padding:22px 22px 20px;background:color-mix(in srgb,var(--accent) 5%,var(--bg));border:1px solid color-mix(in srgb,var(--accent) 14%,var(--sep));border-radius:var(--rLg)}
-.folge-eyebrow{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:6px}
-.folge-headline{font-size:1.05rem;font-weight:700;color:var(--primary);letter-spacing:-.01em;margin:0 0 8px}
-.folge-sub{font-size:.85rem;color:var(--textMuted);line-height:1.5;margin:0 0 16px}
-.folge-tiles{display:flex;flex-wrap:wrap;gap:8px}
-.folge-tile{display:inline-flex;align-items:center;gap:9px;padding:10px 14px;background:#fff;border:1px solid var(--sep);border-radius:var(--r);color:var(--primary);text-decoration:none;font-size:.84rem;font-weight:600;transition:background .2s,color .2s,border-color .2s,transform .2s,box-shadow .2s}
-.folge-tile:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.folge-tile svg{width:18px;height:18px;flex-shrink:0}
-.stil-modern .folge-tile{border-radius:100px}
-.stil-elegant .folge-tile:hover{transform:none;box-shadow:none}
+/* Kontakt-Socials prominenter — groessere Tiles */
+.kontakt-social{gap:14px!important;margin-top:20px!important}
+.kontakt-social a{width:60px!important;height:60px!important}
+.kontakt-social a svg{width:24px!important;height:24px!important}
 `;
 
 export async function onRequestGet({params, env, request}) {
@@ -109,10 +89,9 @@ export async function onRequestGet({params, env, request}) {
     if (!o.linkedin)  o.linkedin  = "https://www.linkedin.com/company/wagner-it-solutions";
   }
 
-  // Social-Injects: Mobile-Burger-Icons + prominente "Folge uns"-Card in Kontakt-Sektion
+  // Social-Injects: Mobile-Burger-Icons + groessere Kontakt-Icons (CSS-Override)
   const navSocialsMobile = buildNavSocialsMobile(o);
-  const kontaktSocialsCard = buildKontaktSocialsCard(o);
-  if (navSocialsMobile || kontaktSocialsCard) {
+  if (navSocialsMobile || collectSocials(o).length) {
     html = html.replace("</style>\n<nav id=\"sitenav\">", `${SOCIAL_INJECTS_CSS}</style>\n<nav id="sitenav">`);
     if (navSocialsMobile) {
       if (html.includes('class="mob-cta"')) {
@@ -120,13 +99,6 @@ export async function onRequestGet({params, env, request}) {
       } else {
         html = html.replace(/(<\/div>\s*<script>\s*\(function\(\)\{)/, `${navSocialsMobile}$1`);
       }
-    }
-    if (kontaktSocialsCard) {
-      // In die linke Spalte der Kontakt-Sektion einfuegen, vor dem Maps-Block
-      html = html.replace(
-        /(<\/div>\s*<div class="fade-up"><!-- MAPS -->)/,
-        `${kontaktSocialsCard}\n$1`
-      );
     }
   }
 

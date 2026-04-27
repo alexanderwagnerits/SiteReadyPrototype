@@ -196,19 +196,13 @@ function Admin({adminKey}){
     const a=document.createElement("a");a.href=url;a.download=`siteready-bestellungen-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
   };
 
-  const healthTicketSent=useRef({});
   const checkHealth=async(order)=>{
     const url=`https://sitereadyprototype.pages.dev/s/${order.subdomain||"test"}`;
     setHealth(h=>({...h,[order.id]:"checking"}));
     const t0=Date.now();
-    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"ok"}));setHealthMs(m=>({...m,[order.id]:ms}));delete healthTicketSent.current[order.id];}
+    try{await fetch(url,{mode:"no-cors",signal:AbortSignal.timeout(5000)});const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"ok"}));setHealthMs(m=>({...m,[order.id]:ms}));}
     catch(e){
       const ms=Date.now()-t0;setHealth(h=>({...h,[order.id]:"error"}));setHealthMs(m=>({...m,[order.id]:ms}));
-      // Auto-Ticket erstellen (max 1x pro Website pro Session)
-      if(supabase&&!healthTicketSent.current[order.id]){
-        healthTicketSent.current[order.id]=true;
-        try{await supabase.from("support_requests").insert({email:"system@siteready.at",subject:`[Auto] Website nicht erreichbar: ${order.firmenname||order.subdomain}`,message:`${order.subdomain}.siteready.at ist nicht erreichbar.\n\nOrder: ${order.id}\nFirma: ${order.firmenname||"unbekannt"}\nStatus: ${order.status}`,status:"offen"});}catch(_){}
-      }
     }
     setHealthTime(t=>({...t,[order.id]:new Date()}));
   };
@@ -252,9 +246,9 @@ function Admin({adminKey}){
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(()=>{
     if(tab==="sites"){
-      const run=()=>{orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));setHealthCountdown(60);};
+      const run=()=>{orders.filter(o=>o.subdomain&&["live","trial"].includes(o.status)).forEach(o=>checkHealth(o));setHealthCountdown(300);};
       run();
-      const iv=setInterval(run,60000);
+      const iv=setInterval(run,300000);
       const cd=setInterval(()=>setHealthCountdown(c=>c>0?c-1:0),1000);
       return()=>{clearInterval(iv);clearInterval(cd);};
     }

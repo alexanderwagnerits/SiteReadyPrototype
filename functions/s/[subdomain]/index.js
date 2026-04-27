@@ -1127,6 +1127,17 @@ export async function onRequestGet({params, env, request}) {
     html = html.split(key).join(val);
   }
 
+  // Serve-time-Fallback fuer Bestandsseiten (vor Placeholder-Refactor generiert):
+  // hero-desc und About-Heading hatten den Text fix eingebrannt, kein Placeholder.
+  // Diese Regex-Replacements ueberschreiben sie mit aktuellen DB-Werten —
+  // idempotent: bei neuen Seiten ist der Inhalt bereits der richtige.
+  if (o.kurzbeschreibung && String(o.kurzbeschreibung).trim()) {
+    html = html.replace(/<p class="hero-desc">[\s\S]*?<\/p>/, `<p class="hero-desc">${esc(o.kurzbeschreibung)}</p>`);
+  }
+  if (o.firmenname && String(o.firmenname).trim()) {
+    html = html.replace(/<h2>Über [^<]*<\/h2>/, `<h2>Über ${esc(o.firmenname)}</h2>`);
+  }
+
   // TODO: noindex entfernen wenn live (aktivieren wenn Prototyp-Phase abgeschlossen)
   // if (o.status === "live") {
   //   html = html.replace(

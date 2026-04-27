@@ -688,11 +688,14 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
   // Hero-Headline: User-Override > Claude-Generierung > leer (Fallback = Firmenname im Template)
   const heroHeadline = (o.hero_headline && o.hero_headline.trim()) || texts.hero_headline || "";
 
+  // firmenname und kurzbeschreibung als Placeholder ans Template uebergeben —
+  // damit greifen Portal-Aenderungen serve-time, ohne Re-Generate. einsatzgebiet
+  // und brancheLabel bleiben baked (aendern sich praktisch nie nachtraeglich).
   let html = buildTemplate({
-    firmenname: o.firmenname,
+    firmenname: "{{FIRMENNAME}}",
     brancheLabel: heroLabel,
     einsatzgebiet: o.einsatzgebiet || o.bundesland || "Österreich",
-    kurzbeschreibung: o.kurzbeschreibung || "",
+    kurzbeschreibung: "{{KURZBESCHREIBUNG}}",
     heroHeadline,
     ctaPrimary,
     ctaPrimaryHref,

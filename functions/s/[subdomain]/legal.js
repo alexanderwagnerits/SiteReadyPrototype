@@ -25,10 +25,16 @@ function esc(s) {
 }
 
 // Pflichtfelder pro Unternehmensform — definiert was im Impressum stehen MUSS
+// Strippt Rechtsform-Suffix am Ende eines Firmennamens — verhindert Doppelung
+// wenn User die Rechtsform schon im Firmenname-Feld eingegeben hat.
+function stripUfSuffix(name) {
+  return String(name || "").replace(/\s+(e\.?\s?U\.?|GmbH|OG|KG|AG)\.?\s*$/i, "").trim();
+}
+
 function buildImpressumRows(o) {
   const uf = o.unternehmensform || "";
   const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
-  const firmaVoll = o.firmenname + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
+  const firmaVoll = stripUfSuffix(o.firmenname) + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
   const sitz = [o.plz, o.ort].filter(Boolean).join(" ");
   const adresse = [o.adresse, sitz].filter(Boolean).join(", ");
   const ugFallback = o.unternehmensgegenstand || o.branche_label || "";
@@ -375,7 +381,7 @@ ${(() => {
     title = "Datenschutzerklärung";
     const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
     const uf = o.unternehmensform || "";
-    const firmaVoll = o.firmenname + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
+    const firmaVoll = stripUfSuffix(o.firmenname) + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
     const adresse = [o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ");
 
     content = `<h1>Datenschutzerklärung</h1>

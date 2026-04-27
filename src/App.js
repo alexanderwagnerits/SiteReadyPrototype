@@ -1274,7 +1274,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
     <div id="q-sec-1" className={`q-section${step===1?" q-vis":""}`}>
       {hdr("Grunddaten","Grunddaten","Erzählen Sie uns von Ihrem Unternehmen.")}
       <div className="q-mb">
-        <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller GmbH" required/>
+        <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller" hint="Bitte ohne Rechtsform-Zusatz (GmbH, KG, e.U., …) — die Rechtsform wird separat im Impressum-Schritt erfasst." required/>
         <Combobox label="Beruf / Branche" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
         {data.branche&&data.branche!=="sonstige"&&getBrancheGruppe(data.branche)&&<div style={{marginTop:-12,marginBottom:16,fontSize:".78rem",color:T.textMuted}}>Berufsgruppe: <span style={{fontWeight:600,color:T.accent}}>{getBrancheGruppe(data.branche).label}</span></div>}
         {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}

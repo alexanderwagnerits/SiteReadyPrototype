@@ -1065,12 +1065,19 @@ export async function onRequestGet({params, env, request}) {
   const oezKey = o.oeffnungszeiten || "";
   const oezRaw = oezKey === "custom" ? (o.oeffnungszeiten_custom || "") : (OEZ_LABELS[oezKey] || oezKey || "Nach Vereinbarung");
   // Mehrzeilige Öffnungszeiten als kleine Tabelle darstellen
+  // Erkennt sowohl Einzeltage ("Mo: 09-17") als auch Bereiche ("Mo–Do 09:00–17:00")
   const oezLines = oezRaw.split(/[,\n]+/).map(s => s.trim()).filter(Boolean);
   let oezLabel;
   if (oezLines.length > 1) {
+    const dayRe = "Mo|Di|Mi|Do|Fr|Sa|So|Mon|Die|Mit|Don|Fre|Sam|Son";
+    // [–—\-] = en-dash, em-dash, hyphen — wichtig: explizite Unicode-Escapes,
+    // damit der Bereichstrenner sicher matcht (User koennen alle drei eingeben).
     const rows = oezLines.map(line => {
-      const m = line.match(/^(Mo|Di|Mi|Do|Fr|Sa|So|Mon|Die|Mit|Don|Fre|Sam|Son)[a-z]*\.?\s*[:\-]?\s*(.*)/i);
-      if (m) return `<tr><td style="font-weight:600;padding:3px 16px 3px 0;white-space:nowrap;vertical-align:top">${m[1]}</td><td style="padding:3px 0">${m[2]}</td></tr>`;
+      const m = line.match(new RegExp(`^(${dayRe})[a-z]*\\.?(?:\\s*(?:[\\u2013\\u2014\\-]|bis)\\s*(${dayRe})[a-z]*\\.?)?\\s*[:]?\\s*(.+)$`, "i"));
+      if (m) {
+        const days = m[2] ? `${m[1]}–${m[2]}` : m[1];
+        return `<tr><td style="font-weight:600;padding:3px 16px 3px 0;white-space:nowrap;vertical-align:top">${days}</td><td style="padding:3px 0">${m[3]}</td></tr>`;
+      }
       return `<tr><td colspan="2" style="padding:3px 0">${line}</td></tr>`;
     }).join("");
     oezLabel = `<table style="font-size:.9rem;line-height:1.5;border-collapse:collapse">${rows}</table>`;

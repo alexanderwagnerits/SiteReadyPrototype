@@ -13,3 +13,5 @@ skills-lock.json
 test-results/
 playwright-report/
 .lighthouse/
+tools/
+scripts/screenshot-all-tests.js

@@ -301,7 +301,8 @@ export async function onRequestGet({params, env, request}) {
     // H1 ersetzen (section.hero <h1>...</h1>)
     html = html.replace(/(<section class="hero[^"]*"[^>]*id="sr-hero"[\s\S]*?)<h1>[\s\S]*?<\/h1>/, `$1<h1>${headline}</h1>`);
     // Sub-Zeile komplett ersetzen (nicht nur Prefix einfuegen)
-    if (firmenSub) html = html.replace(/<p class="hero-sub">[\s\S]*?<\/p>/, `<p class="hero-sub">${firmenSub}</p>`);
+    // has-firma-Klasse anhaengen, damit CSS prominenter rendert (Beta-Feedback Lea)
+    if (firmenSub) html = html.replace(/<p class="hero-sub(?:\s+has-firma)?">[\s\S]*?<\/p>/, `<p class="hero-sub has-firma">${firmenSub}</p>`);
   }
 
 

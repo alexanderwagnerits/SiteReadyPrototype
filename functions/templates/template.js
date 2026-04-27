@@ -181,6 +181,9 @@ body.nav-scrolled #sitenav{background:color-mix(in srgb,var(--primary) 88%,trans
 /* Eyebrow-Badge: Branche oberhalb H1 (Klassisch + Modern) */
 .hero-sub{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border:1px solid rgba(255,255,255,.2);border-radius:100px;background:rgba(255,255,255,.09);font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.92);margin-bottom:22px}
 .hero-sub .hero-loc{display:inline-flex;align-items:center;gap:4px;text-transform:none;font-weight:600;opacity:.8}
+/* Wenn der Firmenname in der Sub steht (hero_headline aktiv), prominenter darstellen */
+.hero-sub.has-firma{font-size:.95rem;text-transform:none;letter-spacing:.01em;padding:8px 18px;font-weight:600}
+.hero-sub.has-firma strong{font-weight:700}
 
 .hero-desc{font-size:.95rem;color:rgba(255,255,255,.62);max-width:500px;margin-bottom:34px;line-height:1.78}
 .hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}
@@ -780,7 +783,7 @@ ${buildCss(data)}
 <main id="main">
 <section class="hero sr-grain" id="sr-hero">
 <div class="hero-inner">
-<p class="hero-sub">${showFirmenSub ? `<strong style="color:inherit;font-weight:700">${firmenname}</strong>${einsatzgebiet ? `, <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}` : `${brancheLabel}${einsatzgebiet ? `, <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}`}</p>
+<p class="hero-sub${showFirmenSub ? ' has-firma' : ''}">${showFirmenSub ? `<strong style="color:inherit;font-weight:700">${firmenname}</strong>${einsatzgebiet ? `, <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}` : `${brancheLabel}${einsatzgebiet ? `, <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${einsatzgebiet}</span>` : ""}`}</p>
 <h1>${heroH1}</h1>
 <span class="hero-accent-line"></span>
 <p class="hero-desc">${kurzbeschreibung}</p>

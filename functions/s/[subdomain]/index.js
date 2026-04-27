@@ -296,7 +296,7 @@ export async function onRequestGet({params, env, request}) {
     const headline = esc(String(o.hero_headline).trim());
     // Sub-Content komplett neu: Firmenname + Ort (kein brancheLabel mehr, das vermittelt H1)
     const ortText = o.einsatzgebiet || o.ort || o.bundesland || "";
-    const locIcon = ortText ? ` · <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${esc(ortText)}</span>` : "";
+    const locIcon = ortText ? `, <span class="hero-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${esc(ortText)}</span>` : "";
     const firmenSub = o.firmenname ? `<strong style="color:inherit;font-weight:700">${esc(o.firmenname)}</strong>${locIcon}` : "";
     // H1 ersetzen (section.hero <h1>...</h1>)
     html = html.replace(/(<section class="hero[^"]*"[^>]*id="sr-hero"[\s\S]*?)<h1>[\s\S]*?<\/h1>/, `$1<h1>${headline}</h1>`);

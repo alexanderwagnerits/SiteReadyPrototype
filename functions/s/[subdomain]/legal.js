@@ -367,13 +367,13 @@ ${missingBanner}<table>${tRows}</table>
 <p>Die Inhalte dieser Website unterliegen dem österreichischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Betreibers.</p>
 
 ${(() => {
-  // Bildnachweis automatisch: User-Credit + Unsplash falls Stock-Bild als Hero-Placeholder
-  // hero_is_placeholder wird in generate.js gesetzt wenn Unsplash-Stock kopiert wurde
+  // Bildnachweis: standardmaessig "Eigene Aufnahmen", erweitert um spezifische
+  // Quellen wenn vorhanden (User-Credit, Unsplash-Stock-Hero).
   const usesUnsplash = o.hero_is_placeholder === true;
-  const lines = [];
+  const lines = ["Eigene Aufnahmen, sofern nicht anders gekennzeichnet."];
   if (o.foto_credit) lines.push(esc(o.foto_credit));
-  if (usesUnsplash) lines.push('Titelbild: Unsplash (<a href="https://unsplash.com" rel="noopener">unsplash.com</a>)');
-  return lines.length ? `<h2>Bildnachweis</h2>\n<p>${lines.join("<br>")}</p>` : "";
+  if (usesUnsplash) lines.push('Titelbild: lizenzfrei via Unsplash (<a href="https://unsplash.com" rel="noopener">unsplash.com</a>)');
+  return `<h2>Bildnachweis</h2>\n<p>${lines.join("<br>")}</p>`;
 })()}
 
 <p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;

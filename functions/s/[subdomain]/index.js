@@ -1138,6 +1138,16 @@ export async function onRequestGet({params, env, request}) {
     html = html.replace(/<h2>Über [^<]*<\/h2>/, `<h2>Über ${esc(o.firmenname)}</h2>`);
   }
 
+  // CTA-Konsistenz fuer Bestandsseiten: "Termin buchen" mit tel:-Href entkoppeln.
+  // Bestand wurde vor dem Fix in generate.js generiert — diese Sites haben das
+  // Label/Ziel-Mismatch noch im HTML. Hier reparieren wir es serve-time.
+  // Loesung: Wenn Hero-CTA-Button "Termin buchen" sagt und Href tel: ist,
+  // Label auf "Termin anfragen" und Ziel auf #kontakt aendern.
+  html = html.replace(
+    /<a href="tel:[^"]*" class="btn btn-accent">Termin buchen<\/a>/g,
+    '<a href="#kontakt" class="btn btn-accent">Termin anfragen</a>'
+  );
+
   // TODO: noindex entfernen wenn live (aktivieren wenn Prototyp-Phase abgeschlossen)
   // if (o.status === "live") {
   //   html = html.replace(

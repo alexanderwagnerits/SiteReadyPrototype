@@ -336,13 +336,22 @@ export async function generateWebsite(order_id, env) {
     galerie: "Ausstellung besuchen", kuenstler: "Anfrage stellen",
     musiker: "Booking anfragen", theater: "Tickets sichern",
   };
+  // CTA-Label und Href sauber entkoppelt:
+  // - Buchungslink → "Termin buchen" + externer Link (einziger Fall mit "buchen")
+  // - Notdienst → "Notdienst anrufen" + tel:
+  // - Sonst → branchen- oder kontextspezifisches Label, Ziel ist Kontaktformular (#kontakt)
+  // "Termin buchen" wird NIE mit tel:-Href ausgespielt (Beta-Feedback Lea: Label/Ziel-Mismatch).
+  const branchenCtaRaw = BRANCHEN_CTA[o.branche] || "Jetzt kontaktieren";
+  // "Termin buchen" → "Termin anfragen" wenn kein echter Buchungslink hinterlegt ist
+  const branchenCtaSafe = branchenCtaRaw.replace(/\bbuchen\b/i, "anfragen");
   const ctaPrimary = o.buchungslink ? "Termin buchen"
     : o.notdienst ? "Notdienst anrufen"
     : o.kostenvoranschlag ? "Kostenlosen KV anfordern"
     : o.erstgespraech_gratis ? "Gratis Erstgespräch"
-    : BRANCHEN_CTA[o.branche]
-    || "Jetzt kontaktieren";
-  const ctaPrimaryHref = o.buchungslink || (o.telefon ? "{{TEL_HREF}}" : "#kontakt");
+    : branchenCtaSafe;
+  const ctaPrimaryHref = o.buchungslink ? o.buchungslink
+    : o.notdienst && o.telefon ? "{{TEL_HREF}}"
+    : "#kontakt";
   const ctaSecondary = "Leistungen ansehen";
 
   /* ─── Meta ─── */

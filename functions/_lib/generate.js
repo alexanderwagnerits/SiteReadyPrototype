@@ -191,6 +191,12 @@ export async function generateWebsite(order_id, env) {
     // Neue Handwerk
     steinmetz: "Steinmetzbetrieb", uhrmacher: "Uhrmacher",
     stuckateur: "Stuckateurbetrieb",
+    // Erweiterungen 2026-04-27 (Beta-Feedback)
+    werbetechnik: "Werbetechnik", schmiede: "Schmiede", reparaturservice: "Reparaturservice",
+    brauerei: "Brauerei", kaeserei: "Käserei",
+    skateshop: "Skateshop", musikhandel: "Musikfachhandel", schreibwaren: "Schreibwaren",
+    tierhandel: "Zoofachhandel", souvenirladen: "Souvenirladen",
+    maschinenbau: "Maschinenbau", anlagenbau: "Anlagenbau", metallverarbeitung: "Metallverarbeitung",
   };
   const heroLabel = o.spezialisierung || HERO_LABELS[o.branche] || o.branche_label || o.branche || "Betrieb";
   const betriebstyp = heroLabel;
@@ -335,6 +341,12 @@ export async function generateWebsite(order_id, env) {
     // Kultur
     galerie: "Ausstellung besuchen", kuenstler: "Anfrage stellen",
     musiker: "Booking anfragen", theater: "Tickets sichern",
+    // Erweiterungen 2026-04-27
+    werbetechnik: "Angebot anfragen", schmiede: "Anfrage stellen", reparaturservice: "Reparatur anfragen",
+    brauerei: "Verkostung anfragen", kaeserei: "Sortiment ansehen",
+    skateshop: "Sortiment ansehen", musikhandel: "Beratung anfragen", schreibwaren: "Sortiment ansehen",
+    tierhandel: "Sortiment ansehen", souvenirladen: "Sortiment ansehen",
+    maschinenbau: "Anfrage stellen", anlagenbau: "Beratung anfragen", metallverarbeitung: "Angebot anfragen",
   };
   // CTA-Label und Href sauber entkoppelt:
   // - Buchungslink → "Termin buchen" + externer Link (einziger Fall mit "buchen")
@@ -884,6 +896,15 @@ LEISTUNGEN für leistungen_beschreibungen Keys: ${JSON.stringify(leistungen)}`;
         fahrradwerkstatt:"photo-1571068316344-75bc76f77890",erdbau:"photo-1504307651254-35680f356dfd",
         // Gastro (neue)
         winzer:"photo-1506377247377-2a5b3b417ebb",
+        // Erweiterungen 2026-04-27 (Beta-Feedback)
+        werbetechnik:"photo-1567527415038-c80aa3b58a8b",schmiede:"photo-1504328345606-18bbc8c9d7d1",
+        reparaturservice:"photo-1581092446327-9b52bd1570c2",
+        brauerei:"photo-1571613914409-bd3045b54880",kaeserei:"photo-1452195100486-9cc805987862",
+        skateshop:"photo-1531565637446-32307b194362",musikhandel:"photo-1511379938547-c1f69419868d",
+        schreibwaren:"photo-1497019220340-65aa1b8ec33a",tierhandel:"photo-1583511655802-41f361389c64",
+        souvenirladen:"photo-1481437156560-3205f6a55735",
+        maschinenbau:"photo-1565043589221-1a6fd9ae45c7",anlagenbau:"photo-1581094271901-8022df4466f9",
+        metallverarbeitung:"photo-1504328345606-18bbc8c9d7d1",
       };
       const branche = (o.branche || "").toLowerCase();
       const photoId = stockPhotos[branche] || "photo-1497366216548-37526070297c"; // Fallback: modernes Büro

@@ -598,7 +598,7 @@ function SuccessPage({data,onBack,onPortal,orderInProgressRef}){
     const orderId=crypto.randomUUID();
     const{error}=await supabase.from("orders").insert({
       id:orderId,user_id:userId,vorname,nachname,
-      firmenname:snap.firmenname,branche:snap.branche,branche_label:snap.brancheLabel,
+      firmenname:snap.firmenname,branche:snap.branche,branche_label:(snap.branche==="sonstige"?snap.brancheCustom:snap.brancheLabel)||null,
       kurzbeschreibung:snap.kurzbeschreibung,bundesland:snap.bundesland,
       leistungen:snap.leistungen,extra_leistung:snap.extraLeistung,notdienst:snap.notdienst,meisterbetrieb:snap.meisterbetrieb,kostenvoranschlag:snap.kostenvoranschlag,buchungslink:snap.buchungslink||null,whatsapp:snap.whatsapp||null,hausbesuche:snap.hausbesuche,terminvereinbarung:snap.terminvereinbarung,foerderungsberatung:snap.foerderungsberatung,lieferservice:snap.lieferservice,barrierefrei:snap.barrierefrei,parkplaetze:snap.parkplaetze,kassenvertrag:snap.kassenvertrag||null,erstgespraech_gratis:snap.erstgespraech_gratis,online_beratung:snap.online_beratung,ratenzahlung:snap.ratenzahlung,fruehstueck:snap.fruehstueck||false,wlan:snap.wlan||false,haustiere:snap.haustiere||false,online_shop:snap.online_shop||false,
       adresse:snap.adresse,plz:snap.plz,ort:snap.ort,telefon:snap.telefon,email:snap.email,
@@ -1132,20 +1132,21 @@ function Questionnaire({data,setData,onComplete,onBack}){
     const sameB=data.branche===val;
     if(!sameB&&hasLeistungen&&!window.confirm("Branche wechseln? Ihre gewählten Leistungen werden zurückgesetzt.")){return;}
     setData(d=>{const gPal=b?GRUPPEN_PALETTEN[b.gruppe]||{}:{};
-    return{...d,branche:val,brancheLabel:b?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,
+    // Bei "sonstige" brancheLabel leer lassen — wird aus brancheCustom (Freitext) gefuellt
+    return{...d,branche:val,brancheLabel:b&&val!=="sonstige"?b.label:"",brancheCustom:"",stil:b?b.stil:d.stil,
       leistungen:sameB?d.leistungen:[],extraLeistung:sameB?d.extraLeistung:"",
       accentColor:"",
       ...(!sameB?gPal:{})};
   });if(!sameB){setHexInput("");}};
   const legalOk=(()=>{const u=data.unternehmensform;if(!u)return false;if(u==="einzelunternehmen"&&(!data.vorname?.trim()||!data.nachname?.trim()))return false;const needsFB=["eu","gmbh","og","kg","ag"].includes(u);if(needsFB&&(!data.firmenbuchnummer?.trim()||!data.firmenbuchgericht?.trim()))return false;if(u==="gmbh"&&!data.geschaeftsfuehrer?.trim())return false;if((u==="og"||u==="kg")&&!data.gesellschafter?.trim())return false;if(u==="ag"&&!data.vorstand?.trim())return false;if(u==="verein"&&!data.zvr_zahl?.trim())return false;return true})();
-  const sv1=!!(data.firmenname?.trim()&&data.branche&&data.bundesland&&data.kurzbeschreibung?.trim());
+  const sv1=!!(data.firmenname?.trim()&&data.branche&&data.bundesland&&data.kurzbeschreibung?.trim()&&(data.branche!=="sonstige"||data.brancheCustom?.trim()));
   const sv2=!!(data.leistungen?.length>0||data.extraLeistung?.trim());
   const sv3=!!(data.adresse?.trim()&&data.plz?.trim()&&data.ort?.trim()&&data.telefon?.trim()&&data.email?.trim()&&data.oeffnungszeiten);
   const sv4=legalOk&&impressumConfirm;
   const allValid=sv1&&sv2&&sv3&&sv4;
   const uf=data.unternehmensform;const hasFB=["eu","gmbh","og","kg","ag"].includes(uf);
   const hdr=(bc,title,sub)=><><div className="q-mh"><div className="q-mh-bc">Website erstellen <span style={{opacity:.4}}>{"›"}</span> <b>{bc}</b>{importResult&&<span style={{marginLeft:8,fontSize:".65rem",fontWeight:600,color:T.green,background:T.greenLight,padding:"2px 8px",borderRadius:100,verticalAlign:"middle"}}>importiert — bitte prüfen</span>}</div><div className="q-mh-title">{title}</div><div className="q-mh-sub">{sub}</div></div><div className="q-mh-line"/></>;
-  const missingHint=(stepN)=>{const m=[];if(stepN===1){if(!data.firmenname?.trim())m.push("Firmenname");if(!data.branche)m.push("Branche");if(!data.bundesland)m.push("Bundesland");if(!data.kurzbeschreibung?.trim())m.push("Kurzbeschreibung");}else if(stepN===2){if(!(data.leistungen?.length>0||data.extraLeistung?.trim()))m.push("mind. 1 Leistung");}else if(stepN===3){if(!data.adresse?.trim())m.push("Adresse");if(!data.plz?.trim())m.push("PLZ");if(!data.ort?.trim())m.push("Ort");if(!data.telefon?.trim())m.push("Telefon");if(!data.email?.trim())m.push("E-Mail");if(!data.oeffnungszeiten)m.push("Öffnungszeiten");}else if(stepN===4){if(!legalOk)m.push("Impressum-Angaben");if(!impressumConfirm)m.push("Bestätigung");}return m;};
+  const missingHint=(stepN)=>{const m=[];if(stepN===1){if(!data.firmenname?.trim())m.push("Firmenname");if(!data.branche)m.push("Branche");if(data.branche==="sonstige"&&!data.brancheCustom?.trim())m.push("Branchenbezeichnung");if(!data.bundesland)m.push("Bundesland");if(!data.kurzbeschreibung?.trim())m.push("Kurzbeschreibung");}else if(stepN===2){if(!(data.leistungen?.length>0||data.extraLeistung?.trim()))m.push("mind. 1 Leistung");}else if(stepN===3){if(!data.adresse?.trim())m.push("Adresse");if(!data.plz?.trim())m.push("PLZ");if(!data.ort?.trim())m.push("Ort");if(!data.telefon?.trim())m.push("Telefon");if(!data.email?.trim())m.push("E-Mail");if(!data.oeffnungszeiten)m.push("Öffnungszeiten");}else if(stepN===4){if(!legalOk)m.push("Impressum-Angaben");if(!impressumConfirm)m.push("Bestätigung");}return m;};
   const ftr=(back,next,label,disabled,style)=>{const missing=disabled?missingHint(step):[];return<div className="q-footer">{disabled&&missing.length>0&&<div style={{fontSize:".78rem",color:T.textMuted,marginBottom:8,textAlign:"center"}}>Bitte ausfüllen: {missing.join(", ")}</div>}{back&&<button className="q-btn-back" onClick={()=>go(step-1)}>Zurück</button>}<button className="q-btn-next" onClick={next} disabled={disabled} style={style}>{label} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button></div>};
   const chevron=<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 
@@ -1277,7 +1278,7 @@ function Questionnaire({data,setData,onComplete,onBack}){
         <Field label="Firmenname" value={data.firmenname} onChange={up("firmenname")} placeholder="z.B. Elektro Müller" hint="Bitte ohne Rechtsform-Zusatz (GmbH, KG, e.U., …) — die Rechtsform wird separat im Impressum-Schritt erfasst." required/>
         <Combobox label="Beruf / Branche" value={data.branche} onChange={onBrancheChange} options={BRANCHEN} placeholder="z.B. Elektriker, Friseur, ..." hint="Leistungen und Stil werden automatisch angepasst" required/>
         {data.branche&&data.branche!=="sonstige"&&getBrancheGruppe(data.branche)&&<div style={{marginTop:-12,marginBottom:16,fontSize:".78rem",color:T.textMuted}}>Berufsgruppe: <span style={{fontWeight:600,color:T.accent}}>{getBrancheGruppe(data.branche).label}</span></div>}
-        {data.branche==="sonstige"&&<Field label="Ihr Beruf" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Spenglerei, Beautysalon, ..."/>}
+        {data.branche==="sonstige"&&<Field label="Wie soll Ihre Branche heißen?" value={data.brancheCustom} onChange={up("brancheCustom")} placeholder="z.B. Skateshop, Maschinenbau, Mikrobrauerei …" hint="Wird als Branchenbezeichnung auf Ihrer Website angezeigt" required/>}
         <Field label="Kurzbeschreibung" value={data.kurzbeschreibung} onChange={up("kurzbeschreibung")} placeholder="Seit 15 Jahren Ihr zuverlässiger Partner." rows={2} hint="Erscheint oben auf Ihrer Website. Daraus erstellen wir automatisch Ihren Über-uns-Text und Ihre Vorteile." required/>
         <Dropdown label="Bundesland" value={data.bundesland} onChange={v=>{up("bundesland")(v);const bl=BUNDESLAENDER.find(b=>b.value===v);up("einsatzgebiet")(bl?bl.label:"")}} options={BUNDESLAENDER} placeholder="Bundesland wählen" required/>
       </div>
@@ -2819,6 +2820,11 @@ function Portal({session,onLogout}){
         </div>}
         {/* Hero page — combined Logo + Hero uploads + Grunddaten fields */}
         {page==="hero"&&<>
+          {/* Branchen-Bezeichnung fuer Sonstige-Pfad — erscheint im Hero-Sub */}
+          {order.branche==="sonstige"&&<div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
+            <SectionHeader label="Branchenbezeichnung" desc="Wie Ihre Branche im Hero-Bereich Ihrer Website angezeigt wird."/>
+            <Field label="Branche" value={order.branche_label||""} onChange={upOrder("branche_label")} placeholder="z.B. Skateshop, Maschinenbau, Mikrobrauerei" hint="Frei waehlbar — Ihre eigene Berufsbezeichnung"/>
+          </div>}
           {/* Hero-Headline — der grosse Satz oben auf der Website */}
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginBottom:16}}>
             <SectionHeader label="Hero-Überschrift" desc="Der große Satz ganz oben auf Ihrer Website. Meist ein Slogan oder Kernversprechen — nicht der Firmenname (der erscheint automatisch klein darunter)." aiField="hero_headline"/>

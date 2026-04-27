@@ -54,6 +54,8 @@ export const BRANCHEN_GRUPPEN = {
   mobilitaet: { label: 'Mobilität & Transport', features: FT_MOBILITAET },
   agrar: { label: 'Landwirtschaft & Direktvermarktung', features: FT_AGRAR },
   kultur: { label: 'Kultur & Kunst', features: [] },
+  industrie: { label: 'Industrie & Maschinenbau', features: [] },
+  sonstige: { label: 'Andere Branche', features: [] },
 };
 
 // Farbpaletten pro Branchengruppe (Ref: echte Premium-Websites + Stilkategorien)
@@ -69,6 +71,8 @@ export const GRUPPEN_PALETTEN = {
   mobilitaet:    { custom_color: '#121826', custom_accent: '#f59e0b', custom_bg: '#f5f6f8', custom_text: '#121826', custom_text_muted: '#6b6b80', custom_sep: '#e2e4ea' },
   agrar:         { custom_color: '#2f3a1d', custom_accent: '#7a8c47', custom_bg: '#f7f6ef', custom_text: '#2f3a1d', custom_text_muted: '#6b6b4f', custom_sep: '#e0dec8' },
   kultur:        { custom_color: '#1c1a26', custom_accent: '#a78bcf', custom_bg: '#f8f6f4', custom_text: '#1c1a26', custom_text_muted: '#6b6880', custom_sep: '#e5e2e9' },
+  industrie:     { custom_color: '#1f2937', custom_accent: '#dc6b1f', custom_bg: '#f4f5f7', custom_text: '#1f2937', custom_text_muted: '#6b7280', custom_sep: '#e0e2e6' },
+  sonstige:      { custom_color: '#0f2b5b', custom_accent: '#0369a1', custom_bg: '#f4f7fa', custom_text: '#1e293b', custom_text_muted: '#475569', custom_sep: '#d8eefe' },
 };
 
 export const BRANCHEN = [
@@ -100,6 +104,9 @@ export const BRANCHEN = [
   { value: 'steinmetz',        label: 'Steinmetz',                        gruppe: 'handwerk', leistungen: ['Grabmale','Natursteinarbeiten','Restaurierung','Gartendeko','Küchenplatten','Beratung'], stil: 'elegant' },
   { value: 'uhrmacher',        label: 'Uhrmacher',                        gruppe: 'handwerk', leistungen: ['Uhrenreparatur','Batteriewechsel','Restaurierung','Armbandwechsel','Schmuckreparatur','Verkauf'], stil: 'elegant' },
   { value: 'stuckateur',       label: 'Stuckateur / Trockenbau',          gruppe: 'handwerk', leistungen: ['Trockenbau','Stuckarbeiten','Dämmarbeiten','Deckenverkleidung','Putzarbeiten','Sanierung'], stil: 'klassisch' },
+  { value: 'werbetechnik',     label: 'Werbetechnik / Beschriftung',      gruppe: 'handwerk', leistungen: ['Folienbeschriftung','Lichtwerbung','Fahrzeugbeschriftung','Schilder & Banner','Schaufensterfolien','Großformatdruck'], stil: 'modern' },
+  { value: 'schmiede',         label: 'Schmiede / Hufschmied',            gruppe: 'handwerk', leistungen: ['Kunstschmiedearbeiten','Hufbeschlag','Geländer & Tore','Restaurierung','Reparaturen','Sonderanfertigungen'], stil: 'klassisch' },
+  { value: 'reparaturservice', label: 'Reparaturservice / Werkstatt',     gruppe: 'handwerk', leistungen: ['Geräte-Reparatur','Elektronik-Reparatur','Klein-Reparaturen','Wartung','Ersatzteile','Beratung'], stil: 'modern' },
   // Kosmetik & Körperpflege
   { value: 'kosmetik',         label: 'Kosmetikstudio',                   gruppe: 'kosmetik', leistungen: ['Gesichtsbehandlungen','Körperpflege & Peeling','Waxing & Haarentfernung','Anti-Aging-Behandlungen','Augenbrauen & Wimpern','Beratung & Pflegeroutine'], stil: 'modern' },
   { value: 'friseur',          label: 'Friseursalon',                     gruppe: 'kosmetik', leistungen: ['Haarschnitt Damen & Herren','Färben & Strähnchen','Hochzeitsstyling','Haarbehandlungen','Kinder-Haarschnitt','Bartpflege'], stil: 'modern' },
@@ -124,6 +131,7 @@ export const BRANCHEN = [
   { value: 'baeckerei',        label: 'Bäckerei / Konditor',              gruppe: 'gastro', leistungen: ['Brot & Gebäck','Torten & Kuchen','Frühstück','Catering','Saisongebäck','Bestellung & Vorbestellung'], stil: 'elegant' },
   { value: 'fleischerei',      label: 'Fleischerei / Metzger',            gruppe: 'gastro', leistungen: ['Frischfleisch','Wurst & Aufschnitt','Catering & Partyplatten','Grillspezialitäten','Regionale Produkte','Vorbestellung'], stil: 'klassisch' },
   { value: 'winzer',           label: 'Winzer / Weinbau',                 gruppe: 'gastro', leistungen: ['Eigenbauweine','Ab-Hof-Verkauf','Weinverkostung','Kellerführung','Feste & Events','Online-Shop'], stil: 'elegant' },
+  { value: 'brauerei',         label: 'Brauerei / Mikrobrauerei',         gruppe: 'gastro', leistungen: ['Eigene Biere','Brauerei-Führungen','Verkostungen','Veranstaltungen','Hofverkauf','Online-Shop'], stil: 'elegant' },
   // Gesundheit
   { value: 'physiotherapie',   label: 'Physiotherapie',                   gruppe: 'gesundheit', leistungen: ['Manuelle Therapie','Bewegungstherapie','Sportphysiotherapie','Lymphdrainage','Elektrotherapie','Hausbesuche'], stil: 'klassisch' },
   { value: 'arzt',             label: 'Arztpraxis / Ordination (Allgemeinmedizin)',          gruppe: 'gesundheit', leistungen: ['Allgemeinmedizin','Vorsorgeuntersuchung','Gesundenuntersuchung','Impfungen','Hausbesuche','Akutversorgung'], stil: 'klassisch' },
@@ -216,6 +224,11 @@ export const BRANCHEN = [
   { value: 'antiquitaeten',    label: 'Antiquitäten / Vintage',           gruppe: 'handel', leistungen: ['Möbel','Schmuck','Porzellan','Restaurierung','Schätzungen','Ankauf'], stil: 'elegant' },
   { value: 'fahrradhandel',    label: 'Fahrradhandel',                    gruppe: 'handel', leistungen: ['Fahrräder','E-Bikes','Zubehör','Beratung','Probefahrten','Wartung & Service'], stil: 'modern' },
   { value: 'spielwaren',       label: 'Spielwaren',                       gruppe: 'handel', leistungen: ['Kinderspielzeug','Brettspiele','Outdoor-Spielzeug','Lernspielzeug','Geschenkverpackung','Wunschliste'], stil: 'modern' },
+  { value: 'skateshop',        label: 'Skateshop / Boardshop',            gruppe: 'handel', leistungen: ['Skateboards & Longboards','Streetwear & Schuhe','Schoner & Helme','Reparatur & Service','Eigenmarken','Beratung'], stil: 'modern' },
+  { value: 'musikhandel',      label: 'Musikinstrumente / Musikfachhandel', gruppe: 'handel', leistungen: ['Instrumente','Zubehör & Saiten','Verstärker & PA','Reparatur & Service','Mietservice','Beratung'], stil: 'modern' },
+  { value: 'schreibwaren',     label: 'Schreibwaren / Bürobedarf',        gruppe: 'handel', leistungen: ['Bürobedarf','Schulartikel','Geschenkartikel','Druckdienste','Versandservice','Beratung'], stil: 'klassisch' },
+  { value: 'tierhandel',       label: 'Tierhandel / Zoofachhandel',       gruppe: 'handel', leistungen: ['Tierfutter','Aquaristik','Vogel- & Kleintierbedarf','Tierpflege-Produkte','Beratung','Lieferservice'], stil: 'modern' },
+  { value: 'souvenirladen',    label: 'Souvenir / Geschenkartikel',       gruppe: 'handel', leistungen: ['Regionale Souvenirs','Geschenkartikel','Postkarten & Grußkarten','Spezialitäten','Saisonware','Geschenkverpackung'], stil: 'modern' },
   // Mobilität & Transport
   { value: 'taxi',             label: 'Taxi / Mietwagen',                 gruppe: 'mobilitaet', leistungen: ['Taxifahrten','Flughafentransfer','Gruppenfahrten','Kurierfahrten','Festpreise','24/7 erreichbar'], stil: 'klassisch' },
   { value: 'limousine',        label: 'Limousinen- & Chauffeur-Service',  gruppe: 'mobilitaet', leistungen: ['Hochzeitsfahrten','Business-Fahrten','Flughafentransfer','Event-Service','Stadtrundfahrten','Festpreise'], stil: 'elegant' },
@@ -229,13 +242,18 @@ export const BRANCHEN = [
   { value: 'obstbauer',        label: 'Obstbauer / Obstgarten',           gruppe: 'agrar', leistungen: ['Frisches Obst','Säfte','Marmeladen','Edelbrände','Selbstpflücken','Hofverkauf'], stil: 'elegant' },
   { value: 'brennerei',        label: 'Destillerie / Brennerei',          gruppe: 'agrar', leistungen: ['Edelbrände','Liköre','Gin','Verkostungen','Führungen','Online-Shop'], stil: 'elegant' },
   { value: 'baumschule',       label: 'Baumschule / Gärtnerei (Verkauf)', gruppe: 'agrar', leistungen: ['Obstbäume','Ziergehölze','Stauden','Zimmerpflanzen','Beratung','Lieferung'], stil: 'modern' },
+  { value: 'kaeserei',         label: 'Käserei / Sennerei',               gruppe: 'agrar', leistungen: ['Eigene Käsesorten','Joghurt & Topfen','Hofverkauf','Verkostungen','Sennereiführungen','Online-Shop'], stil: 'elegant' },
+  // Industrie & Maschinenbau
+  { value: 'maschinenbau',     label: 'Maschinenbau',                     gruppe: 'industrie', leistungen: ['Sondermaschinenbau','Konstruktion & Engineering','Fertigung','Montage & Inbetriebnahme','Wartung & Service','Reparaturen'], stil: 'klassisch' },
+  { value: 'anlagenbau',       label: 'Anlagenbau / Industrieanlagen',    gruppe: 'industrie', leistungen: ['Anlagenplanung','Fertigung & Montage','Inbetriebnahme','Modernisierung','Wartungsverträge','24/7 Service'], stil: 'klassisch' },
+  { value: 'metallverarbeitung', label: 'Metallverarbeitung / CNC',       gruppe: 'industrie', leistungen: ['CNC-Bearbeitung','Schweißkonstruktionen','Blechbearbeitung','Lasern & Wasserstrahlschneiden','Oberflächenbehandlung','Prototypen'], stil: 'klassisch' },
   // Kultur & Kunst
   { value: 'galerie',          label: 'Kunstgalerie',                     gruppe: 'kultur', leistungen: ['Ausstellungen','Kunstverkauf','Vernissagen','Kunstberatung','Künstlerportfolio','Events'], stil: 'elegant' },
   { value: 'kuenstler',        label: 'Künstler (Maler / Bildhauer)',     gruppe: 'kultur', leistungen: ['Werke','Auftragsarbeiten','Atelier-Besuche','Ausstellungen','Workshops','Editionen'], stil: 'elegant' },
   { value: 'musiker',          label: 'Musiker / Band',                   gruppe: 'kultur', leistungen: ['Hochzeiten','Firmenfeiern','Konzerte','Studio-Aufnahmen','Unterricht','Booking'], stil: 'modern' },
   { value: 'theater',          label: 'Theater / Kleinbühne',             gruppe: 'kultur', leistungen: ['Vorstellungen','Spielplan','Abonnements','Kinderprogramm','Workshops','Saalmiete'], stil: 'elegant' },
-  // Sonstige
-  { value: 'sonstige',         label: 'Anderer Beruf (nicht in der Liste)', gruppe: 'sonstige', leistungen: [], stil: 'klassisch' },
+  // Sonstige — User gibt eigene Berufsbezeichnung ein (Pflicht-Freitext im Fragebogen)
+  { value: 'sonstige',         label: 'Andere Branche / Sonstiges',       gruppe: 'sonstige', leistungen: [], stil: 'klassisch' },
 ];
 
 export const getBrancheFeatures = (b) => {

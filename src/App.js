@@ -3154,7 +3154,11 @@ function Portal({session,onLogout}){
         </div>}
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader label="Team" desc="Stellen Sie Ihr Team vor — Name, Rolle und optional ein Foto. Erscheint auf der Website im Über-uns-Bereich."/>
-          {!(order.team_members||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Teammitglieder hinzugefügt.</div>}
+          {!(order.team_members||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:8}}>👥</div>
+            <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Teammitglieder</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Personen hinter Ihrem Geschäft schaffen Nähe — fügen Sie Ihr Team mit Foto, Name und Rolle hinzu. Die Sektion erscheint automatisch.</div>
+          </div>}
           {(order.team_members||[]).map((m,i)=>(
             <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px"}}>
@@ -3182,7 +3186,11 @@ function Portal({session,onLogout}){
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.amberText} strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>Sie haben nur 1 Schritt — der Ablauf wird erst ab 2 Schritten auf der Website angezeigt.</div>
           </div>})()}
-          {!(order.ablauf_schritte||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Ablaufschritte hinzugefügt.</div>}
+          {!(order.ablauf_schritte||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:8}}>📋</div>
+            <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Ablaufschritte</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Wenn Kunden wissen wie's bei Ihnen abläuft, klären sich viele Fragen vorab — z.B. „Erstgespräch → Angebot → Umsetzung". Mindestens 2 Schritte werden angezeigt.</div>
+          </div>}
           {(order.ablauf_schritte||[]).map((s,i)=>(
             <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>
@@ -3199,7 +3207,11 @@ function Portal({session,onLogout}){
         {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <VariantenHint label="Bewertungen-Variante" value={order?.varianten_cache?.bewertungen}/>
           <SectionHeader label="Kundenbewertungen" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
-          {!(order.bewertungen||[]).length&&<div style={{padding:"16px 0 8px",fontSize:".82rem",color:T.textMuted,textAlign:"center"}}>Noch keine Bewertungen hinzugefügt.</div>}
+          {!(order.bewertungen||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+            <div style={{fontSize:"1.8rem",marginBottom:8}}>⭐</div>
+            <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Bewertungen</div>
+            <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Schon 1-2 echte Kundenstimmen schaffen viel Vertrauen — die Bewertungs-Sektion erscheint automatisch auf Ihrer Website sobald Sie welche hinzufügen.</div>
+          </div>}
           {(order.bewertungen||[]).map((b,i)=>(
             <div key={i} style={{marginBottom:10,background:"#fff",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,overflow:"hidden"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderBottom:`1px solid ${T.bg3}`}}>

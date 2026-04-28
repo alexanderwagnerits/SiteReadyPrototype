@@ -446,7 +446,7 @@ ${(() => {
   return `<h2>Bildnachweis</h2>\n<p>${allLines.join("<br>")}</p>`;
 })()}
 
-<p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;
+${internal ? `<p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>` : ""}`;
   } else {
     title = "Datenschutzerklärung";
     const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};

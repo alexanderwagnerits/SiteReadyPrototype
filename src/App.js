@@ -1636,7 +1636,7 @@ function CropModal({file,aspectKey,onConfirm,onCancel}){
 function Portal({session,onLogout}){
   const[page,setPage]=useState("overview");
   const[showErweitert,setShowErweitert]=useState(false);
-  const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",social:"website",design:"website",branchenfeatures:"website",medien:"website",faq:"website",fakten:"website",partner:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
+  const PAGE_TAB={overview:"website",hero:"website",grunddaten:"website",leistungen:"website",kontakt:"website",ueberuns:"website",bewertungen:"website",galerie:"website",social:"website",design:"website",branchenfeatures:"website",faq:"website",fakten:"website",partner:"website",impressum:"extras",aktuelles:"extras",teilen:"extras",seo:"extras",domain:"extras",rechnungen:"konto",account:"konto",support:"konto",fotos:"website"};
   const tab=PAGE_TAB[page]||"website";
   const nav=p=>{setPage(p);setPtSbOpen(false);};
   const[order,setOrder]=useState(null);
@@ -2189,7 +2189,8 @@ function Portal({session,onLogout}){
     fakten:(order.fakten||[]).filter(f=>f&&f.zahl).length>=2,
     partner:!!order.partner?.some(p=>p&&p.name),
     design:true,
-    medien:!!(assetUrls.logo||assetUrls.hero),
+    bewertungen:!!order.bewertungen?.some(b=>b&&b.text),
+    galerie:(order.galerie||[]).filter(g=>g&&g.url).length>0,
     impressum:(()=>{
       if(!order.unternehmensform)return false;
       const uf=order.unternehmensform;
@@ -2260,7 +2261,7 @@ function Portal({session,onLogout}){
      done:!!(order.team_members?.some(m=>m.name)),page:"ueberuns"},
     {label:order.bewertungen?.some(b=>b.text)?(isAiGen("bewertungen")?aiTag+"Bewertungen prüfen":"Bewertungen prüfen"):"Kundenbewertungen hinzufügen",
      desc:order.bewertungen?.some(b=>b.text)?"Prüfen Sie die übernommenen Bewertungen.":"Echte Kundenstimmen steigern das Vertrauen.",
-     done:!!(order.bewertungen?.some(b=>b.text)),page:"ueberuns"},
+     done:!!(order.bewertungen?.some(b=>b.text)),page:"bewertungen"},
     (()=>{
       // FAQ braucht Frage UND Antwort — sonst auf Website nicht sichtbar
       const complete=!!order.faq?.some(f=>f.frage&&f.antwort);
@@ -2325,22 +2326,23 @@ function Portal({session,onLogout}){
 
   const pageMeta={
     overview:{title:"Übersicht",sub:"Willkommen zurück"},
-    hero:{title:"Titelbild & Kopfbereich",sub:"Logo, Firmenname, Kurzbeschreibung und Titelbild — der erste Eindruck Ihrer Website"},
+    hero:{title:"Start — Kopfbereich",sub:"Logo, Firmenname, Hero-Überschrift und Titelbild — der erste Eindruck Ihrer Website"},
     grunddaten:{title:"Grunddaten",sub:"Firmenname und Einsatzgebiet – erscheinen im Titelbereich und in der Google-Suche"},
     leistungen:{title:"Leistungen",sub:"Diese Leistungen erscheinen als Karten auf Ihrer Website – mit Beschreibung und Preis"},
     kontakt:{title:"Kontakt & Öffnungszeiten",sub:"Adresse, Telefon und Öffnungszeiten erscheinen im Kontaktbereich und in Google Maps"},
-    ueberuns:{title:"Über uns",sub:"Erscheint im mittleren Bereich – Ihre Vorstellung, Vorteile, Team und Ablauf"},
+    ueberuns:{title:"Über uns",sub:"Ihre Vorstellung, Vorteile, Team und Ablauf — erscheint im mittleren Bereich der Website"},
+    bewertungen:{title:"Kundenbewertungen",sub:"Echte Kundenstimmen — erscheinen als eigener Bereich zwischen Über uns und FAQ"},
+    galerie:{title:"Galerie",sub:"Eigener Foto-Bereich auf Ihrer Website. Bis zu 12 Fotos."},
     social:{title:"Social Media",sub:"Ihre Profile erscheinen als Icons im Footer Ihrer Website"},
     design:{title:"Design & Stil",sub:"Das visuelle Erscheinungsbild Ihrer Website – Farben und Typografie"},
     faq:{title:"Häufige Fragen",sub:"Fragen und Antworten, die auf Ihrer Website als aufklappbarer FAQ-Bereich erscheinen"},
-    fakten:{title:"Zahlen",sub:"Erscheinen als Counter-Zeile auf der Website – z.B. Jahre Erfahrung oder Kundenzahl"},
-    partner:{title:"Vertrauen & Referenzen",sub:"Erscheinen als Logo-Reihe im unteren Drittel – Kunden, Partner oder Zertifikate"},
+    fakten:{title:"Zahlen & Fakten",sub:"Erscheinen als Counter-Zeile auf der Website – z.B. Jahre Erfahrung oder Kundenzahl"},
+    partner:{title:"Referenzen & Partner",sub:"Erscheinen als Logo-Reihe im unteren Drittel – Kunden, Partner oder Zertifikate"},
     branchenfeatures:{title:"Besonderheiten",sub:"Was zeichnet Sie aus? Erscheinen als kleine Auszeichnungen (Badges) direkt unter dem Titelbild."},
     impressum:{title:"Unternehmen & Impressum",sub:"Rechtlich vorgeschriebene Pflichtangaben – direkt bearbeitbar, Änderungen erfordern Ihre Bestätigung"},
     aktuelles:{title:"Aktuelles",sub:"Kurzfristige Meldungen erscheinen als Banner ganz oben auf Ihrer Website"},
-    medien:{title:"Fotos",sub:"Professionelle Fotos sind der größte Hebel für Anfragen – ideal mindestens 1 Titelbild"},
     teilen:{title:"Teilen & QR-Code",sub:"QR-Code, Visitenkarte und Firmen-Flyer für Ihre Website"},
-    seo:{title:"SEO, Google & Domain",sub:"Suchmaschinenoptimierung und eigene Domain für Ihre Website"},
+    seo:{title:"Online gehen",sub:"SEO, Google-Indexierung und eigene Domain für Ihre Website"},
     rechnungen:{title:"Rechnungen",sub:"Ihre Zahlungsübersicht und Abonnement-Verwaltung"},
     account:{title:"Account",sub:"E-Mail-Adresse und Passwort Ihres Kundenkontos"},
     support:{title:"Support",sub:"Wir sind für Sie da – Antwort in der Regel innerhalb von 24 Stunden"},
@@ -2360,6 +2362,7 @@ function Portal({session,onLogout}){
 .pt-sb-nav{padding:12px 10px;flex:1;overflow-y:auto;scrollbar-width:none}
 .pt-sb-nav::-webkit-scrollbar{display:none}
 .pt-sb-grp{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 8px 5px}
+.pt-sb-div{height:1px;background:rgba(255,255,255,.06);margin:8px 14px}
 .pt-ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:.91rem;font-weight:500;transition:all .12s;user-select:none;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
 .pt-ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
 .pt-ni.pactive{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
@@ -2538,24 +2541,31 @@ function Portal({session,onLogout}){
         </div>
       </div>
       <nav className="pt-sb-nav">
-        <div className="pt-sb-grp">Meine Website</div>
+        <div className="pt-sb-grp">Inhalt meiner Website</div>
         <button className={`pt-ni${page==="overview"?" pactive":""}`} onClick={()=>nav("overview")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           Übersicht
         </button>
         {[
-          ["hero","Titelbild",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`],
+          ["hero","Start",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`],
           ["branchenfeatures","Besonderheiten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`],
           ["leistungen","Leistungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`],
+          ["__div__"],
           ["ueberuns","Über uns",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`],
+          ["bewertungen","Bewertungen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`],
+          ["galerie","Galerie",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="14" height="14" rx="2"/><path d="M22 18V8a2 2 0 0 0-2-2H10"/></svg>`],
+          ["faq","Häufige Fragen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`],
+          ["fakten","Zahlen & Fakten",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`],
+          ["partner","Referenzen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`],
+          ["__div__"],
           ["kontakt","Kontakt",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`],
           ["social","Social Media",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`],
-          ["faq","Häufige Fragen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`],
-          ["fakten","Zahlen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`],
-          ["partner","Referenzen",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`],
-          ["design","Design",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>`],
-        ].map(([p,label,iconSvg])=>{
-          const isRequired=["hero","branchenfeatures","leistungen","ueberuns","kontakt"].includes(p);
+          ["aktuelles","Aktuelles",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`],
+          ["impressum","Impressum",`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`],
+        ].map((item,idx)=>{
+          if(item[0]==="__div__")return<div key={"div"+idx} className="pt-sb-div"/>;
+          const[p,label,iconSvg]=item;
+          const isRequired=["hero","branchenfeatures","leistungen","ueberuns","kontakt","impressum"].includes(p);
           const isDone=comp[p]===true;
           return(<button key={p} className={`pt-ni${page===p?" pactive":""}`} onClick={()=>nav(p)}>
             <span dangerouslySetInnerHTML={{__html:iconSvg}}/>
@@ -2563,25 +2573,19 @@ function Portal({session,onLogout}){
             {isDone?<span className="pt-done"/>:isRequired?<span className="pt-comp" title="Pflicht – noch nicht ausgefüllt"/>:null}
           </button>);
         })}
-        <div className="pt-sb-grp">Extras</div>
-        <button className={`pt-ni${page==="aktuelles"?" pactive":""}`} onClick={()=>nav("aktuelles")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-          Aktuelles
+        <div className="pt-sb-grp">Einstellungen</div>
+        <button className={`pt-ni${page==="design"?" pactive":""}`} onClick={()=>nav("design")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M13.5 9C13.5 9 13 17 6 17"/><path d="M13.5 9C13.5 9 14 17 19 17"/></svg>
+          Design
+        </button>
+        <button className={`pt-ni${page==="seo"?" pactive":""}`} onClick={()=>nav("seo")}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Online gehen
         </button>
         <button className={`pt-ni${page==="teilen"?" pactive":""}`} onClick={()=>nav("teilen")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Teilen & QR-Code
         </button>
-        <button className={`pt-ni${page==="impressum"?" pactive":""}`} onClick={()=>nav("impressum")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Impressum
-          {comp.impressum===true&&<span className="pt-done"/>}
-        </button>
-        <button className={`pt-ni${page==="seo"?" pactive":""}`} onClick={()=>nav("seo")}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          SEO, Google & Domain
-        </button>
-        <div className="pt-sb-grp">Konto</div>
         <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
           Rechnungen
@@ -3212,6 +3216,35 @@ function Portal({session,onLogout}){
               {(order.downloads||[]).length<3&&<button onClick={()=>{const arr=[...(order.downloads||[]),{label:"",url:""}];upOrder("downloads")(arr);}} style={{padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Download hinzufügen"}</button>}
             </div>
         </div>
+        {getBrancheFeatures(order?.branche).includes("preisliste")&&(()=>{const url=assetUrls.preisliste;const busy=uploading.preisliste;return(
+          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
+            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Preisliste <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>PDF oder Bild Ihrer Preisliste — wird auf der Website als Download angeboten</div>
+              </div>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
+                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
+                  <input type="file" accept="image/*,.pdf" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("preisliste",e.target.files[0]);}}/>
+                </label>
+                {url&&<button onClick={()=>askDelete("Preisliste",()=>deleteAsset("preisliste"))} disabled={deleting.preisliste} title="Preisliste entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting.preisliste?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting.preisliste?"...":"×"}</button>}
+              </div>
+            </div>
+            {url&&<div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:T.greenLight,borderRadius:T.rSm,border:`1px solid rgba(22,163,74,.15)`}}>
+              <span style={{fontSize:"1.1rem"}}>📄</span>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:600,fontSize:".82rem",color:T.green}}>Preisliste hochgeladen</div>
+                <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Wird auf Ihrer Website als „Preisliste ansehen"-Button angezeigt</div>
+              </div>
+              <a href={url} target="_blank" rel="noreferrer" style={{padding:"6px 14px",background:T.accent,color:"#fff",borderRadius:T.rSm,fontSize:".78rem",fontWeight:700,textDecoration:"none",fontFamily:T.font}}>Ansehen</a>
+            </div>}
+            {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
+              <div style={{fontSize:"1.6rem",marginBottom:4}}>📄</div>
+              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Preisliste hochgeladen</div>
+            </div>}
+          </div>
+        );})()}
         <div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
           <SectionHeader label="CTA-Block" desc="Aufruf zum Handeln — erscheint auf der Website direkt nach den Leistungen." aiField="cta_block" onRemove={async()=>{const newAi=(order.ai_generated||[]).filter(f=>f!=="cta_block");await supabase.from("orders").update({cta_headline:null,cta_text:null,ai_generated:newAi}).eq("id",order.id);setOrder(o=>({...o,cta_headline:"",cta_text:"",ai_generated:newAi}));if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,cta_headline:"",cta_text:"",ai_generated:newAi};showToast("CTA-Text entfernt");}}/>
           <VisibilityToggle field="cta_block" labelOn="CTA-Block erscheint auf Ihrer Website" labelOff="CTA-Block wird nicht angezeigt"/>
@@ -3286,9 +3319,50 @@ function Portal({session,onLogout}){
           {(order.ablauf_schritte||[]).length<5&&<button onClick={()=>{const a=[...(order.ablauf_schritte||[]),{titel:"",text:""}];upOrder("ablauf_schritte")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Schritt hinzufügen"}</button>}
           </div>
         </div>}
-        {page==="ueberuns"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
+        {page==="ueberuns"&&(()=>{const keys=["about1","about2","about3","about4","about5","about6","about7","about8"];const freeCount=keys.filter(k=>!assetUrls[k]).length;return(
+        <div
+          style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${dragOverAbout?T.accent:T.bg3}`,boxShadow:T.sh1,transition:"border-color .15s",position:"relative",marginTop:16}}
+          onDragOver={e=>{e.preventDefault();if(!dragOverAbout)setDragOverAbout(true);}}
+          onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setDragOverAbout(false);}}
+          onDrop={e=>{e.preventDefault();setDragOverAbout(false);if(e.dataTransfer.files?.length)uploadBatch(e.dataTransfer.files,keys);}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Betriebsfotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
+              <div style={{fontSize:".82rem",color:T.textSub}}>Zeigen Sie Ihren Betrieb — Team, Werkstatt, Atmosphäre, Referenzen. Bis zu 8 Fotos.</div>
+            </div>
+            {freeCount>0&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Mehrere auswählen
+              <input type="file" accept="image/*" multiple style={{display:"none"}} onChange={e=>{if(e.target.files?.length)uploadBatch(e.target.files,keys);e.target.value="";}}/>
+            </label>}
+          </div>
+          <div style={{fontSize:".74rem",color:T.textMuted,marginTop:8,marginBottom:16,padding:"8px 12px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{verticalAlign:"-2px",marginRight:6,opacity:.6}}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Tipp: Sie können mehrere Fotos gleichzeitig hierher ziehen — sie werden automatisch auf freie Plätze verteilt.
+          </div>
+          <div className="pt-about-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,pointerEvents:dragOverAbout?"none":"auto"}}>
+            {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
+              <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
+                <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {url?<img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
+                </div>
+                <div style={{display:"flex",gap:4}}>
+                  <label style={{flex:1,textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
+                    {busy?"...":url?"Ersetzen":"Hochladen"}
+                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(k,e.target.files[0]);}}/>
+                  </label>
+                  {url&&<button onClick={()=>askDelete("Bild",()=>deleteAsset(k))} disabled={deleting[k]} title="Bild entfernen" style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"×"}</button>}
+                </div>
+              </div>
+            );})}
+          </div>
+          {dragOverAbout&&<div style={{position:"absolute",inset:0,background:"rgba(143,163,184,.12)",borderRadius:T.r,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",border:`2.5px dashed ${T.accent}`}}>
+            <div style={{fontSize:".95rem",fontWeight:800,color:T.accent,background:"#fff",padding:"10px 20px",borderRadius:T.rSm,boxShadow:T.sh2}}>Fotos hier ablegen ({freeCount} {freeCount===1?"freier Platz":"freie Plätze"})</div>
+          </div>}
+        </div>);})()}
+        {page==="bewertungen"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <VariantenHint label="Bewertungen-Variante" value={order?.varianten_cache?.bewertungen}/>
-          <SectionHeader label="Kundenbewertungen" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und Kontakt." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
+          <SectionHeader label="Kundenbewertungen" desc="Zeigen Sie echte Kundenstimmen auf Ihrer Website. Diese erscheinen als eigener Bereich zwischen Über uns und FAQ." aiField="bewertungen" onRemove={async()=>{await supabase.from("orders").update({bewertungen:null,ai_generated:(order.ai_generated||[]).filter(f=>f!=="bewertungen")}).eq("id",order.id);setOrder(o=>({...o,bewertungen:null,ai_generated:(o.ai_generated||[]).filter(f=>f!=="bewertungen")}));showToast("Bewertungen entfernt");}}/>
           {!(order.bewertungen||[]).length&&<div style={{padding:"28px 20px",margin:"8px 0",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
             <div style={{fontSize:"1.8rem",marginBottom:8}}>⭐</div>
             <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Bewertungen</div>
@@ -3306,6 +3380,89 @@ function Portal({session,onLogout}){
           ))}
           {(order.bewertungen||[]).length<6&&<button onClick={()=>{const a=[...(order.bewertungen||[]),{name:"",text:"",sterne:5}];upOrder("bewertungen")(a);}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Bewertung hinzufügen"}</button>}
         </div>}
+        {/* ── Galerie Seite ── */}
+        {page==="galerie"&&(()=>{const items=Array.isArray(order?.galerie)?order.galerie.filter(g=>g&&g.url):[];const maxItems=12;const canAdd=items.length<maxItems;const uploadGalerie=async(files)=>{
+          if(!session?.user?.id||!supabase){showToast("Nicht eingeloggt");return;}
+          const imageFiles=Array.from(files).filter(f=>f.type.startsWith("image/"));
+          if(!imageFiles.length){showToast("Nur Bilddateien möglich");return;}
+          const free=maxItems-items.length;
+          const toUpload=imageFiles.slice(0,free);
+          const skipped=imageFiles.length-toUpload.length;
+          requireRechte(async()=>{
+          setUploading(u=>({...u,galerie:true}));
+          try{
+            const newItems=[...items];
+            for(const file of toUpload){
+              const ts=Date.now()+Math.floor(Math.random()*1000);
+              const extMap={"image/png":"png","image/webp":"webp","image/gif":"gif"};
+              const ext=extMap[file.type]||"jpg";
+              const path=`${session.user.id}/galerie_${ts}.${ext}`;
+              const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:false,contentType:file.type||"image/jpeg"});
+              if(error){showToast("Upload fehlgeschlagen: "+error.message);continue;}
+              const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
+              newItems.push({url:data.publicUrl+"?v="+ts,path});
+            }
+            await supabase.from("orders").update({galerie:newItems}).eq("id",order.id);
+            setOrder(o=>({...o,galerie:newItems}));
+            if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,galerie:newItems};
+            showToast(skipped>0?`${toUpload.length} hochgeladen, ${skipped} übersprungen (max ${maxItems})`:`${toUpload.length} Foto${toUpload.length===1?"":"s"} hochgeladen`);
+          }catch(e){showToast("Fehler: "+e.message);}
+          setUploading(u=>({...u,galerie:false}));
+          });
+        };
+        const deleteGalerieItem=async(idx)=>{
+          const item=items[idx];if(!item)return;
+          askDelete("Foto",async()=>{
+            const newItems=items.filter((_,i)=>i!==idx);
+            if(item.path){try{await supabase.storage.from("customer-assets").remove([item.path]);}catch(_){}}
+            await supabase.from("orders").update({galerie:newItems}).eq("id",order.id);
+            setOrder(o=>({...o,galerie:newItems}));
+            if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,galerie:newItems};
+            showToast("Foto entfernt");
+          });
+        };
+        return(
+          <div
+            style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${dragOverGalerie?T.accent:T.bg3}`,boxShadow:T.sh1,transition:"border-color .15s",position:"relative"}}
+            onDragOver={canAdd?e=>{e.preventDefault();if(!dragOverGalerie)setDragOverGalerie(true);}:undefined}
+            onDragLeave={canAdd?e=>{if(!e.currentTarget.contains(e.relatedTarget))setDragOverGalerie(false);}:undefined}
+            onDrop={canAdd?e=>{e.preventDefault();setDragOverGalerie(false);if(e.dataTransfer.files?.length)uploadGalerie(e.dataTransfer.files);}:undefined}>
+            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,marginBottom:4,flexWrap:"wrap"}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontSize:".78rem",color:T.textMuted}}>Eigener Galerie-Bereich auf der Website. Bis zu {maxItems} Fotos.</div>
+              </div>
+              {canAdd&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:uploading.galerie?"wait":"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                {uploading.galerie?"Lädt...":"Fotos hinzufügen"}
+                <input type="file" accept="image/*" multiple disabled={uploading.galerie} style={{display:"none"}} onChange={e=>{if(e.target.files?.length){uploadGalerie(e.target.files);e.target.value="";}}}/>
+              </label>}
+            </div>
+            <div style={{marginTop:16}}/>
+            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt" hasContent={(order.galerie||[]).filter(g=>g&&g.url).length>0} contentHint="Mindestens ein Foto in der Galerie nötig."/>
+            <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
+              {items.length>0?<>
+                <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} / {maxItems} {items.length===1?"Foto":"Fotos"}</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+                  {items.map((g,i)=><div key={i} style={{display:"flex",flexDirection:"column",gap:6}}>
+                    <div style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000",position:"relative"}}>
+                      <img src={g.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                      <button onClick={()=>deleteGalerieItem(i)} title="Foto entfernen" style={{position:"absolute",top:6,right:6,width:24,height:24,border:"none",borderRadius:"50%",background:"rgba(0,0,0,.6)",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{"×"}</button>
+                    </div>
+                    <input type="text" value={g.credit||""} placeholder="Bildnachweis (optional)" title="Falls Lizenz Namensnennung verlangt — erscheint im Impressum" onChange={e=>{const v=e.target.value;const arr=[...(order.galerie||[])];const realIdx=order.galerie.findIndex(x=>x===g||(x&&x.url===g.url&&x.path===g.path));if(realIdx<0)return;arr[realIdx]={...arr[realIdx],credit:v};upOrder("galerie")(arr);}} style={{width:"100%",padding:"6px 8px",border:`1px solid ${T.bg3}`,borderRadius:4,fontSize:".72rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>
+                  </div>)}
+                </div>
+              </>:<div style={{padding:"28px 20px",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
+                <div style={{fontSize:"1.8rem",marginBottom:8}}>📷</div>
+                <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Fotos</div>
+                <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Klicken Sie oben auf „Fotos hinzufügen" oder ziehen Sie Bilder direkt hierher.</div>
+              </div>}
+            </div>
+            {dragOverGalerie&&<div style={{position:"absolute",inset:0,background:"rgba(143,163,184,.12)",borderRadius:T.r,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",border:`2.5px dashed ${T.accent}`}}>
+              <div style={{fontSize:".9rem",fontWeight:700,color:T.accent,background:"#fff",padding:"10px 16px",borderRadius:T.rSm}}>Hier loslassen zum Hochladen</div>
+            </div>}
+          </div>
+        );})()}
         {/* ── FAQ Seite ── */}
         {page==="faq"&&<div style={{background:"#fff",borderRadius:T.r,padding:"24px 28px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
           <SectionHeader label="Häufige Fragen" desc={`Fragen und Antworten, die Ihre ${kundenWort(order.branche)} häufig stellen. Erscheint als aufklappbarer Bereich auf Ihrer Website.`} aiField="faq"/>
@@ -3874,251 +4031,6 @@ function Portal({session,onLogout}){
         </div>
       </div>)}
 
-      {page==="medien"&&(<div style={{display:"flex",flexDirection:"column",gap:16}}>
-        {/* Logo */}
-        {(()=>{const a=ASSETS[0];const url=assetUrls[a.key];const busy=uploading[a.key];return(
-          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
-              <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
-              </div>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(a.key,e.target.files[0]);}}/>
-                </label>
-                {url&&<button onClick={()=>askDelete(a.label||"Bild",()=>deleteAsset(a.key))} disabled={deleting[a.key]} title="Bild entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[a.key]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting[a.key]?"...":"×"}</button>}
-              </div>
-            </div>
-            {url&&(<div style={{marginBottom:12}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
-              <div className="pt-logo-preview" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                <div>
-                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
-                  <div style={{background:order?.custom_color||"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
-                    <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
-                  </div>
-                </div>
-                <div>
-                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Hell (Briefkopf etc.)</div>
-                  <div style={{background:"#fff",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center",border:`1px solid ${T.bg3}`}}>
-                    <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
-                  </div>
-                </div>
-              </div>
-              {logoContrastIssue&&<div style={{marginTop:10,padding:"12px 14px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:T.rSm}}>
-                <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,marginTop:1}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:".82rem",fontWeight:700,color:"#78350f",marginBottom:3}}>Logo schwer sichtbar auf der Navigation</div>
-                    <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.55}}>{logoContrastIssue==="too-dark"?"Ihr Logo ist dunkel und verschwindet auf dem dunklen Navigationshintergrund (siehe linke Vorschau).":"Ihr Logo ist sehr hell und geht auf dem hellen Hintergrund unter."} Bitte laden Sie eine Version mit ausreichendem Kontrast hoch — die meisten Designer liefern Logo-Varianten für helle UND dunkle Hintergründe.</div>
-                  </div>
-                </div>
-              </div>}
-            </div>)}
-            {!url&&(<div style={{background:T.bg,borderRadius:T.rSm,padding:"28px 16px",textAlign:"center",marginBottom:4}}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.bg3} strokeWidth="1.5" style={{marginBottom:8}}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Logo hochgeladen</div>
-            </div>)}
-            <div style={{fontSize:".8rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>
-              <strong style={{color:T.dark}}>Wichtig:</strong> Ihr Logo wird auf einem dunklen Hintergrund angezeigt. Am besten funktioniert ein PNG mit transparentem Hintergrund (mind. 400 {"×"} 150 px).
-              <br/>Hat Ihr Logo einen farbigen Hintergrund? Entfernen Sie ihn kostenlos: <a href="https://www.remove.bg/de" target="_blank" rel="noopener noreferrer" style={{color:T.accent,fontWeight:600}}>remove.bg</a>
-            </div>
-          </div>
-        );})()}
-        {/* Hero-Bild */}
-        {(()=>{const url=assetUrls["hero"];const busy=uploading["hero"];const isPlaceholder=!!order?.hero_is_placeholder;return(
-          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
-              <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:T.amberLight,color:T.amberText,marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch für einen persönlicheren Auftritt":"Hintergrundbild für den oberen Bereich der Website"}</div>
-              </div>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-                  <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("hero",e.target.files[0]);}}/>
-                </label>
-                {url&&<button onClick={()=>askDelete("Titelbild",()=>deleteAsset("hero"))} disabled={deleting["hero"]} title="Titelbild entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting["hero"]?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting["hero"]?"...":"×"}</button>}
-              </div>
-            </div>
-            {url&&<>
-            <div style={{borderRadius:T.rSm,overflow:"hidden",height:100,background:"#000",position:"relative"}}>
-              <img src={url} alt="Hero" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
-            </div>
-            </>}
-            {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
-              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Titelbild hochgeladen – Farbverlauf bleibt aktiv</div>
-            </div>}
-            <div style={{fontSize:".78rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>Empfohlen: JPG, mind. 1920 &times; 1080 px &middot; Querformat &middot; Ohne Textüberlagerungen (Bild wird automatisch mit Farbverlauf abgedunkelt)</div>
-          </div>
-        );})()}
-        {/* Leistungen-Fotos: jetzt im Leistungen-Editor pro Card */}
-        <div style={{background:"#fff",borderRadius:T.r,padding:"16px 24px",border:`1px solid ${T.bg3}`,display:"flex",alignItems:"center",gap:12}}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.accent} strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <div style={{fontSize:".82rem",color:T.textSub,lineHeight:1.5}}>Leistungsfotos können Sie direkt im <span style={{fontWeight:700,color:T.accent,cursor:"pointer"}} onClick={()=>nav("leistungen")}>Leistungen-Editor</span> pro Leistung zuordnen.</div>
-        </div>
-        {/* Über-uns-Fotos */}
-        {(()=>{const keys=["about1","about2","about3","about4","about5","about6","about7","about8"];const freeCount=keys.filter(k=>!assetUrls[k]).length;return(
-        <div
-          style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${dragOverAbout?T.accent:T.bg3}`,boxShadow:T.sh1,transition:"border-color .15s",position:"relative"}}
-          onDragOver={e=>{e.preventDefault();if(!dragOverAbout)setDragOverAbout(true);}}
-          onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setDragOverAbout(false);}}
-          onDrop={e=>{e.preventDefault();setDragOverAbout(false);if(e.dataTransfer.files?.length)uploadBatch(e.dataTransfer.files,keys);}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4,gap:12,flexWrap:"wrap"}}>
-            <div>
-              <div style={{fontSize:".8rem",fontWeight:700,color:T.dark,marginBottom:4}}>Über-uns-Fotos <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></div>
-              <div style={{fontSize:".82rem",color:T.textSub}}>Zeigen Sie Ihren Betrieb — Team, Werkstatt, Atmosphäre, Referenzen. Bis zu 8 Fotos.</div>
-            </div>
-            {freeCount>0&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-              Mehrere auswählen
-              <input type="file" accept="image/*" multiple style={{display:"none"}} onChange={e=>{if(e.target.files?.length)uploadBatch(e.target.files,keys);e.target.value="";}}/>
-            </label>}
-          </div>
-          <div style={{fontSize:".74rem",color:T.textMuted,marginTop:8,marginBottom:16,padding:"8px 12px",background:T.bg,borderRadius:T.rSm,border:`1px dashed ${T.bg3}`}}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{verticalAlign:"-2px",marginRight:6,opacity:.6}}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Tipp: Sie können mehrere Fotos gleichzeitig hierher ziehen — sie werden automatisch auf freie Plätze verteilt.
-          </div>
-          <div className="pt-about-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,pointerEvents:dragOverAbout?"none":"auto"}}>
-            {keys.map(k=>{const url=assetUrls[k];const busy=uploading[k];return(
-              <div key={k} style={{display:"flex",flexDirection:"column",gap:6}}>
-                <div style={{aspectRatio:"3/2",borderRadius:T.rSm,background:url?"#000":T.bg,border:`1.5px dashed ${url?"transparent":T.bg3}`,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {url?<img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.textMuted} strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>}
-                </div>
-                <div style={{display:"flex",gap:4}}>
-                  <label style={{flex:1,textAlign:"center",padding:"6px 0",border:`1.5px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>
-                    {busy?"...":url?"Ersetzen":"Hochladen"}
-                    <input type="file" accept="image/*" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload(k,e.target.files[0]);}}/>
-                  </label>
-                  {url&&<button onClick={()=>askDelete("Bild",()=>deleteAsset(k))} disabled={deleting[k]} title="Bild entfernen" style={{padding:"6px 8px",border:"1.5px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting[k]?"wait":"pointer",fontSize:".72rem",fontWeight:700,fontFamily:T.font}}>{deleting[k]?"...":"×"}</button>}
-                </div>
-              </div>
-            );})}
-          </div>
-          {dragOverAbout&&<div style={{position:"absolute",inset:0,background:"rgba(143,163,184,.12)",borderRadius:T.r,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",border:`2.5px dashed ${T.accent}`}}>
-            <div style={{fontSize:".95rem",fontWeight:800,color:T.accent,background:"#fff",padding:"10px 20px",borderRadius:T.rSm,boxShadow:T.sh2}}>Fotos hier ablegen ({freeCount} {freeCount===1?"freier Platz":"freie Plätze"})</div>
-          </div>}
-        </div>);})()}
-        <div style={{padding:"14px 16px",background:T.accentLight,borderRadius:T.rSm,border:`1px solid rgba(143,163,184,.15)`,fontSize:".78rem",color:T.textSub}}>
-          Empfohlen: JPG oder PNG, mindestens 1200px breit, max. 5 MB pro Foto.
-        </div>
-        {/* Preisliste */}
-        {getBrancheFeatures(order?.branche).includes("preisliste")&&(()=>{const url=assetUrls.preisliste;const busy=uploading.preisliste;return(
-          <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
-            <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
-              <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Preisliste <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>PDF oder Bild Ihrer Preisliste — wird auf der Website als Download angeboten</div>
-              </div>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <label style={{padding:"9px 18px",border:`2px solid ${T.bg3}`,borderRadius:T.rSm,background:busy?T.bg:"#fff",color:T.textSub,cursor:busy?"wait":"pointer",fontSize:".82rem",fontWeight:600,fontFamily:T.font,whiteSpace:"nowrap"}}>
-                  {busy?"Lädt...":url?"Ersetzen":"Hochladen"}
-                  <input type="file" accept="image/*,.pdf" style={{display:"none"}} disabled={busy} onChange={e=>{if(e.target.files[0])upload("preisliste",e.target.files[0]);}}/>
-                </label>
-                {url&&<button onClick={()=>askDelete("Preisliste",()=>deleteAsset("preisliste"))} disabled={deleting.preisliste} title="Preisliste entfernen" style={{padding:"9px 12px",border:"2px solid #fca5a5",borderRadius:T.rSm,background:"#fff",color:"#ef4444",cursor:deleting.preisliste?"wait":"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font}}>{deleting.preisliste?"...":"×"}</button>}
-              </div>
-            </div>
-            {url&&<div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:T.greenLight,borderRadius:T.rSm,border:`1px solid rgba(22,163,74,.15)`}}>
-              <span style={{fontSize:"1.1rem"}}>📄</span>
-              <div style={{flex:1}}>
-                <div style={{fontWeight:600,fontSize:".82rem",color:T.green}}>Preisliste hochgeladen</div>
-                <div style={{fontSize:".75rem",color:T.textMuted,marginTop:2}}>Wird auf Ihrer Website als „Preisliste ansehen"-Button angezeigt</div>
-              </div>
-              <a href={url} target="_blank" rel="noreferrer" style={{padding:"6px 14px",background:T.accent,color:"#fff",borderRadius:T.rSm,fontSize:".78rem",fontWeight:700,textDecoration:"none",fontFamily:T.font}}>Ansehen</a>
-            </div>}
-            {!url&&<div style={{background:T.bg,borderRadius:T.rSm,padding:"20px 16px",textAlign:"center",marginTop:12}}>
-              <div style={{fontSize:"1.6rem",marginBottom:4}}>📄</div>
-              <div style={{fontSize:".78rem",color:T.textMuted}}>Noch keine Preisliste hochgeladen</div>
-            </div>}
-          </div>
-        );})()}
-        {/* Fotogalerie */}
-        {(()=>{const items=Array.isArray(order?.galerie)?order.galerie.filter(g=>g&&g.url):[];const maxItems=12;const canAdd=items.length<maxItems;const uploadGalerie=async(files)=>{
-          if(!session?.user?.id||!supabase){showToast("Nicht eingeloggt");return;}
-          const imageFiles=Array.from(files).filter(f=>f.type.startsWith("image/"));
-          if(!imageFiles.length){showToast("Nur Bilddateien möglich");return;}
-          const free=maxItems-items.length;
-          const toUpload=imageFiles.slice(0,free);
-          const skipped=imageFiles.length-toUpload.length;
-          // Bildrechte-Check vor erstem Upload (greift nur wenn noch nie bestaetigt)
-          requireRechte(async()=>{
-          setUploading(u=>({...u,galerie:true}));
-          try{
-            const newItems=[...items];
-            for(const file of toUpload){
-              const ts=Date.now()+Math.floor(Math.random()*1000);
-              const extMap={"image/png":"png","image/webp":"webp","image/gif":"gif"};
-              const ext=extMap[file.type]||"jpg";
-              const path=`${session.user.id}/galerie_${ts}.${ext}`;
-              const{error}=await supabase.storage.from("customer-assets").upload(path,file,{upsert:false,contentType:file.type||"image/jpeg"});
-              if(error){showToast("Upload fehlgeschlagen: "+error.message);continue;}
-              const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);
-              newItems.push({url:data.publicUrl+"?v="+ts,path});
-            }
-            await supabase.from("orders").update({galerie:newItems}).eq("id",order.id);
-            setOrder(o=>({...o,galerie:newItems}));
-            if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,galerie:newItems};
-            showToast(skipped>0?`${toUpload.length} hochgeladen, ${skipped} übersprungen (max ${maxItems})`:`${toUpload.length} Foto${toUpload.length===1?"":"s"} hochgeladen`);
-          }catch(e){showToast("Fehler: "+e.message);}
-          setUploading(u=>({...u,galerie:false}));
-          });
-        };
-        const deleteGalerieItem=async(idx)=>{
-          const item=items[idx];if(!item)return;
-          askDelete("Foto",async()=>{
-            const newItems=items.filter((_,i)=>i!==idx);
-            if(item.path){try{await supabase.storage.from("customer-assets").remove([item.path]);}catch(_){}}
-            await supabase.from("orders").update({galerie:newItems}).eq("id",order.id);
-            setOrder(o=>({...o,galerie:newItems}));
-            if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,galerie:newItems};
-            showToast("Foto entfernt");
-          });
-        };
-        return(
-          <div
-            style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${dragOverGalerie?T.accent:T.bg3}`,boxShadow:T.sh1,transition:"border-color .15s",position:"relative"}}
-            onDragOver={canAdd?e=>{e.preventDefault();if(!dragOverGalerie)setDragOverGalerie(true);}:undefined}
-            onDragLeave={canAdd?e=>{if(!e.currentTarget.contains(e.relatedTarget))setDragOverGalerie(false);}:undefined}
-            onDrop={canAdd?e=>{e.preventDefault();setDragOverGalerie(false);if(e.dataTransfer.files?.length)uploadGalerie(e.dataTransfer.files);}:undefined}>
-            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,marginBottom:4,flexWrap:"wrap"}}>
-              <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
-                <div style={{fontSize:".78rem",color:T.textMuted}}>Eigener Galerie-Bereich auf der Website. Bis zu {maxItems} Fotos.</div>
-              </div>
-              {canAdd&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:uploading.galerie?"wait":"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                {uploading.galerie?"Lädt...":"Fotos hinzufügen"}
-                <input type="file" accept="image/*" multiple disabled={uploading.galerie} style={{display:"none"}} onChange={e=>{if(e.target.files?.length){uploadGalerie(e.target.files);e.target.value="";}}}/>
-              </label>}
-            </div>
-            <div style={{marginTop:16}}/>
-            <VisibilityToggle field="galerie" labelOn="Galerie erscheint auf Ihrer Website" labelOff="Galerie wird nicht angezeigt" hasContent={(order.galerie||[]).filter(g=>g&&g.url).length>0} contentHint="Mindestens ein Foto in der Galerie nötig."/>
-            <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
-              {items.length>0?<>
-                <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} / {maxItems} {items.length===1?"Foto":"Fotos"}</div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-                  {items.map((g,i)=><div key={i} style={{display:"flex",flexDirection:"column",gap:6}}>
-                    <div style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000",position:"relative"}}>
-                      <img src={g.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                      <button onClick={()=>deleteGalerieItem(i)} title="Foto entfernen" style={{position:"absolute",top:6,right:6,width:24,height:24,border:"none",borderRadius:"50%",background:"rgba(0,0,0,.6)",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{"×"}</button>
-                    </div>
-                    <input type="text" value={g.credit||""} placeholder="Bildnachweis (optional)" title="Falls Lizenz Namensnennung verlangt — erscheint im Impressum" onChange={e=>{const v=e.target.value;const arr=[...(order.galerie||[])];const realIdx=order.galerie.findIndex(x=>x===g||(x&&x.url===g.url&&x.path===g.path));if(realIdx<0)return;arr[realIdx]={...arr[realIdx],credit:v};upOrder("galerie")(arr);}} style={{width:"100%",padding:"6px 8px",border:`1px solid ${T.bg3}`,borderRadius:4,fontSize:".72rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>
-                  </div>)}
-                </div>
-              </>:<div style={{padding:"28px 20px",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>
-                <div style={{fontSize:"1.8rem",marginBottom:8}}>📷</div>
-                <div style={{fontSize:".92rem",fontWeight:700,color:T.dark,marginBottom:4}}>Noch keine Fotos</div>
-                <div style={{fontSize:".82rem",color:T.textMuted,lineHeight:1.5,maxWidth:340,margin:"0 auto"}}>Klicken Sie oben auf „Fotos hinzufügen" oder ziehen Sie Bilder direkt hierher.</div>
-              </div>}
-            </div>
-            {dragOverGalerie&&<div style={{position:"absolute",inset:0,background:"rgba(143,163,184,.12)",borderRadius:T.r,display:"flex",alignItems:"center",justifyContent:"center",pointerEvents:"none",border:`2.5px dashed ${T.accent}`}}>
-              <div style={{fontSize:".9rem",fontWeight:700,color:T.accent,background:"#fff",padding:"10px 16px",borderRadius:T.rSm}}>Hier loslassen zum Hochladen</div>
-            </div>}
-          </div>
-        );})()}
-      </div>)}
 
       {/* Tab: Domain */}
       {page==="seo"&&order?.status==="trial"&&(<div style={{background:"#fff",borderRadius:T.r,padding:"40px 32px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,textAlign:"center"}}>

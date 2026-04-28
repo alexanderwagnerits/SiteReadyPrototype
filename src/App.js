@@ -2586,6 +2586,7 @@ function Portal({session,onLogout}){
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Teilen & QR-Code
         </button>
+        <div className="pt-sb-grp">Konto</div>
         <button className={`pt-ni${page==="rechnungen"?" pactive":""}`} onClick={()=>nav("rechnungen")}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
           Rechnungen

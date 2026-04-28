@@ -31,7 +31,7 @@ function stripUfSuffix(name) {
   return String(name || "").replace(/\s+(e\.?\s?U\.?|GmbH|OG|KG|AG)\.?\s*$/i, "").trim();
 }
 
-function buildImpressumRows(o) {
+function buildImpressumRows(o, internal) {
   const uf = o.unternehmensform || "";
   const ufSuffix = {eu:"e.U.",gmbh:"GmbH",og:"OG",kg:"KG",ag:"AG"};
   const firmaVoll = stripUfSuffix(o.firmenname) + (ufSuffix[uf] ? ` ${ufSuffix[uf]}` : "");
@@ -45,13 +45,17 @@ function buildImpressumRows(o) {
   const add = (l, v) => { if (v && String(v).trim()) rows.push([l, esc(String(v).trim())]); };
   // Vorgefertigtes HTML (z.B. mailto-Link) — caller verantwortet Escape
   const addHtml = (l, html) => { rows.push([l, html]); };
-  // Pflichtfeld: ergaenzen-Hinweis wenn leer (zaehlt missing hoch)
+  // Pflichtfeld: bei externer View dezenter Strich, bei internal=1 oranger Hinweis fuer Self-Check
   const addRequired = (l, v, hint) => {
     if (v && String(v).trim()) {
       rows.push([l, esc(String(v).trim())]);
     } else {
       missingCount++;
-      rows.push([l, `<span style="color:#b45309;font-style:italic;font-weight:500">[bitte im Portal ergänzen: ${esc(hint || l)}]</span>`]);
+      if (internal) {
+        rows.push([l, `<span style="color:#b45309;font-style:italic;font-weight:500">[bitte ergänzen: ${esc(hint || l)}]</span>`]);
+      } else {
+        rows.push([l, `<span style="color:#9ca3af">—</span>`]);
+      }
     }
   };
 
@@ -314,8 +318,12 @@ ${footerHtml}
 </html>`;
 }
 
-export async function buildLegalPage(subdomain, page, env) {
+export async function buildLegalPage(subdomain, page, env, request) {
   if (!subdomain) return new Response("Not Found", {status: 404});
+
+  // ?internal=1 wird vom Portal genutzt um Pflichtfeld-Hinweise zu sehen.
+  // Externe Besucher sehen die Seite ohne Banner und ohne orange Markierung.
+  const internal = !!(request && new URL(request.url).searchParams.get("internal") === "1");
 
   const r = await fetch(
     `${env.SUPABASE_URL}/rest/v1/orders?subdomain=eq.${encodeURIComponent(subdomain)}&select=*`,
@@ -346,10 +354,11 @@ export async function buildLegalPage(subdomain, page, env) {
 
   if (page === "impressum") {
     title = "Impressum";
-    const {rows: irows, missingCount} = buildImpressumRows(o);
+    const {rows: irows, missingCount} = buildImpressumRows(o, internal);
     const tRows = irows.map(([l,v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join("");
-    const missingBanner = missingCount > 0
-      ? `<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:14px 18px;margin-bottom:24px;font-size:.85rem;color:#92400e;line-height:1.6"><strong>Hinweis:</strong> ${missingCount} ${missingCount === 1 ? "Pflichtangabe ist" : "Pflichtangaben sind"} unvollständig (orange markiert). Bitte ergänzen Sie ${missingCount === 1 ? "diese" : "diese"} im Portal — ein vollständiges Impressum ist gesetzlich vorgeschrieben (§ 5 ECG, § 25 MedienG).</div>`
+    // Hinweis-Banner nur im internen Self-Check (?internal=1) — nie fuer externe Besucher
+    const missingBanner = (internal && missingCount > 0)
+      ? `<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:14px 18px;margin-bottom:24px;font-size:.85rem;color:#92400e;line-height:1.6"><strong>Hinweis:</strong> ${missingCount} ${missingCount === 1 ? "Angabe ist" : "Angaben sind"} noch unvollständig (orange markiert). Bitte ergänzen Sie ${missingCount === 1 ? "diese" : "diese"} im Portal — so enthält Ihr Impressum alle üblichen Angaben.</div>`
       : "";
     content = `<h1>Impressum</h1>
 <p class="h1-sub">Angaben gemäß § 5 ECG und § 25 MedienG</p>
@@ -367,13 +376,74 @@ ${missingBanner}<table>${tRows}</table>
 <p>Die Inhalte dieser Website unterliegen dem österreichischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des Betreibers.</p>
 
 ${(() => {
-  // Bildnachweis: standardmaessig "Eigene Aufnahmen", erweitert um spezifische
-  // Quellen wenn vorhanden (User-Credit, Unsplash-Stock-Hero).
+  // Bildnachweis: dynamisch aus tatsaechlich vorhandenen Quellen aufgebaut.
+  // - Stock-Hero (Unsplash-Placeholder) -> automatisch als solches gekennzeichnet
+  // - Pro-Bild Credits (Hero, Galerie, Team, Leistungen) werden gesammelt
+  // - Pauschale Aussage ueber Eigentum NUR wenn User Rechte bestaetigt hat
+  // - Bei nicht-bestaetigt + keinen Credits -> Block faellt weg (keine Falsch-Aussage)
   const usesUnsplash = o.hero_is_placeholder === true;
-  const lines = ["Eigene Aufnahmen, sofern nicht anders gekennzeichnet."];
-  if (o.foto_credit) lines.push(esc(o.foto_credit));
-  if (usesUnsplash) lines.push('Titelbild: lizenzfrei via Unsplash (<a href="https://unsplash.com" rel="noopener">unsplash.com</a>)');
-  return `<h2>Bildnachweis</h2>\n<p>${lines.join("<br>")}</p>`;
+  const hasOwnHero = !!o.url_hero && !usesUnsplash;
+  const rechteBestaetigt = !!o.rechte_bestaetigt_at;
+  const firmaName = esc(o.firmenname || "");
+
+  // Credits sammeln: [Label, CreditText] Paare
+  const credits = [];
+  if (usesUnsplash) {
+    credits.push(["Titelbild", 'lizenzfrei via Unsplash (<a href="https://unsplash.com" rel="noopener">unsplash.com</a>)']);
+  }
+  if (hasOwnHero && o.foto_credit && String(o.foto_credit).trim()) {
+    credits.push(["Titelbild", esc(String(o.foto_credit).trim())]);
+  }
+  // Galerie: jedes Bild kann eigenen Credit haben
+  if (Array.isArray(o.galerie)) {
+    o.galerie.forEach(g => {
+      if (g && g.credit && String(g.credit).trim()) {
+        credits.push(["Galerie", esc(String(g.credit).trim())]);
+      }
+    });
+  }
+  // Team: jede Person kann eigenen Credit haben
+  if (Array.isArray(o.team_members)) {
+    o.team_members.forEach(t => {
+      if (t && t.foto_credit && String(t.foto_credit).trim()) {
+        credits.push(["Team", esc(String(t.foto_credit).trim())]);
+      }
+    });
+  }
+  // Leistungs-Fotos: Map name -> credit-text
+  if (o.leistungen_fotos_credits && typeof o.leistungen_fotos_credits === "object") {
+    Object.values(o.leistungen_fotos_credits).forEach(c => {
+      if (c && String(c).trim()) {
+        credits.push(["Leistungen", esc(String(c).trim())]);
+      }
+    });
+  }
+
+  // Gibt es ueberhaupt Bilder auf der Seite?
+  const hasAnyImages = usesUnsplash || hasOwnHero ||
+    (Array.isArray(o.galerie) && o.galerie.some(g => g && g.url)) ||
+    (Array.isArray(o.team_members) && o.team_members.some(t => t && t.foto)) ||
+    (o.leistungen_fotos && Object.keys(o.leistungen_fotos).length > 0);
+
+  // Wenn keine Bilder vorhanden: Block komplett weg
+  if (!hasAnyImages) return "";
+
+  // Wenn Bilder vorhanden, aber User hat NICHTS bestaetigt UND keine Credits eingetragen:
+  // Block weg (keine Falsch-Behauptung). Stock-only-Fall wird oben schon abgedeckt.
+  if (!rechteBestaetigt && credits.length === 0) return "";
+
+  // Pauschale Aussage nur wenn bestaetigt
+  let pauschal = "";
+  if (rechteBestaetigt) {
+    const weitere = credits.length > 0 ? "weiteren " : "";
+    pauschal = `Sofern nicht anders gekennzeichnet, liegen alle ${weitere}Bildrechte bei ${firmaName}.`;
+  }
+
+  const creditLines = credits.map(([l, c]) => `${l}: ${c}`);
+  const allLines = [...creditLines];
+  if (pauschal) allLines.push(pauschal);
+
+  return `<h2>Bildnachweis</h2>\n<p>${allLines.join("<br>")}</p>`;
 })()}
 
 <p class="note">Dieses Impressum wurde auf Basis der angegebenen Unternehmensdaten erstellt. Bitte prüfen Sie die Richtigkeit aller Informationen.</p>`;

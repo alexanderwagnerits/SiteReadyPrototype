@@ -1568,6 +1568,27 @@ async function cropImage(imageSrc,pixelCrop){
   return new Promise(r=>c.toBlob(r,"image/jpeg",0.92));
 }
 
+function RechteModal({onConfirm,onCancel,saving}){
+  const[checked,setChecked]=useState(false);
+  return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10000,padding:24}} onClick={()=>{if(!saving)onCancel();}} onKeyDown={e=>{if(e.key==="Escape"&&!saving)onCancel();}}>
+    <div style={{background:"#fff",borderRadius:14,padding:"32px 32px 24px",maxWidth:520,width:"100%",boxShadow:"0 32px 80px rgba(0,0,0,.25)",fontFamily:"DM Sans,system-ui,sans-serif"}} onClick={e=>e.stopPropagation()}>
+      <div style={{fontSize:"1.1rem",fontWeight:800,color:"#0f172a",marginBottom:8,letterSpacing:"-.01em"}}>Bevor Sie Bilder hinzufügen</div>
+      <div style={{fontSize:".88rem",color:"#475569",lineHeight:1.65,marginBottom:18}}>Bitte bestätigen Sie kurz, dass die Bilder von Ihnen genutzt werden dürfen — das schützt Sie vor späteren Problemen:</div>
+      <label style={{display:"flex",alignItems:"flex-start",gap:12,padding:"14px 16px",background:"#f8fafc",border:"1.5px solid "+(checked?"#10b981":"#e2e8f0"),borderRadius:10,cursor:"pointer",marginBottom:14,transition:"border .2s"}}>
+        <input type="checkbox" checked={checked} onChange={e=>setChecked(e.target.checked)} style={{marginTop:3,width:18,height:18,flexShrink:0,cursor:"pointer",accentColor:"#10b981"}}/>
+        <span style={{fontSize:".88rem",color:"#1e293b",lineHeight:1.55,fontWeight:500}}>Ich besitze für alle Bilder, die ich hochlade oder durch den Website-Import übernehme, die Nutzungsrechte oder habe sie lizenziert.</span>
+      </label>
+      <div style={{fontSize:".78rem",color:"#64748b",lineHeight:1.6,marginBottom:22,padding:"10px 14px",background:"#f1f5f9",borderRadius:8}}>
+        <strong style={{color:"#334155"}}>Tipp:</strong> Falls einzelne Bilder eine Quellenangabe verlangen (z.B. Stock-Fotos mit Namensnennung), können Sie pro Bild einen Bildnachweis eintragen — dieser erscheint dann automatisch im Impressum.
+      </div>
+      <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+        <button disabled={saving} onClick={onCancel} style={{padding:"10px 20px",border:"1.5px solid #e2e8f0",borderRadius:8,background:"#fff",color:"#64748b",cursor:saving?"wait":"pointer",fontSize:".85rem",fontWeight:600,fontFamily:"inherit"}}>Abbrechen</button>
+        <button disabled={!checked||saving} onClick={onConfirm} style={{padding:"10px 22px",border:"none",borderRadius:8,background:(checked&&!saving)?"#10b981":"#cbd5e1",color:"#fff",cursor:(checked&&!saving)?"pointer":"default",fontSize:".85rem",fontWeight:700,fontFamily:"inherit"}}>{saving?"Speichern...":"Bestätigen und fortfahren"}</button>
+      </div>
+    </div>
+  </div>);
+}
+
 function CropModal({file,aspectKey,onConfirm,onCancel}){
   const[crop,setCrop]=useState({x:0,y:0});
   const[zoom,setZoom]=useState(1);
@@ -1683,6 +1704,28 @@ function Portal({session,onLogout}){
   const[cropData,setCropData]=useState(null);
   const[dragOverAbout,setDragOverAbout]=useState(false);
   const[dragOverGalerie,setDragOverGalerie]=useState(false);
+  // Bildrechte-Bestaetigung: Modal blockt erstes Upload-Event bis User bestaetigt.
+  // Danach in DB als rechte_bestaetigt_at gespeichert -> kein Modal mehr.
+  const[rechteModal,setRechteModal]=useState(null);
+  const[rechteSaving,setRechteSaving]=useState(false);
+  const requireRechte=(action)=>{
+    if(order?.rechte_bestaetigt_at){action();return;}
+    setRechteModal({onConfirm:action});
+  };
+  const confirmRechte=async()=>{
+    if(!order?.id||!supabase){setRechteModal(null);return;}
+    setRechteSaving(true);
+    const now=new Date().toISOString();
+    const{error}=await supabase.from("orders").update({rechte_bestaetigt_at:now}).eq("id",order.id);
+    setRechteSaving(false);
+    if(error){showToast("Fehler beim Speichern");return;}
+    const action=rechteModal?.onConfirm;
+    setOrder(o=>({...o,rechte_bestaetigt_at:now}));
+    // originalOrderRef synchron halten — sonst meldet isFieldDirty "ungespeicherte Aenderung"
+    if(originalOrderRef.current)originalOrderRef.current={...originalOrderRef.current,rechte_bestaetigt_at:now};
+    setRechteModal(null);
+    if(action)action();
+  };
 
   useEffect(()=>{
     if(!supabase||!session?.user?.id)return;
@@ -1757,6 +1800,7 @@ function Portal({session,onLogout}){
       leistungen_beschreibungen:order.leistungen_beschreibungen||null,
       leistungen_preise:order.leistungen_preise||null,
       leistungen_fotos:order.leistungen_fotos||null,
+      leistungen_fotos_credits:order.leistungen_fotos_credits||null,
       ablauf_schritte:order.ablauf_schritte||null,
       text_ueber_uns:order.text_ueber_uns||null,text_vorteile:order.text_vorteile||null,
       facebook:order.facebook||null,instagram:order.instagram||null,
@@ -1782,7 +1826,7 @@ function Portal({session,onLogout}){
       team_members:order.team_members||null,announcements:order.announcements||null,
       unternehmensgegenstand:order.unternehmensgegenstand||null,liquidation:order.liquidation||null,
       kammer_berufsrecht:order.kammer_berufsrecht||null,aufsichtsbehoerde:order.aufsichtsbehoerde||null,
-      foto_credit:order.foto_credit||null,foto_rights_confirmed:order.foto_rights_confirmed||false,
+      foto_credit:order.foto_credit||null,
     }).eq("id",order.id);
     setSaving(false);
     if(error){
@@ -1838,7 +1882,7 @@ function Portal({session,onLogout}){
   const PAGE_FIELDS={
     hero:["firmenname","kurzbeschreibung","foto_credit","hero_headline","varianten_cache"],
     grunddaten:["firmenname","kurzbeschreibung","einsatzgebiet"],
-    leistungen:["leistungen","extra_leistung","leistungen_beschreibungen","leistungen_preise","leistungen_fotos","cta_headline","cta_text"],
+    leistungen:["leistungen","extra_leistung","leistungen_beschreibungen","leistungen_preise","leistungen_fotos","leistungen_fotos_credits","cta_headline","cta_text"],
     ueberuns:["text_ueber_uns","text_vorteile","team_members","gut_zu_wissen","ablauf_schritte","bewertungen"],
     kontakt:["adresse","plz","ort","telefon","whatsapp","buchungslink","oeffnungszeiten","oeffnungszeiten_custom","kontakt_formular","terminvereinbarung","erstgespraech_gratis","online_beratung","hausbesuche","barrierefrei","parkplaetze","kartenzahlung","gastgarten","takeaway","lieferservice"],
     design:["stil","custom_color","custom_accent","custom_bg","custom_text","custom_text_muted","custom_sep","custom_font","custom_radius","varianten_cache"],
@@ -1961,15 +2005,17 @@ function Portal({session,onLogout}){
 
   const upload=(key,file)=>{
     if(!file)return;
-    // Logos + Preisliste + nicht-Bilder: direkt durchreichen (Logo behaelt PNG-
-    // Transparenz und Original-Groesse — Crop zerstoert beides und erzwingt JPEG).
-    // Partner-Logos (ref_*) auch, aus demselben Grund.
+    // Bildrechte-Check vor jedem Upload (greift nur beim allerersten Mal).
+    // Logo/Referenzen/PDF: kein Bildrechte-Modal — Logo/Refs sind Marken-Material,
+    // PDF ist Dokument. Echte Fotos werden gewrappt.
     const isLogo=key==="logo"||key.startsWith("ref_");
-    if(key==="preisliste"||isLogo||!file.type.startsWith("image/")){
-      uploadBlob(key,file);return;
-    }
-    // Andere Bilder: Crop-Dialog öffnen
-    setCropData({key,file});
+    const isDoc=key==="preisliste"||!file.type.startsWith("image/");
+    const run=()=>{
+      if(isDoc||isLogo){uploadBlob(key,file);return;}
+      setCropData({key,file});
+    };
+    if(isLogo||isDoc){run();return;}
+    requireRechte(run);
   };
 
   // Batch-Upload: verteilt mehrere Dateien auf freie Slots, ohne Crop-Dialog.
@@ -1979,12 +2025,14 @@ function Portal({session,onLogout}){
     if(!imageFiles.length){showToast("Nur Bilddateien moeglich");return;}
     const freeKeys=candidateKeys.filter(k=>!assetUrls[k]);
     if(!freeKeys.length){showToast("Alle Slots belegt — bitte erst einen freigeben");return;}
-    const pairs=imageFiles.slice(0,freeKeys.length).map((f,i)=>[freeKeys[i],f]);
-    const skipped=imageFiles.length-pairs.length;
-    for(const [k,f] of pairs){
-      await uploadBlob(k,f);
-    }
-    if(skipped>0)showToast(`${pairs.length} hochgeladen, ${skipped} uebersprungen (keine freien Slots)`);
+    requireRechte(async()=>{
+      const pairs=imageFiles.slice(0,freeKeys.length).map((f,i)=>[freeKeys[i],f]);
+      const skipped=imageFiles.length-pairs.length;
+      for(const [k,f] of pairs){
+        await uploadBlob(k,f);
+      }
+      if(skipped>0)showToast(`${pairs.length} hochgeladen, ${skipped} uebersprungen (keine freien Slots)`);
+    });
   };
 
   const deleteAsset=async(key)=>{
@@ -2633,6 +2681,44 @@ function Portal({session,onLogout}){
           </div>}
         </div>
       )}
+      {/* Impressum-Vollstaendigkeit-Banner: wenn Pflichtangaben fehlen.
+          Sachlich formuliert — keine Rechtsbehauptungen. */}
+      {(()=>{
+        const missing=getMissingImpressumFields(order);
+        if(!missing.length)return null;
+        if(page==="impressum")return null;
+        const labels=missing.map(m=>m.label).join(", ");
+        return(<div style={{background:"linear-gradient(135deg,#fef3c7,#fde68a)",border:"1.5px solid #f59e0b",borderRadius:T.r,padding:"16px 22px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2" style={{flexShrink:0,marginTop:2}}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            <div>
+              <div style={{fontWeight:700,fontSize:".92rem",color:"#78350f",marginBottom:4}}>Impressum noch nicht vollständig</div>
+              <div style={{fontSize:".82rem",color:"#92400e",lineHeight:1.5,maxWidth:560}}>Folgende Angaben fehlen: <strong>{labels}</strong>. Bitte ergänzen Sie diese, damit Ihr Impressum alle üblichen Angaben enthält.</div>
+            </div>
+          </div>
+          <button onClick={()=>nav("impressum")} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:"#92400e",color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>Jetzt ergänzen →</button>
+        </div>);
+      })()}
+      {/* Bildrechte-Banner: zeigt nur wenn Bilder existieren aber noch nie bestaetigt wurde */}
+      {(()=>{
+        if(order?.rechte_bestaetigt_at)return null;
+        const hatEigenesHero=!!order?.url_hero&&!order?.hero_is_placeholder;
+        const hatGalerie=Array.isArray(order?.galerie)&&order.galerie.some(g=>g&&g.url);
+        const hatTeamFotos=Array.isArray(order?.team_members)&&order.team_members.some(t=>t&&t.foto);
+        const hatLeistFotos=order?.leistungen_fotos&&Object.keys(order.leistungen_fotos).length>0;
+        const hatBilder=hatEigenesHero||hatGalerie||hatTeamFotos||hatLeistFotos;
+        if(!hatBilder)return null;
+        return(<div style={{background:"linear-gradient(135deg,#fef3c7,#fde68a)",border:"1.5px solid #f59e0b",borderRadius:T.r,padding:"16px 22px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2" style={{flexShrink:0,marginTop:2}}><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div>
+              <div style={{fontWeight:700,fontSize:".92rem",color:"#78350f",marginBottom:4}}>Bildrechte bitte kurz bestätigen</div>
+              <div style={{fontSize:".82rem",color:"#92400e",lineHeight:1.5,maxWidth:560}}>Auf Ihrer Website befinden sich Bilder. Bilder ohne geklärte Rechte können später Probleme machen — eine kurze Bestätigung schützt Sie.</div>
+            </div>
+          </div>
+          <button onClick={()=>setRechteModal({onConfirm:null})} style={{padding:"10px 20px",border:"none",borderRadius:T.rSm,background:"#92400e",color:"#fff",cursor:"pointer",fontSize:".85rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap"}}>Jetzt bestätigen</button>
+        </div>);
+      })()}
       {/* Trial-Banner */}
       {order?.status==="trial"&&(<div className="pt-trial-banner" style={{background:"linear-gradient(135deg,#7c3aed,#4f46e5)",borderRadius:T.r,padding:"20px 28px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
         <div>
@@ -2670,6 +2756,8 @@ function Portal({session,onLogout}){
 
       {/* Toast */}
       {toastMsg&&<div className="pt-toast" style={{position:"fixed",bottom:28,right:28,zIndex:9999,background:T.dark,color:"#fff",padding:"12px 20px",borderRadius:T.rSm,fontSize:".85rem",fontWeight:600,fontFamily:T.font,boxShadow:"0 8px 32px rgba(0,0,0,.22)",display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}><span style={{color:T.greenBright}}>&#10003;</span>{toastMsg}</div>}
+      {/* Bildrechte-Bestaetigung (one-time, vor erstem Bild-Upload) */}
+      {rechteModal&&<RechteModal saving={rechteSaving} onCancel={()=>setRechteModal(null)} onConfirm={confirmRechte}/>}
       {/* Bild-Crop */}
       {cropData&&<CropModal file={cropData.file} aspectKey={cropData.key}
         onCancel={()=>setCropData(null)}
@@ -2935,20 +3023,11 @@ function Portal({session,onLogout}){
               <div style={{fontSize:".78rem",color:T.textMuted}}>Noch kein Titelbild hochgeladen – Farbverlauf bleibt aktiv</div>
             </div>}
             <div style={{fontSize:".78rem",color:T.textMuted,marginTop:8,lineHeight:1.6}}>Empfohlen: JPG, mind. 1920 &times; 1080 px &middot; Querformat &middot; Ohne Textüberlagerungen (Bild wird automatisch mit Farbverlauf abgedunkelt)</div>
-            {url&&!isPlaceholder&&<>
-              <div style={{marginTop:14,padding:"12px 14px",borderRadius:T.rSm,background:T.bg,border:`1px solid ${T.bg3}`}}>
-                <div style={{fontSize:".72rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Urheberrecht</div>
-                <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer",marginBottom:10}}>
-                  <input type="checkbox" checked={!!order.foto_rights_confirmed} onChange={e=>upOrder("foto_rights_confirmed")(e.target.checked)} style={{marginTop:2,flexShrink:0}}/>
-                  <span style={{fontSize:".78rem",color:T.textSub,lineHeight:1.5}}>Ich bestätige, die Nutzungsrechte für dieses Foto zu besitzen oder eine entsprechende Lizenz zu haben.</span>
-                </label>
-                <div>
-                  <label style={{display:"block",fontSize:".78rem",fontWeight:600,color:T.dark,marginBottom:4}}>Bildnachweis <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></label>
-                  <input type="text" value={order.foto_credit||""} onChange={e=>upOrder("foto_credit")(e.target.value)} placeholder="z. B. Foto: Max Mustermann | unsplash.com/@beispiel" style={{width:"100%",padding:"8px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>
-                  <div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>Wird im Impressum Ihrer Website unter „Bildnachweis" angezeigt.</div>
-                </div>
-              </div>
-            </>}
+            {url&&!isPlaceholder&&<div style={{marginTop:14,padding:"12px 14px",borderRadius:T.rSm,background:T.bg,border:`1px solid ${T.bg3}`}}>
+              <label style={{display:"block",fontSize:".78rem",fontWeight:600,color:T.dark,marginBottom:4}}>Bildnachweis <span style={{fontWeight:400,color:T.textMuted}}>(optional)</span></label>
+              <input type="text" value={order.foto_credit||""} onChange={e=>upOrder("foto_credit")(e.target.value)} placeholder="z. B. Foto: Max Mustermann | unsplash.com/@beispiel" style={{width:"100%",padding:"8px 12px",border:`1px solid ${T.bg3}`,borderRadius:T.rSm,fontSize:".82rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>
+              <div style={{fontSize:".72rem",color:T.textMuted,marginTop:4}}>Falls Lizenz Namensnennung verlangt — erscheint im Impressum.</div>
+            </div>}
           </div>
           );})()}
           {/* Grunddaten fields */}
@@ -3082,13 +3161,14 @@ function Portal({session,onLogout}){
                     {(order.leistungen_fotos||{})[l]?(<>
                       <img src={(order.leistungen_fotos||{})[l]} alt="" style={{width:52,height:38,objectFit:"cover",borderRadius:4,border:`1px solid ${T.bg3}`}}/>
                       <span style={{flex:1,fontSize:".78rem",color:T.green,fontWeight:600}}>Foto zugewiesen</span>
-                      <button onClick={async()=>{const m={...(order.leistungen_fotos||{})};delete m[l];await supabase.from("orders").update({leistungen_fotos:m}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m}));showToast("Foto entfernt");}} style={{padding:"4px 10px",border:`1px solid #fca5a5`,borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
+                      <button onClick={async()=>{const m={...(order.leistungen_fotos||{})};delete m[l];const c={...(order.leistungen_fotos_credits||{})};delete c[l];await supabase.from("orders").update({leistungen_fotos:m,leistungen_fotos_credits:Object.keys(c).length?c:null}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m,leistungen_fotos_credits:Object.keys(c).length?c:null}));showToast("Foto entfernt");}} style={{padding:"4px 10px",border:`1px solid #fca5a5`,borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
                     </>):(<label style={{display:"flex",alignItems:"center",gap:6,padding:"4px 12px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".78rem",fontWeight:600,color:T.textSub,flex:1,justifyContent:"center"}}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                       Foto hinzufügen
-                      <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const leistName=l;const idx=i;setCropData({key:`leist${idx+1}`,file,onCrop:async(blob)=>{const path=`${session.user.id}/leistfoto_${idx}.jpg`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const m={...(order.leistungen_fotos||{})};m[leistName]=data.publicUrl;await supabase.from("orders").update({leistungen_fotos:m}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m}));showToast("Foto hochgeladen!");}});}}/>
+                      <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const leistName=l;const idx=i;requireRechte(()=>setCropData({key:`leist${idx+1}`,file,onCrop:async(blob)=>{const path=`${session.user.id}/leistfoto_${idx}.jpg`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const m={...(order.leistungen_fotos||{})};m[leistName]=data.publicUrl;await supabase.from("orders").update({leistungen_fotos:m}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m}));showToast("Foto hochgeladen!");}}));}}/>
                     </label>)}
                   </div>
+                  {(order.leistungen_fotos||{})[l]&&<input type="text" value={(order.leistungen_fotos_credits||{})[l]||""} placeholder="Bildnachweis (optional)" title="Falls Lizenz Namensnennung verlangt — erscheint im Impressum" onChange={e=>{const v=e.target.value;const c={...(order.leistungen_fotos_credits||{})};if(v)c[l]=v;else delete c[l];upOrder("leistungen_fotos_credits")(Object.keys(c).length?c:null);}} style={{width:"calc(100% - 24px)",margin:"0 12px 8px",padding:"5px 8px",border:`1px solid ${T.bg3}`,borderRadius:4,fontSize:".72rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>}
                 </div>
               ))}
             </div>}
@@ -3106,13 +3186,14 @@ function Portal({session,onLogout}){
                     {(order.leistungen_fotos||{})[item]?(<>
                       <img src={(order.leistungen_fotos||{})[item]} alt="" style={{width:52,height:38,objectFit:"cover",borderRadius:4,border:`1px solid ${T.bg3}`}}/>
                       <span style={{flex:1,fontSize:".78rem",color:T.green,fontWeight:600}}>Foto zugewiesen</span>
-                      <button onClick={async()=>{const m={...(order.leistungen_fotos||{})};delete m[item];await supabase.from("orders").update({leistungen_fotos:m}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m}));showToast("Foto entfernt");}} style={{padding:"4px 10px",border:`1px solid #fca5a5`,borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
+                      <button onClick={async()=>{const m={...(order.leistungen_fotos||{})};delete m[item];const c={...(order.leistungen_fotos_credits||{})};delete c[item];await supabase.from("orders").update({leistungen_fotos:m,leistungen_fotos_credits:Object.keys(c).length?c:null}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m,leistungen_fotos_credits:Object.keys(c).length?c:null}));showToast("Foto entfernt");}} style={{padding:"4px 10px",border:`1px solid #fca5a5`,borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".72rem",fontWeight:600,fontFamily:T.font}}>Entfernen</button>
                     </>):(<label style={{display:"flex",alignItems:"center",gap:6,padding:"4px 12px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".78rem",fontWeight:600,color:T.textSub,flex:1,justifyContent:"center"}}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                       Foto hinzufügen
-                      <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const leistName=item;const idx2=(order.leistungen||[]).length+i;setCropData({key:`leist${idx2+1}`,file,onCrop:async(blob)=>{const path=`${session.user.id}/leistfoto_${idx2}.jpg`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const m={...(order.leistungen_fotos||{})};m[leistName]=data.publicUrl;await supabase.from("orders").update({leistungen_fotos:m}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m}));showToast("Foto hochgeladen!");}});}}/>
+                      <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const leistName=item;const idx2=(order.leistungen||[]).length+i;requireRechte(()=>setCropData({key:`leist${idx2+1}`,file,onCrop:async(blob)=>{const path=`${session.user.id}/leistfoto_${idx2}.jpg`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const m={...(order.leistungen_fotos||{})};m[leistName]=data.publicUrl;await supabase.from("orders").update({leistungen_fotos:m}).eq("id",order.id);setOrder(o=>({...o,leistungen_fotos:m}));showToast("Foto hochgeladen!");}}));}}/>
                     </label>)}
                   </div>
+                  {(order.leistungen_fotos||{})[item]&&<input type="text" value={(order.leistungen_fotos_credits||{})[item]||""} placeholder="Bildnachweis (optional)" title="Falls Lizenz Namensnennung verlangt — erscheint im Impressum" onChange={e=>{const v=e.target.value;const c={...(order.leistungen_fotos_credits||{})};if(v)c[item]=v;else delete c[item];upOrder("leistungen_fotos_credits")(Object.keys(c).length?c:null);}} style={{width:"calc(100% - 24px)",margin:"0 12px 8px",padding:"5px 8px",border:`1px solid ${T.bg3}`,borderRadius:4,fontSize:".72rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>}
                 </div>
               ))}
               <button onClick={()=>{const a=[...(order.extra_leistung?.split("\n")||[])];upOrder("extra_leistung")([...a,""].join("\n"));}} style={{marginTop:4,padding:"8px 16px",border:`2px dashed ${T.bg3}`,borderRadius:T.rSm,background:"#fff",color:T.textSub,cursor:"pointer",fontSize:".8rem",fontWeight:600,fontFamily:T.font,width:"100%"}}>{"+ Leistung hinzufügen"}</button>
@@ -3167,10 +3248,11 @@ function Portal({session,onLogout}){
                   <input value={m.name||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],name:e.target.value};upOrder("team_members")(a);}} placeholder="Name" style={{width:"100%",padding:"3px 0",border:"none",fontSize:".88rem",fontWeight:700,fontFamily:T.font,background:"transparent",color:T.dark,outline:"none"}}/>
                   <input value={m.rolle||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],rolle:e.target.value};upOrder("team_members")(a);}} placeholder="Rolle (z.B. Geschäftsführer)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".78rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
                   <input value={m.email||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],email:e.target.value};upOrder("team_members")(a);}} placeholder="E-Mail (optional)" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".72rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none"}}/>
+                  {m.foto&&<input value={m.foto_credit||""} onChange={e=>{const a=[...(order.team_members||[])];a[i]={...a[i],foto_credit:e.target.value};upOrder("team_members")(a);}} placeholder="Bildnachweis (optional)" title="Falls Lizenz Namensnennung verlangt — erscheint im Impressum" style={{width:"100%",padding:"2px 0",border:"none",fontSize:".7rem",fontFamily:T.font,background:"transparent",color:T.textMuted,outline:"none",fontStyle:"italic"}}/>}
                 </div>
                 <label style={{padding:"5px 10px",border:`1.5px dashed ${T.bg3}`,borderRadius:4,cursor:"pointer",fontSize:".72rem",fontWeight:600,color:T.textSub,flexShrink:0}}>
                   {m.foto?"Ändern":"Foto"}
-                  <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const idx=i;setCropData({key:`team_${idx}`,file,onCrop:async(blob)=>{const path=`${session.user.id}/team_${idx}.jpg`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const a=[...(order.team_members||[])];a[idx]={...a[idx],foto:data.publicUrl};await supabase.from("orders").update({team_members:a}).eq("id",order.id);setOrder(o=>({...o,team_members:a}));showToast("Foto hochgeladen!");}});}}/>
+                  <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const idx=i;requireRechte(()=>setCropData({key:`team_${idx}`,file,onCrop:async(blob)=>{const path=`${session.user.id}/team_${idx}.jpg`;const{error:upErr}=await supabase.storage.from("customer-assets").upload(path,blob,{upsert:true,contentType:"image/jpeg"});if(upErr){showToast("Upload fehlgeschlagen");return;}const{data}=supabase.storage.from("customer-assets").getPublicUrl(path);const a=[...(order.team_members||[])];a[idx]={...a[idx],foto:data.publicUrl};await supabase.from("orders").update({team_members:a}).eq("id",order.id);setOrder(o=>({...o,team_members:a}));showToast("Foto hochgeladen!");}}));}}/>
                 </label>
                 <button onClick={()=>askDelete("Teammitglied",()=>{const a=[...(order.team_members||[])].filter((_,j)=>j!==i);upOrder("team_members")(a);})} style={{width:24,height:24,border:"1.5px solid #fca5a5",borderRadius:4,background:"#fff",color:"#ef4444",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"×"}</button>
               </div>
@@ -3960,6 +4042,8 @@ function Portal({session,onLogout}){
           const free=maxItems-items.length;
           const toUpload=imageFiles.slice(0,free);
           const skipped=imageFiles.length-toUpload.length;
+          // Bildrechte-Check vor erstem Upload (greift nur wenn noch nie bestaetigt)
+          requireRechte(async()=>{
           setUploading(u=>({...u,galerie:true}));
           try{
             const newItems=[...items];
@@ -3979,6 +4063,7 @@ function Portal({session,onLogout}){
             showToast(skipped>0?`${toUpload.length} hochgeladen, ${skipped} übersprungen (max ${maxItems})`:`${toUpload.length} Foto${toUpload.length===1?"":"s"} hochgeladen`);
           }catch(e){showToast("Fehler: "+e.message);}
           setUploading(u=>({...u,galerie:false}));
+          });
         };
         const deleteGalerieItem=async(idx)=>{
           const item=items[idx];if(!item)return;
@@ -4013,10 +4098,13 @@ function Portal({session,onLogout}){
             <div style={{opacity:order.sections_visible?.galerie===false?0.55:1,transition:"opacity .2s"}}>
               {items.length>0?<>
                 <div style={{fontSize:".74rem",color:T.textMuted,marginBottom:8}}>{items.length} / {maxItems} {items.length===1?"Foto":"Fotos"}</div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
-                  {items.map((g,i)=><div key={i} style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000",position:"relative"}}>
-                    <img src={g.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                    <button onClick={()=>deleteGalerieItem(i)} title="Foto entfernen" style={{position:"absolute",top:6,right:6,width:24,height:24,border:"none",borderRadius:"50%",background:"rgba(0,0,0,.6)",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{"×"}</button>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+                  {items.map((g,i)=><div key={i} style={{display:"flex",flexDirection:"column",gap:6}}>
+                    <div style={{aspectRatio:"3/2",borderRadius:T.rSm,overflow:"hidden",background:"#000",position:"relative"}}>
+                      <img src={g.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                      <button onClick={()=>deleteGalerieItem(i)} title="Foto entfernen" style={{position:"absolute",top:6,right:6,width:24,height:24,border:"none",borderRadius:"50%",background:"rgba(0,0,0,.6)",color:"#fff",cursor:"pointer",fontSize:".82rem",fontWeight:700,fontFamily:T.font,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{"×"}</button>
+                    </div>
+                    <input type="text" value={g.credit||""} placeholder="Bildnachweis (optional)" title="Falls Lizenz Namensnennung verlangt — erscheint im Impressum" onChange={e=>{const v=e.target.value;const arr=[...(order.galerie||[])];const realIdx=order.galerie.findIndex(x=>x===g||(x&&x.url===g.url&&x.path===g.path));if(realIdx<0)return;arr[realIdx]={...arr[realIdx],credit:v};upOrder("galerie")(arr);}} style={{width:"100%",padding:"6px 8px",border:`1px solid ${T.bg3}`,borderRadius:4,fontSize:".72rem",fontFamily:T.font,color:T.dark,background:"#fff",outline:"none"}}/>
                   </div>)}
                 </div>
               </>:<div style={{padding:"28px 20px",background:T.bg,borderRadius:T.rSm,textAlign:"center"}}>

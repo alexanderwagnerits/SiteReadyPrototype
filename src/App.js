@@ -2363,9 +2363,15 @@ function Portal({session,onLogout}){
 .pt-sb-nav::-webkit-scrollbar{display:none}
 .pt-sb-grp{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 8px 5px}
 .pt-sb-div{height:1px;background:rgba(255,255,255,.06);margin:8px 14px}
+.pt-card-h{font-size:1rem;font-weight:700;color:#111111;letter-spacing:-.005em;margin-bottom:4px;line-height:1.3}
+.pt-card-sub{font-size:.82rem;color:#505560;line-height:1.55}
+.pt-warn{display:flex;gap:11px;align-items:flex-start;padding:11px 14px 11px 14px;background:#fffbf0;border-left:3px solid #f59e0b;border-radius:6px;margin-top:14px}
+.pt-warn-icon{flex-shrink:0;color:#92400e;margin-top:1px}
+.pt-warn-title{font-size:.84rem;font-weight:700;color:#78350f;margin-bottom:2px;line-height:1.3}
+.pt-warn-text{font-size:.8rem;color:#78350f;line-height:1.55}
 .pt-ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:.91rem;font-weight:500;transition:all .12s;user-select:none;background:transparent;border:none;width:100%;font-family:inherit;text-align:left}
 .pt-ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
-.pt-ni.pactive{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
+.pt-ni.pactive{background:rgba(255,255,255,.11);color:#fff;font-weight:600;box-shadow:inset 2px 0 0 rgba(255,255,255,.45)}
 .pt-ni svg{flex-shrink:0;opacity:.5;transition:opacity .12s}
 .pt-ni.pactive svg,.pt-ni:hover svg{opacity:.85}
 .pt-ni-ch{margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.22);transition:transform .18s;line-height:1}
@@ -2956,7 +2962,7 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Logo</div>
+                <div style={{fontWeight:700,fontSize:"1rem",color:T.dark,marginBottom:4,letterSpacing:"-.005em"}}>Logo</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{a.desc}</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -2968,28 +2974,26 @@ function Portal({session,onLogout}){
               </div>
             </div>
             {url&&(<div style={{marginBottom:12}}>
-              <div style={{fontSize:".68rem",fontWeight:700,color:T.textMuted,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Vorschau</div>
+              <div style={{fontSize:".78rem",fontWeight:600,color:T.textSub,marginBottom:8}}>Vorschau</div>
               <div className="pt-logo-preview" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 <div>
-                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
+                  <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:4}}>Navigation (dunkel)</div>
                   <div style={{background:order?.custom_color||"#0f172a",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center"}}>
                     <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
                   </div>
                 </div>
                 <div>
-                  <div style={{fontSize:".68rem",color:T.textMuted,marginBottom:4}}>Hell (Briefkopf etc.)</div>
+                  <div style={{fontSize:".72rem",color:T.textMuted,marginBottom:4}}>Hell (Briefkopf etc.)</div>
                   <div style={{background:"#fff",borderRadius:T.rSm,padding:"10px 16px",display:"flex",alignItems:"center",border:`1px solid ${T.bg3}`}}>
                     <img src={url} alt="Logo" style={{height:36,maxWidth:140,objectFit:"contain",display:"block"}}/>
                   </div>
                 </div>
               </div>
-              {logoContrastIssue&&<div style={{marginTop:10,padding:"12px 14px",background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:T.rSm}}>
-                <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,marginTop:1}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:".82rem",fontWeight:700,color:"#78350f",marginBottom:3}}>Logo schwer sichtbar auf der Navigation</div>
-                    <div style={{fontSize:".78rem",color:"#78350f",lineHeight:1.55}}>{logoContrastIssue==="too-dark"?"Ihr Logo ist dunkel und verschwindet auf dem dunklen Navigationshintergrund (siehe linke Vorschau).":"Ihr Logo ist sehr hell und geht auf dem hellen Hintergrund unter."} Bitte laden Sie eine Version mit ausreichendem Kontrast hoch — die meisten Designer liefern Logo-Varianten für helle UND dunkle Hintergründe.</div>
-                  </div>
+              {logoContrastIssue&&<div className="pt-warn">
+                <svg className="pt-warn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div style={{flex:1}}>
+                  <div className="pt-warn-title">Logo schwer sichtbar auf der Navigation</div>
+                  <div className="pt-warn-text">{logoContrastIssue==="too-dark"?"Ihr Logo ist dunkel und verschwindet auf dem dunklen Navigationshintergrund (siehe linke Vorschau).":"Ihr Logo ist sehr hell und geht auf dem hellen Hintergrund unter."} Bitte laden Sie eine Version mit ausreichendem Kontrast hoch — die meisten Designer liefern Logo-Varianten für helle UND dunkle Hintergründe.</div>
                 </div>
               </div>}
             </div>)}
@@ -3008,7 +3012,7 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1}}>
             <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:url?16:0}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:T.amberLight,color:T.amberText,marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
+                <div style={{fontWeight:700,fontSize:"1rem",color:T.dark,marginBottom:4,letterSpacing:"-.005em"}}>Titelbild {isPlaceholder?<span style={{fontSize:".65rem",fontWeight:600,padding:"2px 8px",borderRadius:100,background:T.amberLight,color:T.amberText,marginLeft:6,verticalAlign:"middle"}}>Beispielfoto</span>:<span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span>}</div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>{isPlaceholder?"Laden Sie ein eigenes Foto hoch für einen persönlicheren Auftritt":"Hintergrundbild für den oberen Bereich der Website"}</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -3221,7 +3225,7 @@ function Portal({session,onLogout}){
           <div style={{background:"#fff",borderRadius:T.r,padding:"20px 24px",border:`1px solid ${T.bg3}`,boxShadow:T.sh1,marginTop:16}}>
             <div className="pt-upload-hdr" style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Preisliste <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontWeight:700,fontSize:"1rem",color:T.dark,marginBottom:4,letterSpacing:"-.005em"}}>Preisliste <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>PDF oder Bild Ihrer Preisliste — wird auf der Website als Download angeboten</div>
               </div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -3430,7 +3434,7 @@ function Portal({session,onLogout}){
             onDrop={canAdd?e=>{e.preventDefault();setDragOverGalerie(false);if(e.dataTransfer.files?.length)uploadGalerie(e.dataTransfer.files);}:undefined}>
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,marginBottom:4,flexWrap:"wrap"}}>
               <div>
-                <div style={{fontWeight:700,fontSize:".9rem",color:T.dark,marginBottom:2}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
+                <div style={{fontWeight:700,fontSize:"1rem",color:T.dark,marginBottom:4,letterSpacing:"-.005em"}}>Fotogalerie <span style={{fontSize:".75rem",fontWeight:500,color:T.textMuted}}>(optional)</span></div>
                 <div style={{fontSize:".78rem",color:T.textMuted}}>Eigener Galerie-Bereich auf der Website. Bis zu {maxItems} Fotos.</div>
               </div>
               {canAdd&&<label style={{padding:"8px 14px",border:`1.5px solid ${T.accent}`,borderRadius:T.rSm,background:T.accentLight,color:T.accent,cursor:uploading.galerie?"wait":"pointer",fontSize:".76rem",fontWeight:700,fontFamily:T.font,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:6}}>

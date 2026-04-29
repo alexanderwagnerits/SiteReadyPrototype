@@ -521,7 +521,7 @@ JSON-Felder:
 - plz: 4-stellige oesterreichische Postleitzahl (aus Impressum bevorzugt)
 - ort: Ortsname (aus Impressum bevorzugt)
 - adresse: Strasse mit Hausnummer (aus Impressum bevorzugt, z.B. "Lavaterstraße 1/RH3")
-- kurzbeschreibung: Was das Unternehmen macht, 1-2 Saetze, max 200 Zeichen
+- kurzbeschreibung: Charakteristisches Versprechen oder konkretes Differenzierungs-Merkmal (1-2 Saetze, max 200 Zeichen). Wird als Hero-Subline direkt unter der Headline angezeigt. WICHTIG: KEIN Branchenbuch-Stil ('X, Y sowie Z' / 'Wir bieten X, Y und Z'). Lieber Spezifika (Spezialisierung, Zielgruppe, Region, Geschichte, konkrete Leistung). Beispiele GUT: 'Klassische Cocktailbar im Herzen Wiens, geoeffnet bis in die Morgenstunden.' / 'IT-Betreuung fuer Wiener Anwaltskanzleien und Arztpraxen.' SCHLECHT (vermeiden): 'IT-Dienstleistungen, EDV-Beratung sowie Handel mit Hard- und Software.' Wenn die Quelle nur Branchenbuch-Stil enthaelt: den charakteristischsten Satz aus 'Ueber uns' oder Hero waehlen, sonst Leerstring.
 - bundesland: NUR: wien/noe/ooe/stmk/sbg/tirol/ktn/vbg/bgld
 - whatsapp: WhatsApp-Nummer falls erwaehnt (Format: +43...)
 - buchungslink: URL zum Online-Terminbuchungssystem falls vorhanden

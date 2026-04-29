@@ -439,7 +439,7 @@ export async function generateWebsite(order_id, env) {
   // Stil-Anweisung fuer den Textstil
   const stilAnweisung = {
     klassisch: "Serioes, vertrauenswuerdig, bodenstaendig. Klare Sprache ohne Schnörkel. Betone Zuverlaessigkeit und Tradition.",
-    modern: "Dynamisch, frisch, auf Augenhoehe. Kurze, praegnante Saetze. Betone Innovation und Kundenerlebnis.",
+    modern: "Dynamisch und direkt. Kurze, praegnante Saetze. Betone konkretes Vorgehen und Kundenerlebnis statt abstrakter Versprechen.",
     elegant: "Zurueckhaltend, exklusiv, weniger ist mehr. Schlanke Formulierungen, gehobener Ton. Betone Qualitaet und Anspruch.",
   }[o.stil] || "Professionell und authentisch. Passe den Ton an die Branche an.";
 
@@ -460,7 +460,7 @@ export async function generateWebsite(order_id, env) {
   const branchenSpezifisch = {
     // Handwerk
     elektro: "Technisch prazise, sicherheitsbewusst. Betone Fachkenntnis bei Stark- und Schwachstrom. Keine uebertriebene Werbesprache.",
-    installateur: "Pragmatisch, loesungsorientiert. Spreche Probleme beim Namen (tropfender Hahn, kalte Heizung). Betone Schnelligkeit und Foerder-Know-how.",
+    installateur: "Pragmatisch. Spreche Probleme beim Namen (tropfender Hahn, kalte Heizung). Betone Schnelligkeit, Foerder-Know-how und konkrete Reaktionszeit.",
     maler: "Ruhig, handwerklich. Betone Sauberkeit, saubere Kanten, staubarmes Arbeiten. Farbberatung als Service, nicht als Verkauf.",
     tischler: "Wertig, handwerklich, stolz aufs Material. Betone Massanfertigung und regionales Holz. Details wie Verbindungen, Oberflaechen.",
     dachdecker: "Zuverlaessig, wetterfest. Betone Dichtheit, Sturmsicherheit, Lebensdauer. Fachbegriffe wie Unterspannbahn, First, Kehle ok.",
@@ -491,8 +491,8 @@ export async function generateWebsite(order_id, env) {
     handwerk: "Direkt und ehrlich. Handwerker reden nicht um den heissen Brei. Betone Qualitaet der Arbeit, nicht Marketing-Floskeln.",
     kosmetik: "Einladend und persoenlich. Schaffe eine Wohlfuehl-Atmosphaere schon im Text. Betone das Erlebnis.",
     gastro: "Warm und genussvoll. Mach Lust auf den Besuch. Betone Atmosphaere, Qualitaet der Zutaten, Gastfreundschaft.",
-    gesundheit: "Einfuehlsam und kompetent. Nimm Patienten ernst. Betone Vertrauen, Erfahrung und individuelle Betreuung.",
-    dienstleistung: "Kompetent und loesungsorientiert. Zeige Expertise ohne arrogant zu wirken. Betone den Nutzen fuer den Kunden.",
+    gesundheit: "Einfuehlsam und sachlich. Nimm Patienten ernst. Betone konkrete Erfahrung (Jahre, Spezialisierung) und Termintreue.",
+    dienstleistung: "Sachlich und konkret. Zeige Expertise durch Spezifika (Beispiel-Auftraege, Jahre, Branchen-Know-how) statt durch Adjektive. Betone konkreten Kunden-Nutzen.",
     bildung: "Motivierend und unterstuetzend. Mach Lust aufs Lernen. Betone Fortschritt und persoenliche Entwicklung.",
     tourismus: "Einladend, gastfreundlich, regional verankert. Mach Lust auf einen Aufenthalt. Betone Atmosphaere, Lage, Ausstattung.",
     handel: "Einladend, kundennah, produktbewusst. Betone Sortiment, Beratung, Qualitaet — nicht Preiskampf.",
@@ -527,6 +527,51 @@ VERBOTENE WÖRTER/PHRASEN (KI-Sprech, Marketing-Bullshit):
 - "langjährige Erfahrung" OHNE konkrete Jahresangabe
 - "Ihr Wohlbefinden ist uns wichtig", "Sie stehen im Mittelpunkt"
 - "Vertrauen Sie auf...", "Setzen Sie auf..."
+- "transparent" als Marketing-Wort ("transparente Kalkulation", "transparente Abwicklung")
+- "skalierbar", "flexibel skalierbar"
+- "professionell" als Werbe-Adjektiv über sich selbst
+- "lösungsorientiert", "ergebnisorientiert", "praxisorientiert"
+- "umfassend" als leeres Adjektiv ("umfassende Betreuung", "umfassendes Service")
+- "klarer Fokus auf...", "im Mittelpunkt steht..."
+- "ohne Überraschungen", "keine bösen Überraschungen"
+- "verlässlich" + "zuverlässig" wenn beides im selben Text vorkommt
+- "individuell" als generischer Füller ("individuelle Beratung", "individuelle Lösung")
+
+STIL-VERBOTE (Anti-Pattern, machen Texte sofort als KI erkennbar):
+
+1. KEINE Adjektiv-Trios mit synonymen Wörtern.
+   SCHLECHT: "strukturiert, transparent und termingerecht umgesetzt"
+   SCHLECHT: "funktionierende Systeme, verlässliche Betreuung und ehrliche Beratung"
+   GUT: konkrete Aussage statt Adjektiv-Suppe — "Festpreis vorab. Keine Stundenabrechnung."
+   Maximal 2 Adjektive nebeneinander, und nur mit konkretem Substantiv.
+
+2. KEIN Passiv in Leistungsbeschreibungen — aktive Verben mit "wir" oder klarem Subjekt.
+   SCHLECHT: "Technische Störungen werden rasch identifiziert und behoben."
+   SCHLECHT: "Ihre Daten werden regelmäßig gesichert."
+   GUT: "Wir beheben Störungen am selben Werktag."
+   GUT: "Tägliches Backup auf 3 Standorten, eines davon offline."
+
+3. KONKRETE Zahlen/Spezifika statt schwammige Adjektive.
+   SCHLECHT: "rasch", "kurzfristig", "in der Regel innerhalb kurzer Zeit", "vielfältige Auswahl"
+   GUT: "innerhalb von 4 Stunden", "noch am selben Werktag", "über 80 Cocktails"
+   Wenn keine konkrete Zahl bekannt: lieber Eigenschaft des Vorgehens nennen statt Tempo-Adjektiv.
+
+4. HERO-SUBLINE darf KEIN Branchenbuch-Eintrag sein.
+   SCHLECHT (Branchenbuch-Pattern "X, Y sowie Z"): "IT-Dienstleistungen, EDV-Beratung sowie Handel mit Hard- und Software."
+   SCHLECHT: "Friseur und Barbier mit Färbe-, Schneide- und Stylingservice in Wien."
+   GUT: Charakter-Versprechen oder konkrete Differenzierung.
+   Beispiel IT: "IT-Betreuung für Wiener Kanzleien und Praxen — Reaktion innerhalb 1 Stunde."
+   Beispiel Friseur: "Klassisches Barbershop-Handwerk in der Margaretenstraße, seit 2018."
+
+5. KEINE Tautologien (zwei synonyme Begriffe im selben Satz).
+   SCHLECHT: "Stabile Netzwerke und zuverlässige Server-Infrastruktur."
+   SCHLECHT: "Saubere Verarbeitung und ordentliche Ausführung."
+   Ein Versprechen pro Satz reicht.
+
+6. KEINE Werbe-Adjektive über sich selbst.
+   SCHLECHT: "professionelle Beratung", "kompetente Betreuung", "qualifiziertes Team"
+   GUT: konkrete Qualifikation — "Meisterbetrieb seit 1989", "Team aus 4 Tischlern, 2 mit Restaurator-Ausbildung", "ISO-9001-zertifiziert".
+   Regel: Wer schreibt "wir sind kompetent", überzeugt damit niemanden. Wer schreibt "Marco war 8 Jahre Bartender im Sacher", schon.
 
 REGELN für spezifische Felder:
 - Leistungsbeschreibungen: MAXIMAL 15 Wörter pro Leistung. 1 kurzer, konkreter Satz. Kundenperspektive.

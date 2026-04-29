@@ -460,22 +460,22 @@ export async function generateWebsite(order_id, env) {
   const branchenSpezifisch = {
     // Handwerk
     elektro: "Technisch prazise, sicherheitsbewusst. Betone Fachkenntnis bei Stark- und Schwachstrom. Keine uebertriebene Werbesprache.",
-    installateur: "Pragmatisch. Spreche Probleme beim Namen (tropfender Hahn, kalte Heizung). Betone Schnelligkeit, Foerder-Know-how und konkrete Reaktionszeit.",
+    installateur: "Pragmatisch. Konkrete Probleme nennen (tropfender Hahn, kalte Heizung, verstopfter Abfluss). Fachbegriffe: Therme, Waermepumpe, Brennwertkessel, Pufferspeicher, Vorlauftemperatur, Heizlast. Foerder-Know-how (Bundes- + Landesfoerderungen, Wohnbaufoerderung). Reaktionszeit als Zahl statt Adjektiv.",
     maler: "Ruhig, handwerklich. Betone Sauberkeit, saubere Kanten, staubarmes Arbeiten. Farbberatung als Service, nicht als Verkauf.",
     tischler: "Wertig, handwerklich, stolz aufs Material. Betone Massanfertigung und regionales Holz. Details wie Verbindungen, Oberflaechen.",
     dachdecker: "Zuverlaessig, wetterfest. Betone Dichtheit, Sturmsicherheit, Lebensdauer. Fachbegriffe wie Unterspannbahn, First, Kehle ok.",
     kfz: "Direkt, technisch kompetent. Keine Angstrhetorik, sondern Loesung. Betone Pickerl-Termine, faire Diagnose.",
     // Kosmetik
-    friseur: "Einladend, persoenlich, leicht modisch. Vermeide Uebertriebenheit. Betone individuelles Eingehen auf den Kopf, nicht auf Trends.",
+    friseur: "Einladend, persoenlich. Konkrete Behandlungen nennen (Balayage, Foliensträhnen, Ansatzfärbung, Trockenschnitt, Olaplex, Pflegekur, Hochsteckfrisur). Vermeide Uebertriebenheit und Trend-Floskeln. Pro Schnitt-Typ konkrete Beratungsschritte statt 'individuelle Beratung' allein.",
     kosmetik: "Ruhig, pflegend, nicht Schoenheitsindustrie-Hype. Betone Hauttypberatung, saubere Produkte, Wohlbefinden.",
     massage: "Entspannt, koerperlich ehrlich. Betone spuerbare Entspannung und fachliche Griffe, nicht esoterische Versprechen.",
     // Gastro
-    restaurant: "Warm, appetitanregend. Betone frische Zutaten, Kueche, Atmosphaere. Vermeide Werbesprache ('kulinarische Highlights' vermeiden).",
+    restaurant: "Warm, appetitanregend. Konkrete Kueche (Wiener, Steirisch, Italienisch, Asiatisch, Levantinisch), saisonale Zutaten, regionale Lieferanten wo zutreffend. Vermeide Werbesprache ('kulinarische Highlights', 'mit Liebe zubereitet'). Besonderheiten erwaehnen (Schanigarten, Catering, Mittagsmenue, vegan/glutenfrei wenn verfuegbar).",
     cafe: "Gemuetlich, einladend. Spreche ueber Kaffee, hausgemachten Kuchen, Atmosphaere. Nicht zu gestelzt.",
     baeckerei: "Handwerklich, ehrlich. Betone frisches Backen am Morgen, regionale Zutaten. Vermeide Floskeln wie 'mit Liebe'.",
     // Gesundheit
-    arzt: "Sachlich, vertrauensvoll, ohne Pathos. Nimm Patienten ernst ohne belehrend zu sein. Betone Termintreue und Diskretion.",
-    zahnarzt: "Beruhigend, aufklaerend. Viele Menschen haben Zahnarzt-Angst — sprich das indirekt an. Betone schmerzarme Behandlung und moderne Technik.",
+    arzt: "Sachlich, vertrauensvoll, ohne Pathos. Konkrete Leistungen nennen (e-Card, Vorsorgeuntersuchung, Mutter-Kind-Pass, Gesundenuntersuchung, Impfstrasse, Kassenvertrag, Wahlarzt). Termintreue, Diskretion, Online-Terminbuchung wenn vorhanden.",
+    zahnarzt: "Beruhigend, aufklaerend. Viele Menschen haben Zahnarzt-Angst — sprich das indirekt an. Konkrete Verfahren nennen (Composite-Fuellung, Implantat, Wurzelbehandlung, professionelle Mundhygiene, Bleaching, Aligner). Schmerzarmut konkret (Lokalanaesthesie, Lachgas, Lasertechnik wo zutreffend).",
     physiotherapie: "Aktivierend, kompetent. Betone Befundung, individueller Therapieplan, aktive Mitarbeit. Keine Wunderheilungs-Versprechen.",
     apotheke: "Vertrauensvoll, beratend. Betone persoenliche Beratung und Verfuegbarkeit, weniger die Produkte selbst.",
     // Dienstleistung
@@ -486,6 +486,7 @@ export async function generateWebsite(order_id, env) {
     architekt: "Konzeptionell, ruhig, im Dienst des Projekts. Betone Zuhoerer-Qualitaet, nicht Egotrip. Spreche ueber Kosten, Zeitplan, Genehmigung.",
     // Bildung
     fahrschule: "Locker, geduldig, praxisnah. Betone Fahrpraxis, gute Pruefungsquote, moderne Fahrzeuge. Keine Panikmache.",
+    it_service: "Sachlich-technisch. Konkrete Begriffe statt Marketing: SLA, Tickets, Fernwartung, Endpoint, Patch-Management, Backup-Strategie, Monitoring, DSGVO-Konformitaet, Incident-Response. Reaktionszeit als Zahl (z.B. 4h, 1 Werktag), nicht als Adjektiv. Beispiel-Branchen nennen wo Erfahrung besteht (Kanzleien, Praxen, Handel, Industrie).",
   };
   const gruppenSprache = {
     handwerk: "Direkt und ehrlich. Handwerker reden nicht um den heissen Brei. Betone Qualitaet der Arbeit, nicht Marketing-Floskeln.",

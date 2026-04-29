@@ -456,6 +456,7 @@ export async function generateWebsite(order_id, env) {
     taxi:"mobilitaet",limousine:"mobilitaet",spedition:"mobilitaet",kurierdienst:"mobilitaet",pannendienst:"mobilitaet",busunternehmen:"mobilitaet",
     imker:"agrar",hofladen:"agrar",obstbauer:"agrar",brennerei:"agrar",baumschule:"agrar",
     galerie:"kultur",kuenstler:"kultur",musiker:"kultur",theater:"kultur",
+    maschinenbau:"industrie",anlagenbau:"industrie",metallverarbeitung:"industrie",
   }[o.branche] || "";
   const branchenSpezifisch = {
     // Handwerk
@@ -500,6 +501,7 @@ export async function generateWebsite(order_id, env) {
     mobilitaet: "Zuverlaessig, puenktlich, serviceorientiert. Betone Erreichbarkeit, faire Preise, sauberen Ablauf.",
     agrar: "Bodenstaendig, ehrlich, regional. Betone Herkunft, Qualitaet der Produkte, Handwerk. Keine Marketing-Phrasen.",
     kultur: "Kreativ, persoenlich, mit Haltung. Betone Kunstwerke, Stil, Entstehungsprozess — nicht Selbstdarstellung.",
+    industrie: "Technisch-praezise, sachlich. B2B-Sprache: keine Du-Form, keine Marketing-Floskeln. Konkrete Verfahren (CNC, Lasern, Schweissen), Kapazitaeten (Stueckzahlen, Toleranzen, Materialdicken), Branchen (Automotive, Lebensmittel, Maschinenbau-Zulieferer). Zertifizierungen (ISO 9001, ISO 14001) wenn vorhanden.",
   };
   const branchenSprache = branchenSpezifisch[o.branche] || gruppenSprache[brGruppe] || "";
 

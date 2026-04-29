@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stil-Mockup: Editorial-Light — Restaurant Mira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --paper:#f4f2ef;
+    --paper-2:#ebe7df;
+    --dark:#1a1a1a;
+    --dark-2:#2a2a2a;
+    --text:#2a2a2a;
+    --text-muted:#7a7a7a;
+    --hair:#d8d2c8;
+    --hair-dark:rgba(255,255,255,.12);
+    --accent:#5b9bb3;
+    --accent-dark:#7eb3c7;
+    --maxW:1280px;
+    --section-y:160px;
+    --section-y-mobile:90px;
+    --font-display:'Playfair Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-weight:400;
+    line-height:1.65;
+    font-size:17px;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  ul{list-style:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+  h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;line-height:1.05;letter-spacing:-.012em}
+  h1 em,h2 em,h3 em{font-style:italic;font-weight:400}
+  h1 strong,h2 strong,h3 strong{font-weight:900;font-style:normal}
+
+  .container{max-width:var(--maxW);margin:0 auto;padding:0 40px;position:relative}
+  .container-narrow{max-width:1040px;margin:0 auto;padding:0 40px}
+
+  /* Overline */
+  .overline{
+    font-family:var(--font-body);
+    font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.22em;
+    color:var(--accent);
+    display:inline-flex;align-items:center;gap:14px;
+  }
+  .overline::before{content:'';width:36px;height:1px;background:currentColor}
+  .dark .overline{color:var(--accent-dark)}
+  .dark .overline::before{background:var(--accent-dark)}
+
+  /* NAV */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    padding:24px 0;
+    background:rgba(244,242,239,.78);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(216,210,200,.5);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--font-display);font-weight:900;font-size:24px;letter-spacing:-.015em;line-height:1}
+  .brand em{font-style:italic;font-weight:400;color:var(--accent)}
+  .nav-links{display:flex;gap:40px;align-items:center}
+  .nav-links a{
+    font-size:13px;font-weight:500;color:var(--text);
+    letter-spacing:.04em;
+    transition:color .25s var(--ease);
+  }
+  .nav-links a:hover{color:var(--accent)}
+  .nav-cta{
+    padding:11px 22px;
+    border:1px solid var(--text);
+    font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+    transition:all .3s var(--ease);
+  }
+  .nav-cta:hover{background:var(--text);color:var(--paper)}
+
+  /* HERO */
+  .hero{
+    padding:200px 0 120px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:80px;
+    align-items:end;
+    min-height:560px;
+  }
+  .hero-text{padding-bottom:40px}
+  .hero h1{
+    font-size:clamp(3.4rem,8vw,7.8rem);
+    margin-top:50px;margin-bottom:48px;
+    letter-spacing:-.025em;
+  }
+  .hero h1 em{display:block}
+  .hero-meta{
+    display:flex;gap:32px;flex-wrap:wrap;
+    padding-top:32px;
+    border-top:1px solid var(--hair);
+    font-size:13px;color:var(--text-muted);letter-spacing:.04em;
+  }
+  .hero-meta span{display:inline-flex;align-items:center;gap:8px}
+  .hero-meta span::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .hero-image-wrap{
+    position:relative;
+    aspect-ratio:3/4;
+    margin-right:-80px;
+  }
+  .hero-image{
+    width:100%;height:100%;
+    object-fit:cover;
+    filter:saturate(.85) contrast(1.02);
+  }
+  .hero-image-cap{
+    position:absolute;bottom:-28px;left:-28px;
+    background:var(--paper);padding:14px 18px;
+    font-family:var(--font-display);font-style:italic;font-size:14px;
+    border:1px solid var(--hair);
+    max-width:240px;line-height:1.5;
+  }
+
+  /* TRUST */
+  .trust{
+    padding:50px 0;
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+  }
+  .trust-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:60px;
+    align-items:center;
+  }
+  .trust-item{
+    display:flex;flex-direction:column;gap:6px;
+    padding-left:24px;
+    border-left:1px solid var(--hair);
+  }
+  .trust-num{
+    font-family:var(--font-display);font-weight:900;
+    font-size:34px;line-height:1;letter-spacing:-.02em;
+  }
+  .trust-num em{font-style:italic;font-weight:400;color:var(--accent)}
+  .trust-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.16em;margin-top:8px}
+
+  /* SECTION GENERIC */
+  section{padding:var(--section-y) 0;position:relative}
+  .section-head{margin-bottom:90px;max-width:780px}
+  .section-head h2{font-size:clamp(2.4rem,5vw,4.2rem);margin:24px 0 28px;letter-spacing:-.018em}
+  .section-head p{font-size:19px;color:var(--text-muted);line-height:1.6;font-weight:300;max-width:600px}
+
+  /* DARK SECTION */
+  .dark{background:var(--dark);color:var(--paper)}
+  .dark .section-head h2{color:var(--paper)}
+  .dark .section-head p{color:rgba(244,242,239,.62)}
+  .dark *{border-color:var(--hair-dark)}
+
+  /* ÜBER UNS — magazine 2-column */
+  .ueber-grid{
+    display:grid;grid-template-columns:1fr 1.4fr;gap:120px;align-items:start;
+  }
+  .ueber-image{
+    aspect-ratio:3/4;width:100%;
+    object-fit:cover;
+    filter:saturate(.85) contrast(1.02);
+  }
+  .ueber-text{padding-top:40px}
+  .ueber-text h2{font-size:clamp(2.2rem,4.5vw,3.6rem);margin:24px 0 36px;letter-spacing:-.018em}
+  .ueber-lead{
+    font-family:var(--font-display);font-size:24px;font-style:italic;
+    line-height:1.45;font-weight:400;
+    color:rgba(244,242,239,.92);
+    padding-bottom:32px;border-bottom:1px solid var(--hair-dark);
+    margin-bottom:32px;
+  }
+  .ueber-body{font-size:17px;line-height:1.75;color:rgba(244,242,239,.7);font-weight:300}
+  .ueber-body p{margin-bottom:18px}
+  .ueber-body p:first-letter{
+    font-family:var(--font-display);font-weight:900;
+    font-size:54px;float:left;line-height:.85;
+    margin:6px 12px 0 0;color:var(--accent-dark);
+  }
+
+  /* SPEISEKARTE */
+  .speisen-list{margin-top:30px}
+  .speise{
+    display:grid;grid-template-columns:80px 1fr 100px;
+    gap:32px;align-items:baseline;
+    padding:36px 0;
+    border-bottom:1px solid var(--hair);
+    transition:padding-left .35s var(--ease);
+  }
+  .speise:hover{padding-left:12px}
+  .speise:first-child{border-top:1px solid var(--hair)}
+  .speise-num{
+    font-family:var(--font-display);font-style:italic;
+    font-size:22px;color:var(--accent);font-weight:400;
+  }
+  .speise-content h3{font-size:26px;margin-bottom:8px;font-weight:500;letter-spacing:-.01em}
+  .speise-content p{font-size:15px;color:var(--text-muted);line-height:1.6;font-weight:300;max-width:560px}
+  .speise-content .speise-tag{
+    display:inline-block;font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.16em;
+    color:var(--accent);margin-top:10px;
+  }
+  .speise-price{
+    font-family:var(--font-display);font-size:22px;font-weight:400;
+    text-align:right;
+  }
+  .speise-price em{font-style:italic;color:var(--text-muted);font-size:14px;display:block;margin-top:4px}
+
+  /* CHEFS */
+  .chefs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:80px;margin-top:30px}
+  .chef{display:grid;grid-template-columns:280px 1fr;gap:36px;align-items:start}
+  .chef-photo{
+    aspect-ratio:3/4;width:100%;
+    object-fit:cover;
+    filter:saturate(.85) grayscale(.18);
+  }
+  .chef-content{padding-top:8px}
+  .chef-name{font-family:var(--font-display);font-size:32px;line-height:1.05;letter-spacing:-.012em}
+  .chef-name em{font-style:italic;color:var(--accent-dark);font-weight:400}
+  .chef-role{
+    font-size:11px;color:var(--accent-dark);
+    text-transform:uppercase;letter-spacing:.18em;font-weight:500;
+    margin-top:10px;
+  }
+  .chef-bio{font-size:15px;color:rgba(244,242,239,.65);line-height:1.7;margin-top:24px;font-weight:300}
+  .chef-detail{
+    display:flex;gap:24px;margin-top:22px;
+    padding-top:22px;border-top:1px solid var(--hair-dark);
+    font-size:12px;color:rgba(244,242,239,.5);letter-spacing:.04em;
+  }
+
+  /* GALERIE / Atmosphäre */
+  .galerie{padding-bottom:calc(var(--section-y) - 40px)}
+  .galerie-grid{
+    display:grid;grid-template-columns:repeat(12,1fr);gap:18px;
+    grid-auto-rows:140px;
+  }
+  .galerie-item{position:relative;overflow:hidden}
+  .galerie-item img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+  .galerie-item:nth-child(1){grid-column:span 7;grid-row:span 4}
+  .galerie-item:nth-child(2){grid-column:span 5;grid-row:span 2}
+  .galerie-item:nth-child(3){grid-column:span 5;grid-row:span 2}
+  .galerie-item:nth-child(4){grid-column:span 4;grid-row:span 3}
+  .galerie-item:nth-child(5){grid-column:span 4;grid-row:span 3}
+  .galerie-item:nth-child(6){grid-column:span 4;grid-row:span 3}
+  .galerie-cap{
+    position:absolute;bottom:18px;left:22px;
+    font-family:var(--font-display);font-style:italic;font-size:13px;
+    color:var(--paper);
+    text-shadow:0 1px 8px rgba(0,0,0,.6);
+    max-width:70%;line-height:1.4;
+  }
+
+  /* BEWERTUNGEN — single editorial pull-quote + cards */
+  .pull-quote{
+    text-align:center;
+    max-width:1000px;margin:0 auto;padding:0 40px;
+  }
+  .pull-quote-marks{
+    font-family:var(--font-display);font-size:100px;
+    line-height:.8;color:var(--accent-dark);font-weight:900;font-style:italic;
+    margin-bottom:30px;
+  }
+  .pull-quote-text{
+    font-family:var(--font-display);font-style:italic;font-weight:400;
+    font-size:clamp(1.8rem,3.4vw,2.8rem);
+    line-height:1.32;letter-spacing:-.012em;
+    color:rgba(244,242,239,.95);
+    margin-bottom:48px;
+  }
+  .pull-quote-text strong{font-style:normal;font-weight:900}
+  .pull-quote-attr{
+    display:flex;align-items:center;justify-content:center;gap:16px;
+    padding-top:32px;border-top:1px solid var(--hair-dark);
+    max-width:500px;margin:0 auto;
+  }
+  .pull-quote-attr img{width:48px;height:48px;border-radius:50%;object-fit:cover;filter:grayscale(.2)}
+  .pull-quote-attr-name{font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--paper)}
+  .pull-quote-attr-meta{font-size:11px;color:rgba(244,242,239,.4);text-transform:uppercase;letter-spacing:.18em;margin-top:3px}
+
+  .reviews-secondary{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:60px;
+    margin-top:120px;padding-top:60px;border-top:1px solid var(--hair-dark);
+  }
+  .review-mini{}
+  .review-mini-stars{color:var(--accent-dark);font-size:13px;letter-spacing:3px;margin-bottom:18px}
+  .review-mini-text{
+    font-family:var(--font-body);font-size:15px;line-height:1.65;font-weight:300;
+    color:rgba(244,242,239,.78);
+  }
+  .review-mini-attr{font-size:11px;color:rgba(244,242,239,.4);text-transform:uppercase;letter-spacing:.16em;margin-top:18px}
+
+  /* FAQ */
+  .faq-list{max-width:920px;margin-top:30px}
+  .faq-item{
+    border-top:1px solid var(--hair);
+    padding:36px 0;
+  }
+  .faq-item:last-child{border-bottom:1px solid var(--hair)}
+  .faq-q{
+    display:grid;grid-template-columns:1fr 40px;gap:32px;
+    align-items:start;
+    font-family:var(--font-display);
+    font-size:clamp(1.3rem,2.2vw,1.8rem);
+    font-weight:400;line-height:1.3;letter-spacing:-.012em;
+    color:var(--text);
+  }
+  .faq-q-icon{
+    font-family:var(--font-display);font-style:italic;font-weight:400;
+    font-size:32px;color:var(--accent);line-height:.9;
+  }
+  .faq-a{
+    font-size:16px;color:var(--text-muted);line-height:1.7;
+    margin-top:16px;max-width:760px;font-weight:300;
+  }
+
+  /* KONTAKT */
+  .kontakt{padding-bottom:140px}
+  .kontakt-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:120px;align-items:start;
+  }
+  .kontakt-info h2{font-size:clamp(2rem,4vw,3.4rem);margin:24px 0 36px;letter-spacing:-.018em}
+  .kontakt-info > p{
+    font-family:var(--font-display);font-style:italic;font-size:21px;
+    line-height:1.5;color:var(--text-muted);margin-bottom:48px;font-weight:400;
+  }
+  .kontakt-detail{
+    padding:24px 0;border-bottom:1px solid var(--hair);
+  }
+  .kontakt-detail:first-of-type{border-top:1px solid var(--hair)}
+  .kontakt-label{
+    font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.18em;
+    color:var(--accent);margin-bottom:8px;
+  }
+  .kontakt-value{font-size:17px;line-height:1.5}
+  .kontakt-value-strong{font-family:var(--font-display);font-size:26px;font-weight:400;letter-spacing:-.01em}
+  .kontakt-value-strong em{font-style:italic;color:var(--accent)}
+
+  .form{padding-top:40px}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .form-field{margin-bottom:24px}
+  .form-field label{
+    display:block;font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.18em;
+    color:var(--text-muted);margin-bottom:10px;
+  }
+  .form-field input,.form-field textarea,.form-field select{
+    width:100%;padding:14px 0;
+    background:transparent;
+    border:none;border-bottom:1px solid var(--hair);
+    font-family:inherit;font-size:16px;color:var(--text);
+    transition:border-color .25s var(--ease);
+  }
+  .form-field input:focus,.form-field textarea:focus,.form-field select:focus{
+    outline:none;border-bottom-color:var(--accent);
+  }
+  .form-field textarea{min-height:130px;resize:vertical;line-height:1.6}
+  .form-submit{
+    margin-top:30px;padding:18px 36px;
+    background:var(--text);color:var(--paper);
+    font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+    transition:background .3s var(--ease);
+  }
+  .form-submit:hover{background:var(--accent)}
+
+  /* FOOTER */
+  footer{background:var(--dark);color:var(--paper);padding:120px 0 50px}
+  .footer-grid{
+    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:80px;
+    padding-bottom:80px;border-bottom:1px solid var(--hair-dark);
+  }
+  .footer-brand h3{
+    font-family:var(--font-display);font-weight:900;font-size:42px;
+    line-height:1;letter-spacing:-.02em;margin-bottom:20px;
+  }
+  .footer-brand h3 em{font-style:italic;font-weight:400;color:var(--accent-dark)}
+  .footer-brand p{
+    font-family:var(--font-display);font-style:italic;font-size:18px;
+    line-height:1.5;color:rgba(244,242,239,.6);max-width:360px;font-weight:400;
+  }
+  .footer-col h4{
+    font-size:11px;text-transform:uppercase;letter-spacing:.18em;
+    color:var(--accent-dark);margin-bottom:24px;font-family:var(--font-body);font-weight:500;
+  }
+  .footer-col ul li{margin-bottom:14px;font-size:14px;color:rgba(244,242,239,.6);font-weight:300}
+  .footer-col ul li a:hover{color:var(--accent-dark)}
+  .footer-bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:40px;font-size:12px;color:rgba(244,242,239,.4);letter-spacing:.04em;
+  }
+  .footer-bottom-links{display:flex;gap:32px}
+
+  @media (max-width:1080px){
+    :root{--section-y:var(--section-y-mobile)}
+    .hero{padding-top:140px;padding-bottom:80px}
+    .hero-grid,.ueber-grid,.kontakt-grid{grid-template-columns:1fr;gap:60px}
+    .hero-image-wrap{margin-right:0;aspect-ratio:4/5}
+    .chefs-grid{grid-template-columns:1fr;gap:60px}
+    .chef{grid-template-columns:1fr;gap:24px}
+    .chef-photo{aspect-ratio:4/5}
+    .reviews-secondary,.footer-grid,.trust-grid{grid-template-columns:1fr;gap:40px}
+    .nav-links{display:none}
+    .speise{grid-template-columns:50px 1fr 90px;gap:18px}
+    .galerie-grid{grid-template-columns:1fr;grid-auto-rows:240px}
+    .galerie-item{grid-column:span 1!important;grid-row:span 1!important}
+    .form-row{grid-template-columns:1fr}
+    .container,.container-narrow{padding:0 24px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#" class="brand">Mira<em>.</em></a>
+    <div class="nav-links">
+      <a href="#ueber">Konzept</a>
+      <a href="#speisen">Karte</a>
+      <a href="#chefs">Küche</a>
+      <a href="#galerie">Atmosphäre</a>
+      <a href="#kontakt" class="nav-cta">Reservieren</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <span class="overline">Wien · 4. Bezirk · seit 2019</span>
+      <h1>Eine Küche <em>zwischen</em> <strong>Donau</strong> und <em>Mittelmeer.</em></h1>
+      <div class="hero-meta">
+        <span>Dienstag bis Samstag, 18:00 — 23:00</span>
+        <span>Reservierung empfohlen</span>
+        <span>Schanigarten ab April</span>
+      </div>
+    </div>
+    <div class="hero-image-wrap">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=80" alt="Restaurant-Atmosphäre" class="hero-image">
+      <div class="hero-image-cap">"Ein Wirtshaus, das so leise ist, dass man Gabel und Gespräch hört." — <em>Falter</em></div>
+    </div>
+  </div>
+</header>
+
+<div class="trust">
+  <div class="container trust-grid">
+    <div class="trust-item">
+      <div class="trust-num"><em>17</em></div>
+      <div class="trust-label">Plätze · klein gehalten</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">5<em>-Gang</em></div>
+      <div class="trust-label">Saisonales Menü</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">4<em>.9</em></div>
+      <div class="trust-label">Google &middot; 312 Bewertungen</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">2024</div>
+      <div class="trust-label">Falstaff &middot; <em>Aufsteiger des Jahres</em></div>
+    </div>
+  </div>
+</div>
+
+<section id="ueber" class="dark">
+  <div class="container ueber-grid">
+    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&q=80" alt="Köchin in der Küche" class="ueber-image">
+    <div class="ueber-text">
+      <span class="overline">Konzept</span>
+      <h2>Wir kochen, was uns <em>einfällt</em> — und was gerade Saison hat.</h2>
+      <p class="ueber-lead">Kein Jahres-Menü, keine Festkarte. Was am Naschmarkt frisch ist, was der Biohof Adamah liefert, was Sophia gerade aus Apulien mitbringt — das landet abends auf dem Teller.</p>
+      <div class="ueber-body">
+        <p>Mira ist 17 Plätze, eine offene Küche und zwei Köpfe. Sophia hat in Mailand und Wien gekocht, Daniel zwölf Jahre bei Steirereck — gemeinsam haben wir 2019 aufgesperrt, in einem ehemaligen Greißlerei-Lokal in der Schäffergasse, vier Tische unter dem alten Stuck.</p>
+        <p>Die Karte schreiben wir täglich neu. Wer dasselbe zweimal essen will, soll bitte zweimal hintereinander kommen. Wer Überraschungen mag, ist hier richtig.</p>
+        <p>Wein gibt es ausschließlich aus Österreich — und ein paar Crémants aus dem Burgund, weil das einfach besser passt zu manchen Gerichten als ein Sekt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="speisen">
+  <div class="container-narrow">
+    <div class="section-head">
+      <span class="overline">Aus der <em>Karte</em></span>
+      <h2>Was diese Woche <em>auf dem</em> <strong>Teller</strong> liegt.</h2>
+      <p>Eine Auswahl aus dem aktuellen Menü. Die volle Karte ändert sich täglich und liegt am Tisch auf — anrufen genügt für Allergie-Rückfragen.</p>
+    </div>
+
+    <div class="speisen-list">
+      <div class="speise">
+        <div class="speise-num"><em>I</em></div>
+        <div class="speise-content">
+          <h3>Erbsenschote, junge Ziege, Minze</h3>
+          <p>Frische Erbsen vom Marchfeld, Ziegenkäse aus dem Mostviertel, ein Hauch wilde Minze. Vorspeise oder kleines Hauptgericht.</p>
+          <span class="speise-tag">Vegetarisch</span>
+        </div>
+        <div class="speise-price">€18<em>Vorspeise</em></div>
+      </div>
+      <div class="speise">
+        <div class="speise-num"><em>II</em></div>
+        <div class="speise-content">
+          <h3>Forelle &middot; Gurke &middot; Buttermilch</h3>
+          <p>Saiblings-Forelle aus der Wachau, kalt geräuchert. Mit Salzgurke, fermentiertem Kefir und Schnittlauchblüten.</p>
+          <span class="speise-tag">Glutenfrei</span>
+        </div>
+        <div class="speise-price">€26<em>Hauptgang</em></div>
+      </div>
+      <div class="speise">
+        <div class="speise-num"><em>III</em></div>
+        <div class="speise-content">
+          <h3>Tagliatelle, Hasenragout, Pecorino di Pienza</h3>
+          <p>Pasta selbst gerollt. Hase aus dem Burgenland, lange geschmort in Trebbiano und Schokolade nach Sophias Großmutter.</p>
+        </div>
+        <div class="speise-price">€32<em>Hauptgang</em></div>
+      </div>
+      <div class="speise">
+        <div class="speise-num"><em>IV</em></div>
+        <div class="speise-content">
+          <h3>Risotto allo zafferano, Knochenmark, Salbei</h3>
+          <p>Carnaroli aus Vercelli, mit echtem San Gimignano-Safran. Crème von Knochenmark, frittierter Salbei.</p>
+        </div>
+        <div class="speise-price">€28<em>Hauptgang</em></div>
+      </div>
+      <div class="speise">
+        <div class="speise-num"><em>V</em></div>
+        <div class="speise-content">
+          <h3>Topfen-Tarte, Marille, Sauerampfer</h3>
+          <p>Kein Mürbteig, kein Standard. Marillen aus Spitz, Sauerampfer aus dem eigenen Topf am Fenster.</p>
+          <span class="speise-tag">Hausspezialität</span>
+        </div>
+        <div class="speise-price">€14<em>Dessert</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="chefs" class="dark">
+  <div class="container">
+    <div class="section-head">
+      <span class="overline">Die <em>Küche</em></span>
+      <h2>Zwei Hände am Herd. <em>Eine Stimme</em> auf dem Teller.</h2>
+    </div>
+    <div class="chefs-grid">
+      <div class="chef">
+        <img src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=600&q=80" alt="Sophia D'Aloisio" class="chef-photo">
+        <div class="chef-content">
+          <div class="chef-name">Sophia <em>D'Aloisio</em></div>
+          <div class="chef-role">Küchenchefin · Pasta &amp; Antipasti</div>
+          <p class="chef-bio">Geboren in Bari, ausgebildet bei Niko Romito (Reale, Castel di Sangro), in Wien seit 2016. Verantwortet die italienische Schiene der Karte — Pasta, Risotto, Antipasti. Fährt vier Mal im Jahr nach Süditalien zum Einkaufen.</p>
+          <div class="chef-detail">
+            <span>10 Jahre Küche</span>
+            <span>Reale, Mailand, Wien</span>
+          </div>
+        </div>
+      </div>
+      <div class="chef">
+        <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=600&q=80" alt="Daniel Krainer" class="chef-photo">
+        <div class="chef-content">
+          <div class="chef-name">Daniel <em>Krainer</em></div>
+          <div class="chef-role">Küchenchef · Sous-vide &amp; Saucen</div>
+          <p class="chef-bio">12 Jahre Steirereck (zuletzt als Sous-Chef). Bringt die österreichische Ader auf die Karte — Wild, Fisch, klassische Saucen. Schreibt nebenbei für die Falstaff-Online.</p>
+          <div class="chef-detail">
+            <span>15 Jahre Küche</span>
+            <span>Steirereck, Mraz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="galerie" class="galerie">
+  <div class="container">
+    <div class="section-head">
+      <span class="overline">Atmosphäre</span>
+      <h2>17 Plätze, ein Tresen, <em>viel Holz.</em></h2>
+      <p>Wir haben das Lokal so gelassen, wie es war — alter Stuck, Eichenparkett aus 1908, eine offene Küche hinter einer Marmor-Theke.</p>
+    </div>
+    <div class="galerie-grid">
+      <div class="galerie-item">
+        <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1400&q=80" alt="Restaurantansicht">
+        <div class="galerie-cap">Der lange Tresen — sechs Plätze direkt vor der Küche</div>
+      </div>
+      <div class="galerie-item">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" alt="Pasta-Detail">
+        <div class="galerie-cap">Tagliatelle, frisch gerollt</div>
+      </div>
+      <div class="galerie-item">
+        <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="In der Küche">
+      </div>
+      <div class="galerie-item">
+        <img src="https://images.unsplash.com/photo-1551218372-a8789b81b253?w=800&q=80" alt="Tisch mit Wein">
+      </div>
+      <div class="galerie-item">
+        <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80" alt="Dessert">
+      </div>
+      <div class="galerie-item">
+        <img src="https://images.unsplash.com/photo-1592861956120-e524fc739696?w=800&q=80" alt="Tresen-Detail">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dark">
+  <div class="pull-quote">
+    <span class="overline">Was Gäste sagen</span>
+    <div class="pull-quote-marks">"</div>
+    <p class="pull-quote-text">Es gibt Lokale, die <em>kochen</em>. Und es gibt Lokale, in denen man <strong>das Gefühl hat,</strong> in jemandes Küche zu sitzen, der für einen kocht. Mira ist <em>zweiteres</em> — und es ist selten geworden.</p>
+    <div class="pull-quote-attr">
+      <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80" alt="">
+      <div>
+        <div class="pull-quote-attr-name">Severin Corti</div>
+        <div class="pull-quote-attr-meta">Der Standard · Februar 2025</div>
+      </div>
+    </div>
+    <div class="reviews-secondary">
+      <div class="review-mini">
+        <div class="review-mini-stars">★★★★★</div>
+        <p class="review-mini-text">"Ein Lokal mit Substanz, ohne Mätzchen. Die Karte ist klein, weil sie es sein muss — frischer geht es nicht. Daniel kommt zwischendurch an den Tisch, das ist nicht Service-Theater, das ist echt."</p>
+        <div class="review-mini-attr">Anna L. · Stammgast seit 2021</div>
+      </div>
+      <div class="review-mini">
+        <div class="review-mini-stars">★★★★★</div>
+        <p class="review-mini-text">"Wenn ich Gäste aus dem Ausland habe, gehe ich nach Mira. Weil es das einzige Lokal in Wien ist, das ich wirklich verstehe — österreichisch, italienisch, ehrlich, klein."</p>
+        <div class="review-mini-attr">Markus W. · Architekt</div>
+      </div>
+      <div class="review-mini">
+        <div class="review-mini-stars">★★★★★</div>
+        <p class="review-mini-text">"Die Topfen-Tarte hat mich für eine Sekunde sprachlos gemacht. Sophie hat sie selbst rausgebracht und gefragt, ob alles passt. Ja, alles passt."</p>
+        <div class="review-mini-attr">Helene K. · Innenarchitektin</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-narrow">
+    <div class="section-head">
+      <span class="overline">Häufige <em>Fragen</em></span>
+      <h2>Bevor Sie <em>reservieren.</em></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">
+          Wie weit im Voraus sollte ich reservieren?
+          <span class="faq-q-icon">⟶</span>
+        </div>
+        <div class="faq-a">Freitag und Samstag sind 4–6 Wochen voraus voll. Mittwoch und Donnerstag bekommen wir oft noch unter der Woche unter — Anruf am Vortag genügt meistens.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          Kann ich nur einen Gang bestellen?
+          <span class="faq-q-icon">⟶</span>
+        </div>
+        <div class="faq-a">Selbstverständlich. Wir haben kein Pflichtmenü. Wer nur eine Pasta und ein Glas Wein möchte, ist genauso willkommen wie wer durchkostet.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          Wie geht ihr mit Allergien und Unverträglichkeiten um?
+          <span class="faq-q-icon">⟶</span>
+        </div>
+        <div class="faq-a">Bei Reservierung Bescheid geben — wir kochen es um, wenn es geht (außer Sojasoßen-Risotto, das wäre dann Reis mit Wasser). Glutenfrei und vegan klappt fast immer.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          Gibt es einen Schanigarten?
+          <span class="faq-q-icon">⟶</span>
+        </div>
+        <div class="faq-a">Ja, von April bis Mitte Oktober. Vier Tische in der Schäffergasse, ruhige Seitengasse. Reservierung gilt automatisch für innen oder außen — bei gutem Wetter setzen wir um.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          Können wir die Bar für eine private Feier mieten?
+          <span class="faq-q-icon">⟶</span>
+        </div>
+        <div class="faq-a">Ab 14 Personen exklusiv, Sonntag und Montag (sonst geschlossen) auch ohne Mindestpersonenzahl. Schreiben Sie uns mit Datum und Wunschvorstellung.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="kontakt" class="kontakt">
+  <div class="container kontakt-grid">
+    <div class="kontakt-info">
+      <span class="overline">Reservierung &amp; Kontakt</span>
+      <h2>Wir <em>freuen uns</em> auf Sie.</h2>
+      <p>"Am liebsten persönlich, am sichersten online. Antwort innerhalb eines Tages." — Daniel</p>
+      <div class="kontakt-detail">
+        <div class="kontakt-label">Telefon</div>
+        <div class="kontakt-value kontakt-value-strong">+43 1 <em>586 23 14</em></div>
+      </div>
+      <div class="kontakt-detail">
+        <div class="kontakt-label">E-Mail</div>
+        <div class="kontakt-value">tisch@restaurant-mira.at</div>
+      </div>
+      <div class="kontakt-detail">
+        <div class="kontakt-label">Adresse</div>
+        <div class="kontakt-value">Schäffergasse 12<br>1040 Wien</div>
+      </div>
+      <div class="kontakt-detail">
+        <div class="kontakt-label">Öffnungszeiten</div>
+        <div class="kontakt-value">Dienstag — Samstag<br>18:00 bis 23:00 Uhr<br><em style="color:var(--text-muted)">Sonntag &amp; Montag Ruhetag</em></div>
+      </div>
+    </div>
+    <form class="form" onsubmit="event.preventDefault();alert('Mockup — keine Übertragung')">
+      <h3 style="font-family:var(--font-display);font-size:32px;margin-bottom:8px;font-weight:400">Tisch reservieren</h3>
+      <p style="color:var(--text-muted);margin-bottom:32px;font-size:15px">Antwort innerhalb eines Tages.</p>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Name</label>
+          <input type="text" placeholder="Vor- und Nachname" required>
+        </div>
+        <div class="form-field">
+          <label>Personen</label>
+          <select>
+            <option>2 Personen</option>
+            <option>3 Personen</option>
+            <option>4 Personen</option>
+            <option>5+ Personen</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Wunschdatum</label>
+          <input type="date" required>
+        </div>
+        <div class="form-field">
+          <label>Wunschzeit</label>
+          <select>
+            <option>18:30</option>
+            <option>19:00</option>
+            <option>19:30</option>
+            <option>20:00</option>
+            <option>20:30</option>
+            <option>21:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Telefon</label>
+        <input type="tel" placeholder="+43 ..." required>
+      </div>
+      <div class="form-field">
+        <label>Anmerkung (Allergien, Anlass, ...)</label>
+        <textarea placeholder="z.B. Geburtstag — bitte ein Dessert mit Kerze. Glutenfrei für eine Person."></textarea>
+      </div>
+      <button type="submit" class="form-submit">Reservierungsanfrage senden</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Restaurant <em>Mira.</em></h3>
+        <p>"Eine Küche zwischen Donau und Mittelmeer — täglich neu geschrieben."</p>
+      </div>
+      <div class="footer-col">
+        <h4>Restaurant</h4>
+        <ul>
+          <li>Konzept</li>
+          <li>Karte</li>
+          <li>Küche</li>
+          <li>Atmosphäre</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Service</h4>
+        <ul>
+          <li>Reservierung</li>
+          <li>Private Feiern</li>
+          <li>Geschenkgutscheine</li>
+          <li>Newsletter</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Folgen</h4>
+        <ul>
+          <li>Instagram</li>
+          <li>Falstaff Profil</li>
+          <li>Falter</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Restaurant Mira · Schäffergasse 12, 1040 Wien</div>
+      <div class="footer-bottom-links">
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutz</a>
+        <a href="#">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

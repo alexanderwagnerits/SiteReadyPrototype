@@ -267,22 +267,25 @@ Memory `project_design_references_live.md` nennt nur cpg.at + Komi (für Custome
 ## Reihenfolge-Empfehlung
 
 ```
-Woche 1-2:  Block A vollständig (Benchmarks + Konkurrenz + AI-Story)
-              → liefert Grundlage für alles Weitere
-Woche 3-6:  Block B parallel zu Block 8 (Themes)
-              → Plattform-Design-System + Marketing + Portal + Fragebogen
-              → gleichzeitig 4 Theme-Tokens final
-Woche 4-9:  Block 9 + Block 10 parallel
-              → 25 Section-Specs als Vorlage
-              → 22 Recipe-Mockups (parallelisierbar mit ui-ux-pro-max + anthropic-web-frontend-design Skills)
-Woche 6-7:  Block 11 + 12 (Mikro-Interaktionen + Assets)
-Woche 9-10: Block D (Quality-Standards)
+Woche  1- 2: Block A im Prototyp-Repo (Benchmarks + Konkurrenz + AI-Story)
+                → reine Markdown-Arbeit, kein Code, kein Repo-Setup nötig
+Woche      3: ─── Live-Repo `instantpage` anlegen (MIGRATION-PLAN Phase 0) ───
+                → Doku-Migration + Memory-System neu + Stack-Skelett
+Woche  4- 7: Block B im Live-Repo parallel zu Block 8 (Themes)
+                → Plattform-Design-System + Marketing + Portal + Fragebogen
+                → gleichzeitig 4 Theme-Tokens final
+Woche  5-10: Block 9 + Block 10 parallel im Live-Repo
+                → 25 Section-Specs als Vorlage
+                → 22 Recipe-Mockups (Skills: ui-ux-pro-max + anthropic-web-frontend-design)
+Woche  7- 8: Block 11 + 12 (Mikro-Interaktionen + Assets)
+Woche 10-12: Block D (Quality-Standards)
 ```
 
 **Kritische Abhängigkeiten:**
-- Block 4 (Design-System) blockiert Block 6 + 7 + Code-Phase 0
+- Block 4 (Design-System) blockiert Block 6 + 7 + Code-Phase 1
 - Block 8 (Themes) blockiert Block 9 (Sections) blockiert Block 10 (Recipes)
 - Block A (Benchmarks) sollte vor allen anderen abgeschlossen sein
+- Block A bleibt im Prototyp-Repo (reine Markdown), ab Block B alles im Live-Repo (Mockups gehören gleich an den Zielort)
 
 ---
 

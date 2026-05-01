@@ -37,6 +37,8 @@
 | **Compliance ohne Anwalt** | Phase-1-Live mit Eigenarbeit + offiziellen Quellen. Anwalt Trigger-basiert ab definierten Schwellen. Siehe `docs/LIVE-COMPLIANCE.md`. |
 | **Recipe-System v1** als Kundenseiten-Architektur | Branchen-spezifische Looks statt generischer Stile. 12 Berufsgruppen × 1–4 Looks = 24 Recipes. Siehe `docs/RECIPE-SYSTEM.md`. |
 | **Beta = nur Look & Feel** | Keine Live-Features im Prototyp nachbauen. (Memory `feedback_beta_fokus.md`) |
+| **Live-Repo früh anlegen** (Woche 3, nicht Woche 13) | Stack ist komplett anders (TS+Next.js statt JS+CRA). Mockups + Design-Vision-Spec ab Block B direkt im Ziel-Repo entstehen lassen. Spart Umzug + nur ein Ort für Live-Arbeit. |
+| **Prototyp ab Woche 3 = Wartungs-Modus** | Hier nur noch: Beta-Bugfixes (kritisch), Doku-Pflege bis Cutover, Prompt-Tuning gegen echte Beta-Daten. Keine neuen Features, kein Refactor, keine Section-Library — alles würde weggeworfen. |
 
 ---
 
@@ -295,15 +297,27 @@ Erweitert gegenüber Prototyp um:
 
 ## 8. Bau-Phasen
 
-### Phase 0 — Setup (~2 Wochen)
+### Phase -1 — Strategie + Block A Design-Vision (~2 Wochen, im Prototyp-Repo)
 
-- Pre-Setup-Aktionen aus Abschnitt 2 anstoßen (Versicherung, Stripe, Subprozessoren)
-- Neues Repo + Initial-Stack
-- CI/CD + Lighthouse-CI
-- Wrangler.toml + Staging-Environment
-- Doku-Struktur übernehmen (siehe Abschnitt 5)
-- Memory-System aufsetzen (siehe Abschnitt 6)
+- Pre-Setup-Aktionen aus Abschnitt 2 anstoßen (Versicherung, Stripe, Marken-Recherche, Buchhaltung) — Lead-Time läuft im Hintergrund
+- Strategie-Entscheidungen schärfen (18 offene Fragen `docs/LIVE-COMPLIANCE.md` § 1, Pricing-USt, Repo-Name, Promo-Code-Anzahl)
+- `docs/DESIGN-VISION.md` Block A vollständig: Visuelle Benchmarks + Kompetitive Tiefen-Analyse + AI-Differentiator-Story
+
+### Phase 0 — Live-Repo + Stack-Setup (~1 Woche, **Woche 3**)
+
+- Neues Repo `instantpage` anlegen + Initial-Stack (Next.js 15 + TS + Tailwind + shadcn + Drizzle + Zod)
+- CI/CD + Lighthouse-CI + Wrangler.toml + Staging-Environment
+- Doku aus Prototyp-Repo komplett kopieren + alle `siteready.at` → `instantpage.at`
+- Memory-System neu aufsetzen unter `~/.claude/projects/<neuer-pfad>/memory/` (Memory-Übernahme nach § 6)
 - MCP + Skills + Subagents (siehe Abschnitt 7)
+- **Ab jetzt:** Prototyp-Repo = Wartungs-Modus, gesamter Live-Bau drüben
+
+### Phase 0.5 — Block B-D Design-Vision (~9 Wochen, **Woche 4-12, im Live-Repo**)
+
+- Block B: Plattform-Design-System + Marketing-Konzept + Portal-Sprache + Fragebogen-Magic-Moments
+- Block C: 4 Theme-Tokens + 25 Section-Specs + 22 Recipe-Mockups + Mikro-Interaktionen + Asset-Strategie
+- Block D: Quality-Standards messbar + Code-/Test-Standards
+- Mockups + Theme-Tokens entstehen direkt im Ziel-Repo (kein Umzug nötig)
 
 ### Phase 1 — Section-Library + Themes (~6 Wochen)
 
@@ -358,7 +372,18 @@ Aus `docs/RECIPE-SYSTEM.md`:
 - Lifecycle-Workflows (Trigger.dev oder Inngest)
 - Logs-Aggregation (Better Stack / Axiom)
 
-**Total Phase 0–4: ~18 Wochen Vollzeit (Solo-Dev).**
+**Total Phase -1 bis 4: ~30 Wochen Vollzeit (~7 Monate Solo-Dev).**
+
+```
+Woche  1- 2: Phase -1 (Strategie + Block A) — Prototyp-Repo
+Woche      3: Phase 0  (Live-Repo Setup + Doku-Migration)
+Woche  4-12: Phase 0.5 (Block B-D Design-Vision) — Live-Repo
+Woche 13-18: Phase 1  (Section-Library + 4 Themes)
+Woche 19-24: Phase 2  (24 Recipes + Auto-Engine + Fragebogen + Portal)
+Woche 25-27: Phase 3  (Compliance + Operations)
+Woche      28: Phase 4  (Cutover + Soft-Launch)
+ab Woche 29: Phase 5  (Stabilisierung 3 Monate)
+```
 
 ---
 

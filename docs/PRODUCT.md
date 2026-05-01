@@ -112,7 +112,87 @@ Vorabskizze:
 
 ## 7. Self-Service-Portal Funktionen
 
-`[OFFEN]` — aus `_archive/PROJECT-STAND-MAERZ-2026.md` "Kunden-Portal (Self-Service)" + Memory `project_agenda_2026-04-20.md` (Section-Toggles, Galerie-Upload, etc.).
+Aus Prototyp-Bestand + Live-Erweiterungen. Tab-Reihenfolge folgt Website-Reihenfolge (Memory `feedback_portal_design.md`).
+
+### 7.1 Onboarding-Flow nach Kauf
+
+1. `status = paid` → Onboarding-Screen: Fotos hochladen (optional), "Website erstellen" klicken
+2. `status = in_arbeit` → Build-Screen mit "Status aktualisieren"
+3. `status = live` → Portal mit allen Tabs freigeschaltet
+4. Pflicht-Bestätigungen beim ersten Login: AGB, AVV, Bildrechte (LIVE-COMPLIANCE § 5/6)
+
+### 7.2 Portal-Tabs (Sidebar-Gruppen)
+
+**Gruppe "Inhalte meiner Website":**
+
+| Tab | Funktionen |
+|---|---|
+| **Meine Website** | Status-Anzeige (Live-URL, HTTP-Status), Grunddaten (Firmenname, Branche, Kurzbeschreibung), Kontakt + Adresse, Öffnungszeiten, Social Media |
+| **Leistungen** | Reihenfolge sortierbar, Beschreibungen pro Card, Pro-Service-Bilder mit Bildrechten-Bestätigung, "Zusätzliche Leistungen" Freitext |
+| **Texte** | Über uns, Vorteile, Hero-Headline (auto-generiert, editierbar), Hero-Subline |
+| **Bewertungen** | jsonb-Array CRUD: Name, Sterne, Text |
+| **Galerie** | Multi-Upload mit Caption + Credit pro Bild, Anordnung |
+| **Team** | jsonb-Array CRUD: Name, Titel, Bio, Foto, Foto-Credit |
+| **FAQ** | jsonb-Array CRUD: Frage, Antwort. Alternativ: Auto-Generierung via `/api/generate-faq` (5 branchenspez.) |
+| **Logo & Fotos** | Logo-Upload (Vorschau dunkel+hell), Hero-Bild, bis zu 5 Betriebsfotos. Bildrechten-Modal blockt bis Checkbox aktiviert. Audit-Trail mit IP. |
+| **Section-Toggles** | sections_visible jsonb-Toggles: FAQ, Galerie, Fakten, Partner, Team an/aus |
+
+**Gruppe "Einstellungen":**
+
+| Tab | Funktionen |
+|---|---|
+| **Design** | Look wechseln (Recipe-Auswahl), Akzentfarbe ändern (Vorschläge + Custom Picker), Anrede umstellen (Sie/Du, triggert Re-Gen), Live-Preview rechts daneben |
+| **Unternehmen & Impressum** | Read-only — Änderungen via Support (48h, da rechtlich relevant). Pflichtfelder rechtsformabhängig: Unternehmensform, UID, FB-Nummer, GISA, Kammer, etc. |
+| **SEO & Google** | Indexierungs-Status (echt aus Search Console API — siehe Status-Echtheit-Prinzip), llms.txt-Status, robots.txt-Vorschau |
+| **Custom Domain** (Pro) | DNS-Anleitung CNAME-Setup, Domain-Verifikations-Status (pending → verifying → active), 301-Redirect von Subdomain |
+| **Statistiken** (Pro) | Cloudflare Web Analytics: Besucher, Geräte, Referrer (cookieless, kein Banner) |
+
+**Gruppe "Konto":**
+
+| Tab | Funktionen |
+|---|---|
+| **Mein Account** | Email, Mitglied seit, Passwort ändern, Email-Adresse ändern, 2FA-Opt-in (Live, ARCHITECTURE § 10) |
+| **Rechnungen** | Stripe-Zahlungshistorie + Billing-Portal-Link (Plan ändern, Pause, Kündigung) |
+| **Beta-Feedback** | Nur Beta-Phase, in Live entfernt |
+| **Support** | FAQ + Support-Formular, "Etwas funktioniert nicht?"-Diagnostik (siehe OPERATIONS § 1) |
+
+### 7.3 Live-Preview-Engine
+
+Bei jeder Design-Änderung im Design-Tab:
+- Section rendert direkt rechts daneben
+- Stil-Wechsel ohne Re-Generation der Texte (serve-time CSS-Klasse)
+- Anrede-Wechsel mit Warnung "Texte werden neu generiert"
+- Look-Wechsel (Recipe-Wechsel) mit Vorschau bevor commit
+
+### 7.4 Save-Pattern
+
+- **Hybrid-Save:** Auto-Save bei Toggles + Sliders + Color-Picker; Save-Button bei Forms (Memory `feedback_portal_design.md`)
+- Save-Indikator (Toast oder Inline-Status)
+- Optimistic Updates wo möglich
+- Undo pro Card (`[OFFEN]` Phase 2 Portal-Erweiterung)
+
+### 7.5 Read-only-Bereiche (Änderung via Support)
+
+- **Unternehmen & Impressum** — rechtlich kritisch, 48h Umsetzung via Support-Ticket
+- **Subdomain** — nicht änderbar nach Live-Schaltung (Redirects + SEO-Folgen)
+- **Plan-Wechsel** — nur via Stripe Billing Portal
+
+### 7.6 Mobile-Portal
+
+- Hamburger-Menü ab Tablet-Breite
+- Card-Layout 1-spaltig auf Mobile
+- Touch-optimierte Targets (min 44×44px)
+- File-Upload via Camera-Capture-Hint
+
+### 7.7 Empty-States
+
+Pro Tab eigener Empty-State mit klarem CTA:
+- "Noch keine Bewertungen — füge die erste hinzu"
+- "Noch kein Logo — Upload bringt 30% mehr Conversion" etc.
+
+### 7.8 Diagnostik-Button "Etwas funktioniert nicht?"
+
+In jedem Tab unten: Auto-Check (Logo lädt? Mail eingestellt? Domain konfiguriert?) → konkrete Lösungs-Anleitung statt nur Fehlermeldung. Memory `project_production_refactor.md` "Customer-Support Layer 2".
 
 ## 8. Markt-Positionierung
 

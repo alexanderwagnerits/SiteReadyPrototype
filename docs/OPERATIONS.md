@@ -38,6 +38,72 @@
 | Subdomain stuck in `pending` | `start-build` re-trigger oder Cron starten | Manueller Generate-Aufruf im Admin |
 | DDoS / Abuse | Cloudflare WAF Rules anpassen | IP-Block + Notice an Abuse-Adresse |
 | Datenpanne | siehe Abschnitt 5 + `LIVE-COMPLIANCE.md` § 12.2 | DSB-Meldung 72h |
+| Health-Monitor erkennt Site-Down | Auto-Support-Ticket erstellt, Admin-Alert | Manueller Re-Deploy |
+
+### 1.5 Activity-Log Action-Types (vollständig)
+
+Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-Erweiterungen:
+
+**Build / Generierung:**
+- `build_start` (actor: system) — start-build aufgerufen
+- `build_success` (actor: system) — Generate erfolgreich
+- `build_failed` (actor: system) — Generate fehlgeschlagen, last_error gesetzt
+- `website_generated` (actor: admin/system) — initiale Generierung
+- `website_regenerated` (actor: admin/user) — Re-Generierung
+- `partial_regen_leistungen` (actor: user) — Partial-Regen Leistungen-Section
+- `quality_check_failed` (actor: system) — Quality-Score < Schwellwert
+
+**Status-Wechsel:**
+- `status_changed` (actor: admin/system) — z.B. trial → live
+- `online` (actor: admin) — Status auf live gesetzt
+- `offline` (actor: admin) — Status auf offline gesetzt
+- `subdomain_changed` (actor: admin) — Subdomain umbenannt
+- `stil_changed` / `look_changed` (actor: admin/user) — Design gewechselt
+- `recipe_changed` (actor: admin/user, Live) — Recipe gewechselt
+- `anrede_changed` (actor: user, Live) — triggert Re-Gen mit Warnung
+
+**Trial / Subscription:**
+- `trial_started` (actor: system) — trial_expires_at gesetzt
+- `trial_extended` (actor: admin) — +7d / +14d
+- `trial_expired_cleanup` (actor: system) — Cron-Job-Cleanup
+- `checkout_completed` (actor: system, "via Stripe") — Stripe-Webhook
+- `payment_succeeded` (actor: system, "via Stripe")
+- `payment_failed` (actor: system, "via Stripe")
+- `subscription_canceled` (actor: system/user)
+- `subscription_renewed` (actor: system, Live)
+
+**Portal-Aktionen (User):**
+- `logo_uploaded`, `foto_uploaded`, `foto_removed`
+- `team_member_added`, `team_member_removed`
+- `bewertung_added`, `bewertung_removed`
+- `faq_added`, `faq_removed`
+- `galerie_uploaded`
+- `bildrechte_bestaetigt` — mit IP-Hash
+- `impressum_updated`, `datenschutz_acknowledged`
+- `section_toggled` — mit section-name + visible-state
+- `accent_color_changed` (Live)
+- `domain_added` (Pro), `domain_verified`, `domain_removed`
+
+**Support / Admin:**
+- `ticket_created` (actor: user/system)
+- `ticket_answered` (actor: admin)
+- `ticket_closed` (actor: admin/system)
+- `notiz_updated` (actor: admin)
+- `manual_intervention` (actor: admin) — generische Admin-Aktion
+
+**Compliance / Legal (Live):**
+- `dsgvo_export_requested` (actor: user) — Datenauskunft Art. 15
+- `dsgvo_delete_requested` (actor: user) — Recht auf Löschung Art. 17
+- `dsgvo_delete_executed` (actor: system) — nach Grace-Period
+- `abuse_report_received` (actor: system) — Notice eingegangen
+- `content_suspended` (actor: admin) — Kunden-Site offline wegen Verdacht
+- `consent_recorded` (actor: user) — AGB/AVV-Akzeptanz beim Login
+
+**System:**
+- `health_check_failed` (actor: system) — Health-Monitor Cron erkennt Down
+- `cron_executed` (actor: system) — z.B. trial-cleanup
+- `email_sent` (actor: system) — pro Lifecycle-Email mit template-name
+- `email_bounced` (actor: system) — Email-Provider Bounce-Webhook
 
 ## 2. Email-Templates (Lifecycle)
 

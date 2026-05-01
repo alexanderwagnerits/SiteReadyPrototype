@@ -76,16 +76,174 @@ Supabase (DB + Auth + Storage)
 
 ## 4. Datenbank
 
-`[OFFEN]` — vollständiges Schema im Live-Bau dokumentieren:
+Vollständiges Schema aus Prototyp-Bestand. Live wird via Drizzle-Migrations versioniert in `supabase/migrations/`. RLS-Policies für alle Tabellen aktiv.
 
-- `orders` (Kunden-Orders)
-- `docs` (interne Doku — wird im Live-Bau abgeschafft, da ins Repo gewandert)
-- `support_requests`
-- `activity_log` + `error_logs`
-- `order_snapshots` (geplant für Live, Memory `project_production_refactor.md`)
-- weitere Tabellen aus Migrations (`migrations/`)
+### 4.1 Tabelle `orders` (Kerntabelle)
 
-RLS-Policies für alle Tabellen aktiv (Memory `project_supabase_rls.md`). Im Live-Bau via Drizzle-Migrations versioniert.
+Die zentrale Order-Tabelle hält Firmendaten + Content + Status + Subscription pro Kunden-Website.
+
+**Identität + Auth:**
+- `id` uuid (client-generiert), `user_id` (FK auth.users), `email`, `vorname`, `nachname`
+
+**Firmen-Stammdaten:**
+- `firmenname`, `branche`, `branche_label`, `kurzbeschreibung`, `bundesland`, `einsatzgebiet`
+- `adresse`, `plz`, `ort`, `telefon`
+- `oeffnungszeiten`, `oeffnungszeiten_custom`
+
+**Recipe-System (Live, neu vs. Prototyp):**
+- `berufsgruppe` text (1 von 12) — User-Wahl
+- `berufsbezeichnung` text Freitext — Display-Text
+- `look` text (1 von 1-4 pro Berufsgruppe) — User-Wahl
+- `recipe` text (auto-derived aus berufsgruppe+look)
+- `accent_color` hex
+- `anrede` text ('sie' / 'du')
+- `branche` bleibt als Fallback-Lookup für Inhalts-Defaults
+
+**Style-Felder (aus Prototyp, in Live ggf. via `recipe` ersetzt — `[OFFEN]` Mapping):**
+- `stil` ('klassisch' / 'modern' / 'elegant') — wird durch `look` ersetzt
+- `custom_color`, `custom_accent`, `custom_bg`, `custom_sep`, `custom_font`, `custom_radius`
+
+**Leistungen:**
+- `leistungen` text[] — Liste ausgewählter Leistungen
+- `extra_leistung` text — Freitext, Komma/Zeilenumbruch wird zu Cards
+- `leistungen_beschreibungen` jsonb — Map `{leistungsname: beschreibung}`
+- `leistungen_fotos` jsonb — Map `{leistungsname: url}` Pro-Service-Bilder
+- `leistungen_fotos_credits` jsonb — Bildrechte pro Foto
+
+**Service-Badges + Features:**
+- `notdienst`, `meisterbetrieb`, `kostenvoranschlag` boolean
+- `buchungslink`, `hausbesuche`, `terminvereinbarung`
+
+**Content-Sections (alle als jsonb-Arrays/Maps):**
+- `team` jsonb — `[{name, titel, bio, foto_url, foto_credit}]`
+- `bewertungen` jsonb — `[{name, sterne, text}]`
+- `faq` jsonb — `[{frage, antwort}]`
+- `galerie` jsonb — `[{url, caption, credit}]`
+- `partner` jsonb — `[{name, url_logo}]`
+- `fakten` jsonb — Key-Facts-Block
+- `sections_visible` jsonb — `{faq, galerie, fakten, partner, …}` Toggle-System
+- `varianten_cache` jsonb — Section-Varianten-Auswahl gecacht
+
+**Impressum-Pflichtfelder (rechtsformabhängig):**
+- `unternehmensform` ('e.U.' / 'GmbH' / 'OG' / 'KG' / 'AG' / 'Verein' / 'GesbR' / 'Einzelunternehmen')
+- `uid_nummer`, `firmenbuchnummer`, `firmenbuchgericht`, `gisazahl`
+- `geschaeftsfuehrer`, `vorstand`, `aufsichtsrat` (für GmbH/AG)
+- `zvr_zahl`, `gesellschafter` (für Verein/GesbR)
+- `unternehmensgegenstand`, `liquidation`
+- `kammer_berufsrecht`, `aufsichtsbehoerde`
+- `iban_owner`, `iban_iban`
+
+**Social Media:**
+- `facebook`, `instagram`, `linkedin`, `tiktok`
+
+**Subdomain + Status:**
+- `subdomain` text UNIQUE — URL-Slug
+- `status` ('pending' / 'in_arbeit' / 'trial' / 'live' / 'offline')
+- `notiz` text — interne Admin-Notiz
+- `last_error` text — letzter API-Fehler
+
+**Storage-URLs:**
+- `url_logo`, `url_foto1`-`url_foto5` — Supabase Storage URLs
+- `fotos` boolean — hat Bilder hochgeladen
+- `rechte_bestaetigt_at`, `rechte_bestaetigt_ip` — Bildrechte-Audit
+
+**Generierung:**
+- `website_html` text — generiertes HTML
+- `tokens_in`, `tokens_out`, `cost_eur` — Anthropic Cost-Tracking
+- `quality_score` int (0-100) — Auto Quality-Check Score
+- `quality_issues` jsonb — Array Quality-Issue-Strings
+
+**Re-Generation:**
+- `regen_requested` boolean
+- `last_regen_at`, `prev_regen_at` timestamptz
+- Rate-Limit: max 2x pro 30 Tage (Prototyp-Logik, `[OFFEN]` für Live)
+
+**Import (Firecrawl):**
+- `firecrawl_credits` int
+- `import_cost_eur`, `import_tokens_in`, `import_tokens_out`
+
+**Subscription (Stripe):**
+- `stripe_customer_id`, `subscription_id`
+- `subscription_status` ('active' / 'canceled')
+- `subscription_plan` ('monthly' / 'yearly')
+- `trial_expires_at` timestamptz
+
+**Hero-Headline (Live-Feature, Memory `project_hero_headline_pattern.md`):**
+- `hero_headline` text — Claude-generierte Kernbotschaft (H1)
+
+**Timestamps:**
+- `created_at`, `updated_at` timestamptz
+
+### 4.2 Tabelle `activity_log`
+
+Audit-Trail aller Order-Änderungen.
+
+| Spalte | Typ | Notiz |
+|---|---|---|
+| `id` | uuid | PK |
+| `order_id` | uuid | FK → orders, CASCADE |
+| `action` | text | siehe Action-Liste in OPERATIONS.md § 1.5 |
+| `details` | jsonb | strukturierte Zusatzinfo |
+| `actor` | text | 'admin' / 'system' / 'user' |
+| `created_at` | timestamptz | indexiert (order_id, created_at DESC) |
+
+### 4.3 Tabelle `support_requests`
+
+| Spalte | Typ | Notiz |
+|---|---|---|
+| `id` | uuid | PK |
+| `email` | text | Anfrage-Absender |
+| `subject`, `message` | text | Inhalt |
+| `status` | text | 'offen' / 'in_bearbeitung' / 'beantwortet' |
+| `order_id` | uuid? | FK optional (verknüpfen falls bekannt) |
+| `created_at` | timestamptz | |
+
+### 4.4 Tabelle `error_logs`
+
+Strukturiertes Error-Logging. **Live ggf. durch Sentry ersetzen** (`[OFFEN]` — Entscheidung in Phase 0).
+
+| Spalte | Typ |
+|---|---|
+| `id` uuid PK | `type` text | `message` text | `stack` text | `context` jsonb | `created_at` timestamptz |
+
+### 4.5 Tabelle `beta_feedback` (Beta-Phase-spezifisch)
+
+`[OFFEN]` — wird im Live-Bau abgeschafft (Beta-Phase nur).
+
+### 4.6 Tabelle `docs` (Prototyp-spezifisch)
+
+Wird im Live-Bau **abgeschafft** — Doku ist im Repo (siehe `docs/`).
+
+### 4.7 Geplante neue Tabellen für Live
+
+- **`order_snapshots`** — Pre-Regen-Snapshot der orders-Row (jsonb), Auto-Delete nach 30 Tagen via pg_cron. Memory `project_production_refactor.md`. Admin-only RLS.
+- **`subprocessor_dpas`** — Tracking welcher Auftragsverarbeiter wann DPA unterzeichnet hat (LIVE-COMPLIANCE § 4)
+- **`ai_calls`** — Prompt-Versioning self-built: prompt_hash, model, tokens, cost, latency, quality_score, order_id (Memory `project_production_refactor.md`)
+- **`abuse_reports`** — Notice-and-Takedown-Inbox (LIVE-COMPLIANCE § 12.1)
+
+### 4.8 Storage Bucket: `customer-assets`
+
+```
+customer-assets/                   # public Bucket
+├── {user_id}/logo.{ext}           # PNG empfohlen
+├── {user_id}/foto1.{ext}          # Hero-Foto
+├── {user_id}/foto2-5.{ext}        # Galerie-Slots
+├── {user_id}/galerie/{n}.{ext}    # erweiterte Galerie
+├── {user_id}/team/{name}.{ext}    # Team-Fotos
+└── {user_id}/leistungen/{slug}.{ext}  # Pro-Service-Bilder
+```
+
+- Max 5 MB pro Datei, JPG/PNG/WebP/GIF
+- RLS: authenticated Upload in eigenen Ordner, public Read
+- Trial-Cleanup löscht User-Verzeichnis bei Trial-Ablauf
+
+### 4.9 RLS-Strategie
+
+- **`orders`:** `auth.uid() = user_id` für SELECT/UPDATE/DELETE; INSERT bei Self-Registration nur für eigenen `user_id`
+- **`activity_log`:** SELECT für `auth.uid() = order.user_id`; INSERT nur via Service-Key (server-side)
+- **`support_requests`:** SELECT für eigene; INSERT von beliebigen authenticated
+- **`error_logs`:** Admin-only
+- **Storage:** RLS pro User-Ordner
 
 ## 5. Repo-Struktur (Live-Repo `instantpage`)
 
@@ -331,28 +489,63 @@ Request: admin.instantpage.at/
 
 ### 5.3 API-Endpoints
 
+Vollständige Endpoint-Liste aus Prototyp-Bestand + Live-Ergänzungen:
+
 ```
 src/app/api/
 ├── import/route.ts                   (= functions/api/import-website.js)
-├── generate/route.ts                 (= functions/api/generate-website.js)
+│                                     # Firecrawl + Jina-Fallback + Claude Haiku Extraktion
+├── generate/
+│   ├── route.ts                      (= functions/api/generate-website.js)
+│   ├── headline/route.ts             (= functions/api/generate-headline.js)
+│   │                                 # Hero-Headline-Pattern, separater Call
+│   └── faq/route.ts                  (= functions/api/generate-faq.js)
+│                                     # 5 branchenspez. FAQs als JSON
 ├── start-build/route.ts              (= functions/api/start-build.js)
-├── stripe-webhook/route.ts           (= functions/api/stripe-webhook.js)
-├── billing-portal/route.ts           (= functions/api/billing-portal.js)
+│                                     # initialisiert Generierung, setzt trial_expires_at
+├── request-regen/route.ts            (= functions/api/request-regen.js)
+│                                     # Partial-Regen Leistungen, Rate-Limit 2x/30 Tage
+│                                     # `[OFFEN]` ob Live mit Recipe-System gleich bleibt
 ├── checkout/route.ts                 (= functions/api/create-checkout.js)
+├── billing-portal/route.ts           (= functions/api/billing-portal.js)
 ├── invoices/route.ts                 (= functions/api/get-invoices.js)
+├── stripe-webhook/route.ts           (= functions/api/stripe-webhook.js)
+│                                     # checkout.session.completed, invoice.payment_succeeded,
+│                                     # invoice.payment_failed, customer.subscription.deleted
 ├── admin/
-│   ├── data/route.ts
-│   ├── update/route.ts
-│   ├── delete/route.ts
-│   ├── system/route.ts
-│   └── log-activity/route.ts
-└── cron/
-    ├── stuck-pending/route.ts        # `[OFFEN]` siehe production_refactor
-    ├── trial-cleanup/route.ts
-    └── health-check/route.ts
+│   ├── data/route.ts                 (= admin-data.js)
+│   ├── update/route.ts               (= admin-update.js)
+│   ├── delete/route.ts               (= admin-delete.js, Cascade User+Storage+Logs)
+│   ├── system/route.ts               (= admin-system.js, Health-Check)
+│   ├── ext-status/route.ts           (= ext-status.js, externe Status-Pages)
+│   └── log-activity/route.ts         (= log-activity.js, GET+POST)
+├── cron/
+│   ├── stuck-pending/route.ts        # CF Cron, alle 5 Min
+│   ├── trial-cleanup/route.ts        # CF Cron, täglich 03:00 UTC, Cascade
+│   └── health-monitor/route.ts       # CF Cron, alle 15 Min, HEAD-Probe + Auto-Tickets
+└── webhooks/
+    ├── abuse/route.ts                # Notice-and-Takedown-Inbox (Live-NEW)
+    └── support/route.ts              # ggf. eingehende Support-Mails von Helpdesk
 ```
 
-`[OFFEN]` — **Server Actions vs. Route Handlers:** Next.js 15 hat beide. Forms könnten via Server Actions mehr typsicher und ohne `route.ts`-Boilerplate gehen. Entscheidung: Default Route Handlers (für externe Calls + Webhooks), Forms wo möglich Server Actions. Pattern in Phase 0 fixieren.
+**Endpoints für Kunden-Websites** (unter `app/sites/[subdomain]/`):
+
+```
+app/sites/[subdomain]/
+├── page.tsx                          # Recipe-Render Hauptseite
+├── impressum/page.tsx
+├── datenschutz/page.tsx
+├── legal/page.tsx                    # Vollständige Rechts-Seite (impressum + datenschutz)
+├── sitemap.xml/route.ts              # Sitemap pro Kunden-Site
+├── robots.txt/route.ts               # mit AI-Crawler-Erlaubnis
+├── llms.txt/route.ts                 # AI-Sichtbarkeit (Pro-Plan)
+├── vcard/route.ts                    # vCard-Download (Kontakt)
+└── vcard-contact/route.ts            # QR-Code-vCard
+```
+
+`[OFFEN]` — **Server Actions vs. Route Handlers:** Next.js 15 hat beide. Forms könnten via Server Actions typsicher und ohne `route.ts`-Boilerplate. Entscheidung: Default Route Handlers (für externe Calls + Webhooks + Crons), Forms wo möglich Server Actions. Pattern in Phase 0 fixieren.
+
+`[OFFEN]` — **Re-Generation-Logik Live:** Prototyp hat `request-regen` mit Rate-Limit 2x/30 Tage + Partial-Regen (nur Leistungen). Mit Recipe-System: Re-Gen-Trigger? Bei Berufsbezeichnung-Änderung? Look-Wechsel? Anrede-Wechsel?
 
 ### 5.4 Component-Organisation
 

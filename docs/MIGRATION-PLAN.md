@@ -19,6 +19,7 @@
 6. [Memory-System-Übernahme](#6-memory-system-übernahme)
 7. [Tools, Skills, Subagents, MCP](#7-tools-skills-subagents-mcp)
 8. [Bau-Phasen](#8-bau-phasen)
+8.5. [Bau-Workflow + Block-Aufteilung](#85-bau-workflow--block-aufteilung)
 9. [Erfolgs-Kriterien pro Phase](#9-erfolgs-kriterien-pro-phase)
 10. [Beta → Live Cutover](#10-beta--live-cutover)
 11. [Was wir wissen müssen bevor wir starten](#11-was-wir-wissen-müssen-bevor-wir-starten)
@@ -39,6 +40,8 @@
 | **Beta = nur Look & Feel** | Keine Live-Features im Prototyp nachbauen. (Memory `feedback_beta_fokus.md`) |
 | **Live-Repo früh anlegen** (Woche 3, nicht Woche 13) | Stack ist komplett anders (TS+Next.js statt JS+CRA). Mockups + Design-Vision-Spec ab Block B direkt im Ziel-Repo entstehen lassen. Spart Umzug + nur ein Ort für Live-Arbeit. |
 | **Prototyp ab Woche 3 = Wartungs-Modus** | Hier nur noch: Beta-Bugfixes (kritisch), Doku-Pflege bis Cutover, Prompt-Tuning gegen echte Beta-Daten. Keine neuen Features, kein Refactor, keine Section-Library — alles würde weggeworfen. |
+| **Async-Bau via Cloud-Sessions + GitHub Actions** | Bau-Tokens laufen flat über Claude Max 5x ($100/Mon, hat User schon). User wird Reviewer + Spec-Autor, nicht Builder. Mehrere PRs parallel statt linear schreiben. Siehe § 8.5 Block-Aufteilung. |
+| **Bau-Inkrement ~€100-200 total** | Subscription läuft sowieso, Domain auch. Nur Supabase Pro (€50-75) + Test-API-Tokens (€20-80) sind echtes Inkrement. |
 
 ---
 
@@ -372,18 +375,142 @@ Aus `docs/RECIPE-SYSTEM.md`:
 - Lifecycle-Workflows (Trigger.dev oder Inngest)
 - Logs-Aggregation (Better Stack / Axiom)
 
-**Total Phase -1 bis 4: ~30 Wochen Vollzeit (~7 Monate Solo-Dev).**
+**Total Phase -1 bis 4 — zwei Modi je nach Async-Aggressivität:**
+
+| Modus | Wall-Clock | Annahme |
+|---|---|---|
+| **Aggressiv-Async** | **5-7 Wochen** | Cloud-Sessions konsequent, 4-5 PRs/Tag reviewen, Specs vorher fertig, wenig "ach anders" |
+| **Pragmatisch** | **8-12 Wochen** | normales Tempo, Reviews, paar Iterationen, parallel andere Themen |
+| **Solo ohne AI-Async** | **~30 Wochen** | klassische Vollzeit-Solo-Rechnung, Referenz |
 
 ```
-Woche  1- 2: Phase -1 (Strategie + Block A) — Prototyp-Repo
-Woche      3: Phase 0  (Live-Repo Setup + Doku-Migration)
-Woche  4-12: Phase 0.5 (Block B-D Design-Vision) — Live-Repo
-Woche 13-18: Phase 1  (Section-Library + 4 Themes)
-Woche 19-24: Phase 2  (24 Recipes + Auto-Engine + Fragebogen + Portal)
-Woche 25-27: Phase 3  (Compliance + Operations)
-Woche      28: Phase 4  (Cutover + Soft-Launch)
-ab Woche 29: Phase 5  (Stabilisierung 3 Monate)
+PRAGMATISCH (8-12 Wochen):
+Woche 1-2 : Phase -1 (Strategie + Block A Design-Vision) — Prototyp-Repo
+Woche 3   : Phase 0  (Live-Repo Setup + Doku-Migration)
+Woche 3-5 : Phase 0.5 (Block B-D Design-Vision) — Live-Repo
+Woche 5-7 : Phase 1  (Section-Library + 4 Themes) — async-heavy
+Woche 7-9 : Phase 2  (24 Recipes + Auto-Engine + Fragebogen + Portal)
+Woche 9-10: Phase 3  (Compliance + Operations)
+Woche 10  : Phase 4  (Cutover + Soft-Launch)
+ab Woche 11: Phase 5 (Stabilisierung 3 Monate)
 ```
+
+**Externe Lead-Times bleiben unabhängig vom Bau-Tempo:**
+Stripe-Verifikation 1-2W, Versicherung 1-2W, DPA-Verträge 1W. Phase -1 anstoßen!
+
+---
+
+## 8.5. Bau-Workflow + Block-Aufteilung
+
+### Async-Pattern
+
+```
+Doku/Specs (User + Claude Code lokal)
+    ↓
+"Bau Task X nach Spec Y, oeffne PR" — Auftrag an:
+    ↓
+┌────────────────────────────────────────────────┐
+│ Cloud-Sessions   │ GitHub Actions  │ Lokal     │
+│ claude.ai/code   │ scheduled jobs  │ tagsueber │
+│ (ad-hoc Tasks)   │ (Routine)       │ (Review)  │
+└────────────────────────────────────────────────┘
+    ↓
+PR landet → User reviewt → mergt oder gibt Feedback
+    ↓
+CI/CD deployt nach Staging → User testet → Production
+```
+
+### Welcher Workflow für was
+
+| Aufgaben-Typ | Wo | Beispiel |
+|---|---|---|
+| Doku/Specs schärfen | lokal Claude Code | DESIGN-VISION-Blöcke iterieren |
+| Recipe-Mockup nach Spec bauen | Cloud-Session async | "bau mockup-recipe-handwerk-bau.html nach Token-Set X" |
+| Section-Component + Storybook + Tests | Cloud-Session async | "neue HeroFullbleed-Section + Stories + Visual-Snapshot" |
+| Routine-Tasks | GitHub Actions scheduled | nightly Lighthouse-Check, Build-Health |
+| Architektur-Entscheidungen | lokal (User im Loop) | "wie strukturieren wir die Auto-Engine?" |
+| PR-Review | lokal (User als Reviewer) | morgens 3-5 PRs durchgehen |
+| Compliance-Texte schreiben | lokal (rechtssensibel) | AGB-Klauseln formulieren |
+
+### Block-Granularität
+
+**Faustregel pro Block:** 2-8h Mensch-Äquivalent, ein PR mit ~200-800 Zeilen Diff.
+
+- **Zu groß** ("ganze Section-Library"): Cloud-Session läuft sich tot, PR wird unreviewbar, kein Async-Vorteil
+- **Zu klein** ("ein Button"): Overhead pro PR > Bau-Aufwand
+- **Sweet Spot:** 1 Komponente mit Tests + Stories = 1 Block · 1 Recipe-Mockup = 1 Block · 1 API-Route mit Schema + Tests = 1 Block
+
+### Block-Anzahl pro Phase
+
+| Phase | Blöcke | Was zählt als 1 Block |
+|---|---|---|
+| **Phase 0** Setup | **~10** | Repo-Init, Drizzle, CI/CD, Wrangler, Auth-Pattern, Doku-Migration, Memory-Setup, CLAUDE.md, Smoke-Tests |
+| **Phase 1** Section-Library + Themes | **~50-80** | 4 Theme-Token-Sets + 25 Sections × ~2 Varianten als Component+Story+Test + 5 Branchen-Forms + Universal-Highlight + Layout + Storybook |
+| **Phase 2** Recipes + Engine + Fragebogen + Portal | **~40-60** | 24 Recipe-Configs als 8-12 Bündel + Auto-Engine-Module + Fragebogen-Refactor + Portal-Erweiterung + Generation-API |
+| **Phase 3** Compliance + Ops | **~15-25** | Impressum-Generator + Branchen-Pflichtfeld-Matrix + Mailing-Templates + Sentry+PostHog + Crons + Cookie-Banner + AI-Act + Notice-Takedown |
+| **Phase 4** Cutover | **~5-10** | DNS, Beta-Mail, Soft-Launch-Setup, Production-Smoke-Tests |
+| **Total** | **~120-180 Blöcke** | über 5-12 Wochen Bau |
+
+### Was das praktisch heißt
+
+| Bauzeit | PRs/Woche | PRs/Tag (5 Tage) |
+|---|---|---|
+| 5-6 Wochen aggressiv | ~25-30 | **~5-6/Tag** |
+| 8 Wochen pragmatisch | ~18 | **~3-4/Tag** |
+| 10-12 Wochen entspannt | ~12-15 | **~3/Tag** |
+
+**Engpass = User-Review-Kapazität, nicht Bau.** 3-5 PRs/Tag reviewen heißt:
+- 10-20 Min pro PR durchschauen
+- Manchmal Feedback geben → Re-Bau in nächster Cloud-Session
+- 1-2h Reviews/Tag, plus 1-2h Architektur-Entscheidungen + neue Specs schreiben
+
+→ **Effektiv 2-4h tägliche Bau-Beteiligung** statt 8h Coden.
+
+### Parallelisierung
+
+- **Phase 1 ist Goldgrube** — 25 Sections können fast komplett parallel gebaut werden, Storybook isoliert sie
+- **Phase 2 hat Reihenfolge** — Auto-Engine braucht Section-Library, Recipes brauchen Auto-Engine, Portal braucht Recipes
+- **Phase 3 läuft parallel zu Phase 2 Ende** — Compliance-Texte schreiben während Code-Bau weiter läuft
+
+### Was vor Bau-Start unbedingt fertig sein muss
+
+Sonst geht's NICHT so schnell — endloses "ach anders" verbrennt jeden Async-Vorteil:
+
+- **Theme-Tokens** (Hex/Spacing/Easing) fertig — sonst bei jeder Section Re-Iteration
+- **25 Section-Specs** als ~1-Pager fertig — sonst muss Claude raten
+- **22 Recipe-Mockups** fertig — Component-Bauer schaut auf Mockup als Referenz
+- **DB-Schema** in Drizzle-Migration fertig — kein Refactor mitten im Bau
+- **AGB/AVV-Texte** fertig (Phase -1) — keine Wartezeit in Phase 3
+- **Pricing/Trial/Cancellation** final entschieden — sonst Stripe-Integration zweimal
+- **Acceptance-Criteria pro Block** in Spec-Schnipsel formulieren ("Definition of Done")
+
+→ Das ist Phase -1 + 0.5 Design-Vision. Deshalb sind sie so wichtig — sie ermöglichen erst den Aggressiv-Async-Modus.
+
+### Spec-Format pro Block
+
+Pro Task ein kleines Markdown-Schnipsel das als Prompt für die Cloud-Session dient:
+
+```markdown
+## Task: <Was bauen>
+
+### Acceptance Criteria
+- [ ] Konkrete Anforderung 1
+- [ ] Konkrete Anforderung 2
+- [ ] Tests gruen
+- [ ] Storybook-Story (falls Component)
+- [ ] Lighthouse-Score > X (falls Page)
+
+### Context
+- Spec-Datei: docs/_design/sections/<name>.md
+- Theme-Tokens: docs/_design/themes.md
+- Verwandte Components: ...
+
+### Output
+- Branch: feature/<name>
+- PR mit Beschreibung was gebaut wurde
+```
+
+Wird als Kurz-Briefing an Cloud-Session geschickt, Output kommt als PR.
 
 ---
 

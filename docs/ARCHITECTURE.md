@@ -29,26 +29,41 @@
 
 ## 1. Tech-Stack (Live-Produkt)
 
-`[OFFEN]` — final entschieden in Memory `project_production_refactor.md` "Code-Basis-Modernisierung":
+| Layer | Technologie | Notiz |
+|---|---|---|
+| Sprache | TypeScript strict | |
+| Framework | Next.js 15 (App Router) | |
+| Hosting | Cloudflare Pages via OpenNext.js | OpenNext-Adapter Standard 2026 |
+| Datenbank | Supabase EU (Frankfurt), Pro-Plan | neue Instanz für Live (separater Schnitt zu Prototyp) |
+| ORM | Drizzle | |
+| Validierung | Zod (Forms + API + DB) | |
+| UI | shadcn/ui + Tailwind CSS | |
+| Forms | Server Actions (intern) + React Hook Form + Zod | externe Calls/Webhooks/Cron via Route Handlers |
+| Server-State | TanStack Query | |
+| Auth | Supabase Auth | |
+| Zahlung | Stripe (Live-Mode, neuer Account) + Customer Portal | Test-Mode Prototyp bleibt getrennt |
+| KI | Anthropic Claude Sonnet 4.6 + Prompt Caching | Anthropic-Key aus Prototyp übernommen |
+| **Transaktionale Mails** | **Resend** ($20/Mon für 50k Mails, EU-Hosting) | siehe § 1.1 Mail-Welten-Trennung |
+| **Bildverarbeitung** | **Cloudflare Images** ($5/Mon Basis + Usage) | Auto-Resize, WebP/AVIF, CDN-Delivery |
+| **Lifecycle-Workflows** | **Trigger.dev oder Inngest** (gleich von Anfang) | Mail-Drip, Dunning, Long-Running Jobs |
+| **Routine-Crons** | Cloudflare Cron Triggers (in wrangler.toml) | trial-cleanup, stuck-pending, health-monitor |
+| Analytics | PostHog Cloud EU + Cloudflare Web Analytics (Kundenseiten) | |
+| Error-Monitoring | Sentry | ersetzt `error_logs`-Tabelle Prototyp |
+| Testing | Vitest (Unit) + Playwright (E2E) + Lighthouse-CI | |
 
-| Layer | Technologie |
-|---|---|
-| Sprache | TypeScript strict |
-| Framework | Next.js 15 (App Router) |
-| Hosting | Cloudflare Pages via OpenNext.js |
-| Datenbank | Supabase EU (Frankfurt), Pro-Plan |
-| ORM | Drizzle |
-| Validierung | Zod (Forms + API + DB) |
-| UI | shadcn/ui + Tailwind CSS |
-| Forms | React Hook Form + Zod-Resolver |
-| Server-State | TanStack Query |
-| Auth | Supabase Auth |
-| Zahlung | Stripe (Live-Mode) + Customer Portal |
-| KI | Anthropic Claude Sonnet 4.6 + Prompt Caching |
-| Mailing | Resend / Postmark / Brevo (`[OFFEN]`) |
-| Analytics | PostHog Cloud EU + Cloudflare Web Analytics (Kundenseiten) |
-| Error-Monitoring | Sentry |
-| Testing | Vitest (Unit) + Playwright (E2E) + Lighthouse-CI |
+### 1.1 Mail-Welten-Trennung
+
+Drei verschiedene Mail-Quellen — jede für ihren Zweck:
+
+| Mail-Typ | Wer schickt | Wofür |
+|---|---|---|
+| **Persönliche Mails** | Microsoft 365 Exchange (alex@wagner-its.com / support@instantpage.at) | Support-Antworten, persönlicher Posteingang |
+| **Rechnungen + Payment-Receipts** | Stripe automatisch | "Zahlung über X € eingegangen", Failed-Payment-Reminder |
+| **Lifecycle-Mails** (Welcome, Trial-Reminder, Cancellation, Domain-Setup, Password-Reset) | **Resend** | siehe OPERATIONS.md § 2 Email-Templates |
+
+**Warum nicht Microsoft 365 für Lifecycle-Mails:** kein Templating, schlechte Bulk-Deliverability, kein Bounce-Tracking, persönliches Postfach soll persönlich bleiben.
+
+**SPF / DKIM / DMARC:** Resend liefert DNS-Records — werden in Phase 0 eingerichtet, bevor erste Live-Mail rausgeht. Sonst Spam-Risiko.
 
 ## 2. System-Architektur
 

@@ -573,15 +573,15 @@ Konkrete Schritte am Cutover-Tag (Memory `project_production_refactor.md`):
 
 Plus speziell für Migration:
 
-| Frage | Status |
+| Frage | Entscheidung |
 |---|---|
-| Neuer Repo-Name (instantpage / instantpage-live / sonstiges)? | `[OFFEN]` |
-| Neue Supabase-Instanz oder gleiche mit neuem Schema? | `[OFFEN]` Empfehlung: neue Instanz für sauberen Schnitt |
-| Neuer Stripe-Account oder Test-Mode in Live umschalten? | `[OFFEN]` Empfehlung: neuer Account für sauberen Schnitt |
-| Anthropic API-Key übernehmen oder neu? | `[OFFEN]` kann übernommen werden |
-| Cloudflare-Account übernehmen? | `[OFFEN]` ja, neues Pages-Projekt im selben Account |
+| Neuer Repo-Name | **`instantpage`** |
+| Neue Supabase-Instanz oder gleiche mit neuem Schema? | **Neue Instanz** für sauberen Schnitt |
+| Neuer Stripe-Account oder Test-Mode in Live umschalten? | **Neuer Account** für saubere Buchhaltung + Trennung von Test-Subscriptions |
+| Anthropic API-Key übernehmen oder neu? | **Übernehmen** |
+| Cloudflare-Account übernehmen? | **Ja**, neues Pages-Projekt im selben Account |
 | Wann genau Cutover-Tag? | `[OFFEN]` abhängig von Phase 4 Fortschritt |
-| Promo-Code für Beta-Tester: wie viele Monate kostenlos? | `[OFFEN]` Vorschlag: 3 Monate kostenlos Starter |
+| Promo-Code für Beta-Tester: wie viele Monate kostenlos? | **Inhaber regelt persönlich** mit Beta-Testern (Freunde/Kollegen) — kein systematisches Promo-Code-System nötig |
 
 ### Stammdaten offen
 

@@ -65,19 +65,63 @@ Kernversprechen (Vorabentwurf):
 
 ## 3. Pricing + Pläne
 
-`[OFFEN]` — aktueller Stand laut Memory `feedback_preise_plan.md`:
-
-| Plan | Monatlich | Jährlich | Status |
+| Plan | Monatlich (netto) | Jährlich (netto, pro Monat) | Status |
 |---|---|---|---|
 | Starter | 16 EUR | 14 EUR | aktiv |
 | Professional | 29 EUR | 25 EUR | aktiv |
 | Business | — | — | nur Teaser, noch nicht definiert |
 
-USt-Behandlung: `[OFFEN]` netto + USt empfohlen (B2B-Standard).
-Mindestlaufzeit: `[OFFEN]`.
-Kündigungsfrist: `[OFFEN]`.
+**USt-Behandlung:** netto + USt-Hinweis (B2B-Standard). Anzeige: "16 € pro Monat zzgl. 20 % USt". Stripe rechnet brutto ab, Rechnung weist USt aus.
+**Mindestlaufzeit Monatsabo:** monatlich kündbar.
+**Mindestlaufzeit Jahresabo:** 12 Monate, danach monatlich kündbar.
+**Custom-Domain-Kosten** (Pro): Cloudflare for SaaS gibt 100 Hostnames gratis, ab 101: $0.10/Hostname/Monat. In Pro-Pricing eingerechnet.
 
-→ siehe `LIVE-COMPLIANCE.md` § 1 Strategie-Entscheidungen für offene Punkte.
+## 3.1 Trial-Setup
+
+- **Trial-Dauer:** 7 Tage (wie Prototyp)
+- **Trial-Modus:** Vollzugriff inkl. Live-Schaltung der Subdomain — Wow-Moment ist Verkaufsargument
+- **Karten-Belastung:** Stripe `trial_period_days` — Karte wird erst nach Trial-Ende belastet
+- **Trial-Reminder:** T-3 Tage vor Trial-Ende (Lifecycle-Mail, OPERATIONS § 2)
+
+## 3.2 Cancellation + Datenretention
+
+| Phase | Dauer | Was passiert |
+|---|---|---|
+| **Reaktivierung** | 30 Tage | Subdomain bleibt erreichbar (mit Hinweis "Site pausiert"), Daten + Bilder vollständig erhalten, Reaktivierung mit einem Klick im Portal |
+| **Soft-Delete** | weitere 60 Tage | Subdomain offline, Daten in DB markiert als deleted_at, kein Self-Service-Zugriff. Reaktivierung nur via Support-Anfrage. |
+| **Endgültige Löschung** | nach 90 Tagen total | Hard-Delete inkl. Storage. Activity-Log-Eintrag mit Hash-Bestätigung. |
+
+**Konsistent in:**
+- AGB § Vertragsende (LIVE-COMPLIANCE § 5)
+- Datenschutzerklärung § Speicherdauer
+- Stripe-Webhook `customer.subscription.deleted` triggert Phase 1
+
+## 3.3 Re-Generation-Logik
+
+Was triggert eine neue Text-Generierung im Live-Produkt:
+
+| Auslöser | Re-Gen? | UX |
+|---|---|---|
+| Berufsbezeichnung im Portal geändert | **Ja** (auto) | Warnung "Texte werden neu generiert — vorhandene Anpassungen gehen verloren" |
+| Anrede gewechselt (Sie ↔ Du) | **Ja** (auto) | Warnung wie oben |
+| Look gewechselt (Recipe) | **Nein** | nur Optik, Texte bleiben |
+| Akzentfarbe geändert | **Nein** | nur Optik |
+| Logo getauscht | **Nein** | |
+| Manueller "Neu generieren"-Button | **Ja** (User-Trigger) | Rate-Limit: 3x pro 30 Tage |
+
+**Snapshot vor jedem Re-Gen:** automatisch in `order_snapshots` (Memory `project_production_refactor.md`), Auto-Delete nach 30 Tagen.
+
+## 3.4 Quality-Score-Schwellenwerte
+
+Auto Quality-Check nach jeder Generierung — Score 0-100 (Title, Meta-Description, OG-Tags, H1, Viewport, Lang, Kontaktformular, Impressum-Link, Telefon, Email).
+
+| Score | Reaktion |
+|---|---|
+| **< 70** | Auto-Re-Gen (System versucht es nochmal, max 1x), bei zweitem Fail Admin-Alarm |
+| **70-85** | Admin-Alarm im Dashboard, Site bleibt sichtbar, Kunde merkt nichts |
+| **> 85** | OK, kein Eingriff |
+
+→ siehe `LIVE-COMPLIANCE.md` § 1 Strategie-Entscheidungen für weitere offene Punkte.
 
 ## 4. Feature-Matrix pro Plan
 

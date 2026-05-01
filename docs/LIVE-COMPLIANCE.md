@@ -48,18 +48,23 @@ Status-Marker:
 | 2 | Markt | AT-only / DACH / EU | AT-only Phase 1 | `[ENTSCHIEDEN]` |
 | 3 | Heilberufe (Ärzte etc.) in Phase 1? | ja mit Sonderbehandlung / nein / nur ausgewählte | ja mit Sonderbehandlung | `[OFFEN]` |
 | 4 | Rechtsberatung (Anwälte, Notare, StB) in Phase 1? | ja mit Sonderbehandlung / nein | ja mit Sonderbehandlung | `[OFFEN]` |
-| 5 | Trial-Setup | nur Vorschau ohne Live-Schaltung / Live-Schaltung erlaubt / kein Trial | nur Vorschau | `[OFFEN]` |
-| 6 | Trial-Dauer | 7 / 14 / 30 Tage | 14 Tage | `[OFFEN]` |
-| 7 | Mindestvertragslaufzeit | keine / monatlich / jährlich | monatlich kündbar | `[OFFEN]` |
+| 5 | Trial-Setup | nur Vorschau ohne Live-Schaltung / Live-Schaltung erlaubt / kein Trial | **Live-Schaltung erlaubt** (Wow-Moment ist Verkaufsargument) | `[ENTSCHIEDEN]` |
+| 6 | Trial-Dauer | 7 / 14 / 30 Tage | **7 Tage** (wie Prototyp) | `[ENTSCHIEDEN]` |
+| 7 | Mindestvertragslaufzeit | keine / monatlich / jährlich | **Monatsabo monatlich kündbar / Jahresabo 12 Monate** | `[ENTSCHIEDEN]` |
 | 8 | Kündigungsfrist | sofort / Monatsende / 30 Tage | Monatsende | `[OFFEN]` |
-| 9 | Datenretention nach Kündigung | 30 / 60 / 90 Tage Grace, dann Auto-Delete | 90 Tage | `[OFFEN]` |
+| 9 | Datenretention nach Kündigung | 30 / 60 / 90 Tage Grace, dann Auto-Delete | **30 Tage Reaktivierung + 60 Tage Soft-Delete + danach Hard-Delete** (90 Tage total) | `[ENTSCHIEDEN]` |
 | 10 | Haftungsbegrenzung | 12-Monats-Vergütung / fixer Cap (z.B. €5.000) / pro Schadensfall | 12-Monats-Vergütung | `[OFFEN]` |
 | 11 | Refund-Policy | 14 Tage Widerruf trotz B2B / pro-rata bei Mid-Period / kein Refund | pro-rata bei Mid-Period | `[OFFEN]` |
 | 12 | Custom-Domain-Verantwortung | DNS allein Kunde / DNS-Setup-Hilfe inkludiert | DNS allein Kunde | `[OFFEN]` |
-| 13 | Mailing-Provider | Resend / Postmark / Brevo | Resend (günstig + EU-Server) | `[OFFEN]` |
+| 13 | Mailing-Provider | Resend / Postmark / Brevo | **Resend** (günstig + EU-Server) | `[ENTSCHIEDEN]` |
 | 14 | Error-Monitoring | Sentry / Axiom / nichts | Sentry | `[OFFEN]` |
 | 15 | Analytics-Provider Plattform | PostHog Cloud EU / Plausible EU / nichts | PostHog Cloud EU | `[OFFEN]` |
-| 16 | Pricing-Anzeige | inkl. 20% USt / netto + USt | netto + USt (B2B-Standard) | `[OFFEN]` |
+| 16 | Pricing-Anzeige | inkl. 20% USt / netto + USt | **netto + USt** (B2B-Standard) | `[ENTSCHIEDEN]` |
+| 19 | DSGVO-Datenexport (Art. 15) Format | PDF / JSON+CSV / kombiniert | **PDF reicht** | `[ENTSCHIEDEN]` |
+| 20 | AVV-Akzeptanz-Verfahren | im AGB-Text / separater PDF-Download + Klick / SaaS-Standard | **Separater PDF-Download + Akzept-Klick** beim ersten Login (SaaS-Standard) | `[ENTSCHIEDEN]` |
+| 21 | Daten-Offboarding-Service nach Kündigung | HTML-Backup-ZIP / nur DSGVO-Pflicht-Export | **Nur DSGVO-Pflicht-Export** — kein zusätzlicher Service | `[ENTSCHIEDEN]` |
+| 22 | Re-Generation Live-Trigger | siehe `PRODUCT.md` § 3.3 | Bezeichnung+Anrede auto-Re-Gen, Look/Akzentfarbe nicht. Manueller Button max 3x/30 Tage. | `[ENTSCHIEDEN]` |
+| 23 | Quality-Score Schwellenwerte | siehe `PRODUCT.md` § 3.4 | <70 Auto-Re-Gen, 70-85 Admin-Alarm, >85 OK | `[ENTSCHIEDEN]` |
 | 17 | Anwalt für Schluss-Sichtung bei Trigger | ja, ~5h ~1.750€ / nein, nur bei Vorfall | ja bei Trigger | `[ENTSCHIEDEN]` |
 | 18 | Versicherung | nur VSH / IT-Haftpflicht-Paket (VSH+Cyber) | IT-Haftpflicht-Paket | `[ENTSCHIEDEN]` |
 
@@ -648,12 +653,37 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 
 | Prozess | Trigger | Aktion |
 |---|---|---|
-| Trial-Cleanup | Cron täglich, `trial_expires_at < now()` | DELETE Order + zugehörige Daten |
-| Cancellation-Grace | nach Kündigung, 90 Tage warten | DELETE Order + zugehörige Daten |
-| Subdomain-Recycling | nach Cancellation-Grace | Subdomain freigeben |
+| Trial-Cleanup | Cron täglich, `trial_expires_at < now()` | Status auf `expired`, dann nach 30 Tagen DELETE |
+| Cancellation Phase 1 (Reaktivierung) | nach Kündigung, 30 Tage | Subdomain bleibt online mit "pausiert"-Hinweis, Daten erhalten, Self-Service-Reaktivierung möglich |
+| Cancellation Phase 2 (Soft-Delete) | T+30 nach Kündigung, weitere 60 Tage | Subdomain offline, `deleted_at` gesetzt, Reaktivierung nur via Support |
+| Cancellation Phase 3 (Hard-Delete) | T+90 nach Kündigung | DELETE Order + Storage + Auth-User, Subdomain-Recycling |
+| Subdomain-Recycling | nach Hard-Delete | Subdomain freigeben |
 | Beta-Tester-Cleanup | einmalig vor Live-Schaltung | DELETE alle Beta-Daten + Subdomains |
 
-→ Bestehende Endpoints: `functions/api/trial-cleanup.js` (existiert, braucht Cron-Trigger laut Memory)
+→ Bestehende Endpoints: `functions/api/trial-cleanup.js` (existiert, braucht Cron-Trigger laut Memory). Live: erweitern um 3-Phasen-Cancellation-Cleanup.
+
+### 12.4 DSGVO-Auskunftsrecht (Art. 15) + Recht auf Löschung (Art. 17)
+
+**Auskunftsrecht (Art. 15):**
+- Self-Service-Button im Portal: "Meine Daten herunterladen"
+- Format: **PDF** (alle gespeicherten Daten zum Order, lesbar zusammengefasst)
+- Frist: max 30 Tage, in Praxis sofort
+- Activity-Log-Eintrag: `dsgvo_export_requested`
+
+**Recht auf Löschung (Art. 17):**
+- Self-Service-Button im Portal: "Account löschen" (nicht zu prominent platzieren)
+- Sofortige Bestätigungs-Mail mit 14 Tage Widerruf-Möglichkeit
+- Nach 14 Tagen Hard-Delete-Cascade (orders + Storage + Auth)
+- Activity-Log-Eintrag: `dsgvo_delete_requested` + nach Ausführung `dsgvo_delete_executed` mit Hash-Bestätigung
+- Außerhalb des normalen Cancellation-Flows (Cancellation = Subscription-Ende, Löschung = Daten-Vernichtung)
+
+### 12.5 AVV-Akzeptanz-Verfahren
+
+- **Beim ersten Login** wird AVV als Modal eingeblendet (nach Account-Erstellung, vor Portal-Zugriff)
+- AVV wird als **PDF-Download** angeboten (statisch generiert mit Kunden-Stammdaten als Anhang I)
+- Akzept-Klick: Pflicht-Checkbox + "Akzeptieren"-Button
+- Activity-Log-Eintrag: `consent_recorded` mit `details: {document: 'avv', version: 'v1.0', timestamp, ip_hash}`
+- Bei AVV-Update: alle Kunden müssen erneut akzeptieren beim nächsten Login
 
 ---
 

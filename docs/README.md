@@ -14,6 +14,7 @@
 | [MIGRATION-PLAN.md](MIGRATION-PLAN.md) | **Master-Plan für Live-Bau in neuer Umgebung** — Setup, Übernahme, Phasen, Cutover | aktuell |
 | [LIVE-COMPLIANCE.md](LIVE-COMPLIANCE.md) | Recht / Compliance — AGB, AVV, Datenschutz, Branchen-Pflichten, Anwalt-Trigger | aktuell |
 | [RECIPE-SYSTEM.md](RECIPE-SYSTEM.md) | Kundenseiten-Architektur Live — 4 Themes + 24 Recipes + Section-Library | aktuell |
+| [DESIGN-VISION.md](DESIGN-VISION.md) | **Visual-/UX-/Quality-Specs** für Premium-Anspruch — 14 Lücken in 4 Blöcken (~10-12 Wochen Phase vor Code-Setup) | aktuell |
 | [PRODUCT.md](PRODUCT.md) | Produkt-Spec — Vision, Pricing, Features pro Plan | Skeleton |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Tech-Stack, DB-Schema, Deployment, Subprozessoren | Skeleton |
 | [OPERATIONS.md](OPERATIONS.md) | Runbook, Email-Templates, Support-FAQ | Skeleton |

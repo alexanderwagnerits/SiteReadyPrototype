@@ -1,0 +1,954 @@
+# Live-Compliance — instantpage.at
+
+> **Living Document.** Sammelt alle rechts- und compliance-relevanten Themen für den Übergang Prototyp → Live-Produkt. Nicht alle Punkte müssen sofort entschieden werden — offene Stellen sind als `[OFFEN]` markiert.
+
+**Stand:** 2026-05-01
+**Markt:** AT-only (Phase 1)
+**Brand:** instantpage.at (Brand) — Wagner IT Services e.U. (Rechtsträger)
+**Strategie:** 100% Eigenarbeit für Phase-1-Live, Anwalt Trigger-basiert ab definierten Schwellen
+**Verbindung zu Memory:** ergänzt `project_production_refactor.md` + `project_recipe_system_v1.md`. Diese Datei ist Quelle der Wahrheit für Rechtstexte und Compliance-Prozesse.
+
+---
+
+## Inhalt
+
+1. [Strategie-Entscheidungen](#1-strategie-entscheidungen)
+2. [Stammdaten](#2-stammdaten)
+3. [Versicherung](#3-versicherung)
+4. [Subprozessoren](#4-subprozessoren)
+5. [AGB-Skeleton (B2B-only)](#5-agb-skeleton-b2b-only)
+6. [AVV — Auftragsverarbeitungsvertrag](#6-avv--auftragsverarbeitungsvertrag)
+7. [Plattform-Impressum (instantpage.at)](#7-plattform-impressum-instantpageat)
+8. [Plattform-Datenschutzerklärung](#8-plattform-datenschutzerklärung)
+9. [Branchen-Pflichtfeld-Matrix](#9-branchen-pflichtfeld-matrix)
+10. [Reglementierte Berufe — Sonderbehandlung](#10-reglementierte-berufe--sonderbehandlung)
+11. [TOMs — Technisch-organisatorische Maßnahmen](#11-toms--technisch-organisatorische-maßnahmen)
+12. [Operative Prozesse](#12-operative-prozesse)
+13. [AI Act 2.8.2026](#13-ai-act-282026)
+14. [Markenrecht](#14-markenrecht)
+15. [UWG — Werbeaussagen + Slogans](#15-uwg--werbeaussagen--slogans)
+16. [Beta → Live Migration](#16-beta--live-migration)
+17. [Roadmap (Phase A–D)](#17-roadmap-phase-ad)
+18. [Anwalt-Trigger-Schwellen](#18-anwalt-trigger-schwellen)
+19. [Self-Check vierteljährlich](#19-self-check-vierteljährlich)
+20. [Quellenverzeichnis](#20-quellenverzeichnis)
+
+---
+
+## 1. Strategie-Entscheidungen
+
+Status-Marker:
+- `[ENTSCHIEDEN]` — getroffen, Begründung dokumentiert
+- `[OFFEN]` — noch zu klären, Default-Empfehlung markiert
+- `[BLOCKER]` — muss vor Live-Schaltung entschieden sein
+
+| # | Frage | Optionen | Default-Empfehlung | Status |
+|---|---|---|---|---|
+| 1 | B2B oder B2C? | B2B-only mit UID-Pflicht / B2C zusätzlich | B2B-only | `[ENTSCHIEDEN]` Memory: `project_production_refactor.md` |
+| 2 | Markt | AT-only / DACH / EU | AT-only Phase 1 | `[ENTSCHIEDEN]` |
+| 3 | Heilberufe (Ärzte etc.) in Phase 1? | ja mit Sonderbehandlung / nein / nur ausgewählte | ja mit Sonderbehandlung | `[OFFEN]` |
+| 4 | Rechtsberatung (Anwälte, Notare, StB) in Phase 1? | ja mit Sonderbehandlung / nein | ja mit Sonderbehandlung | `[OFFEN]` |
+| 5 | Trial-Setup | nur Vorschau ohne Live-Schaltung / Live-Schaltung erlaubt / kein Trial | nur Vorschau | `[OFFEN]` |
+| 6 | Trial-Dauer | 7 / 14 / 30 Tage | 14 Tage | `[OFFEN]` |
+| 7 | Mindestvertragslaufzeit | keine / monatlich / jährlich | monatlich kündbar | `[OFFEN]` |
+| 8 | Kündigungsfrist | sofort / Monatsende / 30 Tage | Monatsende | `[OFFEN]` |
+| 9 | Datenretention nach Kündigung | 30 / 60 / 90 Tage Grace, dann Auto-Delete | 90 Tage | `[OFFEN]` |
+| 10 | Haftungsbegrenzung | 12-Monats-Vergütung / fixer Cap (z.B. €5.000) / pro Schadensfall | 12-Monats-Vergütung | `[OFFEN]` |
+| 11 | Refund-Policy | 14 Tage Widerruf trotz B2B / pro-rata bei Mid-Period / kein Refund | pro-rata bei Mid-Period | `[OFFEN]` |
+| 12 | Custom-Domain-Verantwortung | DNS allein Kunde / DNS-Setup-Hilfe inkludiert | DNS allein Kunde | `[OFFEN]` |
+| 13 | Mailing-Provider | Resend / Postmark / Brevo | Resend (günstig + EU-Server) | `[OFFEN]` |
+| 14 | Error-Monitoring | Sentry / Axiom / nichts | Sentry | `[OFFEN]` |
+| 15 | Analytics-Provider Plattform | PostHog Cloud EU / Plausible EU / nichts | PostHog Cloud EU | `[OFFEN]` |
+| 16 | Pricing-Anzeige | inkl. 20% USt / netto + USt | netto + USt (B2B-Standard) | `[OFFEN]` |
+| 17 | Anwalt für Schluss-Sichtung bei Trigger | ja, ~5h ~1.750€ / nein, nur bei Vorfall | ja bei Trigger | `[ENTSCHIEDEN]` |
+| 18 | Versicherung | nur VSH / IT-Haftpflicht-Paket (VSH+Cyber) | IT-Haftpflicht-Paket | `[ENTSCHIEDEN]` |
+
+---
+
+## 2. Stammdaten
+
+Pflichtdaten zum Befüllen — Voraussetzung für Impressum, AGB, AVV, Datenschutzerklärung.
+
+| Feld | Wert | Status |
+|---|---|---|
+| Vollständiger Firmenwortlaut (laut Firmenbuch) | `[OFFEN]` z.B. "Wagner IT Services e.U." | `[BLOCKER]` |
+| Firmenbuchnummer | `[OFFEN]` "FN ..." | `[BLOCKER]` |
+| Firmenbuchgericht | `[OFFEN]` z.B. "HG Wien" | `[BLOCKER]` |
+| UID-Nummer | `[OFFEN]` "ATU..." | `[BLOCKER]` |
+| GISA-Zahl | `[OFFEN]` | `[BLOCKER]` |
+| Geschäftsanschrift (Straße, PLZ, Ort) | `[OFFEN]` | `[BLOCKER]` |
+| Bundesland | `[OFFEN]` | `[BLOCKER]` |
+| Gewerbeberechtigung (exakte Bezeichnung) | `[OFFEN]` z.B. "Dienstleistung in der automatischen Datenverarbeitung und Informationstechnik" | `[BLOCKER]` |
+| Aufsichtsbehörde | `[OFFEN]` (zuständige BH oder Magistrat nach Sitz) | `[BLOCKER]` |
+| WKO-Fachgruppe | `[OFFEN]` (UBIT? Information & Consulting?) | `[BLOCKER]` |
+| Bankverbindung (IBAN) | `[OFFEN]` | für Rechnungen |
+| Kontakt-Mail allgemein | `[OFFEN]` z.B. office@instantpage.at | |
+| Kontakt-Mail Datenschutz | `[OFFEN]` z.B. datenschutz@instantpage.at | empfohlen separat |
+| Kontakt-Mail Abuse | `[OFFEN]` z.B. abuse@instantpage.at | Pflicht für ECG/DSA |
+| Kontakt-Mail Support | `[OFFEN]` z.B. support@instantpage.at | |
+| Telefon (geschäftlich) | `[OFFEN]` | Pflicht ECG |
+
+---
+
+## 3. Versicherung
+
+### Bedarf — IT-Haftpflicht-Paket
+
+Bei e.U. mit Privathaftung ist die einzige nicht-verhandelbare Position. Korrekturen gegenüber früherem Plan: nicht nur VSH, sondern Kombi-Paket.
+
+| Baustein | Warum | Empfohlene Deckung |
+|---|---|---|
+| Vermögensschaden-Haftpflicht (VSH) | Software-/Beratungsfehler bei Kunde | 1 Mio. € |
+| Cyber-Drittschäden | Endkunden-Daten leaken | 500k–1 Mio. € |
+| Cyber-Eigenschäden | Forensik, Wiederherstellung, Lösegeld | 100k–250k € |
+| DSGVO-Bußgelder (soweit versicherbar) | Behörden-Verfahren | je nach Anbieter |
+| Datenschutzrechtsschutz | Anwaltskosten DSGVO-Verfahren | inkludiert |
+| Betriebshaftpflicht (oft inkludiert) | klassische Personen-/Sachschäden | Standard |
+
+### Anbieter-Optionen (AT-Markt)
+
+- Helvetia
+- UNIQA
+- Wiener Städtische
+- Generali
+- Allianz
+
+### Erwartungswerte
+
+- **Jahresprämie:** 1.500–2.500 € für Solo-e.U. mit ~5–50 Kunden
+- **Selbstbehalt:** typisch 1.000–5.000 €
+
+### Voraussetzungen die der Versicherer wahrscheinlich verlangt
+
+- 2FA für eigene Logins (Cloudflare, Supabase, Stripe, Anthropic, Domains)
+- Regelmäßige Backups (dokumentiert)
+- Aktuelle Software-Versionen (Dependencies)
+- Schriftliche AGB
+- Schriftlicher AVV mit Kunden
+- Verarbeitungsverzeichnis Art 30
+- Datenpannen-Meldeprozess
+
+### Aktionen
+
+| Aktion | Status |
+|---|---|
+| Makler vom Steuerberater kontaktieren | `[OFFEN]` |
+| 2–3 Angebote vergleichen | `[OFFEN]` |
+| Police abschließen vor Live-Schaltung | `[BLOCKER]` |
+| Voraussetzungen erfüllen + dokumentieren | `[OFFEN]` |
+| Beim Makler explizit fragen: Deckung für KI-generierte Inhalte? Drittland-Datenflüsse? Voraussetzung Eigen-AGB akzeptiert? | `[OFFEN]` |
+
+---
+
+## 4. Subprozessoren
+
+Liste aller Drittdienste mit Datenverarbeitung. Pflicht: jeder mit DPA, in AVV-Anhang III gelistet, auf Subprozessor-Seite (instantpage.at/subprozessoren) öffentlich.
+
+| Anbieter | Funktion | Sitz | DPA-Status | Aktion |
+|---|---|---|---|---|
+| Cloudflare | DNS, CDN, Pages, R2, Custom Hostnames, Web Analytics | USA (mit EU-Servern) | `[OFFEN]` | DPA via Account-Settings |
+| Supabase | Datenbank, Storage, Auth | Frankfurt (EU) | `[OFFEN]` | DPA via Org → Legal |
+| Stripe | Zahlungsabwicklung | Irland (EU-Hauptsitz) + USA | `[OFFEN]` | DPA via Compliance-Section |
+| Anthropic | Claude API (Textgenerierung, Import-Klassifizierung) | USA | `[OFFEN]` | DPA via Console |
+| Microsoft 365 | E-Mail, Office | EU/USA | `[OFFEN]` | DPA via Microsoft |
+| easyname.at | Domain-Registrierung | Österreich | `[OFFEN]` | meist im AGB |
+| Resend (Mailing) | Transaktionale E-Mails | USA + EU | `[OFFEN]` | nur wenn entschieden |
+| PostHog Cloud EU | Product Analytics + Session Replay | EU | `[OFFEN]` | nur wenn entschieden |
+| Sentry | Error-Monitoring | USA | `[OFFEN]` | nur wenn entschieden |
+| remove.bg (Logo-Freistellung) | Bildverarbeitung | Deutschland | `[OFFEN]` | später Live |
+| Unsplash | Stockfotos via API | USA | `[OFFEN]` | später Live |
+| Google Places API | Business-Daten Import | USA | `[OFFEN]` | später Live |
+
+**Drittland-Hinweis:** USA-Anbieter laufen aktuell unter EU-U.S. Data Privacy Framework. Status in Quartals-Self-Check prüfen — Schrems-III-Risiko nicht ausgeschlossen.
+
+---
+
+## 5. AGB-Skeleton (B2B-only)
+
+> **Defensiv formuliert. Kombiniert WKO-Vorlagen IT-Betreiberdienstleistungen B2B + IT-Programmierdienstleistungen B2B + IT-Software-Support B2B + 5 Eigenklauseln (Betreiber, KI, Vorlagen, Bildrechte, B2B-Beschränkung). Stammdaten in `[Klammern]` einsetzen.**
+
+### § 1 Geltungsbereich, B2B-Beschränkung
+
+(1) Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen `[FIRMENWORTLAUT]` (im Folgenden "Anbieter") und dem Kunden über die Nutzung der Plattform instantpage.at und der damit verbundenen Leistungen.
+
+(2) Das Angebot richtet sich ausschließlich an Unternehmer im Sinne des § 1 KSchG. Verbraucherverträge sind ausgeschlossen.
+
+(3) Der Kunde bestätigt mit Vertragsabschluss, im Rahmen seiner unternehmerischen Tätigkeit zu handeln und im Bestellprozess seine UID-Nummer, GISA-Zahl oder Firmenbuchnummer wahrheitsgemäß angegeben zu haben.
+
+(4) Bei Falschangabe der Unternehmer-Eigenschaft haftet der Kunde für sämtliche daraus entstehenden Folgen, einschließlich entgangener Steuervorteile und zusätzlicher Verpflichtungen.
+
+(5) Allgemeine Geschäftsbedingungen des Kunden gelten nicht, auch wenn der Anbieter ihnen nicht ausdrücklich widerspricht.
+
+### § 2 Vertragsschluss
+
+(1) Die Darstellung der Leistungen auf der Website stellt kein bindendes Angebot dar.
+
+(2) Der Vertrag kommt zustande, sobald der Kunde im Bestellprozess die kostenpflichtige Bestellung durch Klick auf den entsprechend gekennzeichneten Button bestätigt und der Anbieter die Annahme durch Bereitstellung der Plattform-Zugänge bestätigt.
+
+(3) Der Kunde erhält eine Vertragsbestätigung in Textform an die angegebene E-Mail-Adresse.
+
+### § 3 Leistungsumfang
+
+(1) Der Anbieter stellt eine technische Plattform zur Verfügung, die folgende Leistungen umfasst:
+
+a) **Generierung** einer Website auf Basis der vom Kunden bereitgestellten Daten unter Einsatz von KI-Sprachmodellen
+b) **Hosting** der generierten Website unter einer Subdomain (firma.instantpage.at) oder bei höherem Plan unter einer vom Kunden bereitgestellten eigenen Domain
+c) **Self-Service-Portal** zur Bearbeitung von Inhalten, Bildern und Konfigurationen
+d) **Generierte Vorlagen** für Impressum und Datenschutzerklärung auf Basis der vom Kunden eingegebenen Daten
+e) **Generierte SEO-Elemente** (Schema.org, Meta-Tags, Sitemap)
+
+(2) Der konkrete Leistungsumfang richtet sich nach dem vom Kunden gebuchten Plan (Starter, Professional). Plan-spezifische Funktionen sind in der jeweiligen Plan-Beschreibung auf der Website transparent ausgewiesen.
+
+(3) Der Anbieter behält sich Änderungen am Leistungsumfang vor, sofern sie für den Kunden zumutbar sind und den Vertragszweck nicht wesentlich beeinträchtigen.
+
+### § 4 Pflichten und Mitwirkung des Kunden
+
+(1) Der Kunde ist verpflichtet, alle für die Leistungserbringung erforderlichen Daten vollständig und wahrheitsgemäß bereitzustellen, insbesondere:
+
+a) Firmenwortlaut, Adresse, Kontaktdaten
+b) Rechtsform und impressumsrelevante Pflichtangaben
+c) UID-Nummer, GISA-Zahl, Firmenbuchnummer (sofern vorhanden)
+d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichtsbehörde
+
+(2) Der Kunde sichert zu, dass alle bereitgestellten Inhalte (Texte, Bilder, Logos, Daten) frei von Rechten Dritter sind oder er die erforderlichen Nutzungsrechte besitzt.
+
+(3) Der Kunde ist verpflichtet, sämtliche generierten und vom Kunden eingestellten Inhalte vor Veröffentlichung der Website zu prüfen und aktiv freizugeben. Mit der Veröffentlichung erklärt der Kunde, die Inhalte geprüft zu haben und übernimmt für diese die alleinige Verantwortung.
+
+(4) Der Kunde sichert seine Zugangsdaten ab, aktiviert Zwei-Faktor-Authentifizierung sofern angeboten und meldet Sicherheitsvorfälle unverzüglich.
+
+### § 5 KI-generierte Inhalte (Eigenklausel)
+
+(1) Texte, Beschreibungen und Vorschläge auf der generierten Website werden unter Einsatz von KI-Sprachmodellen erstellt.
+
+(2) Trotz sorgfältiger Konfiguration können KI-generierte Inhalte sachliche Ungenauigkeiten, missverständliche Formulierungen oder branchenrechtlich problematische Aussagen enthalten.
+
+(3) Der Kunde ist verpflichtet, alle generierten Inhalte vor Veröffentlichung selbst zu prüfen und gegebenenfalls anzupassen. Der Anbieter übernimmt keine Haftung für die inhaltliche Richtigkeit, Vollständigkeit oder rechtliche Zulässigkeit der generierten Texte.
+
+(4) Bei reglementierten Berufen (insbesondere Heilberufe, Rechts- und Wirtschaftsberatung) hat der Kunde die berufsrechtlichen Werbevorschriften eigenverantwortlich zu beachten und Texte entsprechend anzupassen.
+
+### § 6 Generierte Rechtstexte (Eigenklausel)
+
+(1) Die vom Anbieter bereitgestellten Vorlagen für Impressum und Datenschutzerklärung werden auf Basis der vom Kunden eingegebenen Daten und der vom Kunden aktivierten Plattform-Module automatisiert generiert.
+
+(2) Diese Vorlagen sind Hilfestellungen und ersetzen keine rechtliche Beratung. Die Vollständigkeit und Richtigkeit der Pflichtangaben für die jeweilige Branche, Rechtsform und Datenverarbeitung verantwortet der Kunde.
+
+(3) Bei reglementierten Berufen, besonderen Datenkategorien (Art 9 DSGVO) oder branchenspezifischen Sonderpflichten ist die Vorlage ggf. unzureichend. Der Kunde hat in diesen Fällen die Vorlage durch eine fachkundige Stelle prüfen zu lassen.
+
+(4) Die generierte Datenschutzerklärung deckt ausschließlich die Datenverarbeitung im Rahmen des Website-Besuchs ab. Die Verarbeitung von Patientendaten, Mandantendaten oder sonstigen berufsspezifischen Daten ist nicht Gegenstand der Vorlage und durch den Kunden separat zu regeln.
+
+### § 7 Bildrechte und Inhaltsfreigabe (Eigenklausel)
+
+(1) Der Kunde garantiert, dass er für alle hochgeladenen Inhalte (Bilder, Logos, Texte, Videos) über die erforderlichen Nutzungsrechte verfügt und keine Rechte Dritter verletzt.
+
+(2) Der Kunde stellt den Anbieter von sämtlichen Ansprüchen Dritter frei, die wegen einer Rechtsverletzung durch vom Kunden eingestellte Inhalte gegen den Anbieter erhoben werden.
+
+(3) Der Anbieter ist berechtigt, Inhalte bei begründetem Hinweis auf Rechtsverletzungen oder Verstöße gegen geltendes Recht zu entfernen oder die betroffene Website vorübergehend zu sperren.
+
+### § 8 Verantwortlichkeit für die Website (Betreiber-Klausel)
+
+(1) Der Kunde ist Medieninhaber im Sinne des MedienG, Diensteanbieter im Sinne des § 5 ECG und datenschutzrechtlich Verantwortlicher gemäß Art 4 Z 7 DSGVO seiner über die Plattform bereitgestellten Website.
+
+(2) Der Anbieter erbringt ausschließlich technische Hosting-, Generierungs- und Bereitstellungsleistungen im Sinne des § 16 ECG.
+
+(3) Für die rechtmäßige Verarbeitung personenbezogener Daten von Endnutzern (Kontaktanfragen, Reservierungen, Bewertungen etc.) ist der Kunde verantwortlich. Die technische Verarbeitung dieser Daten durch den Anbieter erfolgt im Auftrag des Kunden auf Grundlage des separat abgeschlossenen Auftragsverarbeitungsvertrags (AVV).
+
+### § 9 Vergütung, Zahlungsbedingungen
+
+(1) Die Vergütung richtet sich nach dem vom Kunden gewählten Plan. Preise verstehen sich `[OFFEN: netto zzgl. USt / brutto inkl. USt]`.
+
+(2) Die Vergütung ist im Voraus für den jeweiligen Abrechnungszeitraum fällig (monatlich oder jährlich, je nach Plan).
+
+(3) Die Abwicklung erfolgt über den Zahlungsdienstleister Stripe. Der Kunde stimmt den Zahlungsbedingungen von Stripe gesondert zu.
+
+(4) Bei Zahlungsverzug ist der Anbieter berechtigt, die Leistungserbringung auszusetzen und die betroffene Website nach vorheriger Mahnung zu sperren. Verzugszinsen nach § 456 UGB.
+
+### § 10 Vertragslaufzeit, Kündigung
+
+(1) Der Vertrag wird auf unbestimmte Zeit geschlossen. `[OFFEN: Mindestlaufzeit?]`
+
+(2) Bei monatlicher Abrechnung kann der Vertrag mit Wirkung zum Ende des laufenden Abrechnungsmonats gekündigt werden. Bei jährlicher Abrechnung mit Wirkung zum Ende der laufenden Jahresperiode.
+
+(3) Die Kündigung erfolgt in Textform über die Self-Service-Funktion im Portal oder per E-Mail an support@instantpage.at.
+
+(4) Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt. Wichtige Gründe für den Anbieter sind insbesondere wiederholte Verstöße gegen diese AGB, rechtswidrige Inhalte, Zahlungsverzug nach Mahnung.
+
+### § 11 Datenrückgabe und Löschung bei Vertragsende
+
+(1) Innerhalb der Vertragslaufzeit kann der Kunde seine Daten jederzeit über das Self-Service-Portal exportieren.
+
+(2) Nach Vertragsende werden die Kundendaten und die zugehörige Website für `[OFFEN: 30/60/90 Tage]` in einem Grace-Status aufbewahrt. In diesem Zeitraum kann der Kunde seine Daten exportieren oder den Vertrag wieder aktivieren.
+
+(3) Nach Ablauf des Grace-Zeitraums werden alle personenbezogenen Daten des Kunden und seiner Endnutzer endgültig gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen (insbesondere § 132 BAO).
+
+(4) Die Subdomain wird nach Ablauf des Grace-Zeitraums freigegeben und kann vom Anbieter neu vergeben werden.
+
+### § 12 Haftung, Haftungsbegrenzung
+
+(1) Der Anbieter haftet unbeschränkt für Vorsatz und grobe Fahrlässigkeit, für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit sowie nach den zwingenden Bestimmungen des Produkthaftungsgesetzes.
+
+(2) Bei leichter Fahrlässigkeit haftet der Anbieter nur bei Verletzung wesentlicher Vertragspflichten und nur in Höhe des bei Vertragsschluss vorhersehbaren, vertragstypischen Schadens.
+
+(3) Die Haftung des Anbieters ist insgesamt der Höhe nach begrenzt auf die vom Kunden in den letzten 12 Monaten vor dem schadensauslösenden Ereignis tatsächlich gezahlte Vergütung.
+
+(4) Der Anbieter haftet nicht für Schäden aus inhaltlichen Fehlern KI-generierter Texte, aus unvollständigen Pflichtangaben in generierten Vorlagen, aus Rechtsverletzungen durch vom Kunden eingestellte Inhalte oder aus Verstößen des Kunden gegen berufsrechtliche Werbevorschriften.
+
+(5) Eine darüberhinausgehende Haftung ist ausgeschlossen.
+
+### § 13 Datenschutz, AVV
+
+(1) Der Anbieter verarbeitet personenbezogene Daten des Kunden zur Vertragserfüllung gemäß der Datenschutzerklärung auf instantpage.at/datenschutz.
+
+(2) Soweit der Anbieter im Rahmen der Plattform-Nutzung personenbezogene Daten von Endnutzern des Kunden verarbeitet (Kontaktanfragen, Reservierungen etc.), erfolgt dies im Auftrag des Kunden. Der dafür erforderliche Auftragsverarbeitungsvertrag (AVV) gemäß Art 28 DSGVO ist Bestandteil dieses Vertrags und wird dem Kunden vor Abschluss zur Verfügung gestellt.
+
+### § 14 Anpassung dieser AGB
+
+(1) Der Anbieter ist berechtigt, diese AGB anzupassen, sofern dies aufgrund geänderter rechtlicher Rahmenbedingungen, neuer technischer Entwicklungen oder zur Anpassung an Marktbedingungen erforderlich ist.
+
+(2) Änderungen werden dem Kunden mindestens 6 Wochen vor Inkrafttreten in Textform mitgeteilt. Widerspricht der Kunde nicht innerhalb dieser Frist, gelten die Änderungen als angenommen. Auf diese Folge wird der Kunde in der Mitteilung gesondert hingewiesen.
+
+(3) Bei einer Änderung steht dem Kunden ein außerordentliches Kündigungsrecht zum Inkrafttretenstag zu.
+
+(4) Wesentliche Änderungen am Vertragskern (Hauptleistung, Vergütung) bedürfen der ausdrücklichen Zustimmung des Kunden.
+
+### § 15 Schlussbestimmungen
+
+(1) Es gilt österreichisches Recht unter Ausschluss der Verweisungsnormen und des UN-Kaufrechts.
+
+(2) Erfüllungsort und Gerichtsstand für alle Streitigkeiten aus diesem Vertrag ist `[OFFEN: Sitz des Anbieters]`.
+
+(3) Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. An die Stelle der unwirksamen Bestimmung tritt die gesetzlich zulässige Regelung, die dem wirtschaftlichen Zweck am nächsten kommt.
+
+(4) Änderungen und Ergänzungen dieses Vertrags bedürfen der Textform.
+
+---
+
+## 6. AVV — Auftragsverarbeitungsvertrag
+
+### Aufbau
+
+**Hauptteil** = EU-Standardvertragsklauseln nach Durchführungsbeschluss (EU) 2021/915, Module Controller-Prozessor (Klauseln 1–10), wortgleich übernommen. Quelle: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32021D0915>
+
+**Anhänge** = individuell befüllt (siehe unten).
+
+### Anhang I — Beschreibung der Verarbeitung
+
+| Punkt | Inhalt |
+|---|---|
+| **Verantwortlicher** | Der Kunde (Inhaber der Website) |
+| **Auftragsverarbeiter** | `[FIRMENWORTLAUT]` |
+| **Gegenstand der Verarbeitung** | Hosting der Website, Speicherung von Endnutzer-Anfragen (Kontaktformular, Reservierungen, Bewertungen), Bereitstellung von Statistik-Daten (sofern Pro-Plan), Versand transaktionaler E-Mails an Endnutzer |
+| **Art der Verarbeitung** | Erheben, Speichern, Übermitteln, Anzeigen, Löschen |
+| **Zweck der Verarbeitung** | Betrieb der Website des Verantwortlichen, Zustellung von Anfragen, statistische Auswertung, technische Sicherheit |
+| **Dauer der Verarbeitung** | Für die Vertragslaufzeit zzgl. Grace-Zeitraum (`[OFFEN: 30/60/90 Tage]`). Logs nach 30 Tagen anonymisiert. |
+| **Kategorien betroffener Personen** | Endnutzer der Kunden-Website (Kontaktanfragen, Bewerter, Reservierungen) |
+| **Kategorien personenbezogener Daten** | Kontaktdaten (Name, E-Mail, Telefon), Inhalt der Anfrage, IP-Adresse (technisch nötig), bei Reservierungen: Datum/Personenzahl/Anliegen, bei Bewertungen: Name + Bewertungstext |
+| **Besondere Datenkategorien** | NICHT umfasst. Bei Heilberufen ist die Eingabe von Gesundheitsdaten in Termin-Anfragen vertraglich ausgeschlossen. Verstöße liegen außerhalb der Auftragsverarbeitung. |
+
+### Anhang II — Technisch-organisatorische Maßnahmen
+
+Siehe [Abschnitt 11 — TOMs](#11-toms--technisch-organisatorische-maßnahmen).
+
+### Anhang III — Subprozessoren
+
+Siehe [Abschnitt 4 — Subprozessoren](#4-subprozessoren).
+
+Aktualisierungen werden auf instantpage.at/subprozessoren öffentlich gemacht. Der Verantwortliche kann der Beauftragung neuer Subprozessoren binnen 30 Tagen widersprechen; bei berechtigtem Widerspruch besteht ein Sonderkündigungsrecht.
+
+### Anhang IV — Datenkategorien-Liste
+
+| Datenkategorie | Quelle | Verarbeitung | Speicherort | Speicherdauer |
+|---|---|---|---|---|
+| Kontaktanfragen | Endnutzer-Eingabe Kontaktformular | Speicherung + Mailweiterleitung | Supabase EU + Resend | `[OFFEN]` z.B. 12 Monate |
+| Reservierungs-/Termin-Anfragen | Endnutzer-Eingabe Reservierungs-Form | wie oben | wie oben | wie oben |
+| Bewertungen | Endnutzer-Eingabe Bewertungs-Form | Speicherung + Anzeige | Supabase EU | bis Widerruf |
+| Hochgeladene Bilder mit Personenabbildungen | Kunde lädt hoch | Speicherung + Auslieferung | Supabase Storage / Cloudflare R2 | bis Vertragsende + Grace |
+| IP-Adressen (Webserver-Log) | Webserver | Anonymisierung nach 30 Tagen | Cloudflare Logs | 30 Tage |
+| Bestellte Produkte (Webshop später) | n/a Phase 1 | n/a | n/a | n/a |
+
+---
+
+## 7. Plattform-Impressum (instantpage.at)
+
+> Skeleton zum Befüllen mit Stammdaten aus Abschnitt 2.
+
+```
+Impressum
+
+Medieninhaber, Herausgeber und Diensteanbieter:
+[FIRMENWORTLAUT]
+[Geschäftsanschrift, PLZ, Ort, Österreich]
+
+Telefon: [Telefonnummer]
+E-Mail: [office@instantpage.at]
+
+Unternehmensgegenstand: Bereitstellung einer Software-as-a-Service-Plattform zur
+Erstellung und zum Betrieb von Unternehmens-Websites
+
+UID-Nummer: [ATU...]
+GISA-Zahl: [...]
+Firmenbuchnummer: [FN ...] (sofern eingetragen)
+Firmenbuchgericht: [HG/LG ...]
+
+Gewerbeberechtigung: [exakte Bezeichnung laut Gewerbeschein,
+z.B. "Dienstleistung in der automatischen Datenverarbeitung und Informationstechnik"]
+
+Aufsichtsbehörde: [zuständige BH oder Magistrat]
+
+Mitglied der Wirtschaftskammer Österreich,
+Fachgruppe [UBIT / Information & Consulting / ...]
+
+Anwendbare gewerberechtliche Vorschriften:
+Gewerbeordnung (www.ris.bka.gv.at)
+
+Berufsbezeichnung: [Inhaber-Name]
+
+Kontakt für Datenschutzanfragen: datenschutz@instantpage.at
+Kontakt für Missbrauchsmeldungen: abuse@instantpage.at
+
+Online-Streitbeilegung:
+Verbraucher haben die Möglichkeit, Beschwerden an die Online-Streitbeilegungsplattform
+der EU zu richten: https://ec.europa.eu/consumers/odr
+(Hinweis: Wir richten unser Angebot ausschließlich an Unternehmer; eine Verpflichtung
+zur Teilnahme an einem Streitbeilegungsverfahren besteht nicht.)
+```
+
+---
+
+## 8. Plattform-Datenschutzerklärung
+
+> Skeleton zum Befüllen — vollständig ausformuliert vor Live-Schaltung. Quelle: WKO-Checkliste DSGVO + WKO-Datenverarbeitung Webshop.
+
+### Pflicht-Bausteine (kurz)
+
+1. **Verantwortlicher:** `[FIRMENWORTLAUT]` mit Stammdaten
+2. **Kontakt für Datenschutzanfragen:** datenschutz@instantpage.at
+3. **Verarbeitungszwecke + Rechtsgrundlagen:**
+   - Vertragsabwicklung (Art 6 Abs 1 lit b)
+   - Zahlungsabwicklung (Art 6 Abs 1 lit b + lit c)
+   - Newsletter sofern aktiviert (Art 6 Abs 1 lit a)
+   - Statistik / Produktverbesserung (Art 6 Abs 1 lit f)
+   - Trial-Verwaltung (Art 6 Abs 1 lit b — Vertragsanbahnung)
+4. **Datenkategorien:** Account, Stripe-Kunden-ID, Kommunikation, Nutzungsdaten
+5. **Empfänger / Subprozessoren:** Liste mit Drittland-Hinweis (siehe Abschnitt 4)
+6. **Speicherdauer:** pro Kategorie konkret (`[OFFEN]`: definieren)
+7. **Drittlandübermittlung:** USA-Anbieter unter EU-U.S. Data Privacy Framework
+8. **Betroffenenrechte:** Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch, Beschwerde bei DSB
+9. **Cookies:** Plattform-Cookies (Auth, Session) — keine Tracking-Cookies; falls PostHog Session Replay → Banner mit Einwilligung
+10. **AI-Verarbeitung:** Hinweis dass Anthropic-API für Textgenerierung eingesetzt wird, mit Drittland-Bezug
+
+---
+
+## 9. Branchen-Pflichtfeld-Matrix
+
+> **Code-Anbindung:** Erweitert [src/data.js](../src/data.js) `BRANCHEN`-Array um `reglementiert: true|false` Flag und [functions/s/[subdomain]/legal.js](../functions/s/[subdomain]/legal.js) um `BRANCHE_PFLICHT`-Map. Bestehende `BRANCHEN_KAMMER`-Map (8 Berufe) wird erweitert auf ~35 reglementierte Branchen.
+
+### Status
+
+`[OFFEN]` Detail-Recherche pro Branche steht aus. Aufwand: ~30 Min/Branche × 35 = 17 Stunden Eigenarbeit oder per parallelen Subagents in 1 Sitzung.
+
+### Berufsgruppen-Übersicht (Recipe-System v1)
+
+| Berufsgruppe | Reglementierungs-Häufigkeit | Sonderbehandlung nötig? |
+|---|---|---|
+| Handwerk | gering (meist nur GISA + Wirtschaftskammer) | nein |
+| Gastronomie | gering | nein |
+| Gesundheit | **hoch** (fast alle ~25 Branchen reglementiert) | **ja** — siehe Abschnitt 10 |
+| Dienstleistung | **mittel** (Anwälte, Notare, StB, Architekten, Finanzberater, Versicherungsmakler, Bestattung, Sicherheitsdienst, Hausverwaltung, Immobilien) | **ja** — siehe Abschnitt 10 |
+| Bildung | gering (außer Fahrschule teilreglementiert) | nein |
+| Tourismus | gering | nein |
+| Handel | gering (außer Apotheke ist reglementiert, gehört aber zu Gesundheit) | nein |
+| Mobilität | gering (außer Taxi/Mietwagen GISA-Pflicht) | nein |
+| Agrar | gering (Direktvermarktung mit Sondervorschriften) | nein |
+| Industrie | gering | nein |
+| Kosmetik | gering (Permanent Make-up + Tattoo mit Hygieneverordnung) | nein |
+| Kultur | gering | nein |
+
+### Pflichtfelder-Schema
+
+```js
+const BRANCHE_PFLICHT = {
+  // Beispiel — vollständige Map siehe nach Recherche
+  arzt: {
+    berufsbezeichnung_default: 'Arzt für Allgemeinmedizin / Facharzt für ...',
+    kammer_default: 'Ärztekammer für [Bundesland]',
+    aufsicht_default: 'Bezirksverwaltungsbehörde / Landesbehörde',
+    berufsrecht: 'Ärztegesetz 1998 (ÄrzteG), www.ris.bka.gv.at',
+    werbeverbot_quelle: '§ 53 ÄrzteG',
+  },
+  rechtsanwalt: {
+    berufsbezeichnung_default: 'Rechtsanwalt',
+    kammer_default: 'Rechtsanwaltskammer [Bundesland]',
+    aufsicht_default: 'Disziplinarrat der Rechtsanwaltskammer',
+    berufsrecht: 'Rechtsanwaltsordnung (RAO), www.ris.bka.gv.at',
+    werbeverbot_quelle: '§ 45 RL-BA 2015',
+  },
+  // ... weitere ~33 Branchen siehe Detail-Recherche
+};
+```
+
+### Bereits implementiert in `legal.js`
+
+- `BRANCHEN_KAMMER` mit 8 Berufen (arzt, zahnarzt, tierarzt, apotheke, rechtsanwalt, notar, steuerberater, architekt)
+- `addRequired`-Helper mit Pflichtfeld-Tracking
+- Berufsbezeichnung + Verleihungsstaat (§ 5 ECG Abs 1 Z 9)
+- Pflichtfeld-Logik pro Unternehmensform (einzelunternehmen, e.U., GmbH, OG, KG, AG, Verein, GesnbR)
+
+### Noch zu implementieren
+
+- `reglementiert: true|false` Flag im `BRANCHEN`-Array in [src/data.js](../src/data.js)
+- `BRANCHE_PFLICHT` Detail-Map in [legal.js](../functions/s/[subdomain]/legal.js) — ~30 weitere Einträge
+- Disziplinarbehörde-Feld im Datenmodell (`disziplinarbehoerde`)
+- Portal-Warnung bei Branchen-Wahl auf reglementiertes Gewerbe
+
+---
+
+## 10. Reglementierte Berufe — Sonderbehandlung
+
+> Wenn Heilberufe und Rechtsberatung in Phase 1 zugelassen sind (siehe Strategie-Entscheidung 3+4), brauchen sie zwingend diese drei Schutzschichten.
+
+### 10.1 Werbeverbote pro Berufsrecht
+
+| Berufsgruppe | Quelle | Was verboten ist |
+|---|---|---|
+| Ärzte | § 53 Ärztegesetz | reklamehaft-marktschreierische Werbung, Vergleich mit anderen Ärzten, Heilversprechen |
+| Zahnärzte | § 35 Zahnärztegesetz | sinngemäß wie ÄrzteG |
+| Apotheker | § 8a Apothekengesetz + AMG | Heilversprechen, irreführende Werbung |
+| Rechtsanwälte | § 45 RL-BA 2015 | nicht sachliche, vergleichende, marktschreierische Werbung |
+| Notare | § 5 Notariatsordnung | öffentliche Anpreisung |
+| Steuerberater | § 70 WTBG | übertriebene Eigenwerbung |
+| Architekten | § 30 ZTG | reklamehafte Werbung |
+| Heilmasseur, Hebamme, Physiotherapeuten | MTD-Gesetz / HebG / HMG | berufsspezifische Werbe-Beschränkungen |
+| Finanzdienstleister | WAG, BoerseG | irreführende Renditeversprechen |
+
+### 10.2 Defensive KI-Prompt-Regeln
+
+In den Generierungs-Prompts ([functions/_lib/generate.js](../functions/_lib/generate.js)) muss bei reglementierten Berufen ein zusätzlicher System-Block aktiv sein:
+
+```
+Bei Berufsgruppe Gesundheit oder Berufen aus Rechts-/Wirtschaftsberatung:
+- Keine Superlative ("die besten", "Nr. 1", "Spitzen-...")
+- Keine Heilversprechen oder Erfolgsgarantien
+- Keine vergleichenden Aussagen gegenüber anderen Berufsausübenden
+- Sachlicher, zurückhaltender Tonfall
+- Fokus auf Leistungsbeschreibung, nicht auf werbliche Anpreisung
+```
+
+### 10.3 Termin-Anfrage ohne Anliegen-Feld
+
+Recipe-System v1 plant Section "Termin-Anfrage" mit Feldern: Wunschtermin, **Anliegen kurz**, Kontakt.
+
+→ Bei Berufsgruppe Gesundheit + reglementierten Rechtsberatungs-Branchen muss eine **Variante ohne "Anliegen kurz"** existieren. Sonst entstehen:
+- Bei Heilberufen: Gesundheitsdaten (Art 9 DSGVO besondere Kategorie)
+- Bei Rechtsberatung: Mandantengeheimnis (§ 9 RAO / § 37 NO / § 91 WTBG)
+
+Beides ist mit Standard-AVV nicht abdeckbar und wäre unzulässige Verarbeitung.
+
+### 10.4 Disclaimer im Portal + AGB
+
+Bei Onboarding mit reglementiertem Beruf zeigt das Portal:
+
+> "Diese Plattform ist eine Marketing-Website. Sie ersetzt keine Praxis-, Kanzlei- oder Patientenverwaltungs-Software. Patientendaten, Mandantendaten und sonstige berufsspezifische Datenverarbeitung verbleiben außerhalb dieser Plattform."
+
+Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
+
+---
+
+## 11. TOMs — Technisch-organisatorische Maßnahmen
+
+> Anhang II zum AVV. Konkrete Beschreibung des Sicherheits-Setups.
+
+### 11.1 Vertraulichkeit
+
+| Maßnahme | Status | Beschreibung |
+|---|---|---|
+| Zugangskontrolle | aktiv | Supabase Auth mit verschlüsselten Passwörtern (bcrypt), JWT-basierte Sessions |
+| Zwei-Faktor-Authentifizierung | `[OFFEN]` Plattform 2FA aktivierbar | Pflicht für Admin-Accounts, Empfehlung für Kunden |
+| Row-Level-Security (RLS) | aktiv | Supabase RLS auf allen 4 Tabellen (Memory: `project_supabase_rls.md`) |
+| Verschlüsselung in Transit | aktiv | TLS 1.3 für alle Verbindungen (Cloudflare-erzwungen) |
+| Verschlüsselung at Rest | aktiv | Supabase + Cloudflare R2 server-side AES-256 |
+| Pseudonymisierung | teilweise | Subdomain-IDs als Stellvertreter für Firma-Identität in Logs |
+
+### 11.2 Integrität
+
+| Maßnahme | Status |
+|---|---|
+| Eingabevalidierung | `[OFFEN]` Pre-Beta gefordert (Memory: `project_production_refactor.md`) |
+| Schema-Validierung an API-Grenzen (Zod) | `[OFFEN]` Live-Plan (Stack-Modernisierung) |
+| Audit-Logs | aktiv | activity_log + error_logs in Supabase |
+
+### 11.3 Verfügbarkeit
+
+| Maßnahme | Status |
+|---|---|
+| Backups Datenbank | `[OFFEN]` Cloudflare R2 täglich, 90 Tage Retention (Live-Plan) |
+| Backups Storage | `[OFFEN]` wöchentlich Sync zu R2 |
+| Restore-Tests | `[OFFEN]` alle 3 Monate in Staging |
+| DDoS-Schutz | aktiv | Cloudflare WAF |
+| Rate-Limiting | `[OFFEN]` Live-Plan (Cloudflare WAF Rules) |
+
+### 11.4 Belastbarkeit + Wiederherstellbarkeit
+
+| Maßnahme | Status |
+|---|---|
+| Disaster-Recovery-Plan | `[OFFEN]` zu dokumentieren |
+| RTO (Recovery Time Objective) | `[OFFEN]` Ziel: <4h |
+| RPO (Recovery Point Objective) | `[OFFEN]` Ziel: <24h |
+
+### 11.5 Verfahren regelmäßiger Überprüfung
+
+| Maßnahme | Frequenz |
+|---|---|
+| Self-Check vierteljährlich (siehe Abschnitt 19) | quartalsweise |
+| Penetration-Test extern | optional ab 100 Kunden |
+| Backup-Restore-Test | quartalsweise |
+
+### 11.6 Auftragskontrolle
+
+- Kein Auftragsverarbeiter wird ohne dokumentierten Subprozessor-Status eingesetzt
+- Subprozessor-Liste auf instantpage.at/subprozessoren öffentlich
+- DPA mit allen Subprozessoren (siehe Abschnitt 4)
+
+---
+
+## 12. Operative Prozesse
+
+### 12.1 Notice-and-Takedown (§ 16 ECG, DSA)
+
+| Schritt | Verantwortlich | SLA |
+|---|---|---|
+| Eingang Meldung an abuse@instantpage.at | E-Mail-System | sofort |
+| Sichtung + Erst-Bewertung | Inhaber | innerhalb 24h |
+| Bei begründetem Verdacht: Inhalt sperren (Status `suspended`) | Inhaber | innerhalb 24h |
+| Information an Kunden mit Frist zur Stellungnahme (7 Tage) | Inhaber | innerhalb 24h |
+| Endgültige Entscheidung (Wiederherstellung oder dauerhafte Entfernung) | Inhaber | innerhalb 14 Tage |
+| Dokumentation des Vorgangs | Inhaber | parallel |
+
+**Adresse:** abuse@instantpage.at
+**Formular:** instantpage.at/meldung (`[OFFEN]` Setup)
+
+### 12.2 Datenpannen-Meldeprozess (Art 33/34 DSGVO)
+
+| Schritt | Frist |
+|---|---|
+| Erkennung der Datenpanne | sofort |
+| Erst-Bewertung der Risiko-Lage für Betroffene | binnen 24h |
+| Bei Risiko: Meldung an DSB (dsb.gv.at, Online-Formular) | binnen 72h |
+| Bei hohem Risiko zusätzlich: Information der Betroffenen | unverzüglich |
+| Dokumentation in `incidents.log` | parallel |
+| Information der betroffenen Kunden (als Verantwortliche) | parallel zur DSB-Meldung |
+
+**Vorlage** für interne Bewertungs-Checkliste:
+- Welche Daten betroffen?
+- Wie viele Betroffene?
+- Risiko für Betroffene? (z.B. Identitätsdiebstahl, Diskriminierung)
+- Eingrenzungs-Maßnahmen?
+- Kommunikation an Betroffene nötig?
+
+### 12.3 Trial- und Cancellation-Cleanup
+
+| Prozess | Trigger | Aktion |
+|---|---|---|
+| Trial-Cleanup | Cron täglich, `trial_expires_at < now()` | DELETE Order + zugehörige Daten |
+| Cancellation-Grace | nach Kündigung, 90 Tage warten | DELETE Order + zugehörige Daten |
+| Subdomain-Recycling | nach Cancellation-Grace | Subdomain freigeben |
+| Beta-Tester-Cleanup | einmalig vor Live-Schaltung | DELETE alle Beta-Daten + Subdomains |
+
+→ Bestehende Endpoints: `functions/api/trial-cleanup.js` (existiert, braucht Cron-Trigger laut Memory)
+
+---
+
+## 13. AI Act 2.8.2026
+
+### Stichtag
+
+**2.8.2026** = Geltungsbeginn der Transparenzpflichten nach Art 50 AI Act (VO 2024/1689). Heute ist 2026-05-01 → noch ~3 Monate.
+
+### Pflichten für instantpage.at
+
+| Pflicht | Umsetzung |
+|---|---|
+| Art 50 Abs 2 — Kennzeichnung KI-generierter Inhalte | Default-Footer auf jeder Kunden-Website: "Inhalte mit KI-Unterstützung erstellt — instantpage.at" |
+| Art 50 Abs 4 — Kennzeichnung in maschinenlesbarer Form | Schema.org-Marker oder Meta-Tag in HTML |
+| Art 50 Abs 1 — Information der Endnutzer (Chatbot etc.) | Phase 1 N/A (kein Chatbot) — relevant wenn Managed Agent eingeführt |
+| Art 4 — KI-Kompetenz beim Anbieter | Selbststudium + Dokumentation, RTR-Servicestelle als Quelle |
+
+### Quellen
+
+- AI Act Originaltext: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32024R1689>
+- WKO AI Act Übersicht: <https://www.wko.at/digitalisierung/ai-act-eu>
+- RTR KI-Servicestelle: <https://www.rtr.at/rtr/service/ki-servicestelle/ai-act/ki-kompetenz.de.html>
+
+### Aktionen
+
+| Aktion | Frist |
+|---|---|
+| Footer-Hinweis auf Kundenseiten implementieren | bis 2026-08-02 |
+| AI-Kennzeichnung in AVV-Anhang I dokumentiert | bis Live |
+| Schema.org-Marker für AI-Generated-Content | bis 2026-08-02 |
+| KI-Kompetenz-Dokumentation (eigenes Wissen) | laufend |
+
+---
+
+## 14. Markenrecht
+
+### Status
+
+`[OFFEN]` Markenrechtsrecherche für "instantpage.at" und "InstantPage" als Wortmarke.
+
+### Was zu prüfen ist
+
+| Quelle | Was |
+|---|---|
+| Österreichisches Patentamt — Markenregister | <https://see-ip.patentamt.at/> Wortmarke "InstantPage" in Klassen 35, 38, 42 |
+| EUIPO — EU-Markenregister | <https://www.tmdn.org/tmview/> dieselbe Recherche EU-weit |
+| Domain-Konflikte | instantpage.com, instantpage.de, instantpage.eu — sind die Inhaber identifizierbar? |
+| Sound-Ähnlichkeiten | "Instapage", "InstaPage", "Instant Page" |
+
+### Aufwand und Optionen
+
+- **Selbstrecherche:** ~1h, kostenlos
+- **WKO-Markenberatung:** kostenlos für Mitglieder, gibt qualifizierte Einschätzung
+- **Markenanwalt:** 200–500 €, falls Konflikt-Risiko unklar
+
+### Konsequenzen
+
+- Wenn frei: Anmeldung als AT-Wortmarke ~280 € (10 Jahre), als EU-Marke ~850 €
+- Wenn nicht frei: Brand-Wechsel überlegen — Marketing-Investment ist sonst potenziell zerstörbar
+
+---
+
+## 15. UWG — Werbeaussagen + Slogans
+
+### Verbotene Begriffe (UWG-Risiko + Versicherer-Voraussetzungs-Risiko)
+
+| Begriff | Warum verboten |
+|---|---|
+| "rechtssicher" | Garantieaussage die nicht haltbar ist (Kunde bleibt Verantwortlicher) |
+| "100% DSGVO-konform" | dito |
+| "abmahnsicher" | dito |
+| "garantiert" (im Compliance-Kontext) | dito |
+| "die beste Plattform" | nicht belegbarer Superlativ |
+| Vergleichende Aussagen ggü. Mitbewerbern (Wix, Jimdo, Herold) ohne sachliche Grundlage | UWG § 2 Abs 4 |
+
+### Defensive Formulierungen
+
+| Statt | Besser |
+|---|---|
+| "rechtssicher" | "wir unterstützen Sie bei der Erfüllung Ihrer rechtlichen Pflichten" |
+| "DSGVO-konform" | "DSGVO-orientiert", "mit Hilfestellungen zur DSGVO-Umsetzung" |
+| "100% Sicher" | "professionell verschlüsselt", "auf Industriestandard abgesichert" |
+| "die beste" | "speziell für österreichische KMU entwickelt" |
+| "garantiert in 5 Minuten" | "in wenigen Minuten startklar" |
+
+### Slogans für Landing Page (Vorschläge defensiv)
+
+- "Premium-Website für österreichische KMU — KI-generiert, professionell, branchen-tauglich"
+- "Marketing-Website ohne Agentur. Speziell für Handwerker, Gastronomen, Berater, Praxen."
+- "Wir bauen Ihre Website. Sie bleiben Inhaber."
+- "Schneller online. Professionell betrieben. Transparent abrechnet."
+
+### Aktionen
+
+- Bestehende Landing-Page-Slogans auditieren
+- Pricing-Texte auditieren
+- Pro-Plan-Beschreibung auditieren
+- "Sichtbarkeits-Check"-Lead-Magnet (geplant) defensiv formulieren
+
+---
+
+## 16. Beta → Live Migration
+
+### Entschiedene Strategie (Memory: `project_production_refactor.md`)
+
+**Sauberer Schnitt** — keine Daten-Migration. Beta-Domain (sitereadyprototype.pages.dev) wird abgedreht, Beta-Tester legen sich auf Live (instantpage.at) neu an.
+
+### Konsequenzen für Compliance
+
+| Punkt | Aktion |
+|---|---|
+| Beta-Tester-Daten in alter DB | DSGVO Art 17: löschen nach Zweck-Wegfall — DELETE alle Beta-Daten |
+| Beta-Tester informieren | E-Mail mit Hinweis auf Domain-Wechsel + Promo-Code für Live + Hinweis auf Datenlöschung |
+| Beta-Subdomain | nach Abdrehen: 410 Gone oder Redirect-Hinweis-Seite |
+| Beta-Logs | nach 30 Tagen automatisch gelöscht |
+
+### Aktionen vor Live-Schaltung
+
+- E-Mail an alle Beta-Tester (Vorlage erstellen)
+- DELETE-Skript für Beta-DB-Daten
+- DNS-Wechsel sitereadyprototype → 410-Status oder Redirect
+
+---
+
+## 17. Roadmap (Phase A–D)
+
+### Phase A — Vor Stack-Modernisierung (~3 Tage Eigenarbeit)
+
+Parallel zu laufender Beta. Vorbereitung der Compliance-Grundlagen.
+
+- Markenrechts-Recherche instantpage.at
+- Versicherungs-Sourcing starten (Makler-Termin)
+- Beta-DB Aufräumstrategie definieren
+- Subprozessor-DPAs herunterladen + sichten (Anthropic, Stripe, Cloudflare, Supabase)
+- Code-Audit Cookie-Domain-Scope
+- Strategie-Entscheidungen (Abschnitt 1) durchgehen + festlegen
+- Stammdaten (Abschnitt 2) zusammenstellen
+
+### Phase B — Während Stack-Modernisierung (~10 Tage parallel)
+
+In TypeScript/Next.js-Rebuild integrieren. Memory: `project_production_refactor.md` Abschnitt "Code-Basis-Modernisierung".
+
+- AGB-Skeleton aus 3 WKO-Vorlagen kombiniert finalisieren (2 Tage)
+- AVV auf EU-SCC-Basis befüllen (1 Tag)
+- Plattform-Datenschutzerklärung mit allen Subprozessoren (1 Tag)
+- Plattform-Impressum (0,5 Tag)
+- Branchen-Pflichtfeld-Matrix Detail-Recherche (2 Tage / 4h via Subagents)
+- Defensive KI-Prompts für reglementierte Berufe (1 Tag)
+- Termin-Anfrage-Variante ohne Anliegen-Feld (0,5 Tag)
+- Disclaimer-Block + AGB-Klauseln für reglementierte Berufe (0,5 Tag)
+- AI Act Footer-Hinweis auf Kundenseiten (0,5 Tag)
+- Verarbeitungsverzeichnis Art 30 (1 Tag)
+
+### Phase C — Vor Live-Schaltung (~3 Tage Eigenarbeit)
+
+- UX-Schutzmechanismen (Pflicht-Checkboxen) (1 Tag)
+- Notice-and-Takedown-Prozess + abuse@ einrichten (0,5 Tag)
+- Datenpannen-Plan dokumentieren (0,5 Tag)
+- TOMs-Dokumentation mit konkretem Setup (1 Tag)
+- Trial-Cleanup + Cancellation-Cleanup-Crons aktivieren (0 Tage neue Arbeit)
+- Versicherung abschließen + Voraussetzungen erfüllen
+- Stripe Live-Verifikation abschließen (1–2 Wochen Lead-Time einplanen)
+- Beta-Tester informieren + Beta-Daten löschen
+- Markenanmeldung (sofern frei)
+
+### Phase D — Erste Wochen Live (laufend)
+
+- Self-Check vierteljährlich (siehe Abschnitt 19)
+- AI Act Stichtag 2.8.2026 im Kalender
+- Monitoring der Trigger-Schwellen (siehe Abschnitt 18)
+- Datenpannen-Übung intern (Probelauf)
+
+---
+
+## 18. Anwalt-Trigger-Schwellen
+
+> Bei einem dieser Ereignisse: Anwalt-Stunden buchen. Realistisch in den ersten 12 Monaten 0–2.000 € statt 9.450 € upfront.
+
+| Trigger | Aktion | Geschätzte Anwalts-Stunden |
+|---|---|---|
+| 30 zahlende Kunden | AGB+AVV Schluss-Sichtung | 5h, ~1.750 € |
+| 1.000 € MRR | komplette Audit | 8h, ~2.800 € |
+| Erste Reklamation/Abmahnung | sofortige Beratung | 2–5h, ~700–1.750 € |
+| Erster reglementierter Heilberuf-Kunde mit Sondersituation | Vorlagen-Spezial-Check | 2h, ~700 € |
+| Datenpanne | DSB-Verfahren-Beratung | 5h, ~1.750 € |
+| Geschäftsmodell-Änderung (B2C, neue Drittländer, neue Branchen) | Re-Audit | 5h, ~1.750 € |
+| AI Act Stichtag 2.8.2026 vorbereiten | optionale Vorab-Sichtung | 2h, ~700 € |
+
+### Wo das Restrisiko bei "ohne Anwalt" liegt
+
+| Stelle | Realistisches Risiko | Mitigation ohne Anwalt |
+|---|---|---|
+| Eigene Haftungsbegrenzung in AGB hält nicht | 5–10% Klauseln werden im Streit gekippt | nahe an WKO-Mustern bleiben + VSH-Fallback |
+| Reglementierter Beruf-Kunde verwendet Texte die § 53 ÄrzteG verletzen | UWG-Abmahnung an Kunden, Regress an dich | defensive Default-Prompts + Disclaimer + Inhaltsfreigabe-Pflicht in AGB |
+| Branchen-Pflichtfeld-Matrix hat Lücke | Mitstörerhaftung bei betroffenen Kunden | Self-Check vierteljährlich + WKO-Newsletter abonnieren |
+
+Kombiniert: ~20% Restrisiko. Mit IT-Haftpflicht-Paket gedeckt für die wirtschaftliche Dimension.
+
+---
+
+## 19. Self-Check vierteljährlich
+
+> Eigene Checkliste, ~2h pro Quartal. Per `/schedule`-Trigger automatisierbar (Background-Agent prüft + meldet Auffälligkeiten).
+
+### Checkliste
+
+- [ ] Subprozessor-Liste aktuell? (neuer Cloud-Service angebunden?)
+- [ ] Verarbeitungsverzeichnis aktuell? (neue Datenkategorie?)
+- [ ] DPAs der Subprozessoren noch gültig? (Stand prüfen, evtl. Updates)
+- [ ] WKO-Vorlagen aktualisiert? (Gesetzesänderung?) — Quelle: <https://www.wko.at/agb>
+- [ ] DSB-Pressemitteilungen geprüft? — Quelle: <https://www.dsb.gv.at/news.html>
+- [ ] AI-Act-Stichtage im Blick? — nächster: 2.8.2026
+- [ ] EU-U.S. Data Privacy Framework noch gültig? — Schrems-III-Status
+- [ ] Kunden-Wachstum gegen Anwalt-Trigger geprüft? (siehe Abschnitt 18)
+- [ ] Backup-Restore-Test durchgeführt? (in Staging)
+- [ ] Versicherungs-Voraussetzungen weiterhin erfüllt? (2FA, Backups, etc.)
+- [ ] Notice-and-Takedown-Reaktionszeiten eingehalten?
+- [ ] Datenpannen-Vorfälle dokumentiert + reflektiert?
+- [ ] Branchen-Pflichtfeld-Matrix für neue Branchen ergänzt?
+
+### Quartalsweise Aktion
+
+Self-Check-Ergebnis als Memory-Eintrag oder im internen `incidents.log` festhalten.
+
+---
+
+## 20. Quellenverzeichnis
+
+### EU-Originaltexte
+
+- DSGVO: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32016R0679>
+- EU-SCC Art 28: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32021D0915>
+- AI Act: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32024R1689>
+- DSA: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32022R2065>
+
+### WKO-Materialien (autoritativ AT)
+
+- AGB-Übersicht: <https://www.wko.at/agb>
+- IT-Betreiberdienstleistungen B2B AGB: <https://www.wko.at/oe/agb/agb-it-betreiberdienstleistungen-b2b.pdf>
+- IT-Programmierdienstleistungen B2B AGB: <https://www.wko.at/oe/agb/agb-it-programmierdienstleistungen-b2b.pdf>
+- IT-Software-Support B2B AGB: <https://www.wko.at/oe/agb/agb-software-support-b2b.pdf>
+- Impressum-Übersicht: <https://www.wko.at/internetrecht/website-impressum>
+- Impressum-Broschüre PDF: <https://www.wko.at/oe/internetrecht/das-korrekte-website-impressum.pdf>
+- ECG-Tool: <https://firmen.wko.at/Web/ECGHint.aspx>
+- Datenschutzerklärung-Checkliste: <https://www.wko.at/internetrecht/datenschutzerklaerung-checkliste-infopflichten-dsgvo-tkg-we>
+- Datenverarbeitung Webshop/Website: <https://www.wko.at/internetrecht/datenverarbeitung-webshop-website>
+- AI Act Übersicht: <https://www.wko.at/digitalisierung/ai-act-eu>
+- DSA Provider-Verpflichtungen: <https://www.wko.at/internetrecht/digital-services-act-verpflichtungen-provider>
+- Barrierefreiheits-Gesetz (BaFG) E-Commerce: <https://www.wko.at/internetrecht/barrierefreiheitsgesetz-e-commerce>
+
+### Behörden + Kammern
+
+- DSB Datenschutzbehörde: <https://www.dsb.gv.at/>
+- RIS — Bundesrecht: <https://www.ris.bka.gv.at/>
+- RTR KI-Servicestelle: <https://www.rtr.at/rtr/service/ki-servicestelle/ai-act/ki-kompetenz.de.html>
+- Sozialministeriumservice (BaFG-Vollzug): <https://www.sozialministeriumservice.gv.at/>
+- Österreichisches Patentamt (Marken): <https://see-ip.patentamt.at/>
+- EUIPO (EU-Marken): <https://www.tmdn.org/tmview/>
+- FMA: <https://www.fma.gv.at/>
+
+### Berufsrecht-Quellen für reglementierte Berufe
+
+- Ärztekammer Österreich: <https://www.aerztekammer.at/>
+- Zahnärztekammer: <https://www.zahnaerztekammer.at/>
+- Tierärztekammer: <https://www.tieraerztekammer.at/>
+- Apothekerkammer: <https://www.apothekerkammer.at/>
+- Rechtsanwaltskammer: <https://www.rechtsanwaelte.at/>
+- Notariatskammer: <https://www.notar.at/>
+- Kammer der Steuerberater und Wirtschaftsprüfer: <https://www.ksw.or.at/>
+- Bundeskammer der Ziviltechnikerinnen: <https://www.arching.at/>
+- Hebammen-Gremium: <https://www.hebammen.at/>
+
+---
+
+## Anhang — Verbindung zu anderen Repo-Dokumenten
+
+- [docs/business-case-kosten.md](business-case-kosten.md) — Wirtschaftlichkeit
+- [docs/Fragen_Anwaeltin_Instantpage.xlsx](Fragen_Anwaeltin_Instantpage.xlsx) — vor "ohne Anwalt"-Entscheidung erstellte Fragen-Sammlung; Inhalte können als Inspiration dienen
+- [docs/mockups/](mockups/) — Stil-Mockups
+- [CLAUDE.md](../CLAUDE.md) — Projekt-Anweisungen
+- [src/data.js](../src/data.js) — Branchen-Datenmodell (BRANCHEN, BRANCHEN_GRUPPEN)
+- [functions/s/[subdomain]/legal.js](../functions/s/[subdomain]/legal.js) — Impressum-Generator (BRANCHEN_KAMMER, addRequired)
+- [functions/_lib/generate.js](../functions/_lib/generate.js) — Text-Generierung (Prompt-Anpassungen für reglementierte Berufe)
+
+## Anhang — Verbindung zu Memory
+
+- `project_production_refactor.md` — Live-Roadmap (Stack, Operations, Hardening, Marketing)
+- `project_recipe_system_v1.md` — Kundenseiten-Architektur final
+- `project_kundenseiten_roadmap_2026-04-17.md` — Kundenseiten-Qualitäts-Roadmap
+- `project_design_references_live.md` — Editorial-Theme-Referenzen
+- `project_supabase_rls.md` — RLS-Status (Stand April 2026 für alle 4 Tabellen aktiv)
+- `feedback_rate_limiting_live.md` — Rate-Limiting erst Live (CF WAF)
+- `feedback_beta_fokus.md` — Beta = nur Look & Feel mit Freunden, keine Live-Features
+
+---
+
+*Ende Living Document. Stand 2026-05-01. Weiterentwickeln wann immer Strategie-Entscheidung getroffen, Stammdatum geklärt, neue Subprozessor angebunden, Branche reglementiert recherchiert, Anwalt-Trigger erreicht.*

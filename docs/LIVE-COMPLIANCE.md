@@ -1121,11 +1121,15 @@ Self-Check-Ergebnis als Memory-Eintrag oder im internen `incidents.log` festhalt
 
 #### WKO-Musterformulare (DOCX zum Befüllen)
 
+Lokale Kopien im Repo: [`docs/_archive/wko-muster/`](_archive/wko-muster/) — siehe README dort fuer Inventarliste + Aktualisierungs-Hinweise.
+
 - Hub Musterformulare: <https://musterformulare.wko.at/>
 - Hub Muster + Vorlagen: <https://www.wko.at/wko-muster-vorlagen>
-- AVV-Mustervertrag (Auftragsverarbeitung, dt+en) — DOCX
-- Verarbeitungsverzeichnis Art 30 für Verantwortliche: <https://www.wko.at/datenschutz/eu-dsgvo-verarbeitungsverzeichnis-verantwortliche-muster>
-- Verarbeitungsverzeichnis Art 30 für Auftragsverarbeiter: <https://www.wko.at/datenschutz/eu-dsgvo-verarbeitungsverzeichnis-auftragsverarbeiter-muster>
+- AVV-Mustervertrag (DE+EN) — lokal: [`AVV-Mustervertrag-DE.docx`](_archive/wko-muster/AVV-Mustervertrag-DE.docx) / [`-EN.docx`](_archive/wko-muster/AVV-Mustervertrag-EN.docx) / [`-DE.pdf`](_archive/wko-muster/AVV-Mustervertrag-DE.pdf), Quelle <https://wko.at/service/wirtschaftsrecht-gewerberecht/eu-dsgvo-mustervertrag-auftragsverarbeitung.html>
+- Data Breach Notification Behörde — lokal: [`DataBreach-Behoerde.pdf`](_archive/wko-muster/DataBreach-Behoerde.pdf)
+- Data Breach Notification Betroffene — Quelle <https://www.wko.at/datenschutz/eu-dsgvo-data-breach-notification-betroffene> (DOCX manuell laden, siehe README)
+- Verarbeitungsverzeichnis Art 30 Verantwortliche — Quelle <https://www.wko.at/datenschutz/eu-dsgvo-verarbeitungsverzeichnis-verantwortliche-muster> (DOCX manuell laden)
+- Verarbeitungsverzeichnis Art 30 Auftragsverarbeiter — Quelle <https://www.wko.at/datenschutz/eu-dsgvo-verarbeitungsverzeichnis-auftragsverarbeiter-muster> (DOCX manuell laden)
 - Dokumentationsvorlage Betroffenenrechte: <https://www.wko.at/datenschutz/eu-dsgvo-dokumentation-betroffenenrechte-muster>
 - Datenschutzerklärung Mitarbeiter (Muster): <https://www.wko.at/datenschutz/dsgvo-datenschutzerklaerung-mitarbeiter-muster>
 - KI-Guidelines-Vorlage Unternehmen: <https://musterformulare.wko.at/digitalisierung/ki-guidelines>

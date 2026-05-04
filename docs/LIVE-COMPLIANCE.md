@@ -650,6 +650,25 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 - Subprozessor-Liste auf instantpage.at/subprozessoren öffentlich
 - DPA mit allen Subprozessoren (siehe Abschnitt 4)
 
+### 11.7 DSFA — Datenschutz-Folgenabschätzung (Art 35 DSGVO)
+
+> Ergebnis der Vorprüfung gegen die WKO-Ausnahmen-Verordnung (BGBl II 108/2018). Pro Verarbeitungstätigkeit getrennt zu bewerten.
+
+| Verarbeitung | Ausnahme greift? | Ergebnis |
+|---|---|---|
+| Kunden-Stammdaten (Name, E-Mail, IBAN, Stripe-Subscription) | **Ja** — fällt unter "Kundenverwaltung, Rechnungswesen, Buchführung" der White List | **keine DSFA nötig** |
+| KI-Textgenerierung (Anthropic-API) für Kundenwebsites | **Nein** — nicht in White List enthalten | **DSFA-Vorprüfung erforderlich** `[OFFEN]` |
+| Hosting Endkundenseiten + Kontaktformular-Daten (Cloudflare Pages) | **Nein** — externes Hosting nicht aufgeführt | **DSFA-Vorprüfung erforderlich** `[OFFEN]` |
+
+**Vorgehensweise:**
+
+1. WKO-Online-Advisor zur DSFA-Pflicht-Prüfung durchlaufen (Quellen § 20)
+2. WKO-Ablaufplan als Strukturvorlage für die kurze DSFA verwenden
+3. Risiko-Bewertung pro Verarbeitung dokumentieren — bei niedrigem Risiko reicht eine kurze schriftliche Begründung warum keine vollständige DSFA nötig ist
+4. Ergebnis als Anhang zum Verarbeitungsverzeichnis Art 30 ablegen
+
+**Hinweis:** Die WKO-White-List entbindet nur von der DSFA — alle anderen DSGVO-Pflichten (Verarbeitungsverzeichnis, AVV, Informationspflichten) bleiben unberührt.
+
 ---
 
 ## 12. Operative Prozesse
@@ -739,10 +758,20 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 | Art 50 Abs 1 — Information der Endnutzer (Chatbot etc.) | Phase 1 N/A (kein Chatbot) — relevant wenn Managed Agent eingeführt |
 | Art 4 — KI-Kompetenz beim Anbieter | Selbststudium + Dokumentation, RTR-Servicestelle als Quelle |
 
+### Auslegung — Quality-Check + Kunden-Freigabe als Ausschlussgrund
+
+Laut WKO-Auslegung der Kennzeichnungspflicht (siehe `Kennzeichnungspflicht für KI-Inhalte` in § 20) entfällt die Art-50-Kennzeichnungspflicht für Texte, **wenn jemand im Betrieb den Text sichtet und freigibt**. Der bestehende SiteReady-Workflow (Quality-Score-Schwelle + verpflichtende Kunden-Freigabe vor Veröffentlichung) erfüllt diese Voraussetzung.
+
+**Konsequenz:** Der Footer-Hinweis bleibt als defensive Maßnahme (Transparenz gegenüber Endnutzern, Marketing-Vorteil), aber nicht zwingend rechtlich gefordert. Bei Streitfall stützt sich die Argumentation auf den dokumentierten Freigabeprozess (Memory: `project_recipe_system_v1.md`).
+
+**WKO-Wording-Empfehlung als Fallback:** „Dieser Text wurde mit Unterstützung von KI erstellt." — kurz, ausreichend, barrierearm.
+
 ### Quellen
 
 - AI Act Originaltext: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32024R1689>
 - WKO AI Act Übersicht: <https://www.wko.at/digitalisierung/ai-act-eu>
+- WKO Kennzeichnungspflicht KI-Inhalte: <https://www.wko.at/oe/gewerbe-handwerk/kennzeichnungspflicht-fuer-ki-inhalte>
+- WKO KI-Guidelines-Vorlage: <https://musterformulare.wko.at/digitalisierung/ki-guidelines>
 - RTR KI-Servicestelle: <https://www.rtr.at/rtr/service/ki-servicestelle/ai-act/ki-kompetenz.de.html>
 
 ### Aktionen
@@ -959,6 +988,8 @@ Self-Check-Ergebnis als Memory-Eintrag oder im internen `incidents.log` festhalt
 
 ### WKO-Materialien (autoritativ AT)
 
+#### Themen-Übersichten
+
 - AGB-Übersicht: <https://www.wko.at/agb>
 - IT-Betreiberdienstleistungen B2B AGB: <https://www.wko.at/oe/agb/agb-it-betreiberdienstleistungen-b2b.pdf>
 - IT-Programmierdienstleistungen B2B AGB: <https://www.wko.at/oe/agb/agb-it-programmierdienstleistungen-b2b.pdf>
@@ -969,8 +1000,43 @@ Self-Check-Ergebnis als Memory-Eintrag oder im internen `incidents.log` festhalt
 - Datenschutzerklärung-Checkliste: <https://www.wko.at/internetrecht/datenschutzerklaerung-checkliste-infopflichten-dsgvo-tkg-we>
 - Datenverarbeitung Webshop/Website: <https://www.wko.at/internetrecht/datenverarbeitung-webshop-website>
 - AI Act Übersicht: <https://www.wko.at/digitalisierung/ai-act-eu>
+- AI Act Kennzeichnungspflicht ab 08/2026: <https://www.wko.at/oe/gewerbe-handwerk/kennzeichnungspflicht-fuer-ki-inhalte>
 - DSA Provider-Verpflichtungen: <https://www.wko.at/internetrecht/digital-services-act-verpflichtungen-provider>
 - Barrierefreiheits-Gesetz (BaFG) E-Commerce: <https://www.wko.at/internetrecht/barrierefreiheitsgesetz-e-commerce>
+- DSGVO Übersicht: <https://www.wko.at/datenschutz/uebersicht>
+- Pflichten des Verantwortlichen: <https://www.wko.at/datenschutz/eu-dsgvo-pflichten-verantwortliche>
+
+#### DSFA — Datenschutz-Folgenabschätzung
+
+- Ablaufplan DSFA: <https://www.wko.at/datenschutz/eu-dsgvo-ablaufplan-folgenabschaetzung>
+- DSFA und vorherige Konsultation: <https://www.wko.at/datenschutz/eu-dsgvo-datenschutz-folgenabschaetzung-konsultation>
+- DSFA-Ausnahmen für IT-Dienstleister (BGBl II 108/2018): <https://www.wko.at/oe/information-consulting/unternehmensberatung-buchhaltung-informationstechnologie/it-dienstleistung/ausnahmen-datenschutz-folgenabschaetzung>
+
+#### Drittland-Datenverkehr
+
+- Prüfschema internationaler Datenverkehr: <https://www.wko.at/datenschutz/eu-dsgvo-pruefschema-internationaler-datenverkehr>
+- Internationaler Datenverkehr EU-USA: <https://www.wko.at/datenschutz/internationaler-datenverkehr-eu-usa>
+
+#### Datenpannen (Art 33/34 DSGVO)
+
+- Themen-Seite Meldung Datenschutzverletzungen: <https://www.wko.at/datenschutz/eu-dsgvo-meldung-von-datenschutzverletzungen>
+- Muster Behörden-Meldung (PDF): <https://www.wko.at/vlbg/gewerbe-handwerk/personenberatung-betreuung/eu-dsgvo-databreachnotification-behoerde.pdf>
+- Muster Benachrichtigung Betroffene: <https://www.wko.at/datenschutz/eu-dsgvo-data-breach-notification-betroffene>
+
+#### Sicherheit (TOMs)
+
+- Leitfaden technische und organisatorische Maßnahmen: <https://www.wko.at/oe/it-sicherheit/leitfaden-massnahmen-dsgvo-1.pdf>
+
+#### WKO-Musterformulare (DOCX zum Befüllen)
+
+- Hub Musterformulare: <https://musterformulare.wko.at/>
+- Hub Muster + Vorlagen: <https://www.wko.at/wko-muster-vorlagen>
+- AVV-Mustervertrag (Auftragsverarbeitung, dt+en) — DOCX
+- Verarbeitungsverzeichnis Art 30 für Verantwortliche: <https://www.wko.at/datenschutz/eu-dsgvo-verarbeitungsverzeichnis-verantwortliche-muster>
+- Verarbeitungsverzeichnis Art 30 für Auftragsverarbeiter: <https://www.wko.at/datenschutz/eu-dsgvo-verarbeitungsverzeichnis-auftragsverarbeiter-muster>
+- Dokumentationsvorlage Betroffenenrechte: <https://www.wko.at/datenschutz/eu-dsgvo-dokumentation-betroffenenrechte-muster>
+- Datenschutzerklärung Mitarbeiter (Muster): <https://www.wko.at/datenschutz/dsgvo-datenschutzerklaerung-mitarbeiter-muster>
+- KI-Guidelines-Vorlage Unternehmen: <https://musterformulare.wko.at/digitalisierung/ki-guidelines>
 
 ### Behörden + Kammern
 

@@ -186,22 +186,29 @@ Erwartungswert Direktangebot: **1.500–2.500 €/Jahr** (Faktor 5–10 teurer a
 
 Liste aller Drittdienste mit Datenverarbeitung. Pflicht: jeder mit DPA, in AVV-Anhang III gelistet, auf Subprozessor-Seite (instantpage.at/subprozessoren) öffentlich.
 
-| Anbieter | Funktion | Sitz | DPA-Status | Aktion |
+DPA-Status-Marker:
+- `[OFFEN]` — DPA noch nicht recherchiert
+- `[URL]` — DPA-URL recherchiert, Sign-off via Account-Settings ausstehend
+- `[SIGNIERT]` — Sign-off durch, Beleg im Account/Mail dokumentiert
+
+| Anbieter | Funktion | Sitz | DPA-URL / Quelle | Status |
 |---|---|---|---|---|
-| Cloudflare | DNS, CDN, Pages, R2, Custom Hostnames, Web Analytics | USA (mit EU-Servern) | `[OFFEN]` | DPA via Account-Settings |
-| Supabase | Datenbank, Storage, Auth | Frankfurt (EU) | `[OFFEN]` | DPA via Org → Legal |
-| Stripe | Zahlungsabwicklung | Irland (EU-Hauptsitz) + USA | `[OFFEN]` | DPA via Compliance-Section |
-| Anthropic | Claude API (Textgenerierung, Import-Klassifizierung) | USA | `[OFFEN]` | DPA via Console |
-| Microsoft 365 | E-Mail, Office | EU/USA | `[OFFEN]` | DPA via Microsoft |
-| easyname.at | Domain-Registrierung | Österreich | `[OFFEN]` | meist im AGB |
-| Resend (Mailing) | Transaktionale E-Mails | USA + EU | `[OFFEN]` | nur wenn entschieden |
-| PostHog Cloud EU | Product Analytics + Session Replay | EU | `[OFFEN]` | nur wenn entschieden |
-| Sentry | Error-Monitoring | USA | `[OFFEN]` | nur wenn entschieden |
-| remove.bg (Logo-Freistellung) | Bildverarbeitung | Deutschland | `[OFFEN]` | später Live |
-| Unsplash | Stockfotos via API | USA | `[OFFEN]` | später Live |
-| Google Places API | Business-Daten Import | USA | `[OFFEN]` | später Live |
+| Cloudflare | DNS, CDN, Pages, R2, Custom Hostnames, Web Analytics | USA (mit EU-Servern) | <https://www.cloudflare.com/cloudflare-customer-dpa/> | `[URL]` Sign-off via Account-Settings → Privacy |
+| Supabase | Datenbank, Storage, Auth | Frankfurt (EU) | <https://supabase.com/legal/dpa> | `[URL]` Sign-off via Dashboard → Org → Legal |
+| Stripe | Zahlungsabwicklung | Irland (EU-Hauptsitz) + USA | <https://stripe.com/legal/dpa> | `[URL]` automatisch Teil der Stripe Services Agreement |
+| Anthropic | Claude API (Textgenerierung, Import-Klassifizierung) | USA | <https://privacy.claude.com/en/articles/7996862-how-do-i-view-and-sign-your-data-processing-addendum-dpa> + Sample-PDF: [`docs/_archive/dpa/Anthropic-DPA-Sample.pdf`](_archive/dpa/Anthropic-DPA-Sample.pdf) | `[URL]` Sign-off via Console → Settings (DPA in Commercial Terms inkludiert) |
+| Microsoft 365 | E-Mail, Office | EU/USA | <https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA> | `[URL]` automatisch Teil der Online Services Terms |
+| easyname.at | Domain-Registrierung | Österreich | im AGB enthalten: <https://www.easyname.at/agb> | `[URL]` Akzept beim Account-Anlegen |
+| Resend (Mailing) | Transaktionale E-Mails | USA + EU | <https://resend.com/legal/dpa> | `[URL]` Sign-off via Account erst wenn entschieden (siehe § 1 #13) |
+| PostHog Cloud EU | Product Analytics + Session Replay | EU | <https://posthog.com/dpa> | `[URL]` Sign-off via Account erst wenn entschieden (§ 1 #15) |
+| Sentry | Error-Monitoring | USA | <https://sentry.io/legal/dpa/> | `[URL]` Sign-off via Account erst wenn entschieden (§ 1 #14) |
+| remove.bg (Logo-Freistellung) | Bildverarbeitung | Deutschland | <https://www.remove.bg/de/agb> (DPA in AGB) | `[URL]` later Live |
+| Unsplash | Stockfotos via API | USA | <https://unsplash.com/data-protection-addendum> | `[URL]` later Live |
+| Google Places API | Business-Daten Import | USA | <https://cloud.google.com/terms/data-processing-addendum> | `[URL]` later Live |
 
 **Drittland-Hinweis:** USA-Anbieter laufen aktuell unter EU-U.S. Data Privacy Framework. Status in Quartals-Self-Check prüfen — Schrems-III-Risiko nicht ausgeschlossen.
+
+**Sign-off-Reihenfolge fuer Phase 0:** Cloudflare → Supabase → Stripe → Anthropic → Microsoft. Jeder DPA mit Datum + Account-Beleg im internen `incidents.log` festhalten. Bei Account-Anlegen vor Live-Schaltung mit erfassen.
 
 ---
 

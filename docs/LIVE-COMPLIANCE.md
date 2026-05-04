@@ -801,25 +801,61 @@ Laut WKO-Auslegung der Kennzeichnungspflicht (siehe `Kennzeichnungspflicht für 
 
 `[OFFEN]` Markenrechtsrecherche für "instantpage.at" und "InstantPage" als Wortmarke.
 
+### Strategischer Rahmen
+
+instantpage.at ist als **oesterreichisches Vertrauensprodukt** positioniert (Memory `feedback_at_vertrauensprodukt.md`). Markenrecht-Pruefung folgt diesem Fokus:
+
+- **Primaere Pruefung: Oesterreichisches Patentamt** — AT-Markenschutz ist Phase-1-Bedarf
+- **Sekundaer: EUIPO** — wichtig wegen Vorrang von EU-Marken bei Konflikt mit AT-Anmeldung, aber kein Schutzziel in Phase 1
+- **Verwechslungsgefahr** wird am oesterreichischen Durchschnittskonsumenten gemessen — internationale Marken die in AT nicht aktiv vermarktet werden, sind weniger kritisch
+- **Anmeldungs-Strategie:** AT-Wortmarke ~280 € fuer Phase 1, EU-Marke ~850 € erst zu Beginn von Phase 2 (DACH/EU)
+
+### Vorab-Recherche-Stand 2026-05-04
+
+Web-Recherche ueber Justia/USPTO und WIPO — keine direkte EUIPO/Patentamt-Abfrage moeglich (CAPTCHA, JS-SPA).
+
+| Treffer | Inhaber | Quelle | Branchen-Konflikt |
+|---|---|---|---|
+| **INSTANTPAGE** US 4072262 | GO DADDY OPERATING COMPANY, LLC | USPTO | hoch — "Software fuer Erstellen, Posten, Pflegen von Websites" identische Branche |
+| **INSTAPAGE** US 5339935 | Instapage, Inc. | USPTO | mittel — Landing-Page-Software, klanglich aehnlich |
+| **instantpage.dev** | unbekannt, Konkurrenz-Domain aktiv | Web | niedrig — Domain-/SEO-Konflikt, kein Markenschutz nachweisbar |
+| **instant.page** | Open-Source-Projekt (Performance-Trick) | github.com | niedrig — anderer Use-Case |
+
+**Bewertung im AT-only-Kontext:**
+- GoDaddy/Instapage sind in AT nicht im B2B-KMU-Segment aktiv vermarktet → Verwechslungsgefahr beim AT-Durchschnittskonsumenten gering, aber nicht null
+- AT-Patentamt-Direkt-Abfrage steht aus
+
 ### Was zu prüfen ist
 
-| Quelle | Was |
-|---|---|
-| Österreichisches Patentamt — Markenregister | <https://see-ip.patentamt.at/> Wortmarke "InstantPage" in Klassen 35, 38, 42 |
-| EUIPO — EU-Markenregister | <https://www.tmdn.org/tmview/> dieselbe Recherche EU-weit |
-| Domain-Konflikte | instantpage.com, instantpage.de, instantpage.eu — sind die Inhaber identifizierbar? |
-| Sound-Ähnlichkeiten | "Instapage", "InstaPage", "Instant Page" |
+| Quelle | Was | Prioritaet |
+|---|---|---|
+| Österreichisches Patentamt — Markenregister | <https://see-ip.patentamt.at/> Wortmarke "instantpage" / "instant page" / "instapage" in Klassen 9, 35, 38, 42 | **hoch** |
+| EUIPO — EU-Markenregister (TMView/eSearch plus) | <https://www.tmdn.org/tmview/> + <https://euipo.europa.eu/eSearch/> dieselbe Recherche EU-weit | hoch |
+| WIPO Madrid Monitor — internationale Marken | <https://www3.wipo.int/madrid/monitor/> | mittel |
+| Domain-Konflikte | instantpage.com (GoDaddy), instantpage.de, instantpage.eu, instantpage.dev — Inhaber identifizieren | mittel |
+| Sound-Ähnlichkeiten | "Instapage", "InstaPage", "Instant Page", "InstaPay" (verwechselbar?) | hoch |
 
 ### Aufwand und Optionen
 
-- **Selbstrecherche:** ~1h, kostenlos
-- **WKO-Markenberatung:** kostenlos für Mitglieder, gibt qualifizierte Einschätzung
-- **Markenanwalt:** 200–500 €, falls Konflikt-Risiko unklar
+- **Selbstrecherche AT-Patentamt:** ~30 Min, kostenlos — primaere Pflicht
+- **WKO-Markenberatung:** kostenlos fuer Mitglieder, gibt qualifizierte Einschaetzung — Termin angefragt 2026-05-04
+- **Markenanwalt:** 200–500 €, falls Konflikt-Risiko nach WKO-Beratung weiter unklar
 
 ### Konsequenzen
 
-- Wenn frei: Anmeldung als AT-Wortmarke ~280 € (10 Jahre), als EU-Marke ~850 €
-- Wenn nicht frei: Brand-Wechsel überlegen — Marketing-Investment ist sonst potenziell zerstörbar
+- **Wenn AT-frei:** AT-Wortmarken-Anmeldung ~280 € (10 Jahre Schutz). EU-Anmeldung erst zu Phase-2-Beginn (DACH/EU)
+- **Wenn AT-belegt:** Brand-Wechsel zwingend — Marketing-Investment in `instantpage.at` einstellen, oesterreichisch klingende Brand-Alternativen brainstormen
+- **Wenn EU-Konflikt aber AT-frei:** Anwalt-Konsultation zu Verwechslungsgefahr-Risiko in AT (~500 €). AT-Anmeldung kann dennoch moeglich sein wenn EU-Marken-Inhaber nicht in AT taetig ist und keine Widerspruchsfrist nutzt.
+
+### Aktionen
+
+| Aktion | Status |
+|---|---|
+| AT-Patentamt SEE-IP Browser-Recherche | `[OFFEN]` |
+| EUIPO eSearch plus Browser-Recherche | `[OFFEN]` |
+| WKO-Markenberatung Termin (Mail raus 2026-05-04) | `[OFFEN]` |
+| Bei freiem Stand: AT-Wortmarke anmelden | `[BLOCKER]` vor erstem Marketing-Spend |
+| Bei Konflikt: Brand-Alternativen-Workshop | bei Trigger |
 
 ---
 

@@ -51,7 +51,7 @@ Diese Schritte VOR Code-Beginn anstoßen — manche brauchen 1–2 Wochen.
 
 | Aktion | Lead-Time | Status |
 |---|---|---|
-| Versicherung sourcen (IT-Haftpflicht-Paket) — siehe `docs/LIVE-COMPLIANCE.md` § 3 | 1–2 Wochen | `[OFFEN]` |
+| Versicherung über UBIT-Rahmenvertrag (Onlineantrag ubit-aon.at) — siehe `docs/LIVE-COMPLIANCE.md` § 3 | 3–5 Tage | `[OFFEN]` |
 | Markenrechts-Recherche instantpage.at | 1 Tag | `[OFFEN]` |
 | Geschäftskonto + Buchhaltungssoftware (sevDesk o.ä.) | 1 Woche | `[OFFEN]` |
 | Stripe Business-Verifikation für Live-Mode | 1–2 Wochen | `[OFFEN]` |
@@ -396,7 +396,7 @@ ab Woche 11: Phase 5 (Stabilisierung 3 Monate)
 ```
 
 **Externe Lead-Times bleiben unabhängig vom Bau-Tempo:**
-Stripe-Verifikation 1-2W, Versicherung 1-2W, DPA-Verträge 1W. Phase -1 anstoßen!
+Stripe-Verifikation 1-2W, Versicherung (UBIT-Onlineantrag) 3-5T, DPA-Verträge 1W. Phase -1 anstoßen!
 
 ---
 

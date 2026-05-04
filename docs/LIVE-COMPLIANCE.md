@@ -99,7 +99,7 @@ Pflichtdaten zum Befüllen — Voraussetzung für Impressum, AGB, AVV, Datenschu
 
 ### Bedarf — IT-Haftpflicht-Paket
 
-Bei e.U. mit Privathaftung ist die einzige nicht-verhandelbare Position. Korrekturen gegenüber früherem Plan: nicht nur VSH, sondern Kombi-Paket.
+Bei e.U. mit Privathaftung ist die einzige nicht-verhandelbare Position. Kombi-Paket aus Berufshaftpflicht + Cyber.
 
 | Baustein | Warum | Empfohlene Deckung |
 |---|---|---|
@@ -110,7 +110,46 @@ Bei e.U. mit Privathaftung ist die einzige nicht-verhandelbare Position. Korrekt
 | Datenschutzrechtsschutz | Anwaltskosten DSGVO-Verfahren | inkludiert |
 | Betriebshaftpflicht (oft inkludiert) | klassische Personen-/Sachschäden | Standard |
 
-### Anbieter-Optionen (AT-Markt)
+### Gewählter Bezugsweg — WKO/UBIT-Rahmenverträge `[ENTSCHIEDEN]`
+
+Über den Fachverband UBIT (Unternehmensberatung, Buchhaltung, IT) der WKO bestehen Rahmenverträge mit deutlich günstigeren Konditionen als Direktangebote am AT-Markt. Voraussetzung: UBIT-Mitgliedschaft (über WKO-Pflichtmitgliedschaft Fachgruppe IT typisch automatisch).
+
+**Onlineantrag:** [ubit-aon.at](https://ubit-aon.at) — Vertrieb über Aon Austria GmbH (Versicherungsmakler)
+
+**Schadenfälle:** Martin Zainzinger, +43 5 7800-528
+
+#### Baustein 1 — Haftpflicht + Berufsrechtsschutz (R+V Versicherung AG)
+
+Quellenbeleg: `docs/_archive/UBIT-Tarifblatt-Haftpflicht-2026.pdf` (gültig ab 01.01.2026)
+
+- **Versicherungssumme:** 2.511.981 €
+- **Standardprämie** (inkl. Vsteuer):
+  - Umsatz bis 350.000 €/Jahr: **150,59 €/Jahr**
+  - Umsatz 350.000–500.000 €/Jahr: **200,70 €/Jahr**
+- **Optionen** (Zuschläge werden einzeln auf die Grundprämie addiert, nicht summiert):
+  - Entfall Selbstbehalt Berufshaftpflicht: +15%
+  - Garantierte Jahreshöchstentschädigung 2,51 Mio. €: +100% auf Gesamtprämie
+  - Einschluss Umweltsanierungskosten: +20%
+  - Geltungsbereich weltweit (exkl. USA/CA/AU): +20%
+  - Einschluss Outdoortraining (Sublimit 1.125.100 €): +181,20 € fix
+  - Sachverständigen-Haftpflicht (gerichtlich beeidet): +100%
+  - CMC-Rabatt (Certified Management Consultant): −20%
+- **Erwarteter Endpreis** (Solo-e.U. < 350k Umsatz, ohne SB, mit Jahreshöchst): **~346 €/Jahr**
+
+#### Baustein 2 — Cyberversicherung (über Aon Austria)
+
+Eigenständiger Rahmenvertrag, separat zu beantragen. **Tarif noch nicht eingeholt** (`[OFFEN]`). Inkludiert laut WKO-Beschreibung:
+
+- 24/7-Krisenhotline (Rechts-/PR-Beratung, IT-Forensiker)
+- Datenschutzverletzungen, Verletzungen Geheimhaltungspflichten
+- Netzwerksicherheits-Vorfälle (Malware, DDoS, Ransomware)
+- Phishing, Hackerpressungen, Betrug durch Dritte
+
+Konkrete Deckungssummen, Prämien, Eigen-/Drittschäden-Aufteilung und DSGVO-Bußgeld-Klausel sind beim Aon-Kontakt zu erfragen.
+
+### Fallback-Anbieter (falls UBIT-Rahmenvertrag nicht greift)
+
+Falls die UBIT-Police aus inhaltlichen Gründen nicht ausreicht (offene Frage: Deckung für KI-generierte Inhalte einer SaaS-Plattform), zurück auf Direktangebote:
 
 - Helvetia
 - UNIQA
@@ -118,10 +157,7 @@ Bei e.U. mit Privathaftung ist die einzige nicht-verhandelbare Position. Korrekt
 - Generali
 - Allianz
 
-### Erwartungswerte
-
-- **Jahresprämie:** 1.500–2.500 € für Solo-e.U. mit ~5–50 Kunden
-- **Selbstbehalt:** typisch 1.000–5.000 €
+Erwartungswert Direktangebot: **1.500–2.500 €/Jahr** (Faktor 5–10 teurer als UBIT-Rahmenvertrag).
 
 ### Voraussetzungen die der Versicherer wahrscheinlich verlangt
 
@@ -137,11 +173,12 @@ Bei e.U. mit Privathaftung ist die einzige nicht-verhandelbare Position. Korrekt
 
 | Aktion | Status |
 |---|---|
-| Makler vom Steuerberater kontaktieren | `[OFFEN]` |
-| 2–3 Angebote vergleichen | `[OFFEN]` |
+| UBIT-Mitgliedschaft / Fachgruppe verifizieren (WKO-Login Stammdaten) | `[OFFEN]` |
+| Cyber-Tarifblatt von Aon anfordern (Martin Zainzinger, +43 5 7800-528) | `[OFFEN]` |
+| Bei Aon explizit fragen: Deckung für KI-generierte Inhalte einer SaaS-Plattform? Drittland-Datenflüsse? Voraussetzung Eigen-AGB akzeptiert? | `[OFFEN]` |
+| Onlineantrag Haftpflicht + Cyber via [ubit-aon.at](https://ubit-aon.at) | `[OFFEN]` |
 | Police abschließen vor Live-Schaltung | `[BLOCKER]` |
 | Voraussetzungen erfüllen + dokumentieren | `[OFFEN]` |
-| Beim Makler explizit fragen: Deckung für KI-generierte Inhalte? Drittland-Datenflüsse? Voraussetzung Eigen-AGB akzeptiert? | `[OFFEN]` |
 
 ---
 

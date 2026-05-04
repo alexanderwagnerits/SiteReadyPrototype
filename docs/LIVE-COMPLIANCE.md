@@ -652,22 +652,68 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 
 ### 11.7 DSFA — Datenschutz-Folgenabschätzung (Art 35 DSGVO)
 
-> Ergebnis der Vorprüfung gegen die WKO-Ausnahmen-Verordnung (BGBl II 108/2018). Pro Verarbeitungstätigkeit getrennt zu bewerten.
+> Vorprüfung dokumentiert 2026-05-04 nach WKO-Methodik. Geprüft gegen drei Quellen: White List (BGBl II 108/2018), Black List (DSB-Verordnung 278/2018), 9 EDSA-WP248-Kriterien (Hohes Risiko ab 2 erfüllten Kriterien).
 
-| Verarbeitung | Ausnahme greift? | Ergebnis |
+#### Pruefergebnis pro Verarbeitungstaetigkeit
+
+##### A) Kunden-Stammdaten (Name, E-Mail, IBAN, Stripe-Subscription)
+
+| Pruefung | Ergebnis |
+|---|---|
+| White List BGBl II 108/2018 | **Greift** — "Kundenverwaltung, Rechnungswesen, Buchführung" |
+| EDSA-WP248-Kriterien | 0 von 9 erfüllt |
+| Black List DSB-VO 278/2018 | nicht anwendbar |
+
+**→ Keine DSFA noetig.** White-List-Ausnahme ausreichend.
+
+##### B) KI-Textgenerierung (Anthropic-API) fuer Kundenwebsites
+
+Verarbeitete Daten: Firmen-Stammdaten (B2B, kein Personenbezug ueber Inhaber-Vorname/Nachname/E-Mail hinaus), Berufsbezeichnung, Branche. Output: deskriptive Texte ueber das Unternehmen.
+
+| EDSA-Kriterium (WP248) | Erfuellt? | Begruendung |
 |---|---|---|
-| Kunden-Stammdaten (Name, E-Mail, IBAN, Stripe-Subscription) | **Ja** — fällt unter "Kundenverwaltung, Rechnungswesen, Buchführung" der White List | **keine DSFA nötig** |
-| KI-Textgenerierung (Anthropic-API) für Kundenwebsites | **Nein** — nicht in White List enthalten | **DSFA-Vorprüfung erforderlich** `[OFFEN]` |
-| Hosting Endkundenseiten + Kontaktformular-Daten (Cloudflare Pages) | **Nein** — externes Hosting nicht aufgeführt | **DSFA-Vorprüfung erforderlich** `[OFFEN]` |
+| 1 Bewertung/Einstufung Personen | nein | Beschreibung Firma, kein Personen-Profiling |
+| 2 Automatisierte Entscheidung mit Rechtswirkung | nein | Output ist Marketing-Text, keine rechtliche Entscheidung |
+| 3 Systematische Ueberwachung | nein | — |
+| 4 Vertrauliche / hochpersoenliche Daten | nein | B2B-Stammdaten, keine Art-9-Kategorien |
+| 5 Datenverarbeitung in grossem Umfang | nein | pro Verarbeitung kleine Datenmenge, einmalig pro Kunde |
+| 6 Datensatzabgleich/-zusammenfuehrung | nein | — |
+| 7 Schutzbeduerftige Personen | nein | Adressat sind B2B-Unternehmer |
+| 8 Innovative Technologie | **ja** | KI-API ist neuartige Verarbeitung |
+| 9 Verwehrung Rechte/Dienste | nein | — |
 
-**Vorgehensweise:**
+**1 von 9 Kriterien erfuellt → keine DSFA-Pflicht** (Schwelle 2+).
 
-1. WKO-Online-Advisor zur DSFA-Pflicht-Prüfung durchlaufen (Quellen § 20)
-2. WKO-Ablaufplan als Strukturvorlage für die kurze DSFA verwenden
-3. Risiko-Bewertung pro Verarbeitung dokumentieren — bei niedrigem Risiko reicht eine kurze schriftliche Begründung warum keine vollständige DSFA nötig ist
-4. Ergebnis als Anhang zum Verarbeitungsverzeichnis Art 30 ablegen
+**→ Keine vollstaendige DSFA noetig.** Diese schriftliche Vorpruefung als Dokumentation ausreichend.
 
-**Hinweis:** Die WKO-White-List entbindet nur von der DSFA — alle anderen DSGVO-Pflichten (Verarbeitungsverzeichnis, AVV, Informationspflichten) bleiben unberührt.
+##### C) Hosting Endkundenseiten + Kontaktformular-Daten (Cloudflare Pages)
+
+Verarbeitete Daten: Endkunden-Eingaben aus Kontaktformularen der Kunden-Websites (Name, E-Mail, Nachricht). Web-Logs Cloudflare-seitig (IP-pseudonymisiert).
+
+| EDSA-Kriterium | Erfuellt? | Begruendung |
+|---|---|---|
+| 4 Vertraulich / hochpersoenlich | nein | Standard-Kontaktformular-Felder |
+| 5 Grosser Umfang | nein | Anfangs klein, lineare Skalierung mit Kundenanzahl, kein zentrales Profiling |
+| 7 Schutzbeduerftige | nein | — |
+| 8 Innovative Technologie | nein | Standard-Web-Hosting |
+| restliche | nein | — |
+
+**0 von 9 Kriterien erfuellt → keine DSFA-Pflicht.**
+
+**→ Keine DSFA noetig.** Hosting ist Standard-Web-Verarbeitung.
+
+#### Gesamtergebnis
+
+Fuer alle drei Verarbeitungstaetigkeiten von instantpage.at ist **keine vollstaendige DSFA nach Art 35 DSGVO erforderlich**. Diese Doku-Sektion gilt als Dokumentation der Vorpruefung und wird als Anhang zum Verarbeitungsverzeichnis Art 30 gefuehrt.
+
+**Re-Evaluation noetig wenn:**
+- Personenanzahl deutlich zunimmt (Kriterium 5 "grosser Umfang") — Schwellenwert: Re-Pruefung bei >1.000 zahlenden Kunden
+- Neue Verarbeitungstaetigkeit hinzukommt (z.B. Profiling der Endkunden, Newsletter-Tracking, Behavioral Analytics)
+- KI-Generierung um Personen-bezogene Aussagen erweitert wird (z.B. AI-Mitarbeiter-Texte)
+- Sensible Branchen-Daten (Gesundheit, Strafregister) ins Spiel kommen
+- DSB ihre Black List BGBl II 278/2018 erweitert
+
+**Hinweis:** Die White-List-Ausnahme entbindet nur von der DSFA — alle anderen DSGVO-Pflichten (Verarbeitungsverzeichnis Art 30, AVV mit Subprozessoren, Informationspflichten Art 13/14, Betroffenenrechte) bleiben unberuehrt.
 
 ---
 

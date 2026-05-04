@@ -1,8 +1,8 @@
-# SiteReady LIVE — Kostenrechnung für Business Case
+# instantpage.at LIVE — Kostenrechnung für Business Case
 
 ## Kontext
 
-SiteReady ist ein AI-Website-Builder für KMU (Handwerker, Ärzte, Gastro etc.).
+instantpage.at ist ein Website-Service für österreichische KMU (Handwerker, Ärzte, Gastro etc.) — siehe `PRODUCT.md` § 1 + § 2.
 Der Kunde beantwortet einen Fragebogen, die AI generiert eine fertige Website.
 Optional wird eine bestehende Website oder ein Google Business Profil importiert.
 Ein digitaler Betreuer (AI-Agent) überwacht und optimiert die Website laufend.

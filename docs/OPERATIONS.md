@@ -64,7 +64,7 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 
 **Trial / Subscription:**
 - `trial_started` (actor: system) — trial_expires_at gesetzt
-- `trial_extended` (actor: admin) — +7d / +14d
+- `trial_extended` (actor: admin) — +7d / +14d (Kulanz-Verlaengerung bei technischen Problemen waehrend Trial; nicht im AGB als Kunden-Recht zugesichert, ausschliesslich Admin-getrieben)
 - `trial_expired_cleanup` (actor: system) — Cron-Job-Cleanup
 - `checkout_completed` (actor: system, "via Stripe") — Stripe-Webhook
 - `payment_succeeded` (actor: system, "via Stripe")
@@ -107,7 +107,7 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 
 ## 2. Email-Templates (Lifecycle)
 
-`[OFFEN]` — vor Live-Schaltung als Markdown-Vorlagen erstellen. Provider: Resend / Postmark (`[OFFEN]`).
+`[OFFEN]` — vor Live-Schaltung als Markdown-Vorlagen erstellen. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
 
 | Template | Trigger | Inhalt |
 |---|---|---|

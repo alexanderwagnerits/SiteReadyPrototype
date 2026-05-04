@@ -54,14 +54,58 @@ Konkret betroffen:
 
 ## 1. Vision + Kernversprechen
 
-`[OFFEN]` — aus `_archive/PROJECT-STAND-MAERZ-2026.md` migrieren + an instantpage.at-Brand anpassen.
+**Vision**
+Eine moderne, branchengerechte Website ist Grundausstattung für jeden Betrieb. instantpage.at liefert sie als Service — vollständig konfiguriert, auf österreichische Standards abgestimmt, ohne Agentur-Aufwand.
 
-Kernversprechen (Vorabentwurf):
-> Sag uns wer du bist und was du machst. Wir bauen die Website, die zu deiner Branche passt — automatisch.
+**Kernversprechen**
+> Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — fertig konfiguriert, mit allen rechtlichen Pflichtangaben, sofort online.
+
+**Was instantpage.at bewusst nicht ist**
+- Kein Website-Builder. Sie treffen keine Design-Entscheidungen.
+- Kein generisches Template-Tool. Jede Berufsgruppe bekommt eine eigene, kuratierte Vorlage.
+- Kein Marketing-Vehikel für Tech-Stack. Die eingesetzte Technik bleibt im Hintergrund.
+
+**Wie die Plattform funktioniert**
+Branchenspezifische Vorlagen werden manuell kuratiert. Texte für Hero, Leistungen, FAQ und Kurzbeschreibung entstehen automatisiert auf Basis der Eingaben. Pflichtangaben (Impressum, Datenschutzerklärung) werden aus den Stammdaten vorbelegt.
+
+**Tonalität gegenüber Endkunden**
+Sachlich, ohne Tech- oder KI-Buzzwords. Wo die Plattform automatisiert arbeitet, wird das transparent gekennzeichnet — gemäß AI-Act-Disclosure-Pflicht ab August 2026.
 
 ## 2. Zielgruppe + Markt
 
-`[OFFEN]` — aus `_archive/PROJECT-STAND-MAERZ-2026.md` "Zielgruppe & Markt" + Memory `project_recipe_system_v1.md` "Markt-Positionierung".
+**Zielgruppe**
+Österreichische Klein- und Mittelbetriebe mit lokalem Geschäft — Betriebe, deren Website Information, Erreichbarkeit und Vertrauen vermitteln muss, ohne dass eigene Webentwicklungs-Ressourcen vorhanden sind.
+
+**Unterstützte Berufsgruppen zum Live-Start (12)**
+
+| Berufsgruppe | Beispielberufe |
+|---|---|
+| Handwerk | Elektriker, Installateur, Maler, Tischler, Fliesenleger |
+| Gastro | Restaurant, Café, Bar, Bäckerei, Konditorei |
+| Gesundheit | Arzt, Therapeut, Apotheke (mit Sonderbehandlung wegen RAO und Heilmittelwerbegesetz) |
+| Dienstleistung | Coach, Berater, Trainer, Steuerberater, Anwalt |
+| Bildung | Sprachschule, Trainer, Nachhilfe |
+| Tourismus | Pension, Ferienwohnung, Reisedienstleister |
+| Handel | Kleinhandel, Boutique, Fachgeschäft |
+| Mobilität | KFZ-Werkstatt, Autohändler, Fahrschule |
+| Agrar | Bauernhof, Imker, Direktvermarkter |
+| Industrie | kleine Produktionsbetriebe, technische Dienstleister |
+| Kosmetik | Friseur, Kosmetikstudio, Massage |
+| Kultur | Künstler, Galerie, kleine Veranstalter |
+
+Recipe-Mapping (Look-Optionen pro Berufsgruppe) in [`RECIPE-SYSTEM.md`](RECIPE-SYSTEM.md).
+
+**Marktgröße Österreich**
+Rund 190.000 Betriebe sind potenzielle Kunden — etwa 120.000 im Handwerk, 30.000 in der Gastronomie, 40.000 in den übrigen Berufsgruppen.
+
+**Bewusst außerhalb des Fokus**
+- Künstler-, DJ- und Influencer-Profile (Linktree- und Komi-Segment)
+- Editorial-Magazine mit individuellem Design-Anspruch (Webflow-Segment)
+- Konzerne und Enterprise-Kunden (Custom-Agentur-Segment)
+- Privatseiten ohne gewerblichen Hintergrund
+
+**Geografie**
+Zum Live-Start ausschließlich Österreich. Erweiterung auf DACH und EU ist für eine spätere Ausbaustufe vorgesehen — siehe [`MIGRATION-PLAN.md`](MIGRATION-PLAN.md) § 8.5.
 
 ## 3. Pricing + Pläne
 
@@ -125,22 +169,17 @@ Auto Quality-Check nach jeder Generierung — Score 0-100 (Title, Meta-Descripti
 
 ## 4. Feature-Matrix pro Plan
 
-`[OFFEN]` — aus Memory `feedback_pricing_features.md` + `project_production_refactor.md` "Abo-Pläne".
+Gruppierung nach Wert-Kategorien (Memory `feedback_pricing_features.md`: stärkste Features zeigen, keine Selbstverständlichkeiten wie "responsive" oder "Logo-Upload").
 
-Vorabskizze:
-
-| Feature | Starter | Professional |
+| Bereich | Starter (16 € / 14 € jährlich) | Professional (29 € / 25 € jährlich) |
 |---|---|---|
-| AI-generierte Website | ✓ | ✓ |
-| Recipe-System (Berufsgruppen + Looks) | ✓ | ✓ |
-| Self-Service-Portal | ✓ | ✓ |
-| Subdomain (`firma.instantpage.at`) | ✓ | ✓ |
-| Custom Domain (`www.firma.at`) | — | ✓ |
-| Ohne instantpage-Branding | — | ✓ |
-| Cloudflare Web Analytics (cookieless) | — | ✓ |
-| Monatlicher Website-Report | — | ✓ |
-| AI-Sichtbarkeit (llms.txt, robots.txt für AI-Crawler) | — | ✓ |
-| Suchmaschinen-Indexierung (IndexNow) | — | ✓ |
+| **Inhalte** | KI-Texte für deine Branche, branchenspezifische Leistungen, FAQ-Automatik | identisch |
+| **Rechtssicherheit** | Impressum + Datenschutzerklärung automatisch, Bildrechte-Workflow, kein Cookie-Banner auf der Kundensite | identisch |
+| **Sichtbarkeit** | Google-Maps eingebunden, Schema.org, Sitemap, mobile-optimiert | + AI-Sichtbarkeit (llms.txt für ChatGPT/Perplexity), IndexNow für Bing/Yandex |
+| **Domain** | Subdomain (firma.instantpage.at), SSL automatisch | + eigene Domain (www.firma.at) inkl. Setup-Anleitung |
+| **Erreichbarkeit** | Kontaktformular mit Mail-Zustellung | identisch |
+| **Kontrolle** | Self-Service-Portal mit Logo, Fotos, Bewertungen, Team, Galerie und FAQ | + Besucher-Statistiken (cookielos), monatlicher Website-Report, ohne instantpage-Branding |
+| **Hilfe** | Wissensdatenbank, Diagnose-Assistent, Support-Mail (24–48h Antwort) | identisch |
 
 ## 5. Pre-Purchase-Onboarding (Fragebogen)
 
@@ -247,7 +286,21 @@ In jedem Tab unten: Auto-Check (Logo lädt? Mail eingestellt? Domain konfigurier
 
 ## 9. Roadmap
 
-`[OFFEN]` — Public- vs. Internal-Roadmap noch zu definieren. Quartalsweise Major-Releases laut Memory `project_production_refactor.md` "Release-Rhythmus".
+**Public Roadmap** (mit Voting/Featurebase): **kein Public Roadmap zum Live-Start**. KMU-Zielgruppe nutzt Voting-Tools selten — Aufwand vs. Nutzen unverhältnismäßig (siehe Memory `project_production_refactor.md` „Public Roadmap & Feedback-Loop"). Erst bei 500+ Kunden überlegen.
+
+**Public Changelog** unter `instantpage.at/changelog`:
+- Quartalsweise Major-Releases mit klarem Thema (z.B. Q1: „Termin-Integration", Q2: „AI-Schreibassistent", Q3: „Pro-Plan launched", Q4: „Berufsgruppen-Refactor")
+- Dazwischen Bugfixes und kleine Verbesserungen kontinuierlich, ohne großen Marketing-Push
+- Eintragsformat in KMU-Sprache, nicht technisch
+
+**Geparkte Quartal-Updates (Backlog):**
+- **Portal-Inbox + Anfragen-Dashboard** — heute: Kontakt-/Reservierungs-/Termin-Formulare laufen als Pure Forwarder direkt an Kunden-Mailbox (siehe LIVE-COMPLIANCE.md Anhang IV). Quartal-Update: optionale Hybrid-Variante mit Portal-Inbox (Backup, Anfragen-Übersicht, Statistik, Spam-Filter). Nicht Live-Day-1-Pflicht.
+
+**Kommunikation pro Major-Release:**
+- Vor Release: Newsletter-Teaser („Nächste Woche kommt …")
+- Bei Release: Changelog-Eintrag + Newsletter + In-App-Banner + ggf. Tutorial-Video
+
+**Internal Roadmap:** in [`MIGRATION-PLAN.md`](MIGRATION-PLAN.md) (Phasen 0–4) und Memory `project_production_refactor.md`. Nicht öffentlich.
 
 ---
 

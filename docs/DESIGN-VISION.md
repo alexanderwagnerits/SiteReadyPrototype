@@ -124,17 +124,79 @@ Memory `project_design_references_live.md` nennt nur cpg.at + Komi (für Custome
 
 ### 6. Portal-Design-Sprache
 
-**Was fehlt:** Memory `project_portal_polish_offen.md` listet die Schwächen — keine Lösung dokumentiert.
+**Was fehlt:** Konkrete Specs fuer das Portal-Design. Prototyp hat funktionale Basis, visuell durchwachsen — Quellen: User-Feedback ("strukturell ja, visuell durchwachsen") + Polish-Audit Etappe 1 (28.04.2026, Commit `631c06a`).
 
-**Outcome:**
-- **Information-Architecture:** Sidebar-Gruppen final (heute schon angefangen, durchdenken)
-- **Card-Patterns:** Eine `<PortalCard>`-Komponente standardisiert (heute 3 verschiedene Header-Patterns)
+**Outcome — High-Level:**
+- **Information-Architecture:** Sidebar-Gruppen final (im Prototyp schon strukturiert, im Live ueberpruefen)
 - **Form-Patterns:** kontextuelle Hilfe, Inline-Validation, Save-Indikatoren, Optimistic-Updates
 - **Live-Preview-UX im Design-Tab:** wie genau soll das aussehen (Split-View? Modal? Slide-Over?)
-- **Mobile-Portal-UX:** heute durchwachsen, für Live spec'n
+- **Mobile-Portal-UX:** im Prototyp durchwachsen, fuer Live spec'n
 - **Settings/Konto-Bereich-Design**
 
-**Connection:** baut auf Block 4 Plattform-Design-System
+**Outcome — Polish-Specs (aus Prototyp-Audit, fuer Live-Bau bindend):**
+
+#### 6.1 Standard-Card-Komponente `<PortalCard>`
+
+Im Prototyp existieren ~3 verschiedene Header-Patterns (SectionHeader mit Border-Bottom, ad-hoc inline, Sub-Card-Patterns). Im Live-Bau **eine** Komponente:
+
+```tsx
+<PortalCard
+  title="Grunddaten"
+  sub="Firmenname und Kurzbeschreibung erscheinen oben auf Ihrer Website"
+  action={<Button>Hinzufuegen</Button>}
+>
+  {children}
+</PortalCard>
+```
+
+Alle Form-Sections, Upload-Sections, Listen-Sections nutzen diese Komponente.
+
+#### 6.2 Card-Padding-Skala
+
+**Im Live: einheitlich 24/28** (statt im Prototyp 20/24 fuer Upload-Cards vs. 24/28 fuer Form-Cards). 24px horizontal, 28px vertikal. Bringt visuelle Ruhe.
+
+#### 6.3 Button Hover/Active-States
+
+Alle interaktiven Elemente bekommen Feedback (im Prototyp viele Buttons funktional ohne Hover):
+
+| Button-Typ | Hover | Active | Transition |
+|---|---|---|---|
+| Primary | `transform: translateY(-1px)` + `box-shadow: 0 4px 12px rgba(0,0,0,.08)` | `translateY(0)` | 150ms ease-out |
+| Secondary | `background-color` 4 % dunkler | `background-color` 8 % dunkler | 150ms ease-out |
+| Icon (×, Ersetzen, Hochladen) | `opacity: 1` (Default 0.7) + `background: rgba(0,0,0,.04)` | `background: rgba(0,0,0,.08)` | 120ms ease-out |
+| Destructive | `background-color` 6 % dunkler + `box-shadow: 0 0 0 3px rgba(red,.1)` | wie Hover ohne Shadow | 150ms |
+
+#### 6.4 Progress-Visualisierung Einrichtungsassistent
+
+Prototyp: reine Liste mit ✓/●. Live: **Mini-Donut „X/Y Pflicht"** prominent oben + Liste darunter. SVG-Donut, animierter Stroke-Dasharray bei Aenderung (300ms ease).
+
+#### 6.5 Mikro-Animationen
+
+| Trigger | Animation | Timing |
+|---|---|---|
+| Tab-Wechsel (Sidebar-Klick → Tab-Inhalt) | Fade-in + 4px Slide-up | 200ms ease-out |
+| Card-Insert (neue Leistung/Bewertung/Galerie-Item) | Slide-down + Fade-in, max-height 0 → auto | 220ms ease-out |
+| Toast erscheinen | Slide-up von unten + Fade-in | 180ms ease-out (enter), 250ms ease-in (exit nach 3s) |
+| Save-Indikator | Pulse-Animation auf Save-Icon (scale 1 → 1.1 → 1) | 400ms ease-in-out |
+| Stil-Wechsel im Design-Tab | Cross-fade zwischen Preview-iframes | 300ms ease |
+
+Alle anderen Default-Transitions: 150ms ease-out (Standard fuer Hover, Color, Background).
+
+#### 6.6 Typographie-Skala
+
+Prototyp nutzt 12+ Stufen (0.65/0.68/0.72/0.74/0.78/0.8/0.82/0.85/0.88/0.9/0.92/.95/1rem). Live: **5 Stufen** mit klarer Hierarchie:
+
+| Token | Wert | Use |
+|---|---|---|
+| `text-xs` | 0.75rem (12px) | Meta, Captions, Badges |
+| `text-sm` | 0.875rem (14px) | Sub-Texte, Form-Hints |
+| `text-base` | 1rem (16px) | Body, Form-Inputs |
+| `text-lg` | 1.125rem (18px) | Card-Titles, Section-Sub-Heads |
+| `text-xl` | 1.375rem (22px) | Section-Heads |
+
+(Headlines `text-2xl` 1.75rem und groesser bleiben dem Marketing-Site vorbehalten — Block 5.)
+
+**Connection:** baut auf Block 4 Plattform-Design-System.
 
 ---
 

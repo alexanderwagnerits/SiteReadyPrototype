@@ -32,7 +32,7 @@
 
 - **Alt:** SiteReady (Prototyp)
 - **Neu:** instantpage.at (Live)
-- **Rechtsträger:** Wagner IT Services e.U. (`[OFFEN]` final bestätigen)
+- **Rechtsträger:** Wagner IT-Solutions e.U. (FN 609574h, HG Wien) — siehe Memory `project_unternehmensdaten.md` und `LIVE-COMPLIANCE.md` § 2
 
 Brand-Wechsel-Begründung in Memory `project_production_refactor.md` "Operative Live-Vorbereitung — Brand".
 

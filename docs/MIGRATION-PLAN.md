@@ -34,8 +34,8 @@
 | **Brand-Wechsel** SiteReady → instantpage.at | Domain bereits gesichert, Logo vorhanden. Alle Marketing- und Public-Faces unter neuem Namen. |
 | **Stack-Modernisierung** | CRA + Vanilla-JS war Prototyp-tauglich, ist für zahlendes Live-Produkt nicht angemessen. TypeScript + Next.js + Drizzle + Zod + shadcn/ui ist Industry-Standard 2026. |
 | **AT-only Phase 1** | Keine OSS, keine Stripe-Tax-Komplikationen, kein FAGG-Detail-Schutz. DACH/EU als Phase 2. |
-| **B2B-only** mit UID-Pflicht | Vereinfacht FAGG, vereinfacht USt, klare Zielgruppe. |
-| **Compliance ohne Anwalt** | Phase-1-Live mit Eigenarbeit + offiziellen Quellen. Anwalt Trigger-basiert ab definierten Schwellen. Siehe `docs/LIVE-COMPLIANCE.md`. |
+| **B2B-only mit Selbsterklaerung (UID optional)** | Vereinfacht FAGG, vereinfacht USt, klare Zielgruppe. Kleinunternehmer/Soloselbstaendige/Vereine ohne UID nicht ausschliessen. Siehe `LIVE-COMPLIANCE.md` § 1 #1 (revidiert 2026-05-04). |
+| **Compliance Tier-Modell** | 7-Schichten-Strategie (Anwalt-Foundation + externe Tools + saubere Architektur + compliance-reviewer Subagent + CHANGELOG + jaehrliches Anwalts-Review + Cyber-Versicherung). Anwalt einmalig fuer AGB/AVV/DSE-Setup PFLICHT vor Stripe-Live. Siehe `docs/LIVE-COMPLIANCE.md` "Compliance-Strategie". |
 | **Recipe-System v1** als Kundenseiten-Architektur | Branchen-spezifische Looks statt generischer Stile. 12 Berufsgruppen × 1–4 Looks = 24 Recipes. Siehe `docs/RECIPE-SYSTEM.md`. |
 | **Beta = nur Look & Feel** | Keine Live-Features im Prototyp nachbauen. (Memory `feedback_beta_fokus.md`) |
 | **Live-Repo früh anlegen** (Woche 3, nicht Woche 13) | Stack ist komplett anders (TS+Next.js statt JS+CRA). Mockups + Design-Vision-Spec ab Block B direkt im Ziel-Repo entstehen lassen. Spart Umzug + nur ein Ort für Live-Arbeit. |
@@ -58,7 +58,7 @@ Diese Schritte VOR Code-Beginn anstoßen — manche brauchen 1–2 Wochen.
 | Subprozessor-DPAs herunterladen + sichten | 1 Tag | `[OFFEN]` |
 | Steuerberater zu Pricing-USt-Frage | 1 Termin | `[OFFEN]` |
 | Cloudflare for SaaS Setup (Custom Hostnames) | 1 Tag | `[OFFEN]` |
-| Mailing-Provider entscheiden (Resend/Postmark) + Account | 1 Tag | `[OFFEN]` |
+| Resend-Account anlegen + SPF/DKIM/DMARC fuer instantpage.at | 1 Tag | `[OFFEN]` (Provider entschieden 2026-05-04: Resend) |
 | PostHog Cloud EU Account | 30 Min | `[OFFEN]` |
 | Sentry Account | 30 Min | `[OFFEN]` |
 | Domain-DNS Konfiguration instantpage.at | 1 Tag | `[OFFEN]` |
@@ -312,7 +312,9 @@ Erweitert gegenüber Prototyp um:
 - CI/CD + Lighthouse-CI + Wrangler.toml + Staging-Environment
 - Doku aus Prototyp-Repo komplett kopieren + alle `siteready.at` → `instantpage.at`
 - Memory-System neu aufsetzen unter `~/.claude/projects/<neuer-pfad>/memory/` (Memory-Übernahme nach § 6)
-- MCP + Skills + Subagents (siehe Abschnitt 7)
+- **Compliance-Strategie Tier-Modell aktivieren** — Anwalt-Termin fixiert (Tier 1, Pflicht vor Stripe-Live), Klaro + Cookiebot-Reserve (Tier 2 Tools), `config/legal-values.ts` als Single-Source-of-Truth angelegt (Tier 3). Siehe `LIVE-COMPLIANCE.md` "Compliance-Strategie".
+- **`compliance-reviewer` Subagent** in `.claude/agents/` anlegen — Spec aus Memory `project_dev_subagents_idea.md` rauskopieren + auf finale Next.js-Pfade anpassen. Reihenfolge: nach Repo-Init, vor erster Feature-Implementierung. Schuetzt ab da jeden Diff (Tier 4).
+- MCP + weitere Skills + Subagents (siehe Abschnitt 7)
 - **Ab jetzt:** Prototyp-Repo = Wartungs-Modus, gesamter Live-Bau drüben
 
 ### Phase 0.5 — Block B-D Design-Vision (~9 Wochen, **Woche 4-12, im Live-Repo**)

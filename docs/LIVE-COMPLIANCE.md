@@ -4,9 +4,32 @@
 
 **Stand:** 2026-05-04
 **Markt:** AT-only (Phase 1)
-**Brand:** instantpage.at (Brand) — Wagner IT Services e.U. (Rechtsträger)
-**Strategie:** 100% Eigenarbeit für Phase-1-Live, Anwalt Trigger-basiert ab definierten Schwellen
-**Verbindung zu Memory:** ergänzt `project_production_refactor.md` + `project_recipe_system_v1.md`. Diese Datei ist Quelle der Wahrheit für Rechtstexte und Compliance-Prozesse.
+**Brand:** instantpage.at (Brand) — Wagner IT-Solutions e.U. (Rechtsträger, FN 609574h)
+**Strategie:** siehe „Compliance-Strategie" unten
+**Verbindung zu Memory:** ergänzt `project_production_refactor.md` + `project_recipe_system_v1.md` + `project_unternehmensdaten.md`. Diese Datei ist Quelle der Wahrheit für Rechtstexte und Compliance-Prozesse.
+
+---
+
+## Compliance-Strategie (Tier-Modell)
+
+7-Schichten-Strategie damit das Live-Produkt rechtlich tragfaehig ist und bleibt. Jede Schicht hat eine Funktion — keine ersetzt eine andere.
+
+| Tier | Was | Kosten | Funktion | Status |
+|---|---|---|---|---|
+| **1 — Anwalts-Foundation** (Pflicht Live-Day-1) | Anwalt einmalig fuer AGB/AVV/DSE/Impressum-Generator-Setup. Nicht selbst texten — Abmahnrisiko zu hoch. | €800–2.000 einmalig | Rechtsgrundlage haltbar — ohne das ist alles andere Sandburg | `[OFFEN]` Termin vor Stripe-Live planen |
+| **2 — Externe Spezialtools** | **Cookiebot** (~9 €/Mo) ODER **Klaro** (Open Source, €0) fuer Cookie-Consent. **Stripe** fuer PCI-DSS. **Resend** mit SPF/DKIM/DMARC fuer Mail-Reputation. **Cloudflare Turnstile** fuer Bot-Schutz statt reCAPTCHA. | €0–9/Mo | gelöste Spezialprobleme nicht selbst lösen | `[ENTSCHIEDEN]` Klaro fuer Plattform, Turnstile fuer Kundenseiten |
+| **3 — Saubere Architektur** (Single-Source-of-Truth) | `config/legal-values.ts` als zentrale Quelle fuer rechtsrelevante Werte (TRIAL_DAYS, REACTIVATION_DAYS, CANCELLATION-Frist, etc.). AGB/DSE/Mail-Templates rendern via Variablen daraus. Code importiert aus Config. ESLint-Rule blockt Magic Numbers in legal-Kontext. | 0 (Eigenarbeit Live-Bau) | Drift verhindern by design — eine Aenderung propagiert automatisch | `[GEPLANT]` Phase 0 Live-Bau |
+| **4 — `compliance-reviewer` Subagent** | Watchdog in jeder Dev-Session. Triggert automatisch bei Aenderungen an: Templates, legal.js, package.json (neue Deps), API-Calls zu externen Services, UI-Texten, DB-Schema, AGB/AVV/Mail-Templates. Cross-Reference-Check zwischen Code/Doku/Templates. Pattern-Detection fuer verbotene Begriffe und Magic Numbers. Cascade-Warnung. | 0 (~30 Min Setup) | catches dev-mistakes vor Commit, erinnert an Sync-Arbeit | `[GEPLANT]` Spec in `project_dev_subagents_idea.md`, Setup im Live-Bau |
+| **5 — CHANGELOG mit `[LEGAL]`-Tag** | Major Compliance-Aenderungen markiert (Pricing, Trial-Dauer, Speicherdauer, neuer Provider, neue PII-Felder, Wording-Aenderungen in AGB). Format: `[LEGAL] TRIAL_DAYS 7→14 + AGB §3.2 + DSE §4 angepasst`. | 0 | Audit-Trail fuer Anwalts-Review + Beweismittel bei Streitfall | `[GEPLANT]` Live-Bau |
+| **6 — Anwalts-Review jaehrlich** | 1× pro Jahr Anwalt drueberschauen — neue Gesetze (DSA-Updates, ePrivacy-Reform, Schrems-Folgen), neue Features, Aenderungen am Geschaeftsmodell. Compliance-Snapshot uebermitteln (CHANGELOG-Auszug). | €500–800/Jahr | Schutz gegen Gesetzes-Drift — Subagent kann das nicht | `[GEPLANT]` ab Live-Jahr 1 |
+| **7 — Cyber-Versicherung** | UBIT/Aon-Rahmenvertrag (R+V Haftpflicht + Aon Cyber) — Schadensfall-Sicherheit bei Datenschutz-Vorfall, Hack, fehlerhafter Beratung. | ~150–350 €/Jahr | finanzieller Backstop bei Restrisiken die alle Schichten oben uebersehen haben | `[OFFEN]` Aon-Antwort wartend (siehe `project_offene_anfragen.md`) |
+
+**Optional bei Skalierung (>500 Kunden):**
+- Vanta/Drata fuer Soc2/ISO27001-Audit-Software (~€500–2.000/Mo) — fuer KMU-Bootstrapper aktuell Overkill
+- iubenda/eRecht24 fuer Auto-Generated DSE (~€10–30/Mo) — Alternative zu Anwalts-Generator falls jaehrlicher Anwalt zu teuer wird
+- Pen-Test (~€2–5k) — bei sensitiven Branchen (Heilberufe-Skalierung) relevant
+
+**Kernprinzip:** Tier 1 + 6 (Anwalt) ist die echte Sicherheit. Tier 3 + 4 (Architektur + Subagent) verhindert Drift im Alltag. Tier 2 (Tools) loest Spezialprobleme. Tier 5 (CHANGELOG) ist die Bruecke zwischen Daily-Dev und Anwalts-Review. Tier 7 (Versicherung) ist der finanzielle Backstop.
 
 ---
 
@@ -44,21 +67,24 @@ Status-Marker:
 
 | # | Frage | Optionen | Default-Empfehlung | Status |
 |---|---|---|---|---|
-| 1 | B2B oder B2C? | B2B-only mit UID-Pflicht / B2C zusätzlich | B2B-only | `[ENTSCHIEDEN]` Memory: `project_production_refactor.md` |
+| 1 | B2B oder B2C? | B2B-only / B2C zusätzlich | **B2B-only mit Unternehmer-Selbsterklaerung im Bestellformular** ("Ich bestelle als Unternehmer im Rahmen meiner gewerblichen Taetigkeit"). Pflichtfelder: Firmenname + Anschrift. **UID optional** (Kleinunternehmer/Soloselbstaendige/Vereine ohne UID nicht ausschliessen) | `[ENTSCHIEDEN]` 2026-05-04 (revidiert) |
 | 2 | Markt | AT-only / DACH / EU | AT-only Phase 1 | `[ENTSCHIEDEN]` |
-| 3 | Heilberufe (Ärzte etc.) in Phase 1? | ja mit Sonderbehandlung / nein / nur ausgewählte | ja mit Sonderbehandlung | `[OFFEN]` |
-| 4 | Rechtsberatung (Anwälte, Notare, StB) in Phase 1? | ja mit Sonderbehandlung / nein | ja mit Sonderbehandlung | `[OFFEN]` |
+| 3 | Heilberufe (Ärzte etc.) in Phase 1? | ja mit Sonderbehandlung / nein / nur ausgewählte | **ja mit Sonderbehandlung** | `[ENTSCHIEDEN]` 2026-05-04 |
+| 4 | Rechtsberatung (Anwälte, Notare, StB) in Phase 1? | ja mit Sonderbehandlung / nein | **ja mit Sonderbehandlung** | `[ENTSCHIEDEN]` 2026-05-04 |
 | 5 | Trial-Setup | nur Vorschau ohne Live-Schaltung / Live-Schaltung erlaubt / kein Trial | **Live-Schaltung erlaubt** (Wow-Moment ist Verkaufsargument) | `[ENTSCHIEDEN]` |
 | 6 | Trial-Dauer | 7 / 14 / 30 Tage | **7 Tage** (wie Prototyp) | `[ENTSCHIEDEN]` |
 | 7 | Mindestvertragslaufzeit | keine / monatlich / jährlich | **Monatsabo monatlich kündbar / Jahresabo 12 Monate** | `[ENTSCHIEDEN]` |
-| 8 | Kündigungsfrist | sofort / Monatsende / 30 Tage | Monatsende | `[OFFEN]` |
+| 8 | Kündigungsfrist | sofort / Monatsende / 30 Tage | **Monatsende** | `[ENTSCHIEDEN]` 2026-05-04 |
 | 9 | Datenretention nach Kündigung | 30 / 60 / 90 Tage Grace, dann Auto-Delete | **30 Tage Reaktivierung + 60 Tage Soft-Delete + danach Hard-Delete** (90 Tage total) | `[ENTSCHIEDEN]` |
-| 10 | Haftungsbegrenzung | 12-Monats-Vergütung / fixer Cap (z.B. €5.000) / pro Schadensfall | 12-Monats-Vergütung | `[OFFEN]` |
-| 11 | Refund-Policy | 14 Tage Widerruf trotz B2B / pro-rata bei Mid-Period / kein Refund | pro-rata bei Mid-Period | `[OFFEN]` |
-| 12 | Custom-Domain-Verantwortung | DNS allein Kunde / DNS-Setup-Hilfe inkludiert | DNS allein Kunde | `[OFFEN]` |
-| 13 | Mailing-Provider | Resend / Postmark / Brevo | **Resend** (günstig + EU-Server) | `[OFFEN]` |
-| 14 | Error-Monitoring | Sentry / Axiom / nichts | Sentry | `[OFFEN]` |
-| 15 | Analytics-Provider Plattform | PostHog Cloud EU / Plausible EU / nichts | PostHog Cloud EU | `[OFFEN]` |
+| 10 | Haftungsbegrenzung | 12-Monats-Vergütung / fixer Cap (z.B. €5.000) / pro Schadensfall | **12-Monats-Vergütung** | `[ENTSCHIEDEN]` 2026-05-04 |
+| 11 | Refund-Policy | 14 Tage Widerruf trotz B2B / pro-rata bei Mid-Period / kein Refund | **Kein Refund nach 7-Tage-Trial** — Trial schuetzt vor Blind-Kauf, danach Vertrag bindend (B2B-Standard wie Wix/Squarespace/Notion). Monatsabo: jederzeit zum Monatsende kuendbar, kein Refund fuer angefangenen Monat. Jahresabo: laeuft 12 Monate durch, kein vorzeitiger Refund. AGB-Wording: *"Nach Ablauf der 7-tägigen kostenlosen Testphase und Erteilung des Bezahlauftrags ist der Vertrag bindend. Ein Widerrufsrecht nach FAGG besteht für Unternehmer nicht."* | `[ENTSCHIEDEN]` 2026-05-04 |
+| 12 | Custom-Domain-Verantwortung | DNS allein Kunde / DNS-Setup-Hilfe inkludiert | **DNS allein Kunde** + ausfuehrliche Anleitung (Doku + Video) im Portal. Spaeter optional: Einrichtungsservice als Addon buchbar | `[ENTSCHIEDEN]` 2026-05-04 |
+| 13 | Mailing-Provider | Resend / Postmark / Brevo | **Resend** (günstig + EU-Server) | `[ENTSCHIEDEN]` 2026-05-04 |
+| 14 | Error-Monitoring | Sentry / Axiom / nichts | **Beta: nur Cloudflare Workers Logs** (kostenlos, schon da). **Live: Sentry-Free-Tier** (5k Events/Monat, EU-Server). Sentry ist Production-grade seit 2012, kein Beta-Tool. | `[ENTSCHIEDEN]` 2026-05-04 |
+| 15 | Analytics-Provider Plattform | Cloudflare Web Analytics / Plausible EU / PostHog Cloud EU / nichts | **Cloudflare Web Analytics** (kostenlos, cookielos, kein Banner noetig, schon im Stack). PostHog optional spaeter wenn Conversion-Funnels gebraucht. | `[ENTSCHIEDEN]` 2026-05-04 |
+| 15a | Analytics-Provider Kundenseiten | Cloudflare / Plausible / Self-hosted | **Cloudflare Web Analytics** auch fuer Kundenseiten (kostenlos egal wieviele Sites, pro Hostname trennbar). **Kunden-Dashboard im Portal Pflicht** ("Statistiken"-Tab pro Kundensite via CF Analytics API: Pageviews, Top-Quellen, Top-Pages, Devices). | `[ENTSCHIEDEN]` 2026-05-04 |
+| 15b | Cookie-Banner Plattform instantpage.at | benoetigt / vermeidbar | **Banner JA** — Plattform akzeptiert Cookies, weil Marketing-Pixel (Meta + Google Ads) + PostHog (Funnel-Tracking, Session-Replay) eingesetzt werden. Tool: **Cookiebot** (ab ~9 €/Monat, Auto-Scan + Compliance-Reports + Marktfuehrer-Vertrauen). Maps Standard-iframe auf Kontakt-Seite ok. | `[ENTSCHIEDEN]` 2026-05-04 |
+| 15c | Cookie-Banner Kundenseiten | mit Banner / banner-frei als USP | **Banner-frei als USP** — *"Ihre Website ohne nervigen Cookie-Banner, DSGVO-konform aus dem Stand"* als Verkaufsargument vs. Wix/Jimdo. Konkret: Maps via **Two-Click-Loesung** ("Karte laden"), YouTube via **youtube-nocookie.com**, Cloudflare Analytics (cookielos). Tracking-Pixel fuer Kunden spaeter optional als **Pro-Addon** ("Erweiterte Tracking-Integration"). | `[ENTSCHIEDEN]` 2026-05-04 |
 | 16 | Pricing-Anzeige | inkl. 20% USt / netto + USt | **netto + USt** (B2B-Standard) | `[ENTSCHIEDEN]` |
 | 19 | DSGVO-Datenexport (Art. 15) Format | PDF / JSON+CSV / kombiniert | **PDF reicht** | `[ENTSCHIEDEN]` |
 | 20 | AVV-Akzeptanz-Verfahren | im AGB-Text / separater PDF-Download + Klick / SaaS-Standard | **Separater PDF-Download + Akzept-Klick** beim ersten Login (SaaS-Standard) | `[ENTSCHIEDEN]` |
@@ -76,22 +102,34 @@ Pflichtdaten zum Befüllen — Voraussetzung für Impressum, AGB, AVV, Datenschu
 
 | Feld | Wert | Status |
 |---|---|---|
-| Vollständiger Firmenwortlaut (laut Firmenbuch) | `[OFFEN]` z.B. "Wagner IT Services e.U." | `[BLOCKER]` |
-| Firmenbuchnummer | `[OFFEN]` "FN ..." | `[BLOCKER]` |
-| Firmenbuchgericht | `[OFFEN]` z.B. "HG Wien" | `[BLOCKER]` |
-| UID-Nummer | `[OFFEN]` "ATU..." | `[BLOCKER]` |
-| GISA-Zahl | `[OFFEN]` | `[BLOCKER]` |
-| Geschäftsanschrift (Straße, PLZ, Ort) | `[OFFEN]` | `[BLOCKER]` |
-| Bundesland | `[OFFEN]` | `[BLOCKER]` |
-| Gewerbeberechtigung (exakte Bezeichnung) | `[OFFEN]` z.B. "Dienstleistung in der automatischen Datenverarbeitung und Informationstechnik" | `[BLOCKER]` |
-| Aufsichtsbehörde | `[OFFEN]` (zuständige BH oder Magistrat nach Sitz) | `[BLOCKER]` |
-| WKO-Fachgruppe | `[OFFEN]` (UBIT? Information & Consulting?) | `[BLOCKER]` |
-| Bankverbindung (IBAN) | `[OFFEN]` | für Rechnungen |
-| Kontakt-Mail allgemein | `[OFFEN]` z.B. office@instantpage.at | |
-| Kontakt-Mail Datenschutz | `[OFFEN]` z.B. datenschutz@instantpage.at | empfohlen separat |
-| Kontakt-Mail Abuse | `[OFFEN]` z.B. abuse@instantpage.at | Pflicht für ECG/DSA |
-| Kontakt-Mail Support | `[OFFEN]` z.B. support@instantpage.at | |
-| Telefon (geschäftlich) | `[OFFEN]` | Pflicht ECG |
+| Vollständiger Firmenwortlaut (laut Firmenbuch) | **Wagner IT-Solutions e.U.** | `[FIXIERT]` 2026-05-04 |
+| Inhaber (natuerliche Person) | Alexander Wagner, geb. 26.07.2002 | `[FIXIERT]` 2026-05-04 |
+| Firmenbuchnummer | **FN 609574h** | `[FIXIERT]` 2026-05-04 |
+| Firmenbuchgericht | **HG Wien** | `[FIXIERT]` 2026-05-04 |
+| Firmenbuch-Eintragungsdatum | 03.08.2023 (e.U.) | `[FIXIERT]` 2026-05-04 |
+| Gewerbeberechtigung — Entstehung | 07.12.2021 (frueher als FB-Eintragung — relevant fuer Gruender-Bonus-Eligibility) | `[FIXIERT]` 2026-05-04 |
+| Rechtsform | Einzelunternehmer | `[FIXIERT]` 2026-05-04 |
+| UID-Nummer | **Keine** — Kleinunternehmerregelung (§ 6 Abs 1 Z 27 UStG, Umsatzgrenze 2026 = 55.000 €). Im Impressum/auf Rechnungen entsprechender Hinweis: *„Kleinunternehmer im Sinne des § 6 Abs 1 Z 27 UStG, daher keine USt ausgewiesen."* | `[FIXIERT]` 2026-05-04 |
+| Steuernummer (intern) | 12 731/8368 (Finanzamt Wien) — nicht im Impressum noetig | `[FIXIERT]` 2026-05-04 |
+| GISA-Zahl | **34399071** (Behoerde: Magistrat der Stadt Wien) | `[FIXIERT]` 2026-05-04 |
+| GLN (GISA) | 9110033875474 | `[FIXIERT]` 2026-05-04 |
+| GLN (Bank/GS1) | 9110031531662 | `[FIXIERT]` 2026-05-04 — abweichend zur GISA-GLN, beide valide |
+| Geschäftsanschrift (Straße, PLZ, Ort) | **Adelheid-Popp-Gasse 14/1/36, 1220 Wien, Österreich** | `[FIXIERT]` 2026-05-04 |
+| Bundesland | **Wien** | `[FIXIERT]` 2026-05-04 |
+| Gewerbewortlaut (exakte Bezeichnung) | **Dienstleistungen in der automatischen Datenverarbeitung und Informationstechnik** (freies Gewerbe) | `[FIXIERT]` 2026-05-04 |
+| Geschäftszweig (Firmenbuch) | IT Dienstleister, IT Beratung | `[FIXIERT]` 2026-05-04 |
+| Aufsichtsbehörde nach GewO | **Magistrat der Stadt Wien** (laut GISA-Auszug, zentrale Gewerbebehoerde Wien) | `[FIXIERT]` 2026-05-04 |
+| WKO-Fachgruppe | Vermutlich **Fachgruppe Unternehmensberatung, Buchhaltung und Informationstechnologie (UBIT) Wien** — passt zum UBIT-Versicherungs-Rahmenvertrag | `[VERMUTET]` — User kann sich aktuell nicht im WKO-Login anmelden, final via WKO-Mitgliedsbeitrags-Vorschreibung oder direkter WKO-Anfrage verifizieren |
+| Rechtsvorschriften (Verweis im Impressum) | www.ris.bka.gv.at — GewO 1994, ECG, MedienG | `[FIXIERT]` 2026-05-04 |
+| Bankverbindung (IBAN) | **AT88 2011 1843 5211 6200**, BIC **GIBAATWWXXX**, Erste Bank | `[FIXIERT]` 2026-05-04 |
+| Telefon (geschäftlich) | **+43 676 5040088** | `[FIXIERT]` 2026-05-04 |
+| Mail (User/Inhaber) | alexander@wagner-its.com | `[FIXIERT]` 2026-05-04 |
+| Kontakt-Mail allgemein | **info@instantpage.at** | `[FIXIERT]` 2026-05-04 |
+| Kontakt-Mail Rechnung | **rechnung@instantpage.at** | `[FIXIERT]` 2026-05-04 |
+| Kontakt-Mail Newsletter | **news@instantpage.at** | `[FIXIERT]` 2026-05-04 |
+| Kontakt-Mail Support | **support@instantpage.at** | `[FIXIERT]` 2026-05-04 |
+| Kontakt-Mail Datenschutz | **datenschutz@instantpage.at** | `[FIXIERT]` 2026-05-04 |
+| Kontakt-Mail Abuse | **abuse@instantpage.at** | `[FIXIERT]` 2026-05-04 |
 
 ---
 
@@ -205,6 +243,9 @@ DPA-Status-Marker:
 | remove.bg (Logo-Freistellung) | Bildverarbeitung | Deutschland | <https://www.remove.bg/de/agb> (DPA in AGB) | `[URL]` later Live |
 | Unsplash | Stockfotos via API | USA | <https://unsplash.com/data-protection-addendum> | `[URL]` later Live |
 | Google Places API | Business-Daten Import | USA | <https://cloud.google.com/terms/data-processing-addendum> | `[URL]` later Live |
+| Klaro (Cookie-Consent Plattform) | Cookie-Banner-Logik fuer instantpage.at, Self-Hosted, keine Daten an Drittanbieter | (selbst gehostet auf Cloudflare) | Open Source — kein DPA noetig (keine Datenuebermittlung an KIPROTECT). Lizenz/Quelle: <https://klaro.org> | `[OK]` keine externe Datenuebermittlung |
+| Cloudflare Turnstile (Bot-Schutz Kontaktformulare Kundenseiten) | Bot-Verifikation ohne Cookies, Token-basiert | USA (mit EU-Servern) | gedeckt durch Cloudflare Customer DPA (s.o.) | `[URL]` Teil der Cloudflare-Services |
+| Cookiebot (Reserve, falls Klaro-Wartung zu aufwendig wird) | Cookie-Consent Auto-Scan + Compliance-Reports | Daenemark (EU) | <https://www.cookiebot.com/de/data-processing-agreement/> | `[OPTIONAL]` nur falls Klaro abgeloest wird |
 
 **Drittland-Hinweis:** USA-Anbieter laufen aktuell unter EU-U.S. Data Privacy Framework. Status in Quartals-Self-Check prüfen — Schrems-III-Risiko nicht ausgeschlossen.
 
@@ -222,7 +263,7 @@ DPA-Status-Marker:
 
 (2) Das Angebot richtet sich ausschließlich an Unternehmer im Sinne des § 1 KSchG. Verbraucherverträge sind ausgeschlossen.
 
-(3) Der Kunde bestätigt mit Vertragsabschluss, im Rahmen seiner unternehmerischen Tätigkeit zu handeln und im Bestellprozess seine UID-Nummer, GISA-Zahl oder Firmenbuchnummer wahrheitsgemäß angegeben zu haben.
+(3) Der Kunde bestätigt mit Vertragsabschluss durch ausdrückliche Selbsterklärung, im Rahmen seiner unternehmerischen Tätigkeit zu handeln, und gibt seinen Firmenwortlaut sowie die Geschäftsanschrift wahrheitsgemäß an. Eine UID-Nummer, GISA-Zahl oder Firmenbuchnummer ist optional anzugeben, sofern vorhanden — eine Verpflichtung zur Angabe besteht insbesondere bei Kleinunternehmern, Soloselbstständigen oder gewerblich tätigen Vereinen ohne UID-Nummer nicht.
 
 (4) Bei Falschangabe der Unternehmer-Eigenschaft haftet der Kunde für sämtliche daraus entstehenden Folgen, einschließlich entgangener Steuervorteile und zusätzlicher Verpflichtungen.
 
@@ -405,14 +446,41 @@ Aktualisierungen werden auf instantpage.at/subprozessoren öffentlich gemacht. D
 
 ### Anhang IV — Datenkategorien-Liste
 
+**Architektur-Hinweis:** Alle Form-Submissions auf Kundenseiten (Kontakt-, Reservierungs-, Termin-Anfragen) laufen als **Pure Forwarder** ueber Resend direkt an die vom Kunden hinterlegte Mailbox. instantpage.at speichert die Inhalte dieser Submissions NICHT in der eigenen DB. Eine Portal-Inbox mit eigener Speicherung ist als Quartal-Update fuer einen spaeteren Release vorgesehen (siehe PRODUCT.md § 9).
+
+#### Endnutzer-Daten (auf Kundenseiten)
+
+| Datenkategorie | Quelle | Verarbeitung | Speicherort | Speicherdauer (instantpage.at) |
+|---|---|---|---|---|
+| Kontaktanfragen | Endnutzer-Eingabe Kontaktformular | Pure Forwarder via Resend an Kunden-Mailbox | nicht gespeichert | wir speichern nichts — Resend-Mail-Logs ~30 Tage (Subprozessor); Kunde verantwortlich fuer Postfach-Retention |
+| Reservierungs-Anfragen | Endnutzer-Eingabe Reservierungsform | wie oben | nicht gespeichert | wie oben |
+| Termin-Anfragen | Endnutzer-Eingabe Terminform | wie oben | nicht gespeichert | wie oben |
+| Bewertungen | Endnutzer-Eingabe Bewertungsform (oder vom Kunden manuell eingetragen) | Speicherung + oeffentliche Anzeige auf Kundensite | Supabase EU | bis Widerruf durch Endnutzer oder Vertragsende des Kunden + 90 Tage Grace |
+| Bilder mit Personenabbildungen | Kunde laedt hoch (Team-Fotos, Mitarbeiter, etc.) | Speicherung + Auslieferung | Supabase Storage + Cloudflare R2 | bis Vertragsende + 90 Tage Grace (siehe PRODUCT.md § 3.2) |
+| IP-Adressen (Kundensite-Webserver-Log) | Webserver | Cloudflare-Standard-Logs, nicht ausgewertet | Cloudflare Logs | 30 Tage (Cloudflare-Standard) |
+| Bot-Schutz-Token (Turnstile) | Cloudflare Turnstile bei Form-Submit | Token-Validierung, kein Cookie | nicht gespeichert | n/a |
+
+#### Kunden-Daten (Plattform-Konto auf instantpage.at)
+
 | Datenkategorie | Quelle | Verarbeitung | Speicherort | Speicherdauer |
 |---|---|---|---|---|
-| Kontaktanfragen | Endnutzer-Eingabe Kontaktformular | Speicherung + Mailweiterleitung | Supabase EU + Resend | `[OFFEN]` z.B. 12 Monate |
-| Reservierungs-/Termin-Anfragen | Endnutzer-Eingabe Reservierungs-Form | wie oben | wie oben | wie oben |
-| Bewertungen | Endnutzer-Eingabe Bewertungs-Form | Speicherung + Anzeige | Supabase EU | bis Widerruf |
-| Hochgeladene Bilder mit Personenabbildungen | Kunde lädt hoch | Speicherung + Auslieferung | Supabase Storage / Cloudflare R2 | bis Vertragsende + Grace |
-| IP-Adressen (Webserver-Log) | Webserver | Anonymisierung nach 30 Tagen | Cloudflare Logs | 30 Tage |
-| Bestellte Produkte (Webshop später) | n/a Phase 1 | n/a | n/a | n/a |
+| Plattform-Stammdaten (Firmenwortlaut, Anschrift, Rechtsform, FN, UID) | Bestellprozess + Portal-Eingabe | Vertragsabwicklung + Impressum-Generierung | Supabase EU | Vertragsdauer + **7 Jahre** (UGB § 212 Geschaeftsbriefe) |
+| Login-/Auth-Sessions | Supabase Auth | Session-Token, Refresh-Token | Supabase EU | bis Logout + 30 Tage Refresh-Token |
+| Stripe-Zahlungsbelege (Token, Rechnungs-IDs) | Stripe-Webhook | Buchhaltung + Rechnungserstellung | Supabase EU + Stripe | **7 Jahre** nach Vertragsende (UGB § 212 + BAO § 132) |
+| Plattform-Activity-Logs (wer aenderte was, IP) | Portal-Aktionen | Audit-Trail | Supabase EU | 12 Monate, danach Anonymisierung |
+| Error-Logs (Sentry-Events, server-side) | Code-Errors | Debugging | Sentry (Live) / Cloudflare Workers Logs (Beta) | 30 Tage Beta / 90 Tage Live |
+| Cloudflare Web Analytics (instantpage.at) | Webserver | Pageviews, Referrer, Devices — aggregiert | Cloudflare | 30 Tage (CF-Standard), kein PII |
+| Newsletter-Anmeldung (news@-Liste) | Opt-in im Portal/Landing | Mailing via Resend, Opt-in-Beweis archiviert | Supabase EU | bis Abmeldung + **3 Jahre** (UWG-Verjaehrung Belaestigungsklage AT, Beweissicherung) |
+| Beta-Feedback-Daten | Beta-Tester-Eingaben | Produktentwicklung | Supabase EU | bis Beta-Ende — danach geloescht (siehe § 16 Beta-Migration) |
+| Support-Mails | E-Mail-Anfragen an support@ | Kundensupport | Mail-Postfach + ggf. Helpdesk | 12 Monate, bei Geschaeftsvorfall 7 Jahre UGB |
+
+#### Backup-Aufbewahrung
+
+| Backup-Typ | Aufbewahrung | Speicherort |
+|---|---|---|
+| Supabase taegliche DB-Backups | 7 Tage rueckwirkend (Supabase Pro Standard) | Supabase EU |
+| Eigene pg_dump → R2 | 90 Tage Retention | Cloudflare R2 EU |
+| Storage-Sync zu R2 | 90 Tage Retention | Cloudflare R2 EU |
 
 ---
 
@@ -479,10 +547,10 @@ zur Teilnahme an einem Streitbeilegungsverfahren besteht nicht.)
    - Trial-Verwaltung (Art 6 Abs 1 lit b — Vertragsanbahnung)
 4. **Datenkategorien:** Account, Stripe-Kunden-ID, Kommunikation, Nutzungsdaten
 5. **Empfänger / Subprozessoren:** Liste mit Drittland-Hinweis (siehe Abschnitt 4)
-6. **Speicherdauer:** pro Kategorie konkret (`[OFFEN]`: definieren)
+6. **Speicherdauer:** pro Kategorie konkret — siehe Anhang IV (oben)
 7. **Drittlandübermittlung:** USA-Anbieter unter EU-U.S. Data Privacy Framework
 8. **Betroffenenrechte:** Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch, Beschwerde bei DSB
-9. **Cookies:** Plattform-Cookies (Auth, Session) — keine Tracking-Cookies; falls PostHog Session Replay → Banner mit Einwilligung
+9. **Cookies:** Plattform-Cookies (Auth, Session) sind funktional und ohne Banner-Pflicht (§ 165 Abs 3 TKG). Tracking-Cookies (PostHog Session Replay, Meta-/Google-Ads-Pixel) werden eingesetzt — Einwilligung erfolgt ueber Cookie-Banner (Klaro Open Source als Default, Cookiebot als Reserve-Option). Siehe § 1 #15b. Auf Kundenseiten (`*.instantpage.at`) sind keine Tracking-Cookies aktiv — Banner-frei als USP (siehe § 1 #15c).
 10. **AI-Verarbeitung:** Hinweis dass Anthropic-API für Textgenerierung eingesetzt wird, mit Drittland-Bezug
 
 ---
@@ -781,7 +849,7 @@ Fuer alle drei Verarbeitungstaetigkeiten von instantpage.at ist **keine vollstae
 
 **Recht auf Löschung (Art. 17):**
 - Self-Service-Button im Portal: "Account löschen" (nicht zu prominent platzieren)
-- Sofortige Bestätigungs-Mail mit 14 Tage Widerruf-Möglichkeit
+- Sofortige Bestätigungs-Mail mit 14 Tage Karenz-Frist (User kann den Lösch-Wunsch innerhalb dieser Zeit zurueckziehen — keine Verwechslung mit FAGG-Widerruf, der bei B2B nicht greift)
 - Nach 14 Tagen Hard-Delete-Cascade (orders + Storage + Auth)
 - Activity-Log-Eintrag: `dsgvo_delete_requested` + nach Ausführung `dsgvo_delete_executed` mit Hash-Bestätigung
 - Außerhalb des normalen Cancellation-Flows (Cancellation = Subscription-Ende, Löschung = Daten-Vernichtung)
@@ -861,42 +929,86 @@ instantpage.at ist als **oesterreichisches Vertrauensprodukt** positioniert (Mem
 - **Primaere Pruefung: Oesterreichisches Patentamt** — AT-Markenschutz ist Phase-1-Bedarf
 - **Sekundaer: EUIPO** — wichtig wegen Vorrang von EU-Marken bei Konflikt mit AT-Anmeldung, aber kein Schutzziel in Phase 1
 - **Verwechslungsgefahr** wird am oesterreichischen Durchschnittskonsumenten gemessen — internationale Marken die in AT nicht aktiv vermarktet werden, sind weniger kritisch
-- **Anmeldungs-Strategie:** AT-Wortmarke ~280 € fuer Phase 1, EU-Marke ~850 € erst zu Beginn von Phase 2 (DACH/EU)
+- **Anmeldungs-Strategie:** AT-Wortmarke ab **294 €** (Online, inkl. 3 Klassen, seit Juli 2024 angepasst — laut WKO-Auskunft 2026-05-04) fuer Phase 1, EU-Marke ab 850 € erst zu Beginn von Phase 2 (DACH/EU)
 
-### Vorab-Recherche-Stand 2026-05-04
+### Recherche-Stand 2026-05-04 (manuell verifiziert)
 
-Web-Recherche ueber Justia/USPTO und WIPO — keine direkte EUIPO/Patentamt-Abfrage moeglich (CAPTCHA, JS-SPA).
+Direkte DB-Abfrage durch User im Browser durchgefuehrt — TMview, EUIPO eSearch plus, WIPO Global Brand Database. CLI-Recherche (Whois, LinkedIn, Hersteller-Sites) ergaenzend.
 
-| Treffer | Inhaber | Quelle | Branchen-Konflikt |
+#### Markentreffer
+
+| Treffer | Inhaber | Office | Status | Branchen-Konflikt |
+|---|---|---|---|---|
+| **INSTANTPAGE** Reg. 4072262 (Klasse 042, registriert 2011-12-13) | GO DADDY OPERATING COMPANY, LLC | USPTO | **Eingetragen** | mittel-hoch in USA — in AT nicht in Kraft |
+| **INSTANTPAGE** Reg. 75826561 (Klasse 9, angemeldet 1999-10-19) | INFOLIO, INC. | USPTO | **Beendet** | irrelevant — Marke nicht mehr in Kraft |
+| **INSTAPAGE** Reg. 5339935 | Instapage, Inc. | USPTO | Eingetragen | mittel in USA — in AT nicht in Kraft, klanglich aehnlich |
+| **EU-Marke (EUIPO)** | — | EUIPO | — | **0 Treffer** (eSearch plus, manuell verifiziert) |
+| **AT-Marke** | — | Patentamt AT (via TMview) | — | **0 Treffer** (TMview deckt AT-Patentamt ab) |
+| **DE-Marke** | — | DPMA (via TMview) | — | **0 Treffer** (TMview deckt DPMA ab) |
+| **IR-/Madrid-Marke** | — | WIPO | — | **0 Treffer** (Global Brand DB, MARK_ALL,HOL:instantpage) |
+
+#### Domain-Konflikte (Whois 2026-05-04)
+
+| Domain | Inhaber | Status | Bewertung |
 |---|---|---|---|
-| **INSTANTPAGE** US 4072262 | GO DADDY OPERATING COMPANY, LLC | USPTO | hoch — "Software fuer Erstellen, Posten, Pflegen von Websites" identische Branche |
-| **INSTAPAGE** US 5339935 | Instapage, Inc. | USPTO | mittel — Landing-Page-Software, klanglich aehnlich |
-| **instantpage.dev** | unbekannt, Konkurrenz-Domain aktiv | Web | niedrig — Domain-/SEO-Konflikt, kein Markenschutz nachweisbar |
-| **instant.page** | Open-Source-Projekt (Performance-Trick) | github.com | niedrig — anderer Use-Case |
+| **instantpage.at** | Wagner IT-Solutions e.U. (Alexander Wagner) | gesichert seit 2026-03-25 | ✅ Eigene Domain — Domain-Recht ist gesichert, ersetzt aber kein Markenrecht |
+| **instantpage.com** | GoDaddy.com LLC, ueber Atom.com gelistet (Domain-Marketplace, NS1/2.atom.com) | parked / zum Verkauf | mittel — Inhaber GoDaddy ist auch INSTANTPAGE-Markeninhaber. SEO-Konflikt + theoretisch fuer GoDaddy reaktivierbar |
+| **instantpage.de** | privat / Nameshift.com (Niederlande, Domain-Broker) | parked / zum Verkauf, last change 2025-09-07 | niedrig — kein aktiver Konkurrent, aber kaufbar |
+| **instantpage.eu** | NOT DISCLOSED (EURid Privacy) | unbekannt | niedrig–mittel |
+| **instantpage.dev** | InstantPage™ (Hongkong, ~11–50 MA, "Partnership", IT Services), aktive SaaS-Plattform | **AKTIV** — Premium Website / Funnel / E-Commerce Builder mit AI, Hashtags #HongKong #StartupHK | **hoch** — identische Branche und identischer Markenname mit ™-Symbol; LinkedIn: linkedin.com/company/instantpage-dev |
+| **instant.page** | Open-Source-Projekt (Performance-Trick) | aktiv | niedrig — anderer Use-Case (JS-Bibliothek), nicht-kommerziell |
 
-**Bewertung im AT-only-Kontext:**
-- GoDaddy/Instapage sind in AT nicht im B2B-KMU-Segment aktiv vermarktet → Verwechslungsgefahr beim AT-Durchschnittskonsumenten gering, aber nicht null
-- AT-Patentamt-Direkt-Abfrage steht aus
+#### Bewertung im AT-only-Kontext
+
+- **Keine eingetragene Marke "instantpage" in AT, EU, DE oder international** — Verwechslungsgefahr-Widerspruch aus diesen Aemtern faellt damit weg. Eintrag in Aemtern manuell verifiziert (TMview, eSearch plus, Global Brand DB). Restrisiko: Sound-Aehnlichkeitsrecherche ("instant page" mit Leerzeichen, "instapage", "instantpages") wurde nur teilweise durchlaufen — Patentamt-Pre-Check oder Markensprechtag-Profi koennte zusaetzliche Aehnlichkeitstreffer aufdecken.
+- **GoDaddy (US INSTANTPAGE 4072262)** und **Instapage Inc. (US INSTAPAGE 5339935)** sind aktive US-Marken, beide aber in AT nicht aktiv vermarktet → Verwechslungsgefahr fuer AT-Durchschnittskonsumenten gering, Widerspruchsrecht im AT-Verfahren ohne EU-/IR-Anmeldung nicht gegeben.
+- **instantpage.dev (Hongkong)** ist aktives SaaS-Konkurrenzprodukt in identischer Branche, nutzt ™-Symbol — aber **keine eingetragene Marke** (weder US, EU, IR). Das ™ ist unverbindlich; rechtlicher Schutz nur durch Eintragung. Im AT-Anmeldeverfahren kein Widerspruchsrecht. UWG-Klagerisiko bleibt theoretisch, aber HK-Anbieter ohne DACH-Auftritt → niedrig.
+- **Beschreibend-Risiko (jetzt das Hauptrisiko):** Patentamt prueft eigenstaendig, ob "InstantPage" / "Instant Page" unterscheidungskraeftig ist oder als beschreibend ("sofortige Seite" fuer Website-erstellende Software) abgelehnt wird. Diese Beurteilung kann nicht im Voraus garantiert werden — Markensprechtag oder Anwalt-Vorab-Einschaetzung empfohlen. Plan B bei Ablehnung: Wortbild-Marke mit Logo, oder Brand-Wechsel.
+
+#### Risiko-Einschaetzung (nach manueller DB-Verifikation)
+
+| Szenario | Wahrscheinlichkeit | Konsequenz |
+|---|---|---|
+| AT-Patentamt akzeptiert Unterscheidungskraft → Eintragung als Wortmarke | mittel-hoch | beste Outcome — ~294 € + 10 J Schutz |
+| AT-Patentamt verneint Unterscheidungskraft (beschreibend) | mittel | Wortbild-Marke mit Logo als Plan B (294 € erneut) |
+| Widerspruch durch eingetragene EU-/AT-/IR-Marke | **sehr niedrig** | nicht zu erwarten — keine Treffer in Aemtern |
+| Sound-Aehnlichkeitstreffer (instapage, instant page) loesen Widerspruch aus | niedrig-mittel | Pre-Check beim Patentamt empfehlenswert (kostenpflichtig) |
+| UWG-Klage durch instantpage.dev bei Marktexpansion | niedrig | HK-Anbieter, derzeit kein DACH-Auftritt — Brand-Investment-Risiko ueber Zeit |
 
 ### Was zu prüfen ist
 
+Recherche-Datenbanken (kostenlos, Quelle: WKO-Marken-Beratung 2026-05-04):
+
 | Quelle | Was | Prioritaet |
 |---|---|---|
-| Österreichisches Patentamt — Markenregister | <https://see-ip.patentamt.at/> Wortmarke "instantpage" / "instant page" / "instapage" in Klassen 9, 35, 38, 42 | **hoch** |
-| EUIPO — EU-Markenregister (TMView/eSearch plus) | <https://www.tmdn.org/tmview/> + <https://euipo.europa.eu/eSearch/> dieselbe Recherche EU-weit | hoch |
-| WIPO Madrid Monitor — internationale Marken | <https://www3.wipo.int/madrid/monitor/> | mittel |
+| Österreichisches Patentamt — see-ip | <https://see-ip.patentamt.at/de> Wortmarke "instantpage" / "instant page" / "instapage" in Klassen 9, 35, 38, 42 | **hoch** |
+| EUIPO — TMview (alle teilnehmenden Markenämter) | <https://www.tmdn.org/tmview/> dieselbe Recherche EU-weit | hoch |
+| EUIPO — eSearch plus (auch Bild-Verfügbarkeit) | <https://euipo.europa.eu/eSearch/> | hoch |
+| WIPO — Global Brand Database (national + international) | <https://branddb.wipo.int/> | mittel |
+| WIPO Madrid Monitor — IR-Marken | <https://www3.wipo.int/madrid/monitor/> | mittel |
+| Deutsches Patentamt — DPMAregister | <https://register.dpma.de/DPMAregister/marke/einsteiger> | mittel — DACH-Vorab-Check |
+| Nizza-Klassifizierungstool EUIPO | <http://euipo.europa.eu/ec2/> Hilfstool fuer Waren-/Dienstleistungs-Klassen | hoch — fuer Anmeldung selbst |
 | Domain-Konflikte | instantpage.com (GoDaddy), instantpage.de, instantpage.eu, instantpage.dev — Inhaber identifizieren | mittel |
 | Sound-Ähnlichkeiten | "Instapage", "InstaPage", "Instant Page", "InstaPay" (verwechselbar?) | hoch |
 
 ### Aufwand und Optionen
 
-- **Selbstrecherche AT-Patentamt:** ~30 Min, kostenlos — primaere Pflicht
-- **WKO-Markenberatung:** kostenlos fuer Mitglieder, gibt qualifizierte Einschaetzung — Termin angefragt 2026-05-04
-- **Markenanwalt:** 200–500 €, falls Konflikt-Risiko nach WKO-Beratung weiter unklar
+- **Selbstrecherche** (oben gelistete Datenbanken): ~30–60 Min, kostenlos — primaere Pflicht vor jeder Anmeldung
+- **WKO-Markensprechtag:** **kostenlos fuer Gruender:innen** (sonst 49 €), Online-Buchung bei WKO — fuer Marke/Markenpositionierung/Designschutz. Empfohlen vor Anmeldung. Termin: <https://outlook.office.com/book/WKOMarkensprechtag@wkonline.onmicrosoft.com/>
+- **Pre Check / 24h-Aehnlichkeitsrecherche** beim AT-Patentamt: optional, kostenpflichtig — vom Patentamt-Infoblatt MA empfohlen vor Anmeldung
+- **Markenanwalt / Patentanwalt:** 200–500 €, optional fuer Anmeldung selbst oder bei unklarem Konflikt-Risiko nach Sprechtag
+  - OOe Rechtsanwaltskammer (Suche "gewerbl. Rechtsschutz, Immaterialguerrecht" / "Marke"): <https://ooerak.at/anwalt>
+  - Oesterreichische Patentanwaltskammer: <https://www.oepak.at/>
+- **Foerderung:** "Bleib Einzigartig" vom AT-Patentamt — Foerderprogramm fuer Markeneintragungen / Design / Patent. Pruefen ob Gruender-/KMU-foerderbar.
+
+### Kostenrechner
+
+- EUIPO-Marke: <https://euipo.europa.eu/ohimportal/de/fees-and-payments>
+- WIPO-Marke (international): <https://madrid.wipo.int/feecalcapp/>
 
 ### Konsequenzen
 
-- **Wenn AT-frei:** AT-Wortmarken-Anmeldung ~280 € (10 Jahre Schutz). EU-Anmeldung erst zu Phase-2-Beginn (DACH/EU)
+- **Wenn AT-frei:** AT-Wortmarken-Anmeldung ab 294 € (Online, 3 Klassen, 10 Jahre Schutz, Erneuerung 700 €). EU-Anmeldung erst zu Phase-2-Beginn (DACH/EU)
 - **Wenn AT-belegt:** Brand-Wechsel zwingend — Marketing-Investment in `instantpage.at` einstellen, oesterreichisch klingende Brand-Alternativen brainstormen
 - **Wenn EU-Konflikt aber AT-frei:** Anwalt-Konsultation zu Verwechslungsgefahr-Risiko in AT (~500 €). AT-Anmeldung kann dennoch moeglich sein wenn EU-Marken-Inhaber nicht in AT taetig ist und keine Widerspruchsfrist nutzt.
 
@@ -904,11 +1016,19 @@ Web-Recherche ueber Justia/USPTO und WIPO — keine direkte EUIPO/Patentamt-Abfr
 
 | Aktion | Status |
 |---|---|
-| AT-Patentamt SEE-IP Browser-Recherche | `[OFFEN]` |
-| EUIPO eSearch plus Browser-Recherche | `[OFFEN]` |
-| WKO-Markenberatung Termin (Mail raus 2026-05-04) | `[OFFEN]` |
-| Bei freiem Stand: AT-Wortmarke anmelden | `[BLOCKER]` vor erstem Marketing-Spend |
-| Bei Konflikt: Brand-Alternativen-Workshop | bei Trigger |
+| WKO-Markenberatung — Anfrage raus 2026-05-04 | `[ERLEDIGT]` Antwort eingelangt mit Recherche-Datenbanken, Sprechtag-Buchungslink, aktualisierten Gebuehren (294 € online), Foerder-Hinweis |
+| Vorab-Recherche Justia/USPTO + Whois aller instantpage-Domains + LinkedIn instantpage.dev | `[ERLEDIGT]` 2026-05-04 — Befunde dokumentiert |
+| **TMview Browser-Recherche** (deckt AT-Patentamt + DPMA + EUIPO ab) | `[ERLEDIGT]` 2026-05-04 — nur 2 USPTO-Treffer (1 eingetragen, 1 beendet); keine AT/EU/DE-Treffer |
+| **EUIPO eSearch plus Browser-Recherche** | `[ERLEDIGT]` 2026-05-04 — 0 Treffer (Trade marks, Designs, Owners, Representatives) |
+| **WIPO Global Brand Database** (deckt Madrid IR + nationale Quellen) | `[ERLEDIGT]` 2026-05-04 — 0 Treffer fuer instantpage |
+| AT see-ip direkt zur Vollstaendigkeit (Doppelpruefung) | `[OPTIONAL]` — TMview deckt AT-Patentamt bereits ab, see-ip-Direktcheck fuer 100 % Sicherheit |
+| Sound-/Aehnlichkeitsrecherche ("instant page", "instapage", "instantpages") | `[OFFEN]` — empfohlen via Patentamt Pre-Check oder Markensprechtag |
+| **WKO-Markensprechtag** | `[GEBUCHT]` Termin 2026-05-20 (gebucht 2026-05-04). Hauptthemen: Schutzfaehigkeit „InstantPage", Wortmarke vs. Wortbildmarke, Klassenwahl, AT vs. EU-Strategie |
+| Nizza-Klassen festlegen (EUIPO-Tool ec2) | `[OFFEN]` — vor Anmeldung. Vorschlag aus Recherche: Klasse 42 (Software/Hosting), ggf. 35 (Werbung/Marketing-Dienstleistungen) |
+| Brand-Alternativen-Liste vorbereiten (Backup) | `[OPTIONAL]` — nur falls Sprechtag/Patentamt Unterscheidungskraft verneint |
+| Wortbild-Marke (mit Logo-Element) als Plan B | `[BACKUP]` — falls Wortmarke wegen Beschreibend-Risiko abgelehnt wird |
+| **AT-Wortmarke anmelden** | `[BEREIT]` Recherche-Stand erlaubt Anmeldung — empfohlene Reihenfolge: Sprechtag → ggf. Pre-Check → Anmeldung |
+| Foerderung "Bleib Einzigartig" auf Eligibility pruefen | `[OFFEN]` — vor Anmeldung pruefen |
 
 ---
 

@@ -43,12 +43,15 @@
 | Auth | Supabase Auth | |
 | Zahlung | Stripe (Live-Mode, neuer Account) + Customer Portal | Test-Mode Prototyp bleibt getrennt |
 | KI | Anthropic Claude Sonnet 4.6 + Prompt Caching | Anthropic-Key aus Prototyp übernommen |
-| **Transaktionale Mails** | Resend (Default — Status `[OFFEN]`) | siehe § 1.1 Mail-Welten-Trennung; Status: `LIVE-COMPLIANCE.md` § 1 #13 |
+| **Transaktionale Mails** | **Resend** (`[ENTSCHIEDEN]` 2026-05-04) | siehe § 1.1 Mail-Welten-Trennung; Quelle: `LIVE-COMPLIANCE.md` § 1 #13 |
 | **Bildverarbeitung** | **Cloudflare Images** ($5/Mon Basis + Usage) | Auto-Resize, WebP/AVIF, CDN-Delivery |
 | **Lifecycle-Workflows** | **Trigger.dev oder Inngest** (gleich von Anfang) | Mail-Drip, Dunning, Long-Running Jobs |
 | **Routine-Crons** | Cloudflare Cron Triggers (in wrangler.toml) | trial-cleanup, stuck-pending, health-monitor |
-| Analytics | PostHog Cloud EU + Cloudflare Web Analytics (Kundenseiten) | Provider `[OFFEN]` — `LIVE-COMPLIANCE.md` § 1 #15 |
-| Error-Monitoring | Sentry (Default) | Provider `[OFFEN]` — `LIVE-COMPLIANCE.md` § 1 #14 |
+| Analytics Plattform | **Cloudflare Web Analytics** (Default, cookielos) + **PostHog Cloud EU** (Funnels, Session-Replay, Feature-Flags) (`[ENTSCHIEDEN]` 2026-05-04) | siehe `LIVE-COMPLIANCE.md` § 1 #15 + #15a |
+| Analytics Kundenseiten | **Cloudflare Web Analytics** (cookielos, kein Banner) — Kunden-Dashboard im Portal (Pro-Feature) (`[ENTSCHIEDEN]` 2026-05-04) | siehe `LIVE-COMPLIANCE.md` § 1 #15a |
+| Cookie-Consent Plattform | **Klaro** (Open Source, Self-Hosted, €0) — Cookiebot als Reserve (`[ENTSCHIEDEN]` 2026-05-04) | nur fuer Plattform-Domain; Kundenseiten Banner-frei. Siehe `LIVE-COMPLIANCE.md` § 1 #15b |
+| Bot-Schutz Kontaktformulare | **Cloudflare Turnstile** (kein Cookie, kostenlos, DSGVO-konform) — NIE Google reCAPTCHA (`[ENTSCHIEDEN]` 2026-05-04) | siehe `LIVE-COMPLIANCE.md` § 1 #15c |
+| Error-Monitoring | **Sentry-Free-Tier** (5k Events/Mo, EU-Server) Live; **Cloudflare Workers Logs** Beta (`[ENTSCHIEDEN]` 2026-05-04) | siehe `LIVE-COMPLIANCE.md` § 1 #14 |
 | Testing | Vitest (Unit) + Playwright (E2E) + Lighthouse-CI | |
 
 ### 1.1 Mail-Welten-Trennung
@@ -64,6 +67,48 @@ Drei verschiedene Mail-Quellen — jede für ihren Zweck:
 **Warum nicht Microsoft 365 für Lifecycle-Mails:** kein Templating, schlechte Bulk-Deliverability, kein Bounce-Tracking, persönliches Postfach soll persönlich bleiben.
 
 **SPF / DKIM / DMARC:** Resend liefert DNS-Records — werden in Phase 0 eingerichtet, bevor erste Live-Mail rausgeht. Sonst Spam-Risiko.
+
+### 1.2 Compliance-Architektur-Patterns
+
+Verbindliche Patterns die im Live-Bau angewandt werden — Quelle der Wahrheit: `LIVE-COMPLIANCE.md` "Compliance-Strategie".
+
+**Single-Source-of-Truth fuer rechtsrelevante Werte:** `config/legal-values.ts` enthaelt alle Konstanten die in mehreren Stellen (AGB, DSE, Mail-Templates, Code) auftauchen — z.B. `TRIAL_DAYS`, `REACTIVATION_DAYS`, `SOFT_DELETE_DAYS`, `HARD_DELETE_DAYS`, `RE_GEN_RATE_LIMIT_PER_30_DAYS`. AGB- und DSE-Templates rendern via Variablen `{{TRIAL_DAYS}}`. ESLint-Rule blockt Magic Numbers in legal-Kontext. Aenderung an einer Konstante propagiert automatisch in AGB/Mails/UI/Doku — keine Drift-Quelle.
+
+```ts
+// config/legal-values.ts (Beispiel)
+export const LEGAL = {
+  TRIAL_DAYS: 7,
+  REACTIVATION_DAYS: 30,
+  SOFT_DELETE_DAYS: 60,
+  HARD_DELETE_DAYS: 90,
+  RE_GEN_RATE_LIMIT_PER_30_DAYS: 3,
+  CANCELLATION_NOTICE: "Monatsende",
+  REFUND_POLICY: "kein Refund nach Trial",
+  CUSTOMER_DATA_RETENTION_YEARS: 7, // UGB § 212
+  STRIPE_RECEIPT_RETENTION_YEARS: 7, // UGB + BAO § 132
+  NEWSLETTER_OPT_IN_PROOF_RETENTION_YEARS: 3, // UWG-Verjaehrung AT
+} as const;
+```
+
+**Pure-Forwarder-Pattern fuer Form-Submissions auf Kundenseiten:** Alle Form-Submissions (Kontakt, Reservierung, Termin) auf `*.instantpage.at` laufen als Pure Forwarder ueber Resend direkt an die vom Kunden hinterlegte Mailbox. Kein Write in unsere DB. Kein Speichern der Inhalte. Cloudflare Function validiert Turnstile-Token, ruft Resend API auf, returnt Status. Server-Log nur Status (success/fail), keine Inhalte. Hybrid-Variante mit Portal-Inbox als Quartal-Update geplant (siehe `PRODUCT.md` § 9). Quelle: `LIVE-COMPLIANCE.md` § 6 Anhang IV.
+
+```
+Endnutzer fuellt Formular aus
+  ↓
+Cloudflare Function (form-submit.ts)
+  ↓
+[Turnstile-Token validieren]
+  ↓
+Resend API → kunden-mail@kunde.at
+  ↓
+Server-Log: nur Status, keine Inhalte
+```
+
+**Cookie-Banner-Verteilung:** `app/(platform)/**` mit Klaro-Banner-Snippet. `app/(customer-sites)/**` ohne Banner — als USP. Implementiert durch separate Layout-Files; Banner-Component nicht in shared Components.
+
+**Bot-Schutz:** Cloudflare Turnstile als React-Component fuer alle Public-Forms (Plattform + Kundenseiten). NIE Google reCAPTCHA. Turnstile ist cookielos und triggert keinen Banner-Bedarf.
+
+**`compliance-reviewer` Subagent:** lokales `.claude/agents/compliance-reviewer.md` File mit Trigger-/Rules-Spec aus Memory `project_dev_subagents_idea.md`. Wird automatisch von Claude konsultiert bei Aenderungen an Templates, legal.ts, package.json, externen API-Calls, UI-Texten, DB-Schema. Pattern-Detection + Cross-Reference-Check + Cascade-Warnung. Setup in Phase 0 direkt nach Repo-Init.
 
 ## 2. System-Architektur
 
@@ -171,7 +216,7 @@ Die zentrale Order-Tabelle hält Firmendaten + Content + Status + Subscription p
 **Re-Generation:**
 - `regen_requested` boolean
 - `last_regen_at`, `prev_regen_at` timestamptz
-- Rate-Limit: max 2x pro 30 Tage (Prototyp-Logik, `[OFFEN]` für Live)
+- Rate-Limit: max **3x pro 30 Tage** (Live, siehe `PRODUCT.md` § 3.3 — Prototyp hatte 2x)
 
 **Import (Firecrawl):**
 - `firecrawl_credits` int
@@ -373,7 +418,7 @@ instantpage/
 │   │   │   └── reglementiert.ts      # reglementierte Berufe Sonderbehandlung
 │   │   ├── import/                   # Firecrawl + Jina-Fallback + Claude-Extraktion
 │   │   ├── stripe/                   # Stripe-Client + Webhook-Handler + Plan-Mapping
-│   │   ├── mailing/                  # `[OFFEN]` Provider Resend/Postmark/Brevo
+│   │   ├── mailing/                  # Resend (entschieden 2026-05-04)
 │   │   │   ├── client.ts
 │   │   │   └── templates/            # 9 Lifecycle-Templates (OPERATIONS § 2)
 │   │   ├── images/                   # `[OFFEN]` Cloudflare Images vs Supabase Storage
@@ -519,7 +564,7 @@ src/app/api/
 ├── start-build/route.ts              (= functions/api/start-build.js)
 │                                     # initialisiert Generierung, setzt trial_expires_at
 ├── request-regen/route.ts            (= functions/api/request-regen.js)
-│                                     # Partial-Regen Leistungen, Rate-Limit 2x/30 Tage
+│                                     # Partial-Regen Leistungen, Rate-Limit 3x/30 Tage
 │                                     # `[OFFEN]` ob Live mit Recipe-System gleich bleibt
 ├── checkout/route.ts                 (= functions/api/create-checkout.js)
 ├── billing-portal/route.ts           (= functions/api/billing-portal.js)
@@ -589,7 +634,7 @@ app/sites/[subdomain]/
 |---|---|---|---|
 | 1 | OpenNext.js Cloudflare-Adapter Setup | Pages-Functions vs. Workers vs. OpenNext-Layer | wrangler.toml + Build-Pipeline |
 | 2 | Server Actions Default für Forms | Pure Route Handlers / Server Actions / Mix | API-Verzeichnis-Struktur |
-| 3 | Mailing-Provider | Resend / Postmark / Brevo | `lib/mailing/` Implementierung |
+| 3 | ~~Mailing-Provider~~ | ~~Resend / Postmark / Brevo~~ — `[ENTSCHIEDEN]` 2026-05-04: **Resend** | `lib/mailing/` Implementierung |
 | 4 | Bildverarbeitung | Cloudflare Images vs. Supabase Storage + Sharp | `lib/images/` |
 | 5 | Cron-Mechanismus | Cloudflare Cron Triggers vs. Supabase pg_cron vs. Trigger.dev/Inngest | wrangler.toml + `app/api/cron/` |
 | 6 | Vitest-Tests neben Source vs. zentral | `<file>.test.ts` vs. `tests/unit/` | nichts kritisches, aber konsistent halten |

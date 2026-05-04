@@ -2,7 +2,7 @@
 
 > **Skeleton.** Wird befüllt aus `_archive/PROJECT-STAND-MAERZ-2026.md` + Memory `project_production_refactor.md` während Live-Bau.
 
-**Stand:** 2026-05-01 (Skeleton)
+**Stand:** 2026-05-04 (Skeleton)
 
 ---
 
@@ -43,12 +43,12 @@
 | Auth | Supabase Auth | |
 | Zahlung | Stripe (Live-Mode, neuer Account) + Customer Portal | Test-Mode Prototyp bleibt getrennt |
 | KI | Anthropic Claude Sonnet 4.6 + Prompt Caching | Anthropic-Key aus Prototyp übernommen |
-| **Transaktionale Mails** | **Resend** ($20/Mon für 50k Mails, EU-Hosting) | siehe § 1.1 Mail-Welten-Trennung |
+| **Transaktionale Mails** | Resend (Default — Status `[OFFEN]`) | siehe § 1.1 Mail-Welten-Trennung; Status: `LIVE-COMPLIANCE.md` § 1 #13 |
 | **Bildverarbeitung** | **Cloudflare Images** ($5/Mon Basis + Usage) | Auto-Resize, WebP/AVIF, CDN-Delivery |
 | **Lifecycle-Workflows** | **Trigger.dev oder Inngest** (gleich von Anfang) | Mail-Drip, Dunning, Long-Running Jobs |
 | **Routine-Crons** | Cloudflare Cron Triggers (in wrangler.toml) | trial-cleanup, stuck-pending, health-monitor |
-| Analytics | PostHog Cloud EU + Cloudflare Web Analytics (Kundenseiten) | |
-| Error-Monitoring | Sentry | ersetzt `error_logs`-Tabelle Prototyp |
+| Analytics | PostHog Cloud EU + Cloudflare Web Analytics (Kundenseiten) | Provider `[OFFEN]` — `LIVE-COMPLIANCE.md` § 1 #15 |
+| Error-Monitoring | Sentry (Default) | Provider `[OFFEN]` — `LIVE-COMPLIANCE.md` § 1 #14 |
 | Testing | Vitest (Unit) + Playwright (E2E) + Lighthouse-CI | |
 
 ### 1.1 Mail-Welten-Trennung
@@ -602,7 +602,7 @@ app/sites/[subdomain]/
 
 ## 6. Auth-Flow
 
-`[OFFEN]` — Supabase Auth + JWT-Validation. Cookie-Domain-Scope kritisch (siehe `LIVE-COMPLIANCE.md` § 2.3).
+`[OFFEN]` — Supabase Auth + JWT-Validation. Cookie-Domain-Scope kritisch (Code-Audit als Phase-A-Aktion in [`LIVE-COMPLIANCE.md` § 17 Roadmap](LIVE-COMPLIANCE.md#17-roadmap-phase-ad), zugehörige Strategie-Frage [§ 5.6 #9](#56-offene-entscheidungen-vor-phase-0)).
 
 ## 7. Deployment-Pipeline
 

@@ -9,8 +9,8 @@ Ein digitaler Betreuer (AI-Agent) überwacht und optimiert die Website laufend.
 
 ### Preise (unsere Einnahmen)
 - Starter: €16/Mo monatlich, €14/Mo bei Jahreszahlung (€168/Jahr)
-- Professional: €24/Mo monatlich, €21/Mo bei Jahreszahlung (€252/Jahr)
-- Enterprise: Individuell (Kontakt-Teaser, kein fixer Preis)
+- Professional: €29/Mo monatlich, €25/Mo bei Jahreszahlung (€300/Jahr)
+- Business: Teaser-Tier ohne fixen Preis (Kontakt-Lead)
 
 ### Tech-Stack
 - Hosting: Cloudflare Pages + Workers

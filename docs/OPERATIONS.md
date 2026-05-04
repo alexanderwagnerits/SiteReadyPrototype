@@ -2,7 +2,7 @@
 
 > **Skeleton.** Wird befüllt während Phase 3 + 4 des Live-Bau (siehe `MIGRATION-PLAN.md`).
 
-**Stand:** 2026-05-01 (Skeleton)
+**Stand:** 2026-05-04 (Skeleton)
 
 ---
 

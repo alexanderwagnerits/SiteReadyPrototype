@@ -2,7 +2,7 @@
 
 > **Skeleton.** Wird befüllt aus `_archive/PROJECT-STAND-MAERZ-2026.md` + Memory-Updates während Live-Bau.
 
-**Stand:** 2026-05-01 (Skeleton)
+**Stand:** 2026-05-04 (Skeleton)
 
 ---
 
@@ -92,7 +92,7 @@ Kernversprechen (Vorabentwurf):
 | **Endgültige Löschung** | nach 90 Tagen total | Hard-Delete inkl. Storage. Activity-Log-Eintrag mit Hash-Bestätigung. |
 
 **Konsistent in:**
-- AGB § Vertragsende (LIVE-COMPLIANCE § 5)
+- AGB-Klausel "Vertragsende" innerhalb [`LIVE-COMPLIANCE.md` § 5 AGB-Skeleton](LIVE-COMPLIANCE.md#5-agb-skeleton-b2b-only)
 - Datenschutzerklärung § Speicherdauer
 - Stripe-Webhook `customer.subscription.deleted` triggert Phase 1
 
@@ -142,28 +142,31 @@ Vorabskizze:
 | AI-Sichtbarkeit (llms.txt, robots.txt für AI-Crawler) | — | ✓ |
 | Suchmaschinen-Indexierung (IndexNow) | — | ✓ |
 
-## 5. Onboarding-Flow
+## 5. Pre-Purchase-Onboarding (Fragebogen)
 
-`[OFFEN]` — siehe `RECIPE-SYSTEM.md` Onboarding-Flow + `_archive/PROJECT-STAND-MAERZ-2026.md` "Fragebogen Schritt 0–5".
+→ Vollständige Spezifikation in [`RECIPE-SYSTEM.md`](RECIPE-SYSTEM.md) Abschnitt "Onboarding-Flow". Diese Doku verweist nur, hält keine eigene Beschreibung — Drift-Schutz.
 
 ## 6. Trial + Cancellation
 
-`[OFFEN]` — Strategie-Entscheidung in `LIVE-COMPLIANCE.md` § 1:
+Strategie-Entscheidungen aus [`LIVE-COMPLIANCE.md` § 1](LIVE-COMPLIANCE.md#1-strategie-entscheidungen):
 
-- Trial-Setup (nur Vorschau / Live-Schaltung) — aktuell Default-Empfehlung: nur Vorschau
-- Trial-Dauer (7 / 14 / 30 Tage) — aktuell Default-Empfehlung: 14 Tage
-- Datenretention nach Kündigung — aktuell Default-Empfehlung: 90 Tage Grace
+- **Trial-Setup:** Live-Schaltung erlaubt (Wow-Moment als Verkaufsargument) — `[ENTSCHIEDEN]` #5
+- **Trial-Dauer:** 7 Tage — `[ENTSCHIEDEN]` #6
+- **Mindestvertragslaufzeit:** Monatsabo monatlich kündbar / Jahresabo 12 Monate — `[ENTSCHIEDEN]` #7
+- **Datenretention nach Kündigung:** 30 Tage Reaktivierung + 60 Tage Soft-Delete + danach Hard-Delete (90 Tage total) — `[ENTSCHIEDEN]` #9
 
 ## 7. Self-Service-Portal Funktionen
 
 Aus Prototyp-Bestand + Live-Erweiterungen. Tab-Reihenfolge folgt Website-Reihenfolge (Memory `feedback_portal_design.md`).
 
-### 7.1 Onboarding-Flow nach Kauf
+### 7.1 Post-Purchase Status-Flow
+
+Status-Maschine **nach** abgeschlossenem Kauf (Pre-Purchase-Fragebogen siehe § 5):
 
 1. `status = paid` → Onboarding-Screen: Fotos hochladen (optional), "Website erstellen" klicken
 2. `status = in_arbeit` → Build-Screen mit "Status aktualisieren"
 3. `status = live` → Portal mit allen Tabs freigeschaltet
-4. Pflicht-Bestätigungen beim ersten Login: AGB, AVV, Bildrechte (LIVE-COMPLIANCE § 5/6)
+4. Pflicht-Bestätigungen beim ersten Login: AGB + AVV ([`LIVE-COMPLIANCE.md` § 1](LIVE-COMPLIANCE.md#1-strategie-entscheidungen) #20) + Bildrechte ([`LIVE-COMPLIANCE.md` § 5](LIVE-COMPLIANCE.md#5-agb-skeleton-b2b-only) AGB-§ 7)
 
 ### 7.2 Portal-Tabs (Sidebar-Gruppen)
 

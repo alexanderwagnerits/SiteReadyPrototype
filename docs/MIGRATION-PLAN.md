@@ -2,7 +2,7 @@
 
 > **Master-Dokument für den Live-Bau in neuer Umgebung.** Beschreibt Setup, Übernahme aus Prototyp, Reihenfolge und Erfolgskriterien.
 
-**Stand:** 2026-05-01
+**Stand:** 2026-05-04
 **Ziel-Brand:** instantpage.at
 **Ziel-Stack:** TypeScript + Next.js 15 (App Router) + Drizzle + Zod + shadcn/ui + Cloudflare Pages via OpenNext.js
 **Übergang:** sauberer Schnitt, keine Daten-Migration (siehe Memory `project_production_refactor.md`)
@@ -128,7 +128,7 @@ npm install -D vitest @vitest/ui playwright
 
 | Aus Prototyp | Wohin im Live-Repo | Anmerkung |
 |---|---|---|
-| `src/data.js` `BRANCHEN`-Liste (~120 Einträge) | `src/lib/branchen.ts` (TypeScript) | Bleibt als interne Wissensbasis für Bezeichnung-Match (Memory `project_recipe_system_v1.md`) |
+| `src/data.js` `BRANCHEN`-Liste (~165 Einträge) | `src/lib/branchen.ts` (TypeScript) | Bleibt als interne Wissensbasis für Bezeichnung-Match (Memory `project_recipe_system_v1.md`) |
 | `src/data.js` `BRANCHEN_GRUPPEN` | `src/lib/berufsgruppen.ts` | 12 Berufsgruppen für User-Wahl |
 | `functions/_lib/generate.js` Generate-Logik + Prompts | `src/lib/generate/` | TypeScript-Migration, Prompt-Caching beibehalten |
 | `functions/api/import-website.js` Import-Logik (Firecrawl + Jina + Claude) | `src/app/api/import/route.ts` | TypeScript-Migration |
@@ -303,7 +303,7 @@ Erweitert gegenüber Prototyp um:
 ### Phase -1 — Strategie + Block A Design-Vision (~2 Wochen, im Prototyp-Repo)
 
 - Pre-Setup-Aktionen aus Abschnitt 2 anstoßen (Versicherung, Stripe, Marken-Recherche, Buchhaltung) — Lead-Time läuft im Hintergrund
-- Strategie-Entscheidungen schärfen (18 offene Fragen `docs/LIVE-COMPLIANCE.md` § 1, Pricing-USt, Repo-Name, Promo-Code-Anzahl)
+- Strategie-Entscheidungen schärfen (offene Fragen in `docs/LIVE-COMPLIANCE.md` § 1 mit Status `[OFFEN]`, plus Pricing-USt, Repo-Name, Promo-Code-Anzahl)
 - `docs/DESIGN-VISION.md` Block A vollständig: Visuelle Benchmarks + Kompetitive Tiefen-Analyse + AI-Differentiator-Story
 
 ### Phase 0 — Live-Repo + Stack-Setup (~1 Woche, **Woche 3**)
@@ -569,7 +569,7 @@ Konkrete Schritte am Cutover-Tag (Memory `project_production_refactor.md`):
 
 ### Strategische Entscheidungen offen
 
-→ siehe `docs/LIVE-COMPLIANCE.md` § 1 für die 18 offenen Strategie-Fragen.
+→ siehe `docs/LIVE-COMPLIANCE.md` § 1 für offene Strategie-Fragen mit Status `[OFFEN]`.
 
 Plus speziell für Migration:
 

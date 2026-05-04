@@ -2,7 +2,7 @@
 
 > **Living Document.** Sammelt alle rechts- und compliance-relevanten Themen für den Übergang Prototyp → Live-Produkt. Nicht alle Punkte müssen sofort entschieden werden — offene Stellen sind als `[OFFEN]` markiert.
 
-**Stand:** 2026-05-01
+**Stand:** 2026-05-04
 **Markt:** AT-only (Phase 1)
 **Brand:** instantpage.at (Brand) — Wagner IT Services e.U. (Rechtsträger)
 **Strategie:** 100% Eigenarbeit für Phase-1-Live, Anwalt Trigger-basiert ab definierten Schwellen
@@ -56,7 +56,7 @@ Status-Marker:
 | 10 | Haftungsbegrenzung | 12-Monats-Vergütung / fixer Cap (z.B. €5.000) / pro Schadensfall | 12-Monats-Vergütung | `[OFFEN]` |
 | 11 | Refund-Policy | 14 Tage Widerruf trotz B2B / pro-rata bei Mid-Period / kein Refund | pro-rata bei Mid-Period | `[OFFEN]` |
 | 12 | Custom-Domain-Verantwortung | DNS allein Kunde / DNS-Setup-Hilfe inkludiert | DNS allein Kunde | `[OFFEN]` |
-| 13 | Mailing-Provider | Resend / Postmark / Brevo | **Resend** (günstig + EU-Server) | `[ENTSCHIEDEN]` |
+| 13 | Mailing-Provider | Resend / Postmark / Brevo | **Resend** (günstig + EU-Server) | `[OFFEN]` |
 | 14 | Error-Monitoring | Sentry / Axiom / nichts | Sentry | `[OFFEN]` |
 | 15 | Analytics-Provider Plattform | PostHog Cloud EU / Plausible EU / nichts | PostHog Cloud EU | `[OFFEN]` |
 | 16 | Pricing-Anzeige | inkl. 20% USt / netto + USt | **netto + USt** (B2B-Standard) | `[ENTSCHIEDEN]` |
@@ -741,13 +741,23 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 - Activity-Log-Eintrag: `consent_recorded` mit `details: {document: 'avv', version: 'v1.0', timestamp, ip_hash}`
 - Bei AVV-Update: alle Kunden müssen erneut akzeptieren beim nächsten Login
 
+### 12.6 AGB-Akzeptanz-Verfahren `[OFFEN]`
+
+> Stub — UX-Detail vor Live-Schaltung ausspezifizieren. Voraussichtlich analog zu § 12.5 AVV-Akzeptanz, mit folgenden offenen Punkten:
+
+- **Akzept-Zeitpunkt:** Beim Trial-Start (Account-Erstellung) oder beim ersten Login? — vermutlich beim Trial-Start, sonst ist Trial-Nutzung ohne AGB-Bindung.
+- **Darstellung:** AGB-Volltext im Modal scrollbar oder PDF-Download wie AVV?
+- **Activity-Log-Eintrag:** `consent_recorded` mit `details: {document: 'agb', version: 'vX.Y', timestamp, ip_hash}`
+- **Bei AGB-Update:** alle Kunden müssen erneut akzeptieren — Sperrung des Portal-Zugriffs bis Akzept oder soft-Banner?
+- **Bildrechten-Bestätigung:** ist eigener Akzept-Flow pro Bild-Upload (siehe AGB-Klausel § 7 in Abschnitt 5), nicht im AGB-Modal.
+
 ---
 
 ## 13. AI Act 2.8.2026
 
 ### Stichtag
 
-**2.8.2026** = Geltungsbeginn der Transparenzpflichten nach Art 50 AI Act (VO 2024/1689). Heute ist 2026-05-01 → noch ~3 Monate.
+**2.8.2026** = Geltungsbeginn der Transparenzpflichten nach Art 50 AI Act (VO 2024/1689). Heute ist 2026-05-04 → noch ~3 Monate.
 
 ### Pflichten für instantpage.at
 
@@ -1065,7 +1075,7 @@ Self-Check-Ergebnis als Memory-Eintrag oder im internen `incidents.log` festhalt
 ## Anhang — Verbindung zu anderen Repo-Dokumenten
 
 - [docs/business-case-kosten.md](business-case-kosten.md) — Wirtschaftlichkeit
-- [docs/Fragen_Anwaeltin_Instantpage.xlsx](Fragen_Anwaeltin_Instantpage.xlsx) — vor "ohne Anwalt"-Entscheidung erstellte Fragen-Sammlung; Inhalte können als Inspiration dienen
+- [docs/_archive/Fragen_Anwaeltin_Instantpage.xlsx](_archive/Fragen_Anwaeltin_Instantpage.xlsx) — vor "ohne Anwalt"-Entscheidung erstellte Fragen-Sammlung; Inhalte können als Inspiration dienen
 - [docs/mockups/](mockups/) — Stil-Mockups
 - [CLAUDE.md](../CLAUDE.md) — Projekt-Anweisungen
 - [src/data.js](../src/data.js) — Branchen-Datenmodell (BRANCHEN, BRANCHEN_GRUPPEN)
@@ -1084,4 +1094,4 @@ Self-Check-Ergebnis als Memory-Eintrag oder im internen `incidents.log` festhalt
 
 ---
 
-*Ende Living Document. Stand 2026-05-01. Weiterentwickeln wann immer Strategie-Entscheidung getroffen, Stammdatum geklärt, neue Subprozessor angebunden, Branche reglementiert recherchiert, Anwalt-Trigger erreicht.*
+*Ende Living Document. Stand 2026-05-04. Weiterentwickeln wann immer Strategie-Entscheidung getroffen, Stammdatum geklärt, neue Subprozessor angebunden, Branche reglementiert recherchiert, Anwalt-Trigger erreicht.*

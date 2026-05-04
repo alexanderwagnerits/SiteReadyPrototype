@@ -2,7 +2,7 @@
 
 > **Quelle der Wahrheit für die Kundenwebsite-Architektur im Live-Produkt.** Promoviert aus Memory `project_recipe_system_v1.md` (Final entschieden 2026-04-29).
 
-**Stand:** 2026-05-01
+**Stand:** 2026-05-04
 
 ---
 
@@ -295,42 +295,7 @@ Live-Preview rechts daneben — User klickt, sieht direkt was sich ändert.
 
 ## Bau-Plan im Live-Repo
 
-### Phase 0 — Section-Library bauen (~6 Wochen)
-
-- 4 Themes mit allen CSS-Tokens (Fonts, Farben, Spacing, Borders, Animations)
-- 25 Section-Bausteine (Hero-Varianten, Leistungen-Varianten, etc.) als Tailwind+shadcn-Components
-- Branchen-Funktionen-Forms (Reservierung, Termin, Buchung, Standard-Kontakt)
-- Universal-Highlight-Block für Edge-Case-Inhalte
-
-### Phase 1 — Recipes definieren (~6 Wochen)
-
-- 24 Recipe-Configs (welches Theme, welche Sections, welche Funktionen)
-- Berufsgruppen → Look-Mapping in Code
-- Theme-pro-Look-Mapping
-- BRANCHEN-Liste mit Recipe-Mapping pro Branche
-
-### Phase 1 — Auto-Engine (~2 Wochen)
-
-- Bezeichnung → BRANCHEN-Match-Logik (Substring + Keyword-Synonym-Map)
-- Hero-Variante-Auswahl-Regeln
-- Layout-Density-Regeln
-- Section-Visibility-Regeln
-- Logo-Farbe-Extraktion (Cloudflare Images oder eigener Algorithmus)
-- Anrede-Detection (Import-Claude-Call, Branchen-Default-Tabelle)
-
-### Phase 1 — Fragebogen-Refactor (~2 Wochen)
-
-- 12 Berufsgruppen-Karten-UI
-- 1–4 Look-Karten-UI mit schematischer Darstellung + Confirmation-Variante
-- Berufsbezeichnung-Pflichtfeld
-- Akzentfarbe-Picker bleibt
-- Sonstige Felder bleiben
-
-### Phase 1 — Portal-Erweiterung (~2 Wochen)
-
-- Design-Tab erweitern (Look-Wechsel, Akzentfarbe, Anrede)
-- Live-Preview-Engine (Sections rendern bei jeder Änderung)
-- Section-Toggles bleiben
+→ Verbindliche Phasen-Numerierung und Zeitplanung steht in [`MIGRATION-PLAN.md` § 8](MIGRATION-PLAN.md). Recipe-System-Bauteile dort als Phase 1 (Section-Library + Themes) und Phase 2 (Recipes + Auto-Engine + Fragebogen-Refactor + Portal-Erweiterung).
 
 ---
 

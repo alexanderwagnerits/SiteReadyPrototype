@@ -2,7 +2,7 @@
 
 > **Living Document.** Sammelt alle Visual-, UX-, Quality- und Differenzierungs-Specs, die fehlen, damit das Live-Produkt premium wirkt — und nicht nur "saubere Next.js-App mit shadcn-Defaults".
 
-**Stand:** 2026-05-01
+**Stand:** 2026-05-04
 **Phase:** vor Phase 0 (Code-Setup) im `MIGRATION-PLAN.md`
 
 ---

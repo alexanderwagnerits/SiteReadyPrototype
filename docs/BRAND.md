@@ -2,7 +2,7 @@
 
 > **Skeleton.** Wird befüllt während Phase 0 + 1 des Live-Bau.
 
-**Stand:** 2026-05-01 (Skeleton)
+**Stand:** 2026-05-04 (Skeleton)
 
 ---
 

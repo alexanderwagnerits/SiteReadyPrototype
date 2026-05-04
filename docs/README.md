@@ -2,7 +2,7 @@
 
 > **Index aller Repo-Dokus.** Living Documents — werden laufend ergänzt während Live-Bau.
 
-**Stand:** 2026-05-01
+**Stand:** 2026-05-04
 
 ---
 

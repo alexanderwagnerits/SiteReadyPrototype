@@ -33,10 +33,11 @@ Konkurrenz (Webflow/Wix) lässt User aus 200 Templates wählen → überfordert 
 ## Architektur-Layer
 
 ```
-Layer 1 — Themes (4)
-  Klassisch · Modern · Editorial · Handwerklich
+Layer 1 — Themes (3)  [Update v2 — 2026-05-05]
+  Klassisch · Edel · Rustikal
   Pro Theme: Fonts, Farben, Spacing-Skala, Border-Sprache, Foto-Filter,
   Animation-Charakter
+  Detailspec: docs/_design/themes.md
 
 Layer 2 — Section-Library (~25 Bausteine)
   Jede Section in mehreren Varianten:
@@ -168,27 +169,37 @@ Recipe-Naming-Pattern: `{berufsgruppe}-{look}` z.B. `handwerk-werkstatt`, `gastr
 
 ## Theme-Zuordnung pro Look
 
-| Look | Theme |
-|---|---|
-| Werkstatt (Handwerk) | Handwerklich |
-| Bau (Handwerk) | Klassisch |
-| Modern (Handwerk) | Modern |
-| Premium (Handwerk) | Editorial |
-| Wirtshaus (Gastro) | Klassisch (warm) |
-| Casual (Gastro) | Modern (warm) |
-| Editorial (Gastro) | Editorial |
-| Praxis (Gesundheit) | Klassisch (medical) |
-| Klassisch (Dienstleistung) | Klassisch |
-| Modern (Dienstleistung) | Modern |
-| Premium (Dienstleistung) | Editorial |
-| Editorial-Premium (Tourismus) | Editorial |
-| Boutique-Premium (Handel) | Editorial |
-| Funktional (Mobilität) | Klassisch |
-| Premium (Agrar) | Editorial (warm) |
-| Technisch (Industrie) | Klassisch (technisch) |
-| Modern (Kosmetik) | Modern (warm) |
-| Premium (Kosmetik) | Editorial |
-| Editorial (Kultur) | Editorial |
+> **Update v2 — 2026-05-05:** Mapping auf 3 Themes (Klassisch / Edel / Rustikal) reduziert. Detail-Tokens in [`docs/_design/themes.md`](_design/themes.md). Recipe-Override-System (Akzent + Spacing-Faktor) ersetzt frueheren "warm/medical/technisch"-Suffix.
+
+| Berufsgruppe | Look | Theme | Recipe-Override |
+|---|---|---|---|
+| Handwerk | Werkstatt | **Rustikal** | Burgund-Akzent, strong Noise |
+| Handwerk | Bau | Klassisch | navy Akzent, kompakt |
+| Handwerk | Modern | Klassisch | vibrant Akzent (Indigo o.ae.), luftig |
+| Handwerk | Premium | **Edel** | Anthrazit-Gold (Goldschmied) |
+| Gastro | Wirtshaus | **Rustikal** | warm-traditionell, mid Noise |
+| Gastro | Casual | Klassisch | warmer Akzent (Terra, Old-Gold) |
+| Gastro | Editorial | **Edel** | Petrol-Default |
+| Gesundheit | Praxis | Klassisch | medical-blue Akzent, kompakt |
+| Dienstleistung | Klassisch | Klassisch | navy/anthrazit, kompakt |
+| Dienstleistung | Modern | Klassisch | vibrant Akzent, luftig |
+| Dienstleistung | Premium | **Edel** | z.B. Architekt-Premium |
+| Bildung | Klassisch | Klassisch | navy/anthrazit |
+| Bildung | Modern | Klassisch | vibrant Akzent |
+| Tourismus | Klassisch | siehe Anmerkung | Stadt-Hotel = Klassisch / Berghuette = **Rustikal** — pro Recipe pruefen |
+| Tourismus | Editorial-Premium | **Edel** | Old-Gold (Boutique-Hotel) |
+| Handel | Klassisch | Klassisch | |
+| Handel | Boutique-Premium | **Edel** | |
+| Mobilitaet | Funktional | Klassisch | technisch + neutral |
+| Agrar | Klassisch | **Rustikal** | Bauernhof, Imker, Tannengruen-Akzent |
+| Agrar | Premium | siehe Anmerkung | Wein/Edelbrenner = **Edel** (Burgund) / Bio-Hof-Premium = **Rustikal** — pro Recipe pruefen |
+| Industrie | Technisch | Klassisch | navy Akzent |
+| Kosmetik | Modern | Klassisch | vibrant Akzent (Rose, Korallenrot) |
+| Kosmetik | Premium | **Edel** | |
+| Kultur | Modern | Klassisch | vibrant Akzent |
+| Kultur | Editorial | **Edel** | Bronze-Akzent |
+
+**Verteilung:** Klassisch ≈ 14 / Edel ≈ 8 / Rustikal ≈ 3 (+2 ambigue Faelle).
 
 ---
 

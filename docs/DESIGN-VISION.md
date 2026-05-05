@@ -35,7 +35,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | 6 | Portal-Design-Sprache | 1 Woche | `[OFFEN]` |
 | 7 | Fragebogen-Magic-Moments | 1 Woche | `[OFFEN]` |
 | **C** | **Recipe-System Visual** | ~5-6 Wochen | `[OFFEN]` |
-| 8 | 4 Theme-Tokens final | 1 Woche | `[OFFEN]` |
+| 8 | 3 Theme-Tokens final | 1 Woche | `[v2 ENTWURF]` (`_design/themes.md`) |
 | 9 | 25 Section-Specs | 2 Wochen | `[OFFEN]` |
 | 10 | 22 Recipe-Mockups | 4-6 Wochen (parallel) | `[OFFEN]` (2 von 24 da) |
 | 11 | Mikro-Interaktionen Kunden-Websites | parallel zu Themes | `[OFFEN]` |
@@ -215,9 +215,11 @@ Prototyp nutzt 12+ Stufen (0.65/0.68/0.72/0.74/0.78/0.8/0.82/0.85/0.88/0.9/0.92/
 
 ## Block C — Recipe-System Visual
 
-### 8. 4 Theme-Tokens final
+### 8. 3 Theme-Tokens final
 
-**Was fehlt:** `RECIPE-SYSTEM.md` nennt 4 Themes (Klassisch, Modern, Editorial, Handwerklich) nur in Worten. Keine Hex/Spacing/Easing-Werte.
+**Was fehlt:** ~~`RECIPE-SYSTEM.md` nennt 4 Themes (Klassisch, Modern, Editorial, Handwerklich) nur in Worten. Keine Hex/Spacing/Easing-Werte.~~
+
+**Status v2 (2026-05-05):** Theme-Architektur reduziert auf **3 Themes** — Klassisch / Edel / Rustikal. Modern wurde in Klassisch integriert (per Recipe-Akzent + Spacing-Override). Editorial → Edel umbenannt (KMU-verstaendlicher), Handwerklich → Rustikal umbenannt + Scope erweitert (Werkstatt + Wirtshaus + Bauernhof + Berghuette).
 
 **Outcome pro Theme:** Konkrete Werte für
 - Farben (Primary, Accent, Surface, Text, Border — mit Light/Dark wenn relevant)
@@ -227,7 +229,7 @@ Prototyp nutzt 12+ Stufen (0.65/0.68/0.72/0.74/0.78/0.8/0.82/0.85/0.88/0.9/0.92/
 - Foto-Filter (Saturation, Grain, Aspect-Ratios, Crop-Strategien)
 - Animation-Charakter (subtle vs. expressive)
 
-**Format:** `docs/_design/themes.md`
+**Format:** [`docs/_design/themes.md`](_design/themes.md) — `[v2 ENTWURF]` 2026-05-05. Tokens komplett, Recipe-Mapping fuer 24 Recipes drin. Klassisch-Mockup fehlt noch (mind. 2 Mockups Anwalt-streng + Coach-luftig zur Spacing-Override-Validierung).
 
 ---
 

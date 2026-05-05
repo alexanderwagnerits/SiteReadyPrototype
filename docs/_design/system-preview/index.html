@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>instantpage.at — Design System Preview</title>
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    /* Preview-Layout — nur fuer diese Seite, NICHT Teil des Design Systems */
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      margin: 0;
+      padding: var(--space-12) var(--space-8);
+      line-height: var(--leading-normal);
+    }
+    .container { max-width: var(--max-width-content); margin: 0 auto; }
+    .section { margin-block: var(--space-16); }
+    .section-title {
+      font-size: var(--text-h2);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: var(--border-hairline);
+    }
+    .grid { display: grid; gap: var(--space-4); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+    @media (max-width: 768px) {
+      .grid-cols-3, .grid-cols-4, .grid-cols-6 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Color Swatches */
+    .swatch { padding: var(--space-4); border-radius: var(--radius-sm); border: var(--border-hairline); }
+    .swatch-color { height: 80px; border-radius: var(--radius-sm); margin-bottom: var(--space-2); border: var(--border-hairline); }
+    .swatch-name { font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-muted); }
+    .swatch-value { font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-subtle); }
+
+    /* Type Specimens */
+    .type-row { padding-block: var(--space-4); border-bottom: var(--border-hairline); }
+    .type-label { font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-muted); margin-bottom: var(--space-2); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header style="margin-bottom: var(--space-16);">
+      <p style="font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-muted); margin-bottom: var(--space-2);">
+        Design System Preview
+      </p>
+      <h1 style="font-size: var(--text-display); font-weight: var(--weight-semibold); line-height: var(--leading-tight); margin: 0;">
+        instantpage.at
+      </h1>
+      <p style="font-size: var(--text-h3); color: var(--color-text-muted); margin-top: var(--space-4); max-width: var(--max-width-narrow);">
+        Plattform-Aesthetik fuer Marketing-Site, Self-Service-Portal und Sales-Material.
+        Kein Branding fuer Kundenseiten (separates Recipe-System).
+      </p>
+    </header>
+
+    <!-- COLORS -->
+    <section class="section">
+      <h2 class="section-title">Farben</h2>
+
+      <p style="font-weight: var(--weight-medium); margin-bottom: var(--space-3);">Neutral</p>
+      <div class="grid grid-cols-6">
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-bg);"></div><div class="swatch-name">bg</div><div class="swatch-value">#FAFAF7</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-surface);"></div><div class="swatch-name">surface</div><div class="swatch-value">#FFFFFF</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-surface-muted);"></div><div class="swatch-name">surface-muted</div><div class="swatch-value">#F4F2EE</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-border);"></div><div class="swatch-name">border</div><div class="swatch-value">#E8E5DF</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-text-muted);"></div><div class="swatch-name">text-muted</div><div class="swatch-value">#5C5C5C</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-text);"></div><div class="swatch-name">text</div><div class="swatch-value">#1A1A1A</div></div>
+      </div>
+
+      <p style="font-weight: var(--weight-medium); margin-top: var(--space-8); margin-bottom: var(--space-3);">
+        Akzent (Vorschlag — Claude Design soll 2-3 Alternativen vorschlagen)
+      </p>
+      <div class="grid grid-cols-4">
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-accent);"></div><div class="swatch-name">accent</div><div class="swatch-value">#2D4A3E Tannengruen</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-accent-hover);"></div><div class="swatch-name">accent-hover</div><div class="swatch-value">#1F362C</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-accent-soft);"></div><div class="swatch-name">accent-soft</div><div class="swatch-value">#E8EDE9</div></div>
+        <div class="swatch"><div class="swatch-color" style="background: var(--color-success);"></div><div class="swatch-name">success</div><div class="swatch-value">#2E7D5C</div></div>
+      </div>
+    </section>
+
+    <!-- TYPOGRAPHY -->
+    <section class="section">
+      <h2 class="section-title">Typographie</h2>
+
+      <div class="type-row">
+        <div class="type-label">display / 56px / DM Sans Semibold</div>
+        <div style="font-size: var(--text-display); font-weight: var(--weight-semibold); line-height: var(--leading-tight);">
+          Premium-Website fuer KMU
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-label">h1 / 40px / DM Sans Semibold</div>
+        <div style="font-size: var(--text-h1); font-weight: var(--weight-semibold); line-height: var(--leading-tight);">
+          Wie es funktioniert
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-label">h2 / 28px / DM Sans Medium</div>
+        <div style="font-size: var(--text-h2); font-weight: var(--weight-medium); line-height: var(--leading-snug);">
+          Fertig konfiguriert, sofort online
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-label">h3 / 20px / DM Sans Medium</div>
+        <div style="font-size: var(--text-h3); font-weight: var(--weight-medium);">
+          Fuer Handwerk, Gastro und Praxen
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-label">body / 16px / DM Sans Regular</div>
+        <div style="max-width: var(--max-width-narrow);">
+          Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website,
+          die zu Ihrer Branche passt — fertig konfiguriert, mit allen rechtlichen Pflichtangaben,
+          sofort online.
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-label">small / 14px / DM Sans Regular / muted</div>
+        <div style="font-size: var(--text-small); color: var(--color-text-muted);">
+          Alle Preise zzgl. 20 % USt. Monatsabo monatlich kuendbar.
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-label">mono / 14px / JetBrains Mono</div>
+        <div style="font-family: var(--font-mono); font-size: var(--text-small);">
+          16 EUR / Monat &nbsp;&nbsp; 29 EUR / Monat &nbsp;&nbsp; 14 / 25 jaehrlich
+        </div>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section class="section">
+      <h2 class="section-title">Buttons</h2>
+      <div style="display: flex; gap: var(--space-4); flex-wrap: wrap; align-items: center;">
+        <button class="btn-primary">Website starten</button>
+        <button class="btn-secondary">Mehr erfahren</button>
+        <a href="#" style="color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; font-weight: var(--weight-medium);">
+          Pricing ansehen
+        </a>
+      </div>
+    </section>
+
+    <!-- CARDS -->
+    <section class="section">
+      <h2 class="section-title">Pricing-Cards (Beispiel-Komposition)</h2>
+      <div class="grid grid-cols-3" style="gap: var(--space-6);">
+
+        <div class="card">
+          <div style="font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-muted); margin-bottom: var(--space-2);">STARTER</div>
+          <div style="display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2);">
+            <span style="font-size: var(--text-h1); font-weight: var(--weight-semibold);">16</span>
+            <span style="color: var(--color-text-muted);">EUR / Monat</span>
+          </div>
+          <div style="font-size: var(--text-small); color: var(--color-text-subtle); margin-bottom: var(--space-6);">
+            14 EUR jaehrlich abgerechnet
+          </div>
+          <button class="btn-secondary" style="width: 100%; margin-bottom: var(--space-6);">Starten</button>
+          <ul style="list-style: none; padding: 0; margin: 0; font-size: var(--text-small); color: var(--color-text-muted);">
+            <li style="padding-block: var(--space-2);">KI-Texte fuer deine Branche</li>
+            <li style="padding-block: var(--space-2);">Impressum + Datenschutzerklaerung automatisch</li>
+            <li style="padding-block: var(--space-2);">Subdomain firma.instantpage.at</li>
+            <li style="padding-block: var(--space-2);">Self-Service-Portal</li>
+          </ul>
+        </div>
+
+        <div class="card-elevated" style="border: 2px solid var(--color-accent); position: relative;">
+          <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--color-accent); color: var(--color-bg); padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); font-size: var(--text-small); font-weight: var(--weight-medium);">
+            Empfohlen
+          </div>
+          <div style="font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-accent); margin-bottom: var(--space-2);">PROFESSIONAL</div>
+          <div style="display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2);">
+            <span style="font-size: var(--text-h1); font-weight: var(--weight-semibold);">29</span>
+            <span style="color: var(--color-text-muted);">EUR / Monat</span>
+          </div>
+          <div style="font-size: var(--text-small); color: var(--color-text-subtle); margin-bottom: var(--space-6);">
+            25 EUR jaehrlich abgerechnet
+          </div>
+          <button class="btn-primary" style="width: 100%; margin-bottom: var(--space-6);">Professional starten</button>
+          <ul style="list-style: none; padding: 0; margin: 0; font-size: var(--text-small); color: var(--color-text-muted);">
+            <li style="padding-block: var(--space-2);">Alles aus Starter</li>
+            <li style="padding-block: var(--space-2);">Eigene Domain (www.firma.at)</li>
+            <li style="padding-block: var(--space-2);">AI-Sichtbarkeit (llms.txt)</li>
+            <li style="padding-block: var(--space-2);">Besucher-Statistiken cookielos</li>
+            <li style="padding-block: var(--space-2);">Ohne instantpage-Branding</li>
+          </ul>
+        </div>
+
+        <div class="card" style="opacity: 0.7;">
+          <div style="font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-muted); margin-bottom: var(--space-2);">BUSINESS</div>
+          <div style="display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2);">
+            <span style="font-size: var(--text-h2); font-weight: var(--weight-medium); color: var(--color-text-muted);">Coming Soon</span>
+          </div>
+          <div style="font-size: var(--text-small); color: var(--color-text-subtle); margin-bottom: var(--space-6);">
+            Erweiterte Funktionen fuer Mehrstandort-Betriebe
+          </div>
+          <button class="btn-secondary" style="width: 100%;" disabled>Vormerken</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HERO EXAMPLE -->
+    <section class="section">
+      <h2 class="section-title">Hero-Komposition (Beispiel)</h2>
+      <div style="background: var(--color-surface); border: var(--border-hairline); border-radius: var(--radius-lg); padding: var(--space-24) var(--space-12); text-align: center;">
+        <p style="font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-muted); margin: 0 0 var(--space-4) 0;">
+          fuer oesterreichische KMU
+        </p>
+        <h1 style="font-size: var(--text-display); font-weight: var(--weight-semibold); line-height: var(--leading-tight); margin: 0 0 var(--space-6) 0; max-width: 24ch; margin-inline: auto;">
+          Premium-Website. Fertig konfiguriert. Sofort online.
+        </h1>
+        <p style="font-size: var(--text-h3); color: var(--color-text-muted); max-width: var(--max-width-narrow); margin: 0 auto var(--space-8) auto;">
+          Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website,
+          die zu Ihrer Branche passt — mit allen rechtlichen Pflichtangaben.
+        </p>
+        <div style="display: inline-flex; gap: var(--space-4);">
+          <button class="btn-primary">Website starten</button>
+          <button class="btn-secondary">Beispiele ansehen</button>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-text-subtle); margin-top: var(--space-6);">
+          7 Tage testen — keine Kartenbelastung waehrend Trial
+        </div>
+      </div>
+    </section>
+
+    <!-- ANTI-PATTERN HINT -->
+    <section class="section">
+      <h2 class="section-title">Was zu vermeiden</h2>
+      <div style="background: var(--color-accent-soft); border-left: 3px solid var(--color-accent); padding: var(--space-6); border-radius: var(--radius-sm); font-size: var(--text-small);">
+        <strong>Anti-Patterns:</strong> Glassmorphism, Neumorphism, Brutalism, Web3-Gradient,
+        knalliges SaaS-Lila, "AI-Builder-Aesthetik" mit Sterne-Icons,
+        Stock-Photo-Hero mit laechelnden Menschen, grosse Card-Shadows ueberall,
+        zu viele Sub-Steps in der Type-Hierarchie.<br><br>
+        <strong>Anti-Wording:</strong> "rechtssicher", "100 % DSGVO-konform",
+        "abmahnsicher", "garantiert", "die beste Plattform", Superlative ohne Beleg,
+        Marketing-Hype, KI-Buzzwords als Headliner.
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

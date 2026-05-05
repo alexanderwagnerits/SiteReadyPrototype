@@ -1,0 +1,159 @@
+/*
+  instantpage.at — Plattform Design Tokens (Draft)
+
+  Single Source of Truth fuer die Plattform-Aesthetik (Marketing-Landing,
+  Self-Service-Portal, Pricing, Pitch-Decks).
+
+  NICHT fuer Kundenseiten verwenden — die folgen Recipe-System mit eigenen Themes.
+
+  Stand: 2026-05-05 — Vorschlag fuer Claude Design Setup.
+  Greenfield: nicht aus Prototyp uebernommen, weil Prototyp visuell durchwachsen.
+  Claude Design darf abweichen + Varianten vorschlagen.
+*/
+
+:root {
+  /* === FARBEN === */
+
+  /* Neutral-Skala — Anthrazit/Cremeweiss-Basis */
+  --color-bg: #FAFAF7;              /* Cremeweiss, leicht warm */
+  --color-surface: #FFFFFF;         /* Cards, Modals */
+  --color-surface-muted: #F4F2EE;   /* Subtle Sections */
+  --color-border: #E8E5DF;          /* Hairline Borders */
+  --color-text: #1A1A1A;            /* Anthrazit, hoher Kontrast */
+  --color-text-muted: #5C5C5C;      /* Sub-Headlines, Body */
+  --color-text-subtle: #8A8A8A;     /* Captions, Hints */
+
+  /* Akzent — Vorschlag: Tannengruen (defensive Trust-Farbe, kein SaaS-Cliche) */
+  /* Claude Design soll 2-3 Alternativen vorschlagen: Burgundy, dezenter Indigo, Olive-Gold */
+  --color-accent: #2D4A3E;
+  --color-accent-hover: #1F362C;
+  --color-accent-soft: #E8EDE9;     /* Subtle Backgrounds, Tags */
+
+  /* Semantic */
+  --color-success: #2E7D5C;
+  --color-warning: #B8730A;
+  --color-error: #B83A3A;
+  --color-info: #3A6FB8;
+
+  /* === TYPOGRAPHIE === */
+
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  --font-serif-optional: 'Source Serif 4', Georgia, serif;  /* Editorial-Akzent, optional */
+
+  /* Type Scale — 5 Stufen */
+  --text-display: 3.5rem;    /* 56px — Hero */
+  --text-h1: 2.5rem;         /* 40px — Section-Headlines */
+  --text-h2: 1.75rem;        /* 28px — Sub-Sections */
+  --text-h3: 1.25rem;        /* 20px — Card-Titles */
+  --text-body: 1rem;         /* 16px — Body */
+  --text-small: 0.875rem;    /* 14px — Captions */
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* === SPACING — 8-Punkt-Grid === */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-24: 6rem;     /* 96px */
+  --space-32: 8rem;     /* 128px */
+
+  /* === SHAPES === */
+  --radius-sm: 0.5rem;     /* 8px — Buttons, Inputs */
+  --radius-md: 0.75rem;    /* 12px — Cards */
+  --radius-lg: 1rem;       /* 16px — Modals, grosse Cards */
+  --radius-pill: 9999px;   /* Tags, Badges */
+
+  /* === SCHATTEN — sparsam === */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* === BORDERS === */
+  --border-hairline: 1px solid var(--color-border);
+  --border-strong: 1px solid var(--color-text);
+
+  /* === MOTION === */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  /* === LAYOUT === */
+  --max-width-content: 72rem;     /* 1152px — Standard Container */
+  --max-width-narrow: 48rem;      /* 768px — Text-only Sections */
+  --max-width-wide: 84rem;        /* 1344px — Hero, Pricing */
+}
+
+/* === BUTTON-VARIANTEN (Beispiel-Skelett, Claude Design baut darauf auf) === */
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--weight-medium);
+  transition: background var(--duration-base) var(--ease-out);
+}
+.btn-primary:hover {
+  background: var(--color-accent-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--weight-medium);
+}
+
+/* === CARD-VARIANTE (Pricing, Feature-Cards) === */
+
+.card {
+  background: var(--color-surface);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  /* KEIN grosser Shadow als Default — sparsam einsetzen */
+}
+
+.card-elevated {
+  background: var(--color-surface);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-card);
+}
+
+/* === SECTION-PADDING === */
+
+.section {
+  padding-block: var(--space-24);
+}
+.section-tight {
+  padding-block: var(--space-16);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-block: var(--space-16);
+  }
+  :root {
+    --text-display: 2.25rem;
+    --text-h1: 1.875rem;
+  }
+}

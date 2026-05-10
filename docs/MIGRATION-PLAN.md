@@ -2,7 +2,7 @@
 
 > **Master-Dokument für den Live-Bau in neuer Umgebung.** Beschreibt Setup, Übernahme aus Prototyp, Reihenfolge und Erfolgskriterien.
 
-**Stand:** 2026-05-04
+**Stand:** 2026-05-06
 **Ziel-Brand:** instantpage.at
 **Ziel-Stack:** TypeScript + Next.js 15 (App Router) + Drizzle + Zod + shadcn/ui + Cloudflare Pages via OpenNext.js
 **Übergang:** sauberer Schnitt, keine Daten-Migration (siehe Memory `project_production_refactor.md`)
@@ -49,20 +49,47 @@
 
 Diese Schritte VOR Code-Beginn anstoßen — manche brauchen 1–2 Wochen.
 
-| Aktion | Lead-Time | Status |
+### Bereits erledigt (Stand 2026-05-06)
+
+| Aktion | Status | Quelle |
 |---|---|---|
-| Versicherung über UBIT-Rahmenvertrag (Onlineantrag ubit-aon.at) — siehe `docs/LIVE-COMPLIANCE.md` § 3 | 3–5 Tage | `[OFFEN]` |
-| Markenrechts-Recherche instantpage.at | 1 Tag | `[OFFEN]` |
-| Geschäftskonto + Buchhaltungssoftware (sevDesk o.ä.) | 1 Woche | `[OFFEN]` |
-| Stripe Business-Verifikation für Live-Mode | 1–2 Wochen | `[OFFEN]` |
-| Subprozessor-DPAs herunterladen + sichten | 1 Tag | `[OFFEN]` |
-| Steuerberater zu Pricing-USt-Frage | 1 Termin | `[OFFEN]` |
-| Cloudflare for SaaS Setup (Custom Hostnames) | 1 Tag | `[OFFEN]` |
-| Resend-Account anlegen + SPF/DKIM/DMARC fuer instantpage.at | 1 Tag | `[OFFEN]` (Provider entschieden 2026-05-04: Resend) |
-| PostHog Cloud EU Account | 30 Min | `[OFFEN]` |
-| Sentry Account | 30 Min | `[OFFEN]` |
-| Domain-DNS Konfiguration instantpage.at | 1 Tag | `[OFFEN]` |
-| WKO-Beratungstermin (Gewerbeordnung + AT-Spezifika) | 1 Termin | `[OFFEN]` |
+| Versicherung Berufshaftpflicht R+V via UBIT — 173 €/Jahr | `[ENTSCHIEDEN, geht in Abschluss]` | Aon-Termin 2026-05-06 (`LIVE-COMPLIANCE.md` § 3) |
+| Subprozessor-DPAs recherchiert + Sample archiviert | `[ERLEDIGT]` | Commit `41277aa` |
+| Email-Provider-Wahl | `[ENTSCHIEDEN: Resend]` | 2026-05-04 (`LIVE-COMPLIANCE.md` § 1 #13) |
+| WKO-Marken-Erstkontakt durchgeführt | `[ERLEDIGT 2026-05-04]` | `LIVE-COMPLIANCE.md` § 14 |
+| Gründungs-Begleitung durch Steuerberater (statt WKO-Beratung) | `[VORHANDEN]` (im Rahmen Gründung 2023) | bestehend |
+| Steuerberater | `[VORHANDEN]` (bestehend für Wagner IT-Solutions, USt-Termin noch offen — siehe unten) | bestehend |
+| Bankverbindung | `[TEILWEISE]` Privatkonto Erste Bank — **Geschäftskonto vor Stripe-Live nötig** | siehe unten |
+
+### Wartet auf externes Datum
+
+| Aktion | Wartet auf | Status |
+|---|---|---|
+| Markenrechts-Final-Klärung instantpage.at | WKO-Markensprechtag **2026-05-20** | `[WARTET]` — siehe `project_offene_anfragen.md` |
+| Versicherungs-Cyber-Re-Evaluation | Trigger ≥ 50 Live-Kunden / ≥ 30k ARR / Vorfall | `[VERTAGT]` — siehe `LIVE-COMPLIANCE.md` § 3.5 |
+
+### Live-Bau-Aufgaben (vor Cutover, 1–2 Wochen Lead-Time)
+
+| Aktion | Lead-Time | Phase | Status |
+|---|---|---|---|
+| **Geschäftskonto Erste Bank eröffnen** ("Erste Business" basic ~7 €/Mo oder "Smart Business" ~14 €/Mo) — **vor Stripe-Live zwingend** (Stripe-KYC + Buchhaltung sauber + Optik) | 1–2 Wochen | Phase 0 | `[STARTBEREIT]` |
+| **sevDesk Buchhaltungs-Plan** (~25 €/Mo netto regulär, Aktion 7,47 €/Mo erste 6 Mo bei 12-Mo-Vertrag) — AT-Setup via `smallSettlement: 1` + SKRAT-Kontenrahmen. Plus **MiracleSync-Plugin** für Stripe→sevDesk-Auto-Sync (Sync 2026-05-08 verifiziert) — Plugin-Preis vor Live final klären. Trial gratis | ~30 Min Setup | Phase 0 | `[STARTBEREIT]` — Detail in `PRODUCT.md` § 3.0 |
+| **Stripe Invoice Template einrichten** mit AT-Pflichtangaben (FN, GISA, IBAN, Aufsichtsbehörde, Kleinunternehmer-Klausel im Footer) | 30 Min im Stripe-Dashboard | Phase 0 | `[STARTBEREIT]` — Detail in `PRODUCT.md` § 3.0 Phase 1 |
+| **Stripe-Code-Anpassung** — `create-checkout.js` + `stripe-webhook.js` für Customer.tax_exempt + Invoice-Creation; `get-invoices.js` von receipt_url auf invoice_pdf | ~2-4h Code | Phase 0 | `[STARTBEREIT]` — siehe `PRODUCT.md` § 3.0 |
+| **Steuerberater-Mini-Termin Setup-Check** (~30 Min, ~100 €) — bestätigt AT-Konformität von Stripe-Invoices + sevDesk-Setup (`smallSettlement` + SKRAT). Plus: Schwellwert-Überwachung 55.000 € + Workflow für Voucher-Finalisierung (monatlich vs quartalsweise) | 1 Termin | vor Live-Schaltung | `[STARTBEREIT]` — kein Vollservice nötig, nur Bestätigung |
+| **Stripe Business-Verifikation für Live-Mode** | 1–2 Wochen | Phase 0 | `[STARTBEREIT]` — kann jetzt parallel zu Spec-Arbeit gestartet werden, **Voraussetzung: Geschäftskonto-IBAN** |
+| **Supabase Pro Plan aktivieren** (~25 USD/Mo) — wegen PITR + DB-Limits | 1 Tag | Phase 0 | `[ENTSCHEIDEN bei Phase 0]` (`OPERATIONS.md` § 6.1) |
+| Cloudflare for SaaS Setup (Custom Hostnames) | 1 Tag | Phase 0 | `[VOR LIVE-BAU]` |
+| Resend-Account anlegen + SPF/DKIM/DMARC für instantpage.at | 1 Tag | Phase 0 | `[VOR LIVE-BAU]` |
+| PostHog Cloud EU Account | 30 Min | Phase 0 | `[VOR LIVE-BAU]` |
+| Sentry Account | 30 Min | Phase 0 | `[VOR LIVE-BAU]` |
+| Domain-DNS Konfiguration instantpage.at | 1 Tag | Phase 0 | `[VOR LIVE-BAU]` |
+
+### Optionale Aufgaben
+
+| Aktion | Wann nötig | Status |
+|---|---|---|
+| Twilio AT-Nummer für Critical-SMS (~5–10 €/Mo) | bei Phase 0 (Monitoring-Setup) | `[VOR LIVE-BAU]` (`OPERATIONS.md` § 9) |
 
 ---
 
@@ -377,6 +404,18 @@ Aus `docs/RECIPE-SYSTEM.md`:
 - Lifecycle-Workflows (Trigger.dev oder Inngest)
 - Logs-Aggregation (Better Stack / Axiom)
 
+### Post-Launch-Backlog (nicht Phase-gebunden)
+
+Features, die im Phase-1-Marktstart bewusst NICHT mitgebaut werden, aber als bekannter Feature-Wunsch in der Roadmap geparkt sind. Auslöser = konkretes Signal, das den Bau triggert.
+
+| Feature | Auslöser | Aufwand | Tier | Status |
+|---|---|---|---|---|
+| **Mehrsprachigkeit DE/EN** | 2–3 Pro-Kunden fragen aktiv nach EN-Version. Quelle: Beta-Tester-Feedback 2026-05-10 (B2B-Berater mit Auslandskunden) | ~8–10 Engineering-Tage + ~€500–800 Anwalt EN-Legal + ~+50–80% Anthropic-Token pro Re-Gen einer Multi-Lang-Site | Pro/Business | `[OFFEN — Phase 2]` |
+
+**Why DE-only Phase 1:** AT-KMU-Mehrheit (Friseur, Tischler, Restaurant, Anwalt regional) braucht kein EN. Aufwand-zu-Nutzen-Verhältnis schwach für Marktstart, klassischer Pro-Tier-Differenzierer für Phase 2. Beta-Tester ist Edge-Case der Zielgruppe (B2B-Berater).
+
+**Implementation-Skizze (für spätere Spec):** DB `texte_en` JSONB + `langs[]` pro Site, Generierungs-Pipeline pro Sprache (oder Bilingual-Prompt mit doppelten Tokens), Routing `/en/*` inkl. EN-Impressum/DSE, Portal-UI mit Tabs DE/EN pro Edit-Feld, Onboarding-Sprachauswahl, Static-Strings i18n, hreflang + Schema.org `inLanguage`. **Lazy-Generation** (EN nur on-demand wenn Kunde im Portal aktiviert) als Token-Spar-Option für Sites die EN nie brauchen.
+
 **Total Phase -1 bis 4 — zwei Modi je nach Async-Aggressivität:**
 
 | Modus | Wall-Clock | Annahme |
@@ -582,22 +621,22 @@ Plus speziell für Migration:
 | Neuer Stripe-Account oder Test-Mode in Live umschalten? | **Neuer Account** für saubere Buchhaltung + Trennung von Test-Subscriptions |
 | Anthropic API-Key übernehmen oder neu? | **Übernehmen** |
 | Cloudflare-Account übernehmen? | **Ja**, neues Pages-Projekt im selben Account |
-| Wann genau Cutover-Tag? | `[OFFEN]` abhängig von Phase 4 Fortschritt |
+| Wann genau Cutover-Tag? | `[BLEIBT OFFEN]` — abhängig von Phase 4 Fortschritt, frühestens Q3/Q4 2026 |
 | Promo-Code für Beta-Tester: wie viele Monate kostenlos? | **Inhaber regelt persönlich** mit Beta-Testern (Freunde/Kollegen) — kein systematisches Promo-Code-System nötig |
 
 ### Stammdaten offen
 
 → siehe `docs/LIVE-COMPLIANCE.md` § 2.
 
-### Technische Voraussetzungen offen
+### Technische Voraussetzungen
 
 | Voraussetzung | Status |
 |---|---|
-| Node-Version (Next.js 15 braucht Node ≥ 18.18) | prüfen |
-| Cloudflare-Account-Limits (Pages-Projekte, Custom Hostnames) | prüfen |
-| Supabase-Plan (Pro nötig für Production) | `[OFFEN]` aktuell vermutlich Free |
-| GitHub Actions Minutes-Limit | prüfen |
-| Stripe Activation-Status | `[OFFEN]` |
+| Node-Version (Next.js 15 braucht Node ≥ 18.18) | bei Phase 0 prüfen — User hat neuen Mac (seit 2026-03-30), aktuelle Node-Version vermutlich vorhanden |
+| Cloudflare-Account-Limits (Pages-Projekte, Custom Hostnames) | bei Phase 0 prüfen — bestehender Account aus Beta nutzbar |
+| Supabase-Plan | **Pro nötig** `[ENTSCHIEDEN 2026-05-06]` — siehe `OPERATIONS.md` § 6.1 (PITR + DB-Limits). Aktivierung in Phase 0. |
+| GitHub Actions Minutes-Limit | bei Phase 0 prüfen — Free-Tier 2.000 Min/Monat reicht für Solo-Dev üblicherweise |
+| Stripe Activation-Status | `[STARTBEREIT]` — Business-Verifikation 1–2 Wochen Lead-Time, in Phase 0 starten |
 
 ---
 

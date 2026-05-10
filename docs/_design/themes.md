@@ -2,8 +2,10 @@
 
 > **Quelle der Wahrheit fuer die 3 Recipe-Themes.** Konkrete Hex/Spacing/Easing-Werte pro Theme + Recipe-Mapping. Aufgehaengt in [`DESIGN-VISION.md`](../DESIGN-VISION.md) Block 8.
 
-**Stand:** 2026-05-05
+**Stand:** 2026-05-06
 **Status:** v2 — verbindliche Theme-Architektur
+
+> **Architektur-Entscheidung 2026-05-06:** Beta-Template (`functions/templates/template.js`) ist die **Grundlage** für alle 3 v2-Themes. Architektur (Vollbild-Color-Hero, Sektions-Sprache, Animationen) bleibt; v2-Themes definieren nur **Tokens** (Farben, Fonts, Spacing) + stil-spezifische Variationen — wie heute schon `.stil-klassisch / .stil-modern / .stil-elegant`. Mockups, die das Magazine-Layout (Edel) oder Noise-Filter (Rustikal) als alleinige Welt aufgemacht haben, sind verworfen. Vergleichs-Mockup: [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html).
 
 ---
 
@@ -76,7 +78,7 @@ CSS-Custom-Properties an `:root`. Im Live-Bau pro Recipe ein Theme-Klassen-Wrapp
 
 **Inspiration:** Linear, Stripe-Docs, Notion-Marketing, Vercel-Marketing.
 
-**Anker:** kein Mockup vorhanden — Theme wird im Bau neu gemockt (siehe Offene Punkte unten).
+**Anker:** [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html) (Switcher → "Klassisch"). Architektur vom Beta-Template `.stil-klassisch` übernommen, Heading-Font Merriweather (vom Beta), Tokens leicht aktualisiert. **Frage offen 2026-05-06:** Merriweather-Serif vs. DM-Sans — Beta hat Merriweather, themes.md v2 hatte DM Sans angedacht; Default jetzt Merriweather (Beta-Konsistenz), Wechsel auf DM Sans wäre 1-Token-Override.
 
 **Zielgruppe:** Anwalt, Notar, Steuerberater, Arzt, Versicherungsmakler, alle klassischen Dienstleister, moderne Coaches/Berater, klassischer Handel, Bildung (klassisch + modern), Industrie, Mobilitaet, Kosmetik-modern, Kultur-modern, Bau-Handwerk, Modern-Handwerk, Gastro-Casual, Gesundheit-Praxis.
 
@@ -182,7 +184,7 @@ Subtile Saturation. Stockfoto-Whitelist branchengerecht (Anwalt: nuechtern, Coac
 
 **Inspiration:** cpg.at, The Gentlewoman, Kinfolk, Komi.
 
-**Anker:** [`public/mockup-stil-editorial-light.html`](../../public/mockup-stil-editorial-light.html) — Restaurant Mira (Gastro-Editorial). Tokens unten reverse-engineered aus diesem Mockup.
+**Anker:** [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html) (Switcher → "Edel"). Architektur vom Beta-Template `.stil-elegant` übernommen, umbenannt zu Edel. Heading-Font Cormorant Garamond (vom Beta) statt Playfair Display — Cormorant wirkt dezenter, passt für Premium-KMU. Akzent Old-Gold `#a87b3f` als Default, recipe-überschreibbar (siehe Beispiele unten). Magazine-Mockup `_archive/mockup-stil-editorial-light.html` (Restaurant Mira) verworfen.
 
 **Zielgruppe:** Premium-Restaurants, Boutique-Hotels, Premium-Tourismus, Premium-Handel (Boutique), Premium-Kosmetik, Premium-Agrar (Weingueter, Edelbrenner), Kultur-Editorial, Premium-Handwerk (Goldschmied), Premium-Dienstleistung (Architekt-Premium, Designagentur).
 
@@ -289,7 +291,7 @@ Bewusst leicht entsaettigt — wirkt redaktionell. Magazine-Galerie statt Symmet
 
 **Inspiration:** historische Wirtshaus-Schilder, Werkstatt-Visitenkarten, oesterreichische Verlags-Druckwerke.
 
-**Anker:** [`public/mockup-stil-handwerklich.html`](../../public/mockup-stil-handwerklich.html) — Tischlerei Steiner. Tokens unten reverse-engineered aus diesem Mockup.
+**Anker:** [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html) (Switcher → "Rustikal"). Architektur vom Beta-Template (Vollbild-Color-Hero, Sektions-Sprache) übernommen, neue Stil-Variation eingeführt: Unna-Serif Headings, Burgund-Primary, Warmgold-Akzent in Italic-Stunts (`<em>` in H1/H2), dezenter Noise-Filter im Hero + CTA-Block. Voll-eigenständiges Werkstatt-Mockup `_archive/mockup-stil-handwerklich.html` verworfen.
 
 **Zielgruppe:** Handwerk-Werkstatt (Tischler, Schmied, Schuster, Drechsler), Gastro-Wirtshaus, Agrar-Klassisch (Bauernhof, Imker, kleine Brauerei), Tourismus-Klassisch wenn rural (Berghuette, Almhuette, Pension am Land — pro Recipe pruefen).
 
@@ -428,17 +430,32 @@ Leicht warmer Sepia-Touch — wirkt "echte Werkstatt-Foto" statt Stock.
 
 | Theme | Mockup | Datei |
 |---|---|---|
-| Klassisch | `[FEHLT]` — neu zu mocken | tba |
-| Edel | `[VORHANDEN]` | [`public/mockup-stil-editorial-light.html`](../../public/mockup-stil-editorial-light.html) |
-| Rustikal | `[VORHANDEN]` | [`public/mockup-stil-handwerklich.html`](../../public/mockup-stil-handwerklich.html) |
+| **3-Theme-Switcher v2** | `[VORHANDEN]` | [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html) — Switcher Klassisch/Edel/Rustikal auf Beta-Template-Basis |
+| Klassisch v2 (im Switcher) | `[VORHANDEN]` | siehe oben — Demo Bauer Architektur |
+| Edel v2 (im Switcher) | `[VORHANDEN]` | siehe oben |
+| Rustikal v2 (im Switcher) | `[VORHANDEN]` | siehe oben |
 
-Klassisch-Mockup ist die offene Aufgabe — bevor das Theme produktiv geht, brauchen wir mind. **2 Mockups** (z.B. Anwalt-streng + Coach-luftig), um Spacing-Override-Faktoren zu validieren.
+**Verworfene v2-Studien** (waren zu weit weg vom Beta-Template-Charakter): `_archive/mockup-stil-editorial-light.html`, `_archive/mockup-stil-handwerklich.html`, `_archive/mockup-stile-vergleich.html`. Bleiben als Referenz, dürfen ignoriert werden.
+
+**Polish-Pass 2026-05-06** — Mockup ist fertig als Token/Stil-Anschauung. Theme-spezifische Verfeinerungen:
+- **Klassisch**: Merriweather Serif, Navy + Indigo, Hairline-Cards, Pattern-Overlays (Architektur-Linien-Grid auf Bild-Slots), JetBrains Mono Tabular für Stats
+- **Edel**: Cormorant Garamond, asymmetrische Section-Heads (200px-Eyebrow-Spalte + 1fr-Headline), Magazine-Pull-Quote-Sektion zwischen Leistungen und Ablauf, Display-Italic-Numbers in Stats und Leistungs-Items, Old-Gold Akzentlinien
+- **Rustikal**: Unna Serif Italic, Burgund + Warmgold, "Wien · 2008 · 17 Jahre"-Stempel bei Über-Stats, Photo-Frame-Style (8px white border + warm shadow) für Galerie + Team-Avatare, italic-Akzent "*Bauer*" Architektur in Nav + Footer, sichtbarer Noise-Filter im Hero + CTA
+- Galerie nutzt Picsum-Bilder als Foto-Placeholder (Live-Bau: echte Kunden-Fotos)
+
+**Live-Bau-Bridge:** Diese Mockup-CSS-Variationen müssen ins `template.js` übersetzt werden — zusätzliche Stil-Klassen `.stil-edel` (ersetzt/ergänzt `.stil-elegant`) und `.stil-rustikal` (neu). Klassen-Namen sind bereits Beta-konform (.leist-list, .galerie-grid, .faq-list etc.).
+
+**Theme-Anker:** [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html) — Switcher Klassisch/Edel/Rustikal mit Demo Bauer Architektur. Validiert die 3 Theme-Token-Sets visuell.
+
+**Recipe-Konfiguration für Live-Bau:** [`recipe-konfiguration.md`](recipe-konfiguration.md) — pragmatische Tabelle für 24 Recipes (alle 12 Berufsgruppen × Look-Varianten) auf Beta-Template-Basis. Kein Custom-Mockup pro Recipe — sondern Komposition aus bestehenden Beta-CSS-Klassen (`.leist-list/.leist-item` vs `.leist-more`, `.bew-grid` vs `.bew-quote` vs `.bew-list`, etc.) plus Section-Reihenfolge + Stil-Default + Akzentfarbe pro Recipe.
+
+**Verworfene Mockup-Studien** (in `public/_archive/`): Recipe-Mockups die eigene Sektionen erfunden haben (Werkstücke-Tabelle, Vorher-Nachher-Slider, Hero-Sigel etc.) — nicht SiteReady-Generator-tauglich.
 
 ---
 
 ## Offene Punkte (vor Live-Bau zu klaeren)
 
-1. **Klassisch-Mockup** — 2 Mockups (Anwalt-streng + Coach-luftig), um Spacing-Override-System zu validieren
+1. **Klassisch-Mockup v2** — bestehendes Template-`stil-klassisch` als Basis, Spacing-Override-System (0.85 / 1.15) validieren. **Frage offen 2026-05-06:** Merriweather Serif (heute) vs. DM Sans (themes.md v2) — User-Bias DM Sans, aber nicht final
 2. **Tourismus-Klassisch** — pro Recipe entscheiden Klassisch vs. Rustikal (Stadt-Hotel vs. Berghuette)
 3. **Agrar-Premium** — pro Recipe entscheiden Edel vs. Rustikal (Wein vs. Bio-Hof)
 4. **Section-Library** wie reagiert auf 3 Themes — Block 9 in DESIGN-VISION.md

@@ -2,13 +2,13 @@
 
 > **Skeleton.** Wird befüllt aus `_archive/PROJECT-STAND-MAERZ-2026.md` + Memory `project_production_refactor.md` während Live-Bau.
 
-**Stand:** 2026-05-04 (Skeleton)
+**Stand:** 2026-05-06
 
 ---
 
 ## Status
 
-`[SKELETON]` — Inhaltsverzeichnis steht. Wird in Phase 0 des Live-Bau befüllt mit aktuellem Stack und Setup.
+`[GRÖSSTENTEILS-FERTIG 2026-05-06]` — Tech-Stack, DB-Schema, Repo-Struktur, Routing, API-Endpoints alle spec'd. Die zuvor offenen 10 Entscheidungen vor Phase 0 (§ 5.6) sind getroffen. Backup/Monitoring/Hardening verweisen auf `OPERATIONS.md`. Verbliebene Detail-Punkte werden in Phase 0 final fixiert (Code-Audit, Diagramm-Erstellung).
 
 ---
 
@@ -112,7 +112,55 @@ Server-Log: nur Status, keine Inhalte
 
 ## 2. System-Architektur
 
-`[OFFEN]` — Diagramm + Datenfluss zu erstellen.
+Textuelles Architektur-Diagramm (Mermaid-Diagramm in Phase 0 ergänzen):
+
+```
+                          ┌─────────────────────┐
+                          │   instantpage.at    │  ← Plattform (Marketing + Portal)
+                          │  (Cloudflare Pages) │
+                          └──────────┬──────────┘
+                                     │
+                ┌────────────────────┼────────────────────┐
+                │                    │                    │
+        ┌───────▼─────────┐  ┌───────▼─────────┐ ┌───────▼─────────┐
+        │  *.instantpage  │  │   Custom-Domain │ │   Auth + Portal │
+        │  (Wildcard      │  │   (Pro-Plan,    │ │   (Supabase     │
+        │   Subdomain)    │  │    CF for SaaS) │ │    Auth + JWT)  │
+        └────────┬────────┘  └────────┬────────┘ └────────┬────────┘
+                 │                    │                    │
+                 └─────────┬──────────┴────────────────────┘
+                           │ (Middleware-Rewrite)
+                  ┌────────▼────────┐
+                  │  Render-Pipeline│
+                  │  Beta: template │  ← Heute (Beta-Stand)
+                  │  Live: Sections │  ← Live-Bau (Phase 1+)
+                  └────────┬────────┘
+                           │
+              ┌────────────┴───────────────┐
+              ▼                            ▼
+    ┌──────────────────┐         ┌──────────────────┐
+    │  Supabase (EU)   │         │  Anthropic API   │
+    │  Postgres + RLS  │         │  (Text-Gen)      │
+    │  Storage         │         └──────────────────┘
+    └──────────────────┘
+              │
+              ▼
+    ┌──────────────────┐
+    │  Cloudflare R2   │  ← Backup-Mirror (siehe OPERATIONS § 6)
+    │  Backup-Storage  │
+    └──────────────────┘
+```
+
+**Datenfluss Onboarding → Live-Site:**
+1. User registriert sich → Supabase Auth → `orders.user_id` gesetzt
+2. Pre-Purchase-Fragebogen sammelt: berufsgruppe, bezeichnung, look_variante, kontaktdaten
+3. Stripe Checkout → Webhook → `status = paid`
+4. User klickt "Website erstellen" → `/api/start-build`
+5. Auto-Engine (Layer 4) leitet Recipe ab (siehe `recipe-konfiguration.md`)
+6. Anthropic generiert Texte mit Placeholders (`{{FIRMENNAME}}`, `{anrede_pron}` etc.)
+7. Quality-Check → Score, bei < 70 Auto-Re-Gen, bei < 70 zweimal Admin-Alarm
+8. `status = live` → Subdomain `firma.instantpage.at` aktiv
+9. Portal-Edits werden serve-time eingespielt (siehe `OPERATIONS.md` § 8.4)
 
 Vorabskizze:
 
@@ -159,7 +207,16 @@ Die zentrale Order-Tabelle hält Firmendaten + Content + Status + Subscription p
 - `anrede` text ('sie' / 'du')
 - `branche` bleibt als Fallback-Lookup für Inhalts-Defaults
 
-**Style-Felder (aus Prototyp, in Live ggf. via `recipe` ersetzt — `[OFFEN]` Mapping):**
+**Style-Felder** — Live-Bau erweitert das Beta-Schema additiv (siehe `recipe-konfiguration.md` § Datenmodell-Bridge):
+- `stil` bleibt (klassisch/modern/elegant/rustikal/custom)
+- `layout` neu (standard/kompakt/ausfuehrlich)
+- `look_variante` neu (pro Berufsgruppe vordefiniert)
+- `section_toggles` jsonb neu
+- `bewertungen_variante` (cards/quote/liste)
+- `leistungen_variante` (alternierend/kompakt)
+- `branchen_funktionen` jsonb (Speisekarte/Reservierung/Termin-Anfrage/Notdienst-Banner/Sprechzeiten/Buchung)
+
+**Aus Prototyp:**
 - `stil` ('klassisch' / 'modern' / 'elegant') — wird durch `look` ersetzt
 - `custom_color`, `custom_accent`, `custom_bg`, `custom_sep`, `custom_font`, `custom_radius`
 
@@ -260,7 +317,9 @@ Audit-Trail aller Order-Änderungen.
 
 ### 4.4 Tabelle `error_logs`
 
-Strukturiertes Error-Logging. **Live ggf. durch Sentry ersetzen** (`[OFFEN]` — Entscheidung in Phase 0).
+Strukturiertes Error-Logging. **Live: beides nutzen** `[ENTSCHIEDEN 2026-05-06]`:
+- `error_logs` (Postgres): App-Fehler aus Cron-Jobs, Build-Pipeline, Webhook-Verarbeitung — strukturiert mit order_id, retention 90 Tage
+- **Sentry**: Worker-Errors + Frontend-Errors (Stack-Traces, Breadcrumbs, Session-Replay) — siehe `OPERATIONS.md` § 9.2
 
 | Spalte | Typ |
 |---|---|
@@ -268,7 +327,7 @@ Strukturiertes Error-Logging. **Live ggf. durch Sentry ersetzen** (`[OFFEN]` —
 
 ### 4.5 Tabelle `beta_feedback` (Beta-Phase-spezifisch)
 
-`[OFFEN]` — wird im Live-Bau abgeschafft (Beta-Phase nur).
+`[ENTSCHIEDEN: in Live entfernt]` — Beta-Phase-only. Migrations-Skript bei Cutover entfernt Tabelle.
 
 ### 4.6 Tabelle `docs` (Prototyp-spezifisch)
 
@@ -421,7 +480,7 @@ instantpage/
 │   │   ├── mailing/                  # Resend (entschieden 2026-05-04)
 │   │   │   ├── client.ts
 │   │   │   └── templates/            # 9 Lifecycle-Templates (OPERATIONS § 2)
-│   │   ├── images/                   # `[OFFEN]` Cloudflare Images vs Supabase Storage
+│   │   ├── images/                   # `[ENTSCHIEDEN 2026-05-06]` Supabase Storage + Sharp-Resize on-the-fly
 │   │   ├── analytics/                # PostHog + Cloudflare Web Analytics
 │   │   ├── seo/                      # Schema.org, Meta-Tags, llms.txt, Sitemap
 │   │   └── utils/                    # esc(), slugify(), …
@@ -479,7 +538,7 @@ instantpage/
 │   │   ├── fragebogen.spec.ts
 │   │   ├── portal.spec.ts
 │   │   └── kundenseite.spec.ts
-│   ├── unit/                         # Vitest (kann auch direkt neben Sources liegen — `[OFFEN]` Convention)
+│   ├── unit/                         # `[ENTSCHIEDEN 2026-05-06]` Vitest neben Source: `<file>.test.ts` (Standard, Vitest-nativ). Zentral nur Integration-Tests.
 │   └── fixtures/
 │
 ├── .storybook/                       # Storybook für Section-Library
@@ -565,7 +624,7 @@ src/app/api/
 │                                     # initialisiert Generierung, setzt trial_expires_at
 ├── request-regen/route.ts            (= functions/api/request-regen.js)
 │                                     # Partial-Regen Leistungen, Rate-Limit 3x/30 Tage
-│                                     # `[OFFEN]` ob Live mit Recipe-System gleich bleibt
+│                                     # `[ENTSCHIEDEN 2026-05-06]` Live nutzt Recipe-System für Auto-Engine-Lookup
 ├── checkout/route.ts                 (= functions/api/create-checkout.js)
 ├── billing-portal/route.ts           (= functions/api/billing-portal.js)
 ├── invoices/route.ts                 (= functions/api/get-invoices.js)
@@ -603,9 +662,9 @@ app/sites/[subdomain]/
 └── vcard-contact/route.ts            # QR-Code-vCard
 ```
 
-`[OFFEN]` — **Server Actions vs. Route Handlers:** Next.js 15 hat beide. Forms könnten via Server Actions typsicher und ohne `route.ts`-Boilerplate. Entscheidung: Default Route Handlers (für externe Calls + Webhooks + Crons), Forms wo möglich Server Actions. Pattern in Phase 0 fixieren.
+`[ENTSCHIEDEN 2026-05-06]` — **Server Actions vs. Route Handlers:** Default **Route Handlers** für externe Calls (Stripe-Webhooks, Anthropic, Cron-Endpoints, Public-API). **Server Actions** für interne Forms (Onboarding, Portal-Edits) — typsicher, ohne `route.ts`-Boilerplate, mit Zod-Validation in actions.ts. Pattern in Phase 0 final-fixiert.
 
-`[OFFEN]` — **Re-Generation-Logik Live:** Prototyp hat `request-regen` mit Rate-Limit 2x/30 Tage + Partial-Regen (nur Leistungen). Mit Recipe-System: Re-Gen-Trigger? Bei Berufsbezeichnung-Änderung? Look-Wechsel? Anrede-Wechsel?
+`[ENTSCHIEDEN 2026-05-06]` — **Re-Generation-Logik Live (Serve-Time-Maximum):** Re-Gen nur in 2 Fällen: (1) initiale Generierung beim Onboarding, (2) manueller "Neu generieren"-Button mit Rate-Limit 3x/30 Tage. Alles andere serve-time via Placeholder (`{{FIRMENNAME}}`, `{{BEZEICHNUNG}}`, `{anrede_pron|Sie/du}`) und Recipe-Konfig-Lookup für Look/Stil/Layout. Detail in `OPERATIONS.md` § 8.4 + `PRODUCT.md` § 3.3. Berufsgruppe nach Onboarding read-only.
 
 ### 5.4 Component-Organisation
 
@@ -617,7 +676,7 @@ app/sites/[subdomain]/
 | `components/marketing/` | Landing-Bausteine, eher Page-spezifisch |
 | `components/fragebogen/` | Fragebogen-Schritte als Components |
 
-`[OFFEN]` — **Atomic-Design vs. Feature-Based:** Empfehlung Feature-Based (sections/themes/marketing/portal) wie hier. Atomic ist für SaaS oft over-engineered.
+`[ENTSCHIEDEN 2026-05-06]` — **Feature-Based Component-Organisation:** sections/themes/marketing/portal. Atomic-Design ist für SaaS over-engineered.
 
 ### 5.5 Konventionen
 
@@ -626,64 +685,106 @@ app/sites/[subdomain]/
 - **Zod-Schemas in `schemas/`** geteilt zwischen Form (RHF), API-Validation (Route Handler) und DB-Insert (Drizzle)
 - **Drizzle-Migrations versioniert** in `supabase/migrations/`, gegen Live-DB nur via Migration-Skript
 - **Storybook-Story für jede Section + Platform-Component** — ist Reviewbasis im Async-PR-Workflow
-- **Tests:** Vitest neben Source (`<file>.test.ts`) oder zentral in `tests/unit/` — Convention vor Phase 1 wählen `[OFFEN]`
+- **Tests:** Vitest neben Source (`<file>.test.ts`) `[ENTSCHIEDEN 2026-05-06]`. Zentral nur für Integration-Tests in `tests/integration/`.
 
-### 5.6 Offene Entscheidungen vor Phase 0
+### 5.6 Entscheidungen vor Phase 0 (alle getroffen 2026-05-06)
 
-| # | Entscheidung | Optionen | Beeinflusst |
+| # | Entscheidung | Gewählt | Begründung |
 |---|---|---|---|
-| 1 | OpenNext.js Cloudflare-Adapter Setup | Pages-Functions vs. Workers vs. OpenNext-Layer | wrangler.toml + Build-Pipeline |
-| 2 | Server Actions Default für Forms | Pure Route Handlers / Server Actions / Mix | API-Verzeichnis-Struktur |
-| 3 | ~~Mailing-Provider~~ | ~~Resend / Postmark / Brevo~~ — `[ENTSCHIEDEN]` 2026-05-04: **Resend** | `lib/mailing/` Implementierung |
-| 4 | Bildverarbeitung | Cloudflare Images vs. Supabase Storage + Sharp | `lib/images/` |
-| 5 | Cron-Mechanismus | Cloudflare Cron Triggers vs. Supabase pg_cron vs. Trigger.dev/Inngest | wrangler.toml + `app/api/cron/` |
-| 6 | Vitest-Tests neben Source vs. zentral | `<file>.test.ts` vs. `tests/unit/` | nichts kritisches, aber konsistent halten |
-| 7 | shadcn-Registry-Config (components.json) Detail | Default vs. erweitertes Setup mit Theme-Provider | `components/ui/` Setup |
-| 8 | DB-Schema Detail | aktuelles `orders` 1:1 vs. mit Recipe-System-Spalten erweitern | `db/schema.ts` |
-| 9 | Auth-Cookie-Domain-Scope | Single-Domain vs. Wildcard | Middleware + Auth-Helpers |
-| 10 | Storage-Bucket-Struktur | aktuell `customer-assets/{user-id}/...` — bleibt? | Storage-Helpers |
+| 1 | OpenNext.js Cloudflare-Adapter Setup | **OpenNext-Layer** (`@opennextjs/cloudflare`) | sauberster Migrations-Pfad, Standard-Next.js-Code unverändert, Pages-Functions automatisch generiert |
+| 2 | Server Actions vs. Route Handlers | **Mix:** Server Actions für interne Forms, Route Handlers für externe Calls/Webhooks/Cron | siehe § 5.3 |
+| 3 | Mailing-Provider | **Resend** `[ENTSCHIEDEN 2026-05-04]` | EU-Hosting verfügbar, gute DSGVO-Doku, Resend-Webhooks für Bounce-Tracking |
+| 4 | Bildverarbeitung | **Supabase Storage + Sharp on-the-fly Resize** | Konsistenz mit Backup-Strategy (R2-Mirror), keine pro-Bild-Kosten wie bei Cloudflare Images, Sharp im Worker performant genug |
+| 5 | Cron-Mechanismus | **Cloudflare Cron Triggers** (in `wrangler.toml`) | direkt im Stack, kein Drittanbieter, Cron-Definition im Code versioniert |
+| 6 | Vitest-Tests | **neben Source** (`<file>.test.ts`) | Vitest-nativ, näher am Code, Refactor-sicher. `tests/integration/` zentral für E2E |
+| 7 | shadcn-Registry-Config | **Default Setup mit Theme-Provider** | nötig für 3 v2-Themes (Klassisch/Edel/Rustikal) + Stil-Toggle |
+| 8 | DB-Schema Detail | **aktuelles `orders` additiv erweitern** | Recipe-System-Spalten (look_variante, layout, section_toggles, branchen_funktionen) hinzufügen — keine destruktiven Migrationen |
+| 9 | Auth-Cookie-Domain-Scope | **Wildcard** (`.instantpage.at`) für Plattform + Subdomains. Custom-Domains bekommen eigenen Auth-Flow (separate Cookie pro Domain) | Subdomain-Hopping-Auth nötig (Portal → Vorschau-Subdomain), aber Custom-Domains sind eigenständige Sites |
+| 10 | Storage-Bucket-Struktur | **bleibt** (`customer-assets/{user-id}/...`) | bewährt, RLS funktioniert, Backup-Sync trivial |
 
-→ Alle 10 vor Phase 0 klären, dann ist die Struktur final.
+→ Alle 10 entschieden 2026-05-06. Code-Audit-Punkte (Auth-Cookie-Scope-Verifikation in Phase 0) bleiben als TODO.
 
 ## 6. Auth-Flow
 
-`[OFFEN]` — Supabase Auth + JWT-Validation. Cookie-Domain-Scope kritisch (Code-Audit als Phase-A-Aktion in [`LIVE-COMPLIANCE.md` § 17 Roadmap](LIVE-COMPLIANCE.md#17-roadmap-phase-ad), zugehörige Strategie-Frage [§ 5.6 #9](#56-offene-entscheidungen-vor-phase-0)).
+**Stack:** Supabase Auth (E-Mail/Passwort + Magic-Link) + JWT-Validation + RLS in Postgres.
+
+**Cookie-Domain-Scope** `[ENTSCHIEDEN]` — **Wildcard `.instantpage.at`** für Plattform-Subdomains (Portal, Marketing-Site, Kunden-Subdomains für Live-Preview). **Custom-Domains** (Pro-Plan) bekommen eigenen Auth-Flow mit separater Cookie pro Domain — sind eigenständige Sites ohne Portal-Funktion.
+
+**Code-Audit-Punkt Phase 0:** Cookie-`SameSite` + `Secure` + `HttpOnly` flags verifizieren, CSRF-Schutz für Server Actions, Session-Refresh-Mechanismus (siehe `LIVE-COMPLIANCE.md` § 17 Roadmap, Phase A).
+
+**Login-Flow:**
+1. User-Login → Supabase Auth → JWT in Cookie (`.instantpage.at` Wildcard, HttpOnly, Secure, SameSite=Lax)
+2. Middleware validiert JWT bei jedem Request, refresht Token wenn < 5 Min Restzeit
+3. RLS in Postgres prüft `auth.uid() = user_id` für alle Tabellen-Zugriffe
+4. Bei Subdomain-Hopping (Portal → kunde.instantpage.at Live-Preview): selbe Cookie wird mitgegeben, RLS validiert Eigentümerschaft
+5. Logout → Cookie löschen + Supabase-Session beenden
+
+**Admin-Auth:** separater Login via `/admin?key=...` aktuell im Beta. Live: 2FA-Pflicht (siehe § 10).
 
 ## 7. Deployment-Pipeline
 
-`[OFFEN]` — Memory `project_production_refactor.md` "GitHub Actions CI/CD" + "wrangler.toml" + "Staging-Environment":
+`[ENTSCHIEDEN 2026-05-06]`:
 
-- `main` → Production Auto-Deploy
-- `staging` → Staging Auto-Deploy
-- `feature/*` → PR Preview-Deployment
-- Lighthouse-CI als Hard-Gate (A11y < 90 blockt)
-- Tests + ESLint + TypeScript-Check als Pre-Merge
+| Branch | Ziel | Trigger |
+|---|---|---|
+| `main` | **Production** auf Cloudflare Pages | Auto-Deploy nach Merge, **manueller Approval-Schritt** vor Production-Push (siehe `OPERATIONS.md` § 9.5 Pflicht-Checks) |
+| `staging` | **Staging-Umgebung** | Auto-Deploy bei Push |
+| `feature/*` | **PR Preview-Deployment** | Auto pro PR |
+
+**Pre-Merge-Gates (GitHub Actions):**
+- ESLint (zero warnings)
+- TypeScript-Check (strict mode)
+- Vitest (alle Tests grün)
+- Playwright (Smoke-Test grün)
+- Lighthouse-CI als **Hard-Gate**: A11y < 90 blockt Merge, Performance < 80 Warning
+
+**Pre-Production-Gates** (siehe `OPERATIONS.md` § 9.5):
+1. Build-Test grün
+2. Smoke-Test grün
+3. Migrations-Diff geprüft (keine destruktiven DB-Änderungen)
+4. Manueller Approval (kein Auto-Deploy aus `main`)
+5. Rollback-Plan (vorherige Version-ID notiert)
 
 ## 8. Monitoring + Logging
 
-`[OFFEN]` — Sentry (Errors) + PostHog (Funnel + Replay) + Better Stack/Axiom (Logs) + Cloudflare Logs.
+→ Vollständige Spec in `OPERATIONS.md` § 9. Hier nur Tool-Stack-Übersicht:
+
+- **Sentry** — Worker + Frontend Errors (Stack-Traces, Breadcrumbs, Session-Replay)
+- **PostHog Cloud EU** — Product-Analytics (Funnel, Session Replay), DSGVO-konform
+- **Cloudflare Workers Logs** + **Logpush nach R2** (30 Tage Retention)
+- **Activity-Log** (Postgres-Tabelle) — App-Events mit User-ID, 12 Monate Retention
+- **UptimeRobot** Free-Tier + **Cloudflare Health-Check** für Uptime
+- **Twilio SMS** (~5–10 €/Mo) für Critical-Alerts
+- **Resend Bounce-Webhook** für E-Mail-Versand-Health
 
 ## 9. Backup + Recovery
 
-`[OFFEN]` — Memory `project_production_refactor.md` "Backup & Recovery":
+→ Vollständige Spec in `OPERATIONS.md` § 6. Kurz-Übersicht:
 
-- Supabase Pro tägliche Backups (7 Tage)
-- pg_dump → Cloudflare R2 (90 Tage Retention)
-- Wöchentlich Storage-Sync zu R2
-- Restore-Test alle 3 Monate in Staging
+- **Supabase Pro** PITR 7 Tage + Daily-Backup → R2-Mirror (30 Tage rolling)
+- **Wochen-Snapshots** R2 (12 Wochen) + **Monats-Snapshots** R2 (12 Monate)
+- **Storage-Sync** Logos/Fotos täglich nach R2 (30 Tage rolling)
+- **Code-Repo:** GitHub eigene Backups + lokales `git clone`
+- **Restore-Drill** quartalsweise (Daily-Backup → Staging) + jährlich (Wochen + Storage)
+- **RPO** 1h (Pro/Business) / 24h (Trial), **RTO** 4h (Standard) / 2h (Business)
 
 ## 10. Security-Hardening
 
-`[OFFEN]` — Memory `project_production_refactor.md` "Sicherheits-Hardening":
+`[SPEZIFIZIERT 2026-05-06]` — wird in Phase 0 + Phase 3 implementiert:
 
-- URL-Escaping in allen Endpoints
-- Auth-Check mit JWT-Validation (alle Endpoints)
-- Subdomain-Kollisions-Handling
-- Portal-Validation parität zu Fragebogen-Validation
-- Cookie-Domain-Scope (siehe `LIVE-COMPLIANCE.md`)
-- Rate-Limiting (Cloudflare WAF Rules)
-- 2FA-Pflicht für Admin-Accounts (Inhaber + spätere Mitarbeiter — non-negotiable)
-- 2FA optional für Kunden-Accounts (Opt-in im Portal). KMU-Akzeptanz für Pflicht-2FA zu niedrig, aber bei sensiblen Branchen (Anwalt, Arzt) prominent empfehlen. Login schickt bei deaktiviertem 2FA periodisch sanften Hinweis.
+| Bereich | Maßnahme |
+|---|---|
+| **URL-Escaping** | alle User-Input-Pfade serverside escapen, kein direktes Echo in HTML/SQL |
+| **Auth-Check** | JWT-Validation in Middleware für alle `/api/`-Endpoints außer öffentliche (Webhooks, Public-API) |
+| **CSRF-Schutz** | Next.js Server Actions haben built-in CSRF, Route Handlers brauchen explizit Token-Check |
+| **Subdomain-Kollisionen** | Reserve-Liste (admin, portal, app, api, www, mail, etc.) + Auto-Suffix bei Konflikt |
+| **Portal-Validation** | Zod-Schema parität zu Fragebogen-Validation (eigene `lib/validation/`) |
+| **Cookie-Domain-Scope** | siehe § 6 + `LIVE-COMPLIANCE.md` § 17 Phase-A-Code-Audit |
+| **Rate-Limiting** | Cloudflare WAF Rules (Login 5x/Min, Build-Endpoint 3x/30 Tage, Generate-API 10x/Tag pro User) |
+| **2FA Admin-Accounts** | **Pflicht** für Inhaber + spätere Mitarbeiter (non-negotiable). TOTP via Supabase Auth Factor-Plugin |
+| **2FA Kunden-Accounts** | **Opt-in** im Portal. KMU-Akzeptanz für Pflicht-2FA zu niedrig. Bei sensiblen Branchen (Anwalt, Arzt) prominent empfehlen. Periodischer sanfter Login-Hinweis. |
+| **Dependency-Audit** | `npm audit` + Dependabot in GitHub Actions, Critical-Findings blocken Merge |
+| **Secret-Management** | nur Cloudflare Workers Secrets (`wrangler secret put`), nie in `.env`-Dateien committen |
 
 ---
 

@@ -2,26 +2,31 @@
 
 > **Skeleton.** Wird befüllt während Phase 3 + 4 des Live-Bau (siehe `MIGRATION-PLAN.md`).
 
-**Stand:** 2026-05-04 (Skeleton)
+**Stand:** 2026-05-06
 
 ---
 
 ## Status
 
-`[SKELETON]` — Inhaltsverzeichnis steht. Operative Prozesse, Email-Templates und Support-FAQ werden parallel zum Live-Bau angelegt.
+`[TEIL-FERTIG]` — Incident-Response (§1), Activity-Log (§1.5), Notice-and-Takedown (§4), Datenpannen-Meldeprozess (§5), **Backup-Restore vollständig (§6)**, Self-Check (§7), **Kunden-Onboarding-Playbook vollständig (§8)**, **Monitoring-Setup vollständig (§9)** — alle Live-Day-1-relevanten Punkte gefüllt.
+
+**Noch `[OFFEN]`** (entstehen vor / nach Live-Schaltung iterativ):
+- §2 Email-Templates: Tabelle steht, einzelne Markdown-Vorlagen vor Resend-Setup
+- §3 Support-FAQ: Top 10 Fragen ohne Antworten, weitere 10 aus realen Anfragen
 
 ---
 
-## Inhalt (geplant)
+## Inhalt
 
 1. Incident-Response-Runbook
-2. Email-Templates (Lifecycle)
-3. Support-FAQ (Top 20)
+2. Email-Templates (Lifecycle) — `[OFFEN]` (vor Live-Schaltung)
+3. Support-FAQ (Top 20) — `[OFFEN]` (iterativ aus Anfragen)
 4. Notice-and-Takedown-Prozess
 5. Datenpannen-Meldeprozess
-6. Backup-Restore-Verfahren
+6. Backup-Restore-Verfahren — Strategy + Restore + Test-Schedule + RPO/RTO + Verantwortlichkeit
 7. Self-Check vierteljährlich
-8. Kunden-Onboarding-Playbook
+8. Kunden-Onboarding-Playbook — Mindestdaten, reglementierte Berufe, Stuck-States, Re-Generate vs Edit
+9. Monitoring-Setup — Was, Logs, Dashboards, Alert-Routing, Deploy-Checks
 
 ---
 
@@ -58,9 +63,11 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 - `online` (actor: admin) — Status auf live gesetzt
 - `offline` (actor: admin) — Status auf offline gesetzt
 - `subdomain_changed` (actor: admin) — Subdomain umbenannt
-- `stil_changed` / `look_changed` (actor: admin/user) — Design gewechselt
-- `recipe_changed` (actor: admin/user, Live) — Recipe gewechselt
-- `anrede_changed` (actor: user, Live) — triggert Re-Gen mit Warnung
+- `stil_changed` / `look_changed` (actor: admin/user) — **serve-time-Update** (CSS-Klasse + Akzentfarbe)
+- `recipe_changed` (actor: admin/user, Live) — **serve-time-Update** (Recipe-Konfig-Lookup: Layout + Section-Reihenfolge + Toggles + Bewertungs-Variante). Texte bleiben.
+- `anrede_changed` (actor: user, Live) — **serve-time-Update** (kein Re-Gen) ab Live-Bau, Voraussetzung: Anrede-Platzhalter im Generierungs-Prompt
+- `firmenname_changed` (actor: user, Live) — **serve-time-Update** via `{{FIRMENNAME}}`-Placeholder
+- `admin_berufsgruppe_reset` (actor: admin, Live) — bei Falsch-Eingabe-Korrektur via Support: Site-Reset oder Daten-Übernahme in neue Site
 
 **Trial / Subscription:**
 - `trial_started` (actor: system) — trial_expires_at gesetzt
@@ -167,9 +174,29 @@ Vorlage für interne Bewertung:
 
 ## 6. Backup-Restore-Verfahren
 
-`[OFFEN]` — siehe `ARCHITECTURE.md` § 9 Backup + Recovery.
+→ Architektur-Detail in `ARCHITECTURE.md` § 9 Backup + Recovery.
 
-Konkrete Restore-Anleitung:
+### 6.1 Backup-Strategy
+
+**Voraussetzung:** Live läuft auf **Supabase Pro** (~25 USD/Mo) — wegen PITR (Point-in-Time Recovery 7 Tage) + höherer DB-Limits. Beta läuft auf Free.
+
+| Datenklasse | Quelle | Frequenz | Ziel | Retention |
+|---|---|---|---|---|
+| **Datenbank PITR** | Supabase Pro | continuous | Supabase-intern | 7 Tage (Pro-Tier-Default) |
+| **Datenbank (Daily-Backup)** | Supabase Pro | täglich 03:00 UTC | Supabase + Mirror nach R2 `backups-instantpage/db-YYYY-MM-DD.sql.gz` | 30 Tage rolling |
+| **Datenbank (Wochen-Snapshot)** | Supabase | sonntags 03:00 UTC | R2 `backups-instantpage/db-YYYY-WW.sql.gz` | 12 Wochen |
+| **Datenbank (Monats-Snapshot)** | Supabase | 1. des Monats | R2 `backups-instantpage/db-YYYY-MM.sql.gz` | 12 Monate |
+| **Storage (Logos, Fotos, Galerie)** | Supabase Storage | täglich (Object-Sync) | R2 `backups-instantpage-storage/` | 30 Tage rolling |
+| **Code-Repository** | GitHub | bei jedem Push | GitHub-eigene Backups + lokales `git clone` Inhaber | unbegrenzt |
+| **Cloudflare-Konfiguration** | Cloudflare | manuell vor jeder Änderung | `wrangler config export` in privates Repo | unbegrenzt |
+| **Stripe-Daten** | Stripe | nicht repliziert | Stripe ist Source of Truth, eigene Backups | n/a |
+| **Activity-Log (Audit)** | Postgres-Tabelle | im DB-Backup enthalten | siehe oben | 12 Monate (DSGVO-konform für Audit-Pflichten) |
+
+**R2-Kosten-Schätzung:** bei 50-200 GB Storage-Volumen ~3-5 €/Monat — überschaubar.
+
+**Trigger:** Cron-Job `functions/cron/backup-mirror.js` läuft täglich 03:30 UTC, holt Supabase-Backup ab und mirror't nach R2. **`[BAU im Live-Migration]`** — siehe `MIGRATION-PLAN.md` Phase 3.
+
+### 6.2 Restore-Anleitung (technisch)
 
 ```bash
 # 1. Letztes Backup aus R2 holen
@@ -183,7 +210,43 @@ psql $STAGING_DB_URL < db-YYYY-MM-DD.sql
 playwright test smoke
 
 # 4. Wenn ok: in Production einspielen (vorsichtig!)
+psql $PRODUCTION_DB_URL < db-YYYY-MM-DD.sql
 ```
+
+### 6.3 Test-Schedule (Restore-Drill)
+
+| Was | Wann | Verantwortlich | Erfolgskriterium |
+|---|---|---|---|
+| Restore-Drill (Daily-Backup → Staging) | quartalsweise | Inhaber | Smoke-Test grün, Anmeldung funktioniert, eine Demo-Kunden-Site rendert |
+| Restore-Drill (Wochen-Snapshot) | jährlich (Self-Check Q4) | Inhaber | wie oben + Activity-Log-Daten konsistent |
+| Storage-Restore (Logos + Fotos) | jährlich (Self-Check Q4) | Inhaber | 5 zufällige Subdomains rendern mit Original-Bildern |
+
+Restore-Drill-Termine im `/schedule`-Cron eingetragen, Reminder per E-Mail an Inhaber.
+
+### 6.4 RPO + RTO
+
+Gestuft nach Plan, da Trial-Kunden keine harten Garantien erhalten:
+
+| Plan | RPO (max. Datenverlust) | RTO (max. Wiederherstellungszeit) | Mechanismus |
+|---|---|---|---|
+| **Trial** | 24 Stunden | 4 Stunden | Daily-Backup-basiert |
+| **Starter / Professional** | 1 Stunde | 4 Stunden | PITR-basiert (Supabase Pro) |
+| **Business** (Teaser) | 1 Stunde | 2 Stunden | PITR + priorisierter Restore |
+
+**Im AGB:** "best effort, keine harte SLA-Zusicherung" (KMU-Vertrauensprodukt, kein Enterprise-Vertrag). RPO/RTO als interne Zielwerte, nicht als rechtsverbindliche Versprechen — Argument: Cloudflare/Supabase haben selbst keine 100%-SLA.
+
+**Status-Banner:** Bei laufendem Restore Erwartungs-Management auf instantpage.at (Status-Page). Trial-User bekommen E-Mail mit ETA.
+
+### 6.5 Verantwortlichkeit
+
+| Aufgabe | Wer | Backup wenn |
+|---|---|---|
+| Backup-Cron-Health überwachen | Auto-Health-Monitor | Bei 2 fehlgeschlagenen Backups → E-Mail an Inhaber |
+| Quartalsweiser Restore-Drill | Inhaber | n/a (Eigentümer-Aufgabe) |
+| Storage-Sync-Health | Cron-Health-Monitor | Bei Sync-Fehler → Slack/E-Mail-Alert |
+| Manuelle Restore-Entscheidung | Inhaber | Bei längerer Abwesenheit Vertretung benennen (Datenpannen-Pflicht) |
+
+
 
 ## 7. Self-Check vierteljährlich
 
@@ -191,14 +254,198 @@ playwright test smoke
 
 Erinnerung: per `/schedule`-Trigger automatisierbar.
 
+**Versicherungs-Re-Evaluation (Phase 2)** — bei jedem Self-Check prüfen:
+
+- Aktive Live-Kunden ≥ **50**?
+- Jahresumsatz (ARR) ≥ **30.000 €**?
+- Beinahe-Vorfall im Quartal (Phishing, kompromittierter Login, DDoS, Datenpanne)?
+- Rechtliche Streitigkeit eingelangt?
+- Vertraglicher Druck von Kunden (Versicherungsnachweis verlangt)?
+
+→ Bei "ja" zu einer Frage: Cyber-Versicherung + Berufsrechtsschutz erneut bei Aon anfragen (Martin Zainzinger, +43 5 7800-528). Detail in `LIVE-COMPLIANCE.md` § 3.5.
+
 ## 8. Kunden-Onboarding-Playbook
 
-`[OFFEN]` — interner Leitfaden bei manuellem Onboarding-Bedarf:
+Interner Leitfaden für manuellen Onboarding-Bedarf — wenn ein Kunde im Self-Service-Flow stecken bleibt oder spezielle Hilfe braucht.
 
-- Welche Daten der Kunde mindestens braucht
-- Welche Branchen-Pflichtfelder bei reglementiertem Beruf
-- Erste-Hilfe bei Stuck-Pending
-- Wann Re-Generierung sinnvoll
+### 8.1 Mindestdaten für eine generierbare Site
+
+Bevor `start-build` aufgerufen werden kann, müssen folgende Felder befüllt sein:
+
+| Feld | Pflicht | Quelle | Fallback wenn leer |
+|---|---|---|---|
+| `firmenname` | ja | User-Eingabe | n/a — ohne Name kein Build |
+| `bezeichnung` | ja | User-Freitext (z.B. "Tischlerei", "Anwaltskanzlei") | n/a |
+| `berufsgruppe` | ja | Dropdown (12 Gruppen) | n/a |
+| `look_variante` | ja | Dropdown abhängig von Berufsgruppe | Default-Variante aus `recipe-konfiguration.md` |
+| `stil` | nein | aus Recipe-Default abgeleitet | aus Recipe-Konfig |
+| `primary` + `accent` | nein | aus Logo-Extraktion oder Recipe-Default | Recipe-Default |
+| `tel` ODER `email` | ja (eines davon) | User-Eingabe | n/a — Kontakt ohne Daten = Site nicht hilfreich |
+| `adresse_voll` | nein | User-Eingabe oder leer | Sektion ausgeblendet |
+| `kurzbeschreibung` | nein | Claude generiert oder User-Edit | Claude generiert aus berufsgruppe + bezeichnung |
+
+**Regel:** Wenn Pflichtfelder fehlen, bleibt Status auf `incomplete`. Build wird nicht ausgelöst.
+
+### 8.2 Reglementierte Berufe — Zusatz-Pflichtfelder
+
+→ **Source of Truth: `LIVE-COMPLIANCE.md` § 10 "Reglementierte Berufe — Sonderbehandlung"**. Dort ist die definitive Tabelle mit ~35 reglementierten Branchen, ihren Kammer-Defaults, Aufsichtsbehörden und Berufsrecht-Quellen.
+
+**Operationelle Konsequenzen für Onboarding:**
+- Bei Branchen-Wahl mit `reglementiert: true` (Flag in `src/data.js` `BRANCHEN`-Array) zeigt das Portal eine **Warnung** mit Zusatz-Pflichtfeldern.
+- Pflichtfelder pro Berufsgruppe sind in `BRANCHE_PFLICHT`-Map in `functions/s/[subdomain]/legal.js` codiert.
+- Generierungs-Prompts in `functions/_lib/generate.js` aktivieren bei reglementierten Berufen einen **Defensiv-Block** (verbietet Heils-Versprechen, vergleichende Werbung etc.).
+- Build wird **blockiert**, wenn Pflichtfelder fehlen — Status bleibt `incomplete`.
+
+**Quick-Referenz für die Top-5 reglementierten Berufsgruppen** (Detail in LIVE-COMPLIANCE.md § 10):
+
+| Berufsgruppe | Beispiele | Pflicht-Zusatzfelder |
+|---|---|---|
+| Gesundheit | Arzt, Zahnarzt, Apotheke, Heilmasseur | Kammer + Aufsicht + Berufsrecht-Quelle |
+| Rechtsberatung | Anwalt, Notar, Patentanwalt | Kammer + RAO/Notariatsordnung |
+| Wirtschaftsberatung | Steuerberater, WP, Gewerbliche Buchhalter | KSW + WTBG |
+| Reglementiertes Gewerbe | Tischler, Elektriker, Installateur, Baumeister | Gewerbeschein + Innung + GewO |
+| Konzessions-Gewerbe | Taxi, Mietwagen, Detektiv | Konzessions-Nr + Aufsichtsbehörde |
+
+### 8.3 Erste-Hilfe bei Stuck-States
+
+| Status | Diagnose | Aktion |
+|---|---|---|
+| `pending` länger als 5 Min | Build-Cron hängt oder Anthropic-API-Fehler | Activity-Log prüfen → `last_error` lesen → ggf. manueller Re-Trigger via Admin |
+| `incomplete` aber alle Pflichtfelder befüllt | Validierungs-Bug oder DB-Cache | Page-Reload, dann manueller `start-build`-Trigger im Admin |
+| `failed` mit `quality_check_failed` | Generierter Content unter Schwellwert | Re-Generate mit anderen Inputs (z.B. längere `kurzbeschreibung`) |
+| `failed` mit `last_error: anthropic_quota` | API-Limit erreicht | Top-up Anthropic-Konsole, dann Re-Trigger |
+| `live` aber Site rendert nicht | Subdomain-DNS oder Worker-Fehler | Cloudflare-Status prüfen, ggf. Worker neu deployen |
+| Subdomain-Konflikt beim Anlegen | Auto-Suffix nicht angesprungen | Manuell anderen Subdomain-Namen vorschlagen |
+
+### 8.4 Wann Re-Generierung nötig ist (vs. Serve-Time / Portal-Edit)
+
+**Architektur-Prinzip 2026-05-06:** **Serve-Time-Maximum.** Re-Generierung kostet Anthropic-Tokens und ist langsam — was serve-time ersetzt werden kann, wird serve-time ersetzt. Re-Gen bleibt **nur** für initiale Generierung + manuellen Admin-Trigger.
+
+| Situation | Mechanismus | Voraussetzung |
+|---|---|---|
+| Stil/Look gewechselt | serve-time (CSS-Klasse) | bereits implementiert |
+| Akzentfarbe geändert | serve-time (CSS-Token) | bereits implementiert |
+| Foto austauschen | serve-time (Image-Replace) | bereits implementiert |
+| Bewertung hinzufügen | serve-time (DB-Read + HTML-Inject) | bereits implementiert |
+| Leistung-Beschreibung anpassen | serve-time (DB-Read + HTML-Inject) | bereits implementiert |
+| **Firmenname geändert** | **serve-time** | Generierungs-Prompts mit `{{FIRMENNAME}}`-Placeholder. Live-Bau-Aufgabe. |
+| **Anrede gewechselt (du/Sie)** | **serve-time** | Anrede-Platzhalter (`{anrede_pron|Sie/du}` etc.). Live-Bau-Aufgabe. |
+| **Look-Variante-Wechsel innerhalb Berufsgruppe** | **serve-time** | Andere CSS-Klasse + Akzentfarbe + Layout (standard/kompakt/ausfuehrlich) + Section-Reihenfolge + Section-Toggles + Bewertungs-Variante — alles serve-time aus Recipe-Konfig-Lookup. **Texte bleiben dieselben** (gleiche Berufsgruppe → gleicher Tonfall). Live-Bau-Aufgabe. |
+| Bezeichnung geändert ("Tischlerei" → "Möbelmanufaktur") | **serve-time** | Wenn als Placeholder generiert (`{{BEZEICHNUNG}}`). Sonst manueller Re-Gen via Admin auf Wunsch. |
+| **Berufsgruppe-Wechsel** | **NICHT möglich** im Portal | Inhalt komplett anders (Tonfall, Begriffe, Recipe). Bei Falsch-Eingabe → Support-Anfrage → Admin macht Site-Reset oder neue Site mit Daten-Übernahme. **Berufsgruppe ist nach Onboarding read-only im Portal.** |
+
+**Re-Gen-Auslöser-Liste (final, nur 2 Fälle):**
+1. **Initiale Generierung** beim Onboarding
+2. **Manueller Re-Gen via Admin/Portal** — auf Wunsch wenn Kunde Tonalität komplett ändern will
+
+**Konsequenz für Portal-UX:**
+- Berufsgruppe-Feld nach Onboarding **read-only** anzeigen mit Hinweis "Berufsgruppe-Änderung über Support"
+- Look-Variante-Wechsel **ohne Warnung** (kein "Re-Gen wird teuer"-Banner mehr)
+- Anrede-Wechsel **ohne Warnung** (serve-time)
+- Stil-Wechsel **ohne Warnung** (serve-time)
+
+**Im Activity-Log umzubauen** (`§1.5`):
+- ~~`anrede_changed → triggert Re-Gen mit Warnung`~~ → `anrede_changed → serve-time-Update`
+- ~~`look_changed/recipe_changed → triggert Re-Gen`~~ → `look_changed → serve-time-Update aus Recipe-Konfig-Lookup`
+- ~~`firmenname_changed → triggert Re-Gen`~~ → `firmenname_changed → serve-time-Update`
+- `berufsgruppe_changed` als Activity-Type entfernen (im User-Portal nicht möglich); falls über Admin → eigener Action-Type `admin_berufsgruppe_reset` mit Site-Reset-Folge
+
+### 8.5 Onboarding-Begleit-E-Mails (manuell, vor Live-Schaltung)
+
+Aktuell im Beta noch manuell. Bei Live-Schaltung als Resend-Templates (siehe § 2):
+- T+0: Welcome-Mail nach erstem Login
+- T+1: "Wie war der erste Tag?" — Reply-on-this-Mail wenn was hängt
+- T+5: Erste-Hilfe-Tipps wenn Site noch `incomplete`
+- T-3 (vor Trial-Ende): Plan-Wahl-Reminder
+
+---
+
+## 9. Monitoring-Setup
+
+Live-Day-1-relevant. Cloudflare + Supabase + Stripe sind die drei Komponenten, die überwacht werden müssen.
+
+### 9.1 Was wird überwacht
+
+**Tool-Stack** (minimaler Setup für Einzelinhaber):
+- **Primary:** Cloudflare Health-Check (gratis, eingebaut)
+- **Backup:** UptimeRobot Free-Tier (50 Monitors gratis, hat eigene Push-App für Alerts)
+- **SMS-Provider:** **Twilio** mit AT-Nummer (~1 USD/Mo + 0.05 USD/SMS, ~5-10 €/Mo realistisch) — **nur für Critical-Alerts** wo alle Sites down sind und Inhaber sofort reagieren muss
+- **Kein Slack** — Einzelinhaber-Setup, E-Mail + UptimeRobot-Push reichen für Important+Info. Bei Skalierung (Team ≥2) später Slack/PagerDuty hinzufügbar.
+
+| Was | Tool | Alert-Schwelle | Empfänger |
+|---|---|---|---|
+| **Plattform-Uptime (instantpage.at)** | Cloudflare Health-Check + UptimeRobot Free | 2 Min Down | E-Mail + UptimeRobot-Push (App) |
+| **Worker-Errors** (Generate, Webhooks) | Cloudflare Workers Logs | >5% Error-Rate über 10 Min | E-Mail Inhaber |
+| **Subdomain-Health** (Kunden-Sites) | Eigener Cron `health-monitor.js` `[BAU]` | HTTP ≠ 2xx oder Render-Fehler | Activity-Log + auto-Ticket |
+| **Supabase-DB** | Supabase Status-Page-Webhook | Down >5 Min | E-Mail Inhaber |
+| **Anthropic-API-Quota** | eigener Counter in DB-Tabelle `[BAU]` | <20% verbleibend | E-Mail Inhaber, Generate-Endpoint pausieren |
+| **Stripe-Webhooks** | Stripe-Dashboard + eigener Logger | Webhook-Fail >2x | E-Mail Inhaber |
+| **Backup-Cron** | eigene Cron-Tabelle mit `last_success_at` | >30h kein Erfolg | E-Mail Inhaber |
+| **Email-Versand (Resend)** | Resend-Bounce-Webhook | Bounce-Rate >2% | E-Mail Inhaber |
+| **DNS für Custom-Domains** (Pro-Plan) | Cron prüft DNS-Records `[BAU]` | Domain unreachable | Auto-Mail an Kunden + Inhaber |
+
+**`[BAU]`-Markierungen** = Cron-Jobs in `functions/cron/` müssen im Live-Bau angelegt werden (siehe `MIGRATION-PLAN.md` Phase 3).
+
+### 9.2 Logs
+
+| Log | Quelle | Retention | Zugriff |
+|---|---|---|---|
+| **Cloudflare Workers Logs** | CF-Dashboard + Logpush nach R2 | 30 Tage Logpush | Inhaber via Dashboard |
+| **Activity-Log** (App-Events) | Postgres-Tabelle `activity_log` | 24 Monate (DSGVO) | Inhaber via Admin-UI |
+| **Supabase DB-Logs** | Supabase-Dashboard | 7 Tage Free / 30 Tage Pro | Inhaber via Dashboard |
+| **Stripe-Logs** | Stripe-Dashboard | unbegrenzt (Stripe-Side) | Inhaber via Dashboard |
+| **Resend-Logs** | Resend-Dashboard | 90 Tage | Inhaber via Dashboard |
+| **Webhook-Failures** (eigene Tabelle) | Postgres `webhook_log` | 90 Tage | Auto-Retry + Admin-UI |
+
+**Logging-Konvention:** Keine PII (Klarnamen, E-Mails, Telefonnummern) im Cloudflare-Worker-Log — diese gehören in `activity_log` mit User-ID statt Klartext (Datenschutz).
+
+### 9.3 Dashboards
+
+Ein einziges **Admin-Dashboard** (`/admin?key=...`) bündelt:
+- Aktive Subdomains (Status-Verteilung: trial / live / offline / failed)
+- Letzte 50 Activity-Log-Einträge
+- Health-Monitor-Status pro Kunde
+- Backup-Cron-Status (last_success, retention)
+- Anthropic-API-Quota-Counter
+- Offene Support-Tickets
+
+→ existiert teilweise im Beta-Prototyp, wird im Live-Bau erweitert.
+
+### 9.4 Alert-Routing
+
+```
+CRITICAL — alle Sites down, Inhaber muss SOFORT reagieren
+  Trigger: Plattform-Uptime >2 Min Down · Supabase-DB Down >5 Min ·
+           Backup-Cron >48h kein Erfolg · Anthropic-Quota <10%
+  → SMS an Inhaber-Privatnummer (via Twilio)
+  → E-Mail an Inhaber-Geschäftsadresse
+  → UptimeRobot-Push-Notification (Smartphone)
+  → Status-Banner auf instantpage.at automatisch
+
+IMPORTANT — Funktion beeinträchtigt, Reaktion innerhalb Werktag
+  Trigger: Worker-Errors >5% · Stripe-Webhook-Fail >2x · Custom-Domain-Down ·
+           Anthropic-Quota <20% · Backup-Cron >30h
+  → E-Mail an Inhaber-Geschäftsadresse
+  → UptimeRobot-Push-Notification
+
+INFO — einzelne Vorfälle, tägliche Sichtung reicht
+  Trigger: einzelne Subdomain-Failures · Bounce-Spike · Auth-Fehler
+  → Auto-Ticket in Activity-Log
+  → tägliche Zusammenfassung per E-Mail (07:00)
+```
+
+**Schwellwert-Logik für SMS:** SMS nur wenn **alle Sites betroffen** sind (Plattform-Layer). Einzelne Subdomain-Failures lösen KEINE SMS aus — die kommen oft (Custom-Domain DNS, Foto-Upload-Konflikt) und würden den Inbox-Wert untergraben.
+
+**Skalierungs-Pfad:** Bei Wachstum (Team ≥2 Personen) Migration auf PagerDuty oder Slack-#ops mit On-Call-Rotation. SMS-Routing dann an Pikett-Person.
+
+### 9.5 Pflicht-Checks vor jedem Deploy
+
+Vor `wrangler pages deploy` zur Production:
+1. **Build-Test grün** (`CI=true npm run build`)
+2. **Smoke-Test grün** (Login + 1 Demo-Site rendern)
+3. **Migrations-Diff geprüft** (keine destruktiven DB-Änderungen)
+4. **Manueller Cloudflare-Deploy-Schritt** (kein Auto-Deploy aus `main` ohne Approval)
+5. **Rollback-Plan** (vorherige Version-ID notiert für `wrangler rollback`)
 
 ---
 

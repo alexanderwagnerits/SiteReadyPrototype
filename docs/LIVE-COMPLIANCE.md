@@ -16,14 +16,14 @@
 
 | Tier | Was | Kosten | Funktion | Status |
 |---|---|---|---|---|
-| **1 — Anwalts-Foundation** (Pflicht Live-Day-1) | Anwalt einmalig fuer AGB/AVV/DSE/Impressum-Generator-Setup. Nicht selbst texten — Abmahnrisiko zu hoch. | €800–2.000 einmalig | Rechtsgrundlage haltbar — ohne das ist alles andere Sandburg | `[OFFEN]` Termin vor Stripe-Live planen |
+| **1 — Anwalts-Foundation** (Pflicht Live-Day-1) | Anwalt einmalig fuer AGB/AVV/DSE/Impressum-Generator-Setup. Nicht selbst texten — Abmahnrisiko zu hoch. | €800–2.000 einmalig | Rechtsgrundlage haltbar — ohne das ist alles andere Sandburg | `[WARTET auf Beauftragung]` — Termin vor Stripe-Live planen, Briefing-Doku als Block A der Roadmap |
 | **1.5 — RechtGPT Bau-Recherche** (Bau-Phase, optional) | KI-Rechtsrecherche auf RIS/Findok/EUR-Lex (rechtgpt.at, Starter-Plan). Nur waehrend Bau-Phase. Workflow: Claude sammelt Recherche-Anfragen in [`docs/_archive/rechtgpt-queries.md`](_archive/rechtgpt-queries.md), User paste in RechtGPT Web-UI, Antworten zurueck in `rechtgpt-answers.md`. Nach Bau kuendigen. **Nicht via API** (Enterprise ab 5 Lizenzen, Solo nicht tragbar). | ~€30 einmalig (1 Monat Starter) | Drafts mit AT-Quellenangaben unterlegen → Anwalts-Review (Tier 1) wird kuerzer + billiger | `[GEPLANT]` Phase B |
 | **2 — Externe Spezialtools** | **Cookiebot** (~9 €/Mo) ODER **Klaro** (Open Source, €0) fuer Cookie-Consent. **Stripe** fuer PCI-DSS. **Resend** mit SPF/DKIM/DMARC fuer Mail-Reputation. **Cloudflare Turnstile** fuer Bot-Schutz statt reCAPTCHA. | €0–9/Mo | gelöste Spezialprobleme nicht selbst lösen | `[ENTSCHIEDEN]` Klaro fuer Plattform, Turnstile fuer Kundenseiten |
 | **3 — Saubere Architektur** (Single-Source-of-Truth) | `config/legal-values.ts` als zentrale Quelle fuer rechtsrelevante Werte (TRIAL_DAYS, REACTIVATION_DAYS, CANCELLATION-Frist, etc.). AGB/DSE/Mail-Templates rendern via Variablen daraus. Code importiert aus Config. ESLint-Rule blockt Magic Numbers in legal-Kontext. | 0 (Eigenarbeit Live-Bau) | Drift verhindern by design — eine Aenderung propagiert automatisch | `[GEPLANT]` Phase 0 Live-Bau |
 | **4 — `compliance-reviewer` Subagent** | Watchdog in jeder Dev-Session. Triggert automatisch bei Aenderungen an: Templates, legal.js, package.json (neue Deps), API-Calls zu externen Services, UI-Texten, DB-Schema, AGB/AVV/Mail-Templates. Cross-Reference-Check zwischen Code/Doku/Templates. Pattern-Detection fuer verbotene Begriffe und Magic Numbers. Cascade-Warnung. | 0 (~30 Min Setup) | catches dev-mistakes vor Commit, erinnert an Sync-Arbeit | `[GEPLANT]` Spec in `project_dev_subagents_idea.md`, Setup im Live-Bau |
 | **5 — CHANGELOG mit `[LEGAL]`-Tag** | Major Compliance-Aenderungen markiert (Pricing, Trial-Dauer, Speicherdauer, neuer Provider, neue PII-Felder, Wording-Aenderungen in AGB). Format: `[LEGAL] TRIAL_DAYS 7→14 + AGB §3.2 + DSE §4 angepasst`. | 0 | Audit-Trail fuer Anwalts-Review + Beweismittel bei Streitfall | `[GEPLANT]` Live-Bau |
 | **6 — Anwalts-Review jaehrlich** | 1× pro Jahr Anwalt drueberschauen — neue Gesetze (DSA-Updates, ePrivacy-Reform, Schrems-Folgen), neue Features, Aenderungen am Geschaeftsmodell. Compliance-Snapshot uebermitteln (CHANGELOG-Auszug). | €500–800/Jahr | Schutz gegen Gesetzes-Drift — Subagent kann das nicht | `[GEPLANT]` ab Live-Jahr 1 |
-| **7 — Cyber-Versicherung** | UBIT/Aon-Rahmenvertrag (R+V Haftpflicht + Aon Cyber) — Schadensfall-Sicherheit bei Datenschutz-Vorfall, Hack, fehlerhafter Beratung. | ~150–350 €/Jahr | finanzieller Backstop bei Restrisiken die alle Schichten oben uebersehen haben | `[OFFEN]` Aon-Antwort wartend (siehe `project_offene_anfragen.md`) |
+| **7 — Versicherung** | Phase 1: Berufshaftpflicht R+V (UBIT-Rahmenvertrag) `[ENTSCHIEDEN 2026-05-06]` — **173 €/Jahr**. Phase 2: Cyber + Rechtsschutz vertagt auf Trigger ≥50 Kunden / ≥30k ARR / Beinahe-Vorfall (siehe § 3.5) | 173 €/Jahr (Phase 1), Phase 2 später | finanzieller Backstop für Beratungs-/Software-Fehler. Cyber kommt mit Skalierung. | `[ENTSCHIEDEN, gestuft]` |
 
 **Optional bei Skalierung (>500 Kunden):**
 - Vanta/Drata fuer Soc2/ISO27001-Audit-Software (~€500–2.000/Mo) — fuer KMU-Bootstrapper aktuell Overkill
@@ -177,7 +177,7 @@ Quellenbeleg: `docs/_archive/UBIT-Tarifblatt-Haftpflicht-2026.pdf` (gültig ab 0
 
 #### Baustein 2 — Cyberversicherung (über Aon Austria)
 
-Eigenständiger Rahmenvertrag, separat zu beantragen. **Tarif noch nicht eingeholt** (`[OFFEN]`). Inkludiert laut WKO-Beschreibung:
+Eigenständiger Rahmenvertrag, separat zu beantragen. **Tarif noch nicht eingeholt** `[VERTAGT 2026-05-06]` — siehe § 3.5 oben (Re-Evaluation bei Trigger ≥ 50 Live-Kunden / ≥ 30k ARR / Beinahe-Vorfall). Inkludiert laut WKO-Beschreibung:
 
 - 24/7-Krisenhotline (Rechts-/PR-Beratung, IT-Forensiker)
 - Datenschutzverletzungen, Verletzungen Geheimhaltungspflichten
@@ -212,12 +212,34 @@ Erwartungswert Direktangebot: **1.500–2.500 €/Jahr** (Faktor 5–10 teurer a
 
 | Aktion | Status |
 |---|---|
-| UBIT-Mitgliedschaft / Fachgruppe verifizieren (WKO-Login Stammdaten) | `[OFFEN]` |
-| Cyber-Tarifblatt von Aon anfordern (Martin Zainzinger, +43 5 7800-528) | `[OFFEN]` |
-| Bei Aon explizit fragen: Deckung für KI-generierte Inhalte einer SaaS-Plattform? Drittland-Datenflüsse? Voraussetzung Eigen-AGB akzeptiert? | `[OFFEN]` |
-| Onlineantrag Haftpflicht + Cyber via [ubit-aon.at](https://ubit-aon.at) | `[OFFEN]` |
-| Police abschließen vor Live-Schaltung | `[BLOCKER]` |
-| Voraussetzungen erfüllen + dokumentieren | `[OFFEN]` |
+| Aon-Beratungstermin durchgeführt (2026-05-06) | `[ERLEDIGT]` |
+| **Berufshaftpflicht R+V abschließen — 173 €/Jahr** | `[ENTSCHIEDEN, geht in Abschluss]` |
+| Cyber-Versicherung | `[VERTAGT]` — siehe § 3.5 unten |
+| Berufsrechtsschutz | `[VERTAGT]` — siehe § 3.5 unten |
+| Voraussetzungen für Berufshaftpflicht erfüllen + dokumentieren | `[GRÖSSTENTEILS GEDECKT 2026-05-06]` — 2FA: `ARCHITECTURE.md` § 10 · Backups: `OPERATIONS.md` § 6 · Datenpannen-Meldeprozess: § 12.2 hier · Verarbeitungsverzeichnis Art 30 + AGB + AVV: warten auf Anwalts-Beauftragung (Block A) |
+
+### 3.5 Versicherungs-Strategie gestuft
+
+**Phase 1 — Beta + erste Live-Kunden (jetzt):**
+- ✅ Berufshaftpflicht R+V via UBIT-Rahmenvertrag — **173 €/Jahr** (Solo-e.U. < 350k Umsatz)
+- Versicherungssumme: 2,5 Mio. € (laut Tarifblatt)
+- Deckt: Vermögensschäden bei Kunden durch Beratungs-/Software-Fehler
+
+**Phase 2 — Re-Evaluation-Trigger für Cyber + Rechtsschutz:**
+
+Die teureren Bausteine (Cyber, Rechtsschutz) werden NICHT sofort abgeschlossen. **Re-Evaluation bei Erreichen eines der folgenden Trigger-Punkte:**
+
+| Trigger | Schwellwert | Begründung |
+|---|---|---|
+| Aktive Live-Kunden | **≥ 50** | Ab dieser Größe gibt's genug PII-Verarbeitung in der DB, dass Cyber sich rechnet |
+| Jahresumsatz (ARR) | **≥ 30.000 €** | Versicherung ~5–10% des ARR ist normaler KMU-Schwellwert |
+| Erster Beinahe-Vorfall | beim Eintreten | Phishing-Versuch, kompromittierter Login, DDoS-Welle, Datenpanne (auch ohne meldepflichtige Folgen) |
+| Erste rechtliche Streitigkeit | beim Eintreten | Mahnschreiben, Notice-and-Takedown-Eskalation, Marken-/Urheberrechts-Drohbrief |
+| Vertraglicher Druck | beim Eintreten | Größerer Kunde fordert Versicherungsnachweis im Onboarding (typisch ab Mittelstand-Kunden) |
+
+**Re-Evaluation-Pfad:** Bei jedem vierteljährlichen Self-Check (siehe OPERATIONS.md § 7) prüfen ob Trigger erreicht. Wenn ja → erneut Aon kontaktieren (Martin Zainzinger, +43 5 7800-528) und Cyber-Tarifblatt anfordern.
+
+**Risiko-Hinweis Phase 1:** Ohne Cyber-Versicherung trägt der Inhaber DSGVO-Bußgelder + Drittschäden bei Datenpanne **persönlich**. Mitigation in dieser Phase: kleine Kundenzahl, minimaler PII-Umfang, robuste Backup-Strategie (siehe OPERATIONS.md § 6), Notice-and-Takedown-Prozess (siehe LIVE-COMPLIANCE § 12.1).
 
 ---
 
@@ -562,7 +584,7 @@ zur Teilnahme an einem Streitbeilegungsverfahren besteht nicht.)
 
 ### Status
 
-`[OFFEN]` Detail-Recherche pro Branche steht aus. Aufwand: ~30 Min/Branche × 35 = 17 Stunden Eigenarbeit oder per parallelen Subagents in 1 Sitzung.
+`[GROSSE EIGENARBEIT — Phase A]` Detail-Recherche pro Branche steht aus. Aufwand: ~30 Min/Branche × 35 = 17 Stunden Eigenarbeit oder per parallelen Subagents in 1 Sitzung. **Plan**: gebündelt vor Live-Schaltung in 1–2 Sitzungen via parallel-Subagents, Quelle: WKO-Branchen-Datenbank + RIS für Berufsrecht-Verweise. Output: erweiterte `BRANCHEN_KAMMER`-Map in `legal.js`.
 
 ### Berufsgruppen-Übersicht (Recipe-System v1)
 
@@ -680,7 +702,7 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 | Maßnahme | Status | Beschreibung |
 |---|---|---|
 | Zugangskontrolle | aktiv | Supabase Auth mit verschlüsselten Passwörtern (bcrypt), JWT-basierte Sessions |
-| Zwei-Faktor-Authentifizierung | `[OFFEN]` Plattform 2FA aktivierbar | Pflicht für Admin-Accounts, Empfehlung für Kunden |
+| Zwei-Faktor-Authentifizierung | `[SPEZIFIZIERT 2026-05-06]` | Pflicht für Admin-Accounts (Inhaber + Mitarbeiter), Opt-in für Kunden — siehe `ARCHITECTURE.md` § 10 |
 | Row-Level-Security (RLS) | aktiv | Supabase RLS auf allen 4 Tabellen (Memory: `project_supabase_rls.md`) |
 | Verschlüsselung in Transit | aktiv | TLS 1.3 für alle Verbindungen (Cloudflare-erzwungen) |
 | Verschlüsselung at Rest | aktiv | Supabase + Cloudflare R2 server-side AES-256 |
@@ -690,27 +712,27 @@ Plus AGB-Klausel in § 6 Abs 4 (siehe oben).
 
 | Maßnahme | Status |
 |---|---|
-| Eingabevalidierung | `[OFFEN]` Pre-Beta gefordert (Memory: `project_production_refactor.md`) |
-| Schema-Validierung an API-Grenzen (Zod) | `[OFFEN]` Live-Plan (Stack-Modernisierung) |
-| Audit-Logs | aktiv | activity_log + error_logs in Supabase |
+| Eingabevalidierung | `[SPEZIFIZIERT 2026-05-06]` URL-Escaping + Zod-Schema-Validation an allen Endpoints — `ARCHITECTURE.md` § 10 |
+| Schema-Validierung an API-Grenzen (Zod) | `[SPEZIFIZIERT 2026-05-06]` Zod in `lib/validation/` mit Parität zwischen Fragebogen + Portal — `ARCHITECTURE.md` § 5.5 + § 10 |
+| Audit-Logs | aktiv | activity_log + error_logs in Supabase, 12 Monate Retention DSGVO-konform |
 
 ### 11.3 Verfügbarkeit
 
 | Maßnahme | Status |
 |---|---|
-| Backups Datenbank | `[OFFEN]` Cloudflare R2 täglich, 90 Tage Retention (Live-Plan) |
-| Backups Storage | `[OFFEN]` wöchentlich Sync zu R2 |
-| Restore-Tests | `[OFFEN]` alle 3 Monate in Staging |
+| Backups Datenbank | `[SPEZIFIZIERT 2026-05-06]` Supabase Pro PITR 7 Tage + Daily-Backup → R2-Mirror 30/12W/12M — siehe `OPERATIONS.md` § 6.1 |
+| Backups Storage | `[SPEZIFIZIERT 2026-05-06]` täglicher Object-Sync nach R2, 30 Tage rolling — `OPERATIONS.md` § 6.1 |
+| Restore-Tests | `[SPEZIFIZIERT 2026-05-06]` quartalsweise (DB) + jährlich (Wochen-Snapshot + Storage) — `OPERATIONS.md` § 6.3 |
 | DDoS-Schutz | aktiv | Cloudflare WAF |
-| Rate-Limiting | `[OFFEN]` Live-Plan (Cloudflare WAF Rules) |
+| Rate-Limiting | `[SPEZIFIZIERT 2026-05-06]` Cloudflare WAF Rules — Login 5x/Min, Build-Endpoint 3x/30 Tage, Generate-API 10x/Tag — `ARCHITECTURE.md` § 10 |
 
 ### 11.4 Belastbarkeit + Wiederherstellbarkeit
 
 | Maßnahme | Status |
 |---|---|
-| Disaster-Recovery-Plan | `[OFFEN]` zu dokumentieren |
-| RTO (Recovery Time Objective) | `[OFFEN]` Ziel: <4h |
-| RPO (Recovery Point Objective) | `[OFFEN]` Ziel: <24h |
+| Disaster-Recovery-Plan | `[SPEZIFIZIERT 2026-05-06]` Restore-Anleitung + Verantwortlichkeits-Matrix in `OPERATIONS.md` § 6.2 + § 6.5 |
+| RTO (Recovery Time Objective) | `[ENTSCHIEDEN 2026-05-06]` 4h Standard, 2h Business — `OPERATIONS.md` § 6.4 |
+| RPO (Recovery Point Objective) | `[ENTSCHIEDEN 2026-05-06]` 1h für Pro/Business (PITR), 24h für Trial (Daily-Backup) — `OPERATIONS.md` § 6.4 |
 
 ### 11.5 Verfahren regelmäßiger Überprüfung
 
@@ -807,7 +829,7 @@ Fuer alle drei Verarbeitungstaetigkeiten von instantpage.at ist **keine vollstae
 | Dokumentation des Vorgangs | Inhaber | parallel |
 
 **Adresse:** abuse@instantpage.at
-**Formular:** instantpage.at/meldung (`[OFFEN]` Setup)
+**Formular:** instantpage.at/meldung `[BAU in Phase 3]` — Live-Bau-Aufgabe, einfaches öffentliches Formular mit Felder: Meldung-Typ, beanstandete URL, Kontakt-E-Mail, Beschreibung, Beweise-Upload. Auto-E-Mail an abuse@instantpage.at + Eintrag in neue Tabelle `abuse_reports` (`ARCHITECTURE.md` § 4.7).
 
 ### 12.2 Datenpannen-Meldeprozess (Art 33/34 DSGVO)
 
@@ -863,7 +885,7 @@ Fuer alle drei Verarbeitungstaetigkeiten von instantpage.at ist **keine vollstae
 - Activity-Log-Eintrag: `consent_recorded` mit `details: {document: 'avv', version: 'v1.0', timestamp, ip_hash}`
 - Bei AVV-Update: alle Kunden müssen erneut akzeptieren beim nächsten Login
 
-### 12.6 AGB-Akzeptanz-Verfahren `[OFFEN]`
+### 12.6 AGB-Akzeptanz-Verfahren `[WARTET auf Anwalt — Block A]`
 
 > Stub — UX-Detail vor Live-Schaltung ausspezifizieren. Voraussichtlich analog zu § 12.5 AVV-Akzeptanz, mit folgenden offenen Punkten:
 
@@ -921,7 +943,7 @@ Laut WKO-Auslegung der Kennzeichnungspflicht (siehe `Kennzeichnungspflicht für 
 
 ### Status
 
-`[OFFEN]` Markenrechtsrecherche für "instantpage.at" und "InstantPage" als Wortmarke.
+`[WARTET auf WKO-Markensprechtag 2026-05-20]` Markenrechtsrecherche für "instantpage.at" und "InstantPage" als Wortmarke.
 
 ### Strategischer Rahmen
 
@@ -1023,13 +1045,13 @@ Recherche-Datenbanken (kostenlos, Quelle: WKO-Marken-Beratung 2026-05-04):
 | **EUIPO eSearch plus Browser-Recherche** | `[ERLEDIGT]` 2026-05-04 — 0 Treffer (Trade marks, Designs, Owners, Representatives) |
 | **WIPO Global Brand Database** (deckt Madrid IR + nationale Quellen) | `[ERLEDIGT]` 2026-05-04 — 0 Treffer fuer instantpage |
 | AT see-ip direkt zur Vollstaendigkeit (Doppelpruefung) | `[OPTIONAL]` — TMview deckt AT-Patentamt bereits ab, see-ip-Direktcheck fuer 100 % Sicherheit |
-| Sound-/Aehnlichkeitsrecherche ("instant page", "instapage", "instantpages") | `[OFFEN]` — empfohlen via Patentamt Pre-Check oder Markensprechtag |
+| Sound-/Aehnlichkeitsrecherche ("instant page", "instapage", "instantpages") | `[WARTET auf Markensprechtag 2026-05-20]` — vom WKO-Berater durchführen lassen |
 | **WKO-Markensprechtag** | `[GEBUCHT]` Termin 2026-05-20 (gebucht 2026-05-04). Hauptthemen: Schutzfaehigkeit „InstantPage", Wortmarke vs. Wortbildmarke, Klassenwahl, AT vs. EU-Strategie |
-| Nizza-Klassen festlegen (EUIPO-Tool ec2) | `[OFFEN]` — vor Anmeldung. Vorschlag aus Recherche: Klasse 42 (Software/Hosting), ggf. 35 (Werbung/Marketing-Dienstleistungen) |
+| Nizza-Klassen festlegen (EUIPO-Tool ec2) | `[WARTET auf Markensprechtag 2026-05-20]` — Vorschlag aus Recherche: Klasse 42 (Software/Hosting), ggf. 35 (Werbung/Marketing-Dienstleistungen) |
 | Brand-Alternativen-Liste vorbereiten (Backup) | `[OPTIONAL]` — nur falls Sprechtag/Patentamt Unterscheidungskraft verneint |
 | Wortbild-Marke (mit Logo-Element) als Plan B | `[BACKUP]` — falls Wortmarke wegen Beschreibend-Risiko abgelehnt wird |
 | **AT-Wortmarke anmelden** | `[BEREIT]` Recherche-Stand erlaubt Anmeldung — empfohlene Reihenfolge: Sprechtag → ggf. Pre-Check → Anmeldung |
-| Foerderung "Bleib Einzigartig" auf Eligibility pruefen | `[OFFEN]` — vor Anmeldung pruefen |
+| Foerderung "Bleib Einzigartig" auf Eligibility pruefen | `[WARTET auf Markensprechtag 2026-05-20]` — beim WKO-Termin gleich mit klären |
 
 ---
 

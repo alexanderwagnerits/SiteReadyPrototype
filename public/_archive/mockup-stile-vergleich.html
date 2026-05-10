@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stil-Vergleich — Klassisch · Modern · Elegant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  a,button,input,select,textarea{touch-action:manipulation}
+
+  /* Demo-Farben pro Stil — entsprechen den Default-Farbpaletten aus dem Template */
+  :root{
+    --primary:#0f2b5b;
+    --accent:#2563eb;
+    --bg:#f8fafc;
+    --sep:#e2e8f0;
+    --text:#1e293b;
+    --textMuted:#475569;
+    --white:#fffffe;
+    --r:4px;
+    --rLg:6px;
+    --font:'Inter',system-ui,-apple-system,sans-serif;
+    --fontHeading:var(--font);
+    --mono:'JetBrains Mono',monospace;
+    --maxW:1100px;
+    --sectionY:80px;
+  }
+
+  /* === KLASSISCH (default) === */
+  .stil-klassisch{
+    --primary:#0f2b5b;
+    --accent:#2563eb;
+    --bg:#f8fafc;
+    --sep:#e2e8f0;
+    --fontHeading:'Merriweather',Georgia,serif;
+  }
+  /* === MODERN === */
+  .stil-modern{
+    --primary:#1e1b4b;
+    --accent:#6366f1;
+    --bg:#fafafa;
+    --sep:#e4e4e7;
+    --text:#18181b;
+    --textMuted:#71717a;
+    --fontHeading:'Space Grotesk','Plus Jakarta Sans',system-ui,sans-serif;
+    --maxW:1140px;
+    --sectionY:100px;
+    --r:12px;
+    --rLg:16px;
+  }
+  /* === ELEGANT === */
+  .stil-elegant{
+    --primary:#292524;
+    --accent:#a87b3f;
+    --bg:#f5f1ea;
+    --sep:#e8e0d3;
+    --text:#2c2620;
+    --textMuted:#6b6058;
+    --white:#fdfbf7;
+    --fontHeading:'Cormorant Garamond',Georgia,serif;
+    --maxW:1060px;
+    --sectionY:100px;
+    --r:2px;
+    --rLg:2px;
+  }
+
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  h1,h2,h3,.s-h2{font-family:var(--fontHeading)}
+  body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:16px;background:var(--white);-webkit-font-smoothing:antialiased;overflow-x:clip;max-width:100vw;transition:background .35s ease,color .35s ease}
+  .stil-elegant body,.stil-elegant{line-height:1.8;letter-spacing:-.01em}
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  ul{list-style:none}
+  button{font-family:inherit;cursor:pointer}
+
+  .w{max-width:var(--maxW);margin:0 auto;padding:0 28px}
+  @media(min-width:900px){.w{padding:0 32px}}
+
+  /* === STIL-SWITCHER === */
+  .stil-switch{
+    position:fixed;top:14px;right:14px;z-index:200;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+    border:1px solid rgba(0,0,0,.08);border-radius:100px;
+    padding:5px;display:flex;gap:4px;
+    box-shadow:0 8px 28px rgba(0,0,0,.12);
+  }
+  .stil-switch button{
+    border:none;background:transparent;
+    padding:9px 18px;font-size:13px;font-weight:600;
+    color:#475569;border-radius:100px;cursor:pointer;
+    font-family:'Inter',system-ui,sans-serif;
+    letter-spacing:.01em;transition:all .25s ease;
+  }
+  .stil-switch button.active{background:#0f172a;color:#fff}
+  .stil-switch button:hover:not(.active){background:rgba(15,23,42,.05)}
+  .stil-switch-label{
+    position:fixed;top:14px;left:14px;z-index:200;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+    border:1px solid rgba(0,0,0,.08);border-radius:100px;
+    padding:11px 18px;font-size:11.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.12em;color:#475569;
+    font-family:'Inter',system-ui,sans-serif;
+    box-shadow:0 8px 28px rgba(0,0,0,.12);
+  }
+
+  /* === SECTION HEADERS === */
+  .s-label{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .s-h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px}
+  .s-intro{color:var(--textMuted);font-size:.95rem;max-width:540px;line-height:1.7}
+  .stil-modern .s-label{gap:6px;letter-spacing:.1em;background:color-mix(in srgb,var(--accent) 8%,transparent);padding:6px 14px;border-radius:100px}
+  .stil-modern .s-h2{font-size:clamp(2rem,4.5vw,3rem)}
+  .stil-elegant .s-label{font-size:.68rem;font-weight:500;letter-spacing:.14em}
+  .stil-elegant .s-h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:500;letter-spacing:-.02em}
+  .stil-elegant .s-intro{line-height:1.8}
+
+  /* === NAV === */
+  #sitenav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:18px 0;transition:background .35s ease,backdrop-filter .35s,box-shadow .35s;
+  }
+  #sitenav.scrolled{background:color-mix(in srgb,var(--primary) 88%,transparent);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 22px rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.08)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between}
+  .nav-brand{display:flex;align-items:center;gap:12px;color:#fff}
+  .nav-brand-mark{
+    width:38px;height:38px;border-radius:var(--rLg);
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:14px;color:#fff;letter-spacing:-.01em;
+  }
+  .stil-modern .nav-brand-mark{border-radius:50%}
+  .nav-brand-name{font-weight:700;font-size:15px;color:#fff;letter-spacing:-.01em;line-height:1.1}
+  .nav-brand-sub{font-size:11px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.04em;margin-top:2px}
+  .nav-links{display:flex;gap:28px}
+  .nav-links a{color:rgba(255,255,255,.78);font-size:14px;font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:#fff}
+  .stil-elegant .nav-links a{font-weight:400;font-size:13.5px}
+
+  /* === HERO === */
+  .hero{
+    background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 60%,color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);
+    color:#fff;display:flex;align-items:center;
+    position:relative;min-height:92vh;min-height:92svh;overflow:hidden;
+  }
+  .hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 60px}
+  .hero h1{font-size:clamp(2.8rem,5.5vw,4.6rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:20px;max-width:720px;color:#fff}
+  .hero-sub{
+    display:inline-flex;align-items:center;gap:6px;padding:7px 16px;
+    border:1px solid rgba(255,255,255,.2);border-radius:100px;
+    background:rgba(255,255,255,.09);font-size:.72rem;font-weight:700;
+    letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.92);margin-bottom:22px;
+  }
+  .hero-sub-loc{font-weight:500;opacity:.7;text-transform:none;letter-spacing:.01em}
+  .hero-desc{font-size:.98rem;color:rgba(255,255,255,.62);max-width:520px;margin-bottom:34px;line-height:1.78}
+  .hero-btns{display:flex;flex-wrap:wrap;gap:12px}
+
+  /* Klassisch: dekorative Kreise rechts oben */
+  .stil-klassisch .hero::before{content:'';position:absolute;top:-120px;right:-120px;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 65%);pointer-events:none;z-index:0}
+  .stil-klassisch .hero::after{content:'';position:absolute;top:80px;right:180px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.04);pointer-events:none;z-index:0}
+
+  /* Modern: Blur-Blobs */
+  .stil-modern .hero{background:var(--primary)}
+  .stil-modern .hero::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.18;top:-200px;right:-150px;filter:blur(50px);pointer-events:none}
+  .stil-modern .hero::after{content:'';position:absolute;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 60%,#fff),transparent 70%);opacity:.09;bottom:-120px;left:-60px;filter:blur(70px);pointer-events:none;z-index:0}
+  .stil-modern .hero h1{font-size:clamp(3.2rem,7vw,5.8rem);letter-spacing:-.045em}
+  .stil-modern .hero-sub{background:color-mix(in srgb,var(--accent) 18%,rgba(255,255,255,.05));border-color:color-mix(in srgb,var(--accent) 35%,rgba(255,255,255,.1));color:rgba(255,255,255,.95)}
+
+  /* Elegant: Schlicht, Akzentlinie als Trenner */
+  .stil-elegant .hero{background:linear-gradient(155deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 60%,#000) 100%)}
+  .stil-elegant .hero-inner{padding:140px 28px 68px}
+  .stil-elegant .hero h1{font-size:clamp(3rem,7vw,5.5rem);font-weight:500;margin-bottom:0;letter-spacing:-.02em}
+  .stil-elegant .hero-accent-line{display:block;width:48px;height:1px;background:var(--accent);margin:28px 0 28px;opacity:.55}
+  .stil-elegant .hero-sub{background:transparent;border-color:rgba(255,255,255,.14);text-transform:none;letter-spacing:.04em;font-weight:400;font-size:.8rem;padding:6px 14px;color:rgba(255,255,255,.7);margin-bottom:0}
+  .stil-elegant .hero-desc{color:rgba(255,255,255,.52);line-height:1.85}
+  .hero-accent-line{display:none}
+
+  /* === BUTTONS === */
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 32px;font-size:.9rem;font-weight:600;border-radius:var(--r);transition:all .2s cubic-bezier(.22,1,.36,1);border:none;letter-spacing:.01em;font-family:var(--font);position:relative;overflow:hidden}
+  .btn::after{content:"→";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s,transform .28s,margin-left .28s;font-weight:600}
+  .btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:hover{opacity:.92}
+  .btn-ghost{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1.5px solid rgba(255,255,255,.2);backdrop-filter:blur(6px)}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.14)}
+  .stil-modern .btn{font-weight:700;border-radius:100px;padding:14px 36px}
+  .stil-modern .btn-accent{box-shadow:0 4px 16px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .stil-modern .btn-accent:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 32px color-mix(in srgb,var(--accent) 40%,transparent)}
+  .stil-modern .btn-ghost{border-radius:100px}
+  .stil-elegant .btn{font-weight:500;letter-spacing:.02em}
+  .stil-elegant .btn-accent:hover{opacity:.82;transform:none;box-shadow:none}
+  .stil-elegant .btn-ghost{border-width:1px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.65)}
+  .stil-elegant .btn-ghost:hover{background:rgba(255,255,255,.05);transform:none;box-shadow:none}
+
+  /* === LEISTUNGEN === */
+  .leist{padding:var(--sectionY) 0;background:var(--bg)}
+  .leist-head{margin-bottom:48px}
+  .leist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .leist-card{background:#fff;border-radius:var(--rLg);padding:28px 24px;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+  .leist-card:hover{transform:translateY(-3px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  .leist-card-icon{width:42px;height:42px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:18px;font-size:18px;font-weight:700;font-family:var(--mono)}
+  .leist-card h3{font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:6px}
+  .leist-card p{font-size:.85rem;color:var(--textMuted);line-height:1.65}
+  .stil-modern .leist-card{box-shadow:0 2px 12px rgba(0,0,0,.04)}
+  .stil-modern .leist-card:hover{transform:translateY(-5px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+  .stil-modern .leist-card-icon{border-radius:50%}
+  .stil-elegant .leist-card{background:transparent;border:1px solid var(--sep)}
+  .stil-elegant .leist-card:hover{transform:none;box-shadow:none;border-color:var(--accent)}
+  .stil-elegant .leist-card h3{font-weight:500}
+  .stil-elegant .leist-card-icon{background:transparent;border:1px solid var(--sep);font-weight:300;font-size:20px}
+
+  /* === ABLAUF === */
+  .ablauf{padding:var(--sectionY) 0;background:#fff}
+  .ablauf-head{margin-bottom:48px}
+  .ablauf-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .ablauf-step{background:var(--bg);border-radius:var(--rLg);padding:28px 24px;position:relative;transition:transform .3s}
+  .ablauf-step:hover{transform:translateY(-3px)}
+  .ablauf-num{font-family:var(--mono);font-size:1.8rem;font-weight:700;color:var(--accent);opacity:.35;margin-bottom:12px;display:block}
+  .ablauf-step h4{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:6px}
+  .ablauf-step p{font-size:.82rem;color:var(--textMuted);line-height:1.6}
+  .stil-modern .ablauf-step{box-shadow:0 2px 12px rgba(0,0,0,.04)}
+  .stil-modern .ablauf-step::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#818cf8))}
+  .stil-modern .ablauf-num{font-size:2rem;opacity:.5;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#818cf8));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .stil-modern .ablauf-step:hover{transform:translateY(-5px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+  .stil-elegant .ablauf-step{background:transparent;border:1px solid var(--sep);padding:32px 24px}
+  .stil-elegant .ablauf-step:hover{transform:none;border-color:var(--accent)}
+  .stil-elegant .ablauf-num{font-size:2.4rem;font-weight:300;opacity:.25}
+  .stil-elegant .ablauf-step h4{font-weight:500}
+
+  /* === UEBER === */
+  .ueber{padding:var(--sectionY) 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+  .ueber-grid{display:grid;gap:48px;align-items:start;position:relative;z-index:1}
+  @media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr}}
+  .ueber h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;letter-spacing:-.03em;margin-bottom:18px;color:#fff}
+  .ueber-text{font-size:.95rem;line-height:1.85;opacity:.82;margin-bottom:24px}
+  .ueber-vorteile{display:flex;flex-direction:column;gap:12px}
+  .ueber-vorteile li{font-size:.92rem;font-weight:500;opacity:.88;padding-left:20px;position:relative}
+  .ueber-vorteile li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--accent);border-radius:1px;opacity:.85}
+  .ueber-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.1)}
+  .ueber-stat{text-align:center}
+  .ueber-stat-num{font-family:var(--mono);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:#fff;margin-bottom:4px}
+  .ueber-stat-label{font-size:.72rem;color:rgba(255,255,255,.5);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+  .stil-modern .ueber::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:var(--accent);opacity:.08;bottom:-120px;left:-80px;filter:blur(60px);pointer-events:none}
+  .stil-modern .ueber-vorteile li{padding-left:28px}
+  .stil-modern .ueber-vorteile li::before{content:'\2713';width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;top:0;left:0}
+  .stil-elegant .ueber h2{font-weight:500;letter-spacing:-.02em}
+  .stil-elegant .ueber-text{opacity:.7}
+  .stil-elegant .ueber-vorteile{gap:0}
+  .stil-elegant .ueber-vorteile li{font-weight:400;opacity:.85;padding:14px 0 14px 24px;border-top:1px solid rgba(255,255,255,.08)}
+  .stil-elegant .ueber-vorteile li:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
+  .stil-elegant .ueber-vorteile li::before{content:'\2013';position:absolute;left:0;top:14px;width:auto;height:auto;background:none;color:rgba(255,255,255,.5);font-weight:500;border-radius:0}
+  .stil-elegant .ueber-stat-num{font-weight:300}
+  .stil-elegant .ueber-stat-label{font-size:.7rem;letter-spacing:.12em}
+
+  /* === TEAM === */
+  .team{padding:var(--sectionY) 0;background:var(--bg)}
+  .team-head{margin-bottom:48px}
+  .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .team-member{text-align:center}
+  .team-avatar{
+    width:100%;aspect-ratio:1;border-radius:var(--rLg);margin-bottom:16px;
+    background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 20%,#fff) 0%,color-mix(in srgb,var(--primary) 30%,#fff) 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2.4rem;font-weight:700;color:rgba(255,255,255,.85);font-family:var(--fontHeading);
+    transition:transform .4s cubic-bezier(.22,1,.36,1);
+  }
+  .team-avatar:hover{transform:scale(1.02)}
+  .team-name{font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:2px}
+  .team-role{font-size:.82rem;color:var(--textMuted)}
+  .stil-modern .team-member{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:transform .3s,box-shadow .3s}
+  .stil-modern .team-member:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+  .stil-elegant .team-avatar{filter:grayscale(.6) saturate(.6)}
+  .stil-elegant .team-name{font-weight:500}
+  .stil-elegant .team-role{font-size:.78rem;letter-spacing:.02em}
+
+  /* === BEWERTUNGEN === */
+  .bew{padding:var(--sectionY) 0;background:#fff}
+  .bew-head{margin-bottom:40px}
+  .bew-rating{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+  .bew-rating-num{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--primary)}
+  .bew-rating-bar{height:6px;border-radius:3px;background:var(--sep);flex:1;max-width:180px;overflow:hidden}
+  .bew-rating-fill{height:100%;width:96%;border-radius:3px;background:var(--accent)}
+  .bew-rating-meta{font-size:.82rem;color:var(--textMuted)}
+  .bew-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .bew-card{background:var(--bg);border-radius:var(--rLg);padding:28px;position:relative;transition:transform .3s,box-shadow .3s}
+  .bew-card:hover{transform:translateY(-3px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  .bew-text{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:16px;font-style:italic}
+  .bew-author{display:flex;align-items:center;gap:10px}
+  .bew-avatar{width:36px;height:36px;border-radius:50%;background:color-mix(in srgb,var(--accent) 12%,#fff);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--accent);flex-shrink:0}
+  .bew-name{font-size:.85rem;font-weight:600;color:var(--primary)}
+  .bew-meta{font-size:.75rem;color:var(--textMuted)}
+  .stil-modern .bew-card{background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+  .stil-modern .bew-card:hover{transform:translateY(-5px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+  .stil-elegant .bew-card{background:transparent;border:1px solid var(--sep)}
+  .stil-elegant .bew-card:hover{transform:none;box-shadow:none;border-color:var(--accent)}
+  .stil-elegant .bew-text{font-size:.88rem}
+
+  /* === KONTAKT === */
+  .kontakt{padding:var(--sectionY) 0}
+  .kontakt-head{margin-bottom:40px}
+  .kontakt-grid{display:grid;gap:40px}
+  @media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1.2fr;align-items:start}}
+  .kontakt h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:28px}
+  .kontakt-item{margin-bottom:20px}
+  .kontakt-item-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
+  .kontakt-item-value{font-size:1rem;font-weight:500}
+  .kontakt-tel{font-size:1.2rem;font-weight:800;color:var(--primary);display:inline-block;margin:4px 0;transition:color .2s}
+  .kontakt-tel:hover{color:var(--accent)}
+  .kontakt-email{color:var(--primary);font-weight:600;transition:color .2s}
+  .kontakt-email:hover{color:var(--accent)}
+  .kontakt-form{background:var(--bg);border-radius:var(--rLg);padding:32px}
+  .kontakt-form h3{font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:20px}
+  .k-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .k-field{margin-bottom:12px}
+  .k-field label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:6px}
+  .k-field input,.k-field textarea{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-size:.9rem;font-family:var(--font);background:#fff;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;min-height:44px}
+  .k-field input:focus,.k-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+  .k-field textarea{resize:vertical;min-height:100px}
+  .k-submit{background:var(--accent);color:#fff;border:none;padding:14px 32px;border-radius:var(--r);font-size:.88rem;font-weight:700;font-family:var(--font);transition:opacity .2s}
+  .k-submit:hover{opacity:.85}
+  .stil-modern .kontakt-tel{color:var(--accent)}
+  .stil-modern .k-field input,.stil-modern .k-field textarea{padding:12px 16px;border-width:2px;border-radius:12px}
+  .stil-modern .k-submit{border-radius:100px;padding:14px 36px;box-shadow:0 4px 16px color-mix(in srgb,var(--accent) 25%,transparent)}
+  .stil-elegant .kontakt h2{font-weight:500;letter-spacing:-.02em}
+  .stil-elegant .kontakt-tel{font-size:1.1rem;font-weight:600}
+  .stil-elegant .k-field label{font-size:.62rem;font-weight:500;letter-spacing:.12em}
+  .stil-elegant .k-submit{background:var(--primary);font-weight:500;letter-spacing:.02em}
+
+  /* === CTA-BLOCK === */
+  .cta-block{padding:80px 0;background:var(--primary);color:#fff;text-align:center;position:relative;overflow:hidden}
+  .cta-block h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:10px;color:#fff}
+  .cta-block p{font-size:.92rem;opacity:.6;margin-bottom:28px}
+  .cta-block .btn-accent{background:#fff;color:var(--primary)}
+  .cta-block .btn-accent:hover{opacity:.9}
+  .stil-modern .cta-block{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#818cf8))}
+  .stil-modern .cta-block::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.08);top:-100px;right:-50px;filter:blur(40px);pointer-events:none}
+  .stil-modern .cta-block .btn-accent{color:var(--accent)}
+  .stil-elegant .cta-block h2{font-weight:500;letter-spacing:-.01em}
+  .stil-elegant .cta-block p{opacity:.5}
+
+  /* === FOOTER === */
+  footer{background:#0c1424;color:rgba(255,255,255,.62);padding:64px 0 28px}
+  .stil-elegant footer{background:#1a1612}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px}
+  .footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .footer-brand .nav-brand-mark{background:rgba(255,255,255,.08);border:none}
+  footer p{font-size:.86rem;line-height:1.65;max-width:340px;color:rgba(255,255,255,.5)}
+  .footer-col h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#fff;margin-bottom:18px}
+  .footer-col ul{display:grid;gap:10px}
+  .footer-col a{font-size:.88rem;color:rgba(255,255,255,.6);transition:color .2s}
+  .footer-col a:hover{color:#fff}
+  .footer-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:.78rem;color:rgba(255,255,255,.4)}
+
+  /* === RESPONSIVE === */
+  @media(max-width:920px){
+    .nav-links{display:none}
+    .leist-grid{grid-template-columns:1fr 1fr}
+    .ablauf-steps{grid-template-columns:1fr 1fr}
+    .team-grid{grid-template-columns:1fr 1fr}
+    .bew-grid{grid-template-columns:1fr}
+    .ueber-stats{grid-template-columns:1fr 1fr}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:28px}
+    .stil-switch button{padding:8px 12px;font-size:12px}
+  }
+  @media(max-width:600px){
+    .hero{min-height:78svh}
+    .hero-inner{padding:90px 24px 48px}
+    .hero h1{font-size:2.2rem;letter-spacing:-.03em}
+    .hero-desc{font-size:.88rem}
+    .hero-btns{flex-direction:column}
+    .hero-btns .btn{width:100%}
+    .leist-grid,.ablauf-steps,.team-grid,.k-row,.footer-grid{grid-template-columns:1fr}
+    .stil-switch{top:auto;bottom:14px;right:14px;left:14px;justify-content:center}
+    .stil-switch-label{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body class="stil-klassisch">
+
+<!-- STIL-SWITCHER -->
+<div class="stil-switch-label">Mockup-Vergleich</div>
+<div class="stil-switch" role="tablist" aria-label="Stil wählen">
+  <button class="active" data-stil="klassisch" type="button">Klassisch</button>
+  <button data-stil="modern" type="button">Modern</button>
+  <button data-stil="elegant" type="button">Elegant</button>
+</div>
+
+<!-- NAV -->
+<nav id="sitenav">
+  <div class="w nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-brand-mark">BA</div>
+      <div>
+        <div class="nav-brand-name">Bauer Architektur</div>
+        <div class="nav-brand-sub">ZT GmbH · Wien</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#leistungen">Leistungen</a></li>
+      <li><a href="#ablauf">Ablauf</a></li>
+      <li><a href="#ueber">Büro</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-sub">Architekturbüro <span class="hero-sub-loc">· 1010 Wien</span></span>
+    <h1>Räume, die bleiben.<br>Architektur mit Maß und Haltung.</h1>
+    <span class="hero-accent-line"></span>
+    <p class="hero-desc">Seit 2008 entwickelt Bauer Architektur Wohn-, Sanierungs- und Gewerbeprojekte in Wien und Niederösterreich. Wir verstehen Architektur als langsames Handwerk — gebaut für die nächsten zwanzig Jahre, nicht für die nächste Hochglanzbroschüre.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn btn-accent">Erstgespräch</a>
+      <a href="#leistungen" class="btn btn-ghost">Leistungen</a>
+    </div>
+  </div>
+</header>
+
+<!-- LEISTUNGEN -->
+<section class="leist" id="leistungen">
+  <div class="w">
+    <div class="leist-head">
+      <span class="s-label">Leistungen</span>
+      <h2 class="s-h2">Vier Schwerpunkte. Ein Anspruch.</h2>
+      <p class="s-intro">Vom Einfamilienhaus bis zum Bürogebäude — Planung, Einreichung, Bauleitung. Aus einer Hand, mit klaren Honorar­strukturen nach HOA.</p>
+    </div>
+    <div class="leist-grid">
+      <article class="leist-card">
+        <div class="leist-card-icon">01</div>
+        <h3>Wohnbau</h3>
+        <p>Einfamilienhäuser, Mehrfamilienhäuser, Reihenhausanlagen. Schwerpunkt energieeffizienter Holzbau.</p>
+      </article>
+      <article class="leist-card">
+        <div class="leist-card-icon">02</div>
+        <h3>Sanierung</h3>
+        <p>Bestandsobjekte denkmalgeschützt oder gründerzeitlich. Behördenkommunikation inklusive.</p>
+      </article>
+      <article class="leist-card">
+        <div class="leist-card-icon">03</div>
+        <h3>Gewerbe</h3>
+        <p>Bürogebäude, Praxen, Hotels. Skalierbare Konzepte für Bauherren mit klarem Programm.</p>
+      </article>
+      <article class="leist-card">
+        <div class="leist-card-icon">04</div>
+        <h3>Innenarchitektur</h3>
+        <p>Maßmöbel, Material- und Farbkonzepte. Auch als eigenständiger Auftrag ohne Bauleitung.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ABLAUF -->
+<section class="ablauf" id="ablauf">
+  <div class="w">
+    <div class="ablauf-head">
+      <span class="s-label">Ablauf</span>
+      <h2 class="s-h2">In vier Phasen zum Bauwerk.</h2>
+      <p class="s-intro">Klare Meilensteine, schriftliche Zwischenberichte, Festpreise pro Phase. Sie wissen jederzeit, wo wir stehen — und was als Nächstes kommt.</p>
+    </div>
+    <div class="ablauf-steps">
+      <div class="ablauf-step">
+        <span class="ablauf-num">01</span>
+        <h4>Erstgespräch</h4>
+        <p>Kostenlos. Sie schildern das Vorhaben, wir schätzen Machbarkeit und Aufwand realistisch ein.</p>
+      </div>
+      <div class="ablauf-step">
+        <span class="ablauf-num">02</span>
+        <h4>Vorentwurf</h4>
+        <p>Erste Skizzen, Massenstudie, Kostenrahmen. Hier entscheiden Sie, ob das Konzept passt.</p>
+      </div>
+      <div class="ablauf-step">
+        <span class="ablauf-num">03</span>
+        <h4>Einreichung</h4>
+        <p>Polierter Plan, Behördenpaket, Anrainer-Kommunikation. Wir begleiten den Bescheid bis zur Rechtskraft.</p>
+      </div>
+      <div class="ablauf-step">
+        <span class="ablauf-num">04</span>
+        <h4>Bauleitung</h4>
+        <p>Ausschreibung, Vergabe, örtliche Bauaufsicht. Wir sind auf der Baustelle, bis übergeben ist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UEBER -->
+<section class="ueber" id="ueber">
+  <div class="w">
+    <div class="ueber-grid">
+      <div>
+        <span class="s-label" style="color:rgba(255,255,255,.55)">Über das Büro</span>
+        <h2>Sechs Architektinnen und Architekten. Ein gemeinsames Verständnis.</h2>
+        <p class="ueber-text">Bauer Architektur wurde 2008 von DI Markus Bauer gegründet. Wir arbeiten in der Operngasse mit sechs Mitarbeiterinnen — bewusst klein gehalten, damit Sie nie ein Junior-Team übergeben werden, sondern jede Phase mit dem Architekten besprechen, der die Linie zeichnet.</p>
+        <p class="ueber-text">Wir glauben an langsame Architektur: Maßstab über Maximum. Holz vor Beton, wo möglich. Bestand vor Abriss, wo sinnvoll. Honorartransparenz vor Hand­schlagsdeals.</p>
+      </div>
+      <div>
+        <ul class="ueber-vorteile">
+          <li>Honorar nach HOA-Tafel — schriftlich vor Auftrag</li>
+          <li>Festpreis pro Leistungsphase, kein Aufrunden</li>
+          <li>Architekt persönlich bei jeder Bauberatung</li>
+          <li>Holzbau-Spezialisierung seit 2014</li>
+          <li>Mitglied bei Architektenkammer + ZT-Kammer</li>
+          <li>Eintragene Ziviltechniker-GmbH</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ueber-stats">
+      <div class="ueber-stat"><div class="ueber-stat-num">17</div><div class="ueber-stat-label">Jahre</div></div>
+      <div class="ueber-stat"><div class="ueber-stat-num">142</div><div class="ueber-stat-label">Projekte</div></div>
+      <div class="ueber-stat"><div class="ueber-stat-num">6</div><div class="ueber-stat-label">Architekten</div></div>
+      <div class="ueber-stat"><div class="ueber-stat-num">98%</div><div class="ueber-stat-label">Termintreue</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team" id="team">
+  <div class="w">
+    <div class="team-head">
+      <span class="s-label">Team</span>
+      <h2 class="s-h2">Drei Linien. Ein Büro.</h2>
+      <p class="s-intro">Jede Bauherrin hat eine feste Bezugsperson — kein wechselndes Sachbearbeiter-Karussell.</p>
+    </div>
+    <div class="team-grid">
+      <article class="team-member">
+        <div class="team-avatar">MB</div>
+        <div class="team-name">DI Markus Bauer</div>
+        <div class="team-role">Gründer · Wohnbau</div>
+      </article>
+      <article class="team-member">
+        <div class="team-avatar">LH</div>
+        <div class="team-name">DI Lena Hofer</div>
+        <div class="team-role">Partnerin · Sanierung</div>
+      </article>
+      <article class="team-member">
+        <div class="team-avatar">TR</div>
+        <div class="team-name">DI Thomas Reiter</div>
+        <div class="team-role">Architekt · Gewerbe</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BEWERTUNGEN -->
+<section class="bew">
+  <div class="w">
+    <div class="bew-head">
+      <span class="s-label">Bewertungen</span>
+      <h2 class="s-h2">Was Bauherren sagen.</h2>
+      <p class="s-intro">Auszüge aus Google-Bewertungen und persönlichen Empfehlungsschreiben.</p>
+      <div class="bew-rating" style="margin-top:24px">
+        <span class="bew-rating-num">4.8</span>
+        <div class="bew-rating-bar"><div class="bew-rating-fill"></div></div>
+        <span class="bew-rating-meta">aus 38 Bewertungen</span>
+      </div>
+    </div>
+    <div class="bew-grid">
+      <article class="bew-card">
+        <p class="bew-text">Markus Bauer hat unser Sanierungsprojekt im 7. Bezirk übernommen, nachdem ein anderes Büro abgesprungen war. Klare Termine, klare Kosten — und das Ergebnis übertrifft, was wir uns vorgestellt haben.</p>
+        <div class="bew-author"><div class="bew-avatar">EH</div><div><div class="bew-name">Eva H.</div><div class="bew-meta">Wohnungssanierung Wien-Neubau</div></div></div>
+      </article>
+      <article class="bew-card">
+        <p class="bew-text">Lena Hofer hat den Bescheid bei einem denkmalgeschützten Gründerzeithaus durchgebracht, wo zwei Vorgängerbüros gescheitert sind. Sehr ruhig, sehr präzise.</p>
+        <div class="bew-author"><div class="bew-avatar">MS</div><div><div class="bew-name">Martin S.</div><div class="bew-meta">Bauherr · 1080 Wien</div></div></div>
+      </article>
+      <article class="bew-card">
+        <p class="bew-text">Bürogebäude in NÖ vom Vorentwurf bis Schlüsselübergabe. Festpreis hat zu 100% gehalten, Termine zu 95%. Würden wir wieder beauftragen.</p>
+        <div class="bew-author"><div class="bew-avatar">CT</div><div><div class="bew-name">CT Industries GmbH</div><div class="bew-meta">Bürogebäude Mödling</div></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="kontakt" id="kontakt">
+  <div class="w">
+    <div class="kontakt-head">
+      <span class="s-label">Kontakt</span>
+      <h2 class="s-h2">Erstgespräch vereinbaren.</h2>
+      <p class="s-intro">Persönlich in der Operngasse oder per Video-Call. Antwort innerhalb von 24 Stunden.</p>
+    </div>
+    <div class="kontakt-grid">
+      <div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Adresse</div>
+          <div class="kontakt-item-value">Operngasse 4<br>1010 Wien</div>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Telefon</div>
+          <a href="tel:+4315873210" class="kontakt-tel">+43 1 587 32 10</a>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">E-Mail</div>
+          <a href="mailto:bueno@bauer-architektur.at" class="kontakt-email">bueno@bauer-architektur.at</a>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Bürozeiten</div>
+          <div class="kontakt-item-value">Mo–Fr · 9:00–17:00</div>
+        </div>
+      </div>
+      <form class="kontakt-form" onsubmit="event.preventDefault();this.querySelector('.k-submit').textContent='Wird gesendet…'">
+        <h3>Anfrage senden</h3>
+        <div class="k-row">
+          <div class="k-field"><label>Vorname *</label><input type="text" required></div>
+          <div class="k-field"><label>Nachname *</label><input type="text" required></div>
+        </div>
+        <div class="k-field"><label>E-Mail *</label><input type="email" required></div>
+        <div class="k-field"><label>Projekt</label><input type="text" placeholder="z. B. Sanierung 1080 Wien, ca. 120 m²"></div>
+        <div class="k-field"><label>Nachricht *</label><textarea required></textarea></div>
+        <button type="submit" class="k-submit">Anfrage abschicken</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- CTA-BLOCK -->
+<section class="cta-block">
+  <div class="w">
+    <h2>Sie haben ein Vorhaben?</h2>
+    <p>Wir hören zu, sagen ehrlich, ob wir das richtige Büro sind.</p>
+    <a href="#kontakt" class="btn btn-accent">Termin vereinbaren</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="w">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="nav-brand-mark">BA</div>
+          <div>
+            <div class="nav-brand-name">Bauer Architektur</div>
+            <div class="nav-brand-sub">ZT GmbH · Wien</div>
+          </div>
+        </div>
+        <p>Architekturbüro für Wohnbau, Sanierung und Gewerbe — eingetragene Ziviltechniker-Gesellschaft, Mitglied der Architektenkammer Wien.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#">Wohnbau</a></li>
+          <li><a href="#">Sanierung</a></li>
+          <li><a href="#">Gewerbe</a></li>
+          <li><a href="#">Innenarchitektur</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Büro</h4>
+        <ul>
+          <li><a href="#">Über uns</a></li>
+          <li><a href="#">Team</a></li>
+          <li><a href="#">Projekte</a></li>
+          <li><a href="#">Karriere</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">AGB</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <div>© 2026 Bauer Architektur ZT GmbH · FN 345678 m · HG Wien</div>
+      <div>ZT-Kammer · Architektenkammer Wien</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Stil-Switcher
+  const buttons = document.querySelectorAll('.stil-switch button');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const stil = btn.dataset.stil;
+      document.body.className = 'stil-' + stil;
+      buttons.forEach(b => b.classList.toggle('active', b === btn));
+      window.scrollTo({top: window.scrollY, behavior:'instant'});
+    });
+  });
+  // Nav-Scroll-Glas
+  const nav = document.getElementById('sitenav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, {passive:true});
+</script>
+
+</body>
+</html>

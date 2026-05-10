@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v2-Themes — Klassisch · Edel · Rustikal (Beta-Layout, Polish-Pass)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Unna:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   v2-THEMES — Beta-Layout-konform (template.js).
+   Polish-Pass: Edel asymmetric magazine, Rustikal Werkstatt-Stempel,
+   Pattern-Overlays auf Bild-Slots, echte Galerie-Fotos via Picsum.
+   ═══════════════════════════════════════════════════════ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+a,button,input,select,textarea{touch-action:manipulation}
+
+:root{
+  --primary:#0f2b5b;
+  --primary-deep:#081a3a;
+  --accent:#2563eb;
+  --bg:#f8fafc;
+  --bg-alt:#eef2f7;
+  --sep:#e2e8f0;
+  --text:#1e293b;
+  --textMuted:#475569;
+  --white:#fffffe;
+  --r:4px;
+  --rLg:6px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --fontHeading:var(--font);
+  --mono:'JetBrains Mono',monospace;
+  --maxW:1100px;
+  --sectionY:80px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+.theme-klassisch{
+  --primary:#0f2b5b;--primary-deep:#081a3a;--accent:#2563eb;
+  --bg:#f8fafc;--bg-alt:#eef2f7;--sep:#dbe2ed;
+  --fontHeading:'Merriweather',Georgia,serif;
+  --r:4px;--rLg:6px;
+}
+
+.theme-edel{
+  --primary:#1c1714;--primary-deep:#100c0a;
+  --accent:#a87b3f;--accent-soft:#c8a675;
+  --bg:#f6f1e8;--bg-alt:#ede5d6;--sep:#dcd0bc;
+  --text:#2c2620;--textMuted:#6b6058;--white:#fdfbf7;
+  --fontHeading:'Cormorant Garamond',Georgia,serif;
+  --maxW:1080px;--sectionY:100px;--r:0px;--rLg:0px;
+}
+
+.theme-rustikal{
+  --primary:#3d2818;--primary-deep:#2a1a0e;
+  --accent:#7a3528;--accent-warm:#c9904a;
+  --bg:#f5f1e8;--bg-alt:#ebe2d0;--sep:#d4c4a4;
+  --text:#2c241a;--textMuted:#6b5d4a;--white:#faf6ec;
+  --fontHeading:'Unna',Georgia,serif;
+  --maxW:1100px;--sectionY:90px;--r:3px;--rLg:5px;
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
+body{
+  font-family:var(--font);color:var(--text);
+  line-height:1.7;font-size:1rem;
+  background:var(--white);-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:clip;max-width:100vw;
+  transition:background .4s var(--ease),color .4s var(--ease);
+}
+.theme-edel body,.theme-edel{line-height:1.85;letter-spacing:-.005em}
+.theme-rustikal{line-height:1.7}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+h1,h2,h3,h4,.s-h2{font-family:var(--fontHeading)}
+h1 em,h2 em,h3 em{font-style:italic;color:var(--accent)}
+.theme-rustikal h1 em,.theme-rustikal h2 em,.theme-rustikal h3 em{color:var(--accent-warm,#c9904a)}
+.w{max-width:var(--maxW);margin:0 auto;padding:0 28px}
+@media(min-width:900px){.w{padding:0 32px}}
+
+/* ═══ STIL-SWITCHER ═══ */
+.stil-switch{position:fixed;top:14px;right:14px;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(0,0,0,.08);border-radius:100px;padding:5px;display:flex;gap:4px;box-shadow:0 12px 32px rgba(0,0,0,.14);font-family:'Inter',system-ui,sans-serif}
+.stil-switch button{padding:9px 18px;font-size:13px;font-weight:600;color:#475569;border-radius:100px;cursor:pointer;letter-spacing:.01em;transition:all .25s var(--ease);display:inline-flex;align-items:center;gap:8px;min-height:36px}
+.stil-switch button .dot{width:8px;height:8px;border-radius:50%;display:inline-block;transition:transform .25s var(--ease)}
+.stil-switch button[data-theme="klassisch"] .dot{background:#2563eb}
+.stil-switch button[data-theme="edel"] .dot{background:#a87b3f}
+.stil-switch button[data-theme="rustikal"] .dot{background:#7a3528}
+.stil-switch button.active{background:#0f172a;color:#fff}
+.stil-switch button.active .dot{transform:scale(1.3)}
+.stil-switch button:hover:not(.active){background:rgba(15,23,42,.05)}
+.stil-switch button:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
+.stil-switch-label{position:fixed;top:14px;left:14px;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(0,0,0,.08);border-radius:100px;padding:11px 18px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#475569;font-family:'Inter',system-ui,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.14)}
+
+/* ═══ SECTION HEADERS ═══ */
+.s-label,.leist-label,.sec-label{display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.s-h2,.leist h2,.kontakt h2,.faq-head h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px;line-height:1.2}
+.s-intro,.leist-intro,.faq-head p{color:var(--textMuted);font-size:.95rem;max-width:540px;line-height:1.7}
+.theme-edel .s-label,.theme-edel .leist-label,.theme-edel .sec-label{font-size:.68rem;font-weight:500;letter-spacing:.18em;color:var(--accent)}
+.theme-edel .s-h2,.theme-edel .leist h2,.theme-edel .kontakt h2,.theme-edel .faq-head h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;letter-spacing:-.02em}
+.theme-edel .s-intro,.theme-edel .leist-intro{line-height:1.85;font-size:1rem}
+.theme-rustikal .s-label,.theme-rustikal .leist-label,.theme-rustikal .sec-label{color:var(--accent)}
+
+/* === EDEL: ASYMMETRIC SECTION HEADS === Magazine-style 2-Spalten Layout */
+@media(min-width:900px){
+  .theme-edel .leist-head,
+  .theme-edel .ablauf-head,
+  .theme-edel .galerie-head,
+  .theme-edel .bew-head,
+  .theme-edel .kontakt-head{
+    display:grid;grid-template-columns:200px 1fr;gap:64px;align-items:start;
+  }
+  .theme-edel .leist-head .leist-label,
+  .theme-edel .leist-head .sec-label,
+  .theme-edel .ablauf-head .sec-label,
+  .theme-edel .galerie-head .sec-label,
+  .theme-edel .bew-head .sec-label,
+  .theme-edel .kontakt-head .sec-label{
+    align-self:start;padding-top:14px;
+    border-top:1px solid var(--accent);
+    margin-bottom:0;display:block;
+  }
+  .theme-edel .leist-head h2,
+  .theme-edel .ablauf-head h2,
+  .theme-edel .galerie-head h2,
+  .theme-edel .bew-head h2,
+  .theme-edel .kontakt-head h2{margin-top:0;margin-bottom:18px}
+}
+
+/* ═══ NAV ═══ */
+#sitenav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 0;transition:background .35s var(--ease),backdrop-filter .35s,box-shadow .35s,padding .35s}
+#sitenav.scrolled{background:color-mix(in srgb,var(--primary-deep) 90%,transparent);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 22px rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.08);padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-brand{display:flex;align-items:center;gap:14px;color:#fff}
+.nav-brand-mark{width:42px;height:42px;border-radius:var(--rLg);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14.5px;color:#fff;letter-spacing:-.01em;font-family:var(--fontHeading)}
+.theme-edel .nav-brand-mark{font-style:italic;font-weight:400;font-size:18px}
+.theme-rustikal .nav-brand-mark{border-color:rgba(201,144,74,.35);background:rgba(201,144,74,.12)}
+.nav-brand-name{font-weight:700;font-size:15.5px;color:#fff;letter-spacing:-.012em;line-height:1.1}
+.theme-edel .nav-brand-name{font-weight:500;letter-spacing:0}
+.theme-rustikal .nav-brand-name .accent-italic{font-style:italic;color:var(--accent-warm,#c9904a);font-weight:400}
+.nav-brand-sub{font-size:11px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.06em;margin-top:2px;font-family:'Inter',sans-serif}
+.nav-links{display:flex;gap:30px}
+.nav-links a{color:rgba(255,255,255,.78);font-size:14px;font-weight:500;transition:color .2s;padding:6px 0}
+.nav-links a:hover{color:#fff}
+.nav-links a:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:4px;border-radius:2px}
+.theme-edel .nav-links a{font-weight:400;font-size:14px;letter-spacing:.02em}
+
+/* ═══ HERO ═══ */
+.hero{background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 60%,color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:92vh;min-height:92svh;overflow:hidden}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 60px}
+.hero-sub{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border:1px solid rgba(255,255,255,.2);border-radius:100px;background:rgba(255,255,255,.09);backdrop-filter:blur(8px);font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.92);margin-bottom:22px}
+.hero-sub-loc{font-weight:500;opacity:.7;text-transform:none;letter-spacing:.01em;display:inline-flex;align-items:center;gap:4px}
+.hero h1{font-size:clamp(2.8rem,5.5vw,4.6rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:20px;max-width:720px;color:#fff}
+.hero-accent-line{display:none}
+.hero-desc{font-family:'Inter',sans-serif;font-size:.95rem;color:rgba(255,255,255,.62);max-width:500px;margin-bottom:34px;line-height:1.78}
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}
+
+.hero-trust-bar{position:relative;z-index:2;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;gap:12px 28px}
+.t-item{display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.85);white-space:nowrap}
+.t-icon{width:28px;height:28px;border-radius:var(--r);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t-icon svg{width:14px;height:14px;color:rgba(255,255,255,.7)}
+.theme-edel .t-item{font-size:.78rem;font-weight:400;color:rgba(255,255,255,.6);letter-spacing:.01em}
+.theme-edel .t-icon{border-color:rgba(255,255,255,.1)}
+
+.theme-klassisch .hero::before{content:'';position:absolute;top:-120px;right:-120px;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 65%);pointer-events:none;z-index:0}
+.theme-klassisch .hero::after{content:'';position:absolute;top:80px;right:180px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.04);pointer-events:none;z-index:0}
+
+.theme-edel .hero{background:linear-gradient(155deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 60%,#000) 100%)}
+.theme-edel .hero-inner{padding:140px 28px 68px}
+.theme-edel .hero h1{font-size:clamp(3rem,7vw,5.5rem);font-weight:400;margin-bottom:0;letter-spacing:-.02em}
+.theme-edel .hero h1 em{color:var(--accent-soft,#c8a675)}
+.theme-edel .hero-accent-line{display:block;width:48px;height:1px;background:var(--accent);margin:28px 0;opacity:.55}
+.theme-edel .hero-sub{background:transparent;border-color:rgba(255,255,255,.14);text-transform:none;letter-spacing:.04em;font-weight:400;font-size:.8rem;color:rgba(255,255,255,.7);margin-bottom:0}
+.theme-edel .hero-desc{color:rgba(255,255,255,.55);line-height:1.85}
+
+.theme-rustikal .hero{background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,#000) 55%,color-mix(in srgb,var(--accent) 80%,#1a0f08) 100%)}
+.theme-rustikal .hero::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");opacity:.55;mix-blend-mode:overlay}
+.theme-rustikal .hero h1{font-weight:700;letter-spacing:-.005em}
+.theme-rustikal .hero-sub{background:rgba(201,144,74,.14);border-color:rgba(201,144,74,.32);color:rgba(255,235,205,.95)}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 32px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;border-radius:var(--r);transition:all .2s var(--ease);letter-spacing:.01em;cursor:pointer;position:relative}
+.btn::after{content:"→";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s,transform .28s,margin-left .28s;font-weight:600}
+.btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{opacity:.92}
+.btn-ghost{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1.5px solid rgba(255,255,255,.2);backdrop-filter:blur(6px)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.14)}
+.theme-edel .btn{font-weight:500;letter-spacing:.02em}
+.theme-edel .btn-accent:hover{opacity:.82;transform:none;box-shadow:none}
+.theme-edel .btn-ghost{border-width:1px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.65)}
+.theme-edel .btn-ghost:hover{background:rgba(255,255,255,.05);transform:none;box-shadow:none}
+.theme-rustikal .btn-accent{box-shadow:0 4px 14px rgba(122,53,40,.32)}
+
+/* ═══ LEISTUNGEN — alternierende Bild-Text-Items mit Pattern-Overlay ═══ */
+.leist{padding:var(--sectionY) 0;background:var(--bg);position:relative}
+.leist-head{margin-bottom:48px}
+.leist-list{display:grid;gap:48px;margin-bottom:48px}
+.leist-item{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.leist-item:nth-child(even){direction:rtl}
+.leist-item:nth-child(even) > *{direction:ltr}
+.leist-item-img{
+  border-radius:var(--rLg);overflow:hidden;
+  aspect-ratio:3/2;width:100%;
+  position:relative;
+  transition:transform .6s var(--ease);
+}
+.leist-item-img-bg{position:absolute;inset:0}
+.leist-item-img::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(0deg,rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:linear-gradient(135deg,transparent 0%,#000 30%,#000 70%,transparent 100%);
+  opacity:.7;
+}
+.leist-item-img:hover{transform:scale(1.015)}
+.theme-edel .leist-item-img{filter:saturate(.75)}
+.theme-edel .leist-item-img:hover{transform:none;filter:saturate(.9)}
+.theme-rustikal .leist-item-img{filter:sepia(.08) contrast(1.04)}
+.theme-rustikal .leist-item-img::after{
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 12px);
+  mask-image:none;opacity:.6;
+}
+.leist-item-text h3{font-size:1.3rem;font-weight:700;color:var(--primary);margin-bottom:10px;letter-spacing:-.01em}
+.theme-edel .leist-item-text h3{font-weight:400;font-size:1.7rem}
+.theme-edel .leist-item-text h3 em{font-style:italic;color:var(--accent)}
+.leist-item-text p{font-size:.95rem;color:var(--textMuted);line-height:1.7;margin-bottom:12px}
+.leist-item-meta{display:flex;gap:16px;margin-top:14px;font-size:.82rem;color:var(--textMuted);flex-wrap:wrap}
+.leist-item-price{font-family:var(--mono);font-weight:600;color:var(--primary);font-feature-settings:'tnum'}
+.theme-edel .leist-item-price{font-family:var(--fontHeading);font-style:italic;font-weight:500;font-size:.95rem}
+.leist-item-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;font-size:.86rem;margin-top:14px;border-bottom:1px solid currentColor;padding-bottom:2px;transition:gap .25s var(--ease)}
+.leist-item-link:hover{gap:12px}
+
+/* Edel — Display-Italic-Number-Decoration vor h3 in Items */
+.theme-edel .leist-item-num{
+  display:block;font-family:var(--fontHeading);font-style:italic;font-weight:300;
+  font-size:3rem;color:var(--accent);opacity:.5;line-height:.8;
+  margin-bottom:14px;letter-spacing:-.01em;
+}
+.leist-item-num{display:none}
+
+@media(max-width:768px){
+  .leist-item{grid-template-columns:1fr!important;gap:24px}
+  .leist-item:nth-child(even){direction:ltr}
+}
+
+/* ═══ PULL-QUOTE — primär Edel-Magazine ═══ */
+.pullquote{padding:var(--sectionY) 0;background:var(--white);position:relative}
+.pullquote-inner{max-width:780px;margin:0 auto;text-align:center;position:relative}
+.pullquote-mark{font-family:var(--fontHeading);font-size:5rem;line-height:.6;color:var(--accent);opacity:.28;font-style:italic;margin-bottom:8px}
+.pullquote-text{font-family:var(--fontHeading);font-size:clamp(1.3rem,2.2vw,1.7rem);line-height:1.45;color:var(--text);font-weight:500;letter-spacing:-.005em}
+.pullquote-text em{font-style:italic;color:var(--accent)}
+.pullquote-attr{margin-top:24px;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--textMuted);display:inline-flex;align-items:center;gap:14px}
+.pullquote-attr::before{content:'';width:32px;height:1px;background:var(--accent);opacity:.5}
+
+/* Edel — groß magazine */
+.theme-edel .pullquote{padding:140px 0;background:var(--bg)}
+.theme-edel .pullquote-inner{max-width:880px}
+.theme-edel .pullquote-text{font-size:clamp(2rem,4.4vw,3.6rem);font-weight:300;font-style:italic;line-height:1.12;letter-spacing:-.02em;color:var(--primary)}
+.theme-edel .pullquote-text em{font-weight:400;color:var(--accent)}
+.theme-edel .pullquote-mark{font-size:7rem;color:var(--accent-soft);opacity:.55;line-height:.5}
+
+/* Rustikal — Hand-Akzent */
+.theme-rustikal .pullquote-mark{color:var(--accent-warm,#c9904a);opacity:.5}
+.theme-rustikal .pullquote-text em{color:var(--accent-warm,#c9904a);font-weight:700}
+
+/* ═══ ABLAUF ═══ */
+.ablauf{padding:var(--sectionY) 0;background:#fff;position:relative}
+.ablauf-head{margin-bottom:48px}
+.ablauf-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.ablauf-step{background:var(--bg);border-radius:var(--rLg);padding:28px 24px;position:relative;transition:transform .3s var(--ease)}
+.ablauf-step:hover{transform:translateY(-3px)}
+.ablauf-num{font-family:var(--mono);font-feature-settings:'tnum';font-size:1.8rem;font-weight:700;color:var(--accent);opacity:.4;margin-bottom:12px;display:block}
+.ablauf-step h4{font-size:.98rem;font-weight:700;color:var(--primary);margin-bottom:6px;letter-spacing:-.01em}
+.ablauf-step p{font-size:.84rem;color:var(--textMuted);line-height:1.6}
+.theme-edel .ablauf-step{background:transparent;border:1px solid var(--sep);padding:32px 24px}
+.theme-edel .ablauf-step:hover{transform:none;border-color:var(--accent)}
+.theme-edel .ablauf-num{font-family:var(--fontHeading);font-style:italic;font-weight:300;font-size:2.6rem;opacity:.4;line-height:1}
+.theme-edel .ablauf-step h4{font-weight:500}
+.theme-rustikal .ablauf-num{font-family:var(--fontHeading);font-style:italic;font-weight:700;color:var(--accent);opacity:.55;font-size:2rem}
+@media(max-width:768px){.ablauf-steps{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.ablauf-steps{grid-template-columns:1fr}}
+
+/* ═══ ÜBER mit TEAM innerhalb + RUSTIKAL-STEMPEL ═══ */
+.ueber{padding:var(--sectionY) 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+.ueber::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 65%);opacity:.08;bottom:-200px;left:-200px;filter:blur(80px);pointer-events:none}
+.ueber-grid{display:grid;gap:40px;position:relative;z-index:1}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}}
+.ueber h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;letter-spacing:-.03em;margin-bottom:18px;color:#fff;font-family:var(--fontHeading);line-height:1.2}
+.ueber h2 em{color:color-mix(in srgb,var(--accent) 50%,#fff);font-style:italic}
+.theme-edel .ueber h2{font-weight:400;letter-spacing:-.02em}
+.theme-edel .ueber h2 em{color:var(--accent-soft,#c8a675)}
+.theme-rustikal .ueber h2 em{color:var(--accent-warm,#c9904a)}
+.ueber-text{font-size:.95rem;line-height:1.85;opacity:.82;margin-bottom:22px;font-family:'Inter',sans-serif}
+.ueber-vorteile{display:flex;flex-direction:column;gap:12px;list-style:none}
+.ueber-vorteile li{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:500;opacity:.88;padding-left:20px;position:relative}
+.ueber-vorteile li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--accent);border-radius:1px;opacity:.85}
+.theme-edel .ueber-vorteile{gap:0}
+.theme-edel .ueber-vorteile li{font-weight:400;opacity:.85;padding:14px 0 14px 24px;border-top:1px solid rgba(255,255,255,.08)}
+.theme-edel .ueber-vorteile li:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
+.theme-edel .ueber-vorteile li::before{content:'\2013';position:absolute;left:0;top:14px;width:auto;height:auto;background:none;color:rgba(255,255,255,.5);font-weight:500}
+.theme-rustikal .ueber-vorteile li::before{background:var(--accent-warm,#c9904a);border-radius:50%}
+
+/* Stats + Stempel */
+.ueber-stats-wrap{position:relative;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.1)}
+.ueber-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.ueber-stat{text-align:center}
+.ueber-stat-num{font-family:var(--mono);font-feature-settings:'tnum';font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:#fff;margin-bottom:4px}
+.ueber-stat-label{font-family:'Inter',sans-serif;font-size:.74rem;color:rgba(255,255,255,.5);font-weight:500;text-transform:uppercase;letter-spacing:.08em}
+.theme-edel .ueber-stat-num{font-family:var(--fontHeading);font-weight:300;font-style:italic;font-size:clamp(2rem,3.6vw,3rem)}
+.theme-rustikal .ueber-stat-num{color:var(--accent-warm,#c9904a)}
+
+/* RUSTIKAL Stempel */
+.rustikal-stamp{
+  display:none;
+  position:absolute;top:-60px;right:-20px;
+  width:128px;height:128px;border-radius:50%;
+  border:2px solid var(--accent-warm,#c9904a);
+  align-items:center;justify-content:center;flex-direction:column;
+  text-align:center;transform:rotate(-9deg);
+  font-family:var(--fontHeading);
+  pointer-events:none;z-index:2;
+  background:rgba(58,36,18,.35);backdrop-filter:blur(4px);
+}
+.rustikal-stamp::before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid var(--accent-warm,#c9904a);opacity:.5}
+.rustikal-stamp-top{font-style:italic;font-weight:400;font-size:.66rem;color:var(--accent-warm,#c9904a);letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
+.rustikal-stamp-num{font-style:italic;font-weight:700;font-size:1.8rem;color:var(--accent-warm,#c9904a);line-height:1}
+.rustikal-stamp-bot{font-family:'Inter',sans-serif;font-style:normal;font-weight:600;font-size:.6rem;color:var(--accent-warm,#c9904a);letter-spacing:.14em;text-transform:uppercase;margin-top:6px;opacity:.85}
+.theme-rustikal .rustikal-stamp{display:flex}
+@media(max-width:768px){.rustikal-stamp{width:96px;height:96px;top:-30px;right:0}.rustikal-stamp-num{font-size:1.4rem}}
+
+/* TEAM */
+.team-block{margin-top:56px;padding-top:40px;border-top:1px solid rgba(255,255,255,.1);position:relative;z-index:1}
+.team-block-head{margin-bottom:32px}
+.team-block-head h3{font-family:var(--fontHeading);font-size:1.05rem;font-weight:600;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.theme-edel .team-block-head h3{font-style:italic;font-weight:400;letter-spacing:.04em;text-transform:none;font-size:1.4rem}
+.team-block-head p{font-family:'Inter',sans-serif;font-size:.88rem;color:rgba(255,255,255,.6);max-width:480px}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.team-member{text-align:center}
+.team-avatar{
+  width:100%;aspect-ratio:1;border-radius:var(--rLg);
+  margin-bottom:14px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 28%,var(--primary)) 0%,color-mix(in srgb,var(--primary-deep) 80%,#000) 100%);
+  display:flex;align-items:flex-end;justify-content:flex-start;
+  padding:18px;
+  font-family:var(--fontHeading);font-size:2rem;font-weight:700;color:rgba(255,255,255,.5);
+  position:relative;overflow:hidden;
+  transition:transform .4s var(--ease);
+}
+.team-avatar::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(0deg,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.team-member:hover .team-avatar{transform:scale(1.02)}
+.theme-edel .team-avatar{border-radius:0;filter:grayscale(.6) saturate(.7);font-style:italic;font-weight:300;font-size:2.4rem}
+/* RUSTIKAL Photo-Frame für Team */
+.theme-rustikal .team-avatar{
+  border:2px solid var(--accent-warm,#c9904a);
+  box-shadow:0 6px 22px rgba(0,0,0,.35),inset 0 0 0 4px var(--white);
+  filter:sepia(.06) contrast(1.02);
+  padding:14px;
+}
+.team-name{font-family:var(--fontHeading);font-size:1rem;font-weight:700;color:#fff;margin-bottom:2px;letter-spacing:-.01em}
+.theme-edel .team-name{font-weight:500;font-size:1.1rem}
+.team-name em{font-style:italic;color:color-mix(in srgb,var(--accent) 50%,#fff)}
+.theme-edel .team-name em{color:var(--accent-soft,#c8a675)}
+.theme-rustikal .team-name em{color:var(--accent-warm,#c9904a)}
+.team-role{font-family:'Inter',sans-serif;font-size:.82rem;color:rgba(255,255,255,.55)}
+@media(max-width:768px){.team-grid{grid-template-columns:1fr 1fr}.ueber-stats{grid-template-columns:1fr 1fr}}
+
+/* ═══ GALERIE — 3-Grid mit Picsum-Bildern ═══ */
+.galerie{padding:var(--sectionY) 0;background:var(--bg)}
+.galerie-head{margin-bottom:32px}
+.galerie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.galerie-item{
+  border-radius:var(--rLg);overflow:hidden;
+  aspect-ratio:3/2;cursor:pointer;
+  position:relative;background:var(--bg-alt);
+}
+.galerie-item-img{
+  width:100%;height:100%;
+  background-size:cover;background-position:center;
+  transition:transform .5s var(--ease);
+}
+.galerie-item:hover .galerie-item-img{transform:scale(1.04)}
+.galerie-item-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,transparent 50%,rgba(15,23,42,.78) 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:18px 20px;opacity:0;
+  transition:opacity .3s var(--ease);
+}
+.galerie-item:hover .galerie-item-overlay{opacity:1}
+.galerie-item-tag{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:4px}
+.galerie-item h4{font-family:var(--fontHeading);font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.01em}
+.theme-edel .galerie-item{border-radius:0}
+.theme-edel .galerie-item-img{filter:saturate(.75) contrast(.95)}
+.theme-edel .galerie-item:hover .galerie-item-img{filter:saturate(.9) contrast(1)}
+.theme-edel .galerie-item h4{font-weight:400;font-size:1.2rem}
+.theme-edel .galerie-item h4 em{font-style:italic;color:var(--accent-soft,#c8a675)}
+
+/* RUSTIKAL Photo-Frame für Galerie */
+.theme-rustikal .galerie-grid{gap:18px}
+.theme-rustikal .galerie-item{
+  border:8px solid var(--white);
+  box-shadow:0 6px 22px rgba(60,40,20,.22);
+  background:var(--white);
+}
+.theme-rustikal .galerie-item-img{filter:sepia(.1) contrast(1.04)}
+
+@media(max-width:768px){.galerie-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.galerie-grid{grid-template-columns:1fr}}
+
+/* ═══ BEWERTUNGEN ═══ */
+.bew{padding:var(--sectionY) 0;background:#fff}
+.bew-head{margin-bottom:40px}
+.bew-rating{display:flex;align-items:center;gap:12px;margin-top:20px}
+.bew-rating-num{font-family:var(--mono);font-feature-settings:'tnum';font-size:1.4rem;font-weight:700;color:var(--primary)}
+.theme-edel .bew-rating-num{font-family:var(--fontHeading);font-style:italic;font-weight:500;font-size:1.8rem}
+.bew-rating-bar{height:6px;border-radius:3px;background:var(--sep);flex:1;max-width:180px;overflow:hidden}
+.bew-rating-fill{height:100%;width:96%;border-radius:3px;background:var(--accent)}
+.bew-rating-meta{font-size:.82rem;color:var(--textMuted)}
+.bew-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.bew-card{background:var(--bg);border-radius:var(--rLg);padding:28px;position:relative;transition:transform .3s var(--ease),box-shadow .3s}
+.bew-card:hover{transform:translateY(-3px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.bew-text{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:16px;font-style:italic}
+.bew-author{display:flex;align-items:center;gap:10px}
+.bew-avatar{width:36px;height:36px;border-radius:50%;background:color-mix(in srgb,var(--accent) 12%,#fff);display:flex;align-items:center;justify-content:center;font-family:var(--fontHeading);font-size:.75rem;font-weight:700;color:var(--accent);flex-shrink:0}
+.bew-name{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:var(--primary)}
+.bew-meta{font-size:.75rem;color:var(--textMuted)}
+.theme-edel .bew-card{background:transparent;border:1px solid var(--sep)}
+.theme-edel .bew-card:hover{transform:none;box-shadow:none;border-color:var(--accent)}
+.theme-edel .bew-text{font-size:.95rem;line-height:1.85}
+.theme-edel .bew-name{font-weight:500}
+.theme-rustikal .bew-card{background:var(--white);border:1px solid var(--sep);box-shadow:0 2px 6px rgba(60,40,20,.04)}
+@media(max-width:768px){.bew-grid{grid-template-columns:1fr}}
+
+/* ═══ FAQ ═══ */
+.faq{padding:var(--sectionY) 0;background:#fff}
+.faq-layout{display:grid;gap:40px}
+@media(min-width:900px){.faq-layout{grid-template-columns:280px 1fr;gap:64px}}
+.faq-list{display:flex;flex-direction:column}
+.faq-item{border-bottom:1px solid var(--sep)}
+.faq-item:first-child{border-top:1px solid var(--sep)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;width:100%;padding:20px 0;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--primary);text-align:left;gap:16px;transition:color .2s;cursor:pointer}
+.faq-q:hover{color:var(--accent)}
+.faq-toggle{width:28px;height:28px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s,background .3s;font-size:.85rem;color:var(--textMuted)}
+.faq-item[open] .faq-toggle{transform:rotate(45deg);background:var(--accent);color:#fff}
+.faq-a{padding-bottom:20px;font-size:.88rem;color:var(--textMuted);line-height:1.7}
+.theme-edel .faq-q{font-weight:500;font-size:.95rem}
+.theme-edel .faq-toggle{background:transparent;border:1px solid var(--sep);border-radius:0}
+.theme-edel .faq-item[open] .faq-toggle{background:var(--accent);color:#fff;border-color:var(--accent)}
+.theme-edel .faq-a{font-size:.95rem;line-height:1.85}
+.theme-rustikal .faq-toggle{background:color-mix(in srgb,var(--accent-warm,#c9904a) 14%,transparent)}
+
+/* ═══ KONTAKT ═══ */
+.kontakt{padding:var(--sectionY) 0;background:var(--white)}
+.kontakt-head{margin-bottom:40px}
+.kontakt-grid{display:grid;gap:40px}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1.2fr;gap:40px;align-items:stretch}}
+.kontakt-item{margin-bottom:20px}
+.kontakt-item-label{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:5px}
+.kontakt-item-value{font-size:1rem;font-weight:500;line-height:1.5}
+.kontakt-tel{font-family:var(--fontHeading);font-size:1.2rem;font-weight:800;color:var(--primary);display:inline-block;margin:4px 0;transition:color .2s;letter-spacing:-.01em}
+.kontakt-tel:hover{color:var(--accent)}
+.kontakt-email{color:var(--primary);font-weight:600;transition:color .2s}
+.kontakt-email:hover{color:var(--accent)}
+.theme-edel .kontakt-tel{font-weight:500;font-size:1.3rem;font-style:italic}
+.theme-edel .kontakt-item-label{font-size:.62rem;font-weight:500;letter-spacing:.16em}
+.theme-rustikal .kontakt-tel{color:var(--accent)}
+.kontakt-social{display:flex;gap:10px;margin-top:14px}
+.kontakt-social a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:var(--r);border:1px solid var(--sep);color:var(--primary);transition:all .2s var(--ease)}
+.kontakt-social a:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.kontakt-social a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.kontakt-social svg{width:18px;height:18px}
+.theme-edel .kontakt-social a:hover{transform:none;box-shadow:none}
+.kontakt-map{border-radius:var(--rLg);overflow:hidden;min-height:360px;background:var(--bg-alt);position:relative}
+.kontakt-map-fake{position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 12%,#e8eef5) 0%,color-mix(in srgb,var(--primary) 18%,#dde5f0) 100%);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--textMuted)}
+.kontakt-map-fake::before{content:'';position:absolute;inset:0;background-image:linear-gradient(0deg,rgba(15,43,91,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(15,43,91,.06) 1px,transparent 1px);background-size:48px 48px;opacity:.5}
+.kontakt-map-pin{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.kontakt-map-pin-dot{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent),0 4px 12px rgba(0,0,0,.16);color:#fff}
+.kontakt-map-pin-dot::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--accent)}
+
+.kontakt-infos{margin-top:32px;padding-top:28px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(3,1fr);gap:14px 20px}
+.kontakt-info-item{display:flex;align-items:flex-start;gap:10px;font-size:.85rem;color:var(--text);line-height:1.5}
+.kontakt-info-icon{width:32px;height:32px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent) 8%,#fff);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;color:var(--accent)}
+.kontakt-info-icon svg{width:16px;height:16px}
+.theme-edel .kontakt-info-icon{background:transparent;border:1px solid var(--sep)}
+@media(max-width:768px){.kontakt-infos{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.kontakt-infos{grid-template-columns:1fr}}
+
+.kontakt-form-wrap{margin-top:32px;padding-top:32px;border-top:1px solid var(--sep)}
+.k-form h3{font-family:var(--fontHeading);font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:20px;letter-spacing:-.012em}
+.theme-edel .k-form h3{font-weight:400;font-size:1.4rem;font-style:italic}
+.k-form label{display:block;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:6px}
+.k-form input,.k-form textarea{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.9rem;background:#fff;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;min-height:44px}
+.k-form input:focus,.k-form textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.k-form textarea{resize:vertical;min-height:120px}
+.k-form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.k-form-row-2{grid-template-columns:1fr 1fr}
+.k-form-field{margin-bottom:12px}
+.k-form button{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;min-height:48px;transition:opacity .2s}
+.k-form button:hover{opacity:.85}
+.theme-edel .k-form button{background:var(--primary);font-weight:500;letter-spacing:.04em;text-transform:uppercase;font-size:.78rem}
+@media(max-width:640px){.k-form-row,.k-form-row-2{grid-template-columns:1fr}}
+
+/* ═══ CTA-BLOCK ═══ */
+.cta-block{padding:80px 0;background:var(--primary);color:#fff;text-align:center;position:relative;overflow:hidden}
+.cta-block h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;margin-bottom:10px;color:#fff;font-family:var(--fontHeading)}
+.cta-block h2 em{color:color-mix(in srgb,var(--accent) 40%,#fff);font-style:italic}
+.theme-edel .cta-block h2{font-weight:400;font-size:clamp(1.6rem,3.4vw,2.4rem)}
+.theme-edel .cta-block h2 em{color:var(--accent-soft)}
+.theme-rustikal .cta-block h2 em{color:var(--accent-warm,#c9904a)}
+.cta-block p{font-family:'Inter',sans-serif;font-size:.9rem;color:rgba(255,255,255,.6);margin-bottom:28px;max-width:540px;margin-left:auto;margin-right:auto}
+.cta-block .btn-accent{background:#fff;color:var(--primary)}
+.cta-block .btn-accent:hover{opacity:.9}
+.theme-rustikal .cta-block::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");opacity:.5;mix-blend-mode:overlay}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--primary-deep);color:rgba(255,255,255,.62);padding:64px 0 28px}
+.theme-edel footer{background:#0a0807}
+.theme-rustikal footer{background:#1c1108}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px}
+.footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.footer-brand .nav-brand-mark{background:rgba(255,255,255,.08);border:none}
+footer p{font-family:'Inter',sans-serif;font-size:.86rem;line-height:1.65;max-width:340px;color:rgba(255,255,255,.5)}
+.footer-col h4{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#fff;margin-bottom:18px}
+.footer-col ul{display:grid;gap:10px}
+.footer-col a{font-family:'Inter',sans-serif;font-size:.88rem;color:rgba(255,255,255,.6);transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-feature-settings:'tnum';font-size:.78rem;color:rgba(255,255,255,.4)}
+
+/* ═══ ANIMATIONS ═══ */
+.fade-up,.sr-fade{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.fade-up.visible,.sr-fade.sr-vis{opacity:1;transform:none}
+.theme-edel .fade-up,.theme-edel .sr-fade{transform:translateY(12px);transition-duration:.85s}
+.hero-sub,.hero h1,.hero-accent-line,.hero-desc,.hero-btns,.hero-trust-bar{opacity:0;transform:translateY(14px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+body.hero-play .hero-sub{opacity:1;transform:none;transition-delay:0ms}
+body.hero-play .hero h1{opacity:1;transform:none;transition-delay:110ms}
+body.hero-play .hero-accent-line{opacity:1;transform:none;transition-delay:220ms}
+body.hero-play .hero-desc{opacity:1;transform:none;transition-delay:300ms}
+body.hero-play .hero-btns{opacity:1;transform:none;transition-delay:380ms}
+body.hero-play .hero-trust-bar{opacity:1;transform:none;transition-delay:480ms}
+.stagger-children > *{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.stagger-children.visible > *{opacity:1;transform:none}
+.stagger-children.visible > *:nth-child(1){transition-delay:0ms}
+.stagger-children.visible > *:nth-child(2){transition-delay:80ms}
+.stagger-children.visible > *:nth-child(3){transition-delay:160ms}
+.stagger-children.visible > *:nth-child(4){transition-delay:240ms}
+.stagger-children.visible > *:nth-child(5){transition-delay:320ms}
+.stagger-children.visible > *:nth-child(6){transition-delay:400ms}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .fade-up,.sr-fade,.stagger-children > *{opacity:1!important;transform:none!important}
+  .hero-sub,.hero h1,.hero-accent-line,.hero-desc,.hero-btns,.hero-trust-bar{opacity:1!important;transform:none!important}
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media(min-width:900px){
+  :root{--sectionY:96px}
+  .theme-edel{--sectionY:120px}
+  .theme-rustikal{--sectionY:104px}
+}
+@media(max-width:920px){
+  .nav-links{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:600px){
+  .hero{min-height:78svh}
+  .hero-inner{padding:90px 24px 48px}
+  .hero h1{font-size:2.2rem;letter-spacing:-.03em}
+  .hero-desc{font-size:.88rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .hero-btns{flex-direction:column}
+  .hero-btns .btn{width:100%}
+  .hero-trust-bar{flex-direction:column;align-items:flex-start;gap:10px}
+  .footer-grid{grid-template-columns:1fr}
+  .stil-switch{top:auto;bottom:14px;right:14px;left:14px;justify-content:center}
+  .stil-switch-label{display:none}
+  .pullquote{padding:64px 0!important}
+}
+</style>
+</head>
+<body class="theme-klassisch">
+
+<!-- STIL-SWITCHER -->
+<div class="stil-switch-label">v2-Themes</div>
+<div class="stil-switch" role="tablist" aria-label="Theme wählen">
+  <button class="active" data-theme="klassisch" type="button"><span class="dot" aria-hidden="true"></span>Klassisch</button>
+  <button data-theme="edel" type="button"><span class="dot" aria-hidden="true"></span>Edel</button>
+  <button data-theme="rustikal" type="button"><span class="dot" aria-hidden="true"></span>Rustikal</button>
+</div>
+
+<!-- NAV — Brand "Bauer" wird in Rustikal italic-Warmgold -->
+<nav id="sitenav">
+  <div class="w nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-brand-mark">BA</div>
+      <div>
+        <div class="nav-brand-name"><span class="accent-italic">Bauer</span> Architektur</div>
+        <div class="nav-brand-sub">ZT GmbH · Wien</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#leistungen">Leistungen</a></li>
+      <li><a href="#ueber-uns">Über uns</a></li>
+      <li><a href="#projekte">Projekte</a></li>
+      <li><a href="#stimmen">Stimmen</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="sr-hero">
+  <div class="hero-inner">
+    <p class="hero-sub">
+      Architekturbüro
+      <span class="hero-sub-loc">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-1px;opacity:.7"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        1010 Wien
+      </span>
+    </p>
+    <h1>Räume, die <em>bleiben</em>.<br>Architektur mit Maß und Haltung.</h1>
+    <span class="hero-accent-line"></span>
+    <p class="hero-desc">Seit 2008 entwickelt Bauer Architektur Wohn-, Sanierungs- und Gewerbeprojekte in Wien und Niederösterreich. Wir verstehen Architektur als langsames Handwerk — gebaut für die nächsten zwanzig Jahre, nicht für die nächste Hochglanzbroschüre.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn btn-accent">Erstgespräch vereinbaren</a>
+      <a href="#leistungen" class="btn btn-ghost">Leistungen ansehen</a>
+    </div>
+    <div class="hero-trust-bar">
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/></svg></span>ZT-Kammer Wien</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13M9 21V12h6v9"/></svg></span>Architektenkammer</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6l-8-4Z"/></svg></span>Holzbau-Plus</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Seit 2008</div>
+    </div>
+  </div>
+</section>
+
+<!-- LEISTUNGEN -->
+<section class="leist" id="leistungen">
+  <div class="w">
+    <div class="leist-head fade-up">
+      <div class="leist-label">Leistungen</div>
+      <div>
+        <h2>Was wir für <em>Sie</em> tun</h2>
+        <p class="leist-intro">Vom Einfamilienhaus bis zum Bürogebäude — Planung, Einreichung, Bauleitung. Aus einer Hand, mit klaren Honorar­strukturen nach HOA.</p>
+      </div>
+    </div>
+    <div class="leist-list">
+      <article class="leist-item">
+        <div class="leist-item-img"><div class="leist-item-img-bg" style="background:linear-gradient(135deg,#8da4c8 0%,#1f3458 100%)"></div></div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">01</span>
+          <h3>Wohnbau</h3>
+          <p>Einfamilien­häuser, Mehrfamilien­häuser, Reihenhausanlagen. Schwerpunkt energie­effizienter Holzbau mit Lärchen- und Fichtenkonstruktion. Jedes Projekt mit eigener Materialstudie.</p>
+          <div class="leist-item-meta">
+            <span>Honorar nach HOA</span>
+            <span class="leist-item-price">ab Ø € 18.000</span>
+          </div>
+          <a href="#" class="leist-item-link">Wohnbau-Referenzen <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      <article class="leist-item">
+        <div class="leist-item-img"><div class="leist-item-img-bg" style="background:linear-gradient(135deg,#c9b896 0%,#5e4a32 100%)"></div></div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">02</span>
+          <h3>Sanierung</h3>
+          <p>Bestandsobjekte denkmalgeschützt oder gründerzeitlich. Wir übernehmen die komplette Behörden­kommunikation — von Vorab-Recherche im Akt bis zum Bescheid.</p>
+          <div class="leist-item-meta">
+            <span>Auch Teil-Sanierung</span>
+            <span class="leist-item-price">ab Ø € 12.000</span>
+          </div>
+          <a href="#" class="leist-item-link">Sanierungs-Beispiele <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      <article class="leist-item">
+        <div class="leist-item-img"><div class="leist-item-img-bg" style="background:linear-gradient(135deg,#9aa8b8 0%,#1f2e40 100%)"></div></div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">03</span>
+          <h3>Gewerbe</h3>
+          <p>Bürogebäude, Praxen, Hotels, Gastronomie. Skalierbare Konzepte für Bauherren mit klarem Programm — wir liefern Plan, Ausschreibung und Bauleitung als ein Paket.</p>
+          <div class="leist-item-meta">
+            <span>Phasen einzeln buchbar</span>
+            <span class="leist-item-price">ab Ø € 24.000</span>
+          </div>
+          <a href="#" class="leist-item-link">Gewerbe-Projekte <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      <article class="leist-item">
+        <div class="leist-item-img"><div class="leist-item-img-bg" style="background:linear-gradient(135deg,#d4c4a4 0%,#735633 100%)"></div></div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">04</span>
+          <h3>Innenarchitektur</h3>
+          <p>Maßmöbel, Material- und Farbkonzepte, Lichtplanung. Auch als eigenständiger Auftrag — ohne Bauleitung — für bestehende Objekte oder einzelne Räume.</p>
+          <div class="leist-item-meta">
+            <span>Inkl. Werkstatt-Kontakt</span>
+            <span class="leist-item-price">ab Ø € 4.800</span>
+          </div>
+          <a href="#" class="leist-item-link">Beispiele Innenarchitektur <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PULL-QUOTE — primär Edel-Magazine, dezent in Klassisch + Rustikal -->
+<section class="pullquote">
+  <div class="w">
+    <div class="pullquote-inner fade-up">
+      <div class="pullquote-mark" aria-hidden="true">„</div>
+      <p class="pullquote-text">Architektur ist <em>Verantwortung</em> — gegenüber dem Ort, dem Bauherrn, und denen, die in zwanzig Jahren noch dort leben.</p>
+      <div class="pullquote-attr">DI Markus Bauer · Gründer</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABLAUF -->
+<section class="ablauf">
+  <div class="w">
+    <div class="ablauf-head fade-up">
+      <div class="sec-label">Ablauf</div>
+      <div>
+        <h2 class="s-h2">In <em>vier</em> Phasen zum Bauwerk</h2>
+        <p class="s-intro">Klare Meilensteine, schriftliche Zwischenberichte, Festpreise pro Phase. Sie wissen jederzeit, wo wir stehen.</p>
+      </div>
+    </div>
+    <div class="ablauf-steps stagger-children">
+      <div class="ablauf-step">
+        <span class="ablauf-num">01</span>
+        <h4>Erstgespräch</h4>
+        <p>Kostenlos. Sie schildern das Vorhaben, wir schätzen Machbarkeit und Aufwand realistisch ein.</p>
+      </div>
+      <div class="ablauf-step">
+        <span class="ablauf-num">02</span>
+        <h4>Vorentwurf</h4>
+        <p>Erste Skizzen, Massenstudie, Kostenrahmen. Hier entscheiden Sie, ob das Konzept passt.</p>
+      </div>
+      <div class="ablauf-step">
+        <span class="ablauf-num">03</span>
+        <h4>Einreichung</h4>
+        <p>Polierter Plan, Behördenpaket, Anrainer-Kommunikation. Wir begleiten den Bescheid bis zur Rechtskraft.</p>
+      </div>
+      <div class="ablauf-step">
+        <span class="ablauf-num">04</span>
+        <h4>Bauleitung</h4>
+        <p>Ausschreibung, Vergabe, örtliche Bauaufsicht. Wir sind auf der Baustelle, bis übergeben ist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ÜBER mit Stempel + Team -->
+<section class="ueber" id="ueber-uns">
+  <div class="w">
+    <div class="ueber-grid">
+      <div class="fade-up">
+        <div class="sec-label" style="color:rgba(255,255,255,.6)">Über uns</div>
+        <h2>Über <em>Bauer Architektur</em></h2>
+        <p class="ueber-text">Bauer Architektur wurde 2008 von DI Markus Bauer gegründet. Wir arbeiten in der Operngasse mit sechs Mitarbeiterinnen — bewusst klein gehalten, damit Sie nie ein Junior-Team übergeben werden, sondern jede Phase mit dem Architekten besprechen, der die Linie zeichnet.</p>
+        <p class="ueber-text">Wir glauben an langsame Architektur: Maßstab über Maximum. Holz vor Beton, wo möglich. Bestand vor Abriss, wo sinnvoll. Honorartransparenz vor Hand­schlagsdeals.</p>
+      </div>
+      <div class="fade-up">
+        <ul class="ueber-vorteile">
+          <li>Honorar nach HOA-Tafel — schriftlich vor Auftrag</li>
+          <li>Festpreis pro Leistungsphase, kein Aufrunden</li>
+          <li>Architekt persönlich bei jeder Bauberatung</li>
+          <li>Holzbau-Spezialisierung seit 2014</li>
+          <li>Mitglied bei Architektenkammer + ZT-Kammer</li>
+          <li>Eingetragene Ziviltechniker-GmbH</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ueber-stats-wrap fade-up">
+      <!-- Rustikal-Stempel (nur in theme-rustikal sichtbar) -->
+      <div class="rustikal-stamp" aria-hidden="true">
+        <span class="rustikal-stamp-top">Wien</span>
+        <span class="rustikal-stamp-num">2008</span>
+        <span class="rustikal-stamp-bot">17 Jahre</span>
+      </div>
+      <div class="ueber-stats">
+        <div class="ueber-stat"><div class="ueber-stat-num">17</div><div class="ueber-stat-label">Jahre</div></div>
+        <div class="ueber-stat"><div class="ueber-stat-num">142</div><div class="ueber-stat-label">Projekte</div></div>
+        <div class="ueber-stat"><div class="ueber-stat-num">6</div><div class="ueber-stat-label">Architekten</div></div>
+        <div class="ueber-stat"><div class="ueber-stat-num">98%</div><div class="ueber-stat-label">Termintreue</div></div>
+      </div>
+    </div>
+
+    <div class="team-block">
+      <div class="team-block-head fade-up">
+        <h3>Das Team</h3>
+        <p>Drei Linien, ein Büro — jede Bauherrin hat eine feste Bezugsperson.</p>
+      </div>
+      <div class="team-grid stagger-children">
+        <article class="team-member">
+          <div class="team-avatar">MB</div>
+          <div class="team-name">DI Markus <em>Bauer</em></div>
+          <div class="team-role">Gründer · Wohnbau</div>
+        </article>
+        <article class="team-member">
+          <div class="team-avatar">LH</div>
+          <div class="team-name">DI Lena <em>Hofer</em></div>
+          <div class="team-role">Partnerin · Sanierung</div>
+        </article>
+        <article class="team-member">
+          <div class="team-avatar">TR</div>
+          <div class="team-name">DI Thomas <em>Reiter</em></div>
+          <div class="team-role">Architekt · Gewerbe</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE — mit Picsum-Bildern + Photo-Frame in Rustikal -->
+<section class="galerie" id="projekte">
+  <div class="w">
+    <div class="galerie-head fade-up">
+      <div class="sec-label">Projekte</div>
+      <div>
+        <h2 class="s-h2">Auswahl aus <em>siebzehn</em> Jahren</h2>
+        <p class="s-intro">Detailliertes Portfolio mit Plänen und Kostenrahmen auf Anfrage.</p>
+      </div>
+    </div>
+    <div class="galerie-grid stagger-children">
+      <article class="galerie-item">
+        <div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/bauer-wohnhaus-k/600/400')"></div>
+        <div class="galerie-item-overlay"><span class="galerie-item-tag">Wohnbau · Hietzing</span><h4>Wohnhaus <em>K.</em></h4></div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/bauer-gruenderzeit-w/600/400')"></div>
+        <div class="galerie-item-overlay"><span class="galerie-item-tag">Sanierung · 1080</span><h4>Gründerzeit­haus <em>W.</em></h4></div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/bauer-buero-ct/600/400')"></div>
+        <div class="galerie-item-overlay"><span class="galerie-item-tag">Gewerbe · Mödling</span><h4>Bürogebäude <em>CT</em></h4></div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/bauer-almhuette-h/600/400')"></div>
+        <div class="galerie-item-overlay"><span class="galerie-item-tag">Tourismus · Salzkammergut</span><h4>Almhütte <em>H.</em></h4></div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/bauer-praxis-s/600/400')"></div>
+        <div class="galerie-item-overlay"><span class="galerie-item-tag">Praxis · 1010</span><h4>Zahnpraxis <em>S.</em></h4></div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/bauer-stadthaus-m/600/400')"></div>
+        <div class="galerie-item-overlay"><span class="galerie-item-tag">Wohnbau · Neubau</span><h4>Stadthaus <em>M.</em></h4></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BEWERTUNGEN -->
+<section class="bew" id="stimmen">
+  <div class="w">
+    <div class="bew-head fade-up">
+      <div class="sec-label">Stimmen</div>
+      <div>
+        <h2 class="s-h2">Was Bauherren <em>sagen</em></h2>
+        <p class="s-intro">Auszüge aus Google-Bewertungen und persönlichen Empfehlungs­schreiben.</p>
+        <div class="bew-rating">
+          <span class="bew-rating-num">4.8</span>
+          <div class="bew-rating-bar"><div class="bew-rating-fill"></div></div>
+          <span class="bew-rating-meta">aus 38 Bewertungen</span>
+        </div>
+      </div>
+    </div>
+    <div class="bew-grid stagger-children">
+      <article class="bew-card">
+        <p class="bew-text">Markus Bauer hat unser Sanierungsprojekt im 7. Bezirk übernommen, nachdem ein anderes Büro abgesprungen war. Klare Termine, klare Kosten — und das Ergebnis übertrifft, was wir uns vorgestellt haben.</p>
+        <div class="bew-author"><div class="bew-avatar">EH</div><div><div class="bew-name">Eva H.</div><div class="bew-meta">Wohnungssanierung Wien-Neubau</div></div></div>
+      </article>
+      <article class="bew-card">
+        <p class="bew-text">Lena Hofer hat den Bescheid bei einem denkmal­geschützten Gründerzeithaus durchgebracht, wo zwei Vorgängerbüros gescheitert sind. Sehr ruhig, sehr präzise.</p>
+        <div class="bew-author"><div class="bew-avatar">MS</div><div><div class="bew-name">Martin S.</div><div class="bew-meta">Bauherr · 1080 Wien</div></div></div>
+      </article>
+      <article class="bew-card">
+        <p class="bew-text">Bürogebäude in NÖ vom Vorentwurf bis Schlüsselübergabe. Festpreis hat zu 100% gehalten, Termine zu 95%. Würden wir wieder beauftragen.</p>
+        <div class="bew-author"><div class="bew-avatar">CT</div><div><div class="bew-name">CT Industries GmbH</div><div class="bew-meta">Bürogebäude Mödling</div></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="w faq-layout">
+    <div class="faq-head fade-up">
+      <div class="sec-label">FAQ</div>
+      <h2 class="s-h2">Häufige Fragen</h2>
+      <p>Wenn Ihre Frage nicht dabei ist: Im Erstgespräch nehmen wir uns dafür Zeit.</p>
+    </div>
+    <div class="faq-list fade-up">
+      <details class="faq-item" open>
+        <summary class="faq-q">Wie hoch sind die Honorare?<span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <div class="faq-a">Wir honorieren nach HOA-Tafel, alternativ als Festpreis pro Leistungsphase. Eine schriftliche Kostenschätzung erhalten Sie vor Auftragserteilung — keine Honorarüberraschungen.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Übernehmen Sie auch Teil-Aufträge?<span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <div class="faq-a">Ja. Sie können einzelne Leistungsphasen separat beauftragen — von Vorentwurf bis Bauleitung. Bei laufenden Projekten anderer Büros prüfen wir die Übernahme im Einzelfall.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Wie lange dauert ein typisches Projekt?<span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <div class="faq-a">Vorentwurf bis Einreichung typischerweise 4–8 Monate. Behörden­verfahren in Wien aktuell 6–12 Monate. Bauleitung dann 12–24 Monate je Größe.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Arbeiten Sie auch außerhalb Wien?<span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <div class="faq-a">Niederösterreich und nördliches Burgenland sind unser Standardeinsatzgebiet. Salzkammergut auf Anfrage. Außerhalb dieser Regionen prüfen wir die Wirtschaftlichkeit gemeinsam.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Bieten Sie Nachhaltigkeits-Beratung?<span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <div class="faq-a">Ja. Wir sind ÖGNI-Mitglied und planen klimaaktiv-ready. Bei Holzbau-Projekten arbeiten wir mit Holzbau-Plus-Betrieben aus Vorarlberg und Niederösterreich.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="kontakt" id="kontakt">
+  <div class="w">
+    <div class="kontakt-head fade-up">
+      <div class="sec-label">Kontakt</div>
+      <div>
+        <h2>So erreichen Sie uns</h2>
+        <p class="s-intro">Persönlich in der Operngasse oder per Video-Call. Antwort innerhalb von 24 Stunden.</p>
+      </div>
+    </div>
+    <div class="kontakt-grid">
+      <div class="fade-up">
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Adresse</div>
+          <div class="kontakt-item-value">Operngasse 4<br>1010 Wien</div>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Telefon</div>
+          <a href="tel:+4315873210" class="kontakt-tel">+43 1 587 32 10</a>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">E-Mail</div>
+          <a href="mailto:bueno@bauer-architektur.at" class="kontakt-email">bueno@bauer-architektur.at</a>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Bürozeiten</div>
+          <div class="kontakt-item-value">Mo–Fr · 9:00–17:00</div>
+        </div>
+        <div class="kontakt-social">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4a3 3 0 0 1 6 0v4M11 10v7"/></svg></a>
+          <a href="#" aria-label="Pinterest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 19l3-12M11 13a3 3 0 1 0 3-3"/></svg></a>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="kontakt-map" aria-label="Karte Operngasse 4, 1010 Wien">
+          <div class="kontakt-map-fake">
+            <div class="kontakt-map-pin">
+              <div class="kontakt-map-pin-dot">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <span style="margin-top:18px">Operngasse 4 · 1010 Wien</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kontakt-infos fade-up">
+      <div class="kontakt-info-item">
+        <span class="kontakt-info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div><strong>Erstgespräch kostenlos</strong><br>30 Min, persönlich oder per Video</div>
+      </div>
+      <div class="kontakt-info-item">
+        <span class="kontakt-info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
+        <div><strong>Festpreis pro Phase</strong><br>Kein Honorar­aufrunden</div>
+      </div>
+      <div class="kontakt-info-item">
+        <span class="kontakt-info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <div><strong>Architekt persönlich</strong><br>Bei jeder Bauberatung</div>
+      </div>
+    </div>
+
+    <div class="kontakt-form-wrap">
+      <form class="k-form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Wird gesendet…'">
+        <h3>Anfrage senden</h3>
+        <div class="k-form-row k-form-row-2">
+          <div class="k-form-field"><label>Vorname *</label><input type="text" required></div>
+          <div class="k-form-field"><label>Nachname *</label><input type="text" required></div>
+        </div>
+        <div class="k-form-row k-form-row-2">
+          <div class="k-form-field"><label>E-Mail *</label><input type="email" required></div>
+          <div class="k-form-field"><label>Telefon</label><input type="tel"></div>
+        </div>
+        <div class="k-form-field"><label>Projekt</label><input type="text" placeholder="z. B. Sanierung 1080 Wien, ca. 120 m²"></div>
+        <div class="k-form-field"><label>Nachricht *</label><textarea required></textarea></div>
+        <button type="submit">Anfrage abschicken</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- CTA-BLOCK -->
+<section class="cta-block">
+  <div class="w">
+    <h2>Sie haben ein <em>Vorhaben</em>?</h2>
+    <p>Wir hören zu, sagen ehrlich, ob wir das richtige Büro sind. Erstgespräch immer kostenlos.</p>
+    <a href="#kontakt" class="btn btn-accent">Termin vereinbaren</a>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="w">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="nav-brand-mark">BA</div>
+          <div>
+            <div class="nav-brand-name"><span class="accent-italic">Bauer</span> Architektur</div>
+            <div class="nav-brand-sub">ZT GmbH · Wien</div>
+          </div>
+        </div>
+        <p>Architekturbüro für Wohnbau, Sanierung und Gewerbe — eingetragene Ziviltechniker-Gesellschaft, Mitglied der Architektenkammer Wien.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#">Wohnbau</a></li>
+          <li><a href="#">Sanierung</a></li>
+          <li><a href="#">Gewerbe</a></li>
+          <li><a href="#">Innenarchitektur</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Büro</h4>
+        <ul>
+          <li><a href="#">Über uns</a></li>
+          <li><a href="#">Team</a></li>
+          <li><a href="#">Projekte</a></li>
+          <li><a href="#">Karriere</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">AGB</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <div>© 2026 Bauer Architektur ZT GmbH · FN 345678 m · HG Wien</div>
+      <div>ZT-Kammer · Architektenkammer Wien</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const buttons = document.querySelectorAll('.stil-switch button');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.theme;
+      document.body.className = 'theme-' + t;
+      buttons.forEach(b => b.classList.toggle('active', b === btn));
+      document.body.classList.remove('hero-play');
+      requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('hero-play')));
+    });
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('hero-play')));
+
+  const nav = document.getElementById('sitenav');
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        nav.classList.toggle('scrolled', window.scrollY > 60);
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, {passive:true});
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {rootMargin:'0px 0px -10% 0px',threshold:.1});
+    document.querySelectorAll('.fade-up,.stagger-children').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.fade-up,.stagger-children').forEach(el => el.classList.add('visible'));
+  }
+</script>
+
+</body>
+</html>

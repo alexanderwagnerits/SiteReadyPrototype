@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe: Handwerk-Werkstatt-Rustikal — Tischlerei Steiner &amp; Söhne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unna:ital,wght@0,400;0,700;1,400;1,700&family=Caveat:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   RECIPE: Handwerk-Werkstatt-Rustikal
+   Demo: Tischlerei Steiner & Söhne · 1140 Wien-Hütteldorf · seit 1972
+   Anti-AI-Bias: Custom Decorative Elements, asymmetrische Layouts,
+   Vater-Sohn-Story, Vorher-Nachher als Hero-Element, Material-Strip,
+   Hand-Schrift-Akzente (Caveat), Stempel-Sigel, Werkstück-Tabelle.
+   ═══════════════════════════════════════════════════════ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+a,button,input{touch-action:manipulation}
+
+:root{
+  --primary:#3d2818;
+  --primary-deep:#241509;
+  --accent:#7a3528;
+  --accent-warm:#c9904a;
+  --accent-warm-deep:#a8753a;
+  --bg:#f5f1e8;
+  --bg-alt:#ebe2d0;
+  --bg-paper:#faf6ec;
+  --sep:#d4c4a4;
+  --sep-strong:#3d2818;
+  --text:#2c241a;
+  --textMuted:#6b5d4a;
+  --white:#faf6ec;
+  --r:3px;
+  --rLg:5px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --fontHeading:'Unna',Georgia,serif;
+  --fontHand:'Caveat',cursive;
+  --mono:'JetBrains Mono',monospace;
+  --maxW:1140px;
+  --sectionY:104px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
+body{
+  font-family:var(--font);color:var(--text);
+  line-height:1.7;font-size:1rem;
+  background:var(--white);-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:clip;max-width:100vw;position:relative;
+}
+/* Cream-Papier-Atmosphere mit Noise */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55 0 0 0 0 .35 0 0 0 0 .15 0 0 0 .07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.5;mix-blend-mode:multiply;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+h1,h2,h3,h4{font-family:var(--fontHeading)}
+h1 em,h2 em,h3 em{font-style:italic;color:var(--accent-warm)}
+.w{max-width:var(--maxW);margin:0 auto;padding:0 28px;position:relative;z-index:1}
+@media(min-width:900px){.w{padding:0 32px}}
+
+.recipe-label{position:fixed;top:14px;left:14px;z-index:200;background:rgba(250,246,236,.96);backdrop-filter:blur(14px);border:1px solid rgba(0,0,0,.1);border-radius:100px;padding:9px 18px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#6b5d4a;font-family:'Inter',sans-serif;box-shadow:0 12px 32px rgba(60,40,20,.18);display:inline-flex;align-items:center;gap:10px}
+.recipe-label .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* ═══ Hand-Drawn Underline (custom SVG) — anti-generic ═══ */
+.hand-underline{position:relative;display:inline-block}
+.hand-underline::after{
+  content:'';position:absolute;left:-4px;right:-4px;bottom:-4px;height:6px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 6' preserveAspectRatio='none'><path d='M2 4 Q 50 1, 100 3 T 198 4' stroke='%237a3528' stroke-width='1.8' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat;background-size:100% 100%;
+  opacity:.65;
+}
+
+/* ═══ Holz-Maserung als CSS-Pattern für Bild-Slots ═══ */
+.holz-bg{
+  background:
+    repeating-linear-gradient(180deg,
+      transparent 0,transparent 3px,
+      rgba(122,53,40,.05) 3px,rgba(122,53,40,.05) 4px),
+    repeating-linear-gradient(180deg,
+      transparent 0,transparent 18px,
+      rgba(122,53,40,.08) 18px,rgba(122,53,40,.08) 19px),
+    linear-gradient(135deg,#c9a87a 0%,#8b6f47 100%);
+}
+
+/* ═══ NAV ═══ */
+#sitenav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:18px 0;
+  transition:background .35s var(--ease),backdrop-filter .35s,box-shadow .35s,padding .35s;
+}
+#sitenav.scrolled{background:color-mix(in srgb,var(--primary-deep) 92%,transparent);backdrop-filter:blur(12px);box-shadow:0 6px 22px rgba(60,40,20,.32);padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-brand{display:flex;align-items:center;gap:14px;color:#fff}
+/* Custom Logo — gefrästes-aussehendes Holz-Sigel */
+.nav-brand-mark{
+  width:46px;height:46px;
+  background:var(--accent-warm);border:1px solid var(--accent-warm-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fontHeading);font-style:italic;
+  font-weight:700;font-size:18px;color:#241509;
+  position:relative;
+  box-shadow:inset 0 -3px 6px rgba(60,40,20,.3),inset 0 1px 2px rgba(255,235,200,.4);
+}
+.nav-brand-mark::before{content:'';position:absolute;inset:4px;border:1px solid rgba(60,40,20,.25)}
+.nav-brand-name{font-family:var(--fontHeading);font-weight:700;font-size:17px;color:#fff;letter-spacing:0;line-height:1.1}
+.nav-brand-name em{font-style:italic;color:var(--accent-warm);font-weight:400}
+.nav-brand-sub{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,235,200,.6);font-weight:400;letter-spacing:.06em;margin-top:3px}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:rgba(255,235,200,.78);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;transition:color .2s;padding:6px 0}
+.nav-links a:hover{color:var(--accent-warm)}
+
+/* ═══ HERO — Vater-Sohn-Story-Layout (split, kein generic Trust-Bar) ═══ */
+.hero{
+  background:linear-gradient(155deg,var(--primary) 0%,var(--primary-deep) 60%,#1a0d05 100%);
+  color:#faf6ec;display:flex;align-items:center;
+  position:relative;min-height:96vh;min-height:96svh;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.6;mix-blend-mode:overlay;z-index:1;
+}
+.hero-grid{
+  position:relative;z-index:2;width:100%;
+  max-width:var(--maxW);margin:0 auto;
+  padding:140px 28px 80px;
+  display:grid;gap:72px;align-items:end;
+}
+@media(min-width:1024px){.hero-grid{grid-template-columns:1.3fr 1fr;gap:80px;align-items:center}}
+
+.hero-text{max-width:680px;position:relative}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:14px;
+  font-family:var(--fontHand);font-size:1.4rem;
+  color:var(--accent-warm);
+  margin-bottom:24px;
+  transform:rotate(-1.5deg);
+  position:relative;
+}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--accent-warm);opacity:.6}
+.hero h1{
+  font-family:var(--fontHeading);
+  font-size:clamp(2.8rem,5.4vw,4.6rem);
+  font-weight:700;line-height:1.06;letter-spacing:-.005em;
+  margin-bottom:24px;color:#fff;
+}
+.hero h1 em{font-style:italic;color:var(--accent-warm);font-weight:400}
+.hero-desc{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;color:rgba(250,246,236,.72);
+  max-width:520px;margin-bottom:36px;line-height:1.85;
+}
+.hero-btns{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:48px}
+
+/* Hero-Generation-Strip (statt Trust-Bar) — drei Generations-Marken */
+.gen-strip{
+  display:flex;flex-wrap:wrap;gap:0;
+  border-top:1px solid rgba(255,235,200,.12);padding-top:32px;
+}
+.gen-mark{
+  flex:1;min-width:140px;
+  padding-right:32px;position:relative;
+}
+.gen-mark + .gen-mark{padding-left:32px;border-left:1px solid rgba(255,235,200,.12)}
+.gen-year{font-family:var(--fontHeading);font-style:italic;font-weight:700;font-size:1.3rem;color:var(--accent-warm);line-height:1;margin-bottom:6px}
+.gen-name{font-family:'Inter',sans-serif;font-size:.78rem;color:rgba(250,246,236,.85);font-weight:500;letter-spacing:.04em}
+.gen-role{font-family:'Inter',sans-serif;font-size:.7rem;color:rgba(250,246,236,.5);margin-top:2px;letter-spacing:.06em;text-transform:uppercase}
+
+/* Hero-Sigel — großes Stempel-Element rechts */
+.hero-sigel{
+  position:relative;width:280px;height:280px;margin:0 auto;
+}
+.hero-sigel-outer,.hero-sigel-inner{
+  position:absolute;inset:0;border-radius:50%;
+  border:2px solid var(--accent-warm);
+}
+.hero-sigel-inner{inset:14px;border-width:1px;opacity:.45}
+.hero-sigel-content{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;color:var(--accent-warm);
+  transform:rotate(-7deg);
+}
+.hero-sigel-top{font-family:var(--fontHeading);font-style:italic;font-size:.9rem;font-weight:400;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;opacity:.85}
+.hero-sigel-num{font-family:var(--fontHeading);font-weight:700;font-size:3.6rem;line-height:.9;letter-spacing:-.005em}
+.hero-sigel-mid{font-family:var(--fontHeading);font-style:italic;font-size:1.2rem;margin:8px 0 6px;opacity:.85}
+.hero-sigel-bot{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-warm);opacity:.7}
+.hero-sigel-deco{position:absolute;left:50%;top:50%;width:8px;height:8px;background:var(--accent-warm);border-radius:50%;transform:translate(-50%,-50%);opacity:.4}
+/* Sigel-Curve-Text */
+.hero-sigel-curve{
+  position:absolute;inset:32px;
+  font-family:'Inter',sans-serif;
+  font-size:.62rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent-warm);opacity:.55;
+}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 28px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:.02em;border-radius:var(--r);transition:all .25s var(--ease);cursor:pointer;position:relative}
+.btn::after{content:"→";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s,transform .28s,margin-left .28s}
+.btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(122,53,40,.32)}
+.btn-accent:hover{background:#5a2419;box-shadow:0 8px 22px rgba(122,53,40,.4);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:rgba(255,235,200,.85);border:1.5px solid rgba(201,144,74,.42)}
+.btn-ghost:hover{border-color:var(--accent-warm);color:#fff;background:rgba(201,144,74,.08)}
+
+/* ═══ MATERIAL-STRIP — branchen-spezifische Sektion (Holzarten als Strip) ═══ */
+.material{
+  padding:32px 0;background:var(--bg-alt);
+  border-top:1px solid var(--sep);border-bottom:1px solid var(--sep);
+  position:relative;z-index:1;
+}
+.material-inner{display:flex;align-items:center;gap:32px;overflow-x:auto;padding:8px 0}
+.material-label{
+  font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--textMuted);
+  flex-shrink:0;
+}
+.material-list{display:flex;gap:0;flex:1}
+.material-holz{
+  flex:1;min-width:140px;padding:0 24px;
+  display:flex;flex-direction:column;gap:4px;
+  border-left:1px solid var(--sep);
+}
+.material-holz:first-child{border-left:none;padding-left:0}
+.material-name{font-family:var(--fontHeading);font-style:italic;font-weight:700;font-size:1.1rem;color:var(--primary);line-height:1.2}
+.material-meta{font-family:'Inter',sans-serif;font-size:.74rem;color:var(--textMuted);letter-spacing:.02em}
+.material-origin{font-family:var(--fontHand);font-size:.95rem;color:var(--accent-warm);margin-top:2px}
+
+/* ═══ WERKSTÜCKE — Werkstück-Tabelle (branchen-spezifisch) ═══ */
+.werke{padding:var(--sectionY) 0;background:var(--white);position:relative;z-index:1}
+.werke-head{margin-bottom:64px;display:grid;gap:32px;align-items:end}
+@media(min-width:900px){.werke-head{grid-template-columns:1fr auto;gap:48px}}
+.werke-head-text{max-width:600px}
+.werke-eyebrow{font-family:var(--fontHand);font-size:1.3rem;color:var(--accent);margin-bottom:8px;transform:rotate(-1deg);display:inline-block}
+.werke-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem);font-weight:700;color:var(--primary);letter-spacing:-.005em;margin-bottom:14px;line-height:1.15}
+.werke-head h2 em{font-style:italic;color:var(--accent)}
+.werke-intro{font-family:'Inter',sans-serif;font-size:.95rem;color:var(--textMuted);line-height:1.75}
+
+.werke-list{display:flex;flex-direction:column;border-top:1.5px solid var(--sep-strong)}
+.werke-row{
+  display:grid;gap:24px;
+  padding:32px 0;border-bottom:1px solid var(--sep);
+  position:relative;align-items:start;
+  transition:background .25s var(--ease);
+}
+.werke-row:hover{background:var(--bg)}
+@media(min-width:900px){.werke-row{grid-template-columns:80px 1fr 200px 140px;align-items:center;gap:32px}}
+.werke-num{font-family:var(--mono);font-feature-settings:'tnum';font-size:1.1rem;font-weight:500;color:var(--accent-warm);letter-spacing:.04em}
+.werke-name h3{font-family:var(--fontHeading);font-size:1.35rem;font-weight:700;color:var(--primary);letter-spacing:-.005em;margin-bottom:4px;line-height:1.2}
+.werke-name h3 em{font-style:italic;color:var(--accent);font-weight:400}
+.werke-desc{font-family:'Inter',sans-serif;font-size:.88rem;color:var(--textMuted);line-height:1.6;max-width:520px}
+.werke-mass{font-family:var(--mono);font-size:.82rem;color:var(--text);letter-spacing:.01em;line-height:1.7;font-feature-settings:'tnum'}
+.werke-mass span{display:block;color:var(--textMuted);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+.werke-preis{font-family:var(--fontHeading);font-style:italic;font-weight:700;font-size:1.3rem;color:var(--primary);text-align:right}
+.werke-preis small{display:block;font-family:'Inter',sans-serif;font-size:.7rem;font-style:normal;font-weight:500;color:var(--textMuted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+
+.werke-note{margin-top:32px;padding:18px 24px;background:var(--bg-alt);border-left:3px solid var(--accent-warm);font-family:var(--fontHand);font-size:1.15rem;color:var(--text);line-height:1.5}
+
+/* ═══ VORHER-NACHHER — branchen-spezifisch (zentral!) ═══ */
+.vornach{padding:var(--sectionY) 0;background:var(--bg);position:relative;z-index:1}
+.vornach-head{margin-bottom:48px;text-align:center}
+.vornach-eyebrow{font-family:var(--fontHand);font-size:1.4rem;color:var(--accent);margin-bottom:6px;display:inline-block;transform:rotate(-1deg)}
+.vornach-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem);font-weight:700;color:var(--primary);letter-spacing:-.005em;line-height:1.15}
+.vornach-head h2 em{font-style:italic;color:var(--accent)}
+.vornach-grid{display:grid;gap:32px}
+@media(min-width:900px){.vornach-grid{grid-template-columns:1fr 1fr 1fr}}
+.vornach-card{
+  position:relative;background:var(--white);
+  border:1px solid var(--sep);
+  box-shadow:0 6px 22px rgba(60,40,20,.08);
+  padding:14px 14px 24px;
+}
+.vornach-imgs{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--bg-alt)}
+.vornach-img{position:absolute;inset:0;background-size:cover;background-position:center}
+.vornach-img.vorher{filter:sepia(.18) contrast(.95) brightness(.92)}
+.vornach-img.nachher{
+  background-position:right center;
+  clip-path:inset(0 0 0 50%);
+}
+.vornach-divider{
+  position:absolute;left:50%;top:0;bottom:0;width:2px;
+  background:var(--accent-warm);transform:translateX(-50%);
+  z-index:2;
+}
+.vornach-divider::before,.vornach-divider::after{
+  content:'';position:absolute;left:50%;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent-warm);transform:translateX(-50%);
+  border:3px solid var(--white);
+  box-shadow:0 2px 8px rgba(60,40,20,.3);
+}
+.vornach-divider::before{top:calc(50% - 12px)}
+.vornach-divider::after{display:none}
+.vornach-label{
+  position:absolute;top:12px;
+  font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;
+  background:rgba(60,40,20,.85);color:#fff;
+  padding:4px 10px;z-index:3;
+}
+.vornach-label.vorher{left:12px}
+.vornach-label.nachher{right:12px;background:var(--accent)}
+.vornach-meta{margin-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.vornach-meta-name{font-family:var(--fontHeading);font-weight:700;font-size:1.02rem;color:var(--primary)}
+.vornach-meta-name em{font-style:italic;color:var(--accent);font-weight:400}
+.vornach-meta-year{font-family:var(--mono);font-size:.78rem;color:var(--textMuted);font-feature-settings:'tnum'}
+.vornach-meta-text{margin-top:6px;font-family:'Inter',sans-serif;font-size:.84rem;color:var(--textMuted);line-height:1.55}
+
+/* ═══ VATER-SOHN-STORY mit Pull-Quote ═══ */
+.story{padding:var(--sectionY) 0;background:var(--white);position:relative;z-index:1}
+.story-grid{display:grid;gap:48px;align-items:center}
+@media(min-width:900px){.story-grid{grid-template-columns:1fr 1fr;gap:80px}}
+.story-img{
+  aspect-ratio:4/5;width:100%;background-size:cover;background-position:center;
+  border:8px solid var(--white);
+  box-shadow:0 12px 32px rgba(60,40,20,.22);
+  filter:sepia(.12) contrast(1.05);
+  transform:rotate(-1deg);
+  position:relative;
+}
+.story-img::before{
+  content:'';position:absolute;top:14px;right:-14px;
+  width:88px;height:88px;background:var(--accent-warm);
+  border-radius:50%;z-index:-1;opacity:.4;
+}
+.story-text-eyebrow{font-family:var(--fontHand);font-size:1.4rem;color:var(--accent);margin-bottom:14px;display:inline-block;transform:rotate(-1deg)}
+.story-text h2{font-family:var(--fontHeading);font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.1;color:var(--primary);letter-spacing:-.01em;margin-bottom:24px}
+.story-text h2 em{font-style:italic;color:var(--accent)}
+.story-text p{font-family:'Inter',sans-serif;font-size:1rem;line-height:1.85;color:var(--text);margin-bottom:18px}
+
+/* Pull-Quote in Story */
+.story-quote{
+  margin:32px 0 24px;padding:24px 28px;
+  border-left:3px solid var(--accent-warm);
+  background:var(--bg-alt);
+  font-family:var(--fontHeading);font-style:italic;font-weight:400;
+  font-size:1.15rem;line-height:1.55;color:var(--primary);
+  position:relative;
+}
+.story-quote::before{
+  content:'„';position:absolute;left:8px;top:-8px;
+  font-family:var(--fontHeading);font-size:3rem;line-height:1;
+  color:var(--accent-warm);opacity:.4;
+}
+.story-quote-attr{
+  margin-top:14px;font-family:var(--fontHand);font-size:1.1rem;
+  color:var(--accent);
+}
+
+/* ═══ TEAM — als Generations-Liste statt Card-Grid ═══ */
+.gen-team{padding:var(--sectionY) 0;background:var(--primary);color:#faf6ec;position:relative;overflow:hidden}
+.gen-team::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--accent-warm) 0%,transparent 65%);opacity:.08;bottom:-200px;right:-200px;filter:blur(80px)}
+.gen-team-head{margin-bottom:64px;max-width:680px;position:relative;z-index:1}
+.gen-team-head .eyebrow{font-family:var(--fontHand);font-size:1.4rem;color:var(--accent-warm);display:inline-block;margin-bottom:6px;transform:rotate(-1deg)}
+.gen-team-head h2{font-family:var(--fontHeading);font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:700;color:#fff;letter-spacing:-.005em;line-height:1.15;margin-bottom:14px}
+.gen-team-head h2 em{font-style:italic;color:var(--accent-warm)}
+.gen-team-head p{font-family:'Inter',sans-serif;font-size:.95rem;color:rgba(250,246,236,.7);max-width:520px;line-height:1.75}
+
+.gen-team-list{display:grid;gap:0;border-top:1px solid rgba(250,246,236,.12);position:relative;z-index:1}
+.gen-team-member{
+  display:grid;gap:32px;
+  padding:40px 0;border-bottom:1px solid rgba(250,246,236,.12);
+  align-items:center;
+}
+@media(min-width:900px){.gen-team-member{grid-template-columns:120px 1fr 200px;gap:48px}}
+.gen-team-year{
+  font-family:var(--fontHeading);font-style:italic;font-weight:700;
+  font-size:2.4rem;color:var(--accent-warm);line-height:1;
+}
+.gen-team-info h3{font-family:var(--fontHeading);font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.005em;margin-bottom:4px}
+.gen-team-info h3 em{font-style:italic;color:var(--accent-warm);font-weight:400}
+.gen-team-role{font-family:'Inter',sans-serif;font-size:.86rem;color:rgba(250,246,236,.55);margin-bottom:12px;letter-spacing:.04em}
+.gen-team-bio{font-family:'Inter',sans-serif;font-size:.92rem;color:rgba(250,246,236,.78);line-height:1.7;max-width:560px}
+.gen-team-meta{font-family:var(--mono);font-size:.74rem;color:rgba(250,246,236,.5);font-feature-settings:'tnum';letter-spacing:.02em;line-height:1.7}
+.gen-team-meta span{display:block;text-transform:uppercase;letter-spacing:.1em;color:rgba(250,246,236,.35);font-size:.66rem;margin-bottom:2px}
+
+/* ═══ KONTAKT mit Werkstatt-Adresse + Gewerbeschein-Box ═══ */
+.kontakt{padding:var(--sectionY) 0;background:var(--bg);position:relative;z-index:1}
+.kontakt-head{margin-bottom:48px;text-align:center}
+.kontakt-head .eyebrow{font-family:var(--fontHand);font-size:1.4rem;color:var(--accent);display:inline-block;margin-bottom:6px;transform:rotate(-1deg)}
+.kontakt-head h2{font-family:var(--fontHeading);font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:700;color:var(--primary);letter-spacing:-.005em;line-height:1.15}
+.kontakt-head h2 em{font-style:italic;color:var(--accent)}
+.kontakt-grid{display:grid;gap:32px}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1.2fr 1fr 1fr;gap:32px;align-items:start}}
+
+.kontakt-card{
+  background:var(--white);border:1px solid var(--sep);
+  padding:28px 28px 32px;position:relative;
+}
+.kontakt-card h3{font-family:var(--fontHeading);font-size:1.2rem;font-weight:700;color:var(--primary);margin-bottom:18px;letter-spacing:-.005em;display:flex;align-items:baseline;gap:12px}
+.kontakt-card h3 em{font-style:italic;color:var(--accent);font-weight:400;font-size:.9em}
+.kontakt-card-tag{font-family:var(--fontHand);font-size:1.1rem;color:var(--accent-warm);position:absolute;top:-8px;right:18px;background:var(--bg);padding:0 10px;transform:rotate(-2deg)}
+.kontakt-row{font-family:'Inter',sans-serif;padding:12px 0;border-top:1px dashed var(--sep)}
+.kontakt-row:first-of-type{border-top:none;padding-top:0}
+.kontakt-row dt{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--textMuted);margin-bottom:4px}
+.kontakt-row dd{font-size:.96rem;color:var(--text);line-height:1.55}
+.kontakt-tel{font-family:var(--fontHeading);font-style:italic;font-weight:700;font-size:1.4rem;color:var(--accent);letter-spacing:-.005em;display:inline-block;margin:2px 0}
+.kontakt-tel:hover{color:var(--accent-warm)}
+
+.zeiten{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-family:'Inter',sans-serif;font-size:.92rem;margin-top:6px}
+.zeiten dt{color:var(--textMuted);font-weight:500}
+.zeiten dd{color:var(--text)}
+.zeiten .geschlossen{color:var(--accent);font-style:italic;font-family:var(--fontHeading)}
+.zeiten-note{margin-top:12px;font-family:var(--fontHand);font-size:1.05rem;color:var(--accent-warm);line-height:1.4}
+
+/* Gewerbeschein-Box (typisch österreichisch) */
+.gewerbe{
+  background:var(--white);border:1px solid var(--sep);
+  padding:24px 28px;position:relative;
+}
+.gewerbe::before{
+  content:'';position:absolute;top:-1px;left:-1px;width:48px;height:48px;
+  background:linear-gradient(135deg,var(--accent-warm) 0%,var(--accent-warm) 50%,transparent 50%);
+}
+.gewerbe-tag{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-warm-deep);margin-bottom:14px;display:block;position:relative;z-index:1}
+.gewerbe h4{font-family:var(--fontHeading);font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:14px;letter-spacing:-.005em}
+.gewerbe-row{padding:10px 0;border-top:1px dashed var(--sep);display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
+.gewerbe-row:first-of-type{border-top:1px dashed var(--sep)}
+.gewerbe-row dt{font-family:'Inter',sans-serif;font-size:.74rem;color:var(--textMuted);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.gewerbe-row dd{font-family:var(--mono);font-size:.86rem;color:var(--text);font-feature-settings:'tnum';letter-spacing:.01em}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--primary-deep);color:rgba(250,246,236,.6);padding:64px 0 32px;position:relative;z-index:1}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.footer-brand .nav-brand-mark{background:rgba(201,144,74,.16);border-color:rgba(201,144,74,.3);box-shadow:none}
+.footer-brand .nav-brand-mark::before{display:none}
+footer p{font-family:'Inter',sans-serif;font-size:.86rem;line-height:1.75;max-width:320px;color:rgba(250,246,236,.45)}
+.footer-col h4{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:#fff;margin-bottom:18px}
+.footer-col ul{display:grid;gap:10px}
+.footer-col a{font-family:'Inter',sans-serif;font-size:.88rem;color:rgba(250,246,236,.55);transition:color .2s}
+.footer-col a:hover{color:var(--accent-warm)}
+.footer-bot{border-top:1px solid rgba(250,246,236,.08);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-feature-settings:'tnum';font-size:.76rem;color:rgba(250,246,236,.35)}
+
+@media(max-width:920px){
+  .nav-links{display:none}
+  .hero-sigel{width:220px;height:220px}
+  .hero-sigel-num{font-size:2.8rem}
+  .gen-strip{flex-direction:column;gap:18px}
+  .gen-mark + .gen-mark{padding-left:0;border-left:none;border-top:1px solid rgba(255,235,200,.12);padding-top:18px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .werke-row{grid-template-columns:1fr!important;gap:8px}
+  .werke-preis{text-align:left}
+  .gen-team-member{grid-template-columns:1fr!important}
+  .material-inner{flex-direction:column;align-items:flex-start;gap:14px}
+  .material-list{flex-direction:column;width:100%;gap:14px}
+  .material-holz{border-left:none;padding-left:0;border-top:1px solid var(--sep);padding-top:14px}
+  .material-holz:first-child{border-top:none;padding-top:0}
+}
+@media(max-width:600px){
+  .hero{min-height:auto}
+  .hero-grid{padding:120px 24px 60px}
+  .hero h1{font-size:2.2rem}
+  .hero-btns{flex-direction:column}
+  .hero-btns .btn{width:100%}
+  .footer-grid{grid-template-columns:1fr}
+}
+
+.fade-up{opacity:0;transform:translateY(16px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.fade-up.visible{opacity:1;transform:none}
+.hero-eyebrow,.hero h1,.hero-desc,.hero-btns,.gen-strip,.hero-sigel{opacity:0;transform:translateY(14px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+body.hero-play .hero-eyebrow{opacity:1;transform:rotate(-1.5deg) translateY(0);transition-delay:0ms}
+body.hero-play .hero h1{opacity:1;transform:none;transition-delay:120ms}
+body.hero-play .hero-desc{opacity:1;transform:none;transition-delay:280ms}
+body.hero-play .hero-btns{opacity:1;transform:none;transition-delay:380ms}
+body.hero-play .gen-strip{opacity:1;transform:none;transition-delay:480ms}
+body.hero-play .hero-sigel{opacity:1;transform:none;transition-delay:240ms}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.fade-up,.hero-eyebrow,.hero h1,.hero-desc,.hero-btns,.gen-strip,.hero-sigel{opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+
+<div class="recipe-label"><span class="dot"></span>Recipe · Handwerk-Werkstatt-Rustikal</div>
+
+<nav id="sitenav">
+  <div class="w nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-brand-mark">St</div>
+      <div>
+        <div class="nav-brand-name"><em>Steiner</em> &amp; Söhne</div>
+        <div class="nav-brand-sub">Tischlerei · Wien-Hütteldorf · seit 1972</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#werke">Werkstücke</a></li>
+      <li><a href="#vornach">Sanierung</a></li>
+      <li><a href="#story">Werkstatt</a></li>
+      <li><a href="#team">3 Generationen</a></li>
+      <li><a href="#kontakt">Termin</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO — Vater-Sohn-Story-Layout mit großem Sigel -->
+<header class="hero">
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="hero-eyebrow">— Tischlerei aus Wien-Hütteldorf, seit drei Generationen.</div>
+      <h1>Möbel,<br>die <em>Hand und Holz</em><br>noch kennen.</h1>
+      <p class="hero-desc">Maßmöbel, Sanierung historischer Stücke, Restaurierung von Großmutters Vertiko. Kleine Werkstatt im 14. Bezirk — keine Auftragsfertigung in Übersee, kein MDF mit Folie. Nur Massivholz, geleimt, gedübelt, gebürstet.</p>
+      <div class="hero-btns">
+        <a href="#kontakt" class="btn btn-accent">Termin in der Werkstatt</a>
+        <a href="#werke" class="btn btn-ghost">Werkstücke ansehen</a>
+      </div>
+      <!-- Generations-Strip statt Trust-Bar -->
+      <div class="gen-strip">
+        <div class="gen-mark">
+          <div class="gen-year">1972</div>
+          <div class="gen-name">Franz Steiner</div>
+          <div class="gen-role">Gründer · Meister</div>
+        </div>
+        <div class="gen-mark">
+          <div class="gen-year">1998</div>
+          <div class="gen-name">Hans Steiner</div>
+          <div class="gen-role">Übernahme · 2. Generation</div>
+        </div>
+        <div class="gen-mark">
+          <div class="gen-year">2019</div>
+          <div class="gen-name">Lukas Steiner</div>
+          <div class="gen-role">heute · 3. Generation</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-sigel" aria-hidden="true">
+      <div class="hero-sigel-outer"></div>
+      <div class="hero-sigel-inner"></div>
+      <svg class="hero-sigel-curve" viewBox="0 0 200 200">
+        <defs><path id="topcurve" d="M 30,100 A 70,70 0 0,1 170,100" /></defs>
+        <text fill="currentColor"><textPath href="#topcurve" startOffset="50%" text-anchor="middle">· Innung Holz · Wien · Meisterbetrieb ·</textPath></text>
+      </svg>
+      <div class="hero-sigel-deco"></div>
+      <div class="hero-sigel-content">
+        <div class="hero-sigel-top">Anno</div>
+        <div class="hero-sigel-num">1972</div>
+        <div class="hero-sigel-mid">Steiner</div>
+        <div class="hero-sigel-bot">3 Generationen</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MATERIAL-STRIP — 5 Holzarten als Strip (branchen-spezifisch) -->
+<section class="material" aria-label="Holzarten">
+  <div class="w material-inner">
+    <div class="material-label">Wir arbeiten mit</div>
+    <div class="material-list">
+      <div class="material-holz">
+        <div class="material-name">Eiche</div>
+        <div class="material-meta">hart · langlebig · 720 kg/m³</div>
+        <div class="material-origin">— aus dem Mühlviertel</div>
+      </div>
+      <div class="material-holz">
+        <div class="material-name">Lärche</div>
+        <div class="material-meta">witterungsfest · 600 kg/m³</div>
+        <div class="material-origin">— aus Tirol</div>
+      </div>
+      <div class="material-holz">
+        <div class="material-name">Kirsche</div>
+        <div class="material-meta">edel · dunkelt nach · 580 kg/m³</div>
+        <div class="material-origin">— Wienerwald</div>
+      </div>
+      <div class="material-holz">
+        <div class="material-name">Nuss</div>
+        <div class="material-meta">tiefdunkel · feinporig · 670 kg/m³</div>
+        <div class="material-origin">— Steiermark</div>
+      </div>
+      <div class="material-holz">
+        <div class="material-name">Fichte</div>
+        <div class="material-meta">leicht · für Innenausbau · 470 kg/m³</div>
+        <div class="material-origin">— Niederösterreich</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WERKSTÜCKE — branchen-spezifische Tabellen-Sektion -->
+<section class="werke" id="werke">
+  <div class="w">
+    <div class="werke-head fade-up">
+      <div class="werke-head-text">
+        <span class="werke-eyebrow">— was wir bauen.</span>
+        <h2>Sechs Werkstücke<br>aus dem letzten <em>Quartal</em>.</h2>
+        <p class="werke-intro">Eine Auswahl aus der laufenden Produktion. Preise sind Richtwerte — endgültig nach Aufmaß und Holzauswahl in der Werkstatt.</p>
+      </div>
+    </div>
+    <div class="werke-list">
+      <div class="werke-row">
+        <div class="werke-num">N° 01</div>
+        <div class="werke-name">
+          <h3><em>Vertiko</em> · Eiche, geräuchert</h3>
+          <p class="werke-desc">Tischlermäßige Restaurierung eines Erbstücks aus 1924. Ergänzte Schubladenführungen, neue Rückwand, geräucherte Eiche zur Anpassung des Farbtons.</p>
+        </div>
+        <div class="werke-mass">
+          <span>Maß</span>
+          1.180 × 480 × 1.640 mm<br>
+          <span style="margin-top:6px;display:block">Holz</span>
+          Eiche · geräuchert
+        </div>
+        <div class="werke-preis">€ 4.800<small>Restaurierung</small></div>
+      </div>
+
+      <div class="werke-row">
+        <div class="werke-num">N° 02</div>
+        <div class="werke-name">
+          <h3>Esstisch <em>auf Maß</em></h3>
+          <p class="werke-desc">Massivholz-Esstisch für 8 Personen, Auszugsmechanik bis 12. Geseifte Eiche, geölte Oberfläche, Gestell aus Schwarzstahl.</p>
+        </div>
+        <div class="werke-mass">
+          <span>Maß</span>
+          2.200 × 980 × 760 mm<br>
+          <span style="margin-top:6px;display:block">Auszug</span>
+          + 800 mm
+        </div>
+        <div class="werke-preis">€ 6.400<small>fertig montiert</small></div>
+      </div>
+
+      <div class="werke-row">
+        <div class="werke-num">N° 03</div>
+        <div class="werke-name">
+          <h3>Bibliothek · 4 Wände <em>raumhoch</em></h3>
+          <p class="werke-desc">Maßeinbau in einem Gründerzeit-Salon, 1080 Wien. 18 Regalmeter, 6 verglaste Felder, integrierte Schreibtischnische. Echtes Eichenfurnier auf Multiplex.</p>
+        </div>
+        <div class="werke-mass">
+          <span>Lauflänge</span>
+          18 lfm<br>
+          <span style="margin-top:6px;display:block">Höhe</span>
+          3.140 mm
+        </div>
+        <div class="werke-preis">€ 22.500<small>komplett</small></div>
+      </div>
+
+      <div class="werke-row">
+        <div class="werke-num">N° 04</div>
+        <div class="werke-name">
+          <h3>Küche <em>aus einem Guss</em></h3>
+          <p class="werke-desc">L-förmige Küche in einem Reihenhaus, Hütteldorf. Fronten massiv Lärche, Arbeitsplatte 4 cm Eiche geölt, Spülmodul Edelstahl handgeschliffen.</p>
+        </div>
+        <div class="werke-mass">
+          <span>Lauflänge</span>
+          4.200 + 2.800 mm<br>
+          <span style="margin-top:6px;display:block">Mit Geräten</span>
+          Miele
+        </div>
+        <div class="werke-preis">€ 28.000<small>Korpus + Front</small></div>
+      </div>
+
+      <div class="werke-row">
+        <div class="werke-num">N° 05</div>
+        <div class="werke-name">
+          <h3>Reparatur · Großmutters <em>Sekretär</em></h3>
+          <p class="werke-desc">Gelöste Verzapfung im Aufsatz, drei abgebrochene Schmuckleisten neu gefertigt, komplette Politur (Schellack, dünn aufgezogen). Acht Wochen geduldige Arbeit.</p>
+        </div>
+        <div class="werke-mass">
+          <span>Anno</span>
+          1888<br>
+          <span style="margin-top:6px;display:block">Holz</span>
+          Mahagoni · Birkenmaser
+        </div>
+        <div class="werke-preis">€ 3.200<small>komplett</small></div>
+      </div>
+
+      <div class="werke-row">
+        <div class="werke-num">N° 06</div>
+        <div class="werke-name">
+          <h3>Bett · klassisch <em>steckbar</em></h3>
+          <p class="werke-desc">Steckverbindung ohne sichtbare Schrauben. Kopfteil mit Lattenrost-Auflage, Seitenteile zerlegbar für Umzug. Lieblingsstück.</p>
+        </div>
+        <div class="werke-mass">
+          <span>Maß</span>
+          200 × 200 cm<br>
+          <span style="margin-top:6px;display:block">Holz</span>
+          Wildkirsche
+        </div>
+        <div class="werke-preis">€ 3.900<small>fertig</small></div>
+      </div>
+    </div>
+    <div class="werke-note">
+      Ein Erstbesuch in der Werkstatt ist der schnellste Weg. Bringen Sie ein Foto, ein Maß, eine Idee mit — wir reden eine Stunde drüber, der Kaffee ist vom Sutterlüty.
+    </div>
+  </div>
+</section>
+
+<!-- VORHER-NACHHER — branchen-spezifische zentrale Sektion -->
+<section class="vornach" id="vornach">
+  <div class="w">
+    <div class="vornach-head fade-up">
+      <span class="vornach-eyebrow">— vorher / nachher.</span>
+      <h2>Drei Stücke,<br>die wir <em>nicht aufgegeben</em> haben.</h2>
+    </div>
+    <div class="vornach-grid">
+      <article class="vornach-card fade-up">
+        <div class="vornach-imgs">
+          <div class="vornach-img vorher holz-bg"></div>
+          <div class="vornach-img nachher holz-bg" style="background:linear-gradient(135deg,#a8753a 0%,#5e3a1c 100%)"></div>
+          <div class="vornach-divider" aria-hidden="true"></div>
+          <span class="vornach-label vorher">Vorher</span>
+          <span class="vornach-label nachher">Nachher</span>
+        </div>
+        <div class="vornach-meta">
+          <span class="vornach-meta-name"><em>Bauernschrank</em>, 1872</span>
+          <span class="vornach-meta-year">8 Monate</span>
+        </div>
+        <p class="vornach-meta-text">Wurmbefall ausgeräumt, fehlende Türfüllung neu gestemmt, Eisenbeschläge geschmiedet beim Schmied im 16. Bezirk.</p>
+      </article>
+
+      <article class="vornach-card fade-up">
+        <div class="vornach-imgs">
+          <div class="vornach-img vorher" style="background:linear-gradient(135deg,#8a7560 0%,#4a3826 100%)"></div>
+          <div class="vornach-img nachher" style="background:linear-gradient(135deg,#d4a875 0%,#7a5230 100%)"></div>
+          <div class="vornach-divider" aria-hidden="true"></div>
+          <span class="vornach-label vorher">Vorher</span>
+          <span class="vornach-label nachher">Nachher</span>
+        </div>
+        <div class="vornach-meta">
+          <span class="vornach-meta-name">Wiener <em>Stockerl</em>, ca. 1910</span>
+          <span class="vornach-meta-year">3 Wochen</span>
+        </div>
+        <p class="vornach-meta-text">Verzapfung gelockert, Sitzfläche eingerissen. Verleimt mit Knochenleim, Politur in vier Schichten Schellack.</p>
+      </article>
+
+      <article class="vornach-card fade-up">
+        <div class="vornach-imgs">
+          <div class="vornach-img vorher" style="background:linear-gradient(135deg,#998878 0%,#5a4a3e 100%)"></div>
+          <div class="vornach-img nachher" style="background:linear-gradient(135deg,#c89e75 0%,#6e4a2c 100%)"></div>
+          <div class="vornach-divider" aria-hidden="true"></div>
+          <span class="vornach-label vorher">Vorher</span>
+          <span class="vornach-label nachher">Nachher</span>
+        </div>
+        <div class="vornach-meta">
+          <span class="vornach-meta-name">Klavier-Hocker · <em>Bösendorfer</em></span>
+          <span class="vornach-meta-year">5 Wochen</span>
+        </div>
+        <p class="vornach-meta-text">Höhenverstellung defekt, Bezug rissig. Mechanik aus Originalteilen rekonstruiert, Bezug neu in Walknappa.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- STORY — Vater-Sohn-Geschichte mit Pull-Quote -->
+<section class="story" id="story">
+  <div class="w">
+    <div class="story-grid">
+      <div class="story-img holz-bg fade-up" style="background:linear-gradient(135deg,#b39576 0%,#5e3a1c 100%)" aria-label="Hans und Lukas Steiner in der Werkstatt"></div>
+      <div class="story-text fade-up">
+        <span class="story-text-eyebrow">— über uns.</span>
+        <h2>Drei <em>Generationen</em>,<br>eine Werkstatt.</h2>
+        <p>Mein Großvater Franz hat 1972 die Werkstatt im 14. Bezirk aufgemacht — damals noch in der Linzer Straße, im Hinterhof. Mein Vater Hans hat 1998 übernommen, und seit 2019 stehe ich am Hobel.</p>
+        <p>Wir sind drei Tischler, ein Lehrling, eine Bürokraft. Kleinste Auftrags­größe: ein einzelnes Werkstück. Größte Bauzeit: zwei Jahre für eine ganze Bibliothek.</p>
+        <div class="story-quote">
+          „Wir reparieren auch Stücke, die wirtschaftlich keinen Sinn machen. Aber das Vertiko der Großmutter ist nicht wirtschaftlich — es ist <strong style="font-style:normal;color:var(--accent)">die Großmutter</strong>."
+          <div class="story-quote-attr">— Hans Steiner, an einem Mittwochnachmittag</div>
+        </div>
+        <p>Werkstatt-Termine bekommen Sie beim Anruf — fünf Minuten bevor der Kaffee kalt wird, sind wir meistens dran.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 GENERATIONEN — Liste statt Card-Grid -->
+<section class="gen-team" id="team">
+  <div class="w">
+    <div class="gen-team-head">
+      <span class="eyebrow">— wer hier arbeitet.</span>
+      <h2>Drei <em>Steiners</em>,<br>einundfünfzig <em>gemeinsame Jahre</em>.</h2>
+      <p>Vom Lehrling bis zum Pensionisten — alle drei Generationen sind heute noch beteiligt. Franz schaut zweimal die Woche rein, gibt Rat und korrigiert Lehrlingsarbeiten.</p>
+    </div>
+    <div class="gen-team-list">
+      <article class="gen-team-member fade-up">
+        <div class="gen-team-year">III.</div>
+        <div class="gen-team-info">
+          <h3>Lukas <em>Steiner</em></h3>
+          <div class="gen-team-role">Tischlermeister · Geschäftsführer · seit 2019</div>
+          <p class="gen-team-bio">Lehre bei Sebastian Häupl in Salzburg, Meisterprüfung 2018, Werkstatt-Übernahme im Sommer 2019. Schwerpunkt Restaurierung historischer Möbel und Maß-Einbauten.</p>
+        </div>
+        <div class="gen-team-meta">
+          <span>Geboren</span>1991<br>
+          <span style="margin-top:6px;display:block">Lehre</span>2010<br>
+          <span style="margin-top:6px;display:block">Meister</span>2018
+        </div>
+      </article>
+      <article class="gen-team-member fade-up">
+        <div class="gen-team-year">II.</div>
+        <div class="gen-team-info">
+          <h3>Hans <em>Steiner</em></h3>
+          <div class="gen-team-role">Senior · 2. Generation · seit 1998</div>
+          <p class="gen-team-bio">Übernahm die Werkstatt von seinem Vater Franz im Jahr 1998. Heute halbtags in der Werkstatt — Schwerpunkt Sanierung und Beratung. Spezialist für Wiener Möbel der Gründerzeit.</p>
+        </div>
+        <div class="gen-team-meta">
+          <span>Geboren</span>1962<br>
+          <span style="margin-top:6px;display:block">Übernahme</span>1998<br>
+          <span style="margin-top:6px;display:block">Wechsel</span>2019
+        </div>
+      </article>
+      <article class="gen-team-member fade-up">
+        <div class="gen-team-year">I.</div>
+        <div class="gen-team-info">
+          <h3>Franz <em>Steiner</em></h3>
+          <div class="gen-team-role">Gründer · 1. Generation · 1972–1998</div>
+          <p class="gen-team-bio">Gründete die Werkstatt 1972 im 14. Wiener Gemeindebezirk. Heute Pensionist, aber zweimal die Woche in der Werkstatt — als „beratendes Auge" und Lehrlings­korrektor.</p>
+        </div>
+        <div class="gen-team-meta">
+          <span>Geboren</span>1942<br>
+          <span style="margin-top:6px;display:block">Gründung</span>1972<br>
+          <span style="margin-top:6px;display:block">Pension</span>2008
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT mit Werkstatt + Gewerbeschein -->
+<section class="kontakt" id="kontakt">
+  <div class="w">
+    <div class="kontakt-head">
+      <span class="eyebrow">— so kommen Sie zu uns.</span>
+      <h2>Werkstatt-Termin<br><em>vereinbaren</em>.</h2>
+    </div>
+    <div class="kontakt-grid">
+      <div class="kontakt-card">
+        <span class="kontakt-card-tag">— immer erreichbar</span>
+        <h3>Werkstatt &amp; <em>Telefon</em></h3>
+        <div class="kontakt-row">
+          <dt>Adresse</dt>
+          <dd>Hadikgasse 144<br>1140 Wien · Hütteldorf<br><small style="color:var(--textMuted);font-family:'Inter';font-size:.84rem">U4 Hütteldorf · 5 Min. zu Fuß</small></dd>
+        </div>
+        <div class="kontakt-row">
+          <dt>Telefon</dt>
+          <dd><a href="tel:+431914223380" class="kontakt-tel">+43 1 914 22 33 80</a></dd>
+        </div>
+        <div class="kontakt-row">
+          <dt>E-Mail</dt>
+          <dd><a href="mailto:werkstatt@steiner-tischlerei.at" style="color:var(--text);font-weight:500;border-bottom:1px solid var(--accent-warm)">werkstatt@steiner-tischlerei.at</a></dd>
+        </div>
+      </div>
+
+      <div class="kontakt-card">
+        <h3>Werkstatt-<em>zeiten</em></h3>
+        <dl class="zeiten">
+          <dt>Montag</dt><dd>8:00 — 17:00</dd>
+          <dt>Dienstag</dt><dd>8:00 — 17:00</dd>
+          <dt>Mittwoch</dt><dd>8:00 — 17:00</dd>
+          <dt>Donnerstag</dt><dd>8:00 — 17:00</dd>
+          <dt>Freitag</dt><dd>8:00 — 14:00</dd>
+          <dt>Samstag</dt><dd class="geschlossen">geschlossen</dd>
+          <dt>Sonntag</dt><dd class="geschlossen">geschlossen</dd>
+        </dl>
+        <p class="zeiten-note">Termine außerhalb der Werkstatt­zeiten — wenn Sie nicht aus Wien kommen — gerne nach Anruf.</p>
+      </div>
+
+      <!-- Gewerbeschein-Box (typisch österreichisch) -->
+      <div class="gewerbe">
+        <span class="gewerbe-tag">Gewerbeschein</span>
+        <h4>Eingetragener <em style="font-style:italic;color:var(--accent);font-weight:400">Meisterbetrieb</em></h4>
+        <dl>
+          <div class="gewerbe-row"><dt>Firmenbuch</dt><dd>FN 89234 d</dd></div>
+          <div class="gewerbe-row"><dt>UID</dt><dd>ATU 4523 6710</dd></div>
+          <div class="gewerbe-row"><dt>Gewerbe</dt><dd>Tischler 87.51</dd></div>
+          <div class="gewerbe-row"><dt>Innung</dt><dd>Holz · Wien</dd></div>
+          <div class="gewerbe-row"><dt>Gegründet</dt><dd>03 / 1972</dd></div>
+          <div class="gewerbe-row"><dt>Mitarbeiter</dt><dd>4 + 1 Lehrling</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="w">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="nav-brand-mark">St</div>
+          <div>
+            <div class="nav-brand-name"><em>Steiner</em> &amp; Söhne</div>
+            <div class="nav-brand-sub">Tischlerei · 1140 Wien · seit 1972</div>
+          </div>
+        </div>
+        <p>Maßmöbel, Sanierung historischer Möbel und Restaurierungen — drei Generationen Tischlerei in Hütteldorf. Mitglied der Wiener Holz-Innung.</p>
+      </div>
+      <div class="footer-col"><h4>Werkstücke</h4><ul><li><a href="#">Maßmöbel</a></li><li><a href="#">Restaurierung</a></li><li><a href="#">Bibliotheken</a></li><li><a href="#">Küchen</a></li><li><a href="#">Kleinmöbel</a></li></ul></div>
+      <div class="footer-col"><h4>Werkstatt</h4><ul><li><a href="#">3 Generationen</a></li><li><a href="#">Vater &amp; Sohn</a></li><li><a href="#">Lehrlings­ausbildung</a></li><li><a href="#">Material-Liste</a></li></ul></div>
+      <div class="footer-col"><h4>Information</h4><ul><li><a href="#">Anreise</a></li><li><a href="#">Impressum</a></li><li><a href="#">Datenschutz</a></li><li><a href="#">AGB</a></li></ul></div>
+    </div>
+    <div class="footer-bot">
+      <div>© 2026 Tischlerei Steiner GmbH · FN 89234 d · HG Wien · Innung Holz Wien</div>
+      <div>Hadikgasse 144 · 1140 Wien</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('hero-play')));
+  const nav = document.getElementById('sitenav');
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {nav.classList.toggle('scrolled', window.scrollY > 60); scrollTicking = false;});
+      scrollTicking = true;
+    }
+  }, {passive:true});
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {if (e.isIntersecting) {e.target.classList.add('visible'); io.unobserve(e.target);}});
+    }, {rootMargin:'0px 0px -10% 0px',threshold:.1});
+    document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+  }
+</script>
+</body>
+</html>

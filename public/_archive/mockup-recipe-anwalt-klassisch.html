@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe: Anwalt-Klassisch — Müller &amp; Partner Rechtsanwälte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   RECIPE: Anwalt-Klassisch
+   Theme: Klassisch (Merriweather, Navy)
+   Sektion-Reihenfolge: Hero → Rechtsgebiete → Über+Team → Honorar → Stimmen (Quote) → FAQ → Kontakt+Notfall → CTA → Footer
+   Branchen-spezifisch: Rechtsgebiete-Kompakt-Grid, Honorar-Sektion, Notfall-Box, Quote-Variante bei Stimmen
+   ═══════════════════════════════════════════════════════ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+a,button,input,select,textarea{touch-action:manipulation}
+
+:root{
+  --primary:#0f2b5b;
+  --primary-deep:#081a3a;
+  --accent:#2563eb;
+  --bg:#f8fafc;
+  --bg-alt:#eef2f7;
+  --sep:#dbe2ed;
+  --text:#1e293b;
+  --textMuted:#475569;
+  --white:#fffffe;
+  --r:4px;
+  --rLg:6px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --fontHeading:'Merriweather',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --maxW:1100px;
+  --sectionY:80px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
+body{font-family:var(--font);color:var(--text);line-height:1.7;font-size:1rem;background:var(--white);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;max-width:100vw;position:relative}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(circle at 1px 1px,rgba(15,43,91,.04) 1px,transparent 0);background-size:32px 32px}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+h1,h2,h3,h4,.s-h2{font-family:var(--fontHeading)}
+h1 em,h2 em,h3 em{font-style:italic;color:var(--accent)}
+.w{max-width:var(--maxW);margin:0 auto;padding:0 28px;position:relative;z-index:1}
+@media(min-width:900px){.w{padding:0 32px}}
+
+/* ═══ RECIPE-LABEL ═══ */
+.recipe-label{
+  position:fixed;top:14px;left:14px;z-index:200;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(14px);
+  border:1px solid rgba(0,0,0,.08);border-radius:100px;
+  padding:9px 18px;font-size:11.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.14em;color:#475569;
+  font-family:'Inter',sans-serif;
+  box-shadow:0 12px 32px rgba(0,0,0,.14);
+  display:inline-flex;align-items:center;gap:10px;
+}
+.recipe-label .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* ═══ SECTION HEADERS ═══ */
+.s-label,.leist-label,.sec-label{display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.s-h2,.leist h2,.kontakt h2,.faq-head h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--primary);letter-spacing:-.03em;margin-bottom:12px;line-height:1.2}
+.s-intro{color:var(--textMuted);font-size:.95rem;max-width:540px;line-height:1.7}
+
+/* ═══ NAV ═══ */
+#sitenav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 0;transition:background .35s var(--ease),backdrop-filter .35s,box-shadow .35s,padding .35s}
+#sitenav.scrolled{background:color-mix(in srgb,var(--primary-deep) 90%,transparent);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 22px rgba(0,0,0,.2);padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-brand{display:flex;align-items:center;gap:14px;color:#fff}
+.nav-brand-mark{width:42px;height:42px;border-radius:var(--rLg);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;font-family:var(--fontHeading)}
+.nav-brand-name{font-weight:700;font-size:15.5px;color:#fff;letter-spacing:-.012em;line-height:1.1}
+.nav-brand-sub{font-size:11px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.06em;margin-top:2px;font-family:'Inter',sans-serif}
+.nav-links{display:flex;gap:30px}
+.nav-links a{color:rgba(255,255,255,.78);font-size:14px;font-weight:500;transition:color .2s;padding:6px 0}
+.nav-links a:hover{color:#fff}
+
+/* ═══ HERO — text-led, Trust-fokussiert ═══ */
+.hero{background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 65%,#000) 60%,color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);color:#fff;display:flex;align-items:center;position:relative;min-height:88vh;min-height:88svh;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-120px;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 65%);pointer-events:none}
+.hero::after{content:'';position:absolute;top:80px;right:180px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.04);pointer-events:none}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 60px}
+.hero-sub{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border:1px solid rgba(255,255,255,.2);border-radius:100px;background:rgba(255,255,255,.09);font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.92);margin-bottom:22px}
+.hero h1{font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:20px;max-width:680px;color:#fff}
+.hero-desc{font-family:'Inter',sans-serif;font-size:.98rem;color:rgba(255,255,255,.66);max-width:520px;margin-bottom:34px;line-height:1.78}
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px}
+.hero-trust-bar{position:relative;z-index:2;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;gap:12px 28px}
+.t-item{display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.85);white-space:nowrap}
+.t-icon{width:28px;height:28px;border-radius:var(--r);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t-icon svg{width:14px;height:14px;color:rgba(255,255,255,.7)}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 30px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;border-radius:var(--r);transition:all .2s var(--ease);letter-spacing:.01em;cursor:pointer;position:relative}
+.btn::after{content:"→";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s,transform .28s,margin-left .28s}
+.btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-ghost{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1.5px solid rgba(255,255,255,.2);backdrop-filter:blur(6px)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.14)}
+
+/* ═══ RECHTSGEBIETE — 3×2 Kompakt-Grid (Section-Variant: kompakt) ═══ */
+.gebiete{padding:var(--sectionY) 0;background:var(--bg)}
+.gebiete-head{margin-bottom:48px;max-width:680px}
+.gebiete-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--sep);border-radius:var(--rLg);overflow:hidden;background:var(--white)}
+.gebiet{
+  padding:30px 28px;
+  border-right:1px solid var(--sep);border-bottom:1px solid var(--sep);
+  transition:background .25s var(--ease);position:relative;
+}
+.gebiet:nth-child(3n){border-right:none}
+.gebiet:nth-last-child(-n+3){border-bottom:none}
+.gebiet:hover{background:var(--bg-alt)}
+.gebiet-num{font-family:var(--mono);font-feature-settings:'tnum';font-size:.74rem;font-weight:600;color:var(--accent);margin-bottom:14px;letter-spacing:.06em}
+.gebiet h3{font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:8px;letter-spacing:-.012em}
+.gebiet p{font-size:.86rem;color:var(--textMuted);line-height:1.65}
+.gebiet-link{margin-top:16px;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;display:inline-flex;align-items:center;gap:6px;transition:gap .25s var(--ease)}
+.gebiet-link::after{content:'→';font-size:.85rem}
+.gebiet:hover .gebiet-link{gap:10px}
+@media(max-width:768px){.gebiete-grid{grid-template-columns:1fr}.gebiet{border-right:none}.gebiet:nth-child(3n){border-right:none}.gebiet:nth-last-child(-n+3){border-bottom:1px solid var(--sep)}.gebiet:last-child{border-bottom:none}}
+
+/* ═══ ÜBER + TEAM (innerhalb) ═══ */
+.ueber{padding:var(--sectionY) 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+.ueber::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 65%);opacity:.08;bottom:-200px;left:-200px;filter:blur(80px);pointer-events:none}
+.ueber-grid{display:grid;gap:40px;position:relative;z-index:1}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}}
+.ueber h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;letter-spacing:-.03em;margin-bottom:18px;color:#fff;font-family:var(--fontHeading);line-height:1.2}
+.ueber-text{font-size:.95rem;line-height:1.85;opacity:.82;margin-bottom:22px;font-family:'Inter',sans-serif}
+.ueber-vorteile{display:flex;flex-direction:column;gap:12px}
+.ueber-vorteile li{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:500;opacity:.88;padding-left:20px;position:relative}
+.ueber-vorteile li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--accent);border-radius:1px;opacity:.85}
+
+.team-block{margin-top:56px;padding-top:40px;border-top:1px solid rgba(255,255,255,.1);position:relative;z-index:1}
+.team-block-head{margin-bottom:32px}
+.team-block-head h3{font-family:var(--fontHeading);font-size:1.05rem;font-weight:600;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.team-member{text-align:left}
+.team-avatar{width:100%;aspect-ratio:1;border-radius:var(--rLg);margin-bottom:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 28%,var(--primary)) 0%,color-mix(in srgb,var(--primary-deep) 80%,#000) 100%);display:flex;align-items:flex-end;padding:18px;font-family:var(--fontHeading);font-size:1.8rem;font-weight:700;color:rgba(255,255,255,.5);position:relative;overflow:hidden}
+.team-avatar::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(0deg,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:24px 24px}
+.team-name{font-family:var(--fontHeading);font-size:1rem;font-weight:700;color:#fff;margin-bottom:2px}
+.team-role{font-family:'Inter',sans-serif;font-size:.82rem;color:rgba(255,255,255,.55);margin-bottom:6px}
+.team-meta{font-family:var(--mono);font-size:.7rem;color:rgba(255,255,255,.45);font-feature-settings:'tnum'}
+@media(max-width:768px){.team-grid{grid-template-columns:1fr}}
+
+/* ═══ HONORAR-TRANSPARENZ — branchen-spezifische Sektion ═══ */
+.honorar{padding:var(--sectionY) 0;background:var(--white)}
+.honorar-head{margin-bottom:40px;max-width:680px}
+.honorar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.honorar-card{
+  background:var(--bg);border:1px solid var(--sep);border-radius:var(--rLg);
+  padding:32px 28px;position:relative;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+}
+.honorar-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(15,43,91,.06)}
+.honorar-card.featured{background:var(--primary);color:#fff;border-color:var(--primary)}
+.honorar-card.featured h3,.honorar-card.featured .honorar-amount{color:#fff}
+.honorar-card.featured .honorar-tag{color:rgba(255,255,255,.55)}
+.honorar-card.featured ul li{color:rgba(255,255,255,.85)}
+.honorar-card.featured ul li::before{background:rgba(255,255,255,.45)}
+.honorar-tag{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.honorar-card h3{font-size:1.2rem;font-weight:700;color:var(--primary);margin-bottom:6px;letter-spacing:-.012em}
+.honorar-amount{font-family:var(--mono);font-feature-settings:'tnum';font-size:1.6rem;font-weight:600;color:var(--primary);margin:14px 0;letter-spacing:-.01em}
+.honorar-amount small{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:500;color:var(--textMuted);text-transform:uppercase;letter-spacing:.1em;display:block;margin-top:2px}
+.honorar-card.featured .honorar-amount small{color:rgba(255,255,255,.5)}
+.honorar-card ul{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.honorar-card ul li{font-family:'Inter',sans-serif;font-size:.86rem;color:var(--text);padding-left:18px;position:relative;line-height:1.55}
+.honorar-card ul li::before{content:'';position:absolute;left:0;top:9px;width:8px;height:1px;background:var(--accent)}
+@media(max-width:768px){.honorar-grid{grid-template-columns:1fr;gap:14px}}
+
+/* ═══ STIMMEN — Quote-Variante (1 großes Zitat) ═══ */
+.stimmen{padding:var(--sectionY) 0;background:var(--bg)}
+.stimmen-head{margin-bottom:48px;max-width:680px}
+.stimmen-quote{
+  max-width:840px;
+  padding:0 0 0 32px;
+  border-left:3px solid var(--accent);
+  position:relative;
+}
+.stimmen-quote-mark{font-family:var(--fontHeading);font-size:5rem;line-height:.6;color:var(--accent);opacity:.32;font-style:italic;position:absolute;top:-10px;left:32px}
+.stimmen-quote-text{
+  font-family:var(--fontHeading);
+  font-size:clamp(1.3rem,2.4vw,1.8rem);
+  line-height:1.45;color:var(--text);font-weight:400;
+  font-style:italic;letter-spacing:-.005em;
+  padding-top:36px;
+}
+.stimmen-quote-text em{font-style:normal;color:var(--accent);font-weight:700}
+.stimmen-quote-author{margin-top:24px;font-family:'Inter',sans-serif;font-size:.86rem}
+.stimmen-quote-name{font-weight:700;color:var(--primary)}
+.stimmen-quote-meta{color:var(--textMuted);margin-top:2px}
+.stimmen-rating{margin-top:32px;display:flex;align-items:center;gap:14px;padding-top:24px;border-top:1px solid var(--sep)}
+.stimmen-rating-num{font-family:var(--mono);font-feature-settings:'tnum';font-size:1.4rem;font-weight:700;color:var(--primary)}
+.stimmen-rating-stars{color:var(--accent);font-size:1rem}
+.stimmen-rating-meta{font-size:.82rem;color:var(--textMuted)}
+.stimmen-link{margin-left:auto;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--accent);border-bottom:1px solid currentColor;padding-bottom:2px}
+
+/* ═══ FAQ ═══ */
+.faq{padding:var(--sectionY) 0;background:var(--white)}
+.faq-layout{display:grid;gap:40px}
+@media(min-width:900px){.faq-layout{grid-template-columns:280px 1fr;gap:64px}}
+.faq-list{display:flex;flex-direction:column}
+.faq-item{border-bottom:1px solid var(--sep)}
+.faq-item:first-child{border-top:1px solid var(--sep)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;width:100%;padding:20px 0;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--primary);text-align:left;gap:16px;transition:color .2s;cursor:pointer}
+.faq-q:hover{color:var(--accent)}
+.faq-toggle{width:28px;height:28px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s,background .3s;font-size:.85rem;color:var(--textMuted)}
+.faq-item[open] .faq-toggle{transform:rotate(45deg);background:var(--accent);color:#fff}
+.faq-a{padding-bottom:20px;font-size:.88rem;color:var(--textMuted);line-height:1.7}
+
+/* ═══ KONTAKT mit NOTFALL-BOX (branchen-spezifisch) ═══ */
+.kontakt{padding:var(--sectionY) 0;background:var(--bg)}
+.kontakt-head{margin-bottom:40px;max-width:680px}
+.kontakt-grid{display:grid;gap:40px}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1.2fr;align-items:start}}
+.kontakt-info{display:grid;gap:0}
+.kontakt-row{display:grid;grid-template-columns:120px 1fr;gap:20px;padding:18px 0;border-bottom:1px solid var(--sep);align-items:center}
+.kontakt-row:first-child{border-top:1px solid var(--sep)}
+.kontakt-row dt{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--textMuted)}
+.kontakt-row dd{font-size:.95rem;color:var(--text);line-height:1.5}
+.kontakt-tel{font-family:var(--fontHeading);font-size:1.3rem;font-weight:800;color:var(--primary);letter-spacing:-.01em;display:inline-block;margin:2px 0}
+.kontakt-tel:hover{color:var(--accent)}
+
+/* Notfall-Box — branchen-spezifisch */
+.notfall{margin-top:24px;padding:24px;background:#7f1d1d;color:#fff;border-radius:var(--rLg);position:relative;overflow:hidden}
+.notfall::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06)}
+.notfall-tag{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:8px;display:inline-flex;align-items:center;gap:8px}
+.notfall-tag::before{content:'';width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 0 4px rgba(239,68,68,.3);animation:notfall-pulse 2.4s ease infinite}
+@keyframes notfall-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.notfall h4{font-family:var(--fontHeading);font-size:1.05rem;font-weight:700;margin-bottom:6px;color:#fff}
+.notfall p{font-family:'Inter',sans-serif;font-size:.86rem;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:14px;position:relative;z-index:1}
+.notfall-tel{font-family:var(--fontHeading);font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.005em;display:inline-block}
+.notfall-tel small{font-family:'Inter',sans-serif;font-size:.74rem;font-weight:500;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.1em;display:block;margin-top:2px}
+
+/* Form */
+.kontakt-form{background:var(--white);border:1px solid var(--sep);border-radius:var(--rLg);padding:32px}
+.kontakt-form h3{font-family:var(--fontHeading);font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:20px;letter-spacing:-.012em}
+.k-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.k-field{margin-bottom:12px}
+.k-field label{display:block;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--textMuted);margin-bottom:6px}
+.k-field input,.k-field textarea{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.9rem;background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;min-height:44px}
+.k-field input:focus,.k-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.k-field textarea{resize:vertical;min-height:100px}
+.k-submit{background:var(--accent);color:#fff;border:none;padding:13px 32px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;min-height:48px;transition:opacity .2s}
+.k-submit:hover{opacity:.85}
+.k-note{margin-top:12px;font-family:'Inter',sans-serif;font-size:.74rem;color:var(--textMuted);line-height:1.5}
+@media(max-width:640px){.k-row{grid-template-columns:1fr}}
+
+/* ═══ CTA-BLOCK ═══ */
+.cta-block{padding:80px 0;background:var(--primary);color:#fff;text-align:center;position:relative;overflow:hidden}
+.cta-block h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;margin-bottom:10px;color:#fff;font-family:var(--fontHeading)}
+.cta-block h2 em{color:color-mix(in srgb,var(--accent) 40%,#fff);font-style:italic}
+.cta-block p{font-family:'Inter',sans-serif;font-size:.95rem;color:rgba(255,255,255,.62);margin-bottom:28px;max-width:540px;margin-left:auto;margin-right:auto}
+.cta-block .btn-accent{background:#fff;color:var(--primary)}
+.cta-block .btn-accent:hover{opacity:.9}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--primary-deep);color:rgba(255,255,255,.62);padding:64px 0 28px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px}
+.footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.footer-brand .nav-brand-mark{background:rgba(255,255,255,.08);border:none}
+footer p{font-family:'Inter',sans-serif;font-size:.86rem;line-height:1.65;max-width:340px;color:rgba(255,255,255,.5)}
+.footer-col h4{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#fff;margin-bottom:18px}
+.footer-col ul{display:grid;gap:10px}
+.footer-col a{font-family:'Inter',sans-serif;font-size:.88rem;color:rgba(255,255,255,.6);transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-feature-settings:'tnum';font-size:.78rem;color:rgba(255,255,255,.4)}
+@media(max-width:920px){.nav-links{display:none}.footer-grid{grid-template-columns:1fr 1fr;gap:32px}}
+@media(max-width:600px){.hero{min-height:78svh}.hero-inner{padding:90px 24px 48px}.hero h1{font-size:2.1rem}.hero-btns{flex-direction:column}.hero-btns .btn{width:100%}.hero-trust-bar{flex-direction:column;align-items:flex-start;gap:10px}.footer-grid{grid-template-columns:1fr}}
+
+/* ═══ ANIMATIONS ═══ */
+.fade-up{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.fade-up.visible{opacity:1;transform:none}
+.hero-sub,.hero h1,.hero-desc,.hero-btns,.hero-trust-bar{opacity:0;transform:translateY(14px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+body.hero-play .hero-sub{opacity:1;transform:none;transition-delay:0ms}
+body.hero-play .hero h1{opacity:1;transform:none;transition-delay:110ms}
+body.hero-play .hero-desc{opacity:1;transform:none;transition-delay:240ms}
+body.hero-play .hero-btns{opacity:1;transform:none;transition-delay:340ms}
+body.hero-play .hero-trust-bar{opacity:1;transform:none;transition-delay:440ms}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.fade-up{opacity:1!important;transform:none!important}.hero-sub,.hero h1,.hero-desc,.hero-btns,.hero-trust-bar{opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+
+<div class="recipe-label"><span class="dot"></span>Recipe · Anwalt-Klassisch</div>
+
+<nav id="sitenav">
+  <div class="w nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-brand-mark">M&amp;P</div>
+      <div>
+        <div class="nav-brand-name">Müller &amp; Partner</div>
+        <div class="nav-brand-sub">Rechtsanwälte · Wien</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#rechtsgebiete">Rechtsgebiete</a></li>
+      <li><a href="#kanzlei">Kanzlei</a></li>
+      <li><a href="#honorar">Honorar</a></li>
+      <li><a href="#stimmen">Mandanten</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="hero-sub">Kanzlei seit 2004 · 1010 Wien</p>
+    <h1>Rechtsberatung<br>auf <em>Augenhöhe</em>.<br>Präzise. Verlässlich.</h1>
+    <p class="hero-desc">Wir vertreten Unternehmen und Privatpersonen in Wirtschafts-, Arbeits- und Familienrecht. Sechs Anwälte, ein klarer Anspruch: jeder Fall braucht eine eigene Strategie — keine Standardlösung.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn btn-accent">Erstgespräch vereinbaren</a>
+      <a href="#rechtsgebiete" class="btn btn-ghost">Rechtsgebiete</a>
+    </div>
+    <div class="hero-trust-bar">
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></span>Rechtsanwaltskammer Wien</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6l-8-4Z"/></svg></span>ÖRAK</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/></svg></span>WKÖ Fachverband</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Seit 2004</div>
+    </div>
+  </div>
+</header>
+
+<!-- RECHTSGEBIETE — branchen-spezifisches Layout: Kompakt-Grid 3×2 mit Hairline-Borders -->
+<section class="gebiete" id="rechtsgebiete">
+  <div class="w">
+    <div class="gebiete-head fade-up">
+      <span class="s-label">Rechtsgebiete</span>
+      <h2 class="s-h2">Fünf Schwerpunkte. <em>Tiefe</em> statt Breite.</h2>
+      <p class="s-intro">Wir beraten dort, wo wir langjährige Erfahrung und ein eingespieltes Team haben. Liegt Ihr Anliegen außerhalb unserer Schwerpunkte, vermitteln wir transparent.</p>
+    </div>
+    <div class="gebiete-grid">
+      <article class="gebiet">
+        <div class="gebiet-num">01</div>
+        <h3>Wirtschaftsrecht</h3>
+        <p>Gesellschaftsrecht, Vertragsgestaltung, M&amp;A bei KMU, Compliance-Beratung. Begleitung von Gründung bis Übergabe.</p>
+        <span class="gebiet-link">Mehr erfahren</span>
+      </article>
+      <article class="gebiet">
+        <div class="gebiet-num">02</div>
+        <h3>Arbeitsrecht</h3>
+        <p>Arbeitsverträge, Kündigungen, Betriebsvereinbarungen. Vertretung sowohl auf Arbeitgeber- als auch Arbeitnehmerseite.</p>
+        <span class="gebiet-link">Mehr erfahren</span>
+      </article>
+      <article class="gebiet">
+        <div class="gebiet-num">03</div>
+        <h3>Familienrecht</h3>
+        <p>Scheidung, Obsorge, Unterhalt, Eheverträge. Fokus auf einvernehmliche Lösungen — wenn nötig vor Gericht.</p>
+        <span class="gebiet-link">Mehr erfahren</span>
+      </article>
+      <article class="gebiet">
+        <div class="gebiet-num">04</div>
+        <h3>Strafverteidigung</h3>
+        <p>Wirtschaftsstrafrecht, Verkehrsstrafrecht, allgemeine Strafverteidigung. 24-Stunden-Erreichbarkeit bei Festnahme.</p>
+        <span class="gebiet-link">Mehr erfahren</span>
+      </article>
+      <article class="gebiet">
+        <div class="gebiet-num">05</div>
+        <h3>Mediation</h3>
+        <p>Eingetragene Mediatorinnen begleiten Konflikte zwischen Gesellschaftern, Erben oder Nachbarn — bevor sie vor Gericht landen.</p>
+        <span class="gebiet-link">Mehr erfahren</span>
+      </article>
+      <article class="gebiet">
+        <div class="gebiet-num">06</div>
+        <h3>Erstberatung</h3>
+        <p>30-minütiges Gespräch zur Einschätzung Ihres Falls — kostenlos und unverbindlich. Persönlich oder per Video-Call.</p>
+        <span class="gebiet-link">Termin buchen</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ÜBER + Team innerhalb -->
+<section class="ueber" id="kanzlei">
+  <div class="w">
+    <div class="ueber-grid">
+      <div class="fade-up">
+        <span class="s-label" style="color:rgba(255,255,255,.6)">Über die Kanzlei</span>
+        <h2>21 Jahre <em>Wiener Innenstadt</em>.</h2>
+        <p class="ueber-text">Müller &amp; Partner wurde 2004 von Dr. Maximilian Müller gegründet. Aus der Einzelkanzlei am Schottenring sind sechs Anwälte und vier Sekretariatskräfte geworden — die Adresse blieb.</p>
+        <p class="ueber-text">Wir arbeiten ausschließlich auf Honorarbasis nach AHK oder pauschal — keine Erfolgshonorare. Unsere Zielgruppe sind Unternehmer, Familienbetriebe und Privatpersonen.</p>
+      </div>
+      <div class="fade-up">
+        <ul class="ueber-vorteile">
+          <li>Erstgespräch immer kostenlos &amp; unverbindlich</li>
+          <li>Honorartransparenz — schriftliche Schätzung vor Mandatierung</li>
+          <li>Mandatsverantwortlich ist immer ein Partner</li>
+          <li>Verschwiegenheit nach §9 RAO selbstverständlich</li>
+          <li>Notfall-Erreichbarkeit 24/7 bei Festnahme</li>
+          <li>Mitglied bei RAK Wien + ÖRAK</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="team-block">
+      <div class="team-block-head fade-up">
+        <h3>Das Anwalts-Team</h3>
+      </div>
+      <div class="team-grid">
+        <article class="team-member fade-up">
+          <div class="team-avatar">MM</div>
+          <div class="team-name">Dr. Maximilian Müller</div>
+          <div class="team-role">Gründungspartner · Wirtschaftsrecht</div>
+          <div class="team-meta">Seit 2004 · DE · EN</div>
+        </article>
+        <article class="team-member fade-up">
+          <div class="team-avatar">SL</div>
+          <div class="team-name">Mag. Sophie Lehner</div>
+          <div class="team-role">Partnerin · Familien- &amp; Arbeitsrecht</div>
+          <div class="team-meta">Seit 2011 · DE · EN · FR</div>
+        </article>
+        <article class="team-member fade-up">
+          <div class="team-avatar">AR</div>
+          <div class="team-name">Mag. Alexander Reiter</div>
+          <div class="team-role">Rechtsanwalt · Strafverteidigung</div>
+          <div class="team-meta">Seit 2017 · DE · EN</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HONORAR-TRANSPARENZ — branchen-spezifische Sektion -->
+<section class="honorar" id="honorar">
+  <div class="w">
+    <div class="honorar-head fade-up">
+      <span class="s-label">Honorar</span>
+      <h2 class="s-h2">Drei Modelle. <em>Transparent</em>.</h2>
+      <p class="s-intro">Schriftliche Kostenschätzung vor Mandatsannahme. Keine Erfolgshonorare. Sie wissen vorher, was auf Sie zukommt.</p>
+    </div>
+    <div class="honorar-grid">
+      <article class="honorar-card">
+        <div class="honorar-tag">01 · Stundenhonorar</div>
+        <h3>AHK-Tarif</h3>
+        <div class="honorar-amount">€ 280<small>/ Stunde</small></div>
+        <ul>
+          <li>Nach österreichischer Anwaltshonorar­konvention</li>
+          <li>Detailgenaue Zeitabrechnung</li>
+          <li>Monatliche Zwischenabrechnung</li>
+          <li>Standard für komplexe Mandate</li>
+        </ul>
+      </article>
+      <article class="honorar-card featured">
+        <div class="honorar-tag">02 · meistgewählt</div>
+        <h3>Pauschalhonorar</h3>
+        <div class="honorar-amount">ab € 1.800<small>/ Mandat</small></div>
+        <ul>
+          <li>Festpreis vor Mandatsannahme</li>
+          <li>Kein Stundenzählen</li>
+          <li>Ideal bei klar abgrenzbaren Anliegen</li>
+          <li>Schriftlich vor Beginn fixiert</li>
+        </ul>
+      </article>
+      <article class="honorar-card">
+        <div class="honorar-tag">03 · Erstberatung</div>
+        <h3>Kostenlos</h3>
+        <div class="honorar-amount">€ 0<small>/ 30 Min</small></div>
+        <ul>
+          <li>Persönlich oder Video-Call</li>
+          <li>Erste Einschätzung Ihres Falls</li>
+          <li>Empfehlung über das richtige Honorarmodell</li>
+          <li>Unverbindlich, keine Verpflichtung</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- STIMMEN — Quote-Variante (1 großes Zitat statt 3 Cards) -->
+<section class="stimmen" id="stimmen">
+  <div class="w">
+    <div class="stimmen-head fade-up">
+      <span class="s-label">Mandanten</span>
+      <h2 class="s-h2">Was unsere Mandanten <em>sagen</em>.</h2>
+    </div>
+    <div class="stimmen-quote fade-up">
+      <span class="stimmen-quote-mark">„</span>
+      <p class="stimmen-quote-text">Müller &amp; Partner hat unsere GmbH-Übergabe an die zweite Generation begleitet. <em>Strukturiert, kein Kanzlei-Latein</em>, immer mit Blick auf das Familiengefüge dahinter. Das ist selten geworden — und für uns Gold wert."</p>
+      <div class="stimmen-quote-author">
+        <div class="stimmen-quote-name">Karin H.</div>
+        <div class="stimmen-quote-meta">Geschäftsführerin · Maschinenbau-KMU, Niederösterreich</div>
+      </div>
+      <div class="stimmen-rating">
+        <span class="stimmen-rating-num">4.9</span>
+        <span class="stimmen-rating-stars">★★★★★</span>
+        <span class="stimmen-rating-meta">aus 47 Mandanten-Bewertungen</span>
+        <a href="#" class="stimmen-link">Alle Bewertungen lesen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="w faq-layout">
+    <div class="faq-head fade-up">
+      <span class="s-label">FAQ</span>
+      <h2 class="s-h2">Vor dem Erstgespräch</h2>
+      <p>Wenn Ihre Frage nicht dabei ist: Im 30-Min-Gespräch nehmen wir uns dafür Zeit.</p>
+    </div>
+    <div class="faq-list fade-up">
+      <details class="faq-item" open>
+        <summary class="faq-q">Was kostet das Erstgespräch?<span class="faq-toggle">+</span></summary>
+        <div class="faq-a">Das 30-minütige Erstgespräch ist kostenlos und unverbindlich. Wir hören zu, schätzen die Erfolgsaussichten ein und sagen Ihnen ehrlich, ob wir die richtige Kanzlei sind.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Erhalte ich vorab eine Kostenschätzung?<span class="faq-toggle">+</span></summary>
+        <div class="faq-a">Ja. Vor Mandatsannahme erhalten Sie eine schriftliche Honorarvereinbarung mit klarem Rahmen — Pauschalbetrag oder Stundensatz nach AHK. Keine Überraschungen.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Bieten Sie Erfolgshonorare an?<span class="faq-toggle">+</span></summary>
+        <div class="faq-a">Nein. Wir arbeiten ausschließlich nach AHK-Tarif oder als Pauschalhonorar. Erfolgshonorare sind in Österreich nur eingeschränkt zulässig und stehen unserem Verständnis von Beratung entgegen.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Wie schnell bekomme ich einen Termin?<span class="faq-toggle">+</span></summary>
+        <div class="faq-a">Erstgespräche meist innerhalb von 3 Werktagen. Bei dringenden Fällen (Festnahme, Hausdurchsuchung, Frist) sind wir 24/7 erreichbar — siehe Notfall-Nummer im Kontakt.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Können wir per Video-Call sprechen?<span class="faq-toggle">+</span></summary>
+        <div class="faq-a">Ja. Für Erstgespräche und laufende Mandate bieten wir Video-Calls über sichere Kanäle (Microsoft Teams, Wire). Ortsunabhängig — auch international.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT mit NOTFALL-BOX -->
+<section class="kontakt" id="kontakt">
+  <div class="w">
+    <div class="kontakt-head fade-up">
+      <span class="s-label">Kontakt</span>
+      <h2 class="s-h2">Termin <em>vereinbaren</em>.</h2>
+      <p class="s-intro">Persönlich in der Kanzlei am Schottenring oder per Video-Call. Antwort innerhalb von 24 Stunden.</p>
+    </div>
+    <div class="kontakt-grid">
+      <div class="fade-up">
+        <dl class="kontakt-info">
+          <div class="kontakt-row"><dt>Adresse</dt><dd>Schottenring 16<br>1010 Wien</dd></div>
+          <div class="kontakt-row"><dt>Telefon</dt><dd><a href="tel:+4315352400" class="kontakt-tel">+43 1 535 24 00</a></dd></div>
+          <div class="kontakt-row"><dt>E-Mail</dt><dd><a href="mailto:kanzlei@mueller-partner.at" style="color:var(--primary);font-weight:600">kanzlei@mueller-partner.at</a></dd></div>
+          <div class="kontakt-row"><dt>Sprechzeiten</dt><dd>Mo–Fr · 8:30–18:00<br>Termine außerhalb nach Vereinbarung</dd></div>
+        </dl>
+
+        <!-- NOTFALL-BOX — branchen-spezifisch -->
+        <div class="notfall">
+          <div class="notfall-tag">24/7 Notfall-Hotline</div>
+          <h4>Festnahme · Hausdurchsuchung · Sicherstellung</h4>
+          <p>Bei akuten strafrechtlichen Notfällen oder behördlichen Zwangsmaßnahmen erreichen Sie uns rund um die Uhr.</p>
+          <a href="tel:+436605352400" class="notfall-tel">+43 660 535 24 00<small>Anwalt persönlich</small></a>
+        </div>
+      </div>
+      <form class="kontakt-form fade-up" onsubmit="event.preventDefault();this.querySelector('.k-submit').textContent='Wird gesendet…'">
+        <h3>Anfrage senden</h3>
+        <div class="k-row">
+          <div class="k-field"><label>Vorname *</label><input type="text" required></div>
+          <div class="k-field"><label>Nachname *</label><input type="text" required></div>
+        </div>
+        <div class="k-field"><label>E-Mail *</label><input type="email" required></div>
+        <div class="k-field"><label>Rechtsgebiet</label><input type="text" placeholder="z. B. Arbeitsrecht — Kündigung"></div>
+        <div class="k-field"><label>Anliegen *</label><textarea required placeholder="Bitte schildern Sie kurz Ihren Fall — keine vertraulichen Details"></textarea></div>
+        <button type="submit" class="k-submit">Anfrage senden</button>
+        <p class="k-note">Mit dem Absenden bestätigen Sie, unsere <a href="#" style="text-decoration:underline">Datenschutzerklärung</a> gelesen zu haben. Anwaltliche Verschwiegenheit nach §9 RAO gilt ab Mandatsannahme.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="cta-block">
+  <div class="w">
+    <h2>Sie haben ein <em>rechtliches Anliegen</em>?</h2>
+    <p>Erstgespräch immer kostenlos. Wir sagen ehrlich, ob wir die richtige Kanzlei sind.</p>
+    <a href="#kontakt" class="btn btn-accent">Termin vereinbaren</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="w">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="nav-brand-mark">M&amp;P</div>
+          <div>
+            <div class="nav-brand-name">Müller &amp; Partner</div>
+            <div class="nav-brand-sub">Rechtsanwälte · Wien</div>
+          </div>
+        </div>
+        <p>Kanzlei für Wirtschafts-, Arbeits-, Familienrecht und Strafverteidigung. Eingetragen bei der Rechtsanwaltskammer Wien.</p>
+      </div>
+      <div class="footer-col"><h4>Rechtsgebiete</h4><ul><li><a href="#">Wirtschaftsrecht</a></li><li><a href="#">Arbeitsrecht</a></li><li><a href="#">Familienrecht</a></li><li><a href="#">Strafverteidigung</a></li><li><a href="#">Mediation</a></li></ul></div>
+      <div class="footer-col"><h4>Kanzlei</h4><ul><li><a href="#">Über uns</a></li><li><a href="#">Anwälte</a></li><li><a href="#">Karriere</a></li><li><a href="#">Aktuelles</a></li></ul></div>
+      <div class="footer-col"><h4>Rechtliches</h4><ul><li><a href="#">Impressum</a></li><li><a href="#">Datenschutz</a></li><li><a href="#">AGB</a></li><li><a href="#">Honorarordnung</a></li></ul></div>
+    </div>
+    <div class="footer-bot">
+      <div>© 2026 Müller &amp; Partner Rechtsanwälte GmbH · FN 234567 g · HG Wien</div>
+      <div>RAK Wien · ÖRAK</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('hero-play')));
+  const nav = document.getElementById('sitenav');
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {nav.classList.toggle('scrolled', window.scrollY > 60); scrollTicking = false;});
+      scrollTicking = true;
+    }
+  }, {passive:true});
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {if (e.isIntersecting) {e.target.classList.add('visible'); io.unobserve(e.target);}});
+    }, {rootMargin:'0px 0px -10% 0px',threshold:.1});
+    document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+  }
+</script>
+</body>
+</html>

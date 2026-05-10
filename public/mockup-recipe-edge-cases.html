@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recipe Edge-Cases — Tourismus + Agrar Sub-Varianten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Merriweather:wght@400;700&family=Cormorant+Garamond:wght@300;400;500;600&family=Unna:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #F5F5F2;
+  --surface: #FFFFFF;
+  --ink: #1a1a1a;
+  --ink-soft: #555;
+  --ink-mute: #888;
+  --border: #E6E4DE;
+  --border-soft: #EFEDE7;
+
+  /* Theme-Akzentfarben */
+  --c-petrol: #5b9bb3;
+  --c-oldgold: #a08456;
+  --c-anthrazit: #665338;
+  --c-burgund: #7a3528;
+}
+body {
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  padding:32px 24px 64px;
+  min-height:100vh;
+  line-height:1.45;
+}
+
+/* Page-Head */
+.page-head { max-width:1400px; margin:0 auto 36px; }
+.crumb {
+  font-size:.75rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-mute); margin-bottom:8px;
+}
+.page-head h1 {
+  font-size:2.1rem; font-weight:800; letter-spacing:-.02em;
+  margin-bottom:10px;
+}
+.page-head p {
+  font-size:1rem; color:var(--ink-soft); max-width:780px;
+}
+.page-head .meta {
+  font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--ink-mute);
+  margin-top:14px;
+}
+
+/* Grid */
+.grid {
+  max-width:1400px; margin:0 auto;
+  display:grid; grid-template-columns:1fr 1fr; gap:24px;
+}
+@media (max-width:980px) { .grid { grid-template-columns:1fr; } }
+
+/* Card */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+}
+
+/* Card Header */
+.card-head {
+  padding:22px 26px 18px;
+  border-bottom:1px solid var(--border-soft);
+  position:relative;
+}
+.card-head::before {
+  content:""; position:absolute; left:0; top:0; bottom:0;
+  width:5px; background:var(--accent);
+}
+.recipe-num {
+  display:inline-block; font-family:'JetBrains Mono',monospace;
+  font-size:.72rem; color:var(--ink-mute); margin-bottom:4px;
+}
+.recipe-name {
+  font-size:1.32rem; font-weight:700; letter-spacing:-.01em;
+  margin-bottom:4px;
+}
+.recipe-look {
+  font-family:'JetBrains Mono',monospace; font-size:.78rem;
+  color:var(--accent); font-weight:500;
+}
+
+/* Theme-Bar (Mini-Hero) */
+.theme-bar {
+  padding:18px 26px;
+  background:var(--accent);
+  color:#fff;
+  font-family:var(--theme-font, 'DM Sans');
+}
+.theme-bar .tag {
+  font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
+  opacity:.85; margin-bottom:4px; font-family:'DM Sans',sans-serif;
+  font-weight:500;
+}
+.theme-bar .demo-h1 {
+  font-size:1.5rem; font-weight:var(--theme-h-weight, 700);
+  letter-spacing:var(--theme-h-spacing, -.01em); line-height:1.2;
+}
+.theme-bar.bar-stadt { --theme-font:'Merriweather','DM Sans',serif; --theme-h-weight:700; }
+.theme-bar.bar-berg { --theme-font:'Unna',serif; --theme-h-weight:700; }
+.theme-bar.bar-wein { --theme-font:'Cormorant Garamond',serif; --theme-h-weight:500; --theme-h-spacing:.005em; }
+.theme-bar.bar-biohof { --theme-font:'Unna',serif; --theme-h-weight:700; }
+.theme-bar.bar-wein .demo-h1 { font-size:1.7rem; }
+
+/* Body */
+.card-body { padding:18px 26px 22px; }
+.card-section + .card-section { margin-top:18px; }
+.section-label {
+  font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
+  font-weight:600; color:var(--ink-mute); margin-bottom:8px;
+}
+
+/* Theme-Tokens */
+.tokens {
+  display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+}
+.token {
+  display:flex; align-items:center; gap:8px;
+  font-size:.85rem; color:var(--ink-soft);
+}
+.swatch {
+  width:18px; height:18px; border-radius:4px; border:1px solid rgba(0,0,0,.08);
+  background:var(--accent);
+}
+.token .mono { font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--ink); }
+
+/* Trigger-Tags */
+.tags { display:flex; gap:6px; flex-wrap:wrap; }
+.tag-chip {
+  display:inline-block; padding:3px 10px; font-size:.78rem;
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:999px; color:var(--ink);
+}
+
+/* Section-Reihenfolge */
+.steps { display:flex; flex-direction:column; gap:6px; }
+.step {
+  display:flex; gap:10px; align-items:baseline;
+  font-size:.92rem; color:var(--ink);
+}
+.step .n {
+  font-family:'JetBrains Mono',monospace; font-size:.78rem;
+  color:var(--ink-mute); min-width:22px;
+}
+.step.diff { color:var(--accent); font-weight:500; }
+.step.diff::after {
+  content:"abweichend"; font-family:'DM Sans',sans-serif;
+  font-size:.66rem; letter-spacing:.06em; text-transform:uppercase;
+  background:var(--accent); color:#fff;
+  padding:2px 7px; border-radius:3px; margin-left:auto;
+  font-weight:600;
+}
+
+/* Diff-Note */
+.diff-note {
+  font-size:.86rem; color:var(--ink-soft);
+  background:var(--bg); padding:12px 14px; border-radius:8px;
+  border-left:3px solid var(--accent);
+}
+.diff-note strong { color:var(--ink); font-weight:600; }
+
+/* Cards mit Akzent */
+.card-stadt { --accent:var(--c-petrol); }
+.card-berg { --accent:var(--c-oldgold); }
+.card-wein { --accent:var(--c-anthrazit); }
+.card-biohof { --accent:var(--c-burgund); }
+
+/* Footer */
+.foot {
+  max-width:1400px; margin:32px auto 0; padding-top:20px;
+  border-top:1px solid var(--border);
+  font-size:.82rem; color:var(--ink-mute);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+.foot a { color:var(--ink-soft); text-decoration:none; border-bottom:1px solid var(--border); }
+.foot a:hover { color:var(--ink); }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <div class="crumb">Block E · Recipe-System Visual</div>
+  <h1>Recipe Edge-Cases — Tourismus + Agrar</h1>
+  <p>2 von 24 Recipes (Recipe 14 + 20) sind 2-in-1: Theme + Akzentfarbe wechseln je nach Sub-Branche. Auto-Engine entscheidet anhand <code style="font-family:'JetBrains Mono',monospace;font-size:.85em">o.bezeichnung</code> + ggf. PLZ-Hinweisen. User kann im Portal überschreiben (serve-time, kein Re-Gen).</p>
+  <div class="meta">Quelle: docs/_design/recipe-konfiguration.md · Stand 2026-05-10</div>
+</header>
+
+<div class="grid">
+
+  <!-- Recipe 14a -->
+  <article class="card card-stadt">
+    <header class="card-head">
+      <div class="recipe-num">RECIPE 14a</div>
+      <div class="recipe-name">Tourismus — Stadt-Hotel</div>
+      <div class="recipe-look">look_variante: tourismus-stadt</div>
+    </header>
+    <div class="theme-bar bar-stadt">
+      <div class="tag">Theme · Klassisch · Merriweather</div>
+      <div class="demo-h1">Hotel im Herzen der Stadt</div>
+    </div>
+    <div class="card-body">
+
+      <div class="card-section">
+        <div class="section-label">Theme-Tokens</div>
+        <div class="tokens">
+          <div class="token"><div class="swatch"></div><span class="mono">#5b9bb3</span> Petrol</div>
+          <div class="token">Stil-Klasse: <span class="mono">.stil-klassisch</span></div>
+          <div class="token">Layout: <span class="mono">ausführlich</span></div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Auto-Engine — Bezeichnung enthält</div>
+        <div class="tags">
+          <span class="tag-chip">Hotel</span>
+          <span class="tag-chip">City</span>
+          <span class="tag-chip">Stadthotel</span>
+          <span class="tag-chip">Pension</span>
+          <span class="tag-chip">+ PLZ Wien/Graz/Salzburg/Innsbruck/Linz</span>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Section-Reihenfolge</div>
+        <div class="steps">
+          <div class="step"><span class="n">1</span>Hero (Sterne-Klassifikation, Tourismusverband)</div>
+          <div class="step"><span class="n">2</span>Leistungen-alternierend (Zimmer-Kategorien)</div>
+          <div class="step diff"><span class="n">3</span>Sec-Fakten</div>
+          <div class="step"><span class="n">4</span>Über (Haus-Story + Lage)</div>
+          <div class="step"><span class="n">5</span>Galerie</div>
+          <div class="step"><span class="n">6</span>Bewertungen-quote (Booking-Score)</div>
+          <div class="step"><span class="n">7</span>FAQ</div>
+          <div class="step diff"><span class="n">8</span>Kontakt mit Buchungs-Anfrage</div>
+          <div class="step"><span class="n">9</span>Footer</div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="diff-note">
+          <strong>Abweichungen:</strong> Sec-Fakten früh (vor Über) für Konversions-Trust. Buchungs-Anfrage statt Standard-Form. FAQ Default an. Bewertungen-quote weil Booking-Score starke Single-Source ist.
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Recipe 14b -->
+  <article class="card card-berg">
+    <header class="card-head">
+      <div class="recipe-num">RECIPE 14b</div>
+      <div class="recipe-name">Tourismus — Berghütte</div>
+      <div class="recipe-look">look_variante: tourismus-berg</div>
+    </header>
+    <div class="theme-bar bar-berg">
+      <div class="tag">Theme · Rustikal · Unna</div>
+      <div class="demo-h1">Almhütte am Berg</div>
+    </div>
+    <div class="card-body">
+
+      <div class="card-section">
+        <div class="section-label">Theme-Tokens</div>
+        <div class="tokens">
+          <div class="token"><div class="swatch"></div><span class="mono">#a08456</span> Old-Gold</div>
+          <div class="token">Stil-Klasse: <span class="mono">.stil-rustikal</span></div>
+          <div class="token">Layout: <span class="mono">ausführlich</span></div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Auto-Engine — Bezeichnung enthält</div>
+        <div class="tags">
+          <span class="tag-chip">Hütte</span>
+          <span class="tag-chip">Almhütte</span>
+          <span class="tag-chip">Berghof</span>
+          <span class="tag-chip">Berggasthaus</span>
+          <span class="tag-chip">Schutzhaus</span>
+          <span class="tag-chip">Alm</span>
+          <span class="tag-chip">+ ländliche PLZ</span>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Section-Reihenfolge</div>
+        <div class="steps">
+          <div class="step"><span class="n">1</span>Hero (großes Berg-Foto, Alpenverein-Trust)</div>
+          <div class="step diff"><span class="n">2</span>Über (Hütten-Geschichte, früh)</div>
+          <div class="step"><span class="n">3</span>Leistungen-alternierend (Übernachtung/Speisen/Touren)</div>
+          <div class="step"><span class="n">4</span>Sec-Fakten (Höhenmeter, Schlafplätze, Saison)</div>
+          <div class="step"><span class="n">5</span>Galerie (Hütte + Aussicht + Wege)</div>
+          <div class="step"><span class="n">6</span>Bewertungen-quote</div>
+          <div class="step"><span class="n">7</span>FAQ (Reservierung, Schlafsack, Saison)</div>
+          <div class="step diff"><span class="n">8</span>Kontakt mit Buchungs-Anfrage + Tel prominent</div>
+          <div class="step"><span class="n">9</span>Footer</div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="diff-note">
+          <strong>Abweichungen:</strong> Über vor Leistungen (Hütten-Story trägt das Recipe). Tel im Kontakt prominenter als Form (oft schlechte Web-Verbindung am Berg). Saison-Hinweise in Sec-Fakten Pflicht.
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Recipe 20a -->
+  <article class="card card-wein">
+    <header class="card-head">
+      <div class="recipe-num">RECIPE 20a</div>
+      <div class="recipe-name">Agrar — Wein / Edelbrenner</div>
+      <div class="recipe-look">look_variante: agrar-wein</div>
+    </header>
+    <div class="theme-bar bar-wein">
+      <div class="tag">Theme · Edel · Cormorant Garamond</div>
+      <div class="demo-h1">Weingut seit 1832</div>
+    </div>
+    <div class="card-body">
+
+      <div class="card-section">
+        <div class="section-label">Theme-Tokens</div>
+        <div class="tokens">
+          <div class="token"><div class="swatch"></div><span class="mono">#665338</span> Anthrazit-Gold</div>
+          <div class="token">Stil-Klasse: <span class="mono">.stil-elegant</span></div>
+          <div class="token">Layout: <span class="mono">standard</span></div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Auto-Engine — Bezeichnung enthält</div>
+        <div class="tags">
+          <span class="tag-chip">Weingut</span>
+          <span class="tag-chip">Winzer</span>
+          <span class="tag-chip">Edelbrennerei</span>
+          <span class="tag-chip">Brennerei</span>
+          <span class="tag-chip">Destillerie</span>
+          <span class="tag-chip">Wein</span>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Section-Reihenfolge</div>
+        <div class="steps">
+          <div class="step"><span class="n">1</span>Hero (Magazine-Display, Editorial-Foto, DAC/Falstaff-Trust)</div>
+          <div class="step diff"><span class="n">2</span>Über (Generationen-/Lagen-Story, früh)</div>
+          <div class="step"><span class="n">3</span>Leistungen-alternierend (Sortiment ohne Preise)</div>
+          <div class="step"><span class="n">4</span>Galerie (Lagen + Keller + Verkostungsraum)</div>
+          <div class="step"><span class="n">5</span>Bewertungen-quote (Falstaff/Vinaria-Punktung)</div>
+          <div class="step diff"><span class="n">6</span>Sec-Fakten (nach Bewertungen, ergänzt Auszeichnungen)</div>
+          <div class="step"><span class="n">7</span>FAQ (Verkostung, Versand, Heuriger)</div>
+          <div class="step"><span class="n">8</span>Kontakt-Standard mit Map + Form</div>
+          <div class="step"><span class="n">9</span>Footer</div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="diff-note">
+          <strong>Abweichungen:</strong> Über sehr früh (Editorial-Story trägt Premium). Sec-Fakten spät — nach Bewertungen, weil Auszeichnungen Fakten ergänzen. Kein Termin-CTA-Block (Verkostungs-Anfragen laufen über Kontakt-Form).
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Recipe 20b -->
+  <article class="card card-biohof">
+    <header class="card-head">
+      <div class="recipe-num">RECIPE 20b</div>
+      <div class="recipe-name">Agrar — Bio-Hof Premium</div>
+      <div class="recipe-look">look_variante: agrar-biohof</div>
+    </header>
+    <div class="theme-bar bar-biohof">
+      <div class="tag">Theme · Rustikal · Unna</div>
+      <div class="demo-h1">Bio-Hof Steiermark</div>
+    </div>
+    <div class="card-body">
+
+      <div class="card-section">
+        <div class="section-label">Theme-Tokens</div>
+        <div class="tokens">
+          <div class="token"><div class="swatch"></div><span class="mono">#7a3528</span> Burgund</div>
+          <div class="token">Stil-Klasse: <span class="mono">.stil-rustikal</span></div>
+          <div class="token">Layout: <span class="mono">standard</span></div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Auto-Engine — Bezeichnung enthält</div>
+        <div class="tags">
+          <span class="tag-chip">Bio-Hof</span>
+          <span class="tag-chip">Hofladen</span>
+          <span class="tag-chip">Bauernhof</span>
+          <span class="tag-chip">Biohof</span>
+          <span class="tag-chip">Demeter</span>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">Section-Reihenfolge</div>
+        <div class="steps">
+          <div class="step"><span class="n">1</span>Hero (Foto-Heavy Hof/Tiere, Bio-Austria/Demeter-Trust)</div>
+          <div class="step"><span class="n">2</span>Leistungen-alternierend (Hofladen / SB / Lieferung / Erlebnis)</div>
+          <div class="step"><span class="n">3</span>Über (Familie + Werte + Tier-/Boden-Praxis)</div>
+          <div class="step"><span class="n">4</span>Galerie (Tiere + Felder + Hofladen)</div>
+          <div class="step"><span class="n">5</span>Sec-Fakten (Hektar, Tiere, Bio-Zertifizierung)</div>
+          <div class="step diff"><span class="n">6</span>Bewertungen-cards (statt quote — Community-Vielfalt)</div>
+          <div class="step diff"><span class="n">7</span>Kontakt mit Hofladen-Öffnungszeiten + Form</div>
+          <div class="step"><span class="n">8</span>Footer</div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="diff-note">
+          <strong>Abweichungen:</strong> Bewertungen-cards statt quote (Bio-Hof lebt von Community-Vielfalt mehrerer Stimmen). Hofladen-Öffnungszeiten im Kontakt prominent. Layout = standard (kein FAQ/CTA-Block, weil Hof selbst die Story ist).
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+</div>
+
+<footer class="foot">
+  <div>Mockup-Übersicht für Recipe-Konfiguration · Block E · Phase -1</div>
+  <div><a href="mockup-themes-v2.html">Theme-Switcher v2</a></div>
+</footer>
+
+</body>
+</html>

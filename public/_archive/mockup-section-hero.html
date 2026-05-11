@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero-Section-Spec — 4 Layouts × 3 Themes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Unna:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   HERO-SECTION-SPEC — Section 9 Block E
+   4 Layouts (text-led / split / photo-led / fullbleed)
+   × 3 Themes (Klassisch / Edel / Rustikal)
+   Token-Quelle: docs/_design/themes.md
+   Spec: docs/_design/sections/hero.md
+   ═══════════════════════════════════════════════════════ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --primary:#0f2b5b;
+  --primary-deep:#081a3a;
+  --accent:#2563eb;
+  --accent-soft:#dbe2ed;
+  --bg:#f8fafc;
+  --bg-alt:#eef2f7;
+  --sep:#e2e8f0;
+  --text:#1e293b;
+  --textMuted:#475569;
+  --white:#fff;
+  --r:4px;
+  --rLg:6px;
+  --rBtn:100px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --fontHeading:var(--font);
+  --mono:'JetBrains Mono',monospace;
+  --maxW:1100px;
+  --sectionY:80px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --eyebrow-ls:0.07em;
+  --h1-clamp:clamp(2.8rem,5.5vw,4.6rem);
+}
+
+/* THEME — Klassisch */
+.theme-klassisch{
+  --primary:#0f2b5b;--primary-deep:#081a3a;--accent:#2563eb;
+  --accent-soft:#dbe2ed;
+  --bg:#f8fafc;--bg-alt:#eef2f7;--sep:#dbe2ed;
+  --text:#1e293b;--textMuted:#475569;
+  --fontHeading:'Merriweather',Georgia,serif;
+  --r:4px;--rLg:6px;--rBtn:100px;
+  --eyebrow-ls:0.07em;
+  --h1-clamp:clamp(2.8rem,5.5vw,4.6rem);
+}
+
+/* THEME — Edel */
+.theme-edel{
+  --primary:#1c1714;--primary-deep:#100c0a;
+  --accent:#a87b3f;--accent-soft:#c8a675;
+  --bg:#f6f1e8;--bg-alt:#ede5d6;--sep:#dcd0bc;
+  --text:#2c2620;--textMuted:#6b6058;--white:#fdfbf7;
+  --fontHeading:'Cormorant Garamond',Georgia,serif;
+  --maxW:1080px;--sectionY:100px;--r:0;--rLg:0;--rBtn:0;
+  --eyebrow-ls:0.22em;
+  --h1-clamp:clamp(3.2rem,6.5vw,5.8rem);
+}
+
+/* THEME — Rustikal */
+.theme-rustikal{
+  --primary:#3d2818;--primary-deep:#2a1a0e;
+  --accent:#7a3528;--accent-warm:#c9904a;--accent-soft:#e8d4b8;
+  --bg:#f5f1e8;--bg-alt:#ebe2d0;--sep:#d4c4a4;
+  --text:#2c241a;--textMuted:#6b5d4a;--white:#faf6ec;
+  --fontHeading:'Unna',Georgia,serif;
+  --maxW:1100px;--sectionY:90px;--r:3px;--rLg:5px;--rBtn:3px;
+  --eyebrow-ls:0.16em;
+  --h1-clamp:clamp(2.6rem,5vw,4.2rem);
+}
+
+html{scroll-behavior:smooth;overflow-x:clip}
+body{
+  font-family:var(--font);color:var(--text);
+  line-height:1.7;font-size:1rem;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:clip;max-width:100vw;
+  transition:background .4s var(--ease),color .4s var(--ease);
+}
+.theme-edel body,.theme-edel{line-height:1.85;letter-spacing:-.005em}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a,button{touch-action:manipulation}
+button{font-family:inherit;cursor:pointer;background:none;border:none;color:inherit}
+h1,h2,h3{font-family:var(--fontHeading)}
+
+/* Focus-Visible — global accessibility */
+*:focus{outline:none}
+*:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+  border-radius:3px;
+}
+.toolbar *:focus-visible{
+  outline-color:#fff;outline-offset:2px;
+}
+
+/* ───────────────────────────────────────────────────────
+   TOOLBAR
+   ─────────────────────────────────────────────────────── */
+.toolbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(15,23,42,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:14px 24px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:24px;
+  font-family:'Inter',sans-serif;color:#fff;
+}
+.toolbar-title{
+  font-size:.78rem;font-weight:700;letter-spacing:.04em;
+  color:rgba(255,255,255,.95);text-transform:uppercase;
+}
+.toolbar-title small{
+  display:block;font-size:.68rem;color:rgba(255,255,255,.5);
+  font-weight:400;letter-spacing:.02em;text-transform:none;margin-top:2px;
+}
+.toolbar-group{display:flex;align-items:center;gap:8px}
+.toolbar-label{
+  font-size:.68rem;color:rgba(255,255,255,.55);
+  text-transform:uppercase;letter-spacing:.08em;font-weight:600;
+}
+.toolbar-pills{display:flex;gap:4px;background:rgba(255,255,255,.06);padding:4px;border-radius:100px}
+.toolbar-pill{
+  min-height:36px;
+  padding:9px 16px;border-radius:100px;
+  font-size:.78rem;font-weight:600;color:rgba(255,255,255,.7);
+  cursor:pointer;transition:all .2s ease;border:1px solid transparent;
+  white-space:nowrap;
+  display:inline-flex;align-items:center;
+}
+.toolbar-pill:hover{color:#fff;background:rgba(255,255,255,.06)}
+.toolbar-pill.active{background:#fff;color:#0f172a}
+.toolbar-pill[aria-disabled="true"]{opacity:.32;cursor:not-allowed}
+@media(max-width:880px){
+  .toolbar-pill{min-height:44px;padding:11px 18px;font-size:.82rem}
+}
+.toolbar-spacer{flex:1}
+.toolbar-meta{
+  font-size:.72rem;color:rgba(255,255,255,.55);
+  font-family:var(--mono);letter-spacing:.04em;
+}
+.toolbar-link{
+  font-size:.72rem;color:rgba(255,255,255,.7);
+  text-decoration:underline;text-decoration-color:rgba(255,255,255,.2);
+  text-underline-offset:3px;
+}
+.toolbar-link:hover{color:#fff;text-decoration-color:#fff}
+
+@media(max-width:880px){
+  .toolbar{padding:10px 14px;gap:12px}
+  .toolbar-title small{display:none}
+  .toolbar-meta{display:none}
+}
+
+/* Mobile-Preview-Frame */
+.preview-frame{
+  margin-top:78px;
+  transition:max-width .35s var(--ease),margin .35s var(--ease);
+}
+@media(max-width:880px){
+  .preview-frame{margin-top:148px}
+}
+@media(max-width:560px){
+  .preview-frame{margin-top:208px}
+}
+.preview-frame.mobile{
+  max-width:430px;margin-left:auto;margin-right:auto;
+  border-left:1px dashed rgba(15,23,42,.18);
+  border-right:1px dashed rgba(15,23,42,.18);
+  box-shadow:0 0 0 100vmax rgba(15,23,42,.04);
+  clip-path:inset(0 -100vmax);
+}
+
+/* ───────────────────────────────────────────────────────
+   HERO BASE
+   ─────────────────────────────────────────────────────── */
+.hero{
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+}
+.hero-inner{
+  position:relative;z-index:2;width:100%;
+  max-width:var(--maxW);margin:0 auto;
+  padding:120px 28px 60px;
+}
+
+/* Eyebrow */
+.hero-sub{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 16px;border-radius:100px;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:.72rem;font-weight:700;
+  letter-spacing:var(--eyebrow-ls);
+  text-transform:uppercase;
+  color:rgba(255,255,255,.92);
+  margin-bottom:22px;
+}
+.hero-sub .pin{width:11px;height:11px;flex-shrink:0}
+.hero-sub .sep{opacity:.45;margin:0 4px}
+.hero-sub .loc{
+  text-transform:none;font-weight:600;opacity:.8;letter-spacing:.01em;
+}
+
+/* H1 */
+.hero h1{
+  font-size:var(--h1-clamp);
+  font-weight:800;line-height:1.05;letter-spacing:-.04em;
+  margin-bottom:20px;max-width:780px;color:#fff;
+}
+
+/* Lead */
+.hero-desc{
+  font-size:1rem;color:rgba(255,255,255,.72);
+  max-width:520px;margin-bottom:34px;line-height:1.78;
+}
+
+/* Buttons */
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:var(--rBtn);
+  font-size:.92rem;font-weight:600;letter-spacing:.005em;
+  transition:all .25s var(--ease);
+  min-height:48px;
+}
+.btn-primary{
+  background:var(--accent);color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
+}
+.btn-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(0,0,0,.28);
+  background:color-mix(in srgb,var(--accent) 88%,#000);
+}
+.btn-secondary{
+  background:transparent;color:#fff;
+  border:1px solid rgba(255,255,255,.32);
+}
+.btn-secondary:hover{
+  border-color:rgba(255,255,255,.7);
+  background:rgba(255,255,255,.06);
+}
+
+/* Wenn Hero-BG = Surface (split + fullbleed), invertiere Text */
+.hero.is-surface{background:var(--bg);}
+.hero.is-surface h1{color:var(--text)}
+.hero.is-surface .hero-desc{color:var(--textMuted)}
+.hero.is-surface .hero-sub{
+  background:rgba(15,23,42,.04);
+  border-color:rgba(15,23,42,.1);
+  color:var(--text);
+}
+.hero.is-surface .btn-secondary{
+  color:var(--text);
+  border-color:rgba(15,23,42,.18);
+}
+.hero.is-surface .btn-secondary:hover{
+  border-color:var(--text);
+  background:rgba(15,23,42,.04);
+}
+
+/* ───────────────────────────────────────────────────────
+   LAYOUT A — TEXT-LED (Vollbild-Color)
+   ─────────────────────────────────────────────────────── */
+.hero[data-layout="text-led"]{
+  min-height:90vh;min-height:90svh;
+  background:linear-gradient(150deg,
+    var(--primary) 0%,
+    var(--primary-deep) 60%,
+    color-mix(in srgb,var(--primary) 80%,var(--accent)) 100%);
+  color:#fff;
+}
+/* Klassisch: Concentric-Circles decorative */
+.theme-klassisch .hero[data-layout="text-led"]::before{
+  content:'';position:absolute;top:-120px;right:-120px;
+  width:540px;height:540px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 65%);
+  pointer-events:none;
+}
+.theme-klassisch .hero[data-layout="text-led"]::after{
+  content:'';position:absolute;top:80px;right:180px;
+  width:220px;height:220px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.04);
+  pointer-events:none;
+}
+/* Edel: KEIN Gradient, Surface-Cremepapier (text-led ist sekundaer) */
+.theme-edel .hero[data-layout="text-led"]{
+  background:var(--bg);color:var(--text);
+}
+.theme-edel .hero[data-layout="text-led"] h1{color:var(--text)}
+.theme-edel .hero[data-layout="text-led"] .hero-desc{color:var(--textMuted)}
+.theme-edel .hero[data-layout="text-led"] .hero-sub{
+  background:transparent;border:none;padding:0;
+  color:var(--textMuted);
+}
+.theme-edel .hero[data-layout="text-led"] .hero-sub .pin{display:none}
+.theme-edel .hero[data-layout="text-led"] .btn-secondary{
+  color:var(--text);border-color:rgba(28,23,20,.2);
+}
+/* Rustikal: Burgund-Tief + Noise */
+.theme-rustikal .hero[data-layout="text-led"]{
+  background:var(--primary-deep);
+  position:relative;
+}
+.theme-rustikal .hero[data-layout="text-led"]::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity:.5;mix-blend-mode:overlay;pointer-events:none;
+}
+
+/* ───────────────────────────────────────────────────────
+   LAYOUT B — SPLIT (50/50)
+   ─────────────────────────────────────────────────────── */
+.hero[data-layout="split"]{
+  min-height:78vh;background:var(--bg);color:var(--text);
+}
+.hero[data-layout="split"] .hero-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+  padding:140px 28px 80px;
+}
+.hero[data-layout="split"] h1{color:var(--text)}
+.hero[data-layout="split"] .hero-desc{color:var(--textMuted)}
+.hero[data-layout="split"] .hero-sub{
+  background:var(--accent-soft);
+  border:none;color:var(--text);
+}
+.hero[data-layout="split"] .btn-secondary{
+  color:var(--text);border-color:rgba(15,23,42,.16);
+}
+.hero[data-layout="split"] .btn-secondary:hover{
+  border-color:var(--text);background:rgba(15,23,42,.04);
+}
+
+.hero-split-img{
+  position:relative;aspect-ratio:4/3;overflow:hidden;
+  border-radius:var(--rLg);
+}
+.hero-split-img img{
+  width:100%;height:100%;object-fit:cover;
+}
+.theme-klassisch .hero-split-img img{
+  filter:saturate(.95) contrast(1.02);
+}
+.theme-klassisch .hero-split-img::before{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(
+    90deg,transparent 0,transparent 39px,
+    rgba(15,43,91,.06) 39px,rgba(15,43,91,.06) 40px);
+  pointer-events:none;mix-blend-mode:multiply;
+}
+.theme-edel .hero[data-layout="split"] .hero-inner{
+  grid-template-columns:200px 1fr 1.1fr;gap:48px;
+}
+.theme-edel .hero[data-layout="split"] .hero-eyebrow-col{
+  align-self:start;padding-top:16px;
+  border-top:1px solid var(--sep);
+}
+.theme-edel .hero[data-layout="split"] .hero-sub{
+  background:transparent;padding:0;font-size:.7rem;
+}
+.theme-edel .hero[data-layout="split"] .hero-split-img{aspect-ratio:3/4;border-radius:0}
+.theme-edel .hero[data-layout="split"] .hero-split-img img{
+  filter:saturate(.85) contrast(1.02);
+}
+.theme-rustikal .hero[data-layout="split"] .hero-split-img{
+  border:8px solid #fff;
+  box-shadow:0 6px 24px rgba(44,36,26,.18);
+  border-radius:3px;
+}
+.theme-rustikal .hero[data-layout="split"] .hero-split-img img{
+  filter:saturate(.92) contrast(1.04) sepia(.06);
+}
+
+/* ───────────────────────────────────────────────────────
+   LAYOUT C — PHOTO-LED (Cinematic Vollbild-Foto)
+   ─────────────────────────────────────────────────────── */
+.hero[data-layout="photo-led"]{
+  min-height:92vh;min-height:92svh;
+  background:#000;color:#fff;
+  position:relative;
+}
+.hero-photo-bg{
+  position:absolute;inset:0;z-index:0;
+}
+.hero-photo-bg img{
+  width:100%;height:100%;object-fit:cover;
+}
+.theme-klassisch .hero-photo-bg img{filter:saturate(.95) contrast(1.02)}
+.theme-edel .hero-photo-bg img{filter:saturate(.85) contrast(1.02)}
+.theme-rustikal .hero-photo-bg img{filter:saturate(.92) contrast(1.04) sepia(.06)}
+
+.hero-photo-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.15) 0%,
+    rgba(0,0,0,.05) 35%,
+    rgba(0,0,0,.55) 100%);
+}
+.theme-edel .hero-photo-overlay{
+  background:linear-gradient(
+    180deg,
+    rgba(28,23,20,.1) 0%,
+    rgba(28,23,20,.05) 30%,
+    rgba(28,23,20,.5) 100%);
+}
+.theme-rustikal .hero-photo-overlay{
+  background:linear-gradient(
+    180deg,
+    rgba(44,36,26,.2) 0%,
+    rgba(44,36,26,.1) 35%,
+    rgba(44,36,26,.65) 100%);
+}
+.hero[data-layout="photo-led"] .hero-inner{
+  position:relative;z-index:2;
+  padding:160px 28px 80px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  min-height:92vh;
+}
+.theme-edel .hero[data-layout="photo-led"] .hero-inner{
+  align-items:center;text-align:center;padding:160px 28px 100px;
+}
+.theme-edel .hero[data-layout="photo-led"] h1{max-width:900px}
+.theme-edel .hero[data-layout="photo-led"] .hero-desc{margin-left:auto;margin-right:auto}
+.hero[data-layout="photo-led"] .hero-btns{margin-bottom:0}
+/* Photo-led: nur 1 CTA */
+.hero[data-layout="photo-led"] .btn-secondary{display:none}
+
+/* ───────────────────────────────────────────────────────
+   LAYOUT D — FULLBLEED (Magazine, Edel-only)
+   ─────────────────────────────────────────────────────── */
+.hero[data-layout="fullbleed"]{
+  background:var(--bg);color:var(--text);
+}
+.hero[data-layout="fullbleed"] .hero-fullbleed-img{
+  width:100%;height:60vh;min-height:480px;
+  margin-top:80px;
+  position:relative;overflow:hidden;
+}
+.hero[data-layout="fullbleed"] .hero-fullbleed-img img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.85) contrast(1.02);
+}
+.hero[data-layout="fullbleed"] .hero-inner{
+  display:grid;grid-template-columns:200px 1fr;
+  gap:48px;align-items:start;
+  padding:80px 28px 100px;max-width:var(--maxW);
+}
+.hero[data-layout="fullbleed"] .hero-eyebrow-col{
+  align-self:start;padding-top:16px;
+  border-top:1px solid var(--sep);
+}
+.hero[data-layout="fullbleed"] .hero-sub{
+  background:transparent;border:none;padding:0;
+  color:var(--textMuted);font-size:.7rem;
+}
+.hero[data-layout="fullbleed"] .hero-sub .pin{display:none}
+.hero[data-layout="fullbleed"] h1{
+  color:var(--text);font-size:clamp(3.6rem,7vw,6.4rem);
+  margin-bottom:32px;
+}
+.hero[data-layout="fullbleed"] h1 em{
+  font-style:italic;font-weight:500;color:var(--accent);
+}
+.hero[data-layout="fullbleed"] .hero-desc{
+  color:var(--textMuted);font-size:1.15rem;line-height:1.65;
+  max-width:600px;
+}
+.hero[data-layout="fullbleed"] .btn-primary{
+  background:var(--accent);color:#fff;
+}
+.hero[data-layout="fullbleed"] .btn-secondary{
+  color:var(--text);border-color:rgba(28,23,20,.18);
+}
+
+/* ───────────────────────────────────────────────────────
+   THEME — Spezifische Headline-Behandlung
+   ─────────────────────────────────────────────────────── */
+.theme-edel .hero h1 em{font-style:italic;font-weight:500;letter-spacing:-.012em}
+.theme-edel .hero h1{letter-spacing:-.012em;font-weight:500}
+.theme-edel .hero[data-layout="fullbleed"] h1 em{color:var(--accent)}
+.theme-edel .hero[data-layout="photo-led"] h1 em{color:var(--accent-soft)}
+
+.theme-rustikal .hero h1 em{
+  font-style:italic;font-weight:700;
+  color:var(--accent-warm);
+}
+
+/* ───────────────────────────────────────────────────────
+   ANIMATIONS — Beta-konform staggered reveal (keyframe-based,
+   reliably restarts on theme/layout switch)
+   ─────────────────────────────────────────────────────── */
+@keyframes heroReveal{
+  from{opacity:0;transform:translateY(14px)}
+  to  {opacity:1;transform:none}
+}
+.hero-sub,.hero h1,.hero-desc,.hero-btns,
+.hero-split-img,.hero-photo-bg,.hero-fullbleed-img{
+  opacity:0;transform:translateY(14px);
+  animation:heroReveal .75s var(--ease) both;
+}
+.hero-sub        {animation-delay:  0ms}
+.hero h1         {animation-delay:110ms}
+.hero-desc       {animation-delay:330ms}
+.hero-btns       {animation-delay:440ms}
+.hero-split-img,
+.hero-photo-bg,
+.hero-fullbleed-img{animation-delay:180ms}
+
+/* Edel: langsamer + expressive */
+.theme-edel .hero-sub,
+.theme-edel .hero h1,
+.theme-edel .hero-desc,
+.theme-edel .hero-btns,
+.theme-edel .hero-split-img,
+.theme-edel .hero-photo-bg,
+.theme-edel .hero-fullbleed-img{animation-duration:1.1s}
+
+/* Rustikal: mid-tempo */
+.theme-rustikal .hero-sub,
+.theme-rustikal .hero h1,
+.theme-rustikal .hero-desc,
+.theme-rustikal .hero-btns,
+.theme-rustikal .hero-split-img,
+.theme-rustikal .hero-photo-bg{animation-duration:.85s}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-sub,.hero h1,.hero-desc,.hero-btns,
+  .hero-split-img,.hero-photo-bg,.hero-fullbleed-img{
+    opacity:1!important;transform:none!important;animation:none!important;
+  }
+}
+
+/* ───────────────────────────────────────────────────────
+   MOBILE
+   ─────────────────────────────────────────────────────── */
+@media(max-width:880px){
+  .hero[data-layout="split"] .hero-inner,
+  .theme-edel .hero[data-layout="split"] .hero-inner,
+  .hero[data-layout="fullbleed"] .hero-inner{
+    grid-template-columns:1fr;gap:32px;
+    padding:100px 20px 60px;
+  }
+  .hero[data-layout="text-led"] .hero-inner,
+  .hero[data-layout="photo-led"] .hero-inner{
+    padding:120px 20px 60px;
+  }
+  .hero h1{font-size:clamp(2rem,8vw,2.8rem);max-width:100%}
+  .hero[data-layout="fullbleed"] h1{font-size:clamp(2.4rem,9vw,3.4rem)}
+  .hero-btns{flex-direction:column;width:100%}
+  .hero-btns .btn{width:100%;justify-content:center}
+  .hero[data-layout="fullbleed"] .hero-fullbleed-img{
+    height:42vh;min-height:320px;margin-top:64px;
+  }
+  .theme-edel .hero[data-layout="split"] .hero-eyebrow-col{
+    border-top:none;padding-top:0;
+  }
+}
+
+/* Preview-Frame Mobile-Mode (toolbar-toggle, simulates < 880px) */
+.preview-frame.mobile .hero[data-layout="split"] .hero-inner,
+.preview-frame.mobile .theme-edel .hero[data-layout="split"] .hero-inner,
+.preview-frame.mobile .hero[data-layout="fullbleed"] .hero-inner{
+  grid-template-columns:1fr;gap:32px;padding:100px 20px 60px;
+}
+.preview-frame.mobile .hero[data-layout="text-led"] .hero-inner,
+.preview-frame.mobile .hero[data-layout="photo-led"] .hero-inner{
+  padding:100px 20px 60px;
+}
+.preview-frame.mobile .hero h1{font-size:clamp(2rem,8vw,2.8rem);max-width:100%}
+.preview-frame.mobile .hero[data-layout="fullbleed"] h1{font-size:clamp(2.4rem,9vw,3.4rem)}
+.preview-frame.mobile .hero-btns{flex-direction:column;width:100%}
+.preview-frame.mobile .hero-btns .btn{width:100%;justify-content:center}
+.preview-frame.mobile .hero[data-layout="fullbleed"] .hero-fullbleed-img{
+  height:42vh;min-height:320px;margin-top:64px;
+}
+.preview-frame.mobile .hero-eyebrow-col{
+  border-top:none!important;padding-top:0!important;
+}
+
+/* ───────────────────────────────────────────────────────
+   SPEC-FOOTER
+   ─────────────────────────────────────────────────────── */
+.spec-footer{
+  background:#0f172a;color:#fff;
+  padding:64px 28px;
+  font-family:'Inter',sans-serif;
+}
+.spec-footer-inner{max-width:1100px;margin:0 auto}
+.spec-footer h3{
+  font-family:'Inter',sans-serif;
+  font-size:.78rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);
+  margin-bottom:24px;
+}
+.spec-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:32px;
+}
+.spec-item{
+  padding:24px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+}
+.spec-item-title{
+  font-size:.84rem;font-weight:700;color:#fff;margin-bottom:10px;
+}
+.spec-item-meta{
+  font-family:var(--mono);font-size:.72rem;
+  color:rgba(255,255,255,.55);margin-bottom:14px;letter-spacing:.04em;
+}
+.spec-item-body{
+  font-size:.88rem;color:rgba(255,255,255,.78);line-height:1.65;
+}
+.spec-footer-meta{
+  margin-top:48px;padding-top:32px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+  font-size:.78rem;color:rgba(255,255,255,.5);
+  font-family:var(--mono);letter-spacing:.04em;
+}
+.spec-footer-meta a{color:rgba(255,255,255,.7);text-decoration:underline;text-decoration-color:rgba(255,255,255,.2)}
+.spec-footer-meta a:hover{color:#fff;text-decoration-color:#fff}
+</style>
+</head>
+<body class="theme-klassisch">
+
+<!-- ═══════════ TOOLBAR ═══════════ -->
+<div class="toolbar">
+  <div class="toolbar-title">
+    Hero-Section
+    <small>Spec § 9 · 4 Layouts × 3 Themes</small>
+  </div>
+
+  <div class="toolbar-group" role="group" aria-label="Theme">
+    <span class="toolbar-label">Theme</span>
+    <div class="toolbar-pills" id="theme-switcher">
+      <button class="toolbar-pill active" data-theme="klassisch" aria-pressed="true">Klassisch</button>
+      <button class="toolbar-pill" data-theme="edel" aria-pressed="false">Edel</button>
+      <button class="toolbar-pill" data-theme="rustikal" aria-pressed="false">Rustikal</button>
+    </div>
+  </div>
+
+  <div class="toolbar-group" role="group" aria-label="Layout">
+    <span class="toolbar-label">Layout</span>
+    <div class="toolbar-pills" id="layout-switcher">
+      <button class="toolbar-pill active" data-layout="text-led" aria-pressed="true">text-led</button>
+      <button class="toolbar-pill" data-layout="split" aria-pressed="false">split</button>
+      <button class="toolbar-pill" data-layout="photo-led" aria-pressed="false">photo-led</button>
+      <button class="toolbar-pill" data-layout="fullbleed" data-edel-only aria-pressed="false" aria-disabled="true" tabindex="-1" title="Nur fuer Theme: Edel verfuegbar">fullbleed</button>
+    </div>
+  </div>
+
+  <div class="toolbar-spacer"></div>
+
+  <div class="toolbar-group" role="group" aria-label="Viewport">
+    <span class="toolbar-label">Viewport</span>
+    <div class="toolbar-pills" id="viewport-switcher">
+      <button class="toolbar-pill active" data-vp="desktop" aria-pressed="true">Desktop</button>
+      <button class="toolbar-pill" data-vp="mobile" aria-pressed="false">Mobile</button>
+    </div>
+  </div>
+
+  <a class="toolbar-link" href="../docs/_design/sections/hero.md" target="_blank">Spec ↗</a>
+</div>
+
+<!-- ═══════════ PREVIEW ═══════════ -->
+<div class="preview-frame" id="preview">
+
+  <!-- LAYOUT A — text-led Klassisch (default visible, JS replaces on first render) -->
+  <section class="hero" data-layout="text-led">
+    <div class="hero-inner">
+      <div class="hero-sub">
+        <svg class="pin" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 1.2c-1.9 0-3.4 1.5-3.4 3.4 0 2.5 3.4 6.2 3.4 6.2s3.4-3.7 3.4-6.2c0-1.9-1.5-3.4-3.4-3.4zm0 4.6a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z"/></svg>
+        <span class="loc">Wien · Architekturbüro</span>
+      </div>
+      <h1>Architektur, die Bestand hat — durchdacht, ehrlich, dauerhaft.</h1>
+      <p class="hero-desc">Bauer Architektur plant seit 17 Jahren Wohn- und Gewerbebauten in Wien und Niederösterreich. Vom Einfamilienhaus bis zum Bürogebäude.</p>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="#kontakt">Projekt anfragen
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h8m-3-3l3 3-3 3"/></svg>
+        </a>
+        <a class="btn btn-secondary" href="tel:+4313456789">+43 1 345 67 89</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══════════ SPEC-FOOTER ═══════════ -->
+<footer class="spec-footer">
+  <div class="spec-footer-inner">
+    <h3>Layout-Spec — was du gerade siehst</h3>
+    <div class="spec-grid" id="spec-grid">
+      <!-- gefuellt per JS -->
+    </div>
+    <div class="spec-footer-meta">
+      <span>SiteReady · Hero-Section-Spec · Stand 2026-05-10</span>
+      <a href="../docs/_design/sections/hero.md" target="_blank">docs/_design/sections/hero.md</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   SWITCHER-LOGIK + Spec-Texte
+   ═══════════════════════════════════════════════════════ */
+
+const STATE = {theme:'klassisch', layout:'text-led', viewport:'desktop'};
+
+// Hero-Content pro Theme (Italic-Akzente theme-spezifisch — Klassisch sans-only, kein <em>)
+const HERO_CONTENT = {
+  klassisch: {
+    eyebrow_label: 'Wien · Architekturbüro',
+    h1: 'Architektur, die Bestand hat — durchdacht, ehrlich, dauerhaft.',
+    desc: 'Bauer Architektur plant seit 17 Jahren Wohn- und Gewerbebauten in Wien und Niederösterreich. Vom Einfamilienhaus bis zum Bürogebäude.'
+  },
+  edel: {
+    eyebrow_label: 'Wien — seit 2008',
+    h1: 'Architektur als <em>stille Bühne</em> für das Leben.',
+    desc: 'Bauer Architektur entwirft Häuser, die zuhören. Material, Licht und Proportion in der Sprache des Ortes.'
+  },
+  rustikal: {
+    eyebrow_label: 'Wien · 1928 · 4. Generation',
+    h1: '<em>Tischlerei Bauer</em> — handgemachte Möbel aus heimischen Hölzern.',
+    desc: 'Vier Generationen Tischlerei in Wien-Margareten. Esstische, Schränke und Einbauten — gefertigt im eigenen Werkstattgebäude.'
+  }
+};
+
+// Foto-Pool (Picsum mit fixed seed pro Layout fuer Konsistenz)
+const PHOTOS = {
+  klassisch: 'https://picsum.photos/seed/architekt-wien-bauer/1600/1200',
+  edel:      'https://picsum.photos/seed/edel-architekt-licht/1600/2000',
+  rustikal:  'https://picsum.photos/seed/tischlerei-werkstatt/1600/1200'
+};
+
+// Spec-Texte pro Layout
+const SPEC = {
+  'text-led': [
+    {title:'Wann', meta:'Auto-Decision', body:'Kunde hat kein Hero-Foto oder Branche bewusst foto-frei (Anwalt, Notar, Steuerberater, Versicherungsmakler). 13 von 32 Recipes Default text-led.'},
+    {title:'Aufbau', meta:'min-height: 90vh', body:'Vollbild-Color-Hero (Surface-Inverted oder Accent-Gradient). Eyebrow + H1 + Lead + 2 CTA-Buttons. Tiefe durch Surface-Wechsel + Theme-Patterns, nicht durch Bilder.'},
+    {title:'Theme-Override', meta:'Edel-only', body:'Edel zeigt text-led NICHT auf Color-Hero — Surface-Cremepapier statt Gradient (text-led ist sekundaer fuer Edel).'},
+    {title:'Mobile', meta:'< 880px', body:'H1 clamp(2rem, 8vw, 2.8rem). CTA-Buttons stacked full-width. Padding 100px top, 60px bottom.'}
+  ],
+  'split': [
+    {title:'Wann', meta:'Auto-Decision', body:'Kunde hat ein gutes Hero-Foto + Branche profitiert von Personenbezug (Coach, Berater-Modern, Architekt-Premium, Designagentur). 8 von 32 Recipes Default split.'},
+    {title:'Aufbau', meta:'min-height: 78vh · grid 1fr 1fr', body:'Container-basiert (NICHT vollbild). Linke Spalte Text vertikal zentriert, rechte Spalte Foto. Surface-Background statt Color-Hero.'},
+    {title:'Theme-Override', meta:'Edel asymmetrisch', body:'Edel: 200px Eyebrow-Spalte + 1fr Text + 1.1fr Foto, aspect-ratio 3/4 portrait. Klassisch: Architektur-Linien-Pattern auf Foto. Rustikal: weisser Photo-Frame + warm shadow.'},
+    {title:'Mobile', meta:'< 880px', body:'Stack vertikal — Foto unter Text, beide full-width. Edel-Eyebrow-Border verschwindet.'}
+  ],
+  'photo-led': [
+    {title:'Wann', meta:'Auto-Decision', body:'Kunde hat starkes atmosphaerisches Foto + Branche lebt von Atmosphaere (Restaurant, Boutique-Hotel, Berghuette, Werkstatt-Premium). 6 von 32 Recipes Default photo-led.'},
+    {title:'Aufbau', meta:'min-height: 92vh', body:'Vollbild-Foto edge-to-edge. Linear-Gradient-Overlay von unten. Text-Block linksbuendig unten (Edel: zentriert). Nur 1 Primary-CTA — bewusst reduktiv.'},
+    {title:'Foto-Bedarf', meta:'≥ 2400×1600px', body:'Hoher Kontrast unten fuer Text-Lesbarkeit. Engine prueft Bild-Helligkeit, faellt bei zu hellem Foto auf split zurueck.'},
+    {title:'Mobile', meta:'< 880px', body:'Layout bleibt photo-led. Foto-Mobile-Source mit 1080px-wide. Min-height bleibt 92svh.'}
+  ],
+  'fullbleed': [
+    {title:'Wann', meta:'Edel-only · 8 Recipes', body:'Premium-Recipes mit Editorial-Anspruch (Boutique-Hotel, Restaurant-Editorial, Architekt-Premium, Goldschmied, Wein-Premium). Klassisch + Rustikal fallen automatisch auf split zurueck.'},
+    {title:'Aufbau', meta:'Foto 60vh + asymmetric grid', body:'Foto edge-to-edge OHNE Container, nur 60vh hoch. Darunter: 200px Eyebrow-Spalte + 1fr Text. KEIN Overlay auf Foto — Text steht UNTER dem Foto.'},
+    {title:'H1-Stunt', meta:'Display-Italic', body:'Statement-Worte in <em> italic Old-Gold-Akzent. H1-Size clamp(3.6rem, 7vw, 6.4rem) — eine Stufe groesser als andere Layouts.'},
+    {title:'Mobile', meta:'< 880px', body:'Foto reduziert auf 42vh. Eyebrow-Spalte verschwindet, single-column. H1 reduziert auf clamp(2.4rem, 9vw, 3.4rem).'}
+  ]
+};
+
+// Render-Funktionen
+function render(){
+  document.body.className = `theme-${STATE.theme}`;
+  const preview = document.getElementById('preview');
+  preview.classList.toggle('mobile', STATE.viewport==='mobile');
+
+  const heroSection = preview.querySelector('.hero');
+  const newHero = buildHero(STATE.theme, STATE.layout);
+  heroSection.replaceWith(newHero);
+  // Keyframe-Animation startet automatisch durch Re-Mount
+
+  renderSpec(STATE.layout);
+  updateSwitcherStates();
+}
+
+function buildHero(theme, layout){
+  const c = HERO_CONTENT[theme];
+  const photo = PHOTOS[theme];
+  const hero = document.createElement('section');
+  hero.className = 'hero';
+  if(layout==='split' || layout==='fullbleed') hero.classList.add('is-surface');
+  hero.dataset.layout = layout;
+
+  let inner = '';
+
+  // EYEBROW Block (unterschiedlich je Layout)
+  const eyebrow = `
+    <div class="hero-sub">
+      <svg class="pin" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 1.2c-1.9 0-3.4 1.5-3.4 3.4 0 2.5 3.4 6.2 3.4 6.2s3.4-3.7 3.4-6.2c0-1.9-1.5-3.4-3.4-3.4zm0 4.6a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z"/></svg>
+      <span class="loc">${c.eyebrow_label}</span>
+    </div>`;
+
+  const buttonsBoth = `
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="#kontakt">Projekt anfragen
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h8m-3-3l3 3-3 3"/></svg>
+      </a>
+      <a class="btn btn-secondary" href="tel:+4313456789">+43 1 345 67 89</a>
+    </div>`;
+
+  if(layout==='text-led'){
+    inner = `
+      <div class="hero-inner">
+        ${eyebrow}
+        <h1>${c.h1}</h1>
+        <p class="hero-desc">${c.desc}</p>
+        ${buttonsBoth}
+      </div>`;
+  }
+  else if(layout==='split'){
+    if(theme==='edel'){
+      inner = `
+        <div class="hero-inner">
+          <div class="hero-eyebrow-col">${eyebrow}</div>
+          <div>
+            <h1>${c.h1}</h1>
+            <p class="hero-desc">${c.desc}</p>
+            ${buttonsBoth}
+          </div>
+          <div class="hero-split-img">
+            <img src="${photo}" alt="Bauer Architektur — Hero" loading="eager" fetchpriority="high" decoding="async" width="1600" height="1200">
+          </div>
+        </div>`;
+    } else {
+      inner = `
+        <div class="hero-inner">
+          <div>
+            ${eyebrow}
+            <h1>${c.h1}</h1>
+            <p class="hero-desc">${c.desc}</p>
+            ${buttonsBoth}
+          </div>
+          <div class="hero-split-img">
+            <img src="${photo}" alt="Bauer Architektur — Hero" loading="eager" fetchpriority="high" decoding="async" width="1600" height="1200">
+          </div>
+        </div>`;
+    }
+  }
+  else if(layout==='photo-led'){
+    inner = `
+      <div class="hero-photo-bg"><img src="${photo}" alt="Bauer Architektur — Hero" loading="eager" fetchpriority="high" decoding="async" width="1600" height="1200"></div>
+      <div class="hero-photo-overlay"></div>
+      <div class="hero-inner">
+        ${eyebrow}
+        <h1>${c.h1}</h1>
+        <p class="hero-desc">${c.desc}</p>
+        <div class="hero-btns">
+          <a class="btn btn-primary" href="#kontakt">Projekt anfragen
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h8m-3-3l3 3-3 3"/></svg>
+          </a>
+        </div>
+      </div>`;
+  }
+  else if(layout==='fullbleed'){
+    inner = `
+      <div class="hero-fullbleed-img"><img src="${photo}" alt="Bauer Architektur — Hero" loading="eager" fetchpriority="high" decoding="async" width="1600" height="1200"></div>
+      <div class="hero-inner">
+        <div class="hero-eyebrow-col">${eyebrow}</div>
+        <div>
+          <h1>${c.h1}</h1>
+          <p class="hero-desc">${c.desc}</p>
+          ${buttonsBoth}
+        </div>
+      </div>`;
+  }
+
+  hero.innerHTML = inner;
+  return hero;
+}
+
+function renderSpec(layout){
+  const grid = document.getElementById('spec-grid');
+  grid.innerHTML = SPEC[layout].map(item => `
+    <div class="spec-item">
+      <div class="spec-item-title">${item.title}</div>
+      <div class="spec-item-meta">${item.meta}</div>
+      <div class="spec-item-body">${item.body}</div>
+    </div>
+  `).join('');
+}
+
+function updateSwitcherStates(){
+  // Theme
+  document.querySelectorAll('#theme-switcher .toolbar-pill').forEach(p=>{
+    const active = p.dataset.theme===STATE.theme;
+    p.classList.toggle('active', active);
+    p.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  // Layout — fullbleed nur wenn Theme=edel
+  document.querySelectorAll('#layout-switcher .toolbar-pill').forEach(p=>{
+    const active = p.dataset.layout===STATE.layout;
+    p.classList.toggle('active', active);
+    p.setAttribute('aria-pressed', active ? 'true' : 'false');
+    if(p.dataset.edelOnly !== undefined){
+      const disabled = STATE.theme!=='edel';
+      p.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+      p.tabIndex = disabled ? -1 : 0;
+    }
+  });
+  // Viewport
+  document.querySelectorAll('#viewport-switcher .toolbar-pill').forEach(p=>{
+    const active = p.dataset.vp===STATE.viewport;
+    p.classList.toggle('active', active);
+    p.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+// Event-Handler
+document.querySelectorAll('#theme-switcher .toolbar-pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    STATE.theme = p.dataset.theme;
+    // Auto-Decision: fullbleed → text-led wenn Theme != edel
+    if(STATE.layout==='fullbleed' && STATE.theme!=='edel'){
+      STATE.layout = 'text-led';
+    }
+    render();
+  });
+});
+document.querySelectorAll('#layout-switcher .toolbar-pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    if(p.getAttribute('aria-disabled')==='true') return;
+    STATE.layout = p.dataset.layout;
+    render();
+  });
+});
+document.querySelectorAll('#viewport-switcher .toolbar-pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    STATE.viewport = p.dataset.vp;
+    render();
+  });
+});
+
+// Initial render
+render();
+</script>
+
+</body>
+</html>

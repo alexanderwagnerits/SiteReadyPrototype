@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SiteReady Sidebar — 4 Varianten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'DM Sans',-apple-system,sans-serif;
+  background:#F5F5F2;
+  color:#111;
+  padding:24px;
+  min-height:100vh;
+}
+
+.page-head {
+  max-width:1600px;
+  margin:0 auto 28px;
+}
+.page-head h1 {
+  font-size:1.8rem;
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin-bottom:6px;
+}
+.page-head p {
+  font-size:.95rem;
+  color:#505560;
+  max-width:680px;
+}
+
+.grid {
+  max-width:1600px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:24px;
+}
+
+.variant {
+  background:#fff;
+  border:1px solid #E0E0DB;
+  border-radius:16px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.var-head {
+  padding:18px 22px;
+  border-bottom:1px solid #E0E0DB;
+}
+.var-head .label {
+  font-size:.7rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#8FA3B8;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.var-head h2 {
+  font-size:1.1rem;
+  font-weight:800;
+  letter-spacing:-.015em;
+  color:#111;
+}
+.var-head .sub {
+  font-size:.82rem;
+  color:#505560;
+  margin-top:3px;
+}
+
+.var-body {
+  padding:18px;
+  background:#fafaf7;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+
+/* Sidebar Style (matches portal) */
+.sb {
+  width:236px;
+  background:#111111;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  height:560px;
+  flex-shrink:0;
+}
+.sb-top {
+  padding:18px 16px 14px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.sb-brand {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
+  color:#fff;
+  font-weight:800;
+  font-size:.92rem;
+  letter-spacing:-.01em;
+}
+.sb-brand .logo {
+  width:22px; height:22px;
+  background:#fff;
+  border-radius:5px;
+  color:#111;
+  font-size:.65rem;
+  font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  letter-spacing:-.04em;
+}
+.sb-site {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 11px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+}
+.sb-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:#4ade80; flex-shrink:0;
+}
+.sb-url {
+  font-size:.72rem; font-weight:600;
+  color:rgba(255,255,255,.5);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.sb-nav {
+  padding:10px 8px;
+  flex:1;
+  overflow-y:auto;
+  scrollbar-width:thin;
+}
+.sb-nav::-webkit-scrollbar { width:4px; }
+.sb-nav::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
+
+.sb-grp {
+  font-size:.58rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.22);
+  padding:12px 8px 4px;
+}
+.sb-grp:first-child { padding-top:2px; }
+
+.ni {
+  display:flex; align-items:center; gap:9px;
+  padding:8px 10px;
+  border-radius:7px;
+  cursor:pointer;
+  color:rgba(255,255,255,.45);
+  font-size:.83rem;
+  font-weight:500;
+  transition:all .12s;
+  background:transparent;
+  border:none;
+  width:100%;
+  font-family:inherit;
+  text-align:left;
+  position:relative;
+}
+.ni:hover { background:rgba(255,255,255,.06); color:rgba(255,255,255,.8); }
+.ni.active { background:rgba(255,255,255,.09); color:#fff; font-weight:600; }
+.ni svg { width:14px; height:14px; flex-shrink:0; opacity:.5; }
+.ni.active svg { opacity:.85; }
+.dot-pflicht {
+  width:6px; height:6px; border-radius:50%;
+  background:#f59e0b;
+  margin-left:auto; flex-shrink:0;
+}
+.dot-done {
+  width:6px; height:6px; border-radius:50%;
+  background:#4ade80;
+  margin-left:auto; flex-shrink:0;
+}
+
+/* Variante D: Sitemap-Style */
+.sm-sec {
+  margin:5px 4px;
+  padding:9px 10px;
+  border-radius:8px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  cursor:pointer;
+  transition:all .15s;
+  position:relative;
+}
+.sm-sec:hover { background:rgba(255,255,255,.08); }
+.sm-sec.active {
+  background:rgba(255,255,255,.12);
+  border-color:rgba(255,255,255,.15);
+}
+.sm-sec .sm-num {
+  font-family:'JetBrains Mono', monospace;
+  font-size:.6rem;
+  color:rgba(255,255,255,.3);
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.sm-sec .sm-title {
+  font-size:.82rem;
+  font-weight:600;
+  color:rgba(255,255,255,.7);
+  margin-top:1px;
+}
+.sm-sec.active .sm-title { color:#fff; font-weight:700; }
+.sm-sec .sm-status {
+  position:absolute;
+  top:9px; right:10px;
+  width:6px; height:6px;
+  border-radius:50%;
+}
+.sm-sec.active .sm-num { color:rgba(255,255,255,.55); }
+
+/* Variante C: Top-Tabs */
+.tt {
+  display:flex;
+  background:#0a0a0a;
+  padding:6px;
+  gap:3px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.tt-tab {
+  flex:1;
+  padding:8px 4px;
+  border-radius:6px;
+  background:transparent;
+  border:none;
+  color:rgba(255,255,255,.4);
+  font-family:inherit;
+  font-size:.74rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s;
+}
+.tt-tab:hover { color:rgba(255,255,255,.8); background:rgba(255,255,255,.05); }
+.tt-tab.active { background:rgba(255,255,255,.12); color:#fff; font-weight:700; }
+
+/* Mock content panel right of sidebar */
+.mock-area {
+  width:100%;
+  max-width:520px;
+  background:#fff;
+  border:1px solid #E0E0DB;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+  font-size:.78rem;
+  color:#8b919e;
+  font-style:italic;
+}
+
+/* Pro/Con sections */
+.var-foot {
+  padding:18px 22px;
+  border-top:1px solid #E0E0DB;
+  background:#fafaf7;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  font-size:.82rem;
+}
+.var-foot .col {
+  display:flex; flex-direction:column; gap:6px;
+}
+.var-foot h4 {
+  font-size:.65rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.var-foot .pro h4 { color:#16a34a; }
+.var-foot .con h4 { color:#dc2626; }
+.var-foot ul { list-style:none; padding:0; }
+.var-foot li {
+  padding-left:14px;
+  position:relative;
+  color:#2B2F36;
+  line-height:1.5;
+  margin-bottom:3px;
+}
+.var-foot .pro li::before {
+  content:"+";
+  position:absolute; left:0;
+  color:#16a34a; font-weight:800;
+}
+.var-foot .con li::before {
+  content:"−";
+  position:absolute; left:0;
+  color:#dc2626; font-weight:800;
+}
+
+/* Counts badge */
+.counts {
+  display:inline-flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.counts .pill {
+  font-size:.68rem;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:100px;
+  background:#EEEEE9;
+  color:#505560;
+  font-family:'JetBrains Mono', monospace;
+}
+
+@media (max-width:1100px) {
+  .grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Sidebar-Varianten — Mockup-Vergleich</h1>
+  <p>Vier Strukturen zum direkten Vergleich. Klick auf einen Tab in jeder Variante zeigt den active-State. Wähle danach welche am besten zu KMU-Kunden passt.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- VARIANTE A: STATUS QUO -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="variant">
+    <div class="var-head">
+      <div class="label">Variante A — Status quo (heute)</div>
+      <h2>3 Gruppen, gemischter Inhalt</h2>
+      <div class="sub">Wie es aktuell live ist. Referenz-Punkt zum Vergleichen.</div>
+      <div class="counts">
+        <span class="pill">Meine Website: 11</span>
+        <span class="pill">Extras: 4</span>
+        <span class="pill">Konto: 3</span>
+      </div>
+    </div>
+    <div class="var-body">
+      <div class="sb">
+        <div class="sb-top">
+          <div class="sb-brand"><div class="logo">SR</div>SiteReady</div>
+          <div class="sb-site"><div class="sb-dot"></div><div class="sb-url">checkmate-touring</div></div>
+        </div>
+        <div class="sb-nav">
+          <div class="sb-grp">Meine Website</div>
+          <button class="ni" data-g="A">Übersicht</button>
+          <button class="ni active" data-g="A">Titelbild<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Besonderheiten<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Leistungen<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Über uns<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Kontakt<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Social Media</button>
+          <button class="ni" data-g="A">Häufige Fragen<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Zahlen</button>
+          <button class="ni" data-g="A">Referenzen<span class="dot-done"></span></button>
+          <button class="ni" data-g="A">Design<span class="dot-done"></span></button>
+          <div class="sb-grp">Extras</div>
+          <button class="ni" data-g="A">Aktuelles</button>
+          <button class="ni" data-g="A">Teilen & QR-Code</button>
+          <button class="ni" data-g="A">Impressum<span class="dot-pflicht"></span></button>
+          <button class="ni" data-g="A">SEO, Google & Domain</button>
+          <div class="sb-grp">Konto</div>
+          <button class="ni" data-g="A">Rechnungen</button>
+          <button class="ni" data-g="A">Account</button>
+          <button class="ni" data-g="A">Support</button>
+        </div>
+      </div>
+    </div>
+    <div class="var-foot">
+      <div class="col pro">
+        <h4>Pro</h4>
+        <ul>
+          <li>Etabliert, Beta-User kennen es</li>
+          <li>Kompakte Liste</li>
+        </ul>
+      </div>
+      <div class="col con">
+        <h4>Con</h4>
+        <ul>
+          <li>"Extras" ist Wischiwaschi-Label</li>
+          <li>Galerie nirgendwo erreichbar</li>
+          <li>Reihenfolge ≠ Website-Reihenfolge</li>
+          <li>Bewertungen versteckt in "Über uns"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- VARIANTE B: SECTIONS + EINSTELLUNGEN (FLACH) -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="variant">
+    <div class="var-head">
+      <div class="label">Variante B — Sections + Einstellungen</div>
+      <h2>Klares Mental Model: Inhalt vs. Konfig</h2>
+      <div class="sub">Alles was auf der Seite steht oben (in Reihenfolge). Drumherum unten.</div>
+      <div class="counts">
+        <span class="pill">Inhalt Website: 14</span>
+        <span class="pill">Einstellungen: 6</span>
+      </div>
+    </div>
+    <div class="var-body">
+      <div class="sb">
+        <div class="sb-top">
+          <div class="sb-brand"><div class="logo">SR</div>SiteReady</div>
+          <div class="sb-site"><div class="sb-dot"></div><div class="sb-url">checkmate-touring</div></div>
+        </div>
+        <div class="sb-nav">
+          <div class="sb-grp">Inhalt meiner Website</div>
+          <button class="ni" data-g="B">Übersicht</button>
+          <button class="ni active" data-g="B">Start<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Besonderheiten<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Leistungen<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Über uns<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Bewertungen</button>
+          <button class="ni" data-g="B">Galerie</button>
+          <button class="ni" data-g="B">Häufige Fragen<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Zahlen & Fakten</button>
+          <button class="ni" data-g="B">Referenzen<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Kontakt<span class="dot-done"></span></button>
+          <button class="ni" data-g="B">Social Media</button>
+          <button class="ni" data-g="B">Aktuelles</button>
+          <button class="ni" data-g="B">Impressum<span class="dot-pflicht"></span></button>
+          <div class="sb-grp">Einstellungen</div>
+          <button class="ni" data-g="B">Design</button>
+          <button class="ni" data-g="B">Online gehen</button>
+          <button class="ni" data-g="B">Teilen & QR</button>
+          <button class="ni" data-g="B">Rechnungen</button>
+          <button class="ni" data-g="B">Account</button>
+          <button class="ni" data-g="B">Support</button>
+        </div>
+      </div>
+    </div>
+    <div class="var-foot">
+      <div class="col pro">
+        <h4>Pro</h4>
+        <ul>
+          <li>Klares "Inhalt vs. Konfig" Modell</li>
+          <li>Reihenfolge spiegelt Website 1:1</li>
+          <li>Galerie & Bewertungen sichtbar</li>
+          <li>Tab-Namen = Section-Namen</li>
+        </ul>
+      </div>
+      <div class="col con">
+        <h4>Con</h4>
+        <ul>
+          <li>14 Tabs in einer Liste sind viel</li>
+          <li>"Einstellungen" wird Sammelbereich</li>
+          <li>Etwas Scrollen nötig</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- VARIANTE C: TOP-TABS + KONTEXT-SIDEBAR -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="variant">
+    <div class="var-head">
+      <div class="label">Variante C — Top-Tabs + Sidebar</div>
+      <h2>Hauptbereich oben, Details links</h2>
+      <div class="sub">Top-Tabs trennen Themen. Sidebar zeigt nur was im aktiven Top-Tab steckt.</div>
+      <div class="counts">
+        <span class="pill">Top-Tabs: 4</span>
+        <span class="pill">Inhalt-Sub: 13</span>
+      </div>
+    </div>
+    <div class="var-body">
+      <div class="sb">
+        <div class="sb-top">
+          <div class="sb-brand"><div class="logo">SR</div>SiteReady</div>
+          <div class="sb-site"><div class="sb-dot"></div><div class="sb-url">checkmate-touring</div></div>
+        </div>
+        <div class="tt">
+          <button class="tt-tab active" data-c-tab="inhalt">Inhalt</button>
+          <button class="tt-tab" data-c-tab="design">Design</button>
+          <button class="tt-tab" data-c-tab="online">Online</button>
+          <button class="tt-tab" data-c-tab="konto">Konto</button>
+        </div>
+        <div class="sb-nav" id="c-nav-inhalt">
+          <button class="ni" data-g="C">Übersicht</button>
+          <button class="ni active" data-g="C">Start<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Besonderheiten<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Leistungen<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Über uns<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Bewertungen</button>
+          <button class="ni" data-g="C">Galerie</button>
+          <button class="ni" data-g="C">Häufige Fragen<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Zahlen & Fakten</button>
+          <button class="ni" data-g="C">Referenzen<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Kontakt<span class="dot-done"></span></button>
+          <button class="ni" data-g="C">Social Media</button>
+          <button class="ni" data-g="C">Aktuelles</button>
+          <button class="ni" data-g="C">Impressum<span class="dot-pflicht"></span></button>
+        </div>
+        <div class="sb-nav" id="c-nav-design" style="display:none">
+          <button class="ni" data-g="C">Stil & Farbe</button>
+          <button class="ni" data-g="C">Schrift</button>
+          <button class="ni" data-g="C">Layout</button>
+        </div>
+        <div class="sb-nav" id="c-nav-online" style="display:none">
+          <button class="ni" data-g="C">Domain</button>
+          <button class="ni" data-g="C">SEO & Google</button>
+          <button class="ni" data-g="C">Teilen & QR-Code</button>
+        </div>
+        <div class="sb-nav" id="c-nav-konto" style="display:none">
+          <button class="ni" data-g="C">Rechnungen</button>
+          <button class="ni" data-g="C">Account</button>
+          <button class="ni" data-g="C">Support</button>
+        </div>
+      </div>
+    </div>
+    <div class="var-foot">
+      <div class="col pro">
+        <h4>Pro</h4>
+        <ul>
+          <li>Reduziert visuelle Komplexität</li>
+          <li>Sehr klare Trennung 4 Themen</li>
+          <li>Squarespace/Shopify-Stil</li>
+        </ul>
+      </div>
+      <div class="col con">
+        <h4>Con</h4>
+        <ul>
+          <li>Mehr Klicks bei Wechsel Inhalt↔Konfig</li>
+          <li>Mobile: Top-Tabs eng</li>
+          <li>Versteckt aktive Sub-Tabs</li>
+          <li>Komplexer für Neulinge</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- VARIANTE D: VISUAL SITEMAP -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="variant">
+    <div class="var-head">
+      <div class="label">Variante D — Visual Sitemap</div>
+      <h2>Mini-Wireframe als Navigation</h2>
+      <div class="sub">Jede Section als Block mit Nummer. Optisch wie eine Page-Outline.</div>
+      <div class="counts">
+        <span class="pill">Section-Blocks: 13</span>
+        <span class="pill">Einstellungen: 6</span>
+      </div>
+    </div>
+    <div class="var-body">
+      <div class="sb">
+        <div class="sb-top">
+          <div class="sb-brand"><div class="logo">SR</div>SiteReady</div>
+          <div class="sb-site"><div class="sb-dot"></div><div class="sb-url">checkmate-touring</div></div>
+        </div>
+        <div class="sb-nav">
+          <div class="sb-grp">Deine Seite — von oben nach unten</div>
+          <div class="sm-sec active" data-g="D">
+            <div class="sm-num">01 — START</div>
+            <div class="sm-title">Logo & Titelbild</div>
+            <div class="sm-status" style="background:#4ade80"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">02</div>
+            <div class="sm-title">Besonderheiten</div>
+            <div class="sm-status" style="background:#4ade80"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">03</div>
+            <div class="sm-title">Leistungen</div>
+            <div class="sm-status" style="background:#4ade80"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">04</div>
+            <div class="sm-title">Über uns</div>
+            <div class="sm-status" style="background:#4ade80"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">05</div>
+            <div class="sm-title">Bewertungen</div>
+            <div class="sm-status" style="background:rgba(255,255,255,.15)"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">06</div>
+            <div class="sm-title">Galerie</div>
+            <div class="sm-status" style="background:rgba(255,255,255,.15)"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">07</div>
+            <div class="sm-title">FAQ & Zahlen</div>
+            <div class="sm-status" style="background:#4ade80"></div>
+          </div>
+          <div class="sm-sec" data-g="D">
+            <div class="sm-num">08 — FUSS</div>
+            <div class="sm-title">Kontakt & Social</div>
+            <div class="sm-status" style="background:#4ade80"></div>
+          </div>
+          <div class="sb-grp">Einstellungen</div>
+          <button class="ni" data-g="D">Design</button>
+          <button class="ni" data-g="D">Online gehen</button>
+          <button class="ni" data-g="D">Impressum<span class="dot-pflicht"></span></button>
+          <button class="ni" data-g="D">Konto</button>
+        </div>
+      </div>
+    </div>
+    <div class="var-foot">
+      <div class="col pro">
+        <h4>Pro</h4>
+        <ul>
+          <li>Sehr intuitiv — visuelle Outline</li>
+          <li>"Von oben nach unten" sofort klar</li>
+          <li>Webflow/Framer-Stil</li>
+          <li>Sections gebündelt (FAQ+Zahlen)</li>
+        </ul>
+      </div>
+      <div class="col con">
+        <h4>Con</h4>
+        <ul>
+          <li>Lernkurve — KMU kennen Sitemap nicht</li>
+          <li>Mehr vertikaler Platz pro Eintrag</li>
+          <li>Bündelung versteckt einzelne Sections</li>
+          <li>Mobil schwierig</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:1600px; margin:32px auto 0; padding:24px; background:#fff; border:1px solid #E0E0DB; border-radius:16px;">
+  <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:12px;">Empfehlung im Vergleich</h3>
+  <div style="font-size:.92rem; color:#2B2F36; line-height:1.65;">
+    <p style="margin-bottom:10px;"><b>Variante B</b> ist der sicherste Weg: löst die akuten Probleme (Galerie sichtbar, Bewertungen eigener Tab, Reihenfolge wie Website), bleibt aber als flache Liste für KMU intuitiv. Vergleichbar mit Hostinger / Carrd.</p>
+    <p style="margin-bottom:10px;"><b>Variante C</b> ist eleganter und reduziert Sidebar-Länge dramatisch — aber Top-Tabs sind eine zusätzliche Lernschicht. Gut für tech-affine Kunden, weniger für Handwerker.</p>
+    <p style="margin-bottom:10px;"><b>Variante D</b> ist visuell am stärksten und macht die Reihenfolge sofort sichtbar — aber die Sitemap-Metapher ist KMU nicht vertraut. Spannend, aber risikoreicher.</p>
+    <p><b>Empfehlung:</b> Variante B umsetzen. Wenn nach Beta-Feedback Sidebar-Länge stört, dann Schritt nach C oder D — als Iteration, nicht direkt.</p>
+  </div>
+</div>
+
+<script>
+// Tab-Switching innerhalb jeder Variante
+document.querySelectorAll('[data-g]').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const g = btn.dataset.g;
+    document.querySelectorAll(`[data-g="${g}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Variante C: Top-Tab Switching
+document.querySelectorAll('[data-c-tab]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-c-tab]').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('[id^="c-nav-"]').forEach(n => n.style.display = 'none');
+    document.getElementById('c-nav-' + tab.dataset.cTab).style.display = '';
+  });
+});
+</script>
+
+</body>
+</html>

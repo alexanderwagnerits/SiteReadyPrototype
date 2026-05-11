@@ -223,7 +223,69 @@ docs/
 
 ## 6. Memory-System-Übernahme
 
-Im neuen Repo wieder ein Memory-System aufbauen unter `~/.claude/projects/<neuer-repo-pfad>/memory/`. Welche Memorys mitnehmen:
+Im neuen Repo wieder ein Memory-System aufbauen unter `~/.claude/projects/<neuer-repo-pfad>/memory/`.
+
+### 6.0 System-Architektur (Stand 2026-05-11 nach Härtung)
+
+**Problem:** Claude Code laedt automatisch nur `MEMORY.md` (Index ≤200 Zeilen) inline. Einzelne `feedback_*.md` und `project_*.md` muessen aktiv via Read-Tool geoeffnet werden — was empirisch unzuverlaessig passiert (Beta-Template-Regel + Skills-Pflicht waren 2026-05-10 durchgerutscht).
+
+**Loesung (Hybrid):**
+
+| Schicht | Mechanik | Token-Kosten/Session | Live-Skalierung |
+|---|---|---|---|
+| **L1: Verhaltens-Memories** (`feedback_*.md`) | SessionStart-Hook `~/.claude/scripts/load-feedback-memories.sh` dumpt alle Files als `additionalContext`. Token-Budget-Schutz via `MEMORY_HOOK_MAX_BYTES` (Default 80 KB). | ~7-8k (heute 23 Files) | ab ~50 Files: Hook um Priority-Frontmatter (`priority: high\|normal`) erweitern und nur `high` immer laden. |
+| **L2: Projekt-Memories** (`project_*.md`) | Auf Trigger via Read-Tool, gesteuert durch `~/.claude/CLAUDE.md` Section "Memory-Disziplin". Bei Subagent-Spawn: relevantes Memory in Prompt mitgeben. | 0 (on-demand) | unveraendert. |
+| **L3: Repo-Doku** (`docs/*.md`) | Source of Truth. Memory verweist auf Doku (`project_live_compliance.md` → `docs/LIVE-COMPLIANCE.md`). Bei Konflikt: Doku gewinnt. | nur fuer aktiv gelesene Files | unveraendert. |
+| **L4: Per-Subagent-Memory** (Live-Bau Phase 0) | `compliance-reviewer` + `design-reviewer` bekommen je eigene Spec-Files unter `.claude/agents/<name>.md` im Live-Repo. Beim Spawn werden relevante L1/L2-Memories als Kontext-Block mitgegeben. | varies | hauptsaechlicher Skalierungs-Hebel. |
+
+### 6.1 Hook-Setup im Live-Repo
+
+Identische Mechanik wie Beta — Script `~/.claude/scripts/load-feedback-memories.sh` ist projekt-agnostisch (nutzt `$CLAUDE_PROJECT_DIR`), wird durch den Live-Repo-Pfad automatisch das richtige Memory-Verzeichnis treffen.
+
+Schritte beim Live-Repo-Init (Phase 0):
+
+1. Neuer Memory-Pfad: `~/.claude/projects/-Users-alex-REPO-instantpage/memory/` (Pfad-Encoding wie heute)
+2. Files gemaess Uebernahme-Tabelle unten kopieren
+3. SessionStart-Hook ist global in `~/.claude/settings.json` — greift automatisch, sobald in Live-Repo-Verzeichnis gestartet wird
+4. Erste Live-Session: pruefen dass feedback inline kommt (`/help` oder erste Anweisung)
+
+### 6.2 Subagent-Kontextquellen (Live-Bau-Phase 0)
+
+`compliance-reviewer` (Spec: `project_dev_subagents_idea.md` Block 1):
+- Pflicht-Memories beim Spawn: `feedback_at_vertrauensprodukt.md`, `project_live_compliance.md`
+- Pflicht-Doku: `docs/LIVE-COMPLIANCE.md` (per Tool-Permission lesbar)
+
+`design-reviewer` (Spec: `project_dev_subagents_idea.md` Block 5):
+- Pflicht-Memories: `feedback_beta_template_grundlage.md`, `feedback_section_design.md`, `feedback_design_skills.md`, `project_design_references_live.md`
+- Pflicht-Doku: `docs/DESIGN-VISION.md` § 13 (Quality-Standards), `docs/_design/references/`
+
+`siteready-reviewer` / `quality-watchdog` (Spec: ebenda):
+- Pflicht-Memories: `feedback_serve_time_maximum.md`, `feedback_umlaute.md`, `feedback_farben_serve_time.md`
+- Pflicht-Doku: `docs/RECIPE-SYSTEM.md`, `docs/ARCHITECTURE.md`
+
+**Konvention:** Subagent-Spec-File (`.claude/agents/<name>.md`) listet seine "Pflicht-Lese-Liste" als Frontmatter — der Spawn-Prompt kann sie programmatisch einlesen.
+
+### 6.3 Cross-Repo-Konsistenz waehrend Uebergangsphase
+
+Phase 0 bis Cutover laeuft Beta-Repo parallel zum Live-Repo. Risiko: dieselbe Verhaltens-Regel divergiert in zwei Memory-Stores.
+
+**Strategie:**
+- Verhaltens-Memories die in beide Repos gehoeren (siehe Uebernahme-Tabelle unten "Übernehmen 1:1") werden initial kopiert, dann ist das **Live-Memory die Master-Quelle**.
+- Wartungs-Modus-Beta: keine neuen `feedback_*.md` ins Beta-Memory mehr nach Phase 0 — neue Verhaltens-Regeln entstehen nur noch im Live-Memory.
+- Diff-Check ab und zu: `diff -r <beta-memory> <live-memory>` zeigt Drift.
+
+### 6.4 Skalierungs-Pfad ueber Phase 0 hinaus
+
+| Trigger | Naechster Schritt |
+|---|---|
+| `feedback_*.md` > 50 Files | Priority-Frontmatter einfuehren, Hook filtert auf `priority: high` |
+| `project_*.md` > 80 Files | Index-Datei `MEMORY.md` thematisch segmentieren (z.B. Compliance / Recipe / Operations / Sales — eigene Sub-Index-Files) |
+| Semantische Suche gewuenscht | MCP-Memory-Server (`@modelcontextprotocol/server-memory`) evaluieren. Verworfen 2026-05-11 wegen "Claude muss aktiv abfragen" — bei Subagent-getriebenem Live-Bau aber neu zu pruefen |
+| User-Editier-UX | Optional: Memory-Verzeichnis als Obsidian-Vault oeffnen (Markdown bleibt Plain, kein Lock, kein MCP noetig). 2026-05-11 verworfen als Memory-Haertungs-Hebel — bleibt als reines Editor-Layer optional |
+
+### 6.5 Übernahme-Tabellen aus Beta-Memory
+
+Welche Memorys aus dem Beta-Memory-Store ins Live-Memory:
 
 ### Übernehmen (1:1)
 

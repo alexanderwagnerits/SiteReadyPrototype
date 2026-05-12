@@ -1,6 +1,13 @@
 # Section-Library — frühe Mockup-Studie (NICHT mehr Source of Truth)
 
-> ⚠️ **Status 2026-05-06: Diese Doku war eine zu komplexe Erst-Ableitung. Source of Truth für den Live-Bau ist jetzt [`../recipe-konfiguration.md`](../recipe-konfiguration.md)** — eine pragmatische Recipe-Tabelle auf Beta-Template-Basis (`functions/templates/template.js`). Die hier dokumentierten "branchen-spezifischen Sektionen" (Werkstücke-Tabelle, Vorher-Nachher-Slider, Material-Strip, Generationen-Liste, Hero-Sigel, Gewerbeschein-Box) wurden verworfen — zu komplex für SiteReady-Generator-Geist (KMU pflegt Daten im Portal).
+> ⚠️ **Status 2026-05-12: Diese Doku ist verworfene Studie.**
+>
+> **Aktuelle Source of Truth (Stand 2026-05-12):**
+> - **[`_BETA-VOCABULARY.md`](_BETA-VOCABULARY.md)** — vollstaendige CSS-Klassen-Referenz aller Beta-Sections mit HTML-Snippets + Stil-Overrides + Anti-Patterns
+> - **[`../recipe-konfiguration.md`](../recipe-konfiguration.md)** — Recipe-Tabelle (14 Berufsgruppen × ~32 Recipes) auf Beta-Template-Basis
+> - **[`hero.md`](hero.md)** — Hero-Detail-Spec
+>
+> Die hier dokumentierten „branchen-spezifischen Sektionen" (Werkstuecke-Tabelle, Vorher-Nachher-Slider, Material-Strip, Generationen-Liste, Hero-Sigel, Gewerbeschein-Box) wurden 2026-05-06 verworfen — zu komplex fuer SiteReady-Generator-Geist (KMU pflegt Daten im Portal).
 >
 > Die Doku bleibt als Studien-Referenz: zeigt was aus Mockup-Experimenten kam, nicht was produziert wird.
 

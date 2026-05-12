@@ -132,9 +132,11 @@ Verworfene Alternativen (dokumentiert fuer spaetere Re-Evaluation): Burgundy `#7
 
 ### 4.1 Plattform (instantpage.at)
 
-**Primaer:** DM Sans (Google Fonts) — uebernommen aus Prototyp, im Live behalten (Memory etabliert, gut fuer KMU-Lesbarkeit).
+**Primaer:** **Poppins** (Google Fonts) `[ENTSCHIEDEN 2026-05-12]` — runder, freundlicher-zugaenglicher Geometric-Sans, KMU-tauglich. Ersetzt frueheren DM-Sans-Vorschlag (2026-05-05), der zu „technisch-neutral" wirkte.
 **Mono fuer Zahlen / Code / Preise:** JetBrains Mono (Google Fonts).
-**Kein Editorial-Serif** `[ENTSCHIEDEN]` 2026-05-05 — konsequent sans-serif. Vermeidet Kollision mit "kein generisches Claude-Aesthetic"-Anti-Pattern.
+**Kein Editorial-Serif** `[ENTSCHIEDEN]` 2026-05-05 — konsequent sans-serif. Vermeidet Kollision mit „kein generisches Claude-Aesthetic"-Anti-Pattern.
+
+**Implikation:** Alle Plattform-Touchpoints (Marketing-Website, LinkedIn-Banner, OG-Images, Visitenkarten, Pitch-Decks) auf Poppins umstellen. Kunden-Recipe-Sites behalten ihre eigene Recipe-Font-Wahl (Plus Jakarta Sans / Space Grotesk / Cormorant Garamond etc., siehe `RECIPE-SYSTEM.md`).
 
 **Type Scale (5 Stufen):**
 
@@ -233,6 +235,33 @@ Aenderung loest **automatische Re-Generation** der Texte aus (PRODUCT § 3.3). W
 
 ## 7. Slogans + Marketing-Texte
 
+### 7.0 Universal-Tagline + About (Cross-Channel) `[LOCK 2026-05-12]`
+
+**Verwendung:** Single-Source-of-Truth fuer alle Cross-Channel-Auftritte (LinkedIn, X-Bio, OG-Tags, Google Business Profile, Visitenkarten, Pitch-Slide-Footer). Brand-Voice ist Editorial-ruhig (passt zu Recipe-Mockup-Sprache „Massivholz aus dem Mostviertel. Seit 1958.").
+
+**Tagline (≤120 chars, primaer):**
+
+> Die Website fuer oesterreichische KMU. 10 Minuten Aufwand.
+
+**About / Beschreibung (≤300 chars, LinkedIn About, Google Business, OG-Description):**
+
+> Die fertige Website fuer oesterreichische KMU.
+>
+> Statt Wochen mit der Agentur oder Abenden vor dem Baukasten: 10 Minuten Fragebogen, fertig konfigurierte Webseite. KI-gestuetzte Texte, AT-Compliance integriert, fuer Google optimiert.
+
+**Design-Entscheidungen:**
+
+- **„KMU"** (nicht „KMUs") — formell, Plural ist im Begriff enthalten
+- **„10 Minuten Aufwand"** statt „in 10 Minuten online" — Aufwand-Framing trifft den realen Zeitschmerz, UWG-safer als Garantie-Zeitversprechen (Zeit-bis-live ist DNS-abhaengig)
+- **„KI-gestuetzte Texte"** drin — als Mechanismus-Erklaerung (warum 10 Min realistisch sind), nicht als Tagline-Buzzword
+- **„AT-Compliance integriert"** — knapp, B2B-tauglich. KMU-naehere Variante „mit Impressum und Datenschutz" als Fallback fuer laengere Texte / nicht-Tech-Audiences
+- **„Fuer Google optimiert"** (verwendet) statt „SEO-optimiert" — KMU-verstaendlicher als Buzzword „SEO". Marketing-Variante zulaessig, **Anwalts-Audit-Punkt fuer Live-Launch:** „optimiert" Grenzbereich UWG (kann als Garantie-Aussage gelesen werden), Defensiv-Alternative waere „fuer Google vorbereitet". Final-Entscheidung im Anwalts-Block A der Roadmap.
+- **Keine Berufsgruppen-Liste** in Hauptbotschaft — wuerde Exklusivitaet implizieren bei 14 Berufsgruppen × 2-3 Looks = ~32 Recipes (siehe Memory `feedback_marketing_zielgruppe_inklusiv.md`)
+- **„Made in Vienna"** verworfen — AT-Anker bereits ueber „oesterreichische KMU" gesetzt, redundant; signature-style Trailer schwaecht das About-Statement
+- **Niemals** „rechtliche Pflichten" / „Pflichtangaben" im Marketing — buerokratischer Nag-Vibe (siehe Memory `feedback_keine_rechtliche_pflichten.md`)
+
+**Konflikt zu § 7.2 (Hero-Headline):** Die alte Hero-Headline „Premium-Website. Fertig konfiguriert. Sofort online." klingt nach dem Tagline-Lock 2026-05-12 Werbe-laut + „Premium" ist Mismatch zur Pricing-Realitaet (16-29 €/Mo). Vor Live-Launch entscheiden: ersetzen durch substanziellere Hero-Headline oder bewusst hero-only-Variante.
+
 ### 7.1 Slogan-Pool (defensive Wording, UWG-konform)
 
 Aus LIVE-COMPLIANCE § 15 + erweitert:
@@ -243,23 +272,27 @@ Aus LIVE-COMPLIANCE § 15 + erweitert:
 | 2 | **Marketing-Website ohne Agentur. Speziell fuer Handwerker, Gastronomen, Berater, Praxen.** | Hero-Alternative, klares Zielgruppen-Statement |
 | 3 | **Wir bauen Ihre Website. Sie bleiben Inhaber.** | Trust-Block, Anti-Builder-Positionierung |
 | 4 | **Schneller online. Professionell betrieben. Transparent abgerechnet.** | Sub-Hero, drei Versprechen |
-| 5 | **Branchengerecht. Mit allen rechtlichen Pflichtangaben. Sofort online.** | Pricing-Page-Header |
+| 5 | **Branchengerecht. AT-Compliance integriert. Sofort online.** | Pricing-Page-Header *(2026-05-12: „rechtliche Pflichtangaben" durch „AT-Compliance" ersetzt — siehe `feedback_keine_rechtliche_pflichten.md`)* |
 | 6 | **Kein Website-Builder. Eine fertige Website.** | Anti-Vergleich zu Wix/Jimdo |
 | 7 | **Fuer Betriebe, die ihre Zeit mit dem Geschaeft verbringen — nicht mit Webdesign.** | Mid-Funnel, Pain-Point-Adressierung |
 
 **Pool-Status:** alle 7 Slogans freigegeben `[ENTSCHIEDEN]` 2026-05-05 — pro Touchpoint wird im jeweiligen Bau-Schritt ausgewaehlt.
 
-### 7.2 Hero-Headline `[ENTSCHIEDEN]` 2026-05-05
+### 7.2 Hero-Headline `[KONFLIKT 2026-05-12 — vor Live-Launch ueberdenken]`
 
-**Primaer:** **"Premium-Website. Fertig konfiguriert. Sofort online."** — drei Versprechen in drei kurzen Phrasen, klare Hierarchie, gut zu setzen.
+> **Hinweis:** Diese Headline wurde 2026-05-05 entschieden, steht aber im Konflikt mit der Editorial-Voice aus § 7.0 (Lock 2026-05-12). „Premium" ist Mismatch zur Pricing-Realitaet (16–29 €/Mo) + Werbe-laut. Vor Live-Launch ersetzen oder als bewusste Hero-only-Variante behalten.
+
+**Primaer (`[KONFLIKT]`):** **"Premium-Website. Fertig konfiguriert. Sofort online."** — drei Versprechen in drei kurzen Phrasen, klare Hierarchie, gut zu setzen.
 
 Verworfene Alternativen (dokumentiert): "Ihre Website. Wir liefern. Sie bleiben Inhaber." / "Branchengerechte Websites fuer oesterreichische KMU."
 
 ### 7.3 Sub-Headlines (Sekundaer-Statement unter Hero)
 
-- "Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — mit allen rechtlichen Pflichtangaben."
+> **Hinweis 2026-05-12:** Sub-Headline 1 enthielt „mit allen rechtlichen Pflichtangaben" — im Marketing tabu (siehe `feedback_keine_rechtliche_pflichten.md`). Ersetzt durch „AT-Compliance integriert". Sub-Headline 3 enthaelt Berufsgruppen-Liste — siehe Hinweis unten zu inklusiver Hauptbotschaft.
+
+- "Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — AT-Compliance integriert."
 - "Kein Website-Builder. Kein Drag-and-Drop. Eine fertige Website fuer Ihren Betrieb."
-- "Speziell fuer Handwerk, Gastro, Praxen, Dienstleister — 12 Berufsgruppen, jede mit eigener kuratierter Vorlage."
+- "Speziell fuer Handwerk, Gastro, Praxen, Dienstleister — 14 Berufsgruppen, jede mit eigener kuratierter Vorlage." *(Berufsgruppen-Liste OK in Sub-Headlines mit „u.a."-Charakter, NICHT in Tagline/About — siehe `feedback_marketing_zielgruppe_inklusiv.md`)*
 
 ### 7.4 CTA-Wording
 
@@ -295,9 +328,11 @@ Verworfene Alternativen (dokumentiert): "Ihre Website. Wir liefern. Sie bleiben 
 
 ### 8.2 Defensive Alternativen
 
+> **Wichtig 2026-05-12:** „rechtliche Pflichten" / „Pflichtangaben" sind **nur** als juristische Defensiv-Sprache (UWG-Audit, AGB/DSE/Impressum-Kontext) verwendbar — **NIEMALS** als Marketing-Hauptbotschaft (Tagline, About, Hero, Pricing-Page). Siehe Memory `feedback_keine_rechtliche_pflichten.md`. Marketing-Alternative: „AT-Compliance integriert" / „mit Impressum und Datenschutz".
+
 | Statt | Besser |
 |---|---|
-| "rechtssicher" | "wir unterstuetzen Sie bei der Erfuellung Ihrer rechtlichen Pflichten" / "mit allen rechtlichen Pflichtangaben" |
+| "rechtssicher" | „wir unterstuetzen Sie bei der Erfuellung Ihrer rechtlichen Pflichten" / „mit allen rechtlichen Pflichtangaben" *(nur juristische Defensiv-Sprache, nicht Marketing — Marketing-Variante: „AT-Compliance integriert")* |
 | "DSGVO-konform" | "DSGVO-orientiert" / "Impressum + Datenschutzerklaerung automatisch" / "mit Hilfestellungen zur DSGVO-Umsetzung" |
 | "100 % Sicher" | "professionell verschluesselt" / "auf Industriestandard abgesichert" |
 | "die beste" | "speziell fuer oesterreichische KMU entwickelt" |

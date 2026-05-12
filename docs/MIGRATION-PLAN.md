@@ -347,6 +347,9 @@ Welche Memorys aus dem Beta-Memory-Store ins Live-Memory:
 | Cloudflare MCP | Pages-Status, KV, Worker-Logs | <https://developers.cloudflare.com/agents/model-context-protocol/> |
 | GitHub CLI (`gh`) | PRs, Issues, Releases | `brew install gh && gh auth login` |
 | Stripe MCP (sobald Live) | Customer/Subscription-Inspektion | <https://stripe.com/docs/mcp> |
+| Sentry MCP (ab Live-Launch) | Stack-Traces + Breadcrumbs direkt in Claude statt Dashboard-Switch | <https://github.com/getsentry/sentry-mcp> |
+| Playwright MCP | Visual-Regression-Runs der Recipes aus Claude triggerbar — vor Cutover Pflicht | <https://github.com/microsoft/playwright-mcp> |
+| Context7 | Versionsaktuelle Docs (Cloudflare Workers, Supabase, Next.js 15) — beendet API-Halluzinationen | <https://github.com/upstash/context7> |
 
 ### 7.2 Custom Skills (im neuen Repo unter `.claude/skills/`)
 

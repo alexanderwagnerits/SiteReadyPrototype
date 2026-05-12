@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="utf-8">
+<title>LinkedIn-Banner — Instantpage.at</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:#e5e5e3;
+    font-family:'Poppins',system-ui,sans-serif;
+    color:#1a1a1a;
+    padding:40px 20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:24px;
+    min-height:100vh;
+  }
+
+  .v-label{
+    font-size:.78rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#6b6058;
+    margin-top:16px;
+  }
+
+  /* Banner-Basis — exakte LinkedIn-Dimensionen */
+  .banner{
+    width:1128px;
+    height:191px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 4px 24px rgba(0,0,0,.10);
+    font-family:'Poppins',system-ui,sans-serif;
+  }
+
+  /* ═══════════════════════════════════════════════
+     DESIGN A — Statement-First, Cream
+     Aesthetik: ruhig, premium, viel Whitespace
+     ═══════════════════════════════════════════════ */
+  .design-a{
+    background:#fdfbf7;
+    display:flex;
+    align-items:center;
+    padding:0 60px 0 340px;
+  }
+  .design-a .heading{
+    font-size:32px;
+    font-weight:600;
+    letter-spacing:-.02em;
+    line-height:1.15;
+    color:#1a1a1a;
+    margin-bottom:10px;
+  }
+  .design-a .heading .accent{
+    color:#2D4A3E;
+  }
+  .design-a .sub{
+    font-size:14px;
+    font-weight:400;
+    letter-spacing:.02em;
+    color:#6b6058;
+  }
+  .design-a .brand{
+    margin-left:auto;
+    padding-left:40px;
+    flex-shrink:0;
+  }
+  .design-a .brand img{
+    height:36px;
+    width:auto;
+    display:block;
+    opacity:.85;
+  }
+
+  /* ═══════════════════════════════════════════════
+     DESIGN B — Tannengrün-Bold, Brand-Signal
+     Aesthetik: laut, brand-stark, in Feed sichtbar
+     ═══════════════════════════════════════════════ */
+  .design-b{
+    background:#2D4A3E;
+    background:linear-gradient(135deg,#2D4A3E 0%,#1f3329 100%);
+    display:flex;
+    align-items:center;
+    padding:0 60px 0 340px;
+    color:#fdfbf7;
+    position:relative;
+  }
+  /* Subtile Pattern-Overlay (Dots) */
+  .design-b::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(circle at 1px 1px,rgba(253,251,247,.06) 1px,transparent 0);
+    background-size:24px 24px;
+    pointer-events:none;
+  }
+  .design-b > *{position:relative;z-index:1}
+  .design-b .heading{
+    font-size:34px;
+    font-weight:600;
+    letter-spacing:-.02em;
+    line-height:1.15;
+    color:#fdfbf7;
+    margin-bottom:10px;
+  }
+  .design-b .sub{
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:rgba(253,251,247,.65);
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .design-b .sub .sep{
+    width:3px;
+    height:3px;
+    border-radius:50%;
+    background:rgba(253,251,247,.4);
+  }
+  .design-b .brand{
+    margin-left:auto;
+    padding-left:40px;
+    flex-shrink:0;
+  }
+  .design-b .brand img{
+    height:36px;
+    width:auto;
+    display:block;
+    filter:brightness(0) invert(1);
+    opacity:.92;
+  }
+
+  /* ═══════════════════════════════════════════════
+     DESIGN C — Pill-Statements, strukturiert
+     Aesthetik: B2B-clear, USP-stack sichtbar
+     ═══════════════════════════════════════════════ */
+  .design-c{
+    background:#fdfbf7;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:0 60px 0 340px;
+    position:relative;
+  }
+  /* Tannengrün-Akzentstreifen links */
+  .design-c::before{
+    content:'';
+    position:absolute;
+    left:340px;
+    top:50%;
+    transform:translateY(-50%);
+    width:3px;
+    height:90px;
+    background:#2D4A3E;
+    border-radius:2px;
+  }
+  .design-c .inner{
+    padding-left:24px;
+  }
+  .design-c .heading{
+    font-size:26px;
+    font-weight:600;
+    letter-spacing:-.015em;
+    line-height:1.2;
+    color:#1a1a1a;
+    margin-bottom:14px;
+  }
+  .design-c .pills{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .design-c .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 14px;
+    background:rgba(45,74,62,.07);
+    border:1px solid rgba(45,74,62,.15);
+    border-radius:100px;
+    font-size:12px;
+    font-weight:500;
+    color:#2D4A3E;
+    letter-spacing:.01em;
+  }
+  .design-c .pill::before{
+    content:'';
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:#2D4A3E;
+  }
+  .design-c .brand{
+    position:absolute;
+    right:60px;
+    top:50%;
+    transform:translateY(-50%);
+  }
+  .design-c .brand img{
+    height:34px;
+    width:auto;
+    display:block;
+    opacity:.85;
+  }
+
+  /* ───────────────────────────────
+     Logo-Safe-Zone-Overlay (Toggle)
+     ─────────────────────────────── */
+  .safe-overlay{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:300px;
+    height:100px;
+    pointer-events:none;
+    border:2px dashed rgba(220,20,60,.35);
+    background:rgba(220,20,60,.05);
+    display:none;
+    z-index:10;
+  }
+  body.safe-on .safe-overlay{display:block}
+
+  .toggle-safe{
+    position:fixed;
+    top:16px;
+    right:16px;
+    padding:8px 14px;
+    background:#fdfbf7;
+    border:1px solid #1a1a1a;
+    border-radius:6px;
+    font-family:inherit;
+    font-size:.78rem;
+    font-weight:600;
+    cursor:pointer;
+    z-index:100;
+  }
+
+  .instructions{
+    max-width:1128px;
+    margin-top:24px;
+    padding:20px 24px;
+    background:#fdfbf7;
+    border-left:3px solid #2D4A3E;
+    font-size:.88rem;
+    line-height:1.7;
+    color:#1a1a1a;
+  }
+  .instructions h3{
+    font-size:1rem;
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  .instructions code{
+    font-family:'JetBrains Mono',monospace;
+    background:rgba(45,74,62,.08);
+    padding:1px 6px;
+    border-radius:3px;
+    font-size:.82rem;
+  }
+</style>
+</head>
+<body>
+
+<button class="toggle-safe" onclick="document.body.classList.toggle('safe-on')">Logo-Safe-Zone ein/aus</button>
+
+<div class="v-label">Design A — Statement-First Cream (Premium, ruhig)</div>
+<div class="banner design-a">
+  <div>
+    <div class="heading">Die Website für österreichische <span class="accent">KMU</span>.</div>
+    <div class="sub">10 Minuten Aufwand · Branchen-typisch · AT-Compliance integriert</div>
+  </div>
+  <div class="brand"><img src="/instantpage-logo.png" alt="instantpage.at"></div>
+  <div class="safe-overlay"></div>
+</div>
+
+<div class="v-label">Design B — Tannengrün Brand-Signal (laut, in Feed sichtbar)</div>
+<div class="banner design-b">
+  <div>
+    <div class="heading">Die Website für österreichische KMU.</div>
+    <div class="sub">
+      <span>10 Minuten Aufwand</span>
+      <span class="sep"></span>
+      <span>Branchen-typisch</span>
+      <span class="sep"></span>
+      <span>AT-Compliance</span>
+    </div>
+  </div>
+  <div class="brand"><img src="/instantpage-logo.png" alt="instantpage.at"></div>
+  <div class="safe-overlay"></div>
+</div>
+
+<div class="v-label">Design C — Pill-Statements strukturiert (B2B-clear)</div>
+<div class="banner design-c">
+  <div class="inner">
+    <div class="heading">Die Website für österreichische KMU. In 10 Minuten.</div>
+    <div class="pills">
+      <span class="pill">Branchen-typisch</span>
+      <span class="pill">AT-Compliance integriert</span>
+      <span class="pill">Für Google optimiert</span>
+    </div>
+  </div>
+  <div class="brand"><img src="/instantpage-logo.png" alt="instantpage.at"></div>
+  <div class="safe-overlay"></div>
+</div>
+
+<div class="instructions">
+  <h3>Schriftart: Poppins (Brand-Lock 2026-05-12)</h3>
+  <p style="margin-bottom:12px">Alle drei Designs verwenden Poppins. Lock in <code>docs/BRAND.md § 4.1</code> festgehalten.</p>
+  <h3>PNG-Export</h3>
+  <ol style="padding-left:18px;margin-top:8px;display:flex;flex-direction:column;gap:6px">
+    <li>Variante auswählen</li>
+    <li>Rechtsklick auf Banner → „Inspect"</li>
+    <li>DevTools: Cmd-Shift-P (Mac) / Strg-Shift-P (Win) → „Capture node screenshot" → Enter</li>
+    <li>PNG mit ~1128×191 px ist im Download-Ordner</li>
+    <li>LinkedIn → Company Page → „Edit Page" → Cover Image hochladen</li>
+  </ol>
+  <p style="margin-top:12px;font-size:.82rem;color:#6b6058">
+    Gestrichelter roter Bereich = LinkedIn-Logo-Overlay (300×100 unten-links). Wird nicht mit-screenshotted, nur Orientierung. Toggle oben rechts.
+  </p>
+</div>
+
+</body>
+</html>

@@ -395,6 +395,269 @@ Hero (große Action-Foto, Trust-Bar: Verband/Zertifikate)
 
 ---
 
+## Branchen-Inhalts-Defaults (pro Berufsgruppe)
+
+> **Stand:** 2026-05-12
+> **Zweck:** Branchen-typische Trust-Pills, Leistungen-Themen, FAQ-Themen, Compliance-Hinweise als **Default-Hypothesen** fuer KI-Generierung und Onboarding-Vorausfuellung. Looks (Werkstatt/Modern/Premium/Klassisch/Editorial) variieren primaer Stil-Klasse + Akzentfarbe, nicht Inhalts-Themen — daher Defaults branchen-weit definiert.
+>
+> **Wichtig:** Defaults sind **Hypothesen aus Branchen-Wissen**, NICHT validierte Echtdaten. Bei Recipe-Bau gegen echte Kunden-Realitaet pruefen. Phase-Polish (siehe `references/<berufsgruppe>.md` Reference-Library) ergaenzt Defaults mit echten Branchen-Recherchen.
+>
+> **Status pro Block:** `[GEFUELLT]` = Defaults eingetragen + branchen-plausibel. `[BRANCHEN-REVIEW-PFLICHT]` = Defaults sind nicht final, brauchen Validierung bei Recipe-Bau.
+
+---
+
+### Handwerk (#1, #2, #3) `[GEFUELLT]`
+
+Inkl. Tischlerei, Schmied, Schlosser, Elektriker, Installateur, Glaser, Maler, Bodenleger.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Innungs-Mitgliedschaft (z.B. „Tischler-Innung NÖ") · Meisterbetrieb · Lehrbetrieb seit Jahr · Region/PLZ-Bezug |
+| **Leistungen-Themen** (6) | Kern-Gewerk (z.B. Massivholzmöbel) · Reparatur/Restaurierung · Sonderanfertigung nach Maß · Auf-/Innenausbau · Wartung/Service · Notdienst (falls vorhanden) |
+| **FAQ-Themen** (5) | Festpreis bindend? · Wartezeit/Vorlaufzeit? · Holz/Material-Empfehlung? · Garantie/Gewährleistung? · Lieferradius? |
+| **Compliance** | Gewerbeschein-Anzeige (Impressum). Reglementiertes Gewerbe — Meister-Pflicht je nach Tätigkeit. Keine besondere Werbe-Restriktion. |
+| **Look-Differenzierung** | Werkstatt (`.stil-modern` + Bronze, Foto-Hero) vs Modern (`.stil-modern` + Indigo, Tech-Vibe) vs Premium (`.stil-elegant` + Old-Gold, edel) |
+
+→ Anker-Recipe-Spec: [`recipes/handwerk-werkstatt.md`](recipes/handwerk-werkstatt.md)
+
+---
+
+### Bau & Sanierung (#4, #5) `[GEFUELLT]`
+
+Inkl. Baumeister, Maurer, Dachdecker, Trockenbau, Stuckateur, Fliesenleger.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | WK-Bau-Mitgliedschaft · Konzessionierter Baumeister · Versicherung Bauwesen · Eigene Mitarbeiter (kein Sub-Vertrieb) |
+| **Leistungen-Themen** (6) | Rohbau / Mauerwerk · Zu- & Umbauten · Sanierung / Renovierung · Abbrucharbeiten · Estricharbeiten · Fassade |
+| **FAQ-Themen** (5) | Kostenvoranschlag verbindlich? · Bauzeit-Realismus? · Versicherung bei Bauschaeden? · Eigene Mitarbeiter vs Sub? · Foerderungen (Sanierung)? |
+| **Compliance** | Konzessionspflicht Baumeister. Pflicht-Versicherung Bauwesen-Haftpflicht. Impressum + Konzessions-Behoerde. |
+| **Look-Differenzierung** | Klassisch (`.stil-klassisch` + Navy, corporate) vs Premium (`.stil-elegant` + Anthrazit, edel-architektonisch) |
+
+---
+
+### Gastro (#6, #7, #8) `[GEFUELLT, #6 TBD]`
+
+Inkl. Restaurant, Wirtshaus, Beisl, Heuriger, Café, Pizzeria, Bistro, Bar, Hauben-Restaurant.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Hauben/Sterne (falls vorhanden) · Falstaff-Bewertung · Familienbetrieb seit Jahr · Bio/Regional-Auszeichnung |
+| **Leistungen-Themen** (6) | Speisekarte/Tageskarte · Wein- & Getränkekarte · Veranstaltungen / Catering · Reservierung · Brunch/Frühstück · Take-Away/Lieferung |
+| **FAQ-Themen** (5) | Reservierung erforderlich? · Kinderwagen-/Hund-freundlich? · Vegane/glutenfreie Optionen? · Parkmöglichkeiten? · Veranstaltungs-Buchungen? |
+| **Compliance** | Speisekarte-Allergen-Kennzeichnung (LMSVG) · Preise inkl. USt · Öffnungszeiten + Ruhetag-Angabe · Reservierungsbedingungen (AGB-light) |
+| **Branchen-Funktionen** | `speisekarte: true` (Items in Leistungen mit Preis-Spalte), `reservierung: true` (Form-Variante mit Datum + Personen) |
+| **Look-Differenzierung** | Wirtshaus #6 `[TBD]` (warm-traditionell, `.stil-klassisch` + Burgund vermutlich) · Casual #7 (`.stil-klassisch` + Terra, alltagsfreundlich) · Editorial #8 (`.stil-elegant` + Petrol, hauben-niveau) |
+
+---
+
+### Gesundheit (#9, #10) `[BRANCHEN-REVIEW-PFLICHT]`
+
+Inkl. Hausarzt, Zahnarzt, Praxis, Klinik, Tierarzt, Physiotherapie, Massage, Osteopathie, Heilpraktiker, Logopäde.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Aerztekammer-Mitgliedschaft · Kassenvertrag (oder Wahlarzt) · Fachausbildung-Zertifikate · Praxis seit Jahr |
+| **Leistungen-Themen** (6) | Kernleistungen (branchenspezifisch — z.B. Allgemeinmedizin: Vorsorge / Akutbehandlung / Impfungen / Wundversorgung / Mutter-Kind-Pass / Kassen-Routine) |
+| **FAQ-Themen** (5) | Kassenvertrag / Wahlarzt-Status? · Termin online buchbar? · Akut-Termine ohne Voranmeldung? · Hausbesuche? · Online-Beratung? |
+| **Compliance** (strikt) | Aerztegesetz § 53 — **kein reklamehafte Werbung**, kein Vergleich mit anderen Aerzten, **keine Heilversprechen** · Diplom/Facharztanerkennung-Pflichtangabe · Aerztekammer-Mitgliedschaft Pflicht (Impressum) · Quality-Score-Schwelle ≥ 85 |
+| **Verbotene Wording** (KI-Prompt-Filter) | „beste Praxis", „garantierte Heilung", „100 %ige Erfolgsquote", „bester Arzt", Vergleiche mit anderen Aerzten |
+| **Branchen-Funktionen** | `termin_anfrage: true` (Form mit Wunschtermin-Picker), `sprechzeiten: true` (Wochentage-Liste in Kontakt), evtl. `notdienst_banner` bei Praxis-Notdienst |
+| **Look-Differenzierung** | Praxis #9 (`.stil-klassisch` + Medical-Blue, klinisch-vertrauensvoll) · Therapie #10 (`.stil-klassisch` + Warm-Sage, beruhigend, weicher) |
+
+---
+
+### Recht & Finanz (#11, #12) `[GEFUELLT, Compliance strikt]`
+
+Inkl. Anwalt, Notar, Steuerberater, Wirtschaftsprüfer, Versicherungsmakler, Vermögensberater.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Rechtsanwaltskammer / Notariatskammer / KSW-Mitgliedschaft · Seit Jahr · Region · Erstgespraech unverbindlich |
+| **Leistungen-Themen** (6) | Rechtsgebiete / Fachbereiche (branchenspezifisch — z.B. Wirtschaftsrecht / Vertragsrecht / Arbeitsrecht / Erbrecht / Streitbeilegung / Compliance) |
+| **FAQ-Themen** (5) | Erstgespraech-Konditionen? · Honorargestaltung (Festpreis vs RATG)? · Mandate ausserhalb Region? · Vertraulichkeit/Verschwiegenheit? · Einmal-Mandat moeglich? |
+| **Compliance** (strikt) | **RAO § 12 Werberecht** — keine reklamehafte / vergleichende Werbung · Anwaltliche Verschwiegenheit RAO § 9 · RAK-Mitgliedschaft Pflicht · RATG-Referenz bei Stundensatz · Quality-Score ≥ 85 |
+| **Verbotene Wording** (KI-Prompt-Filter) | „Top-Anwalt", „Bester Anwalt", „Garantierter Erfolg", „kostenlos" (statt „unverbindlich") |
+| **Look-Differenzierung** | Klassisch #11 (`.stil-klassisch` + Navy, corporate-Anwalt) · Premium #12 (`.stil-elegant` + Anthrazit/Mahagoni, klassische Kanzlei) |
+
+→ Anker-Recipe-Spec: [`recipes/anwalt-klassisch.md`](recipes/anwalt-klassisch.md)
+
+---
+
+### Beratung & Coaching (#13, #14) `[GEFUELLT]`
+
+Inkl. Unternehmensberater, Coach, Mentor, Trainer, Speaker, Strategieberatung, Consulting.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | WKO Unternehmensberater · WKO-Zertifizierungen · CFO/CEO-Vergangenheit · Eingetragener Mediator · Branchen-Erfahrung (Jahre) |
+| **Leistungen-Themen** (6) | Strategie-Workshop · Nachfolge-Begleitung · Wachstums-Strategie · Geschaeftsmodell-Audit · Pricing-Beratung · Sparring-Termin |
+| **FAQ-Themen** (5) | Honorare/Festpreise? · Zielgruppen-Groessen? · Unterschied zu Grossberatung? · Vertraulichkeit/NDA? · Online vs Vor-Ort? |
+| **Compliance** | WKO-Mitgliedschaft Pflicht. Kein besonderes Werberecht. „Erstgespraech kostenlos" UWG-konform wenn sachlich. |
+| **Look-Differenzierung** | Modern #13 (`.stil-klassisch` + Tannengruen, Person-fokussiert) · Premium #14 (`.stil-elegant` + Anthrazit-Gold, edel-konservativ) |
+
+→ Anker-Recipe-Spec: [`recipes/beratung-modern.md`](recipes/beratung-modern.md)
+
+---
+
+### Architektur & Planung (#15, #16) `[GEFUELLT]`
+
+Inkl. Architekt, Innenarchitekt, Ingenieurbüro, Statik, Vermessung, Tragwerksplanung.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Architektenkammer · Ziviltechniker · Eingetragener Architekt · Projekt-Awards · Seit Jahr |
+| **Leistungen-Themen** (6) | Wohnbau · Gewerbebau / Industrie · Sanierung & Umbau · Innenarchitektur · Generalplanung · Beratung & Einreichung |
+| **FAQ-Themen** (5) | Honorar (HOAI/AT-Tarif)? · Projekt-Phasen? · Realisierungsbegleitung? · Sanierung von Altbestand? · Foerderungen? |
+| **Compliance** | Ziviltechnikergesetz · Kammer-Mitgliedschaft Pflicht (Impressum) · Honorarordnung Architekten Quality-Score ≥ 80 (Premium-Anspruch) |
+| **Branchen-Funktionen** | Galerie hochwertig prominent (Projekt-Visuals sind Hauptverkaufsargument) |
+| **Look-Differenzierung** | Klassisch #15 (`.stil-klassisch` + Anthrazit, sachlich-corporate) · Editorial #16 (`.stil-elegant` + Anthrazit, magazin-ruhig) |
+
+---
+
+### IT & Digital (#17, #18) `[GEFUELLT]`
+
+Inkl. IT-Dienstleister, Webdesign, Webagentur, Software-Entwickler, Marketingagentur, Programmierer.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | UBIT-Mitgliedschaft (WKO Unternehmensberatung/IT) · Zertifizierungen (z.B. Microsoft Partner, AWS, Google) · Seit Jahr · Referenz-Kunden |
+| **Leistungen-Themen** (6) | Webentwicklung · App-Entwicklung · IT-Beratung · Cloud / Hosting · Marketing / SEO · Wartung / Support |
+| **FAQ-Themen** (5) | Stundensatz / Festpreis? · Projekt-Methodik (agile/waterfall)? · Maintenance nach Projekt? · Hosting im Preis? · Daten-Hoheit? |
+| **Compliance** | DSGVO besonders heikel (Cookie-Banner, AVV bei Verarbeiter-Rollen). WKO-Mitgliedschaft via UBIT. |
+| **Look-Differenzierung** | Modern #17 (`.stil-modern` + Indigo, tech-frisch) · Premium #18 (`.stil-elegant` + Petrol, edel-tech) |
+
+---
+
+### Bildung (#19, #20) `[GEFUELLT]`
+
+Inkl. Schule, Akademie, Kurszentrum, Sprachschule, Privat-Schule, Online-Kurse, Lernzentrum, Nachhilfe.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Akkreditierung (z.B. Cambridge, AT-Bildungsministerium) · WIFI/BFI-Partner · AMS-Foerderung · Seit Jahr |
+| **Leistungen-Themen** (6) | Kurs-Programm · Einzelunterricht · Gruppenkurse · Online-Kurse · Pruefungsvorbereitung · Sommerkurse / Intensive |
+| **FAQ-Themen** (5) | Kursgebuehren? · AMS-/Foerder-Faehigkeit? · Kursdauer / Stundenanzahl? · Pruefungsmoeglichkeit? · Online vs Praesenz? |
+| **Compliance** | Bildungsministerium-Anerkennung wenn anwendbar. Pflichtangaben Trainer-Qualifikation. |
+| **Look-Differenzierung** | Klassisch #19 (`.stil-klassisch` + Navy, akademisch) · Modern #20 (`.stil-modern` + Tannengruen, jugendlich) |
+
+---
+
+### Tourismus (#21, #22, #23) `[GEFUELLT, #22 TBD]`
+
+Inkl. Hotel, Pension, Stadthotel, Berghütte, Almhütte, Frühstückspension, Apartments.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Sterne-Klassifizierung · TripAdvisor / Booking-Bewertung · WKO Hotelfachgruppe · Seit Jahr · Region-Spezifikum (Alpenverein-Schutzhütte etc.) |
+| **Leistungen-Themen** (6) | Zimmer / Suiten · Restaurant / Kulinarik · Wellness / Spa · Events / Hochzeiten · Aktivitaeten in der Region · Frueck / Halbpension |
+| **FAQ-Themen** (5) | Anreise / Parken? · Haustier-Politik? · Kinder-freundlich? · Stornobedingungen? · Familien-/Gruppenraten? |
+| **Compliance** | Tourismusabgabe-Anmeldung pro Bundesland · WKO Hotelfachgruppe-Mitgliedschaft. AGB für Buchungen Pflicht. Anzahlung/Stornoregeln transparent. |
+| **Branchen-Funktionen** | `buchung: true` (Form mit Anreise/Abreise/Personen), evtl. Booking-Engine-Embed (separater Live-Block) |
+| **Look-Differenzierung** | Klassisch #21 (Stadt-Hotel, `.stil-klassisch` + Petrol) · Rustikal #22 `[TBD]` (Berghütte, `.stil-klassisch` + Old-Gold vermutlich) · Editorial-Premium #23 (`.stil-elegant` + Old-Gold, magazin-luxus) |
+
+---
+
+### Handel (#24, #25) `[GEFUELLT]`
+
+Inkl. Buchhandel, Fachgeschäft, Apotheke, Modegeschäft, Boutique, Schmuckgeschäft, Optiker, Floristik.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | WKO Handelsverband · Marken-Partner (z.B. „Officieller Rolex-Haendler") · Seit Jahr · Sortiment-Spezialisierung |
+| **Leistungen-Themen** (6) | Sortiment-Bereich-1 / -2 / -3 · Beratung · Anpassung / Service · Lieferung · Onlineshop · Reparatur (falls relevant) |
+| **FAQ-Themen** (5) | Beratungs-Termin? · Liefer-/Versandkosten? · Rückgabe / Umtausch? · Anprobe / Vor-Ort-Termin? · Online-Bestand-Synchronisation? |
+| **Compliance** | Apotheke: ApoG strikt (Rezept-Regeln, keine Heilversprechen) · Optiker: Optiker-Gesetz · Lebensmittel-Handel: LMSVG |
+| **Look-Differenzierung** | Klassisch #24 (`.stil-klassisch` + Navy, sachlich) · Boutique-Premium #25 (`.stil-elegant` + Old-Gold, edel) |
+
+---
+
+### Mobilität (#26, #27, #28) `[GEFUELLT]`
+
+Inkl. Spedition, Taxi, Logistik, KFZ-Werkstatt, Autohaus, Reifenhandel, Karosserie, Fahrschule.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | KFZ-Innung · TÜV/Pickerl-Stelle · Markenwerkstatt (BMW, VW, Mercedes-Partner) · Seit Jahr |
+| **Leistungen-Themen** (6) | Service & Inspektion · Reparatur · Reifenservice · Pickerl § 57a · Karosserie & Lackierung · Auto-Verkauf (wenn Autohaus) |
+| **FAQ-Themen** (5) | Termin-Vorlaufzeit? · Marken-Spezialisierung? · Ersatzwagen? · Karosserie-Versicherung-Abwicklung? · Holservice? |
+| **Compliance** | Pickerl § 57a-Berechtigung sichtbar. KFZ-Innung-Mitgliedschaft. Garantie-Konditionen klar. |
+| **Look-Differenzierung** | Funktional #26 (`.stil-klassisch` + Navy, sachlich) · Werkstatt #27 (`.stil-klassisch` + Stahlblau, technisch) · Showroom #28 (`.stil-elegant` + Anthrazit, edel-auto) |
+
+---
+
+### Agrar (#29, #30, #31) `[GEFUELLT, #29 + #31 TBD]`
+
+Inkl. Bauernhof, Landwirtschaft, Hofladen, Bio-Hof, Imker, Käserei, Weingut, Winzer, Edelbrennerei.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Bio-Zertifizierung (Bio Austria, Demeter) · AMA-Gütesiegel · Familienbetrieb seit Generation · Region/Bundesland |
+| **Leistungen-Themen** (6) | Hauptprodukt-Sortiment (z.B. Wein: Weiß / Rot / Sekt / Edelbrand / Veranstaltungen / Verkostung) · Hofladen-Öffnungszeiten · Heuriger/Buschenschank (Wein) · Lieferung / Versand · Genusserlebnisse |
+| **FAQ-Themen** (5) | Hofladen-Oeffnungszeiten? · Versand / Liefergebiet? · Verkostung-Buchung? · Bio-/Demeter-Standards? · Hofführungen? |
+| **Compliance** | LMSVG (Lebensmittel-Kennzeichnung) · Bio-Zertifizierung-Audit · Heuriger-Konzession (Wein) · Weinetiketten-Pflichtangaben |
+| **Look-Differenzierung** | Klassisch #29 `[TBD]` (`.stil-klassisch` + Tannengruen vermutlich, Hofladen-traditional) · Editorial-Premium #30 (Wein/Brennerei, `.stil-elegant` + Anthrazit-Gold) · Erlebnis-Premium #31 `[TBD]` (Bio-Hof Premium, `.stil-klassisch` + Burgund vermutlich) |
+
+---
+
+### Industrie (#32, #33) `[GEFUELLT]`
+
+Inkl. Maschinenbau, Industrie, Fertigung, Produktion, B2B-Hersteller, Anlagenbau, Werkzeugbau.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | ISO-Zertifizierungen (9001/14001/45001) · Branchen-Verband-Mitgliedschaft (FMTI, VOEB) · Seit Jahr · Export-Quote / Internationalität |
+| **Leistungen-Themen** (6) | Fertigung / Produktion · Konstruktion / Engineering · Prototypen / Werkzeugbau · Wartung / Service · Beratung · Komponenten-Versand |
+| **FAQ-Themen** (5) | Lieferzeiten? · Stückzahlen-Min/Max? · Materialprüfung / Zertifikate? · After-Sales-Service? · Internationale Lieferung? |
+| **Compliance** | Branchen-spezifisch (Maschinenrichtlinie, REACH bei Chemie etc.). DSGVO bei Kunden-/Lieferanten-Datenbanken. |
+| **Look-Differenzierung** | Technisch #32 (`.stil-klassisch` + Navy, sachlich-engineering) · Tech-Modern #33 (`.stil-modern` + Petrol, moderner Industrie-Vibe) |
+
+---
+
+### Kosmetik (#34, #35) `[GEFUELLT]`
+
+Inkl. Friseur, Friseursalon, Nageldesign, Kosmetikstudio, Beauty-Studio, Wimpernverlängerung, Permanent Make-up.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Friseur-Innung · Meisterbetrieb · Brand-Partner (Wella, L'Oréal) · Seit Jahr · Mitarbeiter-Anzahl |
+| **Leistungen-Themen** (6) | Haarschnitt / Styling · Färben / Strähnchen · Pflege / Behandlungen · Hochsteckfrisuren / Braut · Beauty-Behandlungen · Make-up |
+| **FAQ-Themen** (5) | Termin online buchen? · Kinder-Friseur? · Beratung kostenlos? · Marken / Produkte? · Hochzeits-Paket? |
+| **Compliance** | Gewerbeschein. Bei Permanent Make-up: Schulungsnachweis. AGB für Termine. |
+| **Branchen-Funktionen** | `termin_anfrage: true` (Form mit Wunschtermin) oder Embed-Buchungs-Tool (Booksy, Treatwell) |
+| **Look-Differenzierung** | Modern #34 (`.stil-modern` + Korallenrot, frisch-trendig) · Premium #35 (`.stil-elegant` + Anthrazit-Gold, edel-spa-vibe) |
+
+---
+
+### Kultur (#36, #37) `[GEFUELLT]`
+
+Inkl. Galerie, Museum, Theater, Atelier, Künstler, Fotograf, Filmemacher, Designer, Musiker.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Ausstellungs-Historie / Awards · Vertretene Künstler · Galerie-Verband · Seit Jahr · Pressestimmen |
+| **Leistungen-Themen** (6) | Ausstellungs-Programm · Sammlung / Bestand · Beratung / Acquisition · Events / Vernissagen · Online-Shop / Editionen · Workshops |
+| **FAQ-Themen** (5) | Oeffnungszeiten? · Eintritt frei / Sammlerpreise? · Privat-Ausstellung buchen? · Online-Kauf möglich? · Künstler-Anfragen? |
+| **Compliance** | Künstler-Sozialversicherungsfonds-Nachweise bei Galerien · Urheberrecht bei Werke-Darstellung |
+| **Look-Differenzierung** | Modern #36 (`.stil-modern` + Tannengruen, contemporary) · Editorial #37 (`.stil-elegant` + Bronze, kunst-magazinhaft) |
+
+---
+
+### Sport & Wellness (#38, #39) `[GEFUELLT]`
+
+Inkl. Yoga-Studio, Fitness-Studio, Personal Trainer, Wellness, Spa, Sportverein, Pilates, CrossFit.
+
+| Default-Slot | Werte |
+|---|---|
+| **Trust-Pills** (Hero, 2-3) | Trainer-Zertifizierungen · Verbands-Mitgliedschaft (Yoga Allianz, EuropeActive) · Seit Jahr · Mitglieder-Anzahl |
+| **Leistungen-Themen** (6) | Stundenplan / Klassen · Personal Training · Probestunde · Mitgliedschaft / Abo-Modelle · Workshops / Retreats · Online-Klassen |
+| **FAQ-Themen** (5) | Probestunde gratis? · Mitgliedschafts-Bindung / Kündigung? · Anfaenger-tauglich? · Equipment-Pflicht? · Kursorte (mehrere)? |
+| **Compliance** | Trainer-Qualifikations-Nachweis (Yoga: 200h / 500h). AGB für Mitgliedschaften klar. Auto-Renewal-Hinweis. Gesundheits-Hinweise (kein „Heilversprechen"). |
+| **Branchen-Funktionen** | Stundenplan-Embed (Eversports, Fitogram) oder eigene Liste; `termin_anfrage: true` für Probestunden |
+| **Look-Differenzierung** | Studio #38 (`.stil-modern` + Tannengruen, frisch-bewegungsfreundlich) · Premium #39 (`.stil-elegant` + Anthrazit, spa-luxus) |
+
+---
+
 ## Datenmodell-Bridge (Backend-Hinweis)
 
 Im `orders`-Datensatz braucht's pro Recipe diese Felder:

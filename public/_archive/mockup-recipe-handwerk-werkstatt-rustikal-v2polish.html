@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tischlerei Pichler — Massivholzmöbel aus dem Mostviertel</title>
+<meta name="description" content="Tischlerei Pichler in Steinakirchen am Forst. Massivholzmöbel, Innenausbau, Treppenbau und Restaurierung — dritte Generation, seit 1958.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unna:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   RECIPE 1 — Handwerk · Werkstatt · Rustikal
+   Anker-Recipe #1 fuer Phase 1 Top-Down-Strategie.
+   Architektur: Beta-Template (functions/templates/template.js)
+   Tokens: docs/_design/themes.md § Theme 3 Rustikal
+   Reference-DNA: docs/_design/references/handwerk.md
+   Konfig: docs/_design/recipe-konfiguration.md Recipe 1
+   Persona: Tischlerei Pichler · Mostviertel · 3. Gen seit 1958
+   ═══════════════════════════════════════════════════════ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+a,button,input,select,textarea{touch-action:manipulation}
+
+:root{
+  --primary:#3d2818;
+  --primary-deep:#2a1a0e;
+  --accent:#7a3528;
+  --accent-warm:#c9904a;
+  --bg:#f5f1e8;
+  --bg-alt:#ebe2d0;
+  --sep:#d4c4a4;
+  --text:#2c241a;
+  --textMuted:#6b5d4a;
+  --white:#faf6ec;
+  --r:3px;
+  --rLg:5px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --fontHeading:'Unna',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+  --maxW:1100px;
+  --sectionY:90px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
+body{
+  font-family:var(--font);color:var(--text);
+  line-height:1.7;font-size:1rem;
+  background:var(--white);-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:clip;max-width:100vw;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+h1,h2,h3,h4,.s-h2{font-family:var(--fontHeading)}
+h1 em,h2 em,h3 em{font-style:italic;color:var(--accent-warm)}
+.w{max-width:var(--maxW);margin:0 auto;padding:0 28px}
+@media(min-width:900px){.w{padding:0 32px}}
+
+/* ═══ RECIPE-MARKER (nur Mockup, im Live entfernen) ═══ */
+.recipe-marker{position:fixed;top:14px;right:14px;z-index:200;background:rgba(58,36,18,.92);backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(201,144,74,.32);border-radius:100px;padding:10px 18px;font-family:'Inter',system-ui,sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#f5e7c8;box-shadow:0 12px 32px rgba(0,0,0,.24);display:inline-flex;align-items:center;gap:10px}
+.recipe-marker .dot{width:8px;height:8px;border-radius:50%;background:var(--accent-warm)}
+
+/* ═══ SECTION HEADERS ═══ */
+.s-label,.leist-label,.sec-label{display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.s-h2,.leist h2,.kontakt h2{font-size:clamp(1.6rem,3.2vw,2.4rem);font-weight:700;color:var(--primary);letter-spacing:-.005em;margin-bottom:12px;line-height:1.2}
+.s-intro,.leist-intro{color:var(--textMuted);font-size:.95rem;max-width:540px;line-height:1.7}
+
+/* ═══ NAV ═══ */
+#sitenav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 0;transition:background .35s var(--ease),backdrop-filter .35s,box-shadow .35s,padding .35s}
+#sitenav.scrolled{background:color-mix(in srgb,var(--primary-deep) 92%,transparent);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 22px rgba(0,0,0,.22);border-bottom:1px solid rgba(201,144,74,.14);padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav-brand{display:flex;align-items:center;gap:14px;color:#fff}
+.nav-brand-mark{width:42px;height:42px;border-radius:var(--rLg);background:rgba(201,144,74,.14);border:1px solid rgba(201,144,74,.36);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14.5px;color:#fff;letter-spacing:-.01em;font-family:var(--fontHeading)}
+.nav-brand-name{font-weight:700;font-size:15.5px;color:#fff;letter-spacing:-.012em;line-height:1.1}
+.nav-brand-name .accent-italic{font-style:italic;color:var(--accent-warm);font-weight:400}
+.nav-brand-sub{font-size:11px;color:rgba(255,235,205,.62);font-weight:500;letter-spacing:.06em;margin-top:2px;font-family:'Inter',sans-serif}
+.nav-links{display:flex;gap:30px}
+.nav-links a{color:rgba(255,235,205,.78);font-size:14px;font-weight:500;transition:color .2s;padding:6px 0}
+.nav-links a:hover{color:#fff}
+.nav-links a:focus-visible{outline:2px solid rgba(201,144,74,.6);outline-offset:4px;border-radius:2px}
+
+/* ═══ HERO ═══ */
+.hero{
+  background:linear-gradient(150deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,#000) 55%,color-mix(in srgb,var(--accent) 80%,#1a0f08) 100%);
+  color:#fff;display:flex;align-items:center;position:relative;
+  min-height:92vh;min-height:92svh;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.55;mix-blend-mode:overlay;
+}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxW);margin:0 auto;padding:120px 28px 60px}
+.hero-sub{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border:1px solid rgba(201,144,74,.32);border-radius:100px;background:rgba(201,144,74,.14);backdrop-filter:blur(8px);font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,235,205,.95);margin-bottom:22px}
+.hero-sub-sep{opacity:.55;font-weight:500}
+.hero h1{font-size:clamp(2.6rem,5.3vw,4.4rem);font-weight:700;line-height:1.06;letter-spacing:-.005em;margin-bottom:20px;max-width:780px;color:#fff}
+.hero h1 em{font-style:italic;color:var(--accent-warm);font-weight:700}
+.hero-desc{font-family:'Inter',sans-serif;font-size:.96rem;color:rgba(255,235,205,.74);max-width:520px;margin-bottom:34px;line-height:1.78}
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0}
+
+.hero-trust-bar{position:relative;z-index:2;margin-top:36px;padding-top:24px;border-top:1px solid rgba(201,144,74,.18);display:flex;flex-wrap:wrap;gap:12px 28px}
+.t-item{display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:rgba(255,235,205,.84);white-space:nowrap}
+.t-icon{width:28px;height:28px;border-radius:var(--r);border:1px solid rgba(201,144,74,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(201,144,74,.06)}
+.t-icon svg{width:14px;height:14px;color:rgba(255,220,170,.78)}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 32px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;border-radius:var(--r);transition:all .2s var(--ease);letter-spacing:.01em;cursor:pointer;position:relative}
+.btn::after{content:"→";display:inline-block;opacity:0;margin-left:0;transform:translateX(-6px);transition:opacity .28s,transform .28s,margin-left .28s;font-weight:600}
+.btn:hover::after{opacity:1;transform:translateX(0);margin-left:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,0,0,.22)}
+.btn:focus-visible{outline:2px solid var(--accent-warm);outline-offset:3px}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(122,53,40,.32)}
+.btn-accent:hover{background:color-mix(in srgb,var(--accent) 80%,#000);opacity:1}
+.btn-ghost{background:rgba(201,144,74,.1);color:rgba(255,235,205,.92);border:1.5px solid rgba(201,144,74,.32);backdrop-filter:blur(6px)}
+.btn-ghost:hover{border-color:var(--accent-warm);color:#fff;background:rgba(201,144,74,.18)}
+
+/* ═══ LEISTUNGEN — alternierend, mit Foto + Werkstuecke-Atmosphaere ═══ */
+.leist{padding:var(--sectionY) 0;background:var(--bg);position:relative}
+.leist-head{margin-bottom:56px}
+.leist-list{display:grid;gap:64px;margin-bottom:0}
+.leist-item{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.leist-item:nth-child(even){direction:rtl}
+.leist-item:nth-child(even) > *{direction:ltr}
+.leist-item-img{
+  border:8px solid var(--white);
+  box-shadow:0 8px 28px rgba(60,40,20,.22);
+  background:var(--white);
+  overflow:hidden;
+  aspect-ratio:4/3;width:100%;
+  position:relative;
+  transition:transform .6s var(--ease);
+}
+.leist-item-img-bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  filter:sepia(.08) contrast(1.04) saturate(.92);
+}
+.leist-item-img::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 12px);
+  opacity:.5;
+}
+.leist-item-img:hover{transform:scale(1.012)}
+.leist-item-text h3{font-size:1.65rem;font-weight:700;color:var(--primary);margin-bottom:12px;letter-spacing:-.005em;line-height:1.2}
+.leist-item-text h3 em{font-style:italic;color:var(--accent);font-weight:700}
+.leist-item-text p{font-size:.96rem;color:var(--textMuted);line-height:1.75;margin-bottom:14px}
+.leist-item-meta{display:flex;gap:18px;margin-top:16px;font-size:.84rem;color:var(--textMuted);flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--sep)}
+.leist-item-price{font-family:var(--fontHeading);font-style:italic;font-weight:700;color:var(--accent);font-size:.95rem}
+.leist-item-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:700;font-size:.86rem;margin-top:18px;border-bottom:1.5px solid currentColor;padding-bottom:3px;transition:gap .25s var(--ease);font-family:'Inter',sans-serif}
+.leist-item-link:hover{gap:12px}
+.leist-item-num{
+  display:block;font-family:var(--fontHeading);font-style:italic;font-weight:700;
+  font-size:2.4rem;color:var(--accent-warm);opacity:.72;line-height:.9;
+  margin-bottom:10px;letter-spacing:-.005em;
+}
+
+@media(max-width:768px){
+  .leist-list{gap:44px}
+  .leist-item{grid-template-columns:1fr!important;gap:24px}
+  .leist-item:nth-child(even){direction:ltr}
+}
+
+/* ═══ ÜBER mit TEAM innerhalb + RUSTIKAL-STEMPEL ═══ */
+.ueber{padding:var(--sectionY) 0;background:var(--primary);color:#fff;position:relative;overflow:hidden}
+.ueber::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .045 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.6;mix-blend-mode:overlay;
+}
+.ueber::after{content:'';position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,var(--accent-warm) 0%,transparent 65%);opacity:.07;bottom:-220px;left:-220px;filter:blur(80px);pointer-events:none;z-index:0}
+.ueber > .w{position:relative;z-index:1}
+.ueber-grid{display:grid;gap:48px}
+@media(min-width:900px){.ueber-grid{grid-template-columns:1.1fr 1fr;gap:64px;align-items:start}}
+.ueber h2{font-size:clamp(1.6rem,3.2vw,2.4rem);font-weight:700;letter-spacing:-.005em;margin-bottom:20px;color:#fff;font-family:var(--fontHeading);line-height:1.2}
+.ueber h2 em{color:var(--accent-warm);font-style:italic}
+.ueber .sec-label{color:var(--accent-warm)}
+.ueber-text{font-size:.98rem;line-height:1.85;color:rgba(255,235,205,.82);margin-bottom:22px;font-family:'Inter',sans-serif}
+.ueber-vorteile{display:flex;flex-direction:column;gap:14px;list-style:none}
+.ueber-vorteile li{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:500;color:rgba(255,235,205,.88);padding-left:22px;position:relative;line-height:1.55}
+.ueber-vorteile li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;background:var(--accent-warm);border-radius:50%;opacity:.85}
+
+/* Stats + Stempel */
+.ueber-stats-wrap{position:relative;margin-top:56px;padding-top:36px;border-top:1px solid rgba(201,144,74,.18)}
+.ueber-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.ueber-stat{text-align:center}
+.ueber-stat-num{font-family:var(--fontHeading);font-style:italic;font-weight:700;font-size:clamp(2rem,3.4vw,2.8rem);color:var(--accent-warm);margin-bottom:4px;line-height:1}
+.ueber-stat-label{font-family:'Inter',sans-serif;font-size:.74rem;color:rgba(255,235,205,.54);font-weight:500;text-transform:uppercase;letter-spacing:.1em}
+
+.rustikal-stamp{
+  position:absolute;top:-58px;right:-12px;
+  width:132px;height:132px;border-radius:50%;
+  border:2px solid var(--accent-warm);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  text-align:center;transform:rotate(-9deg);
+  font-family:var(--fontHeading);
+  pointer-events:none;z-index:2;
+  background:rgba(58,36,18,.4);backdrop-filter:blur(4px);
+}
+.rustikal-stamp::before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid var(--accent-warm);opacity:.5}
+.rustikal-stamp-top{font-style:italic;font-weight:400;font-size:.62rem;color:var(--accent-warm);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.rustikal-stamp-num{font-style:italic;font-weight:700;font-size:1.85rem;color:var(--accent-warm);line-height:1}
+.rustikal-stamp-bot{font-family:'Inter',sans-serif;font-style:normal;font-weight:600;font-size:.58rem;color:var(--accent-warm);letter-spacing:.14em;text-transform:uppercase;margin-top:6px;opacity:.88}
+@media(max-width:768px){.rustikal-stamp{width:98px;height:98px;top:-30px;right:0}.rustikal-stamp-num{font-size:1.4rem}}
+
+/* TEAM */
+.team-block{margin-top:64px;padding-top:44px;border-top:1px solid rgba(201,144,74,.18);position:relative;z-index:1}
+.team-block-head{margin-bottom:36px}
+.team-block-head h3{font-family:var(--fontHeading);font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:-.005em;margin-bottom:8px;font-style:italic}
+.team-block-head h3 em{color:var(--accent-warm);font-style:italic}
+.team-block-head p{font-family:'Inter',sans-serif;font-size:.92rem;color:rgba(255,235,205,.62);max-width:520px;line-height:1.7}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.team-member{text-align:center}
+.team-avatar{
+  width:100%;aspect-ratio:1;
+  margin-bottom:16px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 32%,var(--primary)) 0%,color-mix(in srgb,var(--primary-deep) 80%,#000) 100%);
+  background-size:cover;background-position:center;
+  display:flex;align-items:flex-end;justify-content:flex-start;
+  padding:18px;
+  font-family:var(--fontHeading);font-style:italic;font-size:2.4rem;font-weight:700;color:rgba(255,220,170,.55);
+  position:relative;overflow:hidden;
+  transition:transform .4s var(--ease);
+  border:2px solid var(--accent-warm);
+  box-shadow:0 8px 24px rgba(0,0,0,.38),inset 0 0 0 4px var(--white);
+  filter:sepia(.08) contrast(1.02);
+}
+.team-avatar::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 12px);
+  opacity:.4;
+}
+.team-member:hover .team-avatar{transform:scale(1.015)}
+.team-name{font-family:var(--fontHeading);font-size:1.08rem;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.005em;line-height:1.25}
+.team-name em{font-style:italic;color:var(--accent-warm);font-weight:700}
+.team-role{font-family:'Inter',sans-serif;font-size:.82rem;color:rgba(255,235,205,.58);font-weight:500}
+@media(max-width:768px){.team-grid{grid-template-columns:1fr 1fr;gap:24px}.ueber-stats{grid-template-columns:1fr 1fr;gap:32px 24px}}
+@media(max-width:480px){.team-grid{grid-template-columns:1fr}}
+
+/* ═══ GALERIE — 3-Grid mit Werkstuecke-Fotos + Photo-Frame ═══ */
+.galerie{padding:var(--sectionY) 0;background:var(--bg-alt)}
+.galerie-head{margin-bottom:40px}
+.galerie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.galerie-item-figure{
+  border:8px solid var(--white);
+  box-shadow:0 8px 24px rgba(60,40,20,.18);
+  background:var(--white);
+  overflow:hidden;
+  aspect-ratio:4/5;
+  position:relative;
+}
+.galerie-item-img{
+  width:100%;height:100%;
+  background-size:cover;background-position:center;
+  filter:sepia(.1) contrast(1.04) saturate(.95);
+  transition:transform .55s var(--ease),filter .35s;
+}
+.galerie-item:hover .galerie-item-figure .galerie-item-img{transform:scale(1.03);filter:sepia(.06) contrast(1.05) saturate(1)}
+.galerie-item-caption{
+  padding:14px 4px 0 4px;
+}
+.galerie-item-tag{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;display:block}
+.galerie-item-meta{font-family:'Inter',sans-serif;font-size:.78rem;color:var(--textMuted);line-height:1.5}
+.galerie-item h4{font-family:var(--fontHeading);font-size:1.04rem;font-weight:700;color:var(--primary);letter-spacing:-.005em;line-height:1.25;margin-bottom:3px}
+.galerie-wrap{display:block}
+
+@media(max-width:768px){.galerie-grid{grid-template-columns:1fr 1fr;gap:16px}.galerie-item{border-width:6px}}
+@media(max-width:480px){.galerie-grid{grid-template-columns:1fr}}
+
+/* ═══ BEWERTUNGEN — Cards ═══ */
+.bew{padding:var(--sectionY) 0;background:var(--white)}
+.bew-head{margin-bottom:44px}
+.bew-rating{display:flex;align-items:center;gap:14px;margin-top:22px}
+.bew-rating-num{font-family:var(--fontHeading);font-style:italic;font-weight:700;font-size:1.7rem;color:var(--accent)}
+.bew-rating-bar{height:6px;border-radius:3px;background:var(--sep);flex:1;max-width:180px;overflow:hidden}
+.bew-rating-fill{height:100%;width:96%;border-radius:3px;background:var(--accent)}
+.bew-rating-meta{font-size:.82rem;color:var(--textMuted);font-family:'Inter',sans-serif}
+.bew-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.bew-card{background:var(--bg);border:1px solid var(--sep);border-radius:var(--rLg);padding:30px;position:relative;transition:transform .3s var(--ease),box-shadow .3s,border-color .3s;box-shadow:0 2px 6px rgba(60,40,20,.04)}
+.bew-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(60,40,20,.1);border-color:var(--accent-warm)}
+.bew-stars{display:inline-flex;gap:2px;margin-bottom:14px;color:var(--accent-warm)}
+.bew-stars svg{width:14px;height:14px;fill:currentColor}
+.bew-stars svg.empty{fill:none;stroke:currentColor;stroke-width:1.6;opacity:.45}
+.bew-text{font-size:.95rem;color:var(--text);line-height:1.75;margin-bottom:20px;font-style:italic;font-family:var(--fontHeading);font-weight:400}
+.bew-author{display:flex;align-items:center;gap:12px;padding-top:18px;border-top:1px solid var(--sep)}
+.bew-avatar{width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--accent) 14%,var(--white));display:flex;align-items:center;justify-content:center;font-family:var(--fontHeading);font-style:italic;font-size:.85rem;font-weight:700;color:var(--accent);flex-shrink:0;border:1.5px solid var(--accent-warm)}
+.bew-name{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;color:var(--primary);line-height:1.2}
+.bew-meta{font-size:.76rem;color:var(--textMuted);margin-top:2px;font-family:'Inter',sans-serif}
+
+@media(max-width:768px){.bew-grid{grid-template-columns:1fr;gap:18px}}
+
+/* ═══ KONTAKT ═══ */
+.kontakt{padding:var(--sectionY) 0;background:var(--bg)}
+.kontakt-head{margin-bottom:44px}
+.kontakt-grid{display:grid;gap:40px}
+@media(min-width:900px){.kontakt-grid{grid-template-columns:1fr 1.2fr;gap:48px;align-items:stretch}}
+.kontakt-item{margin-bottom:22px}
+.kontakt-item-label{font-family:'Inter',sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--textMuted);margin-bottom:6px}
+.kontakt-item-value{font-size:1rem;font-weight:500;line-height:1.5;color:var(--text)}
+.kontakt-tel{font-family:var(--fontHeading);font-style:italic;font-size:1.4rem;font-weight:700;color:var(--accent);display:inline-block;margin:4px 0;transition:color .2s;letter-spacing:-.005em}
+.kontakt-tel:hover{color:var(--primary)}
+.kontakt-email{color:var(--accent);font-weight:600;transition:color .2s;border-bottom:1px solid currentColor;padding-bottom:1px}
+.kontakt-email:hover{color:var(--primary)}
+.kontakt-social{display:flex;gap:10px;margin-top:18px}
+.kontakt-social a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:var(--r);border:1.5px solid var(--sep);color:var(--primary);transition:all .2s var(--ease);background:var(--white)}
+.kontakt-social a:hover{background:var(--accent);color:#fff;border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(122,53,40,.22)}
+.kontakt-social a:focus-visible{outline:2px solid var(--accent-warm);outline-offset:2px}
+.kontakt-social svg{width:18px;height:18px}
+
+.kontakt-map{border:8px solid var(--white);box-shadow:0 8px 24px rgba(60,40,20,.16);overflow:hidden;min-height:360px;background:var(--bg-alt);position:relative}
+.kontakt-map-fake{position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-warm) 18%,var(--bg)) 0%,color-mix(in srgb,var(--accent) 14%,var(--bg-alt)) 100%);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--textMuted)}
+.kontakt-map-fake::before{content:'';position:absolute;inset:0;background-image:linear-gradient(0deg,rgba(122,53,40,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(122,53,40,.06) 1px,transparent 1px);background-size:48px 48px;opacity:.55}
+.kontakt-map-pin{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.kontakt-map-pin-dot{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent),0 4px 12px rgba(0,0,0,.16);color:#fff}
+
+.kontakt-infos{margin-top:36px;padding-top:32px;border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(3,1fr);gap:18px 24px}
+.kontakt-info-item{display:flex;align-items:flex-start;gap:12px;font-size:.86rem;color:var(--text);line-height:1.55;font-family:'Inter',sans-serif}
+.kontakt-info-icon{width:34px;height:34px;border-radius:var(--rLg);background:color-mix(in srgb,var(--accent-warm) 14%,var(--white));border:1px solid color-mix(in srgb,var(--accent-warm) 26%,transparent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;color:var(--accent)}
+.kontakt-info-icon svg{width:16px;height:16px}
+@media(max-width:768px){.kontakt-infos{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.kontakt-infos{grid-template-columns:1fr}}
+
+.kontakt-form-wrap{margin-top:36px;padding-top:36px;border-top:1px solid var(--sep)}
+.k-form h3{font-family:var(--fontHeading);font-style:italic;font-size:1.4rem;font-weight:700;color:var(--primary);margin-bottom:22px;letter-spacing:-.005em}
+.k-form h3 em{color:var(--accent);font-style:italic}
+.k-form label{display:block;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--textMuted);margin-bottom:7px}
+.k-form input,.k-form textarea{width:100%;padding:13px 16px;border:1.5px solid var(--sep);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.92rem;background:var(--white);color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;min-height:48px}
+.k-form input:focus,.k-form textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent)}
+.k-form textarea{resize:vertical;min-height:130px}
+.k-form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.k-form-field{margin-bottom:14px}
+.k-form button{background:var(--accent);color:#fff;border:none;padding:14px 36px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;min-height:50px;transition:opacity .2s,transform .2s;box-shadow:0 4px 14px rgba(122,53,40,.28);letter-spacing:.01em}
+.k-form button:hover{opacity:.92;transform:translateY(-1px)}
+@media(max-width:640px){.k-form-row{grid-template-columns:1fr}}
+
+/* ═══ MID-PAGE CTA-BLOCK ═══ */
+.cta-block{padding:84px 0;background:var(--primary);color:#fff;text-align:center;position:relative;overflow:hidden}
+.cta-block::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.55;mix-blend-mode:overlay;
+}
+.cta-block > .w{position:relative;z-index:1}
+.cta-block h2{font-size:clamp(1.5rem,3.2vw,2.1rem);font-weight:700;margin-bottom:12px;color:#fff;font-family:var(--fontHeading);letter-spacing:-.005em;line-height:1.2}
+.cta-block p{font-family:'Inter',sans-serif;font-size:.94rem;color:rgba(255,235,205,.72);margin-bottom:30px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta-block .btn-accent{background:var(--accent-warm);color:var(--primary-deep);font-weight:700}
+.cta-block .btn-accent:hover{background:#fff;color:var(--primary-deep);opacity:1}
+
+/* ═══ FOOTER ═══ */
+footer{background:#1c1108;color:rgba(255,235,205,.58);padding:68px 0 30px;position:relative}
+footer::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95 0 0 0 0 .75 0 0 0 0 .42 0 0 0 .04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.6;mix-blend-mode:overlay;
+}
+footer > .w{position:relative;z-index:1}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:42px}
+.footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.footer-brand .nav-brand-mark{background:rgba(201,144,74,.14);border-color:rgba(201,144,74,.32)}
+footer p{font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.7;max-width:340px;color:rgba(255,235,205,.5)}
+.footer-col h4{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--accent-warm);margin-bottom:18px}
+.footer-col ul{display:grid;gap:10px}
+.footer-col a{font-family:'Inter',sans-serif;font-size:.88rem;color:rgba(255,235,205,.62);transition:color .2s}
+.footer-col a:hover{color:var(--accent-warm)}
+.footer-bot{border-top:1px solid rgba(201,144,74,.14);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-feature-settings:'tnum';font-size:.78rem;color:rgba(255,235,205,.4)}
+
+/* ═══ ANIMATIONS ═══ */
+.fade-up{opacity:0;transform:translateY(16px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+.fade-up.visible{opacity:1;transform:none}
+.hero-sub,.hero h1,.hero-desc,.hero-btns,.hero-trust-bar{opacity:0;transform:translateY(14px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+body.hero-play .hero-sub{opacity:1;transform:none;transition-delay:0ms}
+body.hero-play .hero h1{opacity:1;transform:none;transition-delay:110ms}
+body.hero-play .hero-desc{opacity:1;transform:none;transition-delay:300ms}
+body.hero-play .hero-btns{opacity:1;transform:none;transition-delay:380ms}
+body.hero-play .hero-trust-bar{opacity:1;transform:none;transition-delay:480ms}
+.stagger-children > *{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.stagger-children.visible > *{opacity:1;transform:none}
+.stagger-children.visible > *:nth-child(1){transition-delay:0ms}
+.stagger-children.visible > *:nth-child(2){transition-delay:80ms}
+.stagger-children.visible > *:nth-child(3){transition-delay:160ms}
+.stagger-children.visible > *:nth-child(4){transition-delay:240ms}
+.stagger-children.visible > *:nth-child(5){transition-delay:320ms}
+.stagger-children.visible > *:nth-child(6){transition-delay:400ms}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .fade-up,.stagger-children > *{opacity:1!important;transform:none!important}
+  .hero-sub,.hero h1,.hero-desc,.hero-btns,.hero-trust-bar{opacity:1!important;transform:none!important}
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media(min-width:900px){:root{--sectionY:104px}}
+@media(max-width:920px){
+  .nav-links{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:600px){
+  .hero{min-height:78svh}
+  .hero-inner{padding:90px 24px 48px}
+  .hero h1{font-size:2.1rem;letter-spacing:-.005em}
+  .hero-sub{background:transparent!important;border:none!important;padding:0!important;font-size:.7rem;color:rgba(255,235,205,.6)}
+  .hero-desc{font-size:.9rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .hero-btns{flex-direction:column}
+  .hero-btns .btn{width:100%}
+  .hero-trust-bar{flex-direction:column;align-items:flex-start;gap:10px}
+  .footer-grid{grid-template-columns:1fr}
+  .recipe-marker{top:auto;bottom:14px;right:14px;font-size:10.5px;padding:8px 14px}
+}
+</style>
+</head>
+<body>
+
+<div class="recipe-marker"><span class="dot"></span>Recipe 1 · Handwerk · Werkstatt · Rustikal</div>
+
+<!-- NAV -->
+<nav id="sitenav">
+  <div class="w nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-brand-mark">TP</div>
+      <div>
+        <div class="nav-brand-name">Tischlerei <span class="accent-italic">Pichler</span></div>
+        <div class="nav-brand-sub">Mostviertel · seit 1958</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#leistungen">Leistungen</a></li>
+      <li><a href="#ueber-uns">Werkstatt</a></li>
+      <li><a href="#werkstuecke">Werkstücke</a></li>
+      <li><a href="#stimmen">Stimmen</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="sr-hero">
+  <div class="hero-inner">
+    <p class="hero-sub">
+      Steinakirchen am Forst
+      <span class="hero-sub-sep">·</span>
+      seit 1958
+      <span class="hero-sub-sep">·</span>
+      3. Generation
+    </p>
+    <h1><em>Pichler</em> — Massivholz<br>aus dem Mostviertel.</h1>
+    <p class="hero-desc">Tische, Treppen und Möbel aus Eiche, Nussbaum oder Lärche. Holz aus drei Forstbetrieben in der Region. Montage durch unsere eigenen Tischler — kein Subunternehmer.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn btn-accent">Aufmaß anfragen</a>
+      <a href="#werkstuecke" class="btn btn-ghost">Werkstücke ansehen</a>
+    </div>
+    <div class="hero-trust-bar">
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6l-8-4Z"/></svg></span>Tischler-Innung NÖ</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13M9 21V12h6v9"/></svg></span>Lehrbetrieb seit 1972</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/></svg></span>Holz aus Österreich</div>
+      <div class="t-item"><span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Seit 1958</div>
+    </div>
+  </div>
+</section>
+
+<!-- LEISTUNGEN — alternierend mit Werkstuecke-Fotos -->
+<section class="leist" id="leistungen">
+  <div class="w">
+    <div class="leist-head fade-up">
+      <div class="leist-label">Leistungen</div>
+      <h2 class="s-h2">Was wir bauen</h2>
+      <p class="leist-intro">Von der Skizze am Küchentisch bis zur Lieferung in Ihre vier Wände. Wir nehmen Maß, planen mit, fertigen bei uns am Hobelbank — und bringen das Stück selbst zu Ihnen.</p>
+    </div>
+    <div class="leist-list">
+
+      <article class="leist-item fade-up">
+        <div class="leist-item-img">
+          <div class="leist-item-img-bg" style="background-image:url('https://picsum.photos/seed/pichler-massivholz-tisch/800/600')"></div>
+        </div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">01</span>
+          <h3>Massivholzmöbel nach Maß</h3>
+          <p>Esstische, Schränke, Bücherregale, Sideboards. Aus Eiche, Nussbaum, Esche oder Lärche — keine Spanplatte, keine Furnier-Tricks. Jedes Stück bekommt Holz, das wir gemeinsam im Lager auswählen.</p>
+          <div class="leist-item-meta">
+            <span>Eiche · Nussbaum · Lärche</span>
+            <span class="leist-item-price">ab Ø € 2.400</span>
+          </div>
+          <a href="#kontakt" class="leist-item-link">Maßmöbel anfragen <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="leist-item fade-up">
+        <div class="leist-item-img">
+          <div class="leist-item-img-bg" style="background-image:url('https://picsum.photos/seed/pichler-innenausbau-kueche/800/600')"></div>
+        </div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">02</span>
+          <h3>Innenausbau &amp; Küchen</h3>
+          <p>Einbauküchen, Schlafzimmer, Bibliotheken, Garderoben — komplett auf Maß. Wir kommen ins Haus, nehmen auf, planen mit Ihnen am Tisch, fertigen in der Werkstatt und montieren selbst. Kein Subunternehmer.</p>
+          <div class="leist-item-meta">
+            <span>Aufmaß vor Ort kostenlos</span>
+            <span class="leist-item-price">ab Ø € 8.500</span>
+          </div>
+          <a href="#kontakt" class="leist-item-link">Beratungstermin <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="leist-item fade-up">
+        <div class="leist-item-img">
+          <div class="leist-item-img-bg" style="background-image:url('https://picsum.photos/seed/pichler-restaurierung-truhe/800/600')"></div>
+        </div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">03</span>
+          <h3>Restaurierung historischer Möbel</h3>
+          <p>Bauernschränke, Truhen, Vertikos, Biedermeier. Wir arbeiten substanzschonend mit alten Techniken — Hasenleim, Schellack, Wachs. Wo möglich Original belassen, wo nötig handwerklich ergänzen.</p>
+          <div class="leist-item-meta">
+            <span>Begutachtung vor Ort</span>
+            <span class="leist-item-price">ab Ø € 800</span>
+          </div>
+          <a href="#kontakt" class="leist-item-link">Stück begutachten lassen <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="leist-item fade-up">
+        <div class="leist-item-img">
+          <div class="leist-item-img-bg" style="background-image:url('https://picsum.photos/seed/pichler-treppe-laerche/800/600')"></div>
+        </div>
+        <div class="leist-item-text">
+          <span class="leist-item-num">04</span>
+          <h3>Treppen aus Massivholz</h3>
+          <p>Gerade Treppen, Wendel- und Faltwerktreppen. Eiche oder Lärche, gehobelt oder gebürstet. Statisches Aufmaß durch unseren Treppenbauer Markus — inklusive Brandschutz-Nachweis nach OIB.</p>
+          <div class="leist-item-meta">
+            <span>Inkl. Statik-Nachweis</span>
+            <span class="leist-item-price">ab Ø € 6.200</span>
+          </div>
+          <a href="#kontakt" class="leist-item-link">Treppe planen lassen <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ÜBER + TEAM innerhalb -->
+<section class="ueber" id="ueber-uns">
+  <div class="w">
+    <div class="ueber-grid">
+      <div class="fade-up">
+        <div class="sec-label">Familie</div>
+        <h2>Drei <em>Generationen</em> am Hobelbank.</h2>
+        <p class="ueber-text">Großvater Anton hat 1958 in einer Scheune in Steinakirchen am Forst angefangen — Bandsäge, Hobelbank, drei Aufträge aus dem Dorf. Vater Franz hat 1985 übernommen, CNC-Fräse dazugestellt, Handarbeit nie aufgegeben. Sohn Markus führt den Betrieb seit 2014.</p>
+        <p class="ueber-text">Unser Holz kommt aus drei Forstbetrieben im Umkreis von fünfzig Kilometern. Eiche aus Wieselburg, Lärche aus dem Ybbstal, Nussbaum aus Privatwäldern. Jedes Brett liegt bei uns mindestens zwei Jahre, bevor wir es sägen.</p>
+      </div>
+      <div class="fade-up">
+        <ul class="ueber-vorteile">
+          <li>Anton (1958), Franz (1985), Markus (seit 2014) — drei Pichler, eine Werkstatt.</li>
+          <li>Holz aus Wieselburg, Ybbstal, Privatwäldern. Niemals weiter weg als 50 km.</li>
+          <li>Jedes Brett liegt mindestens zwei Jahre bei uns, bevor wir es sägen — kein Trockenschrank, kein Schnellverfahren, kein Schimmel hinterher.</li>
+          <li>Montage durch unsere eigenen Tischler. Kein Subunternehmer.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ueber-stats-wrap fade-up">
+      <div class="rustikal-stamp" aria-hidden="true">
+        <span class="rustikal-stamp-top">Mostviertel</span>
+        <span class="rustikal-stamp-num">1958</span>
+        <span class="rustikal-stamp-bot">3. Generation</span>
+      </div>
+      <div class="ueber-stats">
+        <div class="ueber-stat"><div class="ueber-stat-num">1958</div><div class="ueber-stat-label">Anton fing an</div></div>
+        <div class="ueber-stat"><div class="ueber-stat-num">3.</div><div class="ueber-stat-label">Pichler-Generation</div></div>
+        <div class="ueber-stat"><div class="ueber-stat-num">50 km</div><div class="ueber-stat-label">Maximaler Holzweg</div></div>
+        <div class="ueber-stat"><div class="ueber-stat-num">~2 J.</div><div class="ueber-stat-label">Trocknung pro Brett</div></div>
+      </div>
+    </div>
+
+    <div class="team-block">
+      <div class="team-block-head fade-up">
+        <h3>Wer hier arbeitet</h3>
+        <p>Fünf Tischler, ein Lehrling, eine Bürokraft. Wer Ihr Stück baut, kommt auch zur Lieferung — Sie kennen jedes Gesicht.</p>
+      </div>
+      <div class="team-grid stagger-children">
+        <article class="team-member">
+          <div class="team-avatar" style="background-image:url('https://picsum.photos/seed/pichler-team-franz/400/400')">FP</div>
+          <div class="team-name">Franz <em>Pichler</em></div>
+          <div class="team-role">Werkstattmeister · seit 1985</div>
+        </article>
+        <article class="team-member">
+          <div class="team-avatar" style="background-image:url('https://picsum.photos/seed/pichler-team-markus/400/400')">MP</div>
+          <div class="team-name">Markus <em>Pichler</em></div>
+          <div class="team-role">Tischlermeister · Geschäftsführung</div>
+        </article>
+        <article class="team-member">
+          <div class="team-avatar" style="background-image:url('https://picsum.photos/seed/pichler-team-lukas/400/400')">LS</div>
+          <div class="team-name">Lukas <em>Stadler</em></div>
+          <div class="team-role">Lehrling · 3. Lehrjahr</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE Werkstuecke -->
+<section class="galerie" id="werkstuecke">
+  <div class="w">
+    <div class="galerie-head fade-up">
+      <div class="sec-label">Werkstücke</div>
+      <h2 class="s-h2">Aus den letzten achtzehn Monaten</h2>
+      <p class="s-intro">Ausgewählte Stücke. Detaillierte Referenzen mit Maßen, Holzarten und Preisen senden wir Ihnen gerne per Mail.</p>
+    </div>
+    <div class="galerie-grid stagger-children">
+      <article class="galerie-item">
+        <div class="galerie-item-figure"><div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/pichler-werk-esstisch/600/750')"></div></div>
+        <div class="galerie-item-caption">
+          <span class="galerie-item-tag">Esstisch · Privat</span>
+          <h4>Tisch Familie K.</h4>
+          <div class="galerie-item-meta">Eiche · Wieselburg</div>
+        </div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-figure"><div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/pichler-werk-bibliothek/600/750')"></div></div>
+        <div class="galerie-item-caption">
+          <span class="galerie-item-tag">Bibliothek · Wien</span>
+          <h4>Wandregal H.</h4>
+          <div class="galerie-item-meta">Nussbaum · 1080</div>
+        </div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-figure"><div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/pichler-werk-bauernschrank/600/750')"></div></div>
+        <div class="galerie-item-caption">
+          <span class="galerie-item-tag">Restauriert · Mostviertel</span>
+          <h4>Bauernschrank 1840</h4>
+          <div class="galerie-item-meta">Schellack · Hasenleim</div>
+        </div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-figure"><div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/pichler-werk-wendeltreppe/600/750')"></div></div>
+        <div class="galerie-item-caption">
+          <span class="galerie-item-tag">Treppe · St. Pölten</span>
+          <h4>Wendeltreppe L.</h4>
+          <div class="galerie-item-meta">Lärche · gebürstet</div>
+        </div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-figure"><div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/pichler-werk-schlafzimmer/600/750')"></div></div>
+        <div class="galerie-item-caption">
+          <span class="galerie-item-tag">Schlafzimmer · Amstetten</span>
+          <h4>Schrank B.</h4>
+          <div class="galerie-item-meta">Nussbaum · 3.40 m</div>
+        </div>
+      </article>
+      <article class="galerie-item">
+        <div class="galerie-item-figure"><div class="galerie-item-img" style="background-image:url('https://picsum.photos/seed/pichler-werk-kueche/600/750')"></div></div>
+        <div class="galerie-item-caption">
+          <span class="galerie-item-tag">Küche · Scheibbs</span>
+          <h4>Einbauküche W.</h4>
+          <div class="galerie-item-meta">Eiche · 14 lfm</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- MID-PAGE CTA -->
+<section class="cta-block">
+  <div class="w">
+    <h2>Sie haben ein Vorhaben?</h2>
+    <p>Schicken Sie uns eine Skizze, ein Foto oder ein paar Sätze. Wir melden uns mit Rückfragen oder einem Aufmaß-Termin — in der Regel innerhalb von 48 Stunden.</p>
+    <a href="#kontakt" class="btn btn-accent">Aufmaß anfragen</a>
+  </div>
+</section>
+
+<!-- BEWERTUNGEN -->
+<section class="bew" id="stimmen">
+  <div class="w">
+    <div class="bew-head fade-up">
+      <div class="sec-label">Stimmen</div>
+      <h2 class="s-h2">Was Kunden sagen</h2>
+      <p class="s-intro">Auszüge aus Google-Bewertungen.</p>
+      <div class="bew-rating">
+        <span class="bew-rating-num">4.8</span>
+        <div class="bew-rating-bar"><div class="bew-rating-fill" style="width:96%"></div></div>
+        <span class="bew-rating-meta">aus 47 Google-Bewertungen</span>
+      </div>
+    </div>
+    <div class="bew-grid stagger-children">
+      <article class="bew-card">
+        <div class="bew-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+        </div>
+        <p class="bew-text">„Top Werkstatt. Esstisch aus Eiche, perfekt geliefert. Markus war 3× bei uns zum Aufmessen — das macht heute keiner mehr."</p>
+        <div class="bew-author">
+          <div class="bew-avatar">SB</div>
+          <div>
+            <div class="bew-name">Stefan B.</div>
+            <div class="bew-meta">Esstisch · Wieselburg</div>
+          </div>
+        </div>
+      </article>
+      <article class="bew-card">
+        <div class="bew-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+        </div>
+        <p class="bew-text">„Wir haben unseren Tisch nach drei Möbelhaus-Versuchen bei Pichler bestellt — keiner hatte unsere Maße. Markus hat aufgenommen, beraten, gemeinsam mit uns das Holz im Lager ausgesucht. Drei Monate später stand der Tisch im Raum, als wäre er für den Raum gewachsen. Was uns überrascht hat: zwei Wochen nach der Lieferung hat Markus nochmal angerufen, ob alles passt, ob das Holz arbeitet. Macht heute keiner mehr."</p>
+        <div class="bew-author">
+          <div class="bew-avatar">EK</div>
+          <div>
+            <div class="bew-name">Eva &amp; Christoph K.</div>
+            <div class="bew-meta">Esstisch Eiche · Wieselburg</div>
+          </div>
+        </div>
+      </article>
+      <article class="bew-card">
+        <div class="bew-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+          <svg viewBox="0 0 24 24" class="empty"><path d="M12 2l2.7 6.7L22 9.6l-5.4 4.9 1.6 7L12 18l-6.2 3.5 1.6-7L2 9.6l7.3-.9z"/></svg>
+        </div>
+        <p class="bew-text">„Restaurierung Biedermeier-Vertiko. Handwerklich tadellos, Schellack-Arbeit wie früher. Zeitlich hat es vier Wochen länger gedauert als avisiert — Franz hat aber regelmäßig informiert, und das Ergebnis ist es wert. Würde wieder kommen."</p>
+        <div class="bew-author">
+          <div class="bew-avatar">RH</div>
+          <div>
+            <div class="bew-name">Robert H.</div>
+            <div class="bew-meta">Restaurierung · Amstetten</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="kontakt" id="kontakt">
+  <div class="w">
+    <div class="kontakt-head fade-up">
+      <div class="sec-label">Kontakt</div>
+      <h2 class="s-h2">Vorbeischauen in Steinakirchen</h2>
+      <p class="s-intro">Persönlich am Hauptstraße-24-Eingang. Sie sehen das Holzlager, die Maschinen und mindestens drei Stücke in Arbeit. Antwort innerhalb von 48 Stunden.</p>
+    </div>
+    <div class="kontakt-grid">
+      <div class="fade-up">
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Werkstatt</div>
+          <div class="kontakt-item-value">Hauptstraße 24<br>3262 Steinakirchen am Forst</div>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Telefon</div>
+          <a href="tel:+43748872340" class="kontakt-tel">+43 7488 7234</a>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">E-Mail</div>
+          <a href="mailto:werkstatt@tischlerei-pichler.at" class="kontakt-email">werkstatt@tischlerei-pichler.at</a>
+        </div>
+        <div class="kontakt-item">
+          <div class="kontakt-item-label">Werkstatt-Zeiten</div>
+          <div class="kontakt-item-value">Mo–Fr · 7:30–17:00<br>Sa nach Vereinbarung</div>
+        </div>
+        <div class="kontakt-social">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="kontakt-map" aria-label="Karte Hauptstraße 24, 3262 Steinakirchen am Forst">
+          <div class="kontakt-map-fake">
+            <div class="kontakt-map-pin">
+              <div class="kontakt-map-pin-dot">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <span style="margin-top:18px">Hauptstraße 24 · 3262 Steinakirchen</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kontakt-infos fade-up">
+      <div class="kontakt-info-item">
+        <span class="kontakt-info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div><strong>Aufmaß vor Ort kostenfrei</strong><br>NÖ + Wien · innerhalb 14 Tagen</div>
+      </div>
+      <div class="kontakt-info-item">
+        <span class="kontakt-info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
+        <div><strong>Festpreis schriftlich</strong><br>vor Auftrag · gilt unverändert</div>
+      </div>
+      <div class="kontakt-info-item">
+        <span class="kontakt-info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <div><strong>Tischler bringt Stück</strong><br>Keine fremde Spedition</div>
+      </div>
+    </div>
+
+    <div class="kontakt-form-wrap">
+      <form class="k-form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Wird gesendet…'">
+        <h3>Anfrage senden</h3>
+        <div class="k-form-row">
+          <div class="k-form-field"><label>Vorname *</label><input type="text" required></div>
+          <div class="k-form-field"><label>Nachname *</label><input type="text" required></div>
+        </div>
+        <div class="k-form-row">
+          <div class="k-form-field"><label>E-Mail *</label><input type="email" required></div>
+          <div class="k-form-field"><label>Telefon</label><input type="tel"></div>
+        </div>
+        <div class="k-form-field"><label>Vorhaben</label><input type="text" placeholder="z. B. Esstisch Eiche ca. 240 × 100 cm"></div>
+        <div class="k-form-field"><label>Nachricht *</label><textarea required placeholder="Beschreiben Sie kurz Ihr Vorhaben — wir melden uns mit Rückfragen oder einem Aufmaß-Termin."></textarea></div>
+        <button type="submit">Anfrage abschicken</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="w">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="nav-brand-mark">TP</div>
+          <div>
+            <div class="nav-brand-name">Tischlerei <span class="accent-italic">Pichler</span></div>
+            <div class="nav-brand-sub">Mostviertel · seit 1958</div>
+          </div>
+        </div>
+        <p>Familienbetrieb in dritter Generation. Massivholzmöbel, Innenausbau, Treppenbau und Restaurierung. Mitglied der Tischler-Innung Niederösterreich.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#leistungen">Möbel nach Maß</a></li>
+          <li><a href="#leistungen">Innenausbau</a></li>
+          <li><a href="#leistungen">Restaurierung</a></li>
+          <li><a href="#leistungen">Treppenbau</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Betrieb</h4>
+        <ul>
+          <li><a href="#ueber-uns">Über uns</a></li>
+          <li><a href="#ueber-uns">Team</a></li>
+          <li><a href="#werkstuecke">Werkstücke</a></li>
+          <li><a href="#stimmen">Stimmen</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">AGB</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <div>© 2026 Tischlerei Pichler GmbH · FN 123456 a · LG St. Pölten</div>
+      <div>Tischler-Innung Niederösterreich</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('hero-play')));
+
+  const nav = document.getElementById('sitenav');
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        nav.classList.toggle('scrolled', window.scrollY > 60);
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, {passive:true});
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {rootMargin:'0px 0px -10% 0px',threshold:.1});
+    document.querySelectorAll('.fade-up,.stagger-children').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.fade-up,.stagger-children').forEach(el => el.classList.add('visible'));
+  }
+</script>
+
+</body>
+</html>

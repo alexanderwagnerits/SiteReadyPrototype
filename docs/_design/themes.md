@@ -1,11 +1,13 @@
-# Recipe-Themes — Visual-Tokens v2
+# Recipe-Themes — Visual-Tokens v2  `[VERWORFEN 2026-05-11]`
 
-> **Quelle der Wahrheit fuer die 3 Recipe-Themes.** Konkrete Hex/Spacing/Easing-Werte pro Theme + Recipe-Mapping. Aufgehaengt in [`DESIGN-VISION.md`](../DESIGN-VISION.md) Block 8.
+> **⚠️ DIESE DOKU IST VERWORFEN.** Der v2-Themes-Ansatz (Klassisch / Edel / Rustikal mit eigenen Polish-Patterns wie Italic-Em, Stempel, Photo-Frame, alternierende Leistungen, asymmetric Heads) hat sich nicht bewaehrt. Vergleich am 2026-05-11 zwischen v2-Polish-Mockup und Beta-Live-Kopie mit Tischlerei-Inhalten: User-Entscheidung **Beta-Stil ist die einzige Linie** („sieht halt einfacher und schlichter aus"). Diese Datei bleibt als Historie. Aktuelle Linie: Beta-Template (`functions/templates/template.js`) + Recipe-spezifische Inhalte + Akzent. Siehe `feedback_beta_template_grundlage.md` und `project_recipe_themes_v2.md`. Mockups verworfen unter `public/_archive/`.
 
-**Stand:** 2026-05-06
-**Status:** v2 — verbindliche Theme-Architektur
+---
 
-> **Architektur-Entscheidung 2026-05-06:** Beta-Template (`functions/templates/template.js`) ist die **Grundlage** für alle 3 v2-Themes. Architektur (Vollbild-Color-Hero, Sektions-Sprache, Animationen) bleibt; v2-Themes definieren nur **Tokens** (Farben, Fonts, Spacing) + stil-spezifische Variationen — wie heute schon `.stil-klassisch / .stil-modern / .stil-elegant`. Mockups, die das Magazine-Layout (Edel) oder Noise-Filter (Rustikal) als alleinige Welt aufgemacht haben, sind verworfen. Vergleichs-Mockup: [`public/mockup-themes-v2.html`](../../public/mockup-themes-v2.html).
+**Stand (Pre-Verwurf):** 2026-05-06
+**Status:** ~~v2 — verbindliche Theme-Architektur~~ **VERWORFEN 2026-05-11**
+
+> **Architektur-Entscheidung 2026-05-06 (ueberholt):** Beta-Template (`functions/templates/template.js`) ist die **Grundlage** für alle 3 v2-Themes. Architektur (Vollbild-Color-Hero, Sektions-Sprache, Animationen) bleibt; v2-Themes definieren nur **Tokens** (Farben, Fonts, Spacing) + stil-spezifische Variationen — wie heute schon `.stil-klassisch / .stil-modern / .stil-elegant`. Mockups, die das Magazine-Layout (Edel) oder Noise-Filter (Rustikal) als alleinige Welt aufgemacht haben, sind verworfen. Vergleichs-Mockup: `public/_archive/mockup-themes-v2.html`.
 
 ---
 

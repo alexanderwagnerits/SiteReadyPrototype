@@ -114,20 +114,31 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 
 ## 2. Email-Templates (Lifecycle)
 
-`[OFFEN]` — vor Live-Schaltung als Markdown-Vorlagen erstellen. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
+`[SPEC-FERTIG 2026-05-13]` — 8 Anker-Templates als Markdown-Drafts in [`docs/email-templates/`](email-templates/). HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
+
+| Template | Trigger | Spec-File | Status |
+|---|---|---|---|
+| **Welcome** | Nach Site-Generation (erster Login) | [welcome.md](email-templates/welcome.md) | Draft |
+| **Trial-Reminder Tag 5** | T-2 vor Trial-Ende | [trial-reminder-day-5.md](email-templates/trial-reminder-day-5.md) | Draft |
+| **Trial-Reminder Tag 7** | Letzter Trial-Tag | [trial-reminder-day-7.md](email-templates/trial-reminder-day-7.md) | Draft |
+| **Trial-End / Grace** | T+8 nach Trial-Start (Site pausiert) | [trial-end-grace.md](email-templates/trial-end-grace.md) | Draft |
+| **Payment-Failed** | Stripe-Webhook `invoice.payment_failed` (Retry 1–4) | [stripe-payment-failed.md](email-templates/stripe-payment-failed.md) | Draft |
+| **Win-Back** | T+14 nach Cancellation | [win-back.md](email-templates/win-back.md) | Draft (Anwalt-Audit-Punkt) |
+| **Support-Confirmation** | Auto-Reply bei Support-Anfrage | [support-confirmation.md](email-templates/support-confirmation.md) | Draft |
+| **Welcome Pro** | Plan-Upgrade Starter → Pro | [welcome-pro.md](email-templates/welcome-pro.md) | Draft |
+
+**Noch nicht gespec'd (Backlog fuer Live-Bau):**
 
 | Template | Trigger | Inhalt |
 |---|---|---|
-| **Welcome** | nach erstem Login | Begrüßung, Portal-Link, Erste-Schritte-Tipps |
-| **Trial-Reminder** | T-3 Tage vor Trial-Ende | "Dein Trial läuft in 3 Tagen ab — Plan wählen" |
-| **Trial-Expired** | bei Trial-Ende ohne Plan | "Trial beendet — Plan jetzt wählen oder Daten in 30 Tagen gelöscht" |
-| **Payment-Confirmation** | nach Stripe-Webhook `invoice.paid` | Rechnung beigefügt, nächster Abrechnungstermin |
-| **Payment-Failed** | nach Stripe-Webhook `invoice.payment_failed` | Hinweis + Stripe-Customer-Portal-Link |
-| **Cancellation-Confirmation** | nach Self-Service-Kündigung | Kündigungsbestätigung, Grace-Period-Hinweis, Daten-Export-Link |
-| **Cancellation-Final** | T-1 Tag vor Daten-Löschung | Letzte Erinnerung Daten zu exportieren |
-| **Domain-Setup-Anleitung** | bei Custom-Domain-Aktivierung (Pro) | DNS-Konfiguration Step-by-Step |
-| **Datenpanne-Information** | bei DSGVO Art 34 Pflicht | Sachverhalt, betroffene Daten, getroffene Maßnahmen |
-| **Beta-Cutover-Mail** | T-7 vor Live-Schaltung | "Wir sind umgezogen — Promo-Code für X Monate kostenlos" |
+| **Payment-Confirmation** | Stripe-Webhook `invoice.paid` | Rechnung beigefuegt, naechster Abrechnungstermin |
+| **Cancellation-Confirmation** | Nach Self-Service-Kuendigung | Kuendigungsbestaetigung, Grace-Period-Hinweis, Daten-Export-Link |
+| **Cancellation-Final** | T-1 Tag vor Daten-Loeschung | Letzte Erinnerung Daten zu exportieren |
+| **Domain-Setup-Anleitung** | Bei Custom-Domain-Aktivierung (Pro) | DNS-Konfiguration Step-by-Step |
+| **Datenpanne-Information** | Bei DSGVO Art 34 Pflicht | Sachverhalt, betroffene Daten, getroffene Massnahmen |
+| **Beta-Cutover-Mail** | T-7 vor Live-Schaltung | „Wir sind umgezogen — Promo-Code fuer X Monate kostenlos" |
+
+Voice + Variablen-Konvention + Master-Footer: siehe [README in `docs/email-templates/`](email-templates/README.md).
 
 ## 3. Support-FAQ (Top 20)
 

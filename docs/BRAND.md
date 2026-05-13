@@ -2,7 +2,7 @@
 
 > Markenrichtlinie fuer das Live-Produkt unter instantpage.at. Verbindlich fuer alle Marketing-Outputs, Plattform-UI, Sales-Material und externe Kommunikation.
 
-**Stand:** 2026-05-05 — `[FERTIG]`. Alle Brand-Entscheidungen getroffen. Live-Logo eingebunden. Asset-Set vor Live-Schaltung noch zu vervollstaendigen (siehe § 2.4).
+**Stand:** 2026-05-13 — `[FERTIG]`. Alle Brand-Entscheidungen getroffen (Hero-Headline-Konflikt aufgeloest 2026-05-13: Hero = Tagline). Live-Logo eingebunden. Asset-Set vor Live-Schaltung noch zu vervollstaendigen (siehe § 2.4).
 
 ---
 
@@ -260,7 +260,7 @@ Aenderung loest **automatische Re-Generation** der Texte aus (PRODUCT § 3.3). W
 - **„Made in Vienna"** verworfen — AT-Anker bereits ueber „oesterreichische KMU" gesetzt, redundant; signature-style Trailer schwaecht das About-Statement
 - **Niemals** „rechtliche Pflichten" / „Pflichtangaben" im Marketing — buerokratischer Nag-Vibe (siehe Memory `feedback_keine_rechtliche_pflichten.md`)
 
-**Konflikt zu § 7.2 (Hero-Headline):** Die alte Hero-Headline „Premium-Website. Fertig konfiguriert. Sofort online." klingt nach dem Tagline-Lock 2026-05-12 Werbe-laut + „Premium" ist Mismatch zur Pricing-Realitaet (16-29 €/Mo). Vor Live-Launch entscheiden: ersetzen durch substanziellere Hero-Headline oder bewusst hero-only-Variante.
+**Konflikt zu § 7.2 (Hero-Headline) `[GELOEST 2026-05-13]`:** Die alte Hero-Headline „Premium-Website. Fertig konfiguriert. Sofort online." wurde am 2026-05-13 durch die gelockte Tagline „Die Website fuer oesterreichische KMU. 10 Minuten Aufwand." ersetzt — eine konsistente Voice auf allen Touchpoints (Hero, Tagline-Section, Social Media).
 
 ### 7.1 Slogan-Pool (defensive Wording, UWG-konform)
 
@@ -268,7 +268,7 @@ Aus LIVE-COMPLIANCE § 15 + erweitert:
 
 | # | Slogan | Verwendung |
 |---|---|---|
-| 1 | **Premium-Website fuer oesterreichische KMU — fertig konfiguriert, branchen-tauglich** | Marketing-Hero (Default-Vorschlag) |
+| 1 | **Premium-Website fuer oesterreichische KMU — fertig konfiguriert, branchen-tauglich** | Sekundaer-Slogan im Pool (NICHT mehr Marketing-Hero — Hero nutzt seit 2026-05-13 die Tagline aus § 7.0, siehe § 7.2) |
 | 2 | **Marketing-Website ohne Agentur. Speziell fuer Handwerker, Gastronomen, Berater, Praxen.** | Hero-Alternative, klares Zielgruppen-Statement |
 | 3 | **Wir bauen Ihre Website. Sie bleiben Inhaber.** | Trust-Block, Anti-Builder-Positionierung |
 | 4 | **Schneller online. Professionell betrieben. Transparent abgerechnet.** | Sub-Hero, drei Versprechen |
@@ -278,13 +278,28 @@ Aus LIVE-COMPLIANCE § 15 + erweitert:
 
 **Pool-Status:** alle 7 Slogans freigegeben `[ENTSCHIEDEN]` 2026-05-05 — pro Touchpoint wird im jeweiligen Bau-Schritt ausgewaehlt.
 
-### 7.2 Hero-Headline `[KONFLIKT 2026-05-12 — vor Live-Launch ueberdenken]`
+### 7.2 Hero-Headline `[LOCK 2026-05-13]`
 
-> **Hinweis:** Diese Headline wurde 2026-05-05 entschieden, steht aber im Konflikt mit der Editorial-Voice aus § 7.0 (Lock 2026-05-12). „Premium" ist Mismatch zur Pricing-Realitaet (16–29 €/Mo) + Werbe-laut. Vor Live-Launch ersetzen oder als bewusste Hero-only-Variante behalten.
+> **Entscheidung 2026-05-13:** Hero-Headline = Tagline aus § 7.0 — eine konsistente Voice auf allen Touchpoints. Konflikt mit der alten Premium-Headline („Werbe-laut", Pricing-Mismatch) damit aufgeloest.
 
-**Primaer (`[KONFLIKT]`):** **"Premium-Website. Fertig konfiguriert. Sofort online."** — drei Versprechen in drei kurzen Phrasen, klare Hierarchie, gut zu setzen.
+**Primaer (Hero-Headline = Tagline):**
 
-Verworfene Alternativen (dokumentiert): "Ihre Website. Wir liefern. Sie bleiben Inhaber." / "Branchengerechte Websites fuer oesterreichische KMU."
+> **„Die Website fuer oesterreichische KMU. 10 Minuten Aufwand."**
+
+Identisch mit der Tagline aus § 7.0 (Lock 2026-05-12) — auf der Marketing-Landing als H1 gesetzt. Sub-Headline darunter aus § 7.3 (Default: „Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — AT-Compliance integriert.").
+
+**Warum Tagline = Hero:**
+- Eine Voice ueber alle Touchpoints (Hero, Tagline-Section, Social Media, About) — keine Voice-Konkurrenz auf der Landing
+- Tagline ist bereits substanziell („oesterreichische KMU" = Zielgruppe, „10 Minuten Aufwand" = Versprechen) — kein zusaetzlicher Hero-Slogan noetig
+- Pricing-Mismatch („Premium" bei 16–29 €/Mo) ist damit weg
+
+**Verworfen 2026-05-13:**
+- „Premium-Website. Fertig konfiguriert. Sofort online." (alte Default-Variante, Werbe-laut + „Premium"-Mismatch)
+- „Eine Website. Branchen-tauglich. In 10 Minuten konfiguriert." (Versprechen-Triplett editorial)
+- „Branchengerechte Websites fuer oesterreichische Klein- und Mittelbetriebe." (sachlich-klassisch)
+- „Die fertige Website fuer oesterreichische KMU." (Tagline-nah, aber ohne „10 Minuten Aufwand"-Versprechen)
+
+Aeltere verworfene Alternativen: „Ihre Website. Wir liefern. Sie bleiben Inhaber." (jetzt Trust-Block, siehe § 7.1 #3) / „Branchengerechte Websites fuer oesterreichische KMU." (jetzt Sub-Variante).
 
 ### 7.3 Sub-Headlines (Sekundaer-Statement unter Hero)
 
@@ -422,7 +437,7 @@ Die generierten Kundensites haben **eigene visuelle Sprache pro Recipe** (siehe 
 | # | Punkt | Entscheidung |
 |---|---|---|
 | 1 | Akzentfarbe Plattform | **Tannengruen `#2D4A3E`** (siehe § 3.1) |
-| 2 | Hero-Headline | **"Premium-Website. Fertig konfiguriert. Sofort online."** (siehe § 7.2) |
+| 2 | Hero-Headline | **alt:** „Premium-Website. Fertig konfiguriert. Sofort online." → **neu (2026-05-13):** Tagline aus § 7.0 = „Die Website fuer oesterreichische KMU. 10 Minuten Aufwand." (siehe § 7.2) |
 | 3 | Slogan-Pool | alle 7 Vorschlaege freigegeben, Auswahl pro Touchpoint im Bau (siehe § 7.1) |
 | 4 | Editorial-Serif | **kein Serif** — konsequent sans-serif (siehe § 4.1) |
 | 5 | Live-Logo | vorhanden, eingebunden, dokumentiert (siehe § 2.1) |

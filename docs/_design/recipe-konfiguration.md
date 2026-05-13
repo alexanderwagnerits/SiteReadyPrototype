@@ -1,10 +1,10 @@
 # Recipe-Konfiguration — 14 Berufsgruppen × 2-3 Looks
 
-> **⚠️ STATUS 2026-05-12 (aktualisiert nach Mockup-Validierung):**
+> **⚠️ STATUS 2026-05-13 (Phase-2-Cleanup durchgefuehrt):**
 >
 > **Was wirklich verworfen wurde** (v2-Themes-Entscheidung 2026-05-11, siehe `themes.md`):
 > - Stil-Klasse `.stil-rustikal` — existiert nicht in Beta-Template. Rustikal-Look wird mit `.stil-klassisch` + warmer Akzentfarbe gebaut.
-> - „Theme"-Spalte (Klassisch/Edel/Rustikal als v2-Theme-Familien) — konzeptionell ueberholt, bleibt als Look-Familie-Hint stehen bis Phase-2-Cleanup
+> - „Theme"-Spalte (Klassisch/Edel/Rustikal als v2-Theme-Familien) — **entfernt 2026-05-13** aus Master-Tabelle.
 > - Eigene Polish-Patterns pro Theme (Italic-Em, Stempel, Photo-Frame, Magazine-Heads) — verworfen
 >
 > **Was GUELTIG bleibt** (in Mockup-Bauphase 2026-05-11/12 bestaetigt):
@@ -14,14 +14,15 @@
 > - Section-Reihenfolgen pro Recipe (unten dokumentiert)
 > - Berufsgruppen-Routing
 >
-> **`[TBD 2026-05-12]` Zeilen:** Recipes #6, #22, #29, #31 hatten `.stil-rustikal` — neue Stil-Klasse + Akzentfarbe wird bei jeweiligem Recipe-Bau entschieden. Recipe #1 ist gebaut (siehe Referenz-Mockup-Sub-Tabelle unten).
+> **`[TBD]` Zeilen:** Recipes #6, #22, #29, #31 hatten `.stil-rustikal` — neue Stil-Klasse + Akzentfarbe wird bei jeweiligem Recipe-Bau entschieden. Recipe #1 ist gebaut (siehe Referenz-Mockup-Sub-Tabelle unten).
 >
-> **Phase-2-Cleanup (nach Section-Specs):** Theme-Spalte entfernen, alle Recipes auf Beta-Klassen-Vokabular ausrichten.
-> **Recipe-Detail-Specs vorhanden:** [`recipes/handwerk-werkstatt.md`](recipes/handwerk-werkstatt.md) (Tischler-Pichler, Beta-Stil-basiert).
+> **Recipe-Detail-Specs vorhanden:** [`recipes/handwerk-werkstatt.md`](recipes/handwerk-werkstatt.md) (Tischler-Pichler), [`recipes/beratung-modern.md`](recipes/beratung-modern.md) (Karner-Strategie), [`recipes/anwalt-klassisch.md`](recipes/anwalt-klassisch.md) (Lechner-Rechtsanwaelte).
+>
+> **Sub-Varianten-Tabelle unten** (§ Sub-Varianten) verwendet „Theme" noch als **Look-Familie-Bezeichner** (Klassisch/Edel/Rustikal als Wording-Convention), nicht mehr als v2-Theme-Architektur. Bedeutet konkret: Stil-Klasse + Akzentfarbe-Tupel.
 
 > **Quelle der Wahrheit für Live-Bau Layer 3 (Recipes).** Jedes Recipe = Beta-Template-Stil + Layout + Section-Reihenfolge + Section-Toggles + Branchen-Funktionen. **Keine neuen Sektionen erfunden** — nur Komposition aus bestehenden Beta-Bausteinen.
 
-**Stand:** 2026-05-12
+**Stand:** 2026-05-13
 **Basis:** [`functions/templates/template.js`](../../functions/templates/template.js) (Beta-Template, produktiv)
 **Section-CSS-Vokabular:** [`sections/_BETA-VOCABULARY.md`](sections/_BETA-VOCABULARY.md) — verbindliche Klassen-Referenz fuer alle Recipes
 **Theme-Tokens:** ~~[`themes.md`](themes.md) (v2-Themes Klassisch/Edel/Rustikal)~~ **VERWORFEN 2026-05-11** — Beta-Stil-Klassen sind die einzige Linie
@@ -103,47 +104,47 @@ Drei Recipes wurden als Mockups gebaut + validieren die Beta-Klassen-Linie als k
 
 ## Recipe-Konfigurations-Tabelle (14 Berufsgruppen × ~32 Recipes)
 
-| # | Berufsgruppe | Look | Theme | Stil-Klasse | Layout | Akzentfarbe | Leistungen | Bewertungen |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Handwerk** | Werkstatt | ~~Rustikal~~ → siehe Referenz-Mockup | `.stil-modern` | standard | Bronze `#926f39` | alternierend | cards |
-| 2 | Handwerk | Modern | Klassisch | `.stil-modern` | standard | Indigo `#6366f1` | alternierend | cards |
-| 3 | Handwerk | Premium | Edel | `.stil-elegant` | standard | Old-Gold `#a87b3f` | alternierend | quote |
-| 4 | **Bau & Sanierung** | Klassisch | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
-| 5 | Bau & Sanierung | Premium | Edel | `.stil-elegant` | standard | Anthrazit `#292524` | alternierend | quote |
-| 6 | **Gastro** | Wirtshaus | `[TBD 2026-05-12]` | `[TBD]` (vermutl. `.stil-klassisch` + warmer Akzent) | standard | Burgund `#7a3528` | alternierend | quote |
-| 7 | Gastro | Casual | Klassisch | `.stil-klassisch` | kompakt | Terra `#c87356` | kompakt | cards |
-| 8 | Gastro | Editorial | Edel | `.stil-elegant` | ausführlich | Petrol `#5b9bb3` | alternierend | quote |
-| 9 | **Gesundheit** | Praxis | Klassisch | `.stil-klassisch` | kompakt | Medical-Blue `#0e7490` | kompakt | quote |
-| 10 | Gesundheit | Therapie | Klassisch | `.stil-klassisch` | standard | Warm-Sage `#7d9b76` | alternierend | cards |
-| 11 | **Recht & Finanz** | Klassisch | Klassisch | `.stil-klassisch` | kompakt | Navy `#0f2b5b` | kompakt | quote |
-| 12 | Recht & Finanz | Premium | Edel | `.stil-elegant` | ausführlich | Anthrazit `#292524` | alternierend | quote |
-| 13 | **Beratung & Coaching** | Modern | Klassisch | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
-| 14 | Beratung & Coaching | Premium | Edel | `.stil-elegant` | ausführlich | Anthrazit-Gold `#665338` | alternierend | quote |
-| 15 | **Architektur & Planung** | Klassisch | Klassisch | `.stil-klassisch` | standard | Anthrazit `#292524` | alternierend | quote |
-| 16 | Architektur & Planung | Editorial | Edel | `.stil-elegant` | ausführlich | Anthrazit `#1a1a1a` | alternierend | quote |
-| 17 | **IT & Digital** | Modern | Klassisch | `.stil-modern` | standard | Indigo `#6366f1` | alternierend | cards |
-| 18 | IT & Digital | Premium | Edel | `.stil-elegant` | ausführlich | Petrol `#0e6b85` | alternierend | quote |
-| 19 | **Bildung** | Klassisch | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
-| 20 | Bildung | Modern | Klassisch | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
-| 21 | **Tourismus** | Klassisch | Klassisch | `.stil-klassisch` | ausführlich | Petrol `#5b9bb3` | alternierend | quote |
-| 22 | Tourismus | Rustikal | `[TBD 2026-05-12]` | `[TBD]` (vermutl. `.stil-klassisch` + Old-Gold) | ausführlich | Old-Gold `#a08456` | alternierend | quote |
-| 23 | Tourismus | Editorial-Premium | Edel | `.stil-elegant` | ausführlich | Old-Gold `#a87b3f` | alternierend | quote |
-| 24 | **Handel** | Klassisch | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
-| 25 | Handel | Boutique-Premium | Edel | `.stil-elegant` | standard | Old-Gold `#a87b3f` | alternierend | quote |
-| 26 | **Mobilität** | Funktional | Klassisch | `.stil-klassisch` | kompakt | Navy `#0f2b5b` | kompakt | liste |
-| 27 | Mobilität | Werkstatt | Klassisch | `.stil-klassisch` | standard | Stahlblau `#3b5d7a` | alternierend | cards |
-| 28 | Mobilität | Showroom | Edel | `.stil-elegant` | standard | Anthrazit `#1a1a1a` | alternierend | quote |
-| 29 | **Agrar** | Klassisch | `[TBD 2026-05-12]` | `[TBD]` (vermutl. `.stil-klassisch` + Tannengrün) | standard | Tannengrün `#3a4f2c` | alternierend | quote |
-| 30 | Agrar | Editorial-Premium | Edel | `.stil-elegant` | standard | Anthrazit-Gold `#665338` | alternierend | quote |
-| 31 | Agrar | Erlebnis-Premium | `[TBD 2026-05-12]` | `[TBD]` (vermutl. `.stil-elegant` oder `.stil-klassisch` + Burgund) | standard | Burgund `#7a3528` | alternierend | cards |
-| 32 | **Industrie** | Technisch | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | liste |
-| 33 | Industrie | Tech-Modern | Klassisch | `.stil-modern` | standard | Petrol `#0e6b85` | alternierend | cards |
-| 34 | **Kosmetik** | Modern | Klassisch | `.stil-modern` | standard | Korallenrot `#e76e7e` | alternierend | cards |
-| 35 | Kosmetik | Premium | Edel | `.stil-elegant` | standard | Anthrazit-Gold `#665338` | alternierend | quote |
-| 36 | **Kultur** | Modern | Klassisch | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
-| 37 | Kultur | Editorial | Edel | `.stil-elegant` | ausführlich | Bronze `#8b6f47` | alternierend | quote |
-| 38 | **Sport & Wellness** | Studio | Klassisch | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
-| 39 | Sport & Wellness | Premium | Edel | `.stil-elegant` | ausführlich | Anthrazit `#292524` | alternierend | quote |
+| # | Berufsgruppe | Look | Stil-Klasse | Layout | Akzentfarbe | Leistungen | Bewertungen |
+|---|---|---|---|---|---|---|---|
+| 1 | **Handwerk** | Werkstatt | `.stil-modern` | standard | Bronze `#926f39` | alternierend | cards |
+| 2 | Handwerk | Modern | `.stil-modern` | standard | Indigo `#6366f1` | alternierend | cards |
+| 3 | Handwerk | Premium | `.stil-elegant` | standard | Old-Gold `#a87b3f` | alternierend | quote |
+| 4 | **Bau & Sanierung** | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
+| 5 | Bau & Sanierung | Premium | `.stil-elegant` | standard | Anthrazit `#292524` | alternierend | quote |
+| 6 | **Gastro** | Wirtshaus | `[TBD]` (vermutl. `.stil-klassisch` + warmer Akzent) | standard | Burgund `#7a3528` | alternierend | quote |
+| 7 | Gastro | Casual | `.stil-klassisch` | kompakt | Terra `#c87356` | kompakt | cards |
+| 8 | Gastro | Editorial | `.stil-elegant` | ausführlich | Petrol `#5b9bb3` | alternierend | quote |
+| 9 | **Gesundheit** | Praxis | `.stil-klassisch` | kompakt | Medical-Blue `#0e7490` | kompakt | quote |
+| 10 | Gesundheit | Therapie | `.stil-klassisch` | standard | Warm-Sage `#7d9b76` | alternierend | cards |
+| 11 | **Recht & Finanz** | Klassisch | `.stil-klassisch` | kompakt | Navy `#0f2b5b` | kompakt | quote |
+| 12 | Recht & Finanz | Premium | `.stil-elegant` | ausführlich | Anthrazit `#292524` | alternierend | quote |
+| 13 | **Beratung & Coaching** | Modern | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
+| 14 | Beratung & Coaching | Premium | `.stil-elegant` | ausführlich | Anthrazit-Gold `#665338` | alternierend | quote |
+| 15 | **Architektur & Planung** | Klassisch | `.stil-klassisch` | standard | Anthrazit `#292524` | alternierend | quote |
+| 16 | Architektur & Planung | Editorial | `.stil-elegant` | ausführlich | Anthrazit `#1a1a1a` | alternierend | quote |
+| 17 | **IT & Digital** | Modern | `.stil-modern` | standard | Indigo `#6366f1` | alternierend | cards |
+| 18 | IT & Digital | Premium | `.stil-elegant` | ausführlich | Petrol `#0e6b85` | alternierend | quote |
+| 19 | **Bildung** | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
+| 20 | Bildung | Modern | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
+| 21 | **Tourismus** | Klassisch | `.stil-klassisch` | ausführlich | Petrol `#5b9bb3` | alternierend | quote |
+| 22 | Tourismus | Rustikal | `[TBD]` (vermutl. `.stil-klassisch` + Old-Gold) | ausführlich | Old-Gold `#a08456` | alternierend | quote |
+| 23 | Tourismus | Editorial-Premium | `.stil-elegant` | ausführlich | Old-Gold `#a87b3f` | alternierend | quote |
+| 24 | **Handel** | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
+| 25 | Handel | Boutique-Premium | `.stil-elegant` | standard | Old-Gold `#a87b3f` | alternierend | quote |
+| 26 | **Mobilität** | Funktional | `.stil-klassisch` | kompakt | Navy `#0f2b5b` | kompakt | liste |
+| 27 | Mobilität | Werkstatt | `.stil-klassisch` | standard | Stahlblau `#3b5d7a` | alternierend | cards |
+| 28 | Mobilität | Showroom | `.stil-elegant` | standard | Anthrazit `#1a1a1a` | alternierend | quote |
+| 29 | **Agrar** | Klassisch | `[TBD]` (vermutl. `.stil-klassisch` + Tannengrün) | standard | Tannengrün `#3a4f2c` | alternierend | quote |
+| 30 | Agrar | Editorial-Premium | `.stil-elegant` | standard | Anthrazit-Gold `#665338` | alternierend | quote |
+| 31 | Agrar | Erlebnis-Premium | `[TBD]` (vermutl. `.stil-elegant` oder `.stil-klassisch` + Burgund) | standard | Burgund `#7a3528` | alternierend | cards |
+| 32 | **Industrie** | Technisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | liste |
+| 33 | Industrie | Tech-Modern | `.stil-modern` | standard | Petrol `#0e6b85` | alternierend | cards |
+| 34 | **Kosmetik** | Modern | `.stil-modern` | standard | Korallenrot `#e76e7e` | alternierend | cards |
+| 35 | Kosmetik | Premium | `.stil-elegant` | standard | Anthrazit-Gold `#665338` | alternierend | quote |
+| 36 | **Kultur** | Modern | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
+| 37 | Kultur | Editorial | `.stil-elegant` | ausführlich | Bronze `#8b6f47` | alternierend | quote |
+| 38 | **Sport & Wellness** | Studio | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
+| 39 | Sport & Wellness | Premium | `.stil-elegant` | ausführlich | Anthrazit `#292524` | alternierend | quote |
 
 **Total: 14 Berufsgruppen × ~2-3 Looks = 39 Recipe-Zeilen** (≈32 visuell unterscheidbare Outcomes — Sub-Varianten zählen als eigene Zeilen wenn Auto-Engine zwischen Themes wechselt).
 

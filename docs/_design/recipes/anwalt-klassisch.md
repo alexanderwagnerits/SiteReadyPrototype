@@ -2,8 +2,8 @@
 
 > **Anker-Recipe #3** auf **Beta-Stil-Basis** (Linie ab 2026-05-11). Mockup: [`public/mockup-recipe-anwalt-klassisch.html`](../../../public/mockup-recipe-anwalt-klassisch.html). Persona im Mockup: Lechner Rechtsanwaelte · 1010 Wien · Wirtschaftsrecht fuer Familienunternehmen seit 1998.
 
-**Stand:** 2026-05-12
-**Status:** `[PHASE 1 FERTIG]` — Beta-Stil-Mockup vorhanden, vollstaendig Beta-pure-Klassen (kein Architektur-Cleanup noetig). 4 Content-Polish-Punkte offen (siehe „Bekannte Polish-Punkte" unten), kein Blocker.
+**Stand:** 2026-05-13
+**Status:** `[PHASE 1 FERTIG]` — Beta-Stil-Mockup vorhanden, vollstaendig Beta-pure-Klassen (kein Architektur-Cleanup noetig). Alle 4 Content-Polish-Punkte umgesetzt 2026-05-13 (siehe „Bekannte Polish-Punkte" unten).
 
 ---
 
@@ -85,7 +85,7 @@ Float-CTA (Tel-Button rechts unten, mobile)
 | Slot | Wert |
 |---|---|
 | Hero-Eyebrow | „Lechner Rechtsanwaelte · 1010 Wien" (`hero-sub has-firma`) |
-| Hero H1 | „Rechtsberatung in der Wiener Innenstadt. Seit 1998." |
+| Hero H1 | „Wirtschaftsrecht fuer Familienunternehmen. Seit 1998." |
 | Hero Lead | „Wirtschaftsrecht, Vertragsgestaltung und Erbrecht fuer oesterreichische KMU und Familienunternehmen. Klare Kommunikation, transparente Honorare, persoenliche Mandantenfuehrung." |
 | Hero CTA-Primary | „Erstgespraech vereinbaren" |
 | Hero CTA-Secondary | „Schwerpunkte ansehen" |
@@ -96,7 +96,7 @@ Float-CTA (Tel-Button rechts unten, mobile)
 | Mid-CTA-Heading | „Ein Erstgespraech klaert mehr als jede Website." |
 | Mid-CTA-Lead | „Telefonisch oder in der Kanzlei in der Wiener Innenstadt. Kostenfrei und vertraulich." |
 | Ablauf (4) | Erstgespraech · Mandat & Honorar · Bearbeitung · Abschluss & Nachsorge |
-| Ueber-H2 | „Die Kanzlei." |
+| Ueber-H2 | „Dr. Anna Lechner." |
 | Ueber-Text | Dr.-Anna-Lechner-Bio: 1998 gegruendet nach 8 Jahren bei Wiener Wirtschaftskanzlei. Schwerpunkt Wirtschaftsrecht fuer Familienunternehmen. Bewusst klein gehalten, keine Folienschlachten. Lehrt Gesellschaftsrecht an der WU Wien. |
 | Ueber-Vorteile (5) | 25 Jahre Wirtschaftsrecht / Persoenliche Mandantenfuehrung / Festpreis oder RATG-Stundensatz / WU-Lektorin / RAK-Mitglied |
 | FAQ (5) | Erstgespraech-Kosten? · Honorargestaltung? · Mandate ausserhalb Wien? · Vertraulichkeit? · Einmal-Mandat moeglich? |
@@ -148,16 +148,16 @@ Minimal — Anwalt-Mockup ist die saubere Beta-pure-Referenz (alle `.leist-more`
 
 ---
 
-## Bekannte Polish-Punkte (kein Blocker, optional)
+## Polish-Tweaks (umgesetzt 2026-05-13)
 
-Aus User-Critique 2026-05-12 — nicht-blocking, aber für Production-Quality nachzuziehen:
+Aus User-Critique 2026-05-12, am 2026-05-13 nachgezogen:
 
-1. **Quote-H2 „Eine Uebergabe, sauber begleitet."** — „sauber" ist Handwerker-Vokabular. Alternative: „praezise begleitet" / „ohne Reibungsverluste".
-2. **Ueber-H2 „Die Kanzlei."** — minimal, fast anonym. Alternative: „Dr. Anna Lechner." (Person-Personalisierung).
-3. **Ablauf-Step #4 „Drei Monate kostenlose Rueckfragen"** — letzte „kostenlose"-Aussage. Alternative: „Drei Monate inkludierte Rueckfragen" (RAO-defensiver).
-4. **Hero-H1 „Rechtsberatung in der Wiener Innenstadt. Seit 1998."** — leicht Tourismus-Vibe (Material+Region+Datum funktioniert beim Tischler perfekt, bei Anwalt klingt's etwas geographisch). Alternative: „Wirtschaftsrecht fuer Familienunternehmen. Seit 1998." (Was+Wer+Wann statt Wo+Wann).
+1. ✅ **Quote-H2** „Eine Uebergabe, sauber begleitet." → „Eine Uebergabe, praezise begleitet." (Handwerker-Vokabular „sauber" raus)
+2. ✅ **Ueber-H2** „Die Kanzlei." → „Dr. Anna Lechner." (Person-Personalisierung)
+3. ✅ **Ablauf-Step #4** „Drei Monate kostenlose Rueckfragen" → „Drei Monate inkludierte Rueckfragen" (RAO-defensiver, letzte „kostenlose"-Aussage raus)
+4. ✅ **Hero-H1** „Rechtsberatung in der Wiener Innenstadt. Seit 1998." → „Wirtschaftsrecht fuer Familienunternehmen. Seit 1998." (Was+Wer+Wann statt Wo+Wann, Tourismus-Vibe raus)
 
-→ Diese Punkte sind **Wording-Geschmack**, nicht Substanz. Production-Texte kommen via KI pro echtem Mandat-Kunden — Mockup-Wording dient als Form-Template.
+→ Diese Punkte waren **Wording-Geschmack**, nicht Substanz. Production-Texte kommen via KI pro echtem Mandat-Kunden — Mockup-Wording dient als Form-Template.
 
 ---
 

@@ -2,22 +2,26 @@
 
 > Markdown-Drafts fuer alle Lifecycle-Mails der Plattform. Werden im Live-Bau in Resend-Templates ueberfuehrt (HTML + Plain) und ueber [`config/legal-values.ts`](../LIVE-COMPLIANCE.md) parametriert.
 
-**Stand:** 2026-05-13 — `[SPEC-FERTIG]` 8 Anker-Templates spec'd. HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet.
+**Stand:** 2026-05-13 — `[SPEC-FERTIG]` 6 Anker-Templates spec'd. HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet.
 
 ---
 
 ## Inhalt
 
-| Template | Trigger | Absender | Status |
+| Template | Trigger | Absender | Reply-To |
 |---|---|---|---|
-| [welcome.md](welcome.md) | Nach Site-Generation (erster Login) | info@instantpage.at | Draft |
-| [trial-reminder-day-5.md](trial-reminder-day-5.md) | T+5 nach Trial-Start (T-2 vor Ende) | info@instantpage.at | Draft |
-| [trial-reminder-day-7.md](trial-reminder-day-7.md) | T+7 letzter Tag vor Stripe-Aktivierung | info@instantpage.at | Draft |
-| [trial-end-grace.md](trial-end-grace.md) | Nach Trial-Ende ohne Plan (Grace startet) | info@instantpage.at | Draft |
-| [stripe-payment-failed.md](stripe-payment-failed.md) | Stripe-Webhook `invoice.payment_failed` | rechnung@instantpage.at | Draft |
-| [win-back.md](win-back.md) | T+14 nach Cancellation (Reaktivierungs-Versuch) | info@instantpage.at | Draft |
-| [support-confirmation.md](support-confirmation.md) | Bei Support-Anfrage ueber Kontaktform | support@instantpage.at | Draft |
-| [welcome-pro.md](welcome-pro.md) | Plan-Upgrade Starter → Professional | info@instantpage.at | Draft |
+| [welcome.md](welcome.md) | Site-Generation (`status = live`) | info@instantpage.at | support@instantpage.at |
+| [trial-reminder.md](trial-reminder.md) | T+4 (T-3 vor Trial-Ende), einmalig | info@instantpage.at | support@instantpage.at |
+| [trial-end-grace.md](trial-end-grace.md) | T+8 (Trial abgelaufen, Site pausiert) | info@instantpage.at | support@instantpage.at |
+| [payment-failed.md](payment-failed.md) | Stripe-Webhook `invoice.payment_failed`, einmalig | rechnung@instantpage.at | rechnung@instantpage.at |
+| [cancellation-confirmation.md](cancellation-confirmation.md) | Stripe-Webhook `customer.subscription.deleted` | info@instantpage.at | support@instantpage.at |
+| [support-confirmation.md](support-confirmation.md) | Support-Form-Submission (Auto-Reply) | support@instantpage.at | support@instantpage.at |
+
+**Bewusst gestrichen:** Doppelter Trial-Reminder (Tag 7), Win-Back, Welcome-Pro — etablierte Anbieter (Stripe/Webflow/Squarespace) machen das nicht, im AT-Vertrauensprodukt-Kontext aufdringlich.
+
+**Stripe-Default (kein eigenes Markdown-Template):** Payment-Confirmation / Rechnung wird automatisch von Stripe versendet (Hosted-Invoice mit AT-Custom-Fields, Tax-Exempt, KU-Klausel als Custom-Field). Stripe-Dashboard-Template-Konfig dokumentiert in [`OPERATIONS.md`](../OPERATIONS.md) § 2.
+
+**Live-Bau-Backlog:** Cancellation-Final (T-1 vor Hard-Delete, finale Warnung vor Datenloeschung), Domain-Setup-Anleitung (bei Pro Custom-Domain-Aktivierung), Datenpanne-Information (DSGVO Art. 34 Pflicht), Beta-Cutover-Mail.
 
 ---
 
@@ -27,19 +31,23 @@ Aus [`BRAND.md`](../BRAND.md) § 5.4:
 
 > Lifecycle-Mails (Trial, Reminder, Cancellation): **freundlich, knapp, ohne Marketing-Drueckerei**.
 
-Konkret:
-- Anrede **„Sie"** ausnahmslos (B2B-Standard AT)
-- **Kein** „Premium", „Sofort!", „Verpassen Sie nicht!", „Sichern Sie sich!"
-- **Kein** „rechtliche Pflichten", „Pflichtangaben" (siehe Memory `feedback_keine_rechtliche_pflichten.md`)
-- Subjects: max. 50 Zeichen, sachlich, kein Klick-Bait
-- Body: max. 100 Worte (Welcome 150), eine Hauptbotschaft, ein CTA
-- Schluss: oesterreichische Hoeflichkeit („Beste Gruesse"), Vorname Inhaber
+**Voice-Standard (orientiert an Stripe / Webflow / Squarespace-Lifecycle-Mails):**
+
+- **Sachlich-professionell.** Faktischer Eroeffnungssatz mit zentralem Fakt, keine Plauder-Phrasen („Wir lesen mit", „Das passiert haeufiger als man denkt").
+- **Strukturiert.** 1–2 Saetze Kontext → Bullet-Liste mit Fakten/Optionen → ein klarer CTA → Sign-Off. Keine Fliesstext-Argumentation.
+- **Anrede „Sie"** ausnahmslos (B2B-Standard AT).
+- **Verboten:** „Premium", „Sofort!", „Verpassen Sie nicht!", „Sichern Sie sich!", Ausrufezeichen in Subjects, doppelte Aufforderungen.
+- **Verboten (Compliance):** „rechtliche Pflichten", „Pflichtangaben" (siehe Memory `feedback_keine_rechtliche_pflichten.md`).
+- **Subjects:** max. 55 Zeichen, sachlich, kein Klick-Bait, keine Ausrufezeichen.
+- **Body:** max. 120 Worte, eine Hauptbotschaft, ein CTA.
+- **Sign-Off:** „Mit freundlichen Gruessen / Ihr Instantpage.at-Team" — **immer Team-Signatur, nie Persona** (Konsistenz, skaliert mit Wachstum).
 
 **Wording-Marker (Master, in allen Templates konsistent):**
-- Pricing: „16 €/Monat" (Starter), „29 €/Monat" (Professional) — netto (B2B-Standard)
+- Pricing: „16 € / Monat netto" (Starter), „29 € / Monat netto" (Professional) — netto-Auszeichnung B2B-Standard
 - Trial: „kostenlose Testphase" (nicht „Trial", KMU-Sprache)
-- Cancellation: „beendet" (nicht „gekuendigt" — weniger formal)
-- Plan-Wahl: „Plan waehlen" (nicht „Upgrade", „aktivieren")
+- Cancellation: „beendet" (nicht „gekuendigt" — neutraler, weniger formal)
+- Plan-Wahl: „Plan auswaehlen" (nicht „Upgrade", „aktivieren")
+- Reaktivierung: „Reaktivierungsfrist" (klar terminiert) statt „Grace-Period" (Fachjargon)
 
 ---
 
@@ -65,16 +73,39 @@ Doppel-geschweifte Klammern, wie das bestehende Template-System ([`functions/tem
 | `{{STRIPE_PORTAL_URL}}` | https://billing.stripe.com/... | Stripe Customer-Portal |
 | `{{EXPORT_URL}}` | https://instantpage.at/portal/export | konstant |
 
-**Anrede-Logik:**
+**Anrede-Logik (Master, in allen Templates konsistent):**
 
 ```
 {{ANREDE}} =
-  if INHABER_VORNAME && INHABER_NACHNAME → "Sehr geehrte/r {{INHABER_VORNAME}} {{INHABER_NACHNAME}}"
-  elif INHABER_NACHNAME → "Sehr geehrte/r Herr/Frau {{INHABER_NACHNAME}}"
-  else → "Guten Tag"
+  if VORNAME && NACHNAME → "Guten Tag {{VORNAME}} {{NACHNAME}}"
+  elif VORNAME           → "Guten Tag {{VORNAME}}"
+  elif NACHNAME          → "Guten Tag {{NACHNAME}}"
+  else                   → "Guten Tag"
 ```
 
-Geschlechts-Anrede „geehrter/geehrte" wird nicht aufgeloest (kein Geschlecht-Feld im Onboarding). Defensiv „Sehr geehrte/r" als geschlechtsneutrale Form, wie in AT-Behoerdenbriefen ueblich.
+**Begruendung „Guten Tag" statt „Sehr geehrte/r":**
+- „Sehr geehrte/r" mit Schraegstrich ist AT-Behoerden-Bürokratie-Sound, wirkt in B2B-Lifecycle-Mails steif.
+- „Guten Tag" ist neutral-professionell, geschlechtsneutral ohne Schraegstrich-Kruecke, B2B-AT-tauglich.
+- Sie-Form bleibt unveraendert erhalten (BRAND.md § 6.1 Lock).
+- Fallback-Kaskade verhindert peinliche Konstrukte wie „Guten Tag  ," bei fehlenden DB-Feldern.
+
+**Onboarding-Implikation:** Vorname + Nachname sollten Pflichtfelder im Bestellformular sein (entspricht aktuellem Beta-Onboarding `src/data.js`). Bei Import-Migration aus Beta ggf. Backfill noetig.
+
+---
+
+## Email-Adressen (Master-Konvention)
+
+**Quelle der Wahrheit:** [`LIVE-COMPLIANCE.md`](../LIVE-COMPLIANCE.md) § 1 (Mail-Adressen).
+
+| Adresse | Verwendung | Reply-To |
+|---|---|---|
+| `info@instantpage.at` | Lifecycle (Welcome, Trial, Win-Back, Welcome-Pro) | `support@instantpage.at` |
+| `rechnung@instantpage.at` | Stripe-Webhooks (Payment-Failed, Payment-Confirmation, Invoices) | `rechnung@instantpage.at` |
+| `support@instantpage.at` | Auto-Reply Support-Form, Support-Antworten | `support@instantpage.at` |
+| `news@instantpage.at` | Newsletter (separates Opt-In, NICHT in dieser Sammlung) | `news@instantpage.at` |
+| `datenschutz@instantpage.at` | DSGVO-Anfragen, Datenpannen-Benachrichtigung | `datenschutz@instantpage.at` |
+
+**Niemals** als Absender verwenden: `alexander@wagner-its.com` (private Inhaber-Mail), `noreply@*` (untergraebt Vertrauen + Spam-Filter-negativ).
 
 ---
 
@@ -82,16 +113,16 @@ Geschlechts-Anrede „geehrter/geehrte" wird nicht aufgeloest (kein Geschlecht-F
 
 ```
 ---
-{{FIRMENNAME}}-Site: {{SITE_URL}}
+{{FIRMENNAME}}-Website: {{SITE_URL}}
 Portal: {{PORTAL_URL}}
 
 Wagner IT-Solutions e.U. · FN 609574h · 1220 Wien · instantpage.at
-Sie erhalten diese E-Mail als aktiver Kunde von instantpage.at.
-Abmelden von Lifecycle-Mails ist nicht moeglich (Vertragsbestandteil).
-Newsletter abmelden: news@instantpage.at
+Sie erhalten diese E-Mail im Rahmen Ihrer Mitgliedschaft bei instantpage.at.
+Lifecycle-Mails sind Vertragsbestandteil und nicht abbestellbar.
+Newsletter abbestellen: news@instantpage.at
 ```
 
-**Begruendung „Abmelden nicht moeglich":** Lifecycle-Mails sind Vertragsbestandteil (Trial-Ende-Hinweis, Rechnung, Cancellation-Bestaetigung) — keine Werbung im Sinne des § 7 UWG, daher kein Opt-Out-Pflicht. Newsletter ist separat (`news@instantpage.at`) und Opt-In-pflichtig.
+**Begruendung „nicht abbestellbar":** Lifecycle-Mails sind Vertragsbestandteil (Trial-Ende-Hinweis, Rechnung, Cancellation-Bestaetigung) — keine Werbung im Sinne des § 7 UWG, daher keine Opt-Out-Pflicht. Newsletter ist separat (`news@instantpage.at`) und Opt-In-pflichtig.
 
 ---
 

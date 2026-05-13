@@ -1,6 +1,6 @@
-# Support-Confirmation — Bestaetigung bei Anfrage
+# Support-Confirmation — Eingangsbestaetigung
 
-**Trigger:** Kunde sendet Anfrage ueber Kontakt-Form im Portal ODER per Mail an support@instantpage.at
+**Trigger:** Support-Anfrage ueber Kontakt-Form im Portal ODER per Mail an support@instantpage.at
 **Absender:** support@instantpage.at
 **Reply-To:** support@instantpage.at
 **Versand:** Sofort nach Form-Submission (Auto-Reply)
@@ -9,57 +9,43 @@
 
 ## Variablen
 
-`{{ANREDE}}`, `{{TICKET_ID}}`, `{{ANFRAGE_BETREFF}}`, `{{ANFRAGE_TEXT}}`
+`{{VORNAME}}`, `{{NACHNAME}}`
 
 ---
 
 ## Subject
 
 ```
-Ihre Anfrage ist bei uns: #{{TICKET_ID}}
+Ihre Anfrage ist eingegangen
 ```
-
-(40 Zeichen. Ticket-ID gibt Tracking-Klarheit.)
 
 ---
 
 ## Body (Plain)
 
 ```
-{{ANREDE}},
+Guten Tag {{VORNAME}} {{NACHNAME}},
 
-vielen Dank fuer Ihre Nachricht — wir haben sie erhalten und melden uns
-in der Regel innerhalb eines Werktags zurueck (Mo-Fr, 09:00–17:00 Wien).
+Ihre Anfrage ist eingegangen und wird in der Regel innerhalb eines
+Werktags bearbeitet (Mo–Fr, 09:00–17:00 Wien-Zeit).
 
-Ihre Anfrage zur Referenz:
+Auf diese E-Mail koennen Sie direkt antworten, falls Sie ergaenzende
+Informationen oder Anhaenge nachreichen moechten.
 
-  Ticket: #{{TICKET_ID}}
-  Betreff: {{ANFRAGE_BETREFF}}
-
-> {{ANFRAGE_TEXT}}
-
-Falls Sie ergaenzende Informationen oder einen Screenshot nachreichen
-moechten — antworten Sie einfach auf diese Mail. Die Ticket-ID bleibt
-erhalten.
-
-Beste Gruesse
-Alexander Wagner
-Wagner IT-Solutions e.U.
+Mit freundlichen Gruessen
+Ihr Instantpage.at-Team
 
 ---
-Support: support@instantpage.at
-Portal: instantpage.at/portal
-
-Wagner IT-Solutions e.U. · FN 609574h · 1220 Wien · instantpage.at
-Diese E-Mail wurde automatisch versendet — Antworten landen im Support-Postfach.
+Instantpage.at · support@instantpage.at
+Impressum: instantpage.at/impressum · Datenschutz: instantpage.at/datenschutz
 ```
 
 ---
 
 ## Anmerkungen
 
-- **Antwort-Erwartung „innerhalb eines Werktags"** — realistisch fuer Solo-Operation. Nicht „innerhalb 24 h" (impliziert 7-Tage-Service), sondern „Werktag" (klare Mo-Fr-Grenze). Wochenend-Anfragen werden Montag bearbeitet.
-- **Ticket-ID** Format z.B. `IPT-2026-0517` (Year + Sequence) oder einfach Stripe-aehnliche Random-IDs `tkt_a1b2c3d4` — Live-Bau-Entscheidung. Wichtig: konsistent ueber alle Touchpoints.
-- **Anfrage-Text im Quote** — Kunde sieht was er geschrieben hat, kann ggf. nachschaerfen.
-- **Footer-Variante** weicht ab vom Master: „Diese E-Mail wurde automatisch versendet" als Hinweis-Klarheit, weil Auto-Reply.
-- **Kein** Marketing-Cross-Sell („Haben Sie schon unseren Pro-Plan gesehen?") — Support-Mail ist Support-Mail. Vertrauen schaedigend.
+- **Keine Ticket-ID** — fuer Solo-/Kleinteam-Operation Overengineering. Mail-Thread des Kunden uebernimmt die Zuordnung, kein paralleles Ticket-System noetig. Bei Skalierung (>50 Anfragen/Woche) Ticket-ID nachruesten.
+- **Kein Anfrage-Text-Echo** — Kunde hat das Original in seinen gesendeten Mails, Echo waere redundant. Reduziert Mail-Laenge.
+- **„Innerhalb eines Werktags"** statt „24 h" — klare Mo-Fr-Grenze. Wochenend-Anfragen werden Montag bearbeitet.
+- **Kein „Bei Fragen erreichen Sie uns..."-Hinweis** — die Mail IST die Support-Antwort, eine Wiederholung des Support-Kanals waere redundant.
+- **Kein „Vielen Dank fuer Ihre Nachricht"** — Floskel ohne Substanz, Stripe/Webflow-Pattern: faktischer Eroeffnungssatz.

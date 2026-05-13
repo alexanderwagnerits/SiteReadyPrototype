@@ -114,31 +114,34 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 
 ## 2. Email-Templates (Lifecycle)
 
-`[SPEC-FERTIG 2026-05-13]` — 8 Anker-Templates als Markdown-Drafts in [`docs/email-templates/`](email-templates/). HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
+`[SPEC-FERTIG 2026-05-13]` — 6 Anker-Templates als Markdown-Drafts in [`docs/email-templates/`](email-templates/). HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
 
-| Template | Trigger | Spec-File | Status |
-|---|---|---|---|
-| **Welcome** | Nach Site-Generation (erster Login) | [welcome.md](email-templates/welcome.md) | Draft |
-| **Trial-Reminder Tag 5** | T-2 vor Trial-Ende | [trial-reminder-day-5.md](email-templates/trial-reminder-day-5.md) | Draft |
-| **Trial-Reminder Tag 7** | Letzter Trial-Tag | [trial-reminder-day-7.md](email-templates/trial-reminder-day-7.md) | Draft |
-| **Trial-End / Grace** | T+8 nach Trial-Start (Site pausiert) | [trial-end-grace.md](email-templates/trial-end-grace.md) | Draft |
-| **Payment-Failed** | Stripe-Webhook `invoice.payment_failed` (Retry 1–4) | [stripe-payment-failed.md](email-templates/stripe-payment-failed.md) | Draft |
-| **Win-Back** | T+14 nach Cancellation | [win-back.md](email-templates/win-back.md) | Draft (Anwalt-Audit-Punkt) |
-| **Support-Confirmation** | Auto-Reply bei Support-Anfrage | [support-confirmation.md](email-templates/support-confirmation.md) | Draft |
-| **Welcome Pro** | Plan-Upgrade Starter → Pro | [welcome-pro.md](email-templates/welcome-pro.md) | Draft |
+| Template | Trigger | Spec-File |
+|---|---|---|
+| **Welcome** | Site-Generation (`status = live`) | [welcome.md](email-templates/welcome.md) |
+| **Trial-Reminder** | T+4 (T-3 vor Trial-Ende), einmalig | [trial-reminder.md](email-templates/trial-reminder.md) |
+| **Trial-End / Grace** | T+8 (Trial abgelaufen, Site pausiert) | [trial-end-grace.md](email-templates/trial-end-grace.md) |
+| **Payment-Failed** | Stripe-Webhook `invoice.payment_failed`, einmalig | [payment-failed.md](email-templates/payment-failed.md) |
+| **Cancellation-Confirmation** | Stripe-Webhook `customer.subscription.deleted` | [cancellation-confirmation.md](email-templates/cancellation-confirmation.md) |
+| **Support-Confirmation** | Auto-Reply bei Support-Anfrage | [support-confirmation.md](email-templates/support-confirmation.md) |
 
-**Noch nicht gespec'd (Backlog fuer Live-Bau):**
+**Bewusst gestrichen** (etablierte SaaS-Anbieter machen das nicht, im AT-Vertrauensprodukt-Kontext aufdringlich): doppelter Trial-Reminder, Win-Back-Mail, Welcome-Pro-Mail.
+
+**Payment-Confirmation / Rechnung:** Stripe-Default-Receipt mit AT-Custom-Fields, Tax-Exempt, KU-Klausel als Custom-Field. **Kein eigenes Markdown-Template** — Konfiguration im Stripe-Dashboard. Setup in Live-Bau Phase 1:
+- Stripe → Settings → Emails → Subscription receipts aktivieren
+- Custom-Footer-Text: *„Kleinunternehmer im Sinne des § 6 Abs 1 Z 27 UStG, daher keine USt ausgewiesen."*
+- Custom-Fields auf Invoice: Firmenbuchnummer (FN 609574h), HG Wien, Bankverbindung Erste Bank
+
+**Live-Bau-Backlog (Phase 2):**
 
 | Template | Trigger | Inhalt |
 |---|---|---|
-| **Payment-Confirmation** | Stripe-Webhook `invoice.paid` | Rechnung beigefuegt, naechster Abrechnungstermin |
-| **Cancellation-Confirmation** | Nach Self-Service-Kuendigung | Kuendigungsbestaetigung, Grace-Period-Hinweis, Daten-Export-Link |
-| **Cancellation-Final** | T-1 Tag vor Daten-Loeschung | Letzte Erinnerung Daten zu exportieren |
+| **Cancellation-Final** | T-1 Tag vor Hard-Delete (T+89) | Letzte Warnung vor endgueltiger Datenloeschung |
 | **Domain-Setup-Anleitung** | Bei Custom-Domain-Aktivierung (Pro) | DNS-Konfiguration Step-by-Step |
-| **Datenpanne-Information** | Bei DSGVO Art 34 Pflicht | Sachverhalt, betroffene Daten, getroffene Massnahmen |
-| **Beta-Cutover-Mail** | T-7 vor Live-Schaltung | „Wir sind umgezogen — Promo-Code fuer X Monate kostenlos" |
+| **Datenpanne-Information** | DSGVO Art 34 Pflicht | Sachverhalt, betroffene Daten, getroffene Massnahmen |
+| **Beta-Cutover-Mail** | T-7 vor Live-Schaltung | Umzug-Information + Promo-Code fuer Beta-Tester |
 
-Voice + Variablen-Konvention + Master-Footer: siehe [README in `docs/email-templates/`](email-templates/README.md).
+Voice + Variablen-Konvention + Master-Footer + Fallback-Anrede: siehe [README in `docs/email-templates/`](email-templates/README.md).
 
 ## 3. Support-FAQ (Top 20)
 

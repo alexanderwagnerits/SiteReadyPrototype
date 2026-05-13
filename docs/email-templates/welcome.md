@@ -1,68 +1,65 @@
 # Welcome — nach Site-Generation
 
-**Trigger:** Nach erstem Login im Portal, nachdem die Site automatisch generiert wurde (= Trial-Start)
+**Trigger:** Status-Uebergang `paid → in_arbeit → live` (Site wurde automatisch generiert)
 **Absender:** info@instantpage.at
 **Reply-To:** support@instantpage.at
-**Versand:** Sofort nach Site-Generation (Webhook nach `sites.status = 'live'`)
-**Verzoegerung:** 5 Minuten Puffer fuer Site-Verfuegbarkeit
+**Versand:** Sofort nach Status-Uebergang auf `live` (Webhook, 5 Min Puffer fuer Site-Verfuegbarkeit)
 
 ---
 
 ## Variablen
 
-`{{ANREDE}}`, `{{FIRMENNAME}}`, `{{SUBDOMAIN}}`, `{{SITE_URL}}`, `{{PORTAL_URL}}`, `{{TRIAL_END_DATE}}`
+`{{VORNAME}}`, `{{NACHNAME}}`, `{{FIRMENNAME}}`, `{{SITE_URL}}`, `{{PORTAL_URL}}`, `{{TRIAL_END_DATE}}`
+
+Anrede-Logik (Master, siehe README): default `Guten Tag {{VORNAME}} {{NACHNAME}}` — geschlechtsneutral, AT-tauglich, weniger steif als „Sehr geehrte/r".
 
 ---
 
 ## Subject
 
 ```
-Ihre Website ist online: {{FIRMENNAME}}
+Ihre Website fuer {{FIRMENNAME}} ist online
 ```
 
-(45 Zeichen bei Beispiel-Firmenname „Tischlerei Pichler". Direkt + sachlich.)
+(45 Zeichen mit Beispielfirmenname „Pichler". Faktisch, kein Werbe-Wording.)
 
 ---
 
 ## Body (Plain)
 
 ```
-{{ANREDE}},
+Guten Tag {{VORNAME}} {{NACHNAME}},
 
-Ihre Website ist fertig und seit eben unter {{SITE_URL}} erreichbar.
+Ihre Website fuer {{FIRMENNAME}} ist eingerichtet und unter
+{{SITE_URL}} erreichbar.
 
-In den naechsten 7 Tagen koennen Sie alles in Ruhe testen — die Site ist
-bereits oeffentlich, Inhalte koennen Sie jederzeit im Portal anpassen.
-Ihre kostenlose Testphase endet am {{TRIAL_END_DATE}}. Danach waehlen Sie
-den Plan, oder die Site wird pausiert (Daten bleiben 30 Tage erhalten).
+Ihre kostenlose Testphase laeuft bis {{TRIAL_END_DATE}}. In diesem
+Zeitraum koennen Sie die Plattform unverbindlich pruefen, Inhalte
+anpassen und alle Funktionen nutzen.
 
-Drei naechste Schritte (~10 Minuten):
+Empfohlene erste Schritte:
 
-  1. Site ansehen: {{SITE_URL}}
-  2. Eigenes Logo + Fotos hochladen (Portal → Medien)
-  3. Bewertungen ergaenzen falls vorhanden (Portal → Bewertungen)
+  1. Website oeffnen und Inhalte pruefen: {{SITE_URL}}
+  2. Logo und eigene Fotos hochladen (Portal -> „Logo & Fotos")
 
-Bei Fragen einfach auf diese Mail antworten — wir lesen mit.
+Bei Fragen erreichen Sie uns unter support@instantpage.at.
 
-Beste Gruesse
-Alexander Wagner
-Wagner IT-Solutions e.U.
+Mit freundlichen Gruessen
+Ihr Instantpage.at-Team
 
 ---
-{{FIRMENNAME}}-Site: {{SITE_URL}}
-Portal: {{PORTAL_URL}}
-
-Wagner IT-Solutions e.U. · FN 609574h · 1220 Wien · instantpage.at
-Sie erhalten diese E-Mail als aktiver Kunde von instantpage.at.
-Abmelden von Lifecycle-Mails ist nicht moeglich (Vertragsbestandteil).
-Newsletter abmelden: news@instantpage.at
+Instantpage.at · support@instantpage.at
+Impressum: instantpage.at/impressum · Datenschutz: instantpage.at/datenschutz
 ```
 
 ---
 
 ## Anmerkungen
 
-- **Kein Promo-Drueckerei.** Trial-Endedatum wird genannt, aber nicht aggressiv.
-- **„Pausiert" statt „geloescht"** — entspricht Phase-1-Grace-Period (30 Tage Reaktivierungsfenster, siehe LIVE-COMPLIANCE § 1 #9).
-- **„Wir lesen mit"** statt automatisierter Hinweis — persoenlicher Touch fuer KMU-Zielgruppe.
-- **3 Schritte** stehen im Body, weil Onboarding-Reibung in den ersten 24 h ueber Conversion entscheidet (vs „Erkunden Sie das Portal" — zu vage).
+- **Anrede mit Schraegstrich** („geehrte/r") — AT-Standard fuer geschlechtsneutrale Form ohne explizites Geschlechts-Feld im Onboarding. Web-Agent-Empfehlung „Hallo {{VORNAME}}" widerspricht BRAND.md § 6.1 („Sie ausnahmslos").
+- **„Logo & Fotos"** ist exakte Tab-Bezeichnung aus PRODUCT.md § 7.2 (kein erfundener Bereich).
+- **Nur 2 Schritte** statt 3 — universeller (jeder Kunde will Logo + Fotos hochladen, aber „Bewertungen ergaenzen" frustriert Kunden ohne vorhandene Bewertungen).
+- **Faktischer Eroeffnungssatz** statt „Vielen Dank fuer Ihre Anmeldung..." — Stripe/Webflow-Standard. Anerkennung passiert durch professionelle Bearbeitung, nicht durch Floskel.
+- **Stripe-Pipeline:** Diese Mail kommt zusaetzlich zur automatischen Stripe-Trial-Mail (Card-Hold-Bestaetigung). Beide Mails sind erwartet.
+- **Footer-Minimalismus:** Stripe/Webflow-Pattern — Brand-Name + Support-Mail + Impressum-/Datenschutz-Link statt vollstaendigem WKO-Impressum-Footer. Anbieterkennzeichnung (Firma, FN, Adresse, KU-Klausel) auf der verlinkten Impressum-Seite. **Anwalts-Audit-Punkt** vor Live-Schaltung: Link-Loesung ECG-§ 5-konform bestaetigen lassen (Common Practice bei AT-SaaS, aber formell pruefen).
+- **Kein Newsletter-Hinweis** im Footer — instantpage.at hat aktuell keinen Newsletter-Funnel. Bei Newsletter-Launch spaeter ergaenzen.

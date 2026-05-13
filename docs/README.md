@@ -20,7 +20,7 @@
 | [OPERATIONS.md](OPERATIONS.md) | Runbook, Email-Templates, Support-FAQ | Skeleton |
 | [BRAND.md](BRAND.md) | Voice & Tone, Logo, Slogans, Tonalität | Skeleton |
 | [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (Gründertarif, Showcase, Multiplikatoren, WKO-Kooperationen, Referral) | Skeleton |
-| [email-templates/](email-templates/) | 8 Lifecycle-Mail-Drafts (Welcome, Trial-Reminder, Trial-End, Payment-Failed, Win-Back, Support, Welcome-Pro) | Spec-fertig |
+| [email-templates/](email-templates/) | 6 Lifecycle-Mail-Drafts (Welcome, Trial-Reminder, Trial-End, Payment-Failed, Cancellation-Confirmation, Support) | Spec-fertig |
 | [business-case-kosten.md](business-case-kosten.md) | Wirtschaftlichkeit, Margen | aktuell (April) |
 | [_archive/](_archive/) | Snapshots überholter Dokumente | Referenz |
 

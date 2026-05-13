@@ -19,6 +19,7 @@
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Tech-Stack, DB-Schema, Deployment, Subprozessoren | Skeleton |
 | [OPERATIONS.md](OPERATIONS.md) | Runbook, Email-Templates, Support-FAQ | Skeleton |
 | [BRAND.md](BRAND.md) | Voice & Tone, Logo, Slogans, Tonalität | Skeleton |
+| [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (Gründertarif, Showcase, Multiplikatoren, WKO-Kooperationen, Referral) | Skeleton |
 | [business-case-kosten.md](business-case-kosten.md) | Wirtschaftlichkeit, Margen | aktuell (April) |
 | [_archive/](_archive/) | Snapshots überholter Dokumente | Referenz |
 
@@ -47,6 +48,7 @@
 | Stack, Deployment, DB-Schema | ARCHITECTURE.md |
 | Pricing, Features, Plan-Gating | PRODUCT.md |
 | Logo, Slogans, Marketing-Texte | BRAND.md |
+| Acquisition-Strategie, Referral, Partnerprogramm | MARKETING.md |
 | Incident-Response, Backup-Restore, Email-Vorlagen | OPERATIONS.md |
 | Live-Bau planen, Phase-Übergang | MIGRATION-PLAN.md |
 

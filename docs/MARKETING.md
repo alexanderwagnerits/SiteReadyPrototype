@@ -35,6 +35,7 @@ Channels in absteigender Pre-Launch-Prioritaet. Multiplikator (§ 3.3) und WKO (
 | Channel | Status | Pre-Launch | Monat 1–2 | Monat 3+ |
 |---|---|---|---|---|
 | LinkedIn Company Page | `[LIVE seit 2026-05-12]` | Content-Aufbau | Hauptkanal | laufend |
+| Instagram + Facebook (Meta Business) | `[Accounts angelegt 2026-05-14]` | Grund-Praesenz + Cross-Post 1×/Wo | identisch (Cross-Post) | evtl. eigenstaendig ab Trigger |
 | Direktansprache (Cold Outreach) | `[BAU vor Launch]` | Lead-Listen | Hauptkanal | reduziert auf hot Spots |
 | Organisch / SEO | `[BAU 1–2 Mo]` | Marketing-Site + Recipe-Showcase-Pages live | indexiert | Long-Tail-Wachstum |
 | Lokale Medien / Branchen-Magazine | `[Trigger 30+ Refs]` | — | Pitch-Vorbereitung | bei Showcase-Reife |
@@ -79,6 +80,96 @@ Channels in absteigender Pre-Launch-Prioritaet. Multiplikator (§ 3.3) und WKO (
 - **Keine Berufsgruppen-Listen in Hauptbotschaften** (Memory `feedback_marketing_zielgruppe_inklusiv.md`) — "oesterreichische KMU" als Umbrella, Konkretisierung erst im Body.
 - **Keine "Pflichtangaben"-Hebel** (Memory `feedback_keine_rechtliche_pflichten.md`) — Compliance-Themen positiv framen ("ohne Cookie-Banner") statt buerokratisch.
 - **UWG-Vorsicht** bei Vergleichs-Posts ("besser als Wix") — neutral formulieren ("anders als generische Builder").
+
+---
+
+### 2.1a Instagram + Facebook (Meta Business)
+
+**Status:** Accounts angelegt 2026-05-14 (Username-Reservierung). Pre-Launch Minimal-Praesenz, kein eigenstaendiger Content-Plan.
+
+**Strategie:** Grund-Praesenz aufbauen, dann Cross-Post-Disziplin via Meta Business. Aufwand ~30–45 Min/Woche fuer beide Channels zusammen.
+
+#### Grund-Setup (einmalig, ~45 Min)
+
+**Profil-Anlage (Instagram + Facebook Page identisch):**
+- Profilbild: instantpage.at Wortmarke + Tannengruen-Hintergrund
+- Tagline / Bio: „Die Website fuer oesterreichische KMU. 10 Minuten Aufwand." (Memory `feedback_at_vertrauensprodukt` + BRAND.md § 7.0)
+- Link in Bio: `instantpage.at`
+- Standort / Adresse: Wien (FB Page mit Map)
+- Branche / Kategorie: Software / Website-Builder
+- Kontakt-Mail: `info@instantpage.at`
+
+**Highlight-Stories Instagram (5–6 Initial-Themen):**
+
+| Thema | Inhalt |
+|---|---|
+| 📋 Was ist das? | 4–6 Story-Slides die das Produkt erklaeren (Problem → Loesung → Wow) |
+| ⚡ So funktioniert es | Fragebogen → KI → Site Slide-by-Slide (3–4 Slides) |
+| 🎨 Beispiele | Recipe-Screenshots der 3 Anker-Recipes (Anwalt / Beratung / Handwerk) |
+| 💰 Preise | Starter + Professional mit Kern-Features |
+| ❓ Haeufige Fragen | 4–5 Top-Fragen aus Support-FAQ (OPERATIONS § 3) |
+| 🇦🇹 Made in Austria | Brand-Anker, AT-Vertrauensvibe, Wagner IT-Solutions e.U. |
+
+Format-Hinweis: Highlight-Cover-Icons in Tannengruen, einheitliche Look-Welt. Tool: Canva oder Figma fuer Story-Templates.
+
+#### Karussell-Beitraege (Initial-Set, ~3–5 Posts in den ersten 2 Wochen)
+
+Dauerhafte Feed-Inhalte die das Produkt erklaeren — nicht Lifecycle-Posts. Format: Instagram-Carousel + Facebook-Bildreihe (Cross-Post via Meta Business).
+
+| # | Titel | Slides |
+|---|---|---|
+| 1 | „Was ist instantpage.at?" | 6–8 Slides Problem (Wix-Editor-Marathon) → Loesung (KI generiert) → Wow (10 Min) → CTA |
+| 2 | „So entsteht deine Website" | 5 Slides Fragebogen → Branchen-Recipe → KI-Generation → Self-Service-Portal → Live-Schaltung |
+| 3 | „Warum keine Cookie-Banner?" | 4–5 Slides USP-Erklaerung (LIVE-COMPLIANCE § 1 #15c) |
+| 4 | „Fuer welche Branchen?" | 6 Slides die 14 Berufsgruppen visuell (Handwerk, Anwalt, Gastro, Friseur, Berater etc.) |
+| 5 | „Was kostet das?" | 4 Slides Plan-Uebersicht + Trial + KMU-Klausel |
+
+**Voice + Format:**
+- Sie-Form (BRAND.md § 6.1 Lock)
+- Tannengruen als Akzent, schwarz/weiss als Basis
+- Sachlich-zugewandt (BRAND.md § 5)
+- Keine Emojis im Text, nur als Slide-Icon
+- Max. 3 Hashtags: `#KMU #Oesterreich #Webdesign`
+
+#### Laufende Frequenz: 1 Post / Woche via Meta Business Cross-Post
+
+**Workflow:**
+- Wochen-Post primaer fuer LinkedIn konzipieren (§ 2.1)
+- LinkedIn-Carousel → 1:1 als Instagram-Carousel via Meta Business
+- LinkedIn-Text-Post → Facebook-Text-Post mit Hero-Bild (Tannengruen-Template)
+- Aufwand pro Cross-Post: ~5–10 Min Bild-Adaption
+
+**Content-Mix laufende Posts (Variation, kein fester Rhythmus):**
+- Recipe-Showcase (40 %)
+- Behind-the-Scenes / Bau-Fortschritt (30 %)
+- Branchen-Mini-Insight (20 %)
+- Trust-Baustein / Meilenstein (10 %)
+
+(Identisch zu LinkedIn-Content-Saeulen § 2.1 — bewusst gleich gehalten fuer Effizienz.)
+
+#### Was NICHT Pre-Launch
+
+- **Stories taeglich pflegen** — Burnout-Risiko, Inhaber-Bottleneck
+- **Reels-Strategie aufbauen** — Eigenproduktion-Aufwand, kein klarer ROI Pre-Launch
+- **KMU per DM kalt-akquirieren** — Spam-Vibe, kollidiert mit § 7 UWG
+- **Facebook-Gruppen-Posting als Plattform-Anbieter** — wird oft als Eigenwerbung gefiltert, Gruppen-Verwarnung-Risiko
+- **Cookie-/Tracking-Pixel** auf Marketing-Site Phase 1 — kollidiert mit „Banner-frei als USP" (LIVE-COMPLIANCE § 1 #15c)
+
+#### Compliance-Hinweise
+
+- **Account-Existenz** ist NICHT subprozessor-pflichtig (LIVE-COMPLIANCE § 4) — Meta erst dann gelistet wenn Pixel/Conversions-API auf Marketing-Site eingebunden
+- **DSGVO Schrems-III:** Meta-Datentransfer USA — bei spaetem Pixel-Einsatz Cookie-Banner zwingend (Plattform-Cookie-Strategie, LIVE-COMPLIANCE § 1 #15b)
+- **Voice-Konsistenz:** alle Social-Posts BRAND.md § 5 + § 8 (verbotene Begriffe UWG) befolgen
+- **Showcase-Posts mit Kunden-Logos:** Opt-in dokumentieren (§ 3.2 Showcase-Mechanik)
+
+#### Eskalations-Trigger fuer aktivere Strategie
+
+| Trigger | Erweiterung |
+|---|---|
+| 10+ Live-Kunden mit Showcase-Opt-in | Instagram bekommt eigenstaendige Recipe-Showcase-Posts (2×/Woche) |
+| Paid-Launch (Phase 2) | Meta Business wird Pflicht-Tool, Pixel-Einbindung + DSGVO-Cookie-Banner |
+| 100+ Follower auf Instagram | Reels-Strategie evaluieren (Recipe-Builder-Process visuell) |
+| KMU-Sparten-Konzentration in einer Region | Lokale FB-Gruppen-Engagement (kommentieren, nicht posten) |
 
 ---
 

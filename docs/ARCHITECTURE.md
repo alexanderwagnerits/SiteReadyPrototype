@@ -1,8 +1,8 @@
 # Architektur — instantpage.at
 
-> **Skeleton.** Wird befüllt aus `_archive/PROJECT-STAND-MAERZ-2026.md` + Memory `project_production_refactor.md` während Live-Bau.
+> **Living Document.** Tech-Stack, DB-Schema, Repo-Struktur, Routing, API, Auth, Deployment, Backup, Security spec'd. Detail-Audits in Phase 0.
 
-**Stand:** 2026-05-06
+**Stand:** 2026-05-14
 
 ---
 

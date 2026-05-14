@@ -2,7 +2,7 @@
 
 > **Index aller Repo-Dokus.** Living Documents — werden laufend ergänzt während Live-Bau.
 
-**Stand:** 2026-05-04
+**Stand:** 2026-05-14
 
 ---
 
@@ -14,13 +14,14 @@
 | [MIGRATION-PLAN.md](MIGRATION-PLAN.md) | **Master-Plan für Live-Bau in neuer Umgebung** — Setup, Übernahme, Phasen, Cutover | aktuell |
 | [LIVE-COMPLIANCE.md](LIVE-COMPLIANCE.md) | Recht / Compliance — AGB, AVV, Datenschutz, Branchen-Pflichten, Anwalt-Trigger | aktuell |
 | [RECIPE-SYSTEM.md](RECIPE-SYSTEM.md) | Kundenseiten-Architektur Live — 4 Themes + 24 Recipes + Section-Library | aktuell |
-| [DESIGN-VISION.md](DESIGN-VISION.md) | **Visual-/UX-/Quality-Specs** für Premium-Anspruch — 14 Lücken in 4 Blöcken (~10-12 Wochen Phase vor Code-Setup) | aktuell |
-| [PRODUCT.md](PRODUCT.md) | Produkt-Spec — Vision, Pricing, Features pro Plan | Skeleton |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Tech-Stack, DB-Schema, Deployment, Subprozessoren | Skeleton |
-| [OPERATIONS.md](OPERATIONS.md) | Runbook, Email-Templates, Support-FAQ | Skeleton |
-| [BRAND.md](BRAND.md) | Voice & Tone, Logo, Slogans, Tonalität | Skeleton |
-| [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (Gründertarif, Showcase, Multiplikatoren, WKO-Kooperationen, Referral) | Skeleton |
-| [email-templates/](email-templates/) | 6 Lifecycle-Mail-Drafts (Welcome, Trial-Reminder, Trial-End, Payment-Failed, Cancellation-Confirmation, Support) | Spec-fertig |
+| [DESIGN-VISION.md](DESIGN-VISION.md) | **Visual-/UX-/Quality-Specs** — Block A + B.6 + C.11 + C.12 + D komplett, Block B/C-Rest im Live-Repo. Details in [`_design/`](_design/) | TEIL-FERTIG |
+| [PRODUCT.md](PRODUCT.md) | Produkt-Spec — Vision, Pricing, Features pro Plan, Portal-Tabs, Trial/Cancellation | GRÖSSTENTEILS-FERTIG |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Tech-Stack, DB-Schema, Repo-Struktur, Routing, Auth, Deployment, Backup, Security | GRÖSSTENTEILS-FERTIG |
+| [OPERATIONS.md](OPERATIONS.md) | Runbook, Email-Templates, Backup, Onboarding-Playbook, Monitoring | TEIL-FERTIG |
+| [BRAND.md](BRAND.md) | Voice & Tone, Logo, Slogans, Tonalität — Tagline + Hero-Headline locked | FERTIG (Logo-Asset-Set offen) |
+| [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (6 Mechaniken + 5 Channels spec'd) | TEIL-SPEC'D |
+| [email-templates/](email-templates/) | 10 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover) | Spec-fertig |
+| [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |
 | [business-case-kosten.md](business-case-kosten.md) | Wirtschaftlichkeit, Margen | aktuell (April) |
 | [_archive/](_archive/) | Snapshots überholter Dokumente | Referenz |
 

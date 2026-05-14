@@ -38,7 +38,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | 8 | 3 Theme-Tokens final | 1 Woche | `[v2 ENTWURF]` (`_design/themes.md`) — 2 Klassisch-Mockups fehlen |
 | 9 | 25 Section-Specs | 2 Wochen | `[1 von 25]` (hero.md) |
 | 10 | 22 Recipe-Mockups | 4-6 Wochen (parallel) | `[3 von 24]` (anwalt-klassisch + beratung-modern + handwerk-werkstatt) |
-| 11 | Mikro-Interaktionen Kunden-Websites | parallel zu Themes | `[OFFEN]` |
+| 11 | Mikro-Interaktionen Kunden-Websites | parallel zu Themes | `[SPEC 2026-05-14]` — Theme-Animations-DNA + Hover/Scroll-Reveal/Parallax-Entscheidungen, JS ≤ 80 KB gzip |
 | 12 | Asset-/Photography-Strategie | 3-4 Tage | `[SPEC 2026-05-14]` — Unsplash+Pexels, Whitelist-Hybrid, Lucide-Icons, keine Illustrations; Foto-Sessions Budget-offen |
 | **D** | **Quality** | ~1 Woche | `[TEIL-SPEC'D]` |
 | 13 | Quality-Standards messbar | 2 Tage | `[FERTIG 2026-05-14]` — 10 Sub-Sections, ausgelagert in `_design/quality-standards.md` |
@@ -234,20 +234,22 @@ Variante A ist Frame-/Beehiiv-Vorbild (Memory `_design/benchmarks-plattform.md`)
 
 ---
 
-### 11. Mikro-Interaktionen Kunden-Websites
+### 11. Mikro-Interaktionen Kunden-Websites `[SPEC 2026-05-14]`
 
-**Was fehlt:** Hover-States, Scroll-Reveals, Page-Transitions nicht spec'd.
+**Detail-Spec:** [`docs/_design/customer-microinteractions.md`](_design/customer-microinteractions.md) — 11 Sektionen.
 
-**Outcome:**
-- Hover-Patterns pro Theme (subtle vs. expressive)
-- Scroll-Reveal-Patterns (oder bewusst weglassen?)
-- Logo-Animationen (Fade? Slide? Statisch?)
-- Hero-Parallax — ja/nein pro Theme
-- SVG-/Lottie-Einsatz definieren
-- Performance-Budget pro Recipe (Lighthouse-Ziel: > 95?)
-- Reduced-Motion-Verhalten
+**Kern-Entscheidungen:**
+- **Animation-Charakter pro Theme** (Klassisch sachlich / Edel ruhig-editorial / Rustikal warm-physisch) mit konkreten Easings + Durations
+- **Hover-Patterns** pro Theme spec'd fuer Cards, Buttons, Navigation, Galerie
+- **Scroll-Reveal** ja, aber dezent (12–16 px Slide, 240–320 ms, Stagger 60–80 ms) — Hero/Galerie/Standorte/Footer kein Reveal
+- **Logo-Animation:** NEIN (statisch, nur dezenter Hover-Opacity-Wechsel)
+- **Hero-Parallax:** Klassisch NEIN, Edel JA-sehr-dezent (≤ 30 px), Rustikal NEIN — Mobile immer NEIN
+- **SVG ja, Lottie nein** (Bundle-Size, Komplexitaet)
+- **Page-Transitions:** keine (Static-MPA, Browser-Native-Behavior)
+- **Reduced-Motion verbindlich** — alle Transform-Animationen deaktiviert, Opacity bleibt
+- **Performance-Budget:** JS ≤ 80 KB gzip, CSS ≤ 30 KB gzip, 60 fps — Mikro-Interaktionen primaer CSS-only
 
-**Connection:** parallel zu Block 8 Themes
+**Connection:** baut auf `_design/themes.md` (Easings als Tokens), parallel zu Block 8 Themes.
 
 ---
 

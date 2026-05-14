@@ -865,10 +865,34 @@ Fuer alle drei Verarbeitungstaetigkeiten von instantpage.at ist **keine vollstae
 ### 12.4 DSGVO-Auskunftsrecht (Art. 15) + Recht auf Löschung (Art. 17)
 
 **Auskunftsrecht (Art. 15):**
-- Self-Service-Button im Portal: "Meine Daten herunterladen"
+- Self-Service-Button im Portal: "Meine Daten herunterladen" (Konto-Tab → „Mein Account")
 - Format: **PDF** (alle gespeicherten Daten zum Order, lesbar zusammengefasst)
 - Frist: max 30 Tage, in Praxis sofort
 - Activity-Log-Eintrag: `dsgvo_export_requested`
+
+**PDF-Struktur (Spec 2026-05-14):**
+
+| Seite | Inhalt |
+|---|---|
+| 1 — Deckblatt | Logo instantpage.at, Titel „Datenauskunft gemäß Art. 15 DSGVO", Stammdaten des Anbieters (Wagner IT-Solutions e.U., FN 609574h, 1220 Wien), Erstellt am, Order-ID |
+| 2 — Vertragsdaten | Plan, Trial-Start, Trial-Ende, Subscription-Status, Subscription-Start, naechste Rechnung |
+| 3 — Stammdaten | Firmenname, Inhaber Vor-/Nachname, Anschrift, UID, GISA, FN, Kammer, Berufsbezeichnung — alle Pflichtfelder aus § 4 Anhang IV |
+| 4 — Website-Inhalte | Aktueller Inhalt aller bearbeiteten Tabs (Leistungen, Texte, Bewertungen, Galerie-Bildunterschriften, Team, FAQ) — strukturiert |
+| 5 — Endnutzer-Daten | Zaehlung der gespeicherten Kontaktformular-Eingaenge (keine Inhalts-Wiedergabe — Endnutzer sind Verantwortliche fuer **ihre** eigenen Daten, hier nur Meta-Zaehlung) |
+| 6 — Subprozessoren | Aktuelle Subprozessoren-Liste (§ 4 dieses Dokuments) — Anhang |
+| 7 — Activity-Log | Last 90 Tage Activity-Log-Eintraege (Action-Type, Datum, Detail-Summary), aelter nur auf Anfrage |
+| 8 — Hinweise | Recht auf Berichtigung (Art. 16) / Loeschung (Art. 17) / Einschraenkung (Art. 18) / Beschwerde bei DSB (dsb.gv.at) |
+
+**Generierungs-Workflow:**
+- PDF wird serve-time aus DB generiert (keine Vorberechnung)
+- Tool: `@react-pdf/renderer` oder `pdf-lib` (Server-Side in Cloudflare Worker)
+- Bei grossen Galerien: nur Caption + Credit, nicht Bilddateien selbst (Bilddateien separat im Storage Bucket abrufbar via Portal-Galerie)
+- Sprache: Deutsch (AT)
+- Versanddatei-Name: `instantpage-datenauskunft-{order-id}-{YYYYMMDD}.pdf`
+
+**Edge-Cases:**
+- Mehrere Orders pro User: 1 PDF pro Order (User loadet selbst, je nachdem welche Site er auskoppeln moechte)
+- Geloeschter Account (Hard-Delete schon ausgefuehrt): kein Export moeglich, Mail-Hinweis mit Bestaetigung der Loeschung
 
 **Recht auf Löschung (Art. 17):**
 - Self-Service-Button im Portal: "Account löschen" (nicht zu prominent platzieren)

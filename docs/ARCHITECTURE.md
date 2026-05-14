@@ -339,6 +339,36 @@ Wird im Live-Bau **abgeschafft** — Doku ist im Repo (siehe `docs/`).
 - **`subprocessor_dpas`** — Tracking welcher Auftragsverarbeiter wann DPA unterzeichnet hat (LIVE-COMPLIANCE § 4)
 - **`ai_calls`** — Prompt-Versioning self-built: prompt_hash, model, tokens, cost, latency, quality_score, order_id (Memory `project_production_refactor.md`)
 - **`abuse_reports`** — Notice-and-Takedown-Inbox (LIVE-COMPLIANCE § 12.1)
+- **`partners`** (Multiplikator-Programm, MARKETING § 3.3) — Spec 2026-05-14:
+  - `id` UUID PK
+  - `name`, `company`, `uid` (Pflicht — Anti-Missbrauch: keine Privat-Partner), `email`, `phone`
+  - `code` (eindeutig, z.B. `STB-LECHNER-2026`), `active` boolean
+  - `provision_model` enum (`lifetime_20` / `first_year_20_then_10` / `mixed_credit`)
+  - `created_at`, `terms_accepted_at`, `payout_method` (z.B. „Provisions-Rechnung an Wagner IT-Solutions e.U.")
+  - Admin-only RLS, partner sieht eigene Daten via separates Partner-Portal (`partners.instantpage.at` `[BAU Phase 2]`)
+- **`partner_referrals`** (MARKETING § 3.3) — Spec 2026-05-14:
+  - `id` UUID PK
+  - `partner_id` FK → `partners.id`
+  - `order_id` FK → `orders.id` (vermittelter Kunde)
+  - `signup_date`, `first_paid_date` (NULL bis erste Zahlung — Cooldown-Schutz)
+  - `status` enum (`pending` / `eligible` / `paid` / `void`)
+  - `void_reason` text (z.B. „self-referral", „cancellation in trial")
+  - Trigger: bei Stripe-Webhook `invoice.payment_succeeded` → Status auf `eligible`, dann Webhook fuer Provisions-Abrechnung
+  - Admin-only RLS, Partner sieht eigene Referrals via Partner-Portal
+- **`partner_provisions`** (MARKETING § 3.3) — Spec 2026-05-14:
+  - `id` UUID PK
+  - `partner_id` FK
+  - `referral_id` FK
+  - `billing_period_start`, `billing_period_end` (Monatsabrechnung)
+  - `amount_net` (Euro), `vat` (0 oder 20 %, je nach Partner-Status)
+  - `paid_at` (NULL bis Auszahlung)
+  - `invoice_url` (Link zur Provisions-Rechnung vom Partner)
+  - Admin-only RLS
+
+**Anti-Missbrauch-Constraints fuer Partner-Tabellen:**
+- Unique-Index auf `partners.uid` — keine doppelten Partner-Accounts mit gleicher UID
+- Trigger: bei `partner_referrals` Insert pruefen ob `order.email` und `partners.email` identisch → automatisch `void` mit Reason „self-referral"
+- Cooldown: `partner_provisions` nur erzeugen wenn `first_paid_date` > 7 Tage (Trial-Cancellation-Schutz)
 
 ### 4.8 Storage Bucket: `customer-assets`
 

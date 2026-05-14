@@ -231,6 +231,37 @@ Themen die KMU googeln: "Impressum-Pflicht Oesterreich 2026", "DSGVO fuer Friseu
 
 ---
 
+### 2.6a Newsletter — Entscheidung Phase 1
+
+**Frage:** Soll instantpage.at einen Newsletter haben?
+
+**Status:** `news@instantpage.at` ist als Mail-Adresse vorgesehen (`docs/email-templates/README.md` Master-Konvention), Inhaltliche Entscheidung steht aus.
+
+**Trade-off:**
+
+| Option | Pro | Contra |
+|---|---|---|
+| **A: Newsletter Phase 1 (Pre-Launch + Day-1)** | Owned-Audience, baut langfristig, KMU-vertraut (Jimdo/Webflow-Pattern), Multiplikator-fuer SEO-Content | Content-Aufwand 1–2 h/Issue, separate Opt-in-Pflicht (§ 109 TKG + DSGVO Art. 6/7), Resend-Sub-Setup, kein Pre-Launch-ROI |
+| **B: Newsletter Phase 2 (Trigger ab 50+ Kunden)** | Content-Substanz aus Erstkunden-Erfahrungen, Aufwand erst wenn Audience da, kein Vorab-Investment | Verpasstes Pre-Launch-Lead-Sammeln, spaeter Audience-Aufbau langsamer |
+| **C: Kein Newsletter** | Fokus auf direktere Kanaele (Direktansprache, LinkedIn, Multiplikator), keine Compliance-Pflege | Verzicht auf Owned-Audience, Abhaengigkeit von externen Channels |
+
+**Default-Entscheidungs-Grundlage:**
+- Phase 1 hat 3 priorisierte Channels (LinkedIn, Direktansprache, SEO — § 2.1–2.3) — Newsletter waere vierter parallel-laufender Channel
+- AT-KMU-Zielgruppe ist eher LinkedIn-Pull als Newsletter-Push aufgeschlossen (Beobachtungsbasis aus Konkurrent-Analyse Wise/DeepL/Cabin)
+- Wenn dann: Newsletter sollte editorial-substantiell sein, nicht „neue Features"-Updates — siehe Plain/Ghost-Vibe in `_design/benchmarks-plattform.md`
+
+**Wenn Option B/C gewaehlt:** `news@instantpage.at` als Mail-Adresse trotzdem reservieren, Opt-in-Sektion auf Marketing-Site auch nicht zwingend. Wenn Option B gewaehlt: 6–9 Monate nach Live-Schaltung re-evaluieren.
+
+**Compliance bei Option A oder B:**
+- Separates Opt-in im Marketing-Site-Footer + Bestell-Form (Pflicht-Checkbox NICHT vor-angekreuzt)
+- DSGVO Art. 7-konformer Double-Opt-in (Bestaetigungs-Mail)
+- Abmelde-Link in jeder Newsletter-Mail (technisch: List-Unsubscribe-Header)
+- Lifecycle-Mails bleiben trotzdem vertragsbestandteil (siehe `email-templates/README.md`)
+
+**Inhaber-Entscheidung:** `[ENTSCHEIDUNGS-OFFEN 2026-05-14]`.
+
+---
+
 ### 2.6 Channel-Mix — Entscheidungs-Grundlage
 
 Der Inhaber entscheidet die konkrete Zeit-Verteilung pro Phase selbst. Diese Sektion liefert die Trade-offs als Entscheidungs-Grundlage.
@@ -402,5 +433,6 @@ Nicht tun — kollidiert mit Brand + AT-Vertrauensprodukt-Positionierung:
 - Multiplikator-Provisions-Modell — 20 % Lifetime vs. 20 % + 10 % Folgejahre (§ 3.3)
 - Channel-Mix (§ 2.6) — konkrete Zeit-Verteilung pro Phase wird vom Inhaber gesetzt, Entscheidungs-Grundlage steht
 - Erstziel-Sparten + Regionen (§ 2.2) — vom Inhaber vor Launch festzulegen anhand Auswahl-Kriterien
+- Newsletter Ja/Nein (§ 2.6a) — 3 Optionen mit Trade-offs spec'd, Inhaber-Entscheidung
 - Marketing-Skills Evaluation (Memory `project_marketing_skills_eval.md`) — vor Marketing-Funnel-Bau noch durchfuehren
 - Cold-Outreach-Mail-Template (§ 2.2) im Anwalts-Briefing (Block A) auf § 7 UWG + DSGVO Art. 14 pruefen lassen

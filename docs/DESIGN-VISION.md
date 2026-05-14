@@ -2,7 +2,7 @@
 
 > **Living Document.** Sammelt alle Visual-, UX-, Quality- und Differenzierungs-Specs, die fehlen, damit das Live-Produkt premium wirkt — und nicht nur "saubere Next.js-App mit shadcn-Defaults".
 
-**Stand:** 2026-05-04
+**Stand:** 2026-05-14
 **Phase:** vor Phase 0 (Code-Setup) im `MIGRATION-PLAN.md`
 
 ---
@@ -26,22 +26,22 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | # | Block | Aufwand | Status |
 |---|---|---|---|
 | **A** | **Vision & Benchmarks** (Voraussetzung) | ~2 Wochen | `[OFFEN]` |
-| 1 | Visuelle Benchmarks | 2-3 Tage | `[OFFEN]` |
+| 1 | Visuelle Benchmarks | 2-3 Tage | `[PLATTFORM-REFS KURATIERT 2026-05-14]` — 16 Refs mit Take-aways + AT-KMU-Kalibrierung; Customer-Refs noch offen |
 | 2 | Kompetitive Tiefen-Analyse | 1 Woche | `[OFFEN]` |
 | 3 | AI-Differentiator-Story | 2-3 Tage | `[OFFEN]` |
 | **B** | **Design-Foundation Plattform** | ~3-4 Wochen | `[OFFEN]` |
 | 4 | Plattform-Design-System | 1 Woche | `[OFFEN]` |
 | 5 | Marketing-Site-Konzept | 3-4 Tage | `[OFFEN]` |
-| 6 | Portal-Design-Sprache | 1 Woche | `[OFFEN]` |
+| 6 | Portal-Design-Sprache | 1 Woche | `[TEIL-SPEC'D]` — § 6.1–6.6 konkret, High-Level offen |
 | 7 | Fragebogen-Magic-Moments | 1 Woche | `[OFFEN]` |
 | **C** | **Recipe-System Visual** | ~5-6 Wochen | `[OFFEN]` |
-| 8 | 3 Theme-Tokens final | 1 Woche | `[v2 ENTWURF]` (`_design/themes.md`) |
-| 9 | 25 Section-Specs | 2 Wochen | `[OFFEN]` |
-| 10 | 22 Recipe-Mockups | 4-6 Wochen (parallel) | `[OFFEN]` (2 von 24 da) |
+| 8 | 3 Theme-Tokens final | 1 Woche | `[v2 ENTWURF]` (`_design/themes.md`) — 2 Klassisch-Mockups fehlen |
+| 9 | 25 Section-Specs | 2 Wochen | `[1 von 25]` (hero.md) |
+| 10 | 22 Recipe-Mockups | 4-6 Wochen (parallel) | `[3 von 24]` (anwalt-klassisch + beratung-modern + handwerk-werkstatt) |
 | 11 | Mikro-Interaktionen Kunden-Websites | parallel zu Themes | `[OFFEN]` |
 | 12 | Asset-/Photography-Strategie | 3-4 Tage | `[OFFEN]` |
-| **D** | **Quality** | ~1 Woche | `[OFFEN]` |
-| 13 | Quality-Standards messbar | 2 Tage | `[OFFEN]` |
+| **D** | **Quality** | ~1 Woche | `[TEIL-SPEC'D]` |
+| 13 | Quality-Standards messbar | 2 Tage | `[ENTWURF 2026-05-10]` — 7 Sub-Sections detailliert |
 | 14 | Code-/Test-Quality-Standards | 2-3 Tage | `[OFFEN]` |
 
 ---
@@ -60,7 +60,7 @@ Memory `project_design_references_live.md` nennt nur cpg.at + Komi (für Custome
 
 **Quellen:** Awwwards, Site Inspire, Land-book, Mobbin, Lapa Ninja, Httpster, One Page Love
 
-**Format:** `docs/_design/benchmarks-plattform.md` + `docs/_design/benchmarks-recipes.md` (oder externes Pinterest)
+**Format:** [`docs/_design/benchmarks-plattform.md`](_design/benchmarks-plattform.md) — `[KURATIERT 2026-05-14]` 16 Plattform-Refs mit Take-aways + AT-KMU-Kalibrierung. Customer-Site-Referenzen separat in `benchmarks-recipes.md` `[TODO]`.
 
 ---
 

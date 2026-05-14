@@ -2,11 +2,13 @@
 
 > Markdown-Drafts fuer alle Lifecycle-Mails der Plattform. Werden im Live-Bau in Resend-Templates ueberfuehrt (HTML + Plain) und ueber [`config/legal-values.ts`](../LIVE-COMPLIANCE.md) parametriert.
 
-**Stand:** 2026-05-13 — `[SPEC-FERTIG]` 6 Anker-Templates spec'd. HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet.
+**Stand:** 2026-05-14 — `[SPEC-FERTIG]` 10 Templates spec'd (6 Lifecycle + 4 Phase-2). HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet.
 
 ---
 
 ## Inhalt
+
+### Lifecycle (automatisiert)
 
 | Template | Trigger | Absender | Reply-To |
 |---|---|---|---|
@@ -15,13 +17,20 @@
 | [trial-end-grace.md](trial-end-grace.md) | T+8 (Trial abgelaufen, Site pausiert) | info@instantpage.at | support@instantpage.at |
 | [payment-failed.md](payment-failed.md) | Stripe-Webhook `invoice.payment_failed`, einmalig | rechnung@instantpage.at | rechnung@instantpage.at |
 | [cancellation-confirmation.md](cancellation-confirmation.md) | Stripe-Webhook `customer.subscription.deleted` | info@instantpage.at | support@instantpage.at |
+| [cancellation-final.md](cancellation-final.md) | Cron T-1 vor Hard-Delete (89 Tage nach Cancellation) | info@instantpage.at | support@instantpage.at |
 | [support-confirmation.md](support-confirmation.md) | Support-Form-Submission (Auto-Reply) | support@instantpage.at | support@instantpage.at |
+| [domain-setup.md](domain-setup.md) | Pro-Plan: Kunde traegt Custom-Domain im Portal ein | info@instantpage.at | support@instantpage.at |
+
+### Manuell / On-Demand
+
+| Template | Trigger | Absender | Reply-To |
+|---|---|---|---|
+| [datenpanne.md](datenpanne.md) | Manueller Versand nach DSB-Meldung (Art. 34 DSGVO, bei hohem Risiko) | datenschutz@instantpage.at | datenschutz@instantpage.at |
+| [beta-cutover.md](beta-cutover.md) | Einmaliger Batch-Versand T-7 vor Live-Schaltung | info@instantpage.at | support@instantpage.at |
 
 **Bewusst gestrichen:** Doppelter Trial-Reminder (Tag 7), Win-Back, Welcome-Pro — etablierte Anbieter (Stripe/Webflow/Squarespace) machen das nicht, im AT-Vertrauensprodukt-Kontext aufdringlich.
 
 **Stripe-Default (kein eigenes Markdown-Template):** Payment-Confirmation / Rechnung wird automatisch von Stripe versendet (Hosted-Invoice mit AT-Custom-Fields, Tax-Exempt, KU-Klausel als Custom-Field). Stripe-Dashboard-Template-Konfig dokumentiert in [`OPERATIONS.md`](../OPERATIONS.md) § 2.
-
-**Live-Bau-Backlog:** Cancellation-Final (T-1 vor Hard-Delete, finale Warnung vor Datenloeschung), Domain-Setup-Anleitung (bei Pro Custom-Domain-Aktivierung), Datenpanne-Information (DSGVO Art. 34 Pflicht), Beta-Cutover-Mail.
 
 ---
 

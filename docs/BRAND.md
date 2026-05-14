@@ -2,7 +2,7 @@
 
 > Markenrichtlinie fuer das Live-Produkt unter instantpage.at. Verbindlich fuer alle Marketing-Outputs, Plattform-UI, Sales-Material und externe Kommunikation.
 
-**Stand:** 2026-05-13 — `[FERTIG]`. Alle Brand-Entscheidungen getroffen (Hero-Headline-Konflikt aufgeloest 2026-05-13: Hero = Tagline). Live-Logo eingebunden. Asset-Set vor Live-Schaltung noch zu vervollstaendigen (siehe § 2.4).
+**Stand:** 2026-05-14 — `[FERTIG]`. Alle Brand-Entscheidungen getroffen (Hero-Headline-Konflikt aufgeloest 2026-05-13: Hero = Tagline). **Komplettes Brand-Kit eingebunden 2026-05-14** — SVG-Logos, PNG-Logo-Varianten, Favicon-Set, Apple-Touch-Icon, OG-Image, PDF-Vektor-Logos, Brand-Guidelines-PDF. § 2.4 Asset-To-Do erledigt.
 
 ---
 
@@ -48,13 +48,26 @@ Der Beta-Prototyp lief unter "SiteReady" (Domain `sitereadyprototype.pages.dev`)
 
 ### 2.1 Assets
 
-| Asset | Pfad / Status |
+**Source-Files:** [`docs/_design/brand-kit/brand-kit/`](_design/brand-kit/brand-kit/) — komplettes Brand-Kit inkl. Brand-Guidelines-PDF, eingebunden 2026-05-14.
+
+**Web-Assets (live-tauglich gespiegelt):**
+
+| Asset | Pfad |
 |---|---|
-| **Live-Logo (kombiniert iP + Wortmarke)** | [`public/instantpage-logo.png`](../public/instantpage-logo.png) — schwarz auf transparent, ~1200×300 px |
-| Icon-Only "iP" Monogramm | `[FEHLT]` — fuer Favicon, Mobile-Burger, Social-Sharing produzieren |
-| SVG-Version Wortmarke | `[FEHLT]` — fuer skalierbare Verwendung (Header, Print) produzieren |
-| Monochrom weiss (fuer dunkle Hintergruende) | `[FEHLT]` — produzieren |
-| Beta-Altbestand | `[ENTFERNT]` 2026-05-05 — `public/logo.png` + `public/icon.png` (SiteReady) sind raus, Live-Logo ist Source-of-Truth |
+| **SVG Wortmarke** schwarz | [`public/brand/logo/instantpage-logo-schwarz.svg`](../public/brand/logo/instantpage-logo-schwarz.svg) |
+| **SVG Wortmarke** weiss (dunkle Hintergruende) | [`public/brand/logo/instantpage-logo-weiss.svg`](../public/brand/logo/instantpage-logo-weiss.svg) |
+| **PNG Wortmarke** schwarz, 1x/2x/3x (400/800/1200 px) | `public/brand/logo/instantpage-logo-schwarz-{1x,2x,3x}.png` |
+| **PNG Wortmarke** weiss, 1x/2x/3x | `public/brand/logo/instantpage-logo-weiss-{1x,2x,3x}.png` |
+| **iP-Icon-Only** 180/192/512 px | `public/brand/logo/instantpage-icon-{180,192,512}.png` |
+| **PDF Vektor-Logos** (Print) | `public/brand/logo/instantpage-logo-{schwarz,weiss}.pdf` |
+| **OG-Image** 1200×630 (Social-Sharing) | [`public/brand/social/og-image-1200x630.png`](../public/brand/social/og-image-1200x630.png) |
+| **Favicon-Set** | `public/` (Standard-Konvention, automatisch von Browser geladen) — `favicon.ico`, `favicon-{16,32,48,180,192,512}x{Groesse}.png`, `apple-touch-icon.png`, `android-chrome-{192,512}x{Groesse}.png`, `site.webmanifest` |
+| **Brand-Guidelines PDF** (2 Seiten) | [`docs/_design/brand-kit/brand-kit/brandsheet/instantpage-brand-guidelines.pdf`](_design/brand-kit/brand-kit/brandsheet/instantpage-brand-guidelines.pdf) |
+| Beta-Altbestand | `[ENTFERNT]` 2026-05-05 — `public/logo.png` + `public/icon.png` (SiteReady) sind raus |
+
+**Wichtig — Brand-Guidelines-PDF Farben:** Das April-2026-PDF zeigt einen Akzent-Farbvorschlag in **Blau #185FA5**. Dies wurde am 2026-05-05 mit der finalen Entscheidung **Tannengruen #2D4A3E** ueberholt (Begruendung: AT-Trust, kein generischer SaaS-Indigo — siehe § 3.1). PDF gilt nur fuer Logo-Verwendungsregeln + Mindestabstaende + Type-Scale-Anregung, **NICHT** fuer Farbpalette. Source-of-Truth Farbpalette ist § 3.1.
+
+**Wichtig — Favicon-ICO:** Aktuelle `favicon.ico` ist Single-16×16, README im Brand-Kit suggerierte Multi-Size (16/32/48). Nicht kritisch, da separate PNG-Varianten alle Groessen abdecken. Falls echte Multi-Size-ICO gewuenscht (aeltere Browser): mit ImageMagick `convert favicon-16x16.png favicon-32x32.png favicon-48x48.png favicon.ico` neu generieren.
 
 ### 2.2 Brand-Schreibweise
 
@@ -83,13 +96,14 @@ Der Beta-Prototyp lief unter "SiteReady" (Domain `sitereadyprototype.pages.dev`)
 
 ### 2.4 Asset-To-Do (vor Live-Schaltung)
 
-- `[OFFEN]` SVG-Version Wortmarke + Monogramm (skalierbar fuer Header)
-- `[OFFEN]` Icon-Only "iP" als separates PNG (mehrere Groessen: 32, 64, 128, 256, 512)
-- `[OFFEN]` Favicon-Set (16, 32, 48, 96, 192, 512 + favicon.ico)
-- `[OFFEN]` Apple-Touch-Icon 180×180
-- `[OFFEN]` Open-Graph-Image 1200×630 (mit Wortmarke + Slogan)
-- `[OFFEN]` Monochrom-weiss-Versionen
+- `[ERLEDIGT 2026-05-14]` SVG-Version Wortmarke + Monogramm (`instantpage-logo-{schwarz,weiss}.svg`)
+- `[ERLEDIGT 2026-05-14]` Icon-Only "iP" als separates PNG (180/192/512 px in `public/brand/logo/`)
+- `[ERLEDIGT 2026-05-14]` Favicon-Set (16, 32, 48, 180, 192, 512 + `favicon.ico` + Android-Chrome + `site.webmanifest`)
+- `[ERLEDIGT 2026-05-14]` Apple-Touch-Icon 180×180
+- `[ERLEDIGT 2026-05-14]` Open-Graph-Image 1200×630
+- `[ERLEDIGT 2026-05-14]` Monochrom-weiss-Versionen (SVG + PNG 1x/2x/3x)
 - `[ERLEDIGT 2026-05-05]` Beta-Logos `public/logo.png` + `public/icon.png` entfernt
+- `[OPTIONAL]` Multi-Size-ICO (16/32/48 in einer .ico-Datei) — falls aeltere Browser-Support gewuenscht, sonst aktuelle Single-16 + PNG-Varianten ausreichend
 
 ---
 
@@ -444,6 +458,8 @@ Die generierten Kundensites haben **eigene visuelle Sprache pro Recipe** (siehe 
 
 ## Offen — vor Live-Schaltung erledigen (kein BRAND-Blocker)
 
-- Logo-Asset-Set vervollstaendigen: SVG, Icon-Only "iP", Favicon-Set, Apple-Touch-Icon, OG-Image, monochrom-weiss-Versionen (Liste in § 2.4)
+- `[ERLEDIGT 2026-05-14]` Logo-Asset-Set komplett (siehe § 2.4) — Brand-Kit eingebunden
+- `[OPTIONAL]` Multi-Size-ICO regenerieren (siehe § 2.1 Hinweis)
+- `[OFFEN]` tokens.css Akzentfarbe — aktuell `--font-sans: 'DM Sans'`, sollte auf `Poppins` umgestellt werden (Stand 2026-05-05, ueberholt durch § 4.1 Lock 2026-05-12). Live-Bau Phase 0 Aufgabe.
 
-**Status BRAND.md:** `[FERTIG]` — bereit als Foundation fuer DESIGN-VISION-Detail, Marketing-Bau und Sales-Material.
+**Status BRAND.md:** `[FERTIG]` — bereit als Foundation fuer DESIGN-VISION-Detail, Marketing-Bau und Sales-Material. Asset-Set vollstaendig.

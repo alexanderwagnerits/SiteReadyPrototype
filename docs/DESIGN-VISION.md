@@ -27,7 +27,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 |---|---|---|---|
 | **A** | **Vision & Benchmarks** (Voraussetzung) | ~2 Wochen | `[OFFEN]` |
 | 1 | Visuelle Benchmarks | 2-3 Tage | `[PLATTFORM-REFS KURATIERT 2026-05-14]` — 16 Refs mit Take-aways + AT-KMU-Kalibrierung; Customer-Refs noch offen |
-| 2 | Kompetitive Tiefen-Analyse | 1 Woche | `[OFFEN]` |
+| 2 | Kompetitive Tiefen-Analyse | 1 Woche | `[SKELETON 2026-05-14]` — 10 Konkurrenten analysiert, Aggregation + Differentiators dokumentiert |
 | 3 | AI-Differentiator-Story | 2-3 Tage | `[OFFEN]` |
 | **B** | **Design-Foundation Plattform** | ~3-4 Wochen | `[OFFEN]` |
 | 4 | Plattform-Design-System | 1 Woche | `[OFFEN]` |
@@ -75,7 +75,7 @@ Memory `project_design_references_live.md` nennt nur cpg.at + Komi (für Custome
 - Mikro-Interaktionen + Wow-Patterns
 - Was machen wir BESSER, was MÜSSEN wir matchen
 
-**Format:** `docs/_design/competitive-analysis.md`
+**Format:** [`docs/_design/competitive-analysis.md`](_design/competitive-analysis.md) — `[SKELETON 2026-05-14]` 10 Konkurrenten (Wix, Jimdo, IONOS, GoDaddy, Hostinger, Squarespace, WordPress.com, Webflow, Framer, Strikingly) mit Staerken/Schwaechen/AI-Erwaehnung/Pricing/Vibes. Aggregation: Anti-Patterns + 8 Differentiators + Konkurrent-Mapping pro Berufsgruppe.
 
 ---
 

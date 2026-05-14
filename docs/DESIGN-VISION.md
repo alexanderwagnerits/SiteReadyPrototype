@@ -39,7 +39,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | 9 | 25 Section-Specs | 2 Wochen | `[1 von 25]` (hero.md) |
 | 10 | 22 Recipe-Mockups | 4-6 Wochen (parallel) | `[3 von 24]` (anwalt-klassisch + beratung-modern + handwerk-werkstatt) |
 | 11 | Mikro-Interaktionen Kunden-Websites | parallel zu Themes | `[OFFEN]` |
-| 12 | Asset-/Photography-Strategie | 3-4 Tage | `[OFFEN]` |
+| 12 | Asset-/Photography-Strategie | 3-4 Tage | `[SPEC 2026-05-14]` — Unsplash+Pexels, Whitelist-Hybrid, Lucide-Icons, keine Illustrations; Foto-Sessions Budget-offen |
 | **D** | **Quality** | ~1 Woche | `[TEIL-SPEC'D]` |
 | 13 | Quality-Standards messbar | 2 Tage | `[FERTIG 2026-05-14]` — 10 Sub-Sections, ausgelagert in `_design/quality-standards.md` |
 | 14 | Code-/Test-Quality-Standards | 2-3 Tage | `[SPEC 2026-05-14]` — Tool-Stack entschieden (Vitest/Playwright/Chromatic/Storybook/axe/Lighthouse-CI), WCAG-AA-Default |
@@ -251,17 +251,18 @@ Variante A ist Frame-/Beehiiv-Vorbild (Memory `_design/benchmarks-plattform.md`)
 
 ---
 
-### 12. Asset-/Photography-Strategie
+### 12. Asset-/Photography-Strategie `[SPEC 2026-05-14]`
 
-**Was fehlt:** Memory `project_production_refactor.md` nennt Unsplash für Live, aber nicht final entschieden.
+**Detail-Spec:** [`docs/_design/asset-strategy.md`](_design/asset-strategy.md) — 7 Sektionen.
 
-**Outcome:**
-- Stockfoto-Provider final: Unsplash API vs. Pexels vs. lizenzierte Bibliothek (Adobe, iStock)
-- Foto-Kuratierung pro Branche (manuelle Whitelist statt blinder API-Call?)
-- Quality-Bar definieren (Mindest-Auflösung, Stil-Konsistenz)
-- Eigene Foto-Sessions für Hero-Looks der Top-Recipes? (Budget-Frage)
-- Icon-Set: Lucide / Phosphor / Heroicons / eigenes
-- Illustration-Style (falls überhaupt — viele KMU-Sites kommen ohne aus)
+**Entscheidungen:**
+- **Stockfoto-Provider:** Unsplash API als Default + Pexels als Fallback (lizenzierte Bibliotheken verworfen, AI-Bilder verboten)
+- **Foto-Kuratierung:** Hybrid — manuelle Whitelist (20–30 IDs pro Berufsgruppe, ~5 Tage Inhaber-Aufwand) + API-Fallback bei Erschoepfung
+- **Quality-Bar:** ≥ 1920 × 1080 px, sRGB, max 250 KB Hero / 120 KB Card, keine Compositing-Tricks
+- **Icon-Set:** Lucide (shadcn-Standard, 1.500+ Icons, MIT-Lizenz)
+- **Illustrationen:** Phase 1 nein (KMU-typisch ohne, Generic-Illustrations sind Anti-AI-Generic-Risk)
+
+**Entscheidungs-offen** (Budget-Frage): eigene Foto-Sessions fuer Top-3-Anker-Recipes — 3 Optionen in `asset-strategy.md` § 4.
 
 ---
 

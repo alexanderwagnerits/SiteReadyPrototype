@@ -28,7 +28,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | **A** | **Vision & Benchmarks** (Voraussetzung) | ~2 Wochen | `[OFFEN]` |
 | 1 | Visuelle Benchmarks | 2-3 Tage | `[PLATTFORM-REFS KURATIERT 2026-05-14]` — 16 Refs mit Take-aways + AT-KMU-Kalibrierung; Customer-Refs noch offen |
 | 2 | Kompetitive Tiefen-Analyse | 1 Woche | `[SKELETON 2026-05-14]` — 10 Konkurrenten analysiert, Aggregation + Differentiators dokumentiert |
-| 3 | AI-Differentiator-Story | 2-3 Tage | `[OFFEN]` |
+| 3 | AI-Differentiator-Story | 2-3 Tage | `[ENTSCHEIDUNGS-OFFEN 2026-05-14]` — 3 Story-Optionen + AI-Act-Constraint + Magic-Moment-Sub-Frage spec'd |
 | **B** | **Design-Foundation Plattform** | ~3-4 Wochen | `[OFFEN]` |
 | 4 | Plattform-Design-System | 1 Woche | `[OFFEN]` |
 | 5 | Marketing-Site-Konzept | 3-4 Tage | `[OFFEN]` |
@@ -81,13 +81,45 @@ Memory `project_design_references_live.md` nennt nur cpg.at + Komi (für Custome
 
 ### 3. AI-Differentiator-Story
 
-**Was fehlt:** Beta-Strategie war "KI nicht erwähnen". Für Live nicht spec'd. Wix-AI / Hostinger-AI machen lautes AI-Marketing — wo positionieren wir uns?
+**Was fehlt:** Beta-Strategie war "KI nicht erwähnen". Für Live nicht spec'd. Wix-AI / Hostinger-AI machen lautes AI-Marketing (siehe `_design/competitive-analysis.md`) — wo positionieren wir uns?
 
 **Outcome:**
-- Story-Linie: wie kommunizieren wir die Magie ohne "KI-Builder" zu sagen
+- Story-Linie: wie kommunizieren wir die Magie
 - Magic-Moment-Konzept (erste Generierung visuell konzipiert)
 - Welche AI-Features sichtbar (Live-Generierung in Bestellseite?), welche unsichtbar (Auto-Engine)
 - Verbindung zu `BRAND.md` Voice & Tone
+
+#### 3.1 Drei Story-Optionen `[ENTSCHEIDUNGS-OFFEN 2026-05-14]`
+
+| # | Option | Pro | Contra |
+|---|---|---|---|
+| 1 | **KI komplett unsichtbar** — Beta-Strategie fortsetzen. KI nirgends erwähnt, Marketing-Story = „10 Minuten und fertig" | Brand-konsistent mit AT-Vertrauensprodukt (Memory `feedback_at_vertrauensprodukt.md`). Differentiator zu Wix/GoDaddy/Hostinger maximal. Kunde fragt sich nicht „macht KI Fehler in meinem Text?" | Kunde könnte spaeter enttaeuscht sein wenn er erfaehrt es ist KI (Trust-Risiko bei Bekanntwerden). „Was steckt drin?"-Frage offen. |
+| 2 | **KI als Funktion, nicht als Hype** — KI dort erwaehnt wo es Substanz traegt (z.B. „Texte intelligent vorgeschlagen", „passende Fotos automatisch"), aber NICHT als Brand-Anker im Hero | Transparenz ohne Hype. AI-Act-konforme Default-Kennzeichnung wirkt natuerlich. Trust-Risiko niedrig weil ehrlich. | Position zwischen den Stuehlen — nicht so klar wie Option 1 oder 3. Wording-Disziplin noetig (kein Auto-Drift in „KI-Builder"-Sprache). |
+| 3 | **KI als sichtbarer Magic-Moment** — Live-Generation im Onboarding-Flow als Wow-Effekt zeigen, aber im Marketing-Hero nicht damit werben | „Show, don't tell" — Kunde erlebt es selbst statt es zu glauben. Conversions-Hebel im Onboarding. | Magic-Moment-UI ist Bau-Aufwand (Stream-Generation, Optimistic-Render). Risiko: Kunde sieht Generation-Glitches in Echtzeit. |
+
+**AI-Act-Constraint (Stichtag 2026-08-02, siehe `LIVE-COMPLIANCE.md` § 13):**
+KI-generierte Inhalte muessen gekennzeichnet werden — unabhaengig welche Option gewaehlt. Konkret:
+- Generierte Texte (Hero, Leistungen, Ueber-Uns, FAQ): dezenter Hinweis im Portal („Vorschlag der Plattform — bitte pruefen und freigeben") + Footer-Disclosure auf Kunden-Seite optional
+- Generierte Bilder (falls Phase 2): IPTC/EXIF-Markierung
+- Auto-Engine-Entscheidungen (Recipe-Wahl, Hero-Variante): NICHT kennzeichnungspflichtig (das ist Software-Auto-Engine, nicht KI-Content im AI-Act-Sinn)
+
+**Anwalts-Audit-Punkt (Block A):** AI-Act-Auslegung für Quality-Check + Kunden-Freigabe als Ausschlussgrund pruefen lassen (`LIVE-COMPLIANCE.md` § 13 „Auslegung — Quality-Check + Kunden-Freigabe als Ausschlussgrund").
+
+#### 3.2 Magic-Moment-Konzept (unabhaengige Sub-Frage)
+
+Egal welche Story-Option oben gewaehlt: Wo erlebt der Kunde den ersten „Wow-Moment"?
+- **Variante A:** Fragebogen-Letzte-Frage → Site direkt vor Kunden-Augen generiert (Stream-Render)
+- **Variante B:** Fragebogen abgeschickt → „Wir bauen Ihre Website..."-Screen 30–60s → fertige Site
+- **Variante C:** Kunde wartet pasive auf E-Mail mit Site-Link (heutige Beta-Variante)
+
+Variante A ist Frame-/Beehiiv-Vorbild (Memory `_design/benchmarks-plattform.md`), Variante B ist Wix/Squarespace-Standard, Variante C ist Beta-Status. Entscheidung haengt von Option 1/2/3 oben ab — bei Option 3 zwingend Variante A.
+
+#### 3.3 Verbindung
+
+- `BRAND.md` § 5 Voice & Tone — Story-Wording muss konsistent sein
+- `LIVE-COMPLIANCE.md` § 13 — AI-Act-Pflichten
+- `_design/competitive-analysis.md` — Konkurrenz-Aggregation Punkt „AI versteckt, Output sichtbar"
+- `MARKETING.md` § 2 Channel-Strategie — Marketing-Hero-Wording haengt von Story-Option ab
 
 ---
 

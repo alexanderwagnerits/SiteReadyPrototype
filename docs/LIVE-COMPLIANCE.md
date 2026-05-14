@@ -367,7 +367,7 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 ### § 9 Vergütung, Zahlungsbedingungen
 
-(1) Die Vergütung richtet sich nach dem vom Kunden gewählten Plan. Preise verstehen sich `[OFFEN: netto zzgl. USt / brutto inkl. USt]`.
+(1) Die Vergütung richtet sich nach dem vom Kunden gewählten Plan. Preise verstehen sich netto zzgl. gesetzlicher Umsatzsteuer.
 
 (2) Die Vergütung ist im Voraus für den jeweiligen Abrechnungszeitraum fällig (monatlich oder jährlich, je nach Plan).
 
@@ -377,7 +377,7 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 ### § 10 Vertragslaufzeit, Kündigung
 
-(1) Der Vertrag wird auf unbestimmte Zeit geschlossen. `[OFFEN: Mindestlaufzeit?]`
+(1) Der Vertrag wird auf unbestimmte Zeit geschlossen. Eine Mindestvertragslaufzeit besteht nicht; die Kündigungsmöglichkeiten richten sich nach der gewählten Abrechnungsperiode (Abs. 2).
 
 (2) Bei monatlicher Abrechnung kann der Vertrag mit Wirkung zum Ende des laufenden Abrechnungsmonats gekündigt werden. Bei jährlicher Abrechnung mit Wirkung zum Ende der laufenden Jahresperiode.
 
@@ -389,7 +389,7 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 (1) Innerhalb der Vertragslaufzeit kann der Kunde seine Daten jederzeit über das Self-Service-Portal exportieren.
 
-(2) Nach Vertragsende werden die Kundendaten und die zugehörige Website für `[OFFEN: 30/60/90 Tage]` in einem Grace-Status aufbewahrt. In diesem Zeitraum kann der Kunde seine Daten exportieren oder den Vertrag wieder aktivieren.
+(2) Nach Vertragsende werden die Kundendaten und die zugehörige Website für insgesamt 90 Tage in einem Grace-Status aufbewahrt. In den ersten 30 Tagen kann der Kunde den Vertrag wieder aktivieren oder seine Daten exportieren; in den anschließenden 60 Tagen ist nur noch der Datenexport möglich (Soft-Delete).
 
 (3) Nach Ablauf des Grace-Zeitraums werden alle personenbezogenen Daten des Kunden und seiner Endnutzer endgültig gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen (insbesondere § 132 BAO).
 
@@ -427,7 +427,7 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 (1) Es gilt österreichisches Recht unter Ausschluss der Verweisungsnormen und des UN-Kaufrechts.
 
-(2) Erfüllungsort und Gerichtsstand für alle Streitigkeiten aus diesem Vertrag ist `[OFFEN: Sitz des Anbieters]`.
+(2) Erfüllungsort und ausschließlicher Gerichtsstand für alle Streitigkeiten aus diesem Vertrag ist der Sitz des Anbieters in Wien.
 
 (3) Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. An die Stelle der unwirksamen Bestimmung tritt die gesetzlich zulässige Regelung, die dem wirtschaftlichen Zweck am nächsten kommt.
 
@@ -452,7 +452,7 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 | **Gegenstand der Verarbeitung** | Hosting der Website, Speicherung von Endnutzer-Anfragen (Kontaktformular, Reservierungen, Bewertungen), Bereitstellung von Statistik-Daten (sofern Pro-Plan), Versand transaktionaler E-Mails an Endnutzer |
 | **Art der Verarbeitung** | Erheben, Speichern, Übermitteln, Anzeigen, Löschen |
 | **Zweck der Verarbeitung** | Betrieb der Website des Verantwortlichen, Zustellung von Anfragen, statistische Auswertung, technische Sicherheit |
-| **Dauer der Verarbeitung** | Für die Vertragslaufzeit zzgl. Grace-Zeitraum (`[OFFEN: 30/60/90 Tage]`). Logs nach 30 Tagen anonymisiert. |
+| **Dauer der Verarbeitung** | Für die Vertragslaufzeit zzgl. Grace-Zeitraum (90 Tage: 30 Tage Reaktivierung + 60 Tage Soft-Delete). Logs nach 30 Tagen anonymisiert. |
 | **Kategorien betroffener Personen** | Endnutzer der Kunden-Website (Kontaktanfragen, Bewerter, Reservierungen) |
 | **Kategorien personenbezogener Daten** | Kontaktdaten (Name, E-Mail, Telefon), Inhalt der Anfrage, IP-Adresse (technisch nötig), bei Reservierungen: Datum/Personenzahl/Anliegen, bei Bewertungen: Name + Bewertungstext |
 | **Besondere Datenkategorien** | NICHT umfasst. Bei Heilberufen ist die Eingabe von Gesundheitsdaten in Termin-Anfragen vertraglich ausgeschlossen. Verstöße liegen außerhalb der Auftragsverarbeitung. |

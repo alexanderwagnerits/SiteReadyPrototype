@@ -42,7 +42,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | 12 | Asset-/Photography-Strategie | 3-4 Tage | `[OFFEN]` |
 | **D** | **Quality** | ~1 Woche | `[TEIL-SPEC'D]` |
 | 13 | Quality-Standards messbar | 2 Tage | `[ENTWURF 2026-05-10]` — 7 Sub-Sections detailliert |
-| 14 | Code-/Test-Quality-Standards | 2-3 Tage | `[OFFEN]` |
+| 14 | Code-/Test-Quality-Standards | 2-3 Tage | `[SPEC 2026-05-14]` — Tool-Stack entschieden (Vitest/Playwright/Chromatic/Storybook/axe/Lighthouse-CI), WCAG-AA-Default |
 
 ---
 
@@ -430,19 +430,106 @@ Pro neuem oder geändertem Recipe vor produktiver Schaltung:
 
 ---
 
-### 14. Code-/Test-Quality-Standards
+### 14. Code-/Test-Quality-Standards `[SPEC 2026-05-14]`
 
 **Was fehlt:** ESLint-Config, Storybook-Setup, Visual-Regression nicht in `ARCHITECTURE.md`.
 
-**Outcome:**
-- ESLint + Prettier-Config explizit (TypeScript strict)
-- Storybook-Setup für Section-Library (essenziell für isolierte Entwicklung der 25 Sections)
-- Visual-Regression: Percy / Chromatic Entscheidung
-- Accessibility-Tests automatisiert (axe-core in Vitest + Playwright)
-- Performance-Tests pro Recipe (Lighthouse-CI Budget-Werte konkret)
-- WCAG-Level-Entscheidung (AA als Default, AAA für reglementierte Branchen?)
+#### 14.1 Linting + Formatting
 
-**Connection:** ergänzt `ARCHITECTURE.md` § 10 Security-Hardening + § 7 Deployment-Pipeline
+**ESLint** (TypeScript strict):
+- `typescript-eslint` (strict-Preset)
+- `eslint-plugin-react`
+- `eslint-plugin-react-hooks`
+- `eslint-plugin-jsx-a11y` — Accessibility-Checks im Editor
+- `eslint-plugin-import` — Import-Order + Cycle-Detection
+
+**Prettier** als Default-Formatter, ESLint nutzt `eslint-config-prettier` um Konflikte zu vermeiden.
+
+**TypeScript:** `strict: true` + `noUncheckedIndexedAccess: true` + `noImplicitOverride: true`. Keine `any`-Verwendungen — Build-Fail bei `any`-Auftauchen ausserhalb Tests.
+
+**Pre-Commit-Hook:** `lint-staged` mit ESLint + Prettier + Type-Check auf geaenderten Files.
+
+#### 14.2 Testing-Strategie
+
+**Unit-Tests — Vitest** (Memory `project_production_refactor.md` `[ENTSCHIEDEN 2026-05-06]`):
+- Test-Files neben Source: `<file>.test.ts` (Standard, Vitest-nativ)
+- Zentral nur Integration-Tests in `tests/integration/`
+
+**E2E-Tests — Playwright:**
+- 3 kritische Flows als Hard-Block vor jedem Deploy:
+  1. Onboarding (Bestellung → Trial-Site live)
+  2. Cancellation (Self-Service → Webhook → Mail)
+  3. Custom-Domain-Setup (DNS-Eintrag → Verifikation)
+- Browser-Coverage: Chromium (Desktop + Mobile), WebKit (Safari), Firefox
+
+**Accessibility-Tests — axe-core:**
+- `vitest-axe` fuer Component-Tests in Vitest
+- `@axe-core/playwright` fuer E2E-Pages
+- Hard-Block: kein WCAG-AA-Violation in CI
+
+#### 14.3 Visual-Regression — Chromatic
+
+**Entscheidung 2026-05-14:** Chromatic (storybook-natives Tool) — `[ENTSCHIEDEN]`
+
+**Begruendung:**
+- Storybook ist ohnehin gesetzt (siehe 14.4) → Chromatic ist nahtlos integriert
+- Percy ist Browser-basiert, weniger geeignet fuer isolierte Component-Snapshots
+- Chromatic Free-Tier (5.000 Snapshots/Mo) reicht fuer Pre-Launch + Erstmonate
+- Bei Skalierung Standard-Plan ~$149/Mo (35.000 Snapshots) — vertretbar
+
+**Setup:**
+- Snapshot pro Story automatisch bei jedem PR
+- Visual-Diff-Review im Chromatic-Dashboard
+- Bei Skalierungs-Druck: Selective-Snapshots (nur geaenderte Stories) als Cost-Optimization
+
+#### 14.4 Storybook — Section-Library
+
+**Storybook 8.x mit Vite-Builder** — essenziell fuer isolierte Entwicklung der 25 Sections (DESIGN-VISION Block 9):
+
+- Pro Section eine `.stories.tsx`-Datei mit Variant-Showcases (Empty / Loading / Default / Edge-Cases)
+- Pro Theme einen Story-Wrapper (Klassisch / Edel / Rustikal) — visuell verifizierbar
+- Storybook auch fuer Marketing-Site- und Portal-Components
+- Deploy via Chromatic-CI auf eigene Subdomain (`storybook.instantpage.at` intern, nicht oeffentlich)
+
+#### 14.5 Performance-Tests — Lighthouse-CI
+
+**Lighthouse-CI** in GitHub Actions:
+- Pro PR Performance-Check auf 3 Sample-Recipes (Klassisch + Edel + Rustikal)
+- Budget-Werte aus DESIGN-VISION § 13.1 (Performance ≥ 85, A11y ≥ 90)
+- Hard-Block: Lighthouse-Score < 85 verhindert Deploy
+
+#### 14.6 WCAG-Level-Entscheidung
+
+**WCAG AA als Default fuer Plattform + Kunden-Sites** — `[ENTSCHIEDEN 2026-05-14]`
+
+**AAA NICHT zwingend** auch fuer Recht/Medical:
+- AAA ist Web-Standard fuer hoch-sensitive Bereiche (Behoerden, Banken), nicht Pflicht fuer kommerzielles SaaS
+- AT-Behindertengleichstellungs-Gesetz (BGStG) verlangt „angemessene Vorkehrungen" — AA ist marktueblich
+- Bei Recht/Medical: AA-konform plus erhoehte Content-Density-Schwellen (DESIGN-VISION § 13.6)
+- Bei Anwalts-Briefing (Block A) klaeren ob spezifische Branchen-Vorschriften AAA verlangen — Default bleibt AA
+
+**Wenn AAA spaeter doch notwendig:** punktuell pro Section, nicht als globaler Standard.
+
+#### 14.7 CI/CD-Pipeline-Gates
+
+Reihenfolge pro PR (Hard-Blocks):
+
+1. Type-Check (`tsc --noEmit`)
+2. Lint (ESLint + Prettier)
+3. Unit-Tests (Vitest) — Coverage ≥ 70 %
+4. Build (Next.js)
+5. Storybook-Build + Chromatic-Snapshot-Diff
+6. E2E-Tests (Playwright auf Vercel-Preview)
+7. Lighthouse-CI auf 3 Sample-Recipes
+8. axe-core-Scan auf Marketing-Pages + Sample-Recipe
+
+Geplante CI-Laufzeit: ≤ 8 Min ohne Cache, ≤ 4 Min mit Cache.
+
+#### 14.8 Connection
+
+- `ARCHITECTURE.md` § 7 Deployment-Pipeline — wird durch 14.7 ergaenzt
+- `ARCHITECTURE.md` § 10 Security-Hardening — wird durch 14.1/14.2 ergaenzt
+- DESIGN-VISION § 13.1 Performance + 13.2 Accessibility — Schwellen fuer 14.5 + axe-Scans
 
 ---
 

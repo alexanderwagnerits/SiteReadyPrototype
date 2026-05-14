@@ -2,7 +2,7 @@
 
 > Acquisition-Strategie und Wachstums-Mechaniken fuer das Live-Produkt. Branding, Voice und Tonalitaet → `BRAND.md`. Pricing-Mechanik → `PRODUCT.md` § 3.
 
-**Stand:** 2026-05-13 — `[SKELETON]` Growth-Mechaniken inhaltlich entschieden, Channels-Strategie noch offen.
+**Stand:** 2026-05-14 — `[SKELETON]` Growth-Mechaniken inhaltlich entschieden, Channel-Strategie (§ 2) ausgebaut.
 
 ---
 
@@ -28,18 +28,232 @@ instantpage.at ist als **oesterreichisches Vertrauensprodukt** positioniert (B2B
 
 ---
 
-## 2. Acquisition-Channels (Skeleton)
+## 2. Acquisition-Channels
 
-> Channel-Details fuer Live-Bau spaeter zu spec'en. Hier nur Liste fuer Vollstaendigkeit.
+Channels in absteigender Pre-Launch-Prioritaet. Multiplikator (§ 3.3) und WKO (§ 3.4) sind eigene Growth-Mechaniken und bleiben dort dokumentiert.
 
-| Channel | Status | Bemerkung |
+| Channel | Status | Pre-Launch | Monat 1–2 | Monat 3+ |
+|---|---|---|---|---|
+| LinkedIn Company Page | `[LIVE seit 2026-05-12]` | Content-Aufbau | Hauptkanal | laufend |
+| Direktansprache (Cold Outreach) | `[BAU vor Launch]` | Lead-Listen | Hauptkanal | reduziert auf hot Spots |
+| Organisch / SEO | `[BAU 1–2 Mo]` | Marketing-Site + Recipe-Showcase-Pages live | indexiert | Long-Tail-Wachstum |
+| Lokale Medien / Branchen-Magazine | `[Trigger 30+ Refs]` | — | Pitch-Vorbereitung | bei Showcase-Reife |
+| Paid (Google Ads, Meta) | `[SPAETER]` | — | — | nur wenn Funnel validiert |
+
+---
+
+### 2.1 LinkedIn Company Page
+
+**Status:** Company Page live seit 2026-05-12 (Memory `project_session_2026-05-12_stand.md`). Posting-Strategie hier spec'd.
+
+**Zielgruppe (LinkedIn-spezifisch):**
+1. **KMU-Inhaber AT** — Tischler, Friseur, Gastronom, Berater (primaer)
+2. **Multiplikatoren** — Steuerberater, IT-Berater, Marketing-Agenturen (sekundaer, Bruecke zu § 3.3)
+3. **Innungs-/WKO-Funktionaere** — fuer spaetere Kooperationen (§ 3.4) auf dem Radar haben
+
+**Content-Saeulen (4):**
+
+1. **Recipe-Showcases (40 %)** — neue Kundenseiten als Carousel: Logo, vorher/nachher, 1-Satz-Story ("Tischlerei Pichler aus Niederoesterreich — Site online in 8 Minuten"). Nur mit Showcase-Opt-in (§ 3.2). Visueller Carousel-Stil, 6–8 Slides.
+2. **Behind-the-Scenes / Bau-Fortschritt (30 %)** — Recipe-Bau, Design-Entscheidungen, KI-Generation-Beispiele. Autor-Stimme: knapp, sachlich, AT-tauglich. Keine Hype-Sprache.
+3. **Branchen-Mini-Insights (20 %)** — "Was eine gute Friseur-Website 2026 koennen muss" / "Warum DSGVO-Banner Kunden verschrecken". KMU-relevant, nicht Tech-Bubble. Bridge zu Recipe-Differenzierung.
+4. **Trust-Bausteine (10 %)** — WKO-Markensprechtag-Eindrueck, Versicherungs-Setup, Pre-Setup-Meilensteine. Zeigt Solidaritaet mit AT-KMU-Realitaet, baut Vertrauen auf.
+
+**Frequenz:** 2–3 Posts pro Woche. Lieber konsistent als Push. Wochentags 08:00–10:00 Wien-Zeit (LinkedIn-AT-Peak).
+
+**Format-Mix:**
+- 50 % Carousel (LinkedIn-Reichweiten-Booster 2026, sehr KMU-tauglich)
+- 30 % Text + 1 Bild
+- 15 % Native Video (≤ 90 s, untertitelt — viele KMU scrollen ohne Ton)
+- 5 % Reposts/Kommentare auf WKO-/Innungs-Posts (Discoverability)
+
+**Voice:** strikt BRAND.md § 5 — sachlich-zugewandt, AT-Du-vermeiden auch in Social (Sie-Form), keine Emojis ausser dem dezenten OE-Bezug ("aus Wien", "fuer AT-KMU"). Keine Hashtag-Wuesten (max. 3–4 relevante Hashtags pro Post: `#KMU` `#Oesterreich` `#Branche`).
+
+**KPIs:**
+- Pre-Launch: 200 Page-Follower (organisch + persoenliche Vernetzung Inhaber)
+- Monat 3: 800 Follower, durchschnittlich 5 % Engagement-Rate auf Posts
+- Monat 6: 1 dokumentierter "via LinkedIn entstandener" Kundendeal pro Monat
+
+**Aufwand:** ~3–4 h/Woche Content-Produktion + 1 h/Woche Engagement (Kommentare beantworten, in fremden Posts kommentieren). Nicht delegieren, weil Inhaber-Stimme Trust-Treiber ist.
+
+**Risiko-Hinweise:**
+- **Keine Berufsgruppen-Listen in Hauptbotschaften** (Memory `feedback_marketing_zielgruppe_inklusiv.md`) — "oesterreichische KMU" als Umbrella, Konkretisierung erst im Body.
+- **Keine "Pflichtangaben"-Hebel** (Memory `feedback_keine_rechtliche_pflichten.md`) — Compliance-Themen positiv framen ("ohne Cookie-Banner") statt buerokratisch.
+- **UWG-Vorsicht** bei Vergleichs-Posts ("besser als Wix") — neutral formulieren ("anders als generische Builder").
+
+---
+
+### 2.2 Direktansprache (Cold Outreach)
+
+**Status:** Vor Launch zu bauen. Memory `project_sales_agent_idea.md` skizziert einen automatisierten Sales-Lead-Agenten als Live-Phase-2-Option (~15–25 EUR/Monat) — Pre-Launch wird manuell gestartet, Agent kommt erst wenn Channel validiert ist.
+
+**Zielgruppen-Definition:**
+- **Geografische + branchen-konzentrierte Cluster** (siehe § 1 Grundlage)
+- **Cluster-Dimensionierung:** je 30–50 Kontakte in 3 Sparten × 1–2 Regionen ergibt 90–300 Erstkontakte — kalibriert auf 4–6 Wochen Pre-Launch + Monat 1 Outreach-Volumen
+- **Auswahl-Kriterien fuer Sparten:**
+  - Innerhalb der 14 Berufsgruppen (siehe `project_berufsgruppen_refactor.md`)
+  - Inhaber hat persoenlichen Zugang oder Branchen-Erfahrung (Trust-Faktor)
+  - Recipe in der Sparte technisch fertig (Live-Demo-Story verfuegbar)
+  - Hohe AT-KMU-Dichte in einer adressbaren Region
+- **Konkrete Sparten + Regionen:** wird vom Inhaber vor Launch festgelegt — Auswahl-Kriterien oben anwenden
+- **Ausschluss-Kriterien:** Unternehmen mit < 1 Jahr Aktivitaet (Insolvenz-Risiko), Unternehmen mit professioneller Bestands-Site (kein Bedarf), Konzernkunden (Off-Brand B2B-Standard)
+
+**Lead-Quellen (in absteigender Datenqualitaet):**
+1. **WKO-Firmenverzeichnis** (firmen.wko.at) — Pflichtmitgliedschaft → 100 % Branche-Abdeckung, oeffentlich zugaenglich, AT-Standard. Adresse + Branche + oft Telefon/Mail.
+2. **Google Places API** — fuer Sparten mit Standort-Praesenz (Gastro, Friseur, Handwerk). Kostenpflichtig oberhalb Free-Tier (~17 USD pro 1k Calls), aber Bewertungen + Fotos als Anreicherung.
+3. **FirmenABC** (firmenabc.at) — kostenfreie Alternative zur WKO, kleiner aber breiter (auch GmbH ohne Pflichtmitgliedschaft sichtbar).
+4. **LinkedIn Sales Navigator** — falls Subscription vorhanden, sonst zu teuer fuer Pre-Launch (~70 EUR/Monat).
+5. **Innungs-Mitgliederlisten** — falls oeffentlich, ergaenzend zu WKO.
+
+**Outreach-Kanaele + Sequenz (Empfehlung):**
+| Schritt | Kanal | Inhalt | Timing |
+|---|---|---|---|
+| 1 | LinkedIn-Connection-Request | Sachlicher 1-Liner, Bezug auf Branche + Region | Tag 0 |
+| 2 | Personalisierte Mail an info@-Adresse | 1 Absatz Pain + 1 Demo-Link (Recipe der eigenen Branche) | Tag 3 |
+| 3 | Follow-up Mail | Wenn Demo-Link geklickt aber keine Antwort | Tag 7 |
+| 4 | (optional) Telefon-Anruf | Bei warmen Leads (Demo-Click oder LinkedIn-Accept) | Tag 10–14 |
+
+Maximal **3 Touchpoints** vor Pause — vermeidet Spam-Wahrnehmung, kollidiert nicht mit § 7 UWG (kein wiederholter unaufgeforderter Kontakt nach Ablehnung).
+
+**Mail-Templates:** Pre-Launch je 1 Template pro Sparte (Tischler, Friseur, Gastro, Steuerberater) als `docs/sales-templates/` `[BAU vor Launch]`. Voice strikt sachlich, kein Standard-Cold-Mail-Pattern, eine Branchen-spezifische Beobachtung pro Mail.
+
+**Volumen-Ziel Pre-Launch + Monat 1:**
+- 50 Leads pro Sparte pro Region = 150 Leads total in 3 Sparten
+- 3 Sparten × 1 Region = 150 personalisierte Touchpoints
+- Realistische Conversion: 8–15 % zu Demo-Termin, davon 25–40 % zu zahlendem Kunden → **10–20 Erstkunden aus Direktansprache** machbar bei 4–6 Wochen Vollfokus
+
+**Compliance:**
+- **B2B-Cold-Outreach** ist in AT unter § 174 UGB + § 7 UWG zulaessig **wenn:** Bezug zu Geschaeftsverkehr klar, Bedarf-Annahme begruendet (Branche relevant), keine wiederholte Belaestigung nach Ablehnung.
+- **Mail-Adressen** aus oeffentlichen Quellen (WKO/FirmenABC) sind als Pflichtangaben des Empfaengers veroeffentlicht (§ 5 ECG) — Verarbeitung fuer berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) ist gedeckt, **wenn** Anbieter-Identifikation, Opt-out und Loeschung gewaehrt werden.
+- Footer in jeder Cold-Mail: Absender-Identifikation (Wagner IT-Solutions e.U., FN, 1220 Wien) + 1-Klick-Opt-out (`opt-out@instantpage.at` oder Link).
+- **Anwalts-Audit-Punkt (Block A):** Cold-Outreach-Mail-Template auf § 7 UWG + DSGVO Art. 14 (Information-Pflicht bei nicht direkt erhobenen Daten) pruefen.
+
+**Aufwand:**
+- Pre-Launch Lead-Listen + Templates: ~2–3 Tage Eigenarbeit
+- Laufend Monat 1–2: 8–12 h/Woche Inhaber + Personalisierung
+
+---
+
+### 2.3 Organisch / SEO
+
+**Status:** Marketing-Site-Konzept (`DESIGN-VISION.md` § 5) wird Pre-Launch parallel zur Live-Plattform gebaut. SEO als zweiter Hebel **nach** Direktansprache, nicht statt.
+
+**Strategie-Saeulen (3):**
+
+**A) Marketing-Site Long-Tail-Pages**
+
+Statt 1 Landing-Page → **1 Landing-Page pro Berufsgruppe** (14 Stueck, siehe `project_berufsgruppen_refactor.md`). Plus **regionale Varianten** fuer die 5 wichtigsten Sparten in den 3 groessten Bundeslaendern.
+
+Konkrete Long-Tail-Keywords (Beispiele, vor Live mit Keyword-Tool verifizieren):
+- `Webseite Friseur Wien` (~120 Suchen/Monat)
+- `Website fuer Tischlerei` (~90)
+- `Homepage Anwaltskanzlei Oesterreich` (~50)
+- `Website Steuerberater Graz` (~30)
+
+Pro Page: H1-Headline (BRAND.md-Tagline-Variante), 1 Recipe-Preview-Visual fuer die Branche, 3-Punkte-Pain ("warum eine generische Wix-Seite fuer einen Friseur nicht reicht"), CTA "Kostenlose Testphase starten".
+
+**B) Programmatic SEO: Kunden-Showcase-Pages**
+
+Jede Kunden-Subdomain (mit Showcase-Opt-in § 3.2) wird auf der Marketing-Site als **Showcase-Page** referenziert (`instantpage.at/beispiele/tischlerei-pichler` mit Inhaltsschnipsel + Link zur Live-Site). Skaliert organisch mit Kundenbasis. Backlink-Effekt zwischen Marketing-Site und Kunden-Subdomain. Bei 30 Live-Kunden = 30 zusaetzliche indexierbare URLs.
+
+**C) Compliance-Themen-Blog (optional, Phase 2)**
+
+Themen die KMU googeln: "Impressum-Pflicht Oesterreich 2026", "DSGVO fuer Friseure", "Cookie-Banner vermeiden". Jeweils 1500–2500 Worte, defensiv formuliert (keine Rechtsberatung — siehe `LIVE-COMPLIANCE.md` § 10), mit Soft-CTA zur Plattform. Erst **nach** Anwalts-Briefing (Block A), wenn Compliance-Linie steht.
+
+**On-Page-SEO-Basics (Plattform-Site):**
+- Schema.org `Organization` + `SoftwareApplication` (Marketing-Site) + `LocalBusiness` (jede Kunden-Subdomain — schon im Beta-Template)
+- Sitemap auto-generiert, in Google Search Console eingereicht
+- Open Graph + Twitter Cards pro Page (LinkedIn-Sharing-Vorteil)
+- Core Web Vitals — Lighthouse mobile ≥ 90 (Quality-Standard aus `DESIGN-VISION.md` § 13)
+
+**Backlink-Strategie (organisch, kein Linkbuilding-Spam):**
+- Subdomain-Reziprozitaet (Marketing → Kunden, Kunden → Marketing-Logo im Footer optional)
+- WKO/Innungs-Verzeichnisse (bei Innungs-Kooperationen § 3.4 quasi automatisch)
+- Gastartikel in IT-/Branchen-Magazinen (siehe § 2.4)
+
+**KPIs:**
+- Monat 3: 14 Berufsgruppen-Pages indexiert, ranking auf Long-Tail-Keywords Top 30
+- Monat 6: 30+ Showcase-Pages, organisch 50+ Sessions/Tag aus Google
+- Monat 12: 1–2 Top-3-Rankings auf umkaempften Branchen-Keywords (z. B. "Website Tischler")
+
+**Aufwand:**
+- Pre-Launch: Marketing-Site + 14 Berufsgruppen-Pages = ~5–7 Tage (parallel zu DESIGN-VISION § 5)
+- Laufend: 1 Showcase-Page pro Neukunde (semi-automatisierbar, ~15 Min/Kunde)
+- Blog (optional Phase 2): ~3–5 h pro Artikel, 1 Artikel/Monat
+
+**Risiko:** SEO-Wachstum ist 6–12 Monate Geduld-Spiel — **nicht** als primaerer Pre-Launch-Channel taugen. SEO ist Insurance fuer Monat 6+, nicht Day-1-Lead-Quelle.
+
+---
+
+### 2.4 Lokale Medien + Branchen-Magazine
+
+**Status:** Trigger-basiert — erst pitchen wenn 30+ Live-Referenzkunden in mindestens einer Sparte vorhanden sind (Showcase als Pitch-Substanz, sonst keine Story).
+
+**Ziel-Medien (priorisiert):**
+1. **WKO-Magazin "Die Wirtschaft"** (Wochenzeitung, alle WKO-Mitglieder) — redaktionelle Erwaehnung als Mitgliedervorteil-Bridge zu § 3.4
+2. **Innungs-Magazine** (z. B. "Holz im Handwerk" Tischler-Innung, regional "Wiener Wirtschaft") — branchen-spezifisch
+3. **Brutkasten / Gruenderszene Austria** — Startup-Medien, fuer Inhaber-Profil + AT-Tech-Szene
+4. **Lokale Tageszeitungen Wirtschaftsteile** (Kurier-Wirtschaft, Standard-Wirtschaft, Krone-Wirtschaft) — bei groesseren Meilensteinen (1000 Kunden, Finanzierungsrunde — sehr spaeter Trigger)
+
+**Pitch-Format:**
+- 1 Pitch pro Medium = 1 personalisierter Mail-Pitch an Wirtschaftsredaktion + Branchen-Redakteur
+- Story-Angle nicht "neue SaaS-Plattform", sondern "AT-Tischler bekommen ihre Website in 10 Minuten" (Beispiel-Kunde mit Foto + Live-Site)
+- Hochwertige Pressefotos + Faktenblatt vorbereitet (Inhaber + 2–3 Kundenseiten + Stammdaten Wagner IT-Solutions)
+
+**Aufwand:** 0,5 Tag Pitch-Vorbereitung + 2–3 h pro versuchtem Medium. Realistisch: 1–2 Erwaehnungen in den ersten 12 Monaten.
+
+**Nicht tun:**
+- **Bezahlte Anzeigen** in Print-Medien — gleicher Anti-Pattern wie Paid Online (§ 2.5), Conversion-Funnel nicht validiert
+- **Generische PR-Agenturen** beauftragen — fuer AT-KMU-Vertrauensprodukt-Vibe ist Inhaber-Stimme besser als professionelle PR-Sprache
+
+---
+
+### 2.5 Paid Acquisition (deferred)
+
+**Status:** Bewusst aufgeschoben. Trigger: stabile Conversion-Funnel-Validierung **nach** 50+ zahlenden Kunden aus organischen + Direkt-Kanaelen.
+
+**Warum erst spaet:**
+- Paid braucht messbaren CAC + LTV — vor 50 Kunden ist die Datengrundlage zu duenn fuer rationale Budgets
+- AT-Vertrauensprodukt-Vibe (§ 1) — Paid-Lead-Pages werden oft als "noch ein generischer SaaS-Pitch" wahrgenommen, kollidiert mit Brand
+- Multiplikator + Direktansprache sind in Pre-Launch effizienter pro investierter Stunde
+
+**Wenn dann (Reihenfolge):**
+1. **Google Ads — Branded Keywords** (`instantpage.at`, `instantpage Wien`) — Defensive gegen Wettbewerber-Hijacking
+2. **Google Ads — Long-Tail Branchen-Keywords** parallel zur SEO-Strategie (§ 2.3 A)
+3. **LinkedIn Ads** — fuer Multiplikator-Akquise (Steuerberater-Targeting)
+4. **Meta Ads** — fuer breitere KMU-Inhaber-Reichweite, erst bei klarem Brand-Asset-Set
+
+**Nicht** als Paid-Kanal:
+- Twitter/X — irrelevante AT-KMU-Reichweite
+- TikTok — Brand-Mismatch (zu Lifestyle)
+- Affiliate-Netzwerke — kollidiert mit § 1 ("keine MLM-Vibes")
+
+**Aufwand:** Lassen wir offen bis Trigger erreicht — Budget-Empfehlung dann mit echten LTV/CAC-Zahlen.
+
+---
+
+### 2.6 Channel-Mix — Entscheidungs-Grundlage
+
+Der Inhaber entscheidet die konkrete Zeit-Verteilung pro Phase selbst. Diese Sektion liefert die Trade-offs als Entscheidungs-Grundlage.
+
+**Phasen-Charakteristika:**
+
+| Phase | Was funktioniert | Was noch nicht funktioniert |
 |---|---|---|
-| Organisch / SEO | `[OFFEN]` | KMU googelt nach "Webseite Friseur Wien" etc. Long-Tail-Strategie + Recipe-Showcase-Pages |
-| LinkedIn (Company Page) | `[LIVE seit 2026-05-12]` | siehe Memory `project_session_2026-05-12_stand.md`. Strategie noch zu spec'en |
-| WKO / Innungen | siehe § 3.4 | institutionelle Kooperation |
-| Multiplikatoren | siehe § 3.3 | Partnerprogramm |
-| Lokale Medien / Branchen-Magazine | `[OFFEN]` | Editorial-Erwaehnungen, kein Paid |
-| Paid (Google Ads, Meta) | `[SPAETER]` | Erst wenn Conversion-Funnel validiert |
+| **Pre-Launch (4–6 Wo)** | SEO-Asset-Bau (Marketing-Site + Berufsgruppen-Pages), LinkedIn-Content-Aufbau, Lead-Listen + Outreach-Templates vorbereiten | Direktansprache: keine Live-Demo-Story verfuegbar. Paid: kein Funnel zum Messen. WKO/Multiplikator: keine Referenzkunden. |
+| **Monat 1–2** | Direktansprache (jetzt mit Demo-Story), LinkedIn-Content laeuft an, Showcase-Pflege bei Erstkunden | SEO: noch keine Rankings. Multiplikator: zu fruehe Skalierungs-Schicht ohne Erstkunden-Validierung. |
+| **Monat 3–6** | Direktansprache reift, LinkedIn-Reichweite, Multiplikator-Akquise (§ 3.3) startet, SEO faengt an zu indexieren | Paid: Conversion-Funnel noch nicht stabil messbar. WKO/Innungen: Referenzkunden-Schwelle (30+) noch nicht erreicht. |
+| **Monat 6+** | Multiplikator skaliert, LinkedIn-Reputation, SEO liefert, WKO-Vorbereitung beginnt | Direktansprache wird bottleneck-getrieben (Inhaber-Zeit) — Anteil reduzieren. |
+
+**Trade-off-Achsen fuer die Entscheidung:**
+
+- **Sofortige Lead-Conversion vs. langfristiger Asset-Aufbau:** Direktansprache liefert in Wochen, SEO in 6–12 Monaten. LinkedIn liegt dazwischen (Content-Compounding-Effekt).
+- **Skalierbarkeit:** SEO + Multiplikator skalieren ohne mehr Inhaber-Zeit. Direktansprache + LinkedIn-Content skalieren linear mit Stunden.
+- **Eintrittsbarriere:** SEO-Marketing-Site muss vor jeder Direktansprache stehen (Demo-Link fuer Cold-Mails). LinkedIn-Posting funktioniert von Tag 1.
+
+**Implizite Reihenfolge (nicht Mix, sondern Sequenz):**
+1. Pre-Launch: Marketing-Site + Lead-Listen + LinkedIn-Profil-Posts kommen **vor** allem anderen — sonst fehlt jeder anderen Aktivitaet die Substanz.
+2. Monat 1: Direktansprache kann erst starten, wenn Live-Plattform demo-bar ist + Marketing-Site live.
+3. Monat 3+: Multiplikator-Programm erst sinnvoll, wenn Erstkunden-Showcase existiert (sonst keine Partner-Pitch-Substanz).
 
 ---
 
@@ -186,5 +400,7 @@ Nicht tun — kollidiert mit Brand + AT-Vertrauensprodukt-Positionierung:
 
 - First-100 vs. First-50 Cap fuer Gruendertarif (§ 3.1)
 - Multiplikator-Provisions-Modell — 20 % Lifetime vs. 20 % + 10 % Folgejahre (§ 3.3)
-- Channel-Mix Live-Launch — wie viel LinkedIn / wie viel Direktansprache / wie viel SEO-Investition
+- Channel-Mix (§ 2.6) — konkrete Zeit-Verteilung pro Phase wird vom Inhaber gesetzt, Entscheidungs-Grundlage steht
+- Erstziel-Sparten + Regionen (§ 2.2) — vom Inhaber vor Launch festzulegen anhand Auswahl-Kriterien
 - Marketing-Skills Evaluation (Memory `project_marketing_skills_eval.md`) — vor Marketing-Funnel-Bau noch durchfuehren
+- Cold-Outreach-Mail-Template (§ 2.2) im Anwalts-Briefing (Block A) auf § 7 UWG + DSGVO Art. 14 pruefen lassen

@@ -89,6 +89,8 @@ Channels in absteigender Pre-Launch-Prioritaet. Multiplikator (§ 3.3) und WKO (
 
 **Strategie:** Grund-Praesenz aufbauen, dann Cross-Post-Disziplin via Meta Business. Aufwand ~30–45 Min/Woche fuer beide Channels zusammen.
 
+**Asset-Produktion: im Live-Repo via Canva MCP** `[ENTSCHIEDEN 2026-05-14]`. Canva Pro Account + Brand-Kit (Tannengruen + Poppins + Wortmarke) wird in Live-Bau Phase 0 aufgesetzt (`MIGRATION-PLAN.md` § 7.1). Claude generiert dann Drafts (Carousel, Story, Banner), Inhaber gibt frei + postet. Bis dahin: Profil-Setup mit minimalem Aufwand manuell durch Inhaber, kein Doku-Asset-Bau im Prototyp-Repo.
+
 #### Grund-Setup (einmalig, ~45 Min)
 
 **Profil-Anlage (Instagram + Facebook Page identisch):**

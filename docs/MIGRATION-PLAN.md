@@ -350,6 +350,7 @@ Welche Memorys aus dem Beta-Memory-Store ins Live-Memory:
 | Sentry MCP (ab Live-Launch) | Stack-Traces + Breadcrumbs direkt in Claude statt Dashboard-Switch | <https://github.com/getsentry/sentry-mcp> |
 | Playwright MCP | Visual-Regression-Runs der Recipes aus Claude triggerbar — vor Cutover Pflicht | <https://github.com/microsoft/playwright-mcp> |
 | Context7 | Versionsaktuelle Docs (Cloudflare Workers, Supabase, Next.js 15) — beendet API-Halluzinationen | <https://github.com/upstash/context7> |
+| Canva MCP (Marketing-Asset-Produktion) | Brand-Kit (Tannengruen + Poppins + Wortmarke) + Social-Media-Templates fuer Cross-Post (`MARKETING.md` § 2.1 + § 2.1a). Claude generiert Drafts (z.B. Recipe-Showcase) → Inhaber-Approval → Post. Voraussetzung: Canva Pro Subscription (~12 €/Mo). | <https://www.canva.com/developers> + MCP-Setup via `.claude/mcp.json` |
 
 ### 7.2 Custom Skills (im neuen Repo unter `.claude/skills/`)
 

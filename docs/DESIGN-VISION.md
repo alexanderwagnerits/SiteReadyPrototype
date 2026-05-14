@@ -127,6 +127,8 @@ Variante A ist Frame-/Beehiiv-Vorbild (Memory `_design/benchmarks-plattform.md`)
 
 ### 4. Plattform-Design-System
 
+> **Brand-Kit-Pflicht:** Das Plattform-Design-System baut auf `BRAND.md` § 9 + Brand-Kit (`public/brand/`, `docs/_design/brand-kit/`) auf — NICHT auf shadcn/Tailwind-Defaults. Memory: [[brand-kit-plattform-pflicht]]. Konkret: Tannengruen `#2D4A3E` als Akzent, Poppins als Font, Logo aus `public/brand/logo/`.
+
 **Was fehlt:** keine konkreten Design-Tokens für instantpage.at selbst. Heute im Prototyp `const T = {...}` in App.js — ad-hoc.
 
 **Outcome:**

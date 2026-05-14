@@ -387,6 +387,10 @@ Verantwortlich: `compliance-reviewer` Subagent (geplant, Memory `project_dev_sub
 
 ## 9. Visuelle Sprache (Plattform-UI)
 
+> **Verbindlich-Regel 2026-05-14:** Brand-Kit (`public/brand/` + `docs/_design/brand-kit/`) + diese BRAND.md sind **Pflicht-Quelle** fuer **alle Plattform-Design-Themen** (Marketing-Site, Portal, Pitch-Decks, Visitenkarten, Social-Media, E-Mail-Signaturen). Memory: [[brand-kit-plattform-pflicht]].
+>
+> **STRIKT AUSGENOMMEN — Customer-Websites:** Recipe-Sites haben **eigene** Tokens (`_design/themes.md` + `recipe-konfiguration.md`). NIE Plattform-Tokens auf Customer-Sites verwenden.
+
 ### 9.1 Aesthetic-Haltung
 
 **Orientierung:** Linear, Stripe, Vercel, Anthropic — minimalistisch, viel Whitespace, klare Typo-Hierarchie, Trust durch Klarheit. Editorial-Komposition, nicht Card-Grid-Standard.
@@ -464,5 +468,18 @@ Die generierten Kundensites haben **eigene visuelle Sprache pro Recipe** (siehe 
 - `[ERLEDIGT 2026-05-14]` Logo-Asset-Set komplett (siehe § 2.4) — Brand-Kit eingebunden
 - `[OPTIONAL]` Multi-Size-ICO regenerieren (siehe § 2.1 Hinweis)
 - `[OFFEN]` tokens.css Akzentfarbe — aktuell `--font-sans: 'DM Sans'`, sollte auf `Poppins` umgestellt werden (Stand 2026-05-05, ueberholt durch § 4.1 Lock 2026-05-12). Live-Bau Phase 0 Aufgabe.
+
+## Brand-Kit-Erweiterung Live-Bau (Trigger-basiert)
+
+Aktuelles Brand-Kit ist Live-Day-1-ready (Logo + Favicon + OG + Verwendungsregeln). Erweiterungen werden trigger-basiert im Live-Bau ergaenzt:
+
+| Erweiterung | Trigger | Wo verankert |
+|---|---|---|
+| **Canva-Brand-Kit** einrichten (Brand-Tokens in Canva einpflegen) | Live-Bau Phase 0 | `MIGRATION-PLAN.md` § 7.1 Canva MCP |
+| **Photography-Style-Guide** | Phase 1 (mit Recipe-Bau) | `_design/asset-strategy.md` erweitern |
+| **Anwendungs-Mockups** (Visitenkarte, Pitch-Deck-Master, LinkedIn-Banner, E-Mail-Signatur-Layout) | Phase 1 | Brand-Kit auf 8–12 Seiten ausbauen |
+| **Plattform-Motion-Spec** (Easings + Durations Marketing-Site + Portal) | Phase 1 (mit DESIGN-VISION § 4) | Block 4 Plattform-Design-System |
+| **Sekundaere Visual-Assets** (Pattern, Backgrounds, Custom-Icon-Set ueber Lucide hinaus) | Phase 2 (Trigger: 30+ Kunden, klarer Bedarf) | optional, nicht Live-Blocker |
+| **Voice-Beispiele mit Kontext** (Do/Don't-Tabelle erweitern) | iterativ aus Support-Anfragen + Kunden-Feedback | BRAND § 5 erweitern |
 
 **Status BRAND.md:** `[FERTIG]` — bereit als Foundation fuer DESIGN-VISION-Detail, Marketing-Bau und Sales-Material. Asset-Set vollstaendig.

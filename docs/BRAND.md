@@ -71,16 +71,19 @@ Der Beta-Prototyp lief unter "SiteReady" (Domain `sitereadyprototype.pages.dev`)
 
 ### 2.2 Brand-Schreibweise
 
-**Pflicht:** "instantpage.at" — **alles klein**, ".at"-Suffix gehoert zur Wortmarke.
+**Pflicht:** "instantpage.at" — **alles klein**, ".at"-Suffix gehoert zur Wortmarke. Gilt auch fuer Social-Media-Display-Namen (Instagram-Profil-Name, Facebook-Page-Name, LinkedIn-Page-Name), OG-Title, Page-Titles, Pitch-Decks, Visitenkarten.
 
 | Form | Erlaubt | Verwendung |
 |---|---|---|
-| `instantpage.at` | ✓ Default | alle Marketing-/UI-/Mail-Texte |
+| `instantpage.at` | ✓ Default | alle Marketing-/UI-/Mail-Texte, alle Social-Media-Display-Namen |
 | `instantpage` | ✓ ausnahmsweise | wenn TLD aus Kontext klar (z.B. "Im instantpage-Portal...") |
+| `Instantpage.at` | ✗ | nie (auch nicht als Display-Name auf Social-Profilen — IG/FB/LinkedIn pruefen) |
 | `Instantpage` | ✗ | nie |
 | `Instant Page` | ✗ | nie |
 | `INSTANTPAGE.AT` | ✗ | nie (auch nicht in Headlines) |
 | `iP` (Monogramm allein) | ✓ nur als Logo-Element | nicht im Fliesstext |
+
+**Satzanfang-Ausnahme:** im Fliesstext besser umformulieren („Mit instantpage.at…", „Die Plattform instantpage.at…") statt Satz mit der Wortmarke beginnen.
 
 ### 2.3 Verwendungsregeln
 

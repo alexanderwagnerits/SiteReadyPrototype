@@ -41,7 +41,7 @@ Diese Doku schließt die Lücke. Sie wird vor Phase 0 (Code-Setup) abgearbeitet 
 | 11 | Mikro-Interaktionen Kunden-Websites | parallel zu Themes | `[OFFEN]` |
 | 12 | Asset-/Photography-Strategie | 3-4 Tage | `[OFFEN]` |
 | **D** | **Quality** | ~1 Woche | `[TEIL-SPEC'D]` |
-| 13 | Quality-Standards messbar | 2 Tage | `[ENTWURF 2026-05-10]` — 7 Sub-Sections detailliert |
+| 13 | Quality-Standards messbar | 2 Tage | `[FERTIG 2026-05-14]` — 10 Sub-Sections, ausgelagert in `_design/quality-standards.md` |
 | 14 | Code-/Test-Quality-Standards | 2-3 Tage | `[SPEC 2026-05-14]` — Tool-Stack entschieden (Vitest/Playwright/Chromatic/Storybook/axe/Lighthouse-CI), WCAG-AA-Default |
 
 ---
@@ -329,104 +329,23 @@ Prototyp nutzt 12+ Stufen (0.65/0.68/0.72/0.74/0.78/0.8/0.82/0.85/0.88/0.9/0.92/
 
 ## Block D — Quality
 
-### 13. Quality-Standards messbar `[ENTWURF 2026-05-10]`
+### 13. Quality-Standards messbar `[FERTIG 2026-05-14]`
 
 **Beschluss 2026-05-10:** Solo-Bau ohne externen Designer = strenge messbare Quality-Gates Pflicht. Wird vom `design-reviewer` Subagent enforced.
 
-#### 13.1 Performance (Lighthouse Mobile)
+**Detail-Spec:** [`docs/_design/quality-standards.md`](_design/quality-standards.md) — 10 Sektionen final spec'd (Performance/Accessibility/Visual-Polish/Content-Density/Quality-Score/Branchen-Profile/Pflicht-Checks/Eskalations-Pfad/Review-Cadence/Connections).
 
-| Metrik | Mindest | Ziel | Messmethode |
-|---|---|---|---|
-| Performance-Score | ≥ 85 | ≥ 90 | Lighthouse-CI (real-mobile-throttle, 4G) |
-| FCP (First Contentful Paint) | < 2.0s | < 1.8s | Lighthouse |
-| LCP (Largest Contentful Paint) | < 3.0s | < 2.5s | Lighthouse |
-| CLS (Cumulative Layout Shift) | < 0.15 | < 0.1 | Lighthouse |
-| TBT (Total Blocking Time) | < 250ms | < 200ms | Lighthouse |
-| Accessibility-Score | ≥ 90 | ≥ 95 | Lighthouse |
-| Best Practices | ≥ 95 | 100 | Lighthouse |
-| SEO | ≥ 95 | 100 | Lighthouse |
+**Kern-Schwellen** (Hard-Block-relevant):
+- Performance ≥ 85 (Mobile, 4G), Accessibility ≥ 90 (Lighthouse + axe-core)
+- WCAG AA als Default, kein AAA-Zwang fuer Recht/Medical (Begruendung in `quality-standards.md` § 2)
+- Quality-Score ≥ 70 Default, ≥ 85 fuer Recht/Medical/Bestattung (Branchen-Profile § 6)
+- Content-Density: 14 Sections mit Min/Max-Wortzahlen, Hero-H1-leer = Hard-Block (§ 4)
+- 7 Pflicht-Checks pro Recipe vor Release (§ 7)
 
-**Hard-Block:** Recipes mit Performance < 85 oder Accessibility < 90 dürfen nicht produktiv geschaltet werden.
-
-#### 13.2 Accessibility (WCAG AA)
-
-| Bereich | Regel |
-|---|---|
-| Color-Contrast | Body-Text ≥ 4.5:1, Large-Text (≥ 24px) ≥ 3.0:1 |
-| Touch-Targets | Mobile ≥ 44px × 44px (interaktive Elemente) |
-| Heading-Hierarchie | Strikt: H1 → H2 → H3 (kein H1 → H3 ohne H2) |
-| ARIA | Icon-only-Buttons brauchen `aria-label`. Form-Inputs immer `<label>`. |
-| Alt-Text | Alle `<img>` mit aussagekräftigem `alt`-Attribut, dekorative mit `alt=""`. |
-| Focus-Visible | Sichtbare Fokus-Ringe, nicht ausgeblendet |
-| Reduced-Motion | `prefers-reduced-motion` respektiert (Animationen aus) |
-
-**Tooling:** axe-core in Vitest + Playwright. Pre-Commit-Hook + CI-Gate.
-
-#### 13.3 Visual-Polish (design-reviewer Subagent)
-
-| Bereich | Regel |
-|---|---|
-| Token-Konsistenz | Keine Hard-Coded Hex außerhalb `themes.md`. Spacing nur via Spacing-Tokens. |
-| Section-Komposition | Nur Sections aus `recipe-konfiguration.md` Section-Pool. Keine erfundenen Sektionen. |
-| Anti-AI-Generic | Keine Pink-Lila-Gradient-BGs. Keine Stockfoto-Klischees. Keine 3+ Akzentfarben gleichzeitig. Verbotene Floskeln in `references/<berufsgruppe>.md`. |
-| Mobile-Verhalten | Galerie horizontaler Scroll-Snap statt Grid. Hero ≤ 100vh. Tabellen scroll-fähig. |
-| Reference-DNA-Match | Recipe muss zur Berufsgruppe-Visual-DNA passen (`references/<berufsgruppe>.md`) |
-| Whitespace-Rhythmus | Section-Padding Tokens-konform, kein "eng-gepacktes" Layout |
-
-#### 13.4 Content-Density (KI-Output-Qualität)
-
-Min/Max-Werte pro Section. Verletzung triggert Re-Generation oder leeres Feld bleibt sichtbar im Portal als TODO.
-
-| Section | Min Wortzahl | Max Wortzahl | Bemerkung |
-|---|---|---|---|
-| Hero-H1 | 3 | 12 | Kernbotschaft, kein Firmenname |
-| Hero-Sub | 12 | 30 | 80–160 Zeichen |
-| Leistungen-Item-Titel | 1 | 5 | |
-| Leistungen-Item-Text | 30 | 80 | Pro Item |
-| Über | 80 | 250 | Pro Absatz, max 2 Absätze |
-| Bewertungen-Quote | 15 | 60 | Pro Zitat |
-| FAQ-Frage | 5 | 15 | |
-| FAQ-Antwort | 30 | 120 | |
-| CTA-Block-Headline | 3 | 8 | |
-
-**Hard-Block:** Hero-H1 leer = Recipe nicht produktiv schaltbar.
-
-#### 13.5 Quality-Score (KI-Generation)
-
-Bestehender `quality_score` 0–100 im Prototyp wird auf Live übernommen mit definierten Schwellen:
-
-| Score | Verhalten |
-|---|---|
-| ≥ 80 | Recipe produktiv schalten — alles OK |
-| 70–79 | Soft-Warning, Admin-Review wenn ≥ 3 Fälle pro Tag |
-| 50–69 | Auto-Retry mit angepasstem Prompt (max 2 Retries) |
-| < 50 | Hard-Block, Admin-Alarm + Onboarding-Recovery-Email |
-
-#### 13.6 Branchen-spezifische Profile
-
-Manche Berufsgruppen brauchen strengere Schwellen:
-
-| Berufsgruppe | Score-Min | Begründung |
-|---|---|---|
-| Recht & Finanz | ≥ 85 | Reglementiert, Wording kritisch (siehe LIVE-COMPLIANCE § 10) |
-| Gesundheit (Medical) | ≥ 85 | Heilberufe, kein Heilversprechen |
-| Architektur & Planung | ≥ 80 | Premium-Anspruch |
-| Bestattung *(Phase 2)* | ≥ 85 | Sensitiver Tonalitäts-Bereich |
-| Sonstige | ≥ 70 | Default |
-
-#### 13.7 Pflicht-Checks vor Live-Recipe-Release
-
-Pro neuem oder geändertem Recipe vor produktiver Schaltung:
-
-1. ✅ Lighthouse mobile ≥ 90 in 4 Kategorien
-2. ✅ Accessibility WCAG AA via axe-core
-3. ✅ design-reviewer-Subagent PASS
-4. ✅ Cross-Browser-Test (Safari + Chrome + Firefox)
-5. ✅ Beta-Test mit ≥ 3 echten Kunden der Berufsgruppe (oder Test-Sites)
-6. ✅ Reference-Library-File für Berufsgruppe existiert + ist gefüllt
-7. ✅ Skill-Prompt + Reference-Set-Input nachvollziehbar (in PR oder Code-Kommentar)
-
-**Format-Detail:** `docs/_design/quality-standards.md` *(separates Detail-File optional, wenn § 13 zu lang wird)*
+**Neue Sub-Sections gegenueber Entwurf 2026-05-10:**
+- § 8 Eskalations-Pfad fuer temporaere Underperformance (Tabelle Performance-/Accessibility-Faelle + Frist + Verantwortlichkeit)
+- § 9 Review-Cadence quartalsweise (gekoppelt an `OPERATIONS.md` § 7 Self-Check)
+- § 4 Content-Density auf 14 Sections erweitert (vorher 9)
 
 ---
 

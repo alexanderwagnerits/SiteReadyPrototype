@@ -2,7 +2,7 @@
 
 > Acquisition-Strategie und Wachstums-Mechaniken fuer das Live-Produkt. Branding, Voice und Tonalitaet → `BRAND.md`. Pricing-Mechanik → `PRODUCT.md` § 3.
 
-**Stand:** 2026-05-14 — `[SKELETON]` Growth-Mechaniken inhaltlich entschieden, Channel-Strategie (§ 2) ausgebaut.
+**Stand:** 2026-05-15 — `[PHASE-1-LOCKED]` Block-D-Entscheidungen abgeschlossen: Newcomer-Rabatt statt Gruendertarif, Multiplikator-Programm verschoben in Post-Live, Newsletter Phase 2, Erstziel-Sparten + Region fixiert, Channel-Mix bleibt Inhaber-Entscheidung.
 
 ---
 
@@ -179,16 +179,30 @@ Dauerhafte Feed-Inhalte die das Produkt erklaeren — nicht Lifecycle-Posts. For
 
 **Status:** Vor Launch zu bauen. Memory `project_sales_agent_idea.md` skizziert einen automatisierten Sales-Lead-Agenten als Live-Phase-2-Option (~15–25 EUR/Monat) — Pre-Launch wird manuell gestartet, Agent kommt erst wenn Channel validiert ist.
 
-**Zielgruppen-Definition:**
-- **Geografische + branchen-konzentrierte Cluster** (siehe § 1 Grundlage)
-- **Cluster-Dimensionierung:** je 30–50 Kontakte in 3 Sparten × 1–2 Regionen ergibt 90–300 Erstkontakte — kalibriert auf 4–6 Wochen Pre-Launch + Monat 1 Outreach-Volumen
-- **Auswahl-Kriterien fuer Sparten:**
-  - Innerhalb der 14 Berufsgruppen (siehe `project_berufsgruppen_refactor.md`)
-  - Inhaber hat persoenlichen Zugang oder Branchen-Erfahrung (Trust-Faktor)
-  - Recipe in der Sparte technisch fertig (Live-Demo-Story verfuegbar)
-  - Hohe AT-KMU-Dichte in einer adressbaren Region
-- **Konkrete Sparten + Regionen:** wird vom Inhaber vor Launch festgelegt — Auswahl-Kriterien oben anwenden
-- **Ausschluss-Kriterien:** Unternehmen mit < 1 Jahr Aktivitaet (Insolvenz-Risiko), Unternehmen mit professioneller Bestands-Site (kein Bedarf), Konzernkunden (Off-Brand B2B-Standard)
+**Zielgruppen-Definition `[ENTSCHIEDEN 2026-05-15]`:**
+
+**Erstziel-Sparten (3) — recipe-aligned:**
+1. **Handwerk (Tischler/Schreiner)** — Anker-Recipe #1 `recipes/handwerk-werkstatt.md` als Demo-Story
+2. **Beratung (Unternehmensberater)** — Anker-Recipe #13 `recipes/beratung-modern.md` als Demo-Story
+3. **Recht (Rechtsanwalt)** — Anker-Recipe #11 `recipes/anwalt-klassisch.md` als Demo-Story (Compliance-Vorzeige-Case fuer reglementierte Berufe)
+
+**Begruendung:** Direkt mit den 3 Anker-Mockups als Demo-Asset unterlegt. Jede Cold-Mail kann auf eine fertige Live-Demo verlinken. Drei sehr unterschiedliche Marktsegmente (Handwerk-volkstuemlich / Beratung-modern / Anwalt-konservativ) = A/B/C-Signal welche Sparte schneller convertet. Friseur/Gastro/Gesundheit folgen in Welle 2, sobald Recipes spec'd + Mockups vorhanden.
+
+**Erstziel-Region: Wien + Niederoesterreich**
+- Heimmarkt-Zugang (Wagner IT-Solutions sitzt 1220 Wien)
+- Hoechste AT-KMU-Dichte
+- Persoenliche Anreise zu Demo-Terminen <90 Min moeglich
+- Spaetere Wellen: Graz / Linz / Salzburg
+
+**Cluster-Dimensionierung:** je 30–50 Kontakte × 3 Sparten = 90–150 personalisierte Touchpoints in 4–6 Wochen Pre-Launch + Monat 1.
+
+**Auswahl-Kriterien fuer Lead-Selektion innerhalb der Sparten:**
+- Inhaber hat persoenlichen Zugang oder Branchen-Erfahrung (Trust-Faktor)
+- Bestehende Web-Praesenz veraltet, fehlend oder unprofessionell
+- 1–20 Mitarbeiter (KMU-Sweetspot)
+- Aktiv seit >1 Jahr (Insolvenz-Filter)
+
+**Ausschluss-Kriterien:** Unternehmen mit < 1 Jahr Aktivitaet (Insolvenz-Risiko), Unternehmen mit professioneller Bestands-Site (kein Bedarf), Konzernkunden (Off-Brand B2B-Standard).
 
 **Lead-Quellen (in absteigender Datenqualitaet):**
 1. **WKO-Firmenverzeichnis** (firmen.wko.at) — Pflichtmitgliedschaft → 100 % Branche-Abdeckung, oeffentlich zugaenglich, AT-Standard. Adresse + Branche + oft Telefon/Mail.
@@ -324,34 +338,22 @@ Themen die KMU googeln: "Impressum-Pflicht Oesterreich 2026", "DSGVO fuer Friseu
 
 ---
 
-### 2.6a Newsletter — Entscheidung Phase 1
+### 2.6a Newsletter — Entscheidung Phase 1 `[ENTSCHIEDEN 2026-05-15 — Phase 2]`
 
-**Frage:** Soll instantpage.at einen Newsletter haben?
+**Entscheidung:** **Newsletter erst in Phase 2** (Trigger: 50+ zahlende Kunden). `news@instantpage.at` als Mail-Adresse reservieren, aber keinen Opt-in-Block auf Marketing-Site Phase 1 einbauen.
 
-**Status:** `news@instantpage.at` ist als Mail-Adresse vorgesehen (`docs/email-templates/README.md` Master-Konvention), Inhaltliche Entscheidung steht aus.
+**Begruendung:**
+- Pre-Launch hat keine Content-Substanz (keine Erstkunden-Cases, keine Branchen-Anekdoten) — Newsletter-Start ohne Inhalt wirkt schwach
+- Phase 1 hat 3 priorisierte Channels (LinkedIn, Direktansprache, SEO) — Newsletter waere vierter parallel-laufender Channel mit zusaetzlichem Compliance-Aufwand (Double-Opt-in, Resend-Setup)
+- AT-KMU sind eher LinkedIn-Pull als Newsletter-Push aufgeschlossen
 
-**Trade-off:**
+**Re-Eval-Trigger:** Nach 50+ Erstkunden im Live-Betrieb. Dann Substanz da fuer editoriellen Content (echte Case Studies, Branchen-Insights aus Mandanten-Beziehungen).
 
-| Option | Pro | Contra |
-|---|---|---|
-| **A: Newsletter Phase 1 (Pre-Launch + Day-1)** | Owned-Audience, baut langfristig, KMU-vertraut (Jimdo/Webflow-Pattern), Multiplikator-fuer SEO-Content | Content-Aufwand 1–2 h/Issue, separate Opt-in-Pflicht (§ 109 TKG + DSGVO Art. 6/7), Resend-Sub-Setup, kein Pre-Launch-ROI |
-| **B: Newsletter Phase 2 (Trigger ab 50+ Kunden)** | Content-Substanz aus Erstkunden-Erfahrungen, Aufwand erst wenn Audience da, kein Vorab-Investment | Verpasstes Pre-Launch-Lead-Sammeln, spaeter Audience-Aufbau langsamer |
-| **C: Kein Newsletter** | Fokus auf direktere Kanaele (Direktansprache, LinkedIn, Multiplikator), keine Compliance-Pflege | Verzicht auf Owned-Audience, Abhaengigkeit von externen Channels |
-
-**Default-Entscheidungs-Grundlage:**
-- Phase 1 hat 3 priorisierte Channels (LinkedIn, Direktansprache, SEO — § 2.1–2.3) — Newsletter waere vierter parallel-laufender Channel
-- AT-KMU-Zielgruppe ist eher LinkedIn-Pull als Newsletter-Push aufgeschlossen (Beobachtungsbasis aus Konkurrent-Analyse Wise/DeepL/Cabin)
-- Wenn dann: Newsletter sollte editorial-substantiell sein, nicht „neue Features"-Updates — siehe Plain/Ghost-Vibe in `_design/benchmarks-plattform.md`
-
-**Wenn Option B/C gewaehlt:** `news@instantpage.at` als Mail-Adresse trotzdem reservieren, Opt-in-Sektion auf Marketing-Site auch nicht zwingend. Wenn Option B gewaehlt: 6–9 Monate nach Live-Schaltung re-evaluieren.
-
-**Compliance bei Option A oder B:**
+**Compliance-Vormerk fuer Phase 2:**
 - Separates Opt-in im Marketing-Site-Footer + Bestell-Form (Pflicht-Checkbox NICHT vor-angekreuzt)
 - DSGVO Art. 7-konformer Double-Opt-in (Bestaetigungs-Mail)
 - Abmelde-Link in jeder Newsletter-Mail (technisch: List-Unsubscribe-Header)
 - Lifecycle-Mails bleiben trotzdem vertragsbestandteil (siehe `email-templates/README.md`)
-
-**Inhaber-Entscheidung:** `[ENTSCHEIDUNGS-OFFEN 2026-05-14]`.
 
 ---
 
@@ -385,17 +387,30 @@ Der Inhaber entscheidet die konkrete Zeit-Verteilung pro Phase selbst. Diese Sek
 
 Fuenf Mechaniken in Reihenfolge der Live-Prioritaet. Details + Aufwand pro Mechanik.
 
-### 3.1 First-100-Gruendertarif `[LAUNCH-Day-1]`
+### 3.1 Newcomer-Rabatt `[LAUNCH-Day-1, ENTSCHIEDEN 2026-05-15]`
 
-**Mechanik:** Die ersten 100 zahlenden Kunden erhalten einen **Lifetime-Preis fixiert** (z. B. Starter 14 EUR/Monat dauerhaft, Professional 25 EUR/Monat dauerhaft — entspricht dem aktuellen Sub-Plan-Preis aus Memory `feedback_preise_plan.md`).
+**Mechanik:** Pauschaler **20 % Rabatt auf das erste Jahr** fuer alle Neukunden, die waehrend der Aktionsphase signen. Kein Cap, kein Lifetime-Lock. Inhaber entscheidet selbst, wann die Aktion ausgeschaltet wird (z. B. nach Markterprobung 6-12 Monate oder bei stabiler Auslastung).
 
-**Warum:** Schafft Pre-Launch-Hype, Loyalitaets-Anker, signalisiert Vertrauen in eigenes Produkt. In AT-Startup-Szene etablierter Hebel. Kunde-1-Geschichte spaeter als Marketing-Asset.
+**Konkret:**
+- Starter 16 EUR/Mo → 12,80 EUR/Mo erstes Jahr
+- Professional 29 EUR/Mo → 23,20 EUR/Mo erstes Jahr
+- Ab Jahr 2: regulaerer Preis ohne Migration noetig
 
-**Aufwand:** Null Tech-Bau — ein Stripe-Coupon `LIFETIME-FOUNDER` mit Cap=100. Landing-Page-Banner + Pricing-Hinweis.
+**Warum:** Senkt Einstiegs-Friktion in der Markterprobung, ohne Margen permanent zu belasten. Konsistent mit AT-Vertrauensprodukt-Vibe — sachlich („Willkommens-Rabatt") statt Hype-Marketing („nur noch 50 Plaetze"). Keine FOMO-Mechanik, kein Knappheits-Theater.
 
-**Risiko:** Bei stark steigenden Preisen spaeter ist die Marge auf die 100 ggf. duenn — Cap = 100 ist akzeptabler Verlust fuer den Trust-Hebel.
+**Verworfen wurden** (User-Entscheidung 2026-05-15):
+- Lifetime First-50/First-100 — permanente Margen-Belastung, FOMO-Vibe kollidiert mit Brand
+- Charter-Member-Programm (Preis-Garantie + Setup-Calls) — zu komplex fuer Phase 1, Setup-Call-Aufwand zu hoch
+- Befristete Beta-Promo mit Countdown — Countdown-Pattern kollidiert mit § 5 Anti-Pop-Up-Logik
 
-**Decision-Trigger:** Vor Live-Launch final festlegen, ob 100 oder 50 (kleinerer Cap = mehr Knappheits-Signal, weniger Lifetime-Belastung).
+**Aufwand:** Null Tech-Bau — Stripe-Coupon `NEWCOMER-20-FIRSTYEAR` mit `duration: repeating, duration_in_months: 12`. Banner auf Pricing-Page + Marketing-Site-Hero („Aktion: 20 % im ersten Jahr"). Coupon manuell deaktivierbar im Stripe-Dashboard.
+
+**Compliance-Hinweise:**
+- UWG-konform: Rabatt klar als zeitlich befristet + auf erstes Jahr beschraenkt kommuniziert
+- Keine versteckten Bedingungen, kein Auto-Renewal-Trick (Stripe deaktiviert Rabatt automatisch nach 12 Mo)
+- AGB-Klausel: „Aktionsrabatte gelten fuer den im Bestellzeitraum gueltigen Zeitraum und enden danach automatisch ohne Kuendigung"
+
+**Decision-Trigger:** Inhaber-Entscheidung wann Aktion endet. Bezugspunkt: Markterprobung abgeschlossen, ausreichend Validierungs-Signale oder stabiler Cashflow ohne Anreiz-Mechanik erreichbar.
 
 ---
 
@@ -411,27 +426,27 @@ Fuenf Mechaniken in Reihenfolge der Live-Prioritaet. Details + Aufwand pro Mecha
 
 ---
 
-### 3.3 Multiplikator-Partnerprogramm `[Monat 2–6]`
+### 3.3 Multiplikator-Partnerprogramm `[VERSCHOBEN — Post-Live-Entscheidung 2026-05-15]`
 
-**Mechanik:** Steuerberater, IT-Berater, lokale Marketing-Agenturen, Branchen-Influencer bekommen einen **Partner-Code** und verdienen z. B. **20 % Lifetime-Provision** auf alle ueber sie vermittelten zahlenden Kunden — solange der Kunde aktiv ist.
+**Stand:** Konzept-Skizze. **Detaillierte Mechanik (Provisions-Modell, Tracking, Co-Marketing-Variante) wird erst entschieden, sobald das Live-Produkt steht und Erstkunden-Validierung vorhanden ist.** Heute keine Spec, kein Stripe-Setup, kein Bau-Aufwand.
 
-**Warum:** Ein Steuerberater hat 20–50 KMU-Mandanten, seine Empfehlung wiegt fuer einen Handwerker mehr als die vom Nachbarn. Effizienter Hebel als Endkunden-Referral. AT-spezifisch: enge Steuerberater-Mandant-Beziehung, hohe Vertrauensbasis.
+**Warum verschoben:**
+- Vor Erstkunden-Validierung ist unklar, welche Multiplikator-Typen wirklich empfehlen (Steuerberater? Marketing-Agenturen? IT-Berater?) — Programm-Design haengt davon ab
+- WTBG § 70 (Steuerberater-Werbeverbot) und UWG-Implikationen fuer Cash-Provisionen brauchen Anwalts-Audit — wird im Anwalts-Termin (Block A) mitbehandelt
+- AT-Vertrauensprodukt-Brand vertraegt klassische Affiliate-Mechanik nur eingeschraenkt — Co-Marketing-Variante (Endkunden-Rabatt + Partner-Co-Branding statt Cash-Provision) ist Alternative die separat zu pruefen ist
 
-**Aufwand (Self-Built):** ~3–4 Tage Bau (Partner-Tabelle, Code-Tracking, Stripe-Webhook fuer Provision, Partner-Dashboard im Portal). Alternativ Drittanbieter wie Rewardful (~49 USD/Monat, Stripe-natives Tool) — aber externer Datenfluss kollidiert mit AT-Vertrauensprodukt-Vibe und LIVE-COMPLIANCE.md-Subprozessor-Logik. Self-Built bevorzugt.
+**Grundsaetzliche Mechanik-Ideen** (nicht entschieden, Post-Live):
+- A) Klassische Provision (Einmal oder gestaffelt) an Partner
+- B) Co-Marketing: Partner-Code gibt Endkunden Rabatt, Partner bekommt Co-Branding + Sichtbarkeit ohne Cash
+- C) Hybrid: kleine Anerkennungs-Provision + Co-Branding-Mehrwert
 
-**Provisions-Modell — Optionen:**
-- 20 % Lifetime (klassisch, hoher Anreiz fuer Multiplikator, Marge-Belastung)
-- 20 % erstes Jahr, danach 10 % (Marge-schonender, marktueblich)
-- 1 Monat gratis pro vermitteltem Kunden + 50 EUR Einmalbonus ab 5 Vermittlungen (gemischt)
+**Re-Eval-Trigger:** Nach 30-50 Erstkunden im Live-Betrieb, sobald klar ist wer empfiehlt und welche Mechanik zur Beziehung passt. Frueher nicht sinnvoll — ohne Empirie nur Spekulation.
 
-**Decision-Trigger:** Vor Programm-Launch festlegen. Empfehlung: 20 % erstes Jahr + 10 % Folgejahre.
-
-**Anti-Missbrauch:**
-- Partner muss verifiziertes Unternehmen sein (UID-Check, kein Privatkunde)
-- Self-Referral blockieren (Partner kann sich nicht selbst vermitteln)
-- Cooldown: Provision erst ab 1. bezahlter Rechnung des Kunden, nicht bei Signup
-
-**Steuer-Aspekt:** Partner stellt Provisions-Rechnung an Wagner IT-Solutions e.U. — kein Eigenrechnungs-Modell. Steuerberater-Termin vor Programm-Launch klaeren (siehe Memory `project_pre_setup_status.md`).
+**Anti-Missbrauch + Steuer-Aspekte** (Erinnerungsposten fuer spaeter):
+- UID-Check fuer Partner (kein Privatkunde)
+- Self-Referral-Block
+- Cooldown ab 1. bezahlter Rechnung
+- Steuerberater-Termin zur Provisions-Rechnung-Mechanik (vor Programm-Launch)
 
 ---
 
@@ -477,12 +492,12 @@ Fuenf Mechaniken in Reihenfolge der Live-Prioritaet. Details + Aufwand pro Mecha
 
 | Phase | Aktion | Aufwand | Hebel |
 |---|---|---|---|
-| **Pre-Launch** | First-100-Gruendertarif (§ 3.1) anlegen | 1h | Pre-Launch-Hype |
+| **Pre-Launch** | Newcomer-Rabatt (§ 3.1) Stripe-Coupon anlegen | 1h | Einstiegs-Friktion senken |
 | **Live-Day-1** | Kunden-Showcase (§ 3.2) auf Landing + Portal-Opt-in | 1 Tag (in DESIGN-VISION integriert) | Trust |
 | **Monat 1–2** | Erste 10–30 Kunden gewinnen ueber Direktansprache + LinkedIn | hoch | Foundation |
-| **Monat 2–6** | Multiplikator-Partnerprogramm (§ 3.3) bauen + launchen | 3–4 Tage Bau + laufender Vertrieb | mittelfristiger Wachstumsmotor |
-| **Monat 6+** | WKO/Innungs-Kooperationen (§ 3.4) anvisieren | hoch Vertrieb, null Tech | institutioneller Trust |
-| **Phase 2** | Branchen-Bundle (§ 3.5) + Endkunden-Referral (§ 3.6) | je 1–4 Tage Bau | Marge-Optimierung |
+| **Monat 3–6** | Erstkunden-Empirie sammeln, Multiplikator-Programm (§ 3.3) **konzipieren** anhand realer Empfehler-Typen | gering (Beobachtung) | Datenbasis fuer Programm-Design |
+| **Monat 6+** | Multiplikator-Programm bauen + launchen (Mechanik nach Empirie), WKO/Innungs-Kooperationen (§ 3.4) anvisieren | je nach Modell 1-4 Tage + Vertrieb | institutioneller Trust + Multiplikator-Skalierung |
+| **Phase 2** | Newsletter (§ 2.6a), Branchen-Bundle (§ 3.5), Endkunden-Referral (§ 3.6) | je 1–4 Tage Bau | Owned-Audience + Marge-Optimierung |
 
 ---
 
@@ -493,7 +508,9 @@ Nicht tun — kollidiert mit Brand + AT-Vertrauensprodukt-Positionierung:
 - **"Verdiene EUR X pro Lead"-Banner** auf Landing — MLM-Vibe, untergraebt Trust
 - **Cashback an Endkunden** statt Plan-Rabatt/Guthaben — wirkt nach Affiliate-Spam
 - **Aggressive Pop-Ups / Exit-Intents** im Marketing-Funnel — kollidiert mit "sachlich-zugewandt" Tonalitaet (`BRAND.md` § 5.4)
-- **Provision verstecken** beim Multiplikator-Programm — DSGVO-/UWG-relevant, Transparenz-Pflicht
+- **FOMO-Countdown / Knappheits-Theater** — "nur noch 12 Plaetze!", animierte Timer auf Pricing-Page. Newcomer-Rabatt § 3.1 wird ohne Countdown kommuniziert
+- **Lifetime-Preis-Lock-Programme** — permanente Margen-Belastung, lockt preis-getriebene statt produktfit-getriebene Kunden (Entscheidung 2026-05-15)
+- **Provision verstecken** beim Multiplikator-Programm (sobald aktiv) — DSGVO-/UWG-relevant, Transparenz-Pflicht
 - **Berufsgruppen-Listen in Hauptbotschaften** (siehe Memory `feedback_marketing_zielgruppe_inklusiv.md`)
 - **"Pflichtangaben" / "rechtliche Pflichten"** als Marketing-Hebel (siehe Memory `feedback_keine_rechtliche_pflichten.md`)
 
@@ -522,10 +539,23 @@ Nicht tun — kollidiert mit Brand + AT-Vertrauensprodukt-Positionierung:
 
 ## Offene Entscheidungen vor Live-Launch
 
-- First-100 vs. First-50 Cap fuer Gruendertarif (§ 3.1)
-- Multiplikator-Provisions-Modell — 20 % Lifetime vs. 20 % + 10 % Folgejahre (§ 3.3)
-- Channel-Mix (§ 2.6) — konkrete Zeit-Verteilung pro Phase wird vom Inhaber gesetzt, Entscheidungs-Grundlage steht
-- Erstziel-Sparten + Regionen (§ 2.2) — vom Inhaber vor Launch festzulegen anhand Auswahl-Kriterien
-- Newsletter Ja/Nein (§ 2.6a) — 3 Optionen mit Trade-offs spec'd, Inhaber-Entscheidung
-- Marketing-Skills Evaluation (Memory `project_marketing_skills_eval.md`) — vor Marketing-Funnel-Bau noch durchfuehren
+**Block-D-Decisions abgeschlossen 2026-05-15:**
+
+| Entscheidung | Status | Verweis |
+|---|---|---|
+| Gruendertarif-Mechanik | ✅ Newcomer-Rabatt 20 % erstes Jahr, kein Cap, Inhaber-getriggertes Ende | § 3.1 |
+| Multiplikator-Provisions-Modell | ✅ Verschoben in Post-Live (nach 30-50 Erstkunden-Empirie) | § 3.3 |
+| Newsletter | ✅ Phase 2 (Trigger 50+ Kunden) | § 2.6a |
+| Erstziel-Sparten | ✅ Handwerk + Beratung + Recht (recipe-aligned) | § 2.2 |
+| Erstziel-Region | ✅ Wien + Niederoesterreich | § 2.2 |
+| Marketing-Skills Eval | ✅ Geprueft 2026-05-15 — bedingt relevant fuer Marketing-Site-Bau im Live (npm-Pack `coreyhaines31/marketingskills`), nicht fuer Kunden-Plattform | Memory `project_marketing_skills_eval.md` |
+
+**Bewusst offen — Inhaber-Entscheidung waehrend Bau:**
+
+- **Channel-Mix Zeit-Verteilung** (§ 2.6) — Inhaber setzt pro Phase selbst, Trade-off-Achsen + Phasen-Charakteristika stehen als Entscheidungs-Grundlage
+
+**Pre-Live noch zu erledigen:**
+
 - Cold-Outreach-Mail-Template (§ 2.2) im Anwalts-Briefing (Block A) auf § 7 UWG + DSGVO Art. 14 pruefen lassen
+- Sales-Templates `docs/sales-templates/` schreiben (je 1 Mail-Template pro Erstziel-Sparte: Tischler / Berater / Anwalt) — Bau in Live-Phase 0 oder bei Bedarf vorgezogen
+- Pitch-Outline / Demo-Skript fuer Erst-Gespraeche — Bau in Live-Phase 0

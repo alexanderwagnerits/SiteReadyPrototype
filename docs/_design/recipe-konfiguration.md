@@ -16,7 +16,7 @@
 >
 > **Frueher `[TBD]` (geschlossen 2026-05-15):** Recipes #6 Wirtshaus, #22 Berghuette, #29 Agrar-Klassisch, #31 Agrar-Erlebnis-Premium hatten `.stil-rustikal` (verworfen 2026-05-11). Die Stil-Klasse + Akzentfarbe sind jetzt als Defaults gesetzt: #6 `.stil-klassisch` + Burgund · #22 `.stil-klassisch` + Old-Gold · #29 `.stil-klassisch` + Tannengruen · #31 `.stil-klassisch` + Burgund. User kann pro Kunde ueberschreiben.
 >
-> **Recipe-Detail-Specs vorhanden:** [`recipes/handwerk-werkstatt.md`](recipes/handwerk-werkstatt.md) (Tischler-Pichler), [`recipes/beratung-modern.md`](recipes/beratung-modern.md) (Karner-Strategie), [`recipes/anwalt-klassisch.md`](recipes/anwalt-klassisch.md) (Lechner-Rechtsanwaelte).
+> **Recipe-Detail-Specs vorhanden:** [`recipes/handwerk-werkstatt.md`](recipes/handwerk-werkstatt.md) (Tischler-Pichler), [`recipes/beratung-modern.md`](recipes/beratung-modern.md) (Karner-Strategie), [`recipes/anwalt-klassisch.md`](recipes/anwalt-klassisch.md) (Lechner-Rechtsanwaelte), [`recipes/gesundheit-praxis.md`](recipes/gesundheit-praxis.md) (Dr.-Bauer-Ordination, `[PHASE 4 SPEC]` ohne Mockup).
 >
 > **Sub-Varianten-Tabelle unten** (§ Sub-Varianten) verwendet „Theme" noch als **Look-Familie-Bezeichner** (Klassisch/Edel/Rustikal als Wording-Convention), nicht mehr als v2-Theme-Architektur. Bedeutet konkret: Stil-Klasse + Akzentfarbe-Tupel.
 
@@ -472,6 +472,8 @@ Inkl. Hausarzt, Zahnarzt, Tierarzt, Klinik, Physiotherapie, Heilmasseur, Hebamme
 - Termin-Anfrage-Form **standardmaessig ohne Anliegen-Feld** rendern (Pflicht, nicht Opt-out)
 - KI-System-Prompt um defensive Regeln (§ 10.2 LIVE-COMPLIANCE) + erweiterte Verbots-Wording-Liste oben erweitern
 - Impressum-Generator: Kammer-Mitgliedschaft + Diplom-/Facharzt-Bezeichnung als Pflichtfelder (siehe LIVE-COMPLIANCE § 9 Branchen-Pflichtfeld-Matrix)
+
+→ Recipe-Detail-Spec Praxis #9: [`recipes/gesundheit-praxis.md`](recipes/gesundheit-praxis.md) (Dr.-Bauer-Ordination, Bisamberg)
 
 ---
 

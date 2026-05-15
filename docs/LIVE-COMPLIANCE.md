@@ -375,6 +375,8 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 (4) Bei Zahlungsverzug ist der Anbieter berechtigt, die Leistungserbringung auszusetzen und die betroffene Website nach vorheriger Mahnung zu sperren. Verzugszinsen nach § 456 UGB.
 
+(5) Aktionsrabatte (z. B. Markterprobungs-Rabatt für Neukunden) gelten ausschließlich für den im Bestellzeitpunkt aktiv beworbenen und vertraglich vereinbarten Zeitraum. Nach Ablauf dieses Zeitraums gilt automatisch der reguläre Tarif gemäß Plan, ohne dass es einer gesonderten Kündigung oder Mitteilung bedarf. Der Anbieter behält sich vor, Aktionsrabatte für Neukunden jederzeit einzustellen; Bestandskunden behalten den bei Vertragsabschluss vereinbarten Rabatt für dessen Restlaufzeit.
+
 ### § 10 Vertragslaufzeit, Kündigung
 
 (1) Der Vertrag wird auf unbestimmte Zeit geschlossen. Eine Mindestvertragslaufzeit besteht nicht; die Kündigungsmöglichkeiten richten sich nach der gewählten Abrechnungsperiode (Abs. 2).

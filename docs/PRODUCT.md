@@ -133,6 +133,8 @@ Zum Live-Start ausschließlich Österreich. Erweiterung auf DACH und EU ist für
 
 **Business-Plan:** bleibt Teaser bis Pro-Plan-Daten zeigen, welche Features fehlen. Trigger für Definition: ≥10 Pro-Kunden mit konkreten Wünschen ODER vertraglicher Druck (größerer Kunde fragt nach SLA / Multi-User / Custom-Branding).
 
+**Markterprobungs-Aktion (Newcomer-Rabatt):** 20 % Rabatt auf das erste Jahr für Neukunden, die während der Aktionsphase signen. Laufzeit Inhaber-getriggert. Stripe-Coupon `NEWCOMER-20-FIRSTYEAR`, `duration: repeating, duration_in_months: 12`. Mechanik und Brand-Begründung in [`MARKETING.md`](MARKETING.md) § 3.1. AGB-Klausel-Hinweis in `LIVE-COMPLIANCE.md` § 5 (§ 9 Abs 5).
+
 > ⚠️ **Pricing-Inkonsistenz Beta vs Spec** — `[TODO Phase 0]`: Beta-Code `create-checkout.js:20` verwendet `1800 cents = 18 €/Mo` und `18360 cents = 183.60 €/Jahr (15,30 €/Mo)`. PRODUCT.md spezifiziert 16 €/14 €. Im Live-Bau mit den hier dokumentierten Werten synchronisieren.
 
 ---

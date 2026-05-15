@@ -1,8 +1,8 @@
 # Anwalts-Briefing — instantpage.at Tier-1-Foundation
 
-> **Vorlage fuer den Erstkontakt + Erstgespraech mit dem IT-Anwalt.** Ziel ist eine einmalige Foundation aus AGB, AVV, Datenschutzerklaerung und Plattform-Impressum, die ueber einen Auto-Generator pro Kunde befuellt werden kann.
+> **Vorlage fuer den Erstkontakt + Erstgespraech mit dem IT-Anwalt.** Ziel ist eine einmalige Foundation aus AGB, AVV, Datenschutzerklaerung und Plattform-Impressum (Pakete 1-4) sowie ein Marketing-Audit (Paket 5: Cold-Outreach + Aktionsrabatt).
 >
-> **Status:** `[DRAFT 2026-05-15]` — wartet auf Anwalts-Auswahl + Erstgespraech.
+> **Status:** `[DRAFT 2026-05-15]` — wartet auf Anwalts-Auswahl + Erstgespraech. Paket 5 ergaenzt nach MARKETING-Block-D-Lock 2026-05-15.
 
 ---
 
@@ -38,7 +38,7 @@ Vollstaendige Strategie-Entscheidungs-Tabelle: `docs/LIVE-COMPLIANCE.md` § 1.
 
 ---
 
-## 2. Liefer-Pakete (4 Pakete)
+## 2. Liefer-Pakete (5 Pakete)
 
 ### Paket 1 — AGB (B2B-only)
 
@@ -97,6 +97,19 @@ Rechtliche **Pruefung** des bestehenden Drafts auf:
 - **Gewerbeberechtigungs-Wortlaut** korrekt — exakte Bezeichnung „Dienstleistung in der automatischen Datenverarbeitung und Informationstechnik" (UBIT)
 - **ODR-Hinweis** (Online-Streitbeilegung) — Klausel-Wirksamkeit trotz B2B-Klarstellung
 - **Aufsichtsbehoerde** — Bezirkshauptmannschaft / Magistrat Wien als zustaendige Stelle
+
+### Paket 5 — Marketing-Audit (Cold-Outreach + Aktionsrabatt)
+
+**Status:** Cold-Outreach-Strategie + Newcomer-Rabatt 20 % erstes Jahr spec'd (`docs/MARKETING.md` § 2.2 + § 3.1). Mail-Templates pro Erstziel-Sparte (Tischler, Berater, Anwalt) noch zu draften vor Live (`docs/sales-templates/`).
+
+**Auftrag an den Anwalt:**
+
+- **Cold-Outreach-Mail-Template-Pruefung** auf:
+  - **§ 7 UWG** — B2B-Cold-Outreach an oeffentlich gelistete WKO-Mitglieder zulaessig? Footer-Anforderungen (Absender-Identifikation, 1-Klick-Opt-out via `opt-out@instantpage.at`)?
+  - **DSGVO Art. 14** — Informations-Pflicht bei nicht direkt erhobenen Daten (WKO-Firmenverzeichnis / FirmenABC als Quelle)
+  - **Maximal-Touchpoint-Zahl** vor Pause — 3 Touches in 14 Tagen zulaessig?
+- **Newcomer-Rabatt-Klausel** (AGB § 9 Abs 5 in `LIVE-COMPLIANCE.md` § 5) — UWG-konform formuliert? Transparenz bezueglich Aktionsende ausreichend?
+- **Kein** Multiplikator-Provisions-Programm im Paket — Mechanik ist Post-Live-Entscheidung (`MARKETING.md` § 3.3). Wenn Phase 2 anstehen, separater Audit-Punkt (WTBG § 70 fuer Steuerberater-Empfehler).
 
 ---
 

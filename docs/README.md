@@ -23,6 +23,7 @@
 | [email-templates/](email-templates/) | 10 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover) | Spec-fertig |
 | [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |
 | [business-case-kosten.md](business-case-kosten.md) | Wirtschaftlichkeit, Margen | aktuell (April) |
+| [anwalt-briefing.md](anwalt-briefing.md) | **Anwalts-Briefing** — Vorlage fuer Erstkontakt + Erstgespraech (4 Liefer-Pakete: AGB/AVV/DSE/Impressum, Lieferformat, Strategische Fragen) | DRAFT 2026-05-15 |
 | [_archive/](_archive/) | Snapshots überholter Dokumente | Referenz |
 
 ---

@@ -35,7 +35,7 @@
 | **Stack-Modernisierung** | CRA + Vanilla-JS war Prototyp-tauglich, ist für zahlendes Live-Produkt nicht angemessen. TypeScript + Next.js + Drizzle + Zod + shadcn/ui ist Industry-Standard 2026. |
 | **AT-only Phase 1** | Keine OSS, keine Stripe-Tax-Komplikationen, kein FAGG-Detail-Schutz. DACH/EU als Phase 2. |
 | **B2B-only mit Selbsterklaerung (UID optional)** | Vereinfacht FAGG, vereinfacht USt, klare Zielgruppe. Kleinunternehmer/Soloselbstaendige/Vereine ohne UID nicht ausschliessen. Siehe `LIVE-COMPLIANCE.md` § 1 #1 (revidiert 2026-05-04). |
-| **Compliance Tier-Modell** | 7-Schichten-Strategie (Anwalt-Foundation + externe Tools + saubere Architektur + compliance-reviewer Subagent + CHANGELOG + jaehrliches Anwalts-Review + Cyber-Versicherung). Anwalt einmalig fuer AGB/AVV/DSE-Setup PFLICHT vor Stripe-Live. Siehe `docs/LIVE-COMPLIANCE.md` "Compliance-Strategie". |
+| **Compliance Tier-Modell** | 7-Schichten-Strategie (Anwalt-Foundation + RechtGPT-Recherche + externe Tools + saubere Architektur + compliance-reviewer Subagent + CHANGELOG + jaehrliches Anwalts-Review + Versicherung). **Pivot 2026-05-15: Eigenarbeit-First** — Tier 1 (Anwalt) wird **nicht** vor Live-Schaltung beauftragt, sondern Trigger-basiert nach Live-Bau aktiviert (siehe `LIVE-COMPLIANCE.md` § 18). Tier 1.5 RechtGPT (~€30) als Hauptstuetze fuer Eigenarbeit. Siehe `docs/LIVE-COMPLIANCE.md` "Compliance-Strategie". |
 | **Recipe-System v1** als Kundenseiten-Architektur | Branchen-spezifische Looks statt generischer Stile. 12 Berufsgruppen × 1–4 Looks = 24 Recipes. Siehe `docs/RECIPE-SYSTEM.md`. |
 | **Beta = nur Look & Feel** | Keine Live-Features im Prototyp nachbauen. (Memory `feedback_beta_fokus.md`) |
 | **Live-Repo früh anlegen** (Woche 3, nicht Woche 13) | Stack ist komplett anders (TS+Next.js statt JS+CRA). Mockups + Design-Vision-Spec ab Block B direkt im Ziel-Repo entstehen lassen. Spart Umzug + nur ein Ort für Live-Arbeit. |
@@ -405,7 +405,7 @@ Erweitert gegenüber Prototyp um:
 - CI/CD + Lighthouse-CI + Wrangler.toml + Staging-Environment
 - Doku aus Prototyp-Repo komplett kopieren + alle `siteready.at` → `instantpage.at`
 - Memory-System neu aufsetzen unter `~/.claude/projects/<neuer-pfad>/memory/` (Memory-Übernahme nach § 6)
-- **Compliance-Strategie Tier-Modell aktivieren** — Anwalt-Termin fixiert (Tier 1, Pflicht vor Stripe-Live), Klaro + Cookiebot-Reserve (Tier 2 Tools), `config/legal-values.ts` als Single-Source-of-Truth angelegt (Tier 3). Siehe `LIVE-COMPLIANCE.md` "Compliance-Strategie".
+- **Compliance-Strategie Tier-Modell aktivieren** — `config/legal-values.ts` als Single-Source-of-Truth angelegt (Tier 3), Klaro + Cookiebot-Reserve (Tier 2 Tools), RechtGPT-Subscription starten (Tier 1.5, ~€30) fuer Bau-Phase. **Tier 1 Anwalt nicht vor Live** (Pivot 2026-05-15 — Trigger-basiert nach Live-Bau, siehe `LIVE-COMPLIANCE.md` § 18). Siehe `LIVE-COMPLIANCE.md` "Compliance-Strategie".
 - **`compliance-reviewer` Subagent** in `.claude/agents/` anlegen — Spec aus Memory `project_dev_subagents_idea.md` rauskopieren + auf finale Next.js-Pfade anpassen. Reihenfolge: nach Repo-Init, vor erster Feature-Implementierung. Schuetzt ab da jeden Diff (Tier 4).
 - MCP + weitere Skills + Subagents (siehe Abschnitt 7)
 - **Ab jetzt:** Prototyp-Repo = Wartungs-Modus, gesamter Live-Bau drüben

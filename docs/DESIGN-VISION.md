@@ -103,7 +103,7 @@ KI-generierte Inhalte muessen gekennzeichnet werden — unabhaengig welche Optio
 - Generierte Bilder (falls Phase 2): IPTC/EXIF-Markierung
 - Auto-Engine-Entscheidungen (Recipe-Wahl, Hero-Variante): NICHT kennzeichnungspflichtig (das ist Software-Auto-Engine, nicht KI-Content im AI-Act-Sinn)
 
-**Anwalts-Audit-Punkt (Block A):** AI-Act-Auslegung für Quality-Check + Kunden-Freigabe als Ausschlussgrund pruefen lassen (`LIVE-COMPLIANCE.md` § 13 „Auslegung — Quality-Check + Kunden-Freigabe als Ausschlussgrund").
+**AI-Act-Selbstcheck (Pivot 2026-05-15):** Auslegung Quality-Check + Kunden-Freigabe als Ausschlussgrund per RechtGPT verifizieren (`LIVE-COMPLIANCE.md` § 13 „Auslegung — Quality-Check + Kunden-Freigabe als Ausschlussgrund"). Anwalts-Audit Trigger-basiert spaeter — AI-Act-Stichtag 2.8.2026 ist einer der Trigger (`LIVE-COMPLIANCE.md` § 18).
 
 #### 3.2 Magic-Moment-Konzept (unabhaengige Sub-Frage)
 

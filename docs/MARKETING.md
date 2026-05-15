@@ -232,7 +232,7 @@ Maximal **3 Touchpoints** vor Pause — vermeidet Spam-Wahrnehmung, kollidiert n
 - **B2B-Cold-Outreach** ist in AT unter § 174 UGB + § 7 UWG zulaessig **wenn:** Bezug zu Geschaeftsverkehr klar, Bedarf-Annahme begruendet (Branche relevant), keine wiederholte Belaestigung nach Ablehnung.
 - **Mail-Adressen** aus oeffentlichen Quellen (WKO/FirmenABC) sind als Pflichtangaben des Empfaengers veroeffentlicht (§ 5 ECG) — Verarbeitung fuer berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) ist gedeckt, **wenn** Anbieter-Identifikation, Opt-out und Loeschung gewaehrt werden.
 - Footer in jeder Cold-Mail: Absender-Identifikation (Wagner IT-Solutions e.U., FN, 1220 Wien) + 1-Klick-Opt-out (`opt-out@instantpage.at` oder Link).
-- **Anwalts-Audit-Punkt (Block A):** Cold-Outreach-Mail-Template auf § 7 UWG + DSGVO Art. 14 (Information-Pflicht bei nicht direkt erhobenen Daten) pruefen.
+- **UWG-Selbstcheck (Pivot 2026-05-15):** Cold-Outreach-Mail-Template selbst gegen § 7 UWG + DSGVO Art. 14 (Information-Pflicht bei nicht direkt erhobenen Daten) pruefen — Anwalts-Audit Trigger-basiert spaeter (`LIVE-COMPLIANCE.md` § 18). Bei Unsicherheit RechtGPT-Recherche nutzen (`LIVE-COMPLIANCE.md` Tier 1.5).
 
 **Aufwand:**
 - Pre-Launch Lead-Listen + Templates: ~2–3 Tage Eigenarbeit
@@ -264,7 +264,7 @@ Jede Kunden-Subdomain (mit Showcase-Opt-in § 3.2) wird auf der Marketing-Site a
 
 **C) Compliance-Themen-Blog (optional, Phase 2)**
 
-Themen die KMU googeln: "Impressum-Pflicht Oesterreich 2026", "DSGVO fuer Friseure", "Cookie-Banner vermeiden". Jeweils 1500–2500 Worte, defensiv formuliert (keine Rechtsberatung — siehe `LIVE-COMPLIANCE.md` § 10), mit Soft-CTA zur Plattform. Erst **nach** Anwalts-Briefing (Block A), wenn Compliance-Linie steht.
+Themen die KMU googeln: "Impressum-Pflicht Oesterreich 2026", "DSGVO fuer Friseure", "Cookie-Banner vermeiden". Jeweils 1500–2500 Worte, defensiv formuliert (keine Rechtsberatung — siehe `LIVE-COMPLIANCE.md` § 10), mit Soft-CTA zur Plattform. Erst **nach** stabiler Eigenarbeits-Compliance-Linie (Pivot 2026-05-15 — Anwalt Trigger-basiert spaeter).
 
 **On-Page-SEO-Basics (Plattform-Site):**
 - Schema.org `Organization` + `SoftwareApplication` (Marketing-Site) + `LocalBusiness` (jede Kunden-Subdomain — schon im Beta-Template)
@@ -432,7 +432,7 @@ Fuenf Mechaniken in Reihenfolge der Live-Prioritaet. Details + Aufwand pro Mecha
 
 **Warum verschoben:**
 - Vor Erstkunden-Validierung ist unklar, welche Multiplikator-Typen wirklich empfehlen (Steuerberater? Marketing-Agenturen? IT-Berater?) — Programm-Design haengt davon ab
-- WTBG § 70 (Steuerberater-Werbeverbot) und UWG-Implikationen fuer Cash-Provisionen brauchen Anwalts-Audit — wird im Anwalts-Termin (Block A) mitbehandelt
+- WTBG § 70 (Steuerberater-Werbeverbot) und UWG-Implikationen fuer Cash-Provisionen brauchen Anwalts-Audit — Trigger-basiert (Pivot 2026-05-15), spaetestens beim Multiplikator-Programm-Launch
 - AT-Vertrauensprodukt-Brand vertraegt klassische Affiliate-Mechanik nur eingeschraenkt — Co-Marketing-Variante (Endkunden-Rabatt + Partner-Co-Branding statt Cash-Provision) ist Alternative die separat zu pruefen ist
 
 **Grundsaetzliche Mechanik-Ideen** (nicht entschieden, Post-Live):
@@ -556,6 +556,6 @@ Nicht tun — kollidiert mit Brand + AT-Vertrauensprodukt-Positionierung:
 
 **Pre-Live noch zu erledigen:**
 
-- Cold-Outreach-Mail-Template (§ 2.2) im Anwalts-Briefing (Block A) auf § 7 UWG + DSGVO Art. 14 pruefen lassen
+- Cold-Outreach-Mail-Template (§ 2.2) UWG-Selbstcheck (§ 7 UWG + DSGVO Art. 14) — Anwalts-Audit Trigger-basiert spaeter (`LIVE-COMPLIANCE.md` § 18)
 - Sales-Templates `docs/sales-templates/` schreiben (je 1 Mail-Template pro Erstziel-Sparte: Tischler / Berater / Anwalt) — Bau in Live-Phase 0 oder bei Bedarf vorgezogen
 - Pitch-Outline / Demo-Skript fuer Erst-Gespraeche — Bau in Live-Phase 0

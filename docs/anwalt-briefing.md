@@ -2,7 +2,11 @@
 
 > **Vorlage fuer den Erstkontakt + Erstgespraech mit dem IT-Anwalt.** Ziel ist eine einmalige Foundation aus AGB, AVV, Datenschutzerklaerung und Plattform-Impressum (Pakete 1-4) sowie ein Marketing-Audit (Paket 5: Cold-Outreach + Aktionsrabatt).
 >
-> **Status:** `[DRAFT 2026-05-15]` — wartet auf Anwalts-Auswahl + Erstgespraech. Paket 5 ergaenzt nach MARKETING-Block-D-Lock 2026-05-15.
+> **Status:** `[GEPARKT 2026-05-15 — wiederverwendbar bei Trigger]`
+>
+> **Pivot 2026-05-15:** Eigenarbeit-First-Strategie aktiviert. Alle Rechtstexte werden zunaechst selbst auf Basis von WKO-Vorlagen + RechtGPT-Recherche ausformuliert. Anwalts-Termin wird **nicht** vor Live-Schaltung beauftragt, sondern Trigger-basiert (`LIVE-COMPLIANCE.md` § 18) — typischer erster Trigger: 30 zahlende Kunden, erste Abmahnung, Heilberufe-Kunde mit Klausel-Luecke oder AI-Act-Stichtag 2.8.2026.
+>
+> **Dieses Briefing ist dann sofort einsetzbar** — Inhalt unveraendert wiederverwendbar, nur Granularitaets-Entscheidung (Welche Pakete? Pauschal- oder Stunden-Honorar?) ist zum Trigger-Zeitpunkt neu zu treffen anhand der dann real bekannten Risiken (z.B. nach erster Abmahnung nur Punkt-Audit der betroffenen Klausel).
 
 ---
 

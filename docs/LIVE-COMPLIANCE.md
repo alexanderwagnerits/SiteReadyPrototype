@@ -2,11 +2,13 @@
 
 > **Living Document.** Sammelt alle rechts- und compliance-relevanten Themen für den Übergang Prototyp → Live-Produkt. Nicht alle Punkte müssen sofort entschieden werden — offene Stellen sind als `[OFFEN]` markiert.
 
-**Stand:** 2026-05-04
+**Stand:** 2026-05-15
 **Markt:** AT-only (Phase 1)
 **Brand:** instantpage.at (Brand) — Wagner IT-Solutions e.U. (Rechtsträger, FN 609574h)
 **Strategie:** siehe „Compliance-Strategie" unten
 **Verbindung zu Memory:** ergänzt `project_production_refactor.md` + `project_recipe_system_v1.md` + `project_unternehmensdaten.md`. Diese Datei ist Quelle der Wahrheit für Rechtstexte und Compliance-Prozesse.
+
+> **Strategie-Pivot 2026-05-15 — Eigenarbeit-First.** Anwalts-Foundation (Tier 1) wird **NICHT** vor Live-Schaltung beauftragt. Stattdessen: alle Rechtstexte (AGB, AVV, DSE, Impressum) auf Basis von WKO-Mustern + RechtGPT-Recherche (Tier 1.5) **selbst** ausformulieren. Anwalt wird Trigger-basiert nach Live-Bau hinzugezogen (§ 18) — typischer erster Trigger: 30 zahlende Kunden oder erste Abmahnung. Risiko-Reality-Check siehe § 18 „Wo das Restrisiko bei ohne Anwalt liegt" + Versicherungs-Backstop (§ 3). Anwalts-Briefing (`docs/anwalt-briefing.md`) bleibt geparkt und wiederverwendbar.
 
 ---
 
@@ -16,8 +18,8 @@
 
 | Tier | Was | Kosten | Funktion | Status |
 |---|---|---|---|---|
-| **1 — Anwalts-Foundation** (Pflicht Live-Day-1) | Anwalt einmalig fuer AGB/AVV/DSE/Impressum-Generator-Setup. Nicht selbst texten — Abmahnrisiko zu hoch. | €800–2.000 einmalig | Rechtsgrundlage haltbar — ohne das ist alles andere Sandburg | `[WARTET auf Beauftragung]` — Termin vor Stripe-Live planen, Briefing-Doku als Block A der Roadmap |
-| **1.5 — RechtGPT Bau-Recherche** (Bau-Phase, optional) | KI-Rechtsrecherche auf RIS/Findok/EUR-Lex (rechtgpt.at, Starter-Plan). Nur waehrend Bau-Phase. Workflow: Claude sammelt Recherche-Anfragen in [`docs/_archive/rechtgpt-queries.md`](_archive/rechtgpt-queries.md), User paste in RechtGPT Web-UI, Antworten zurueck in `rechtgpt-answers.md`. Nach Bau kuendigen. **Nicht via API** (Enterprise ab 5 Lizenzen, Solo nicht tragbar). | ~€30 einmalig (1 Monat Starter) | Drafts mit AT-Quellenangaben unterlegen → Anwalts-Review (Tier 1) wird kuerzer + billiger | `[GEPLANT]` Phase B |
+| **1 — Anwalts-Foundation** (Trigger-basiert, **nicht** Live-Day-1) | Anwalt-Audit der selbst erstellten Rechtstexte (AGB/AVV/DSE/Impressum) bei Erreichen der Trigger-Schwellen in § 18. Erst-Trigger meist 30 zahlende Kunden oder Abmahnung. | €0 bis Trigger, dann 0–2.000 € pro Trigger | Trigger-basierte Absicherung statt Vorab-Pflicht. Briefing in `docs/anwalt-briefing.md` ist wiederverwendbar wenn Trigger ausloest. | `[GEPARKT 2026-05-15]` — Eigenarbeits-Pivot, siehe Pivot-Note oben |
+| **1.5 — RechtGPT Bau-Recherche** (Bau-Phase, **wichtig** wegen Eigenarbeits-Pivot) | KI-Rechtsrecherche auf RIS/Findok/EUR-Lex (rechtgpt.at, Starter-Plan). Workflow: Claude sammelt Recherche-Anfragen in [`docs/_archive/rechtgpt-queries.md`](_archive/rechtgpt-queries.md), User paste in RechtGPT Web-UI, Antworten zurueck in `rechtgpt-answers.md`. Nach Bau kuendigen. **Nicht via API** (Enterprise ab 5 Lizenzen, Solo nicht tragbar). | ~€30 einmalig (1 Monat Starter) | Eigenarbeits-AGB/DSE/AVV mit AT-Quellenangaben absichern. Wichtiger seit Tier 1 verschoben. | `[GEPLANT]` Phase B Live-Bau |
 | **2 — Externe Spezialtools** | **Cookiebot** (~9 €/Mo) ODER **Klaro** (Open Source, €0) fuer Cookie-Consent. **Stripe** fuer PCI-DSS. **Resend** mit SPF/DKIM/DMARC fuer Mail-Reputation. **Cloudflare Turnstile** fuer Bot-Schutz statt reCAPTCHA. | €0–9/Mo | gelöste Spezialprobleme nicht selbst lösen | `[ENTSCHIEDEN]` Klaro fuer Plattform, Turnstile fuer Kundenseiten |
 | **3 — Saubere Architektur** (Single-Source-of-Truth) | `config/legal-values.ts` als zentrale Quelle fuer rechtsrelevante Werte (TRIAL_DAYS, REACTIVATION_DAYS, CANCELLATION-Frist, etc.). AGB/DSE/Mail-Templates rendern via Variablen daraus. Code importiert aus Config. ESLint-Rule blockt Magic Numbers in legal-Kontext. | 0 (Eigenarbeit Live-Bau) | Drift verhindern by design — eine Aenderung propagiert automatisch | `[GEPLANT]` Phase 0 Live-Bau |
 | **4 — `compliance-reviewer` Subagent** | Watchdog in jeder Dev-Session. Triggert automatisch bei Aenderungen an: Templates, legal.js, package.json (neue Deps), API-Calls zu externen Services, UI-Texten, DB-Schema, AGB/AVV/Mail-Templates. Cross-Reference-Check zwischen Code/Doku/Templates. Pattern-Detection fuer verbotene Begriffe und Magic Numbers. Cascade-Warnung. | 0 (~30 Min Setup) | catches dev-mistakes vor Commit, erinnert an Sync-Arbeit | `[GEPLANT]` Spec in `project_dev_subagents_idea.md`, Setup im Live-Bau |
@@ -30,7 +32,7 @@
 - iubenda/eRecht24 fuer Auto-Generated DSE (~€10–30/Mo) — Alternative zu Anwalts-Generator falls jaehrlicher Anwalt zu teuer wird
 - Pen-Test (~€2–5k) — bei sensitiven Branchen (Heilberufe-Skalierung) relevant
 
-**Kernprinzip:** Tier 1 + 6 (Anwalt) ist die echte Sicherheit. Tier 3 + 4 (Architektur + Subagent) verhindert Drift im Alltag. Tier 2 (Tools) loest Spezialprobleme. Tier 5 (CHANGELOG) ist die Bruecke zwischen Daily-Dev und Anwalts-Review. Tier 7 (Versicherung) ist der finanzielle Backstop.
+**Kernprinzip nach Pivot 2026-05-15:** Tier 1.5 (RechtGPT) + saubere Eigenarbeit auf WKO-Vorlagen-Basis sind die primaere Absicherung **bis** Trigger-Schwellen erreicht sind. Tier 3 + 4 (Architektur + Subagent) verhindert Drift im Alltag. Tier 2 (Tools) loest Spezialprobleme. Tier 5 (CHANGELOG) ist die Audit-Bruecke fuer den moeglichen spaeteren Tier-1-Audit. Tier 7 (Versicherung 173 €/Jahr) ist der finanzielle Backstop fuer das verbleibende Rechtstexte-Restrisiko (siehe § 18). Tier 1 + 6 (Anwalt) werden **nach** Live-Bau Trigger-basiert aktiviert.
 
 ---
 
@@ -1183,6 +1185,13 @@ In TypeScript/Next.js-Rebuild integrieren. Memory: `project_production_refactor.
 - Stripe Live-Verifikation abschließen (1–2 Wochen Lead-Time einplanen)
 - Beta-Tester informieren + Beta-Daten löschen
 - Markenanmeldung (sofern frei)
+- **Eigenarbeits-Lock** (Pivot 2026-05-15) — finale Selbst-Pruefung statt Anwalts-Audit:
+  - AGB-Skeleton § 5 final lesen (5 Eigenklauseln auf Plausibilitaet)
+  - DSE-Volltext gegen 10 Pflicht-Bausteine § 8 abgleichen
+  - AVV-Anhaenge I/III/IV gegen tatsaechlich genutzte Subprozessoren § 4 abgleichen
+  - Impressum-Volltext gegen § 7 + § 24 MedienG + § 5 ECG + § 14 UGB abgleichen
+  - Cold-Outreach-Mail-Template UWG-Selbstcheck (§ 7 UWG + DSGVO Art. 14) — siehe MARKETING.md § 2.2
+  - **KEIN Anwalts-Termin** vor Live-Schaltung — Trigger-basiert spaeter (§ 18)
 
 ### Phase D — Erste Wochen Live (laufend)
 
@@ -1195,7 +1204,7 @@ In TypeScript/Next.js-Rebuild integrieren. Memory: `project_production_refactor.
 
 ## 18. Anwalt-Trigger-Schwellen
 
-> Bei einem dieser Ereignisse: Anwalt-Stunden buchen. Realistisch in den ersten 12 Monaten 0–2.000 € statt 9.450 € upfront.
+> `[AKTIVIERT durch Pivot 2026-05-15]` — Tier-1-Anwalts-Foundation wird Trigger-basiert nach Live-Bau hinzugezogen, **nicht** vor Live-Day-1. Bei einem dieser Ereignisse: Anwalt-Stunden buchen. Realistisch in den ersten 12 Monaten 0–2.000 € statt 9.450 € upfront. Briefing-Doku `docs/anwalt-briefing.md` ist bei Trigger-Aktivierung wiederverwendbar.
 
 | Trigger | Aktion | Geschätzte Anwalts-Stunden |
 |---|---|---|

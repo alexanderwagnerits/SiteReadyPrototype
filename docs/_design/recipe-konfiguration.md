@@ -14,7 +14,7 @@
 > - Section-Reihenfolgen pro Recipe (unten dokumentiert)
 > - Berufsgruppen-Routing
 >
-> **`[TBD]` Zeilen:** Recipes #6, #22, #29, #31 hatten `.stil-rustikal` — neue Stil-Klasse + Akzentfarbe wird bei jeweiligem Recipe-Bau entschieden. Recipe #1 ist gebaut (siehe Referenz-Mockup-Sub-Tabelle unten).
+> **Frueher `[TBD]` (geschlossen 2026-05-15):** Recipes #6 Wirtshaus, #22 Berghuette, #29 Agrar-Klassisch, #31 Agrar-Erlebnis-Premium hatten `.stil-rustikal` (verworfen 2026-05-11). Die Stil-Klasse + Akzentfarbe sind jetzt als Defaults gesetzt: #6 `.stil-klassisch` + Burgund · #22 `.stil-klassisch` + Old-Gold · #29 `.stil-klassisch` + Tannengruen · #31 `.stil-klassisch` + Burgund. User kann pro Kunde ueberschreiben.
 >
 > **Recipe-Detail-Specs vorhanden:** [`recipes/handwerk-werkstatt.md`](recipes/handwerk-werkstatt.md) (Tischler-Pichler), [`recipes/beratung-modern.md`](recipes/beratung-modern.md) (Karner-Strategie), [`recipes/anwalt-klassisch.md`](recipes/anwalt-klassisch.md) (Lechner-Rechtsanwaelte).
 >
@@ -111,7 +111,7 @@ Drei Recipes wurden als Mockups gebaut + validieren die Beta-Klassen-Linie als k
 | 3 | Handwerk | Premium | `.stil-elegant` | standard | Old-Gold `#a87b3f` | alternierend | quote |
 | 4 | **Bau & Sanierung** | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
 | 5 | Bau & Sanierung | Premium | `.stil-elegant` | standard | Anthrazit `#292524` | alternierend | quote |
-| 6 | **Gastro** | Wirtshaus | `[TBD]` (vermutl. `.stil-klassisch` + warmer Akzent) | standard | Burgund `#7a3528` | alternierend | quote |
+| 6 | **Gastro** | Wirtshaus | `.stil-klassisch` + warmer Akzent | standard | Burgund `#7a3528` | alternierend | quote |
 | 7 | Gastro | Casual | `.stil-klassisch` | kompakt | Terra `#c87356` | kompakt | cards |
 | 8 | Gastro | Editorial | `.stil-elegant` | ausführlich | Petrol `#5b9bb3` | alternierend | quote |
 | 9 | **Gesundheit** | Praxis | `.stil-klassisch` | kompakt | Medical-Blue `#0e7490` | kompakt | quote |
@@ -127,16 +127,16 @@ Drei Recipes wurden als Mockups gebaut + validieren die Beta-Klassen-Linie als k
 | 19 | **Bildung** | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
 | 20 | Bildung | Modern | `.stil-modern` | standard | Tannengrün `#2d5d3f` | alternierend | cards |
 | 21 | **Tourismus** | Klassisch | `.stil-klassisch` | ausführlich | Petrol `#5b9bb3` | alternierend | quote |
-| 22 | Tourismus | Rustikal | `[TBD]` (vermutl. `.stil-klassisch` + Old-Gold) | ausführlich | Old-Gold `#a08456` | alternierend | quote |
+| 22 | Tourismus | Rustikal | `.stil-klassisch` + Old-Gold | ausführlich | Old-Gold `#a08456` | alternierend | quote |
 | 23 | Tourismus | Editorial-Premium | `.stil-elegant` | ausführlich | Old-Gold `#a87b3f` | alternierend | quote |
 | 24 | **Handel** | Klassisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | cards |
 | 25 | Handel | Boutique-Premium | `.stil-elegant` | standard | Old-Gold `#a87b3f` | alternierend | quote |
 | 26 | **Mobilität** | Funktional | `.stil-klassisch` | kompakt | Navy `#0f2b5b` | kompakt | liste |
 | 27 | Mobilität | Werkstatt | `.stil-klassisch` | standard | Stahlblau `#3b5d7a` | alternierend | cards |
 | 28 | Mobilität | Showroom | `.stil-elegant` | standard | Anthrazit `#1a1a1a` | alternierend | quote |
-| 29 | **Agrar** | Klassisch | `[TBD]` (vermutl. `.stil-klassisch` + Tannengrün) | standard | Tannengrün `#3a4f2c` | alternierend | quote |
+| 29 | **Agrar** | Klassisch | `.stil-klassisch` + Tannengrün | standard | Tannengrün `#3a4f2c` | alternierend | quote |
 | 30 | Agrar | Editorial-Premium | `.stil-elegant` | standard | Anthrazit-Gold `#665338` | alternierend | quote |
-| 31 | Agrar | Erlebnis-Premium | `[TBD]` (vermutl. `.stil-elegant` oder `.stil-klassisch` + Burgund) | standard | Burgund `#7a3528` | alternierend | cards |
+| 31 | Agrar | Erlebnis-Premium | `.stil-klassisch` + Burgund | standard | Burgund `#7a3528` | alternierend | cards |
 | 32 | **Industrie** | Technisch | `.stil-klassisch` | standard | Navy `#0f2b5b` | alternierend | liste |
 | 33 | Industrie | Tech-Modern | `.stil-modern` | standard | Petrol `#0e6b85` | alternierend | cards |
 | 34 | **Kosmetik** | Modern | `.stil-modern` | standard | Korallenrot `#e76e7e` | alternierend | cards |
@@ -398,7 +398,7 @@ Hero (große Action-Foto, Trust-Bar: Verband/Zertifikate)
 
 ## Branchen-Inhalts-Defaults (pro Berufsgruppe)
 
-> **Stand:** 2026-05-12
+> **Stand:** 2026-05-15 (Gesundheit auf `[GEFUELLT, Compliance strikt]` erweitert · TBDs fuer Recipes #6 Wirtshaus / #22 Berghuette / #29 + #31 Agrar geschlossen — alle Berufsgruppen jetzt `[GEFUELLT]`)
 > **Zweck:** Branchen-typische Trust-Pills, Leistungen-Themen, FAQ-Themen, Compliance-Hinweise als **Default-Hypothesen** fuer KI-Generierung und Onboarding-Vorausfuellung. Looks (Werkstatt/Modern/Premium/Klassisch/Editorial) variieren primaer Stil-Klasse + Akzentfarbe, nicht Inhalts-Themen — daher Defaults branchen-weit definiert.
 >
 > **Wichtig:** Defaults sind **Hypothesen aus Branchen-Wissen**, NICHT validierte Echtdaten. Bei Recipe-Bau gegen echte Kunden-Realitaet pruefen. Phase-Polish (siehe `references/<berufsgruppe>.md` Reference-Library) ergaenzt Defaults mit echten Branchen-Recherchen.
@@ -437,7 +437,7 @@ Inkl. Baumeister, Maurer, Dachdecker, Trockenbau, Stuckateur, Fliesenleger.
 
 ---
 
-### Gastro (#6, #7, #8) `[GEFUELLT, #6 TBD]`
+### Gastro (#6, #7, #8) `[GEFUELLT]`
 
 Inkl. Restaurant, Wirtshaus, Beisl, Heuriger, Café, Pizzeria, Bistro, Bar, Hauben-Restaurant.
 
@@ -448,23 +448,30 @@ Inkl. Restaurant, Wirtshaus, Beisl, Heuriger, Café, Pizzeria, Bistro, Bar, Haub
 | **FAQ-Themen** (5) | Reservierung erforderlich? · Kinderwagen-/Hund-freundlich? · Vegane/glutenfreie Optionen? · Parkmöglichkeiten? · Veranstaltungs-Buchungen? |
 | **Compliance** | Speisekarte-Allergen-Kennzeichnung (LMSVG) · Preise inkl. USt · Öffnungszeiten + Ruhetag-Angabe · Reservierungsbedingungen (AGB-light) |
 | **Branchen-Funktionen** | `speisekarte: true` (Items in Leistungen mit Preis-Spalte), `reservierung: true` (Form-Variante mit Datum + Personen) |
-| **Look-Differenzierung** | Wirtshaus #6 `[TBD]` (warm-traditionell, `.stil-klassisch` + Burgund vermutlich) · Casual #7 (`.stil-klassisch` + Terra, alltagsfreundlich) · Editorial #8 (`.stil-elegant` + Petrol, hauben-niveau) |
+| **Look-Differenzierung** | Wirtshaus #6 (warm-traditionell, `.stil-klassisch` + Burgund) · Casual #7 (`.stil-klassisch` + Terra, alltagsfreundlich) · Editorial #8 (`.stil-elegant` + Petrol, hauben-niveau) |
 
 ---
 
-### Gesundheit (#9, #10) `[BRANCHEN-REVIEW-PFLICHT]`
+### Gesundheit (#9, #10) `[GEFUELLT, Compliance strikt]`
 
-Inkl. Hausarzt, Zahnarzt, Praxis, Klinik, Tierarzt, Physiotherapie, Massage, Osteopathie, Heilpraktiker, Logopäde.
+Inkl. Hausarzt, Zahnarzt, Tierarzt, Klinik, Physiotherapie, Heilmasseur, Hebamme, Osteopathie, Heilpraktiker, Logopaedie, Ergotherapie. **Apotheker NICHT in dieser Berufsgruppe** — Apothekengesetz + AMG = eigenes Werberecht, gehoert in „Handel" oder eigenes Recipe.
 
 | Default-Slot | Werte |
 |---|---|
-| **Trust-Pills** (Hero, 2-3) | Aerztekammer-Mitgliedschaft · Kassenvertrag (oder Wahlarzt) · Fachausbildung-Zertifikate · Praxis seit Jahr |
-| **Leistungen-Themen** (6) | Kernleistungen (branchenspezifisch — z.B. Allgemeinmedizin: Vorsorge / Akutbehandlung / Impfungen / Wundversorgung / Mutter-Kind-Pass / Kassen-Routine) |
-| **FAQ-Themen** (5) | Kassenvertrag / Wahlarzt-Status? · Termin online buchbar? · Akut-Termine ohne Voranmeldung? · Hausbesuche? · Online-Beratung? |
-| **Compliance** (strikt) | Aerztegesetz § 53 — **kein reklamehafte Werbung**, kein Vergleich mit anderen Aerzten, **keine Heilversprechen** · Diplom/Facharztanerkennung-Pflichtangabe · Aerztekammer-Mitgliedschaft Pflicht (Impressum) · Quality-Score-Schwelle ≥ 85 |
-| **Verbotene Wording** (KI-Prompt-Filter) | „beste Praxis", „garantierte Heilung", „100 %ige Erfolgsquote", „bester Arzt", Vergleiche mit anderen Aerzten |
-| **Branchen-Funktionen** | `termin_anfrage: true` (Form mit Wunschtermin-Picker), `sprechzeiten: true` (Wochentage-Liste in Kontakt), evtl. `notdienst_banner` bei Praxis-Notdienst |
+| **Trust-Pills** (Hero, 2-3) | Kammer-/Berufsverband-Mitgliedschaft (zustaendig: Aerztekammer / Oesterreichische Zahnaerztekammer / Physio Austria / Hebammengremium / Oest. Berufsverband HMG / Tieraerztekammer) · Kassenvertrag oder Wahlarzt-Status · Diplom-/Facharzt-/Spezialisierungs-Anerkennung · Praxis seit Jahr · Region |
+| **Leistungen-Themen** (6) | Sub-bezeichnungs-spezifisch — z.B. Allgemeinmedizin: Vorsorge / Akut / Impfungen / Wundversorgung / Mutter-Kind / Kassen-Routine · Zahnarzt: Vorsorge / Konservierende Therapie / Prophylaxe / Implantologie / Aesthetik / Notdienst · Physio: Manuelle Therapie / Heilgymnastik / Lymphdrainage / Bobath / Hausbesuch / Sportphysio · Tierarzt: Vorsorge / OP / Roentgen/US / Heimtier / Pferd-/Nutztier-Praxis / Notdienst |
+| **FAQ-Themen** (5) | Kassenvertrag oder Wahlarzt? · Termin online buchbar? · Akut-Termine ohne Voranmeldung? · Hausbesuche / mobile Behandlung? · Online-Beratung / Video-Konsultation? |
+| **Compliance** (strikt) | **Aerztegesetz § 53** (Aerzte) — kein reklamehaft-marktschreierisch, **keine Heilversprechen**, keine Vergleiche mit anderen Aerzten · **Zahnaerztegesetz § 35** sinngemaess · **MTD-Gesetz** (Physio / Ergo / Logo / Diaetologie) · **HebG** (Hebammen) · **HMG** (Heilmasseur) · **TAerzteG** (Tieraerzte) · Diplom-/Facharzt-Anerkennung **Pflichtangabe Impressum** · Kammer-Mitgliedschaft Pflicht (Impressum) · **Disclaimer-Pflicht im Portal vor Vertragsabschluss** (LIVE-COMPLIANCE § 10.4: „Diese Plattform ist eine Marketing-Website...") · **AGB § 6 Abs 4 verweist auf reglementierte Berufe** · Quality-Score-Schwelle ≥ 85 |
+| **Verbotene Wording** (KI-Prompt-Filter, ergaenzt § 10.2 LIVE-COMPLIANCE) | „beste Praxis" / „bester Arzt" / „Spitzen-..." / „Nr. 1" / „die besten" / „garantierte Heilung" / „100 % Erfolgsquote" / „garantierter Erfolg" / Heilversprechen jeder Art / vergleichende Aussagen gegen andere Aerzte oder Therapeuten / Werbung mit Patienten-Befunden ohne Einwilligung / „klinisch erwiesen" ohne Quelle |
+| **Branchen-Funktionen** | `termin_anfrage_no_anliegen: true` (**Pflicht** — Form OHNE Anliegen-Feld, sonst Art 9 DSGVO Gesundheitsdaten ausserhalb AVV-Scope, LIVE-COMPLIANCE § 10.3) · `sprechzeiten: true` (Wochentage-Liste in Kontakt) · `notdienst_banner` optional bei Notdienst-Anbietern (Zahnaerzte-Wochenend-Notdienst, Tieraerzte-Notdienst, Hausarzt-Bereitschaft) |
+| **Sub-Bezeichnung → Recipe-Look** | Praxis #9 (klinisch-vertrauensvoll, Medical-Blue): Hausarzt, Zahnarzt, Tierarzt, Klinik · Therapie #10 (beruhigend-warm, Warm-Sage): Physio, Heilmasseur, Hebamme, Osteopathie, Logopaedie, Ergotherapie, Heilpraktiker |
 | **Look-Differenzierung** | Praxis #9 (`.stil-klassisch` + Medical-Blue, klinisch-vertrauensvoll) · Therapie #10 (`.stil-klassisch` + Warm-Sage, beruhigend, weicher) |
+
+**Onboarding-Konsequenzen (Live-Bau):**
+- Berufsgruppe-Erkennung „Gesundheit" → **Disclaimer-Modal** vor Vertragsabschluss anzeigen (LIVE-COMPLIANCE § 10.4, Wording dort)
+- Termin-Anfrage-Form **standardmaessig ohne Anliegen-Feld** rendern (Pflicht, nicht Opt-out)
+- KI-System-Prompt um defensive Regeln (§ 10.2 LIVE-COMPLIANCE) + erweiterte Verbots-Wording-Liste oben erweitern
+- Impressum-Generator: Kammer-Mitgliedschaft + Diplom-/Facharzt-Bezeichnung als Pflichtfelder (siehe LIVE-COMPLIANCE § 9 Branchen-Pflichtfeld-Matrix)
 
 ---
 
@@ -544,7 +551,7 @@ Inkl. Schule, Akademie, Kurszentrum, Sprachschule, Privat-Schule, Online-Kurse, 
 
 ---
 
-### Tourismus (#21, #22, #23) `[GEFUELLT, #22 TBD]`
+### Tourismus (#21, #22, #23) `[GEFUELLT]`
 
 Inkl. Hotel, Pension, Stadthotel, Berghütte, Almhütte, Frühstückspension, Apartments.
 
@@ -555,7 +562,7 @@ Inkl. Hotel, Pension, Stadthotel, Berghütte, Almhütte, Frühstückspension, Ap
 | **FAQ-Themen** (5) | Anreise / Parken? · Haustier-Politik? · Kinder-freundlich? · Stornobedingungen? · Familien-/Gruppenraten? |
 | **Compliance** | Tourismusabgabe-Anmeldung pro Bundesland · WKO Hotelfachgruppe-Mitgliedschaft. AGB für Buchungen Pflicht. Anzahlung/Stornoregeln transparent. |
 | **Branchen-Funktionen** | `buchung: true` (Form mit Anreise/Abreise/Personen), evtl. Booking-Engine-Embed (separater Live-Block) |
-| **Look-Differenzierung** | Klassisch #21 (Stadt-Hotel, `.stil-klassisch` + Petrol) · Rustikal #22 `[TBD]` (Berghütte, `.stil-klassisch` + Old-Gold vermutlich) · Editorial-Premium #23 (`.stil-elegant` + Old-Gold, magazin-luxus) |
+| **Look-Differenzierung** | Klassisch #21 (Stadt-Hotel, `.stil-klassisch` + Petrol) · Rustikal #22 (Berghütte, `.stil-klassisch` + Old-Gold, warm-alpin) · Editorial-Premium #23 (`.stil-elegant` + Old-Gold, magazin-luxus) |
 
 ---
 
@@ -587,7 +594,7 @@ Inkl. Spedition, Taxi, Logistik, KFZ-Werkstatt, Autohaus, Reifenhandel, Karosser
 
 ---
 
-### Agrar (#29, #30, #31) `[GEFUELLT, #29 + #31 TBD]`
+### Agrar (#29, #30, #31) `[GEFUELLT]`
 
 Inkl. Bauernhof, Landwirtschaft, Hofladen, Bio-Hof, Imker, Käserei, Weingut, Winzer, Edelbrennerei.
 
@@ -597,7 +604,7 @@ Inkl. Bauernhof, Landwirtschaft, Hofladen, Bio-Hof, Imker, Käserei, Weingut, Wi
 | **Leistungen-Themen** (6) | Hauptprodukt-Sortiment (z.B. Wein: Weiß / Rot / Sekt / Edelbrand / Veranstaltungen / Verkostung) · Hofladen-Öffnungszeiten · Heuriger/Buschenschank (Wein) · Lieferung / Versand · Genusserlebnisse |
 | **FAQ-Themen** (5) | Hofladen-Oeffnungszeiten? · Versand / Liefergebiet? · Verkostung-Buchung? · Bio-/Demeter-Standards? · Hofführungen? |
 | **Compliance** | LMSVG (Lebensmittel-Kennzeichnung) · Bio-Zertifizierung-Audit · Heuriger-Konzession (Wein) · Weinetiketten-Pflichtangaben |
-| **Look-Differenzierung** | Klassisch #29 `[TBD]` (`.stil-klassisch` + Tannengruen vermutlich, Hofladen-traditional) · Editorial-Premium #30 (Wein/Brennerei, `.stil-elegant` + Anthrazit-Gold) · Erlebnis-Premium #31 `[TBD]` (Bio-Hof Premium, `.stil-klassisch` + Burgund vermutlich) |
+| **Look-Differenzierung** | Klassisch #29 (`.stil-klassisch` + Tannengruen, Hofladen-traditional) · Editorial-Premium #30 (Wein/Brennerei, `.stil-elegant` + Anthrazit-Gold) · Erlebnis-Premium #31 (Bio-Hof Premium, `.stil-klassisch` + Burgund, erdig-warm) |
 
 ---
 

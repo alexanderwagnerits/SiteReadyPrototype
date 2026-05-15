@@ -290,8 +290,10 @@ await fetch(`https://api.stripe.com/v1/customers/${customerId}`, {
 ## 3.1 Trial-Setup
 
 - **Trial-Dauer:** 7 Tage (wie Prototyp)
+- **Trial-Start:** ab **Freigabe-Klick / Live-Schaltung** (nicht ab Generation oder Bestellung). Während Vorschau-Modus läuft Trial noch nicht.
 - **Trial-Modus:** Vollzugriff inkl. Live-Schaltung der Subdomain — Wow-Moment ist Verkaufsargument
-- **Karten-Belastung:** Stripe `trial_period_days` — Karte wird erst nach Trial-Ende belastet
+- **Live-Schaltungs-Workflow** (LIVE-COMPLIANCE § 1 #24): Nach Generation Kundenwahl zwischen „Jetzt live schalten" (Default) und „Erst prüfen" (Vorschau-Modus). Beide Wege erfordern Akzept-Checkbox + Freigabe-Klick.
+- **Karten-Belastung:** Stripe `trial_period_days` — Karte wird erst nach Trial-Ende belastet. Bei Vorschau-Modus wird `trial_period_days` erst ab Freigabe-Klick gestartet (Stripe-Webhook `customer.subscription.trial_will_end` triggert dann erst).
 - **Trial-Reminder:** T-3 Tage vor Trial-Ende (Lifecycle-Mail, OPERATIONS § 2)
 
 ## 3.2 Cancellation + Datenretention
@@ -377,8 +379,13 @@ Status-Maschine **nach** abgeschlossenem Kauf (Pre-Purchase-Fragebogen siehe § 
 
 1. `status = paid` → Onboarding-Screen: Fotos hochladen (optional), "Website erstellen" klicken
 2. `status = in_arbeit` → Build-Screen mit "Status aktualisieren"
-3. `status = live` → Portal mit allen Tabs freigeschaltet
-4. Pflicht-Bestätigungen beim ersten Login: AGB + AVV ([`LIVE-COMPLIANCE.md` § 1](LIVE-COMPLIANCE.md#1-strategie-entscheidungen) #20) + Bildrechte ([`LIVE-COMPLIANCE.md` § 5](LIVE-COMPLIANCE.md#5-agb-skeleton-b2b-only) AGB-§ 7)
+3. `status = bereit` → **Freigabe-Karte** mit Vorschau + Akzept-Checkbox („Mir ist bewusst, dass die Texte KI-generiert wurden und ich die Verantwortung für die Inhalte übernehme."). Zwei Buttons: **„Jetzt live schalten"** (Primary, Default-Fokus, erfüllt Brand-Versprechen) oder **„Erst prüfen"** (Secondary, öffnet Vorschau-Modus). Beide Wege erfordern aktivierte Checkbox.
+4. **Vorschau-Modus:** Subdomain rendert mit `?preview=1`-Flag, NoIndex-Header, sichtbarer Vorschau-Banner („Diese Site ist noch nicht öffentlich. [Jetzt live schalten]"). Kunde kann beliebig lange prüfen + editieren.
+5. `status = live` → Portal mit allen Tabs freigeschaltet. Subdomain öffentlich indexierbar. **Trial-Zähler startet erst hier** (siehe § 3.1).
+6. Pflicht-Bestätigungen beim ersten Login: AGB + AVV ([`LIVE-COMPLIANCE.md` § 1](LIVE-COMPLIANCE.md#1-strategie-entscheidungen) #20) + Bildrechte ([`LIVE-COMPLIANCE.md` § 5](LIVE-COMPLIANCE.md#5-agb-skeleton-b2b-only) AGB-§ 7)
+7. Freigabe-Klick wird dokumentiert in `live_freigaben`-Tabelle (`ARCHITECTURE.md` § 4.7) — Timestamp, IP, AGB-Version, AI-Disclosure-Text. Audit-Trail für AI-Act § 13 + AGB § 5 Abs 5.
+
+**Re-Generation während Vorschau:** Beliebig oft möglich, kein Freigabe-Klick-Reset (die Freigabe bezieht sich auf das Konzept „KI-Inhalte gehen live", nicht auf jede einzelne Generation). Erste Freigabe = Live-Schaltung = endgültiger Zustands-Übergang.
 
 ### 7.2 Portal-Tabs (Sidebar-Gruppen)
 

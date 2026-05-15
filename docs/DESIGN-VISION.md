@@ -107,12 +107,19 @@ KI-generierte Inhalte muessen gekennzeichnet werden — unabhaengig welche Optio
 
 #### 3.2 Magic-Moment-Konzept (unabhaengige Sub-Frage)
 
-Egal welche Story-Option oben gewaehlt: Wo erlebt der Kunde den ersten „Wow-Moment"?
+Mit dem Live-Schaltungs-Workflow (LIVE-COMPLIANCE § 1 #24, Entscheidung 2026-05-15) gibt es jetzt **zwei sequentielle Wow-Momente:**
+
+**Wow 1 — Generation-Wow** (Wo erlebt der Kunde den ersten „Wow"?):
 - **Variante A:** Fragebogen-Letzte-Frage → Site direkt vor Kunden-Augen generiert (Stream-Render)
-- **Variante B:** Fragebogen abgeschickt → „Wir bauen Ihre Website..."-Screen 30–60s → fertige Site
-- **Variante C:** Kunde wartet pasive auf E-Mail mit Site-Link (heutige Beta-Variante)
+- **Variante B:** Fragebogen abgeschickt → „Wir bauen Ihre Website..."-Screen 30–60s → fertige Site in Vorschau
+- **Variante C:** Kunde wartet passiv auf E-Mail mit Vorschau-Link (heutige Beta-Variante)
 
 Variante A ist Frame-/Beehiiv-Vorbild (Memory `_design/benchmarks-plattform.md`), Variante B ist Wix/Squarespace-Standard, Variante C ist Beta-Status. Entscheidung haengt von Option 1/2/3 oben ab — bei Option 3 zwingend Variante A.
+
+**Wow 2 — Live-Schaltungs-Wow** (immer vorhanden, unabhaengig von Variante):
+Nach Generation: Freigabe-Karte mit Akzept-Checkbox + zwei Buttons („Jetzt live schalten" / „Erst pruefen"). Klick auf „Jetzt live schalten" loest den zweiten Wow aus — Konfetti-Animation oder dezente Bestaetigung „Ihre Site ist jetzt unter firma.instantpage.at oeffentlich erreichbar". Brand-Versprechen „sofort live" wird erfuellt durch Default-Button + 30-Sekunden-Friktion.
+
+**UX-Konsequenz:** Anders als bei Wix/Webflow (Editor-Marathon vor Publish) ist Wow 1 in instantpage.at die fertige Site, nicht ein leerer Editor. Wow 2 ist der oeffentliche-Schalt-Akt. Diese 2-Stufen-Architektur ist Differentiator (siehe `MARKETING.md` § 2.1a Bio „10 Minuten Aufwand").
 
 #### 3.3 Verbindung
 

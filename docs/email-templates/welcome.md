@@ -1,9 +1,9 @@
-# Welcome — nach Site-Generation
+# Welcome — nach Site-Live-Schaltung
 
-**Trigger:** Status-Uebergang `paid → in_arbeit → live` (Site wurde automatisch generiert)
+**Trigger:** Status-Uebergang `bereit → live` durch **Freigabe-Klick** des Kunden (LIVE-COMPLIANCE § 1 #24, PRODUCT.md § 7.1). Nicht mehr automatisch nach Generation — Site geht erst live wenn Kunde aktiv freigibt (Default-Button „Jetzt live schalten" oder nach Vorschau-Modus).
 **Absender:** info@instantpage.at
 **Reply-To:** support@instantpage.at
-**Versand:** Sofort nach Status-Uebergang auf `live` (Webhook, 5 Min Puffer fuer Site-Verfuegbarkeit)
+**Versand:** Sofort nach Status-Uebergang auf `live` (Webhook, 5 Min Puffer fuer Site-Verfuegbarkeit).
 
 ---
 

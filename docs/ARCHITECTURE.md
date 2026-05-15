@@ -397,6 +397,20 @@ Wird im Live-Bau **abgeschafft** — Doku ist im Repo (siehe `docs/`).
   - Admin-only RLS. Index auf `order_id` + `endpoint`. Retention 90 Tage (pg_cron Auto-Delete).
   - **Pflicht:** JEDER Aufruf via `callLLM()` schreibt eine Row — Kostenkontrolle und Provider-Vergleichbarkeit haengen daran.
 - **`abuse_reports`** — Notice-and-Takedown-Inbox (LIVE-COMPLIANCE § 12.1)
+- **`live_freigaben`** (LIVE-COMPLIANCE § 1 #24 + § 5 AGB-§ 5 Abs 5 + § 13 AI-Act-Auslegung) — Audit-Trail des Live-Schaltungs-Freigabe-Klicks pro Kunde:
+  - `id` UUID PK
+  - `order_id` FK → orders (UNIQUE — eine Freigabe pro Order; bei Re-Aktivierung nach Cancellation neue Row)
+  - `freigegeben_at` timestamptz NOT NULL — Zeitpunkt des Klicks
+  - `weg` enum NOT NULL — `sofort_live` (Default-Button) oder `nach_vorschau` (Secondary-Button)
+  - `vorschau_dauer_sek` int nullable — bei `weg = nach_vorschau`: Sekunden zwischen `status = bereit` und Freigabe-Klick. Sonst NULL.
+  - `ip` inet NOT NULL — IP zum Zeitpunkt des Klicks (DSGVO Art 6 Abs 1 lit b Vertragsbeweis)
+  - `agb_version` text NOT NULL — Version der AGB die der Kunde akzeptiert hat (z.B. „2026-08-01")
+  - `ai_disclosure_text` text NOT NULL — exakter Wortlaut der Akzept-Checkbox die der Kunde angeklickt hat (Audit gegen spaetere AGB-Wording-Aenderungen)
+  - `user_agent` text — Browser-/Device-Info (forensischer Wert bei Streit)
+  - `created_at` timestamptz DEFAULT now()
+  - Admin-only RLS, Kunde sieht eigene Freigabe-Historie als read-only im Portal-Tab „Mein Account"
+  - **Pflicht-Insert:** Jeder Statusuebergang `bereit → live` schreibt eine Row. Ohne Row-Insert kein Statuswechsel (Constraint via DB-Trigger oder Application-Layer)
+  - Retention: unbegrenzt (Beweismittel — wird bei Hard-Delete des Kunden mitgeloescht, vorher anonymisiert: IP + User-Agent → NULL, Rest bleibt fuer 7 Jahre fuer steuerrechtliche Aufbewahrungsfrist § 132 BAO)
 - **`partners`** (Multiplikator-Programm, MARKETING § 3.3) — Spec 2026-05-14:
   - `id` UUID PK
   - `name`, `company`, `uid` (Pflicht — Anti-Missbrauch: keine Privat-Partner), `email`, `phone`

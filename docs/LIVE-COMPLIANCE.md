@@ -74,7 +74,7 @@ Status-Marker:
 | 2 | Markt | AT-only / DACH / EU | AT-only Phase 1 | `[ENTSCHIEDEN]` |
 | 3 | Heilberufe (Ärzte etc.) in Phase 1? | ja mit Sonderbehandlung / nein / nur ausgewählte | **ja mit Sonderbehandlung** | `[ENTSCHIEDEN]` 2026-05-04 |
 | 4 | Rechtsberatung (Anwälte, Notare, StB) in Phase 1? | ja mit Sonderbehandlung / nein | **ja mit Sonderbehandlung** | `[ENTSCHIEDEN]` 2026-05-04 |
-| 5 | Trial-Setup | nur Vorschau ohne Live-Schaltung / Live-Schaltung erlaubt / kein Trial | **Live-Schaltung erlaubt** (Wow-Moment ist Verkaufsargument) | `[ENTSCHIEDEN]` |
+| 5 | Trial-Setup | nur Vorschau ohne Live-Schaltung / Live-Schaltung erlaubt / kein Trial | **Live-Schaltung erlaubt** (Wow-Moment ist Verkaufsargument) — Workflow siehe #24 | `[ENTSCHIEDEN]` |
 | 6 | Trial-Dauer | 7 / 14 / 30 Tage | **7 Tage** (wie Prototyp) | `[ENTSCHIEDEN]` |
 | 7 | Mindestvertragslaufzeit | keine / monatlich / jährlich | **Monatsabo monatlich kündbar / Jahresabo 12 Monate** | `[ENTSCHIEDEN]` |
 | 8 | Kündigungsfrist | sofort / Monatsende / 30 Tage | **Monatsende** | `[ENTSCHIEDEN]` 2026-05-04 |
@@ -94,6 +94,7 @@ Status-Marker:
 | 21 | Daten-Offboarding-Service nach Kündigung | HTML-Backup-ZIP / nur DSGVO-Pflicht-Export | **Nur DSGVO-Pflicht-Export** — kein zusätzlicher Service | `[ENTSCHIEDEN]` |
 | 22 | Re-Generation Live-Trigger | siehe `PRODUCT.md` § 3.3 | Bezeichnung+Anrede auto-Re-Gen, Look/Akzentfarbe nicht. Manueller Button max 3x/30 Tage. | `[ENTSCHIEDEN]` |
 | 23 | Quality-Score Schwellenwerte | siehe `PRODUCT.md` § 3.4 | <70 Auto-Re-Gen, 70-85 Admin-Alarm, >85 OK | `[ENTSCHIEDEN]` |
+| 24 | Live-Schaltungs-Workflow nach Generation | direkt live / Pflicht-Vorschau / Kundenwahl mit Freigabe-Klick | **Kundenwahl mit Pflicht-Freigabe-Klick.** Nach Generation zwei Wege: A) „Jetzt live schalten" — Site sofort öffentlich. B) „Erst prüfen" — Vorschau-Modus, Live-Klick später. **Beide Wege** erfordern Akzept-Checkbox: „Mir ist bewusst, dass die Texte KI-generiert wurden und ich die Verantwortung für die Inhalte übernehme." Freigabe wird in `live_freigaben`-Tabelle dokumentiert (Timestamp, IP, AGB-Version, AI-Disclosure-Text). Default-Button: „Jetzt live schalten" (Brand-Versprechen „sofort live"). Keine Branchen-Sonderbehandlung — defensive KI-Prompts (§ 10.2) + Disclaimer-Modal beim Onboarding (§ 10.4) bleiben primärer Compliance-Schutz für reglementierte Berufe. | `[ENTSCHIEDEN 2026-05-15]` |
 | 17 | Anwalt für Schluss-Sichtung bei Trigger | ja, ~5h ~1.750€ / nein, nur bei Vorfall | ja bei Trigger | `[ENTSCHIEDEN]` |
 | 18 | Versicherung | nur VSH / IT-Haftpflicht-Paket (VSH+Cyber) | IT-Haftpflicht-Paket | `[ENTSCHIEDEN]` |
 
@@ -340,6 +341,8 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 (3) Der Kunde ist verpflichtet, alle generierten Inhalte vor Veröffentlichung selbst zu prüfen und gegebenenfalls anzupassen. Der Anbieter übernimmt keine Haftung für die inhaltliche Richtigkeit, Vollständigkeit oder rechtliche Zulässigkeit der generierten Texte.
 
 (4) Bei reglementierten Berufen (insbesondere Heilberufe, Rechts- und Wirtschaftsberatung) hat der Kunde die berufsrechtlichen Werbevorschriften eigenverantwortlich zu beachten und Texte entsprechend anzupassen.
+
+(5) Die aktive Freigabe der generierten Inhalte erfolgt durch den Kunden über einen verpflichtenden Bestätigungs-Klick im Portal vor der Live-Schaltung. Mit diesem Klick erklärt der Kunde, die Inhalte zur Kenntnis genommen zu haben und die Verantwortung für deren Veröffentlichung zu übernehmen. Der Zeitpunkt der Freigabe wird vom Anbieter dokumentiert (siehe § 1.5 Aktivitätenprotokoll).
 
 ### § 6 Generierte Rechtstexte (Eigenklausel)
 
@@ -940,11 +943,15 @@ Fuer alle drei Verarbeitungstaetigkeiten von instantpage.at ist **keine vollstae
 | Art 50 Abs 1 — Information der Endnutzer (Chatbot etc.) | Phase 1 N/A (kein Chatbot) — relevant wenn Managed Agent eingeführt |
 | Art 4 — KI-Kompetenz beim Anbieter | Selbststudium + Dokumentation, RTR-Servicestelle als Quelle |
 
-### Auslegung — Quality-Check + Kunden-Freigabe als Ausschlussgrund
+### Auslegung — Quality-Check + Kunden-Freigabe als Ausschlussgrund `[AKTIV NUTZBAR seit 2026-05-15]`
 
-Laut WKO-Auslegung der Kennzeichnungspflicht (siehe `Kennzeichnungspflicht für KI-Inhalte` in § 20) entfällt die Art-50-Kennzeichnungspflicht für Texte, **wenn jemand im Betrieb den Text sichtet und freigibt**. Der bestehende SiteReady-Workflow (Quality-Score-Schwelle + verpflichtende Kunden-Freigabe vor Veröffentlichung) erfüllt diese Voraussetzung.
+Laut WKO-Auslegung der Kennzeichnungspflicht (siehe `Kennzeichnungspflicht für KI-Inhalte` in § 20) entfällt die Art-50-Kennzeichnungspflicht für Texte, **wenn jemand im Betrieb den Text sichtet und freigibt**. Der instantpage.at-Workflow erfüllt diese Voraussetzung durch:
 
-**Konsequenz:** Der Footer-Hinweis bleibt als defensive Maßnahme (Transparenz gegenüber Endnutzern, Marketing-Vorteil), aber nicht zwingend rechtlich gefordert. Bei Streitfall stützt sich die Argumentation auf den dokumentierten Freigabeprozess (Memory: `project_recipe_system_v1.md`).
+- **Quality-Score-Schwelle** vor Auslieferung (`PRODUCT.md` § 3.4)
+- **Verpflichtender Freigabe-Klick** mit Akzept-Checkbox vor Live-Schaltung (Entscheidung § 1 #24)
+- **Dokumentation** der Freigabe in `live_freigaben`-Tabelle (`ARCHITECTURE.md` § 4.7) — Timestamp, IP, AGB-Version, AI-Disclosure-Text
+
+**Konsequenz:** Der Footer-Hinweis auf Kundenseiten („Dieser Text wurde mit Unterstützung von KI erstellt.") bleibt als defensive Maßnahme (Transparenz gegenüber Endnutzern, Marketing-Vorteil), ist aber durch den Freigabe-Workflow **nicht zwingend rechtlich erforderlich**. Bei Streitfall stützt sich die Argumentation auf den dokumentierten Freigabeprozess (Audit-Trail in `live_freigaben`).
 
 **WKO-Wording-Empfehlung als Fallback:** „Dieser Text wurde mit Unterstützung von KI erstellt." — kurz, ausreichend, barrierearm.
 

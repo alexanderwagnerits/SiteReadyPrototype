@@ -330,6 +330,8 @@ Bevor `start-build` aufgerufen werden kann, müssen folgende Felder befüllt sei
 | `incomplete` aber alle Pflichtfelder befüllt | Validierungs-Bug oder DB-Cache | Page-Reload, dann manueller `start-build`-Trigger im Admin |
 | `failed` mit `quality_check_failed` | Generierter Content unter Schwellwert | Re-Generate mit anderen Inputs (z.B. längere `kurzbeschreibung`) |
 | `failed` mit `last_error: anthropic_quota` | API-Limit erreicht | Top-up Anthropic-Konsole, dann Re-Trigger |
+| `bereit` länger als 7 Tage (kein Freigabe-Klick) | Kunde hat Vorschau-Modus gewählt aber nicht live-geschaltet — siehe LIVE-COMPLIANCE § 1 #24 | Reminder-Mail T-3/T-7 (siehe § 2 Email-Templates). Trial-Zähler startet erst bei Live-Schaltung, kein Datenverlust. Bei Inaktivität >30 Tage Support-Outreach. |
+| `bereit` aber Akzept-Checkbox nicht aktivierbar (UI-Bug) | Frontend-Validierungs-Bug | Reload, ggf. Admin-Override mit manueller `live_freigaben`-Row + Status-Switch |
 | `live` aber Site rendert nicht | Subdomain-DNS oder Worker-Fehler | Cloudflare-Status prüfen, ggf. Worker neu deployen |
 | Subdomain-Konflikt beim Anlegen | Auto-Suffix nicht angesprungen | Manuell anderen Subdomain-Namen vorschlagen |
 

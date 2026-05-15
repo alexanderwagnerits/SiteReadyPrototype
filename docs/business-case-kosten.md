@@ -15,7 +15,7 @@ Ein digitaler Betreuer (AI-Agent) überwacht und optimiert die Website laufend.
 ### Tech-Stack
 - Hosting: Cloudflare Pages + Workers
 - Datenbank: Supabase (PostgreSQL, EU Frankfurt)
-- AI: Anthropic Claude Sonnet 4.6
+- AI: **Anthropic Claude Sonnet 4.6** für alle kundensichtbaren Texte (Quality-Bar, siehe `ARCHITECTURE.md` § 1.3) + **Haiku 4.5** für interne Pipeline-Schritte (Import-Extraktion, Web-Search-Synthese, Foto-Klassifizierung). Provider-agnostische Abstraktion via `lib/generate/client.ts` (`ARCHITECTURE.md` § 1.4 — Switch zu OpenAI/Gemini in 1-2 Tagen machbar).
 - Bilder: Cloudflare Images (CDN, Resize, WebP/AVIF)
 - Import: Firecrawl (Website-Crawling) + Google Places API (Business-Daten)
 - Zahlung: Stripe
@@ -31,14 +31,16 @@ Ein digitaler Betreuer (AI-Agent) überwacht und optimiert die Website laufend.
 |--------|---------|--------|
 | Firecrawl — Website crawlen | 3-5 Seiten à 1 Credit | ~€0.04-0.07 |
 | Google Places API — Business-Daten | Advanced Details + 5-10 Fotos | ~€0.05 |
-| Claude — Web Search (Bewertungen etc.) | Sonnet, max 2048 out, ~2 Searches à $0.01 | ~€0.04 |
-| Claude — Import-Extraktion | Sonnet, ~15k in + ~5k out Tokens | ~€0.10 |
-| Claude — Foto-Klassifizierung | Sonnet Vision, 5-10 Fotos gebatcht | ~€0.04 |
-| Claude — Website-Texte generieren | Sonnet, ~3k in + ~3k out Tokens | ~€0.05 |
+| Claude — Web Search (Bewertungen etc.) | Haiku (intern), max 2048 out, ~2 Searches à $0.01 | ~€0.02 |
+| Claude — Import-Extraktion | Haiku (intern), ~15k in + ~5k out Tokens | ~€0.02 |
+| Claude — Foto-Klassifizierung | Haiku Vision (intern), 5-10 Fotos gebatcht | ~€0.01 |
+| Claude — Website-Texte generieren | **Sonnet (kundensichtbar)**, ~3k in + ~3k out Tokens | ~€0.05 |
 | Cloudflare Images — Upload | 5-10 Bilder | ~€0.01 |
-| **Gesamt API-Kosten einmalig** | | **~€0.33** |
+| **Gesamt API-Kosten einmalig** | | **~€0.20** |
 
-Mit Prompt Caching (System-Prompt cached, -90% auf cached Input): ~€0.25
+Mit Prompt Caching (System-Prompt cached, -90% auf cached Input) + Haiku für interne Pipeline-Schritte: **~€0.15**.
+
+> **Hinweis Modell-Wahl:** Sonnet bleibt fuer alle kundensichtbaren Texte (Haupt-Generierung, Headline, FAQ, Sektion-Regen) gesetzt — Quality-Bar (`ARCHITECTURE.md` § 1.3). Haiku nur fuer interne Pipeline-Schritte ohne End-Output. Per-Call-Cost-Tracking via `ai_calls`-Tabelle (`ARCHITECTURE.md` § 4.7) liefert echte Daten statt Schaetzung — nach ~50 Live-Sites wird re-evaluiert.
 
 ---
 
@@ -49,8 +51,8 @@ Mit Prompt Caching (System-Prompt cached, -90% auf cached Input): ~€0.25
 | Posten | Annahme | Kosten/Mo |
 |--------|---------|-----------|
 | Stripe — Monatliche Abbuchung | 1.5% × €16 + €0.25 | €0.49 |
-| Claude — Section-Regenerierung | ~3×/Mo, Sonnet 2048 out | €0.09 |
-| Claude — FAQ generieren | ~1×/Mo, Sonnet 1024 out | €0.02 |
+| Claude — Section-Regenerierung | ~3×/Mo, **Sonnet** (kundensichtbares HTML), 2048 out | €0.09 |
+| Claude — FAQ generieren | ~1×/Mo, **Sonnet** (kundensichtbar), 1024 out | €0.02 |
 | Cloudflare Images — Serving | ~500 Views × 5 Bilder | €0.00 |
 | Hosting/Serving (Workers) | Serve-time Rendering, kein AI | €0.00 |
 | Custom Domain (40% der Kunden, anteilig) | CF for SaaS | ~€0.01 |

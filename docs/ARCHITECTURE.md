@@ -14,7 +14,7 @@
 
 ## Inhalt (geplant)
 
-1. Tech-Stack (Live-Produkt)
+1. Tech-Stack (Live-Produkt) — inkl. § 1.3 KI-Modell-Strategie, § 1.4 Provider-Portabilitaet
 2. System-Architektur (Diagramm + Datenfluss)
 3. Subprozessoren-Übersicht
 4. Datenbank (Schema, RLS, Migrations)
@@ -42,7 +42,7 @@
 | Server-State | TanStack Query | |
 | Auth | Supabase Auth | |
 | Zahlung | Stripe (Live-Mode, neuer Account) + Customer Portal | Test-Mode Prototyp bleibt getrennt |
-| KI | Anthropic Claude Sonnet 4.6 + Prompt Caching | Anthropic-Key aus Prototyp übernommen |
+| KI | Anthropic Claude Sonnet 4.6 (kundensichtbar) + Haiku 4.5 (interne Pipeline) + Prompt Caching | Provider-agnostische Abstraktion via `lib/generate/client.ts` (§ 1.4). Anthropic-Key aus Prototyp übernommen |
 | **Transaktionale Mails** | **Resend** (`[ENTSCHIEDEN]` 2026-05-04) | siehe § 1.1 Mail-Welten-Trennung; Quelle: `LIVE-COMPLIANCE.md` § 1 #13 |
 | **Bildverarbeitung** | **Cloudflare Images** ($5/Mon Basis + Usage) | Auto-Resize, WebP/AVIF, CDN-Delivery |
 | **Lifecycle-Workflows** | **Trigger.dev oder Inngest** (gleich von Anfang) | Mail-Drip, Dunning, Long-Running Jobs |
@@ -109,6 +109,50 @@ Server-Log: nur Status, keine Inhalte
 **Bot-Schutz:** Cloudflare Turnstile als React-Component fuer alle Public-Forms (Plattform + Kundenseiten). NIE Google reCAPTCHA. Turnstile ist cookielos und triggert keinen Banner-Bedarf.
 
 **`compliance-reviewer` Subagent:** lokales `.claude/agents/compliance-reviewer.md` File mit Trigger-/Rules-Spec aus Memory `project_dev_subagents_idea.md`. Wird automatisch von Claude konsultiert bei Aenderungen an Templates, legal.ts, package.json, externen API-Calls, UI-Texten, DB-Schema. Pattern-Detection + Cross-Reference-Check + Cascade-Warnung. Setup in Phase 0 direkt nach Repo-Init.
+
+### 1.3 KI-Modell-Strategie
+
+> **Leitprinzip:** Beste Qualitaet fuer alle kundensichtbaren Texte. Pragmatismus fuer interne Pipeline-Schritte. Modell-Auswahl pro Endpoint dokumentiert — nicht ad-hoc beim Coden.
+
+**Quality-Bar (kundensichtbar = nicht verhandelbar):** Alle Inhalte, die auf einer Kunden-Website als Text erscheinen, werden mit dem **staerksten aktuell verfuegbaren Sonnet** generiert (Stand 2026-05: `claude-sonnet-4-6`). Trade-off Geschwindigkeit/Kosten wird zugunsten Qualitaet entschieden — der Kunde sieht das Ergebnis, nicht den Token-Preis. Haiku ist fuer Kunden-Output **nicht zulaessig**, auch nicht bei „nur ein Satz"-Endpoints wie der Hero-Headline (das ist die erste Zeile, die ein Besucher liest).
+
+| Endpoint | Modell | Begruendung |
+|---|---|---|
+| `generate/route.ts` (Haupt-Texte) | **Sonnet** | Kunden-sichtbar, Hauptqualitaetstreiber |
+| `generate/headline/route.ts` | **Sonnet** | Hero-H1, praegt First-Impression der Site |
+| `generate/faq/route.ts` | **Sonnet** | Direkt auf Website, SEO-relevant |
+| `request-regen/route.ts` (Sektion-HTML) | **Sonnet** | HTML + Text fuer Live-Site |
+| `import/route.ts` — Extraktion | **Haiku** | Interner Parsing-Step, kein End-Output |
+| `import/route.ts` — Web-Search-Synthese | **Haiku** | Interne Datenakquise |
+| Foto-Klassifizierung (Vision) | **Haiku Vision** | Interne Klassifikation, kein End-Output |
+
+**Regel:** Eine Modell-Wahl gegen diese Tabelle erfordert explizite Begruendung in der PR-Beschreibung + Update dieser Tabelle. Aenderungen an dieser Policy konsultieren den `compliance-reviewer` Subagent.
+
+### 1.4 Provider-Portabilitaet (Architektur-Prinzip)
+
+> **Wir setzen heute auf Anthropic, designen aber so, dass ein Provider-Wechsel (OpenAI, Gemini, andere) in 1-2 Tagen machbar bleibt — kein Re-Architecting.**
+
+**Warum jetzt schon design'en:** Single-Vendor-Lock-in auf den teuersten Cost-Block (KI-Generierung) ist ein strategisches Risiko — Anthropic kann Preise erhoehen, ein neuer Provider kann disruptiv besser werden, oder Compliance kann eine zweite Quelle erzwingen. Die Kapselung ist heute billig (1-2 zusaetzliche Files), nachtraeglich teuer (6 Endpoints umbauen).
+
+**Was Provider-spezifisch ist und gekapselt sein muss:**
+
+- **Prompt Caching** (`cache_control`) — Anthropic-only. Kapselung in `lib/generate/cache.ts`. Bei Wechsel-Provider No-Op; nominaler Listenpreis muss neu kalkuliert werden.
+- **Extended Thinking** (`thinking`-Parameter) — Anthropic-only. Kapselung in `lib/generate/client.ts`. Bei Wechsel-Provider weglassen oder gegen Provider-Equivalent (o1-style Reasoning) tauschen.
+- **System-Prompt + Tool-Format** — leichte Format-Unterschiede zwischen Providern.
+
+**Was die Abstraktion liefern muss:**
+
+- **`lib/generate/client.ts` als Provider-agnostische Funktion** — Signatur: `callLLM({ provider, model, system, messages, maxTokens, cacheable, thinking })` mit internem Switch je Provider. Default: `provider = 'anthropic'`. Alle 6 Endpoints rufen ausschliesslich `callLLM()`, **nie** `fetch("https://api.anthropic.com/...")` direkt.
+- **`lib/generate/pricing.ts`** — Preis-Tabellen je Provider+Modell. Update via Migration, nicht hardcoded an Call-Sites.
+- **`ai_calls`-Tabelle Provider-neutral** — Spalten siehe § 4.7. Kein `anthropic_tokens_in` o.ae., sondern `provider` + `model` + `tokens_in/out/cached`.
+- **ENV-Keys generisch** — `LLM_PROVIDER` (`anthropic` / `openai` / `gemini`) + `<PROVIDER>_API_KEY` Pattern. Default-Wert + Fallback bei fehlendem Key explizit.
+
+**Wann re-evaluieren wir Provider?**
+
+- **Heute:** Anthropic. Caching-Vorteil (cached Input zu ~€0.30/MTok statt €3) macht Sonnet bei unserem statischen ~9K-Token-System-Prompt-Pattern wahrscheinlich konkurrenzlos guenstig.
+- **Trigger fuer Re-Eval:** (1) Anthropic-Preiserhoehung >30%, (2) ein neues Modell mit deutlich besserer Qualitaet bei vergleichbarem Preis, (3) Provider-Resilienz wird zum Compliance-Thema (Single-Point-of-Failure), (4) AT/EU-Compliance-Anforderung an Datenresidenz, die Anthropic nicht erfuellt.
+
+**Verbindliche Memory-Referenz:** `feedback_llm_provider_portability.md` — Architektur-Disziplin gilt fuer jeden neuen LLM-Endpoint.
 
 ## 2. System-Architektur
 
@@ -266,7 +310,7 @@ Die zentrale Order-Tabelle hält Firmendaten + Content + Status + Subscription p
 
 **Generierung:**
 - `website_html` text — generiertes HTML
-- `tokens_in`, `tokens_out`, `cost_eur` — Anthropic Cost-Tracking
+- `tokens_in`, `tokens_out`, `cost_eur` — Aggregiertes KI-Cost-Tracking für die Order-Hauptgenerierung. Per-Call-Granularität (Headline, FAQ, Regen, Import-Calls, Foto-Klassifizierung) in `ai_calls` (§ 4.7). Provider-neutral — siehe § 1.4.
 - `quality_score` int (0-100) — Auto Quality-Check Score
 - `quality_issues` jsonb — Array Quality-Issue-Strings
 
@@ -337,7 +381,21 @@ Wird im Live-Bau **abgeschafft** — Doku ist im Repo (siehe `docs/`).
 
 - **`order_snapshots`** — Pre-Regen-Snapshot der orders-Row (jsonb), Auto-Delete nach 30 Tagen via pg_cron. Memory `project_production_refactor.md`. Admin-only RLS.
 - **`subprocessor_dpas`** — Tracking welcher Auftragsverarbeiter wann DPA unterzeichnet hat (LIVE-COMPLIANCE § 4)
-- **`ai_calls`** — Prompt-Versioning self-built: prompt_hash, model, tokens, cost, latency, quality_score, order_id (Memory `project_production_refactor.md`)
+- **`ai_calls`** — Provider-neutrales Per-Call-Log fuer ALLE LLM-Aufrufe (Memory `project_production_refactor.md`, § 1.3 + § 1.4):
+  - `id` UUID PK
+  - `order_id` FK → orders (nullable: Import vor Order-Anlage erlaubt)
+  - `endpoint` text — z.B. `generate.main`, `generate.headline`, `generate.faq`, `regen.section`, `import.extract`, `import.websearch`, `photo.classify`
+  - `provider` text — `anthropic` / `openai` / `gemini` (Provider-Portabilitaet § 1.4)
+  - `model` text — z.B. `claude-sonnet-4-6`, `claude-haiku-4-5`
+  - `prompt_hash` text — SHA256 fuer Prompt-Versioning (Drift-Detection)
+  - `tokens_in`, `tokens_out`, `tokens_cached_write`, `tokens_cached_read` int
+  - `cost_eur` numeric(10,6) — berechnet via `lib/generate/pricing.ts`
+  - `latency_ms` int
+  - `quality_score` int nullable — wo Quality-Check laeuft (Haupt-Generate)
+  - `error` text nullable — bei Fehler
+  - `created_at` timestamptz
+  - Admin-only RLS. Index auf `order_id` + `endpoint`. Retention 90 Tage (pg_cron Auto-Delete).
+  - **Pflicht:** JEDER Aufruf via `callLLM()` schreibt eine Row — Kostenkontrolle und Provider-Vergleichbarkeit haengen daran.
 - **`abuse_reports`** — Notice-and-Takedown-Inbox (LIVE-COMPLIANCE § 12.1)
 - **`partners`** (Multiplikator-Programm, MARKETING § 3.3) — Spec 2026-05-14:
   - `id` UUID PK
@@ -486,11 +544,12 @@ instantpage/
 │   │   └── tokens.css                # CSS-Variables generiert aus TS-Tokens
 │   │
 │   ├── lib/                          # Pure Logic — testbar ohne React
-│   │   ├── generate/                 # Anthropic-Calls + Prompts + Quality-Check
+│   │   ├── generate/                 # Provider-agnostische LLM-Calls + Prompts + Quality-Check (§ 1.3 + § 1.4)
 │   │   │   ├── prompt.ts
-│   │   │   ├── client.ts
-│   │   │   ├── quality-check.ts
-│   │   │   └── cache.ts              # Prompt-Caching-Helper
+│   │   │   ├── client.ts             # callLLM() Abstraktion — einziger Call-Site zu allen Providern
+│   │   │   ├── cache.ts              # Prompt-Caching-Helper (Anthropic; bei anderen Providern No-Op)
+│   │   │   ├── pricing.ts            # Preis-Tabelle je Provider+Modell — Quelle für cost_eur in ai_calls
+│   │   │   └── quality-check.ts
 │   │   ├── auto-engine/              # Auto-Decisions (RECIPE-SYSTEM § Auto-Engine)
 │   │   │   ├── hero-variant.ts       # aus Foto-Verfügbarkeit
 │   │   │   ├── layout-density.ts
@@ -643,17 +702,18 @@ Vollständige Endpoint-Liste aus Prototyp-Bestand + Live-Ergänzungen:
 ```
 src/app/api/
 ├── import/route.ts                   (= functions/api/import-website.js)
-│                                     # Firecrawl + Jina-Fallback + Claude Haiku Extraktion
+│                                     # Firecrawl + Jina-Fallback + Haiku Extraktion (intern, § 1.3)
 ├── generate/
 │   ├── route.ts                      (= functions/api/generate-website.js)
+│   │                                 # Sonnet (kundensichtbar, § 1.3)
 │   ├── headline/route.ts             (= functions/api/generate-headline.js)
-│   │                                 # Hero-Headline-Pattern, separater Call
+│   │                                 # Hero-Headline-Pattern, Sonnet (Hero-H1, kein Haiku)
 │   └── faq/route.ts                  (= functions/api/generate-faq.js)
-│                                     # 5 branchenspez. FAQs als JSON
+│                                     # 5 branchenspez. FAQs als JSON, Sonnet
 ├── start-build/route.ts              (= functions/api/start-build.js)
 │                                     # initialisiert Generierung, setzt trial_expires_at
 ├── request-regen/route.ts            (= functions/api/request-regen.js)
-│                                     # Partial-Regen Leistungen, Rate-Limit 3x/30 Tage
+│                                     # Partial-Regen Leistungen (Sonnet), Rate-Limit 3x/30 Tage
 │                                     # `[ENTSCHIEDEN 2026-05-06]` Live nutzt Recipe-System für Auto-Engine-Lookup
 ├── checkout/route.ts                 (= functions/api/create-checkout.js)
 ├── billing-portal/route.ts           (= functions/api/billing-portal.js)

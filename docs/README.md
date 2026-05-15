@@ -22,6 +22,7 @@
 | [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (6 Mechaniken + 5 Channels spec'd) | TEIL-SPEC'D |
 | [email-templates/](email-templates/) | 10 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover) | Spec-fertig |
 | [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |
+| [_design/live-bau-backlog.md](_design/live-bau-backlog.md) | **Live-Bau-Backlog** — konsolidierte Inkremente pro Recipe + berufsgruppen-uebergreifende Patterns (Form-Varianten, KI-Prompt-Regeln, Quality-Score-Schwelle, Defaults-Maps) | aktuell |
 | [business-case-kosten.md](business-case-kosten.md) | Wirtschaftlichkeit, Margen | aktuell (April) |
 | [anwalt-briefing.md](anwalt-briefing.md) | **Anwalts-Briefing** — Vorlage fuer Erstkontakt + Erstgespraech (4 Liefer-Pakete: AGB/AVV/DSE/Impressum, Lieferformat, Strategische Fragen) | DRAFT 2026-05-15 |
 | [_archive/](_archive/) | Snapshots überholter Dokumente | Referenz |

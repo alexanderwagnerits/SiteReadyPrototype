@@ -22,9 +22,10 @@
 
 > **Quelle der Wahrheit für Live-Bau Layer 3 (Recipes).** Jedes Recipe = Beta-Template-Stil + Layout + Section-Reihenfolge + Section-Toggles + Branchen-Funktionen. **Keine neuen Sektionen erfunden** — nur Komposition aus bestehenden Beta-Bausteinen.
 
-**Stand:** 2026-05-13
+**Stand:** 2026-05-15
 **Basis:** [`functions/templates/template.js`](../../functions/templates/template.js) (Beta-Template, produktiv)
 **Section-CSS-Vokabular:** [`sections/_BETA-VOCABULARY.md`](sections/_BETA-VOCABULARY.md) — verbindliche Klassen-Referenz fuer alle Recipes
+**Live-Bau-Inkremente:** [`live-bau-backlog.md`](live-bau-backlog.md) — was zusaetzlich zum Beta-Template gebaut werden muss (Form-Varianten, KI-Prompt-Regeln, Defaults-Maps, Recipe-spezifische Inkremente)
 **Theme-Tokens:** ~~[`themes.md`](themes.md) (v2-Themes Klassisch/Edel/Rustikal)~~ **VERWORFEN 2026-05-11** — Beta-Stil-Klassen sind die einzige Linie
 **Konsolidierungs-Logik:** 14 Berufsgruppen × 2-3 Looks = ~32 Recipes. **Look-Namen sind generisch** (visuelle Konzepte, nicht Sub-Branchen). Auto-Engine entscheidet anhand Bezeichnung, welches Theme/Akzentfarbe innerhalb des Looks rauskommt.
 

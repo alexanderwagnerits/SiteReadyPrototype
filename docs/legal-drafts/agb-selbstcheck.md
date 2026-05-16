@@ -212,7 +212,7 @@
 
 ### Empfehlungen
 1. **Neues Email-Template:** `email-templates/aktionsrabatt-ende.md` — 14 Tage vor Ablauf, transparente Mitteilung „Ihr Newcomer-Rabatt endet am [DATUM], danach gilt [REGULAERER_PREIS]". Nicht im AGB verpflichtend, aber Trust-Hebel.
-2. **AGB-Wording schaerfen:** „ohne gesonderte Mitteilung" durch „Der Anbieter informiert den Kunden 14 Tage vor Ablauf des Rabattzeitraums per E-Mail" ersetzen wuerde Anti-Dark-Pattern-Argument staerken — Trade-off: Anbieter ist dann auch dazu verpflichtet, was OPS-Aufwand bedeutet (aber via Stripe-Webhook + Resend automatisierbar).
+2. **AGB-Wording schaerfen:** „ohne gesonderte Mitteilung" durch „Der Anbieter informiert den Kunden 14 Tage vor Ablauf des Rabattzeitraums per E-Mail" ersetzen wuerde Anti-Dark-Pattern-Argument staerken — Trade-off: Anbieter ist dann auch dazu verpflichtet, was OPS-Aufwand bedeutet (aber via Stripe-Webhook + Resend automatisierbar). **`[OFFEN — User-Entscheidung]`** ob AGB-Wording umgeschrieben werden soll. Email-Template ist erstellt (siehe oben), der Versand kann faktisch erfolgen, AGB-Text bleibt aktuell „ohne gesonderte Mitteilung".
 3. **Pricing-Page-Transparenz:** Rabatt-Mechanik klar darstellen — bisher unklar, ob auf Pricing-Page explizit „20% nur erstes Jahr" steht.
 
 ### Anwalts-Flags
@@ -248,7 +248,7 @@ AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll)
 | § 6 Generierte Rechtstexte | **`[FLAG — MARKETING-AGB-PRUEFUNG VOR LIVE]`** | Marketing-Wording-Audit (User-Entscheidung) |
 | § 7 Bildrechte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 4 abuse-Prozess ergaenzen |
 | § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
-| § 9 Abs. 5 Aktionsrabatte | **`[FLAG — ERINNERUNGS-MAIL VOR LIVE]`** | Email-Template `aktionsrabatt-ende.md` |
+| § 9 Abs. 5 Aktionsrabatte | `[FLAG ERLEDIGT 2026-05-16]` | Email-Template [`aktionsrabatt-ende.md`](../email-templates/aktionsrabatt-ende.md) erstellt (14-Tage-Erinnerung vor Rabatt-Ende) |
 | Quer: Re-Gen-Trigger | `[FLAG — AGB-ERGAENZUNG]` | § 4 Abs. 5 ergaenzen |
 | §§ 16, 17, 18 (Plan-Portfolio-Erweiterung 2026-05-16) | `[NACHTRAG — Selbstcheck ausstehend]` | siehe Nachtrag-Block unten |
 

@@ -114,7 +114,7 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 
 ## 2. Email-Templates (Lifecycle)
 
-`[SPEC-FERTIG 2026-05-14]` — 10 Templates als Markdown-Drafts in [`docs/email-templates/`](email-templates/). HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
+`[SPEC-FERTIG 2026-05-14, ERWEITERT 2026-05-16]` — 11 Templates als Markdown-Drafts in [`docs/email-templates/`](email-templates/). HTML-Templates fuer Resend werden im Live-Bau Phase 0 daraus abgeleitet. Provider: **Resend** (`[ENTSCHIEDEN]` 2026-05-04, siehe `LIVE-COMPLIANCE.md` § 1 #13).
 
 ### Lifecycle (automatisiert)
 
@@ -128,6 +128,7 @@ Alle Aktionen die in `activity_log.action` geloggt werden. Aus Prototyp + Live-E
 | **Cancellation-Final** | Cron T-1 vor Hard-Delete (T+89) | [cancellation-final.md](email-templates/cancellation-final.md) |
 | **Support-Confirmation** | Auto-Reply bei Support-Anfrage | [support-confirmation.md](email-templates/support-confirmation.md) |
 | **Domain-Setup** | Pro-Plan: Kunde traegt Custom-Domain im Portal ein | [domain-setup.md](email-templates/domain-setup.md) |
+| **Aktionsrabatt-Ende** | Cron 14 Tage vor Newcomer-Rabatt-Ablauf (`coupon NEWCOMER-20-FIRSTYEAR`) | [aktionsrabatt-ende.md](email-templates/aktionsrabatt-ende.md) |
 
 ### Manuell / On-Demand
 

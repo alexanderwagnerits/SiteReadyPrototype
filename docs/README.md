@@ -20,7 +20,8 @@
 | [OPERATIONS.md](OPERATIONS.md) | Runbook, Email-Templates, Backup, Onboarding-Playbook, Monitoring | TEIL-FERTIG |
 | [BRAND.md](BRAND.md) | Voice & Tone, Logo, Slogans, Tonalität — Tagline + Hero-Headline locked | FERTIG (Logo-Asset-Set offen) |
 | [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (6 Mechaniken + 5 Channels spec'd, Block-D-Decisions 2026-05-15 gelockt) | PHASE-1-LOCKED |
-| [email-templates/](email-templates/) | 10 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover) | Spec-fertig |
+| [email-templates/](email-templates/) | 11 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover, Aktionsrabatt-Ende) | Spec-fertig |
+| [wko-sprechtag-2026-05-20.md](wko-sprechtag-2026-05-20.md) | WKO-Markensprechtag-Vorbereitung (16 Fragen-Liste, Recherche-Stand, Klassen-Strategie) | 2026-05-16 |
 | [sales-templates/](sales-templates/) | Cold-Outreach Mail-Templates Pre-Launch (Tischler, Berater, Anwalt) + UWG-Selbstcheck | ERSTDRAFT 2026-05-16 |
 | [legal-drafts/](legal-drafts/) | **Eigenarbeits-Volltexte** der Plattform-Rechtstexte (Pivot 2026-05-15) — DSE + AVV + Impressum Volltext + AGB-Selbstcheck erstdrafted | ERSTDRAFT 2026-05-16 |
 | [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |

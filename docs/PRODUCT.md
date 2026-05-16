@@ -151,7 +151,11 @@ Zum Live-Start ausschließlich Österreich. Erweiterung auf DACH und EU ist für
 
 ## 3.0 Zahlungs- und Rechnungs-Pipeline
 
-> **Architektur-Entscheidung 2026-05-08.** AT-Solo-e.U. mit Kleinunternehmerregelung. Stripe = Source of Truth für Ausgangsrechnungen, sevDesk + MiracleSync = automatische Buchhaltung. Sync-Test 2026-05-08 erfolgreich verifiziert (siehe Risiko-Tabelle unten).
+> **Architektur-Entscheidung 2026-05-08.** AT-Solo-e.U. mit Kleinunternehmerregelung. Stripe = Source of Truth für Ausgangsrechnungen, sevDesk = Buchhaltung. Sync-Test 2026-05-08 erfolgreich verifiziert (siehe Risiko-Tabelle unten).
+>
+> **Hybrid-Strategie 2026-05-16:** sevDesk-Tier **„Buchhaltung"** (Monatsabo 17,43 EUR Aktion erste 3 Mo, danach 24,90 EUR regulaer netto) startet ohne MiracleSync. Stripe-Charges werden **monatlich manuell** in sevDesk eingetragen (siehe `OPERATIONS.md` § 8.7). Upgrade zu **sevDesk „Buchhaltung Pro"** (10,47 EUR Aktion / 34,90 EUR regulaer netto) + MiracleSync **erst bei Volumen-Schwelle ~30-50 aktive Subscriptions**, wenn manueller Sync mehr als ~1 Std/Monat verschlingt. Hintergrund: REST-API ist erst bei „Buchhaltung Pro" inkludiert; MiracleSync nutzt diese API.
+>
+> **Live-Setup-Stand 2026-05-16:** sevDesk Buchhaltung-Monatsabo eingerichtet (Kleinunternehmer, SKRAT, Logo, Banking Erste Business via PSD2, „Privat Konto" als Verrechnungskonto). 2 wiederkehrende Rechnungen aktiv (CPG 490 EUR + Dr. Gehrer 100 EUR) — Mai 2026 erster sevDesk-Monat. Mac-Anlage 1.129 EUR mit AfA ueber 3 Jahre aktiviert. 9 alte Word-Rechnungen Jan-Apr 2026 + Eingangs-Belege werden ueber das Verrechnungskonto „Privat Konto" nachgepflegt (Variante A — Privatentnahme/-einlage-Logik). 500 EUR Eroeffnungseinlage wartet auf PSD2-Sync (1-2 Tage Verzoegerung).
 
 ### Stack-Übersicht
 
@@ -182,8 +186,9 @@ Zum Live-Start ausschließlich Österreich. Erweiterung auf DACH und EU ist für
 | Komponente | Funktion | Kosten | Zuordnung |
 |---|---|---|---|
 | **Stripe** | Payments + Invoices (Source of Truth) + Customer Portal | Transaktionsgebühren ~0,8 % SEPA / 1,4 % Karte | SiteReady |
-| **MiracleSync** Stripe→sevDesk | Auto-Sync Charges + Belege + Gebühren-Buchung. Stripe als virtuelles Bankkonto in sevDesk. Skaliert mit Zahlungen/Mo | Jahresabo netto: 11 € (≤50) / 19 € (≤500) / 29 € (≤1.000) / 49 € (≤3.000) — brutto ca. +19 %. Was genau als „1 Zahlung" zählt (Charges, Fees, Refunds, Retries) ist beim Anbieter nicht klar dokumentiert — nach Live im sevDesk-Counter beobachten, Tier-Sprung-Differenz ~10 €/Mo | SiteReady |
-| **sevDesk Buchhaltung** | E/A-Rechnung + Belegerfassung + Online-Banking + EÜR/GuV + DATEV-Export für die gesamte e.U. | ~25 €/Mo netto regulär (~30 € brutto). Aktion: 70 % Rabatt erste 6 Mo bei 12-Mo-Vertrag → ~7,50 € netto / ~9 € brutto | Wagner IT-Solutions (allgemein) |
+| **MiracleSync** Stripe→sevDesk `[VERSCHOBEN auf Volumen-Trigger]` | Auto-Sync Charges + Belege + Gebühren-Buchung. Stripe als virtuelles Bankkonto in sevDesk. Skaliert mit Zahlungen/Mo. **Voraussetzung: sevDesk Buchhaltung Pro (REST-API).** | Jahresabo netto: 11 € (≤50) / 19 € (≤500) / 29 € (≤1.000) / 49 € (≤3.000) — brutto ca. +19 %. Aktivierung **erst bei ~30-50 aktiven Subscriptions** (Volumen-Schwelle, wenn manueller Sync >1 Std/Mo kostet) | SiteReady |
+| **sevDesk Buchhaltung** (Tier 2 von 3) | E/A-Rechnung + Belegerfassung + Online-Banking + EÜR/GuV + DATEV-Export für die gesamte e.U. **Start-Tier** — Stripe-Sync manuell monatlich | ~24,90 €/Mo netto regulär. Aktion: 70 % Rabatt erste 6 Mo bei 12-Mo-Vertrag → 7,47 € netto / ~9 € brutto | Wagner IT-Solutions (allgemein) |
+| **sevDesk Buchhaltung Pro** (Tier 3 von 3, Upgrade-Ziel) `[VERSCHOBEN auf Volumen-Trigger]` | Alle Funktionen aus „Buchhaltung" + **REST-API-Schnittstelle** + Kostenstellen + BWA. Voraussetzung fuer MiracleSync-Auto-Sync. | 34,90 €/Mo netto regulär. Aktion: 70 % Rabatt erste 6 Mo → 10,47 € netto / ~12,60 € brutto. Upgrade-Differenz: 3 €/Mo Aktion / 10 €/Mo regulaer | Wagner IT-Solutions (allgemein) |
 | **Erste Bank Geschäftskonto** | Stripe-Auszahlungs-Ziel + sevDesk-Banking-Verknüpfung | ~7 €/Mo (Erste Business basic) | Wagner IT-Solutions (allgemein) |
 | **FinanzOnline** | ESt-Erklärung self-service | 0 € | Wagner IT-Solutions (allgemein) |
 | **Steuerberater** | 1× initial-Setup-Check + 1× bei USt-Wechsel. Aufwand sinkt durch sevDesk-Vorbereitung + DATEV-Export | ~100–200 €/Jahr | Wagner IT-Solutions (allgemein) |

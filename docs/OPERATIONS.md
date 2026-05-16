@@ -410,6 +410,44 @@ AGB § 17 Abs. 5 lit. c: 1 Std/Mo inkludiert, kein Carry-over. **Defensiv-Mechan
 - Quartalsweise Berichts-Mail an Kunde: „Quartal Q3/2026 — 2 von 3 inkludierten Wartungs-Stunden verwendet. Inhalt: Bug-Fix Footer-Link, Text-Anpassung Leistungen, ..." → Transparenz + Beweis-Audit-Trail.
 - Bei 3 Monaten ohne Inanspruchnahme zusaetzlich Goodwill-Aufschlag: kostenloser Performance- oder Browser-Check ohne Stundenverbrauch → Bestandskunden-Bindung.
 
+### 8.7 Manueller Stripe-Sync-Workflow (monatlich) `[NEU 2026-05-16, bis MiracleSync-Aktivierung]`
+
+> Hintergrund: sevDesk-Buchhaltung-Tier hat KEIN REST-API (erst Buchhaltung Pro). MiracleSync verlangt API-Zugang. Bis Volumen-Schwelle erreicht ist (~30-50 aktive Subscriptions), laeuft Stripe-zu-sevDesk-Sync manuell monatlich. Aufwand ~30-60 Min/Monat bei 0-30 Subscriptions, akzeptabel.
+
+**Stand 2026-05-16:** sevDesk-Setup live (Buchhaltung-Tier, Erste Business via PSD2, „Privat Konto" Verrechnungskonto). Wagner-IT-Solutions-Bestandskunden (CPG 490 EUR, Dr. Gehrer 100 EUR) laufen ueber wiederkehrende Rechnungen, Mai 2026 erster sevDesk-Monat. Stripe-Pipeline (instantpage-Kunden) noch nicht aktiv — Live-Verifikation in Phase 0.
+
+**Monatlicher Workflow ab Stripe-Live:**
+
+1. **Stripe-Dashboard → Reports → Payouts** → CSV-Export des Vormonats (z.B. Anfang Juli fuer Juni-Daten)
+2. **Pro Stripe-Auszahlung (Payout) eine Bank-TX in sevDesk-Geschaeftskonto** anlegen:
+   - Datum + Betrag (Netto-Payout, nach Stripe-Gebuehren-Abzug)
+   - Verwendungszweck: „Stripe Payout YYYY-MM"
+3. **Pro Charge (= einzelne Kunden-Zahlung) eine Rechnung in sevDesk anlegen** (oder einen Sammel-Beleg):
+   - Kunde: Stripe-Customer-Name + ggf. Plattform-Kundennummer
+   - Position: Plan-Bezeichnung (Starter / Professional / Einrichtungs-Service / Custom-Hosting)
+   - Betrag: Brutto-Charge
+4. **Pro Charge ein Aufwands-Beleg fuer Stripe-Gebuehren** (z.B. 1,5 % + 0,25 EUR):
+   - Kategorie: „Bankgebuehren" oder SKRAT 7660 (Geldverkehrsspesen)
+   - Zahlungsweg: gleicher Payout
+5. **Stripe-Auszahlung mit Charges + Gebuehren matchen** in sevDesk-Konto-View
+
+**Vereinfachung bei niedrigem Volumen (<10 Subscriptions/Mo):**
+
+Statt 30+ einzelne Buchungen → **Sammel-Buchung pro Stripe-Payout**:
+- Eine Sammel-Rechnung mit Beschreibung „Stripe-Auszahlung YYYY-MM, X Charges aus Plan A/B/C" + Anhang CSV-Export
+- Eine Sammel-Beleg fuer Stripe-Gebuehren
+- Steuerberater sieht die Details im CSV-Anhang
+
+Aufwand: 5-10 Min/Monat (vs 30+ Min bei einzelnen Buchungen). Saubererer DATEV-Export aber bei 10+ Charges/Mo wieder Pflicht einzelner Buchungen → dann Zeit fuer Buchhaltung Pro Upgrade.
+
+**Upgrade-Trigger zu MiracleSync + Buchhaltung Pro:**
+
+- Manueller Sync >1 Std/Mo (in der Praxis: ab 30-50 aktive Subscriptions)
+- Steuerberater verlangt einzelne Charge-Buchungen statt Sammel
+- DATEV-Export bei Sammel-Buchungen unsauber
+
+Sobald Trigger: in sevDesk Tarif auf **Buchhaltung Pro** wechseln (10,47 EUR Aktion / 34,90 EUR regulaer), MiracleSync im Marketplace aktivieren. Voraussichtlich 6-12 Monate nach Live-Schaltung.
+
 ---
 
 ## 9. Monitoring-Setup

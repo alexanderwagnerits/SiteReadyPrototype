@@ -85,6 +85,34 @@ Wording bleibt **„AT-Compliance integriert"**, aber Pricing-Page-Bullet + Mark
 2. **Option C** als Compromise — wenn „integriert" als Brand-Asset zu wertvoll erscheint, dann mit Star-Footnote arbeiten.
 3. **Option A** nur bei explizitem Anwalts-Hinweis (z.B. nach Trigger-Schwelle 30 Kunden).
 
+## ENTSCHEIDUNG 2026-05-16 — Option B' (Iteration aus Option B)
+
+> **User-Entscheidung:** Keine der drei Original-Optionen. „Vorausgefuellt" wurde verworfen, weil es eine Editier-Erwartung impliziert — der Kunde kann Impressum + DSE aber tatsaechlich nicht direkt bearbeiten, sie werden aus Stammdaten generiert (analog zur § 5-KI-Mechanik). Stattdessen finales Wording:
+
+> **„Impressum und Datenschutz automatisch erstellt"**
+
+**Vorteile:**
+- Konkrete Begriffe (Impressum + DSE jeder KMU-Inhaber kennt)
+- Wahrheits-gemaess (es IST automatisch erstellt)
+- Voice-konsistent (BRAND.md § 5.3 Do-Liste hat „automatisch")
+- Konsistent zu `PRODUCT.md` § 4 Feature-Matrix („Impressum + Datenschutzerklaerung automatisch")
+- UWG-defensiv (beschreibt Mechanik, nicht Erfolgs-Versprechen)
+- AI-Act-konsistent (Footer-Kennzeichnung „mit KI erstellt" passt)
+- Impliziert: Maschine erstellt → Pruefung beim Kunden (analog wie „KI-Texte")
+
+**Umgesetzt in:**
+- `BRAND.md` § 7.0 About (KI-gestuetzte Texte, Impressum und Datenschutz automatisch erstellt, fuer Google optimiert)
+- `BRAND.md` § 7.1 Slogan-Pool #5
+- `BRAND.md` § 7.3 Sub-Headline 1
+- `BRAND.md` § 7.0 Design-Entscheidungs-Notizen + § 8.1 Verbotene-Begriffe-Tabelle
+- `_design/landing-pricing.md` Trust-Block
+- `sales-templates/README.md` UWG-Selbstcheck-Liste
+
+**Was nicht erforderlich war (zur Klarstellung):**
+- AGB § 6 bleibt unveraendert (Wording-Wechsel im Marketing reicht — § 6 Abs. 2 ist bereits defensiv genug)
+- Kein Disclaimer-Footnote noetig (Option C verworfen)
+- Tagline bleibt unveraendert
+
 ## Konsequenz fuer die Dokus
 
 ### Bei Option B (empfohlen)

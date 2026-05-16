@@ -67,7 +67,7 @@ Pro Mail mindestens **eine** sparte-spezifische Beobachtung am Anfang. Beispiele
 - [ ] Keine Drueckersprache („Jetzt!", „Nicht verpassen!", „Sichern Sie sich!")
 - [ ] Keine verbotenen Begriffe (siehe `LIVE-COMPLIANCE.md` § 15: „guenstigster", „100 % rechtssicher", „beste", „garantiert")
 - [ ] Keine Berufsgruppen-Listen-Aufzaehlung in Hauptbotschaft
-- [ ] „AT-Compliance integriert" statt „rechtliche Pflichten"
+- [ ] „Impressum und Datenschutz automatisch erstellt" statt „rechtliche Pflichten" oder „AT-Compliance integriert" (Wording-Update 2026-05-16, siehe `legal-drafts/marketing-agb-audit.md`)
 - [ ] „Sie", durchgehend
 
 ## Tracking + KPIs

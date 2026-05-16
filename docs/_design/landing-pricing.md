@@ -138,7 +138,7 @@ REIHE 2 — AUF ANFRAGE / COMING SOON
 ## Trust-Block (unter Karten)
 
 - "Speziell fuer oesterreichische KMU"
-- "AT-Compliance integriert"
+- "Impressum und Datenschutz automatisch erstellt"
 - "Kleinunternehmer im Sinne des § 6 Abs. 1 Z 27 UStG — keine Umsatzsteuer"
 - "Newcomer-Rabatt: 20 % auf das erste Jahr — gilt fuer Starter + Professional"
 

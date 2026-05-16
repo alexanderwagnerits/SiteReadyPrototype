@@ -88,6 +88,8 @@
 
 ## § 6 — Generierte Rechtstexte (Eigenklausel)
 
+> **Update 2026-05-16:** Marketing-AGB-Diskrepanz unten ist seit 2026-05-16 entschaerft — Marketing-Wording „AT-Compliance integriert" wurde durch „Impressum und Datenschutz automatisch erstellt" ersetzt (BRAND.md § 7.0/7.1/7.3, sales-templates/README.md, _design/landing-pricing.md). Siehe [`marketing-agb-audit.md`](marketing-agb-audit.md) Option B'. Folgende Analyse-Notizen dokumentieren den Stand VOR der Entscheidung als Audit-Trail.
+
 ### Ist-Stand
 - Abs. 1: automatisierte Generierung aus Kunden-Daten + Modulen
 - Abs. 2: „Hilfestellung, ersetzen keine rechtliche Beratung"
@@ -245,7 +247,7 @@ AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll)
 |---|---|---|
 | § 1 B2B-Beschraenkung | `[OK MIT MINOR-EMPFEHLUNGEN]` | UI-Hinweis-Box im Bestellprozess |
 | § 5 KI-Inhalte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 6 AI-Act-Kennzeichnung ergaenzen |
-| § 6 Generierte Rechtstexte | **`[AUDIT-DRAFT 2026-05-16, User-Entscheidung offen]`** | Marketing-Wording-Audit in [`marketing-agb-audit.md`](marketing-agb-audit.md) — Option B (empfohlen): „integriert" → „vorausgefuellt"/„inkludiert" |
+| § 6 Generierte Rechtstexte | `[FLAG ERLEDIGT 2026-05-16]` | Marketing-Wording in BRAND.md auf „Impressum und Datenschutz automatisch erstellt" umgestellt (siehe [`marketing-agb-audit.md`](marketing-agb-audit.md) Option B') |
 | § 7 Bildrechte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 4 abuse-Prozess ergaenzen |
 | § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
 | § 9 Abs. 5 Aktionsrabatte | `[FLAG ERLEDIGT 2026-05-16]` | Email-Template [`aktionsrabatt-ende.md`](../email-templates/aktionsrabatt-ende.md) erstellt (14-Tage-Erinnerung vor Rabatt-Ende) |

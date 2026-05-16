@@ -264,14 +264,14 @@ Aenderung loest **automatische Re-Generation** der Texte aus (PRODUCT § 3.3). W
 
 > Die fertige Website fuer oesterreichische KMU.
 >
-> Statt Wochen mit der Agentur oder Abenden vor dem Baukasten: 10 Minuten Fragebogen, fertig konfigurierte Webseite. KI-gestuetzte Texte, AT-Compliance integriert, fuer Google optimiert.
+> Statt Wochen mit der Agentur oder Abenden vor dem Baukasten: 10 Minuten Fragebogen, fertig konfigurierte Webseite. KI-gestuetzte Texte, Impressum und Datenschutz automatisch erstellt, fuer Google optimiert.
 
 **Design-Entscheidungen:**
 
 - **„KMU"** (nicht „KMUs") — formell, Plural ist im Begriff enthalten
 - **„10 Minuten Aufwand"** statt „in 10 Minuten online" — Aufwand-Framing trifft den realen Zeitschmerz, UWG-safer als Garantie-Zeitversprechen (Zeit-bis-live ist DNS-abhaengig)
 - **„KI-gestuetzte Texte"** drin — als Mechanismus-Erklaerung (warum 10 Min realistisch sind), nicht als Tagline-Buzzword
-- **„AT-Compliance integriert"** — knapp, B2B-tauglich. KMU-naehere Variante „mit Impressum und Datenschutz" als Fallback fuer laengere Texte / nicht-Tech-Audiences
+- **„Impressum und Datenschutz automatisch erstellt"** — `[WORDING-WECHSEL 2026-05-16]` konkrete Begriffe (Impressum + DSE jeder KMU-Inhaber kennt) statt Tech-/Compliance-Jargon. Beschreibt Mechanik („automatisch erstellt") statt Erfolgs-Versprechen („integriert") — UWG-defensiv, AI-Act-konsistent, ehrlich gegenueber Kunden-Erwartung (Texte werden generiert, nicht editierbar — analog § 5 KI-Mechanik). Konsistent mit `PRODUCT.md` § 4 Feature-Matrix („Impressum + Datenschutzerklaerung automatisch"). Vorheriges Wording „AT-Compliance integriert" ist im Marketing **nicht mehr zu verwenden** — siehe [`legal-drafts/marketing-agb-audit.md`](../legal-drafts/marketing-agb-audit.md). AT-Anker bleibt durch Tagline („oesterreichische KMU") gesetzt.
 - **„Fuer Google optimiert"** (verwendet) statt „SEO-optimiert" — KMU-verstaendlicher als Buzzword „SEO". Marketing-Variante zulaessig, **Anwalts-Audit-Punkt fuer Live-Launch:** „optimiert" Grenzbereich UWG (kann als Garantie-Aussage gelesen werden), Defensiv-Alternative waere „fuer Google vorbereitet". Final-Entscheidung im Anwalts-Block A der Roadmap.
 - **Keine Berufsgruppen-Liste** in Hauptbotschaft — wuerde Exklusivitaet implizieren bei 14 Berufsgruppen × 2-3 Looks = ~32 Recipes (siehe Memory `feedback_marketing_zielgruppe_inklusiv.md`)
 - **„Made in Vienna"** verworfen — AT-Anker bereits ueber „oesterreichische KMU" gesetzt, redundant; signature-style Trailer schwaecht das About-Statement
@@ -289,7 +289,7 @@ Aus LIVE-COMPLIANCE § 15 + erweitert:
 | 2 | **Marketing-Website ohne Agentur. Speziell fuer Handwerker, Gastronomen, Berater, Praxen.** | Hero-Alternative, klares Zielgruppen-Statement |
 | 3 | **Wir bauen Ihre Website. Sie bleiben Inhaber.** | Trust-Block, Anti-Builder-Positionierung |
 | 4 | **Schneller online. Professionell betrieben. Transparent abgerechnet.** | Sub-Hero, drei Versprechen |
-| 5 | **Branchengerecht. AT-Compliance integriert. Sofort online.** | Pricing-Page-Header *(2026-05-12: „rechtliche Pflichtangaben" durch „AT-Compliance" ersetzt — siehe `feedback_keine_rechtliche_pflichten.md`)* |
+| 5 | **Branchengerecht. Impressum und Datenschutz automatisch erstellt. Sofort online.** | Pricing-Page-Header *(2026-05-16: „AT-Compliance integriert" durch „Impressum und Datenschutz automatisch erstellt" ersetzt — UWG-defensive Schaerfung, siehe `legal-drafts/marketing-agb-audit.md`)* |
 | 6 | **Kein Website-Builder. Eine fertige Website.** | Anti-Vergleich zu Wix/Jimdo |
 | 7 | **Fuer Betriebe, die ihre Zeit mit dem Geschaeft verbringen — nicht mit Webdesign.** | Mid-Funnel, Pain-Point-Adressierung |
 
@@ -303,7 +303,7 @@ Aus LIVE-COMPLIANCE § 15 + erweitert:
 
 > **„Die Website fuer oesterreichische KMU. 10 Minuten Aufwand."**
 
-Identisch mit der Tagline aus § 7.0 (Lock 2026-05-12) — auf der Marketing-Landing als H1 gesetzt. Sub-Headline darunter aus § 7.3 (Default: „Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — AT-Compliance integriert.").
+Identisch mit der Tagline aus § 7.0 (Lock 2026-05-12) — auf der Marketing-Landing als H1 gesetzt. Sub-Headline darunter aus § 7.3 (Default: „Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — Impressum und Datenschutz automatisch erstellt.").
 
 **Warum Tagline = Hero:**
 - Eine Voice ueber alle Touchpoints (Hero, Tagline-Section, Social Media, About) — keine Voice-Konkurrenz auf der Landing
@@ -320,9 +320,9 @@ Aeltere verworfene Alternativen: „Ihre Website. Wir liefern. Sie bleiben Inhab
 
 ### 7.3 Sub-Headlines (Sekundaer-Statement unter Hero)
 
-> **Hinweis 2026-05-12:** Sub-Headline 1 enthielt „mit allen rechtlichen Pflichtangaben" — im Marketing tabu (siehe `feedback_keine_rechtliche_pflichten.md`). Ersetzt durch „AT-Compliance integriert". Sub-Headline 3 enthaelt Berufsgruppen-Liste — siehe Hinweis unten zu inklusiver Hauptbotschaft.
+> **Hinweis 2026-05-12 / aktualisiert 2026-05-16:** Sub-Headline 1 enthielt urspruenglich „mit allen rechtlichen Pflichtangaben" — im Marketing tabu (siehe `feedback_keine_rechtliche_pflichten.md`). Zwischenstand 2026-05-12: „AT-Compliance integriert". **Aktuell (2026-05-16):** „Impressum und Datenschutz automatisch erstellt" — konkrete Begriffe statt Compliance-Jargon, UWG-defensiv, ehrlich gegenueber Mechanik (siehe `legal-drafts/marketing-agb-audit.md`). Sub-Headline 3 enthaelt Berufsgruppen-Liste — siehe Hinweis unten zu inklusiver Hauptbotschaft.
 
-- "Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — AT-Compliance integriert."
+- "Sie sagen uns, wer Sie sind und was Sie machen. Wir liefern die Website, die zu Ihrer Branche passt — Impressum und Datenschutz automatisch erstellt."
 - "Kein Website-Builder. Kein Drag-and-Drop. Eine fertige Website fuer Ihren Betrieb."
 - "Speziell fuer Handwerk, Gastro, Praxen, Dienstleister — 14 Berufsgruppen, jede mit eigener kuratierter Vorlage." *(Berufsgruppen-Liste OK in Sub-Headlines mit „u.a."-Charakter, NICHT in Tagline/About — siehe `feedback_marketing_zielgruppe_inklusiv.md`)*
 
@@ -360,11 +360,11 @@ Aeltere verworfene Alternativen: „Ihre Website. Wir liefern. Sie bleiben Inhab
 
 ### 8.2 Defensive Alternativen
 
-> **Wichtig 2026-05-12:** „rechtliche Pflichten" / „Pflichtangaben" sind **nur** als juristische Defensiv-Sprache (UWG-Audit, AGB/DSE/Impressum-Kontext) verwendbar — **NIEMALS** als Marketing-Hauptbotschaft (Tagline, About, Hero, Pricing-Page). Siehe Memory `feedback_keine_rechtliche_pflichten.md`. Marketing-Alternative: „AT-Compliance integriert" / „mit Impressum und Datenschutz".
+> **Wichtig 2026-05-12 / aktualisiert 2026-05-16:** „rechtliche Pflichten" / „Pflichtangaben" sind **nur** als juristische Defensiv-Sprache (UWG-Audit, AGB/DSE/Impressum-Kontext) verwendbar — **NIEMALS** als Marketing-Hauptbotschaft (Tagline, About, Hero, Pricing-Page). Siehe Memory `feedback_keine_rechtliche_pflichten.md`. Marketing-Alternative ab 2026-05-16: **„Impressum und Datenschutz automatisch erstellt"** (siehe `legal-drafts/marketing-agb-audit.md`). „AT-Compliance integriert" war Zwischenstand 2026-05-12 und wird nicht mehr verwendet — beschreibt Mechanismus nicht ehrlich (impliziert „integriert" = „erledigt", tatsaechlich werden Texte generiert + Kunde gibt frei).
 
 | Statt | Besser |
 |---|---|
-| "rechtssicher" | „wir unterstuetzen Sie bei der Erfuellung Ihrer rechtlichen Pflichten" / „mit allen rechtlichen Pflichtangaben" *(nur juristische Defensiv-Sprache, nicht Marketing — Marketing-Variante: „AT-Compliance integriert")* |
+| "rechtssicher" | „wir unterstuetzen Sie bei der Erfuellung Ihrer rechtlichen Pflichten" / „mit allen rechtlichen Pflichtangaben" *(nur juristische Defensiv-Sprache, nicht Marketing — Marketing-Variante: „Impressum und Datenschutz automatisch erstellt")* |
 | "DSGVO-konform" | "DSGVO-orientiert" / "Impressum + Datenschutzerklaerung automatisch" / "mit Hilfestellungen zur DSGVO-Umsetzung" |
 | "100 % Sicher" | "professionell verschluesselt" / "auf Industriestandard abgesichert" |
 | "die beste" | "speziell fuer oesterreichische KMU entwickelt" |

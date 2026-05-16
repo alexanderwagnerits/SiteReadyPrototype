@@ -24,6 +24,7 @@
 | [wko-sprechtag-2026-05-20.md](wko-sprechtag-2026-05-20.md) | WKO-Markensprechtag-Vorbereitung (16 Fragen-Liste, Recherche-Stand, Klassen-Strategie) | 2026-05-16 |
 | [wko-sprechtag-cheatsheet.md](wko-sprechtag-cheatsheet.md) | 1-Pager-Cheatsheet fuer den Termin (Top 5 Fragen, Stammdaten, Was-mitnehmen) | 2026-05-16 |
 | [brand-alternativen.md](brand-alternativen.md) | Plan B Brand-Wechsel-Skizze falls „InstantPage" nicht schutzfaehig — 4 Cluster-Vorschlaege + Aktivierungs-Trigger | 2026-05-16 |
+| [pre-live-bau-gap-analyse.md](pre-live-bau-gap-analyse.md) | **Pre-Live-Bau Gap-Analyse** — was ist fertig / offen / kritisch + Phase-0-Start-Checkliste + Restrisiko-Inventory | 2026-05-16 |
 | [sales-templates/](sales-templates/) | Cold-Outreach Mail-Templates Pre-Launch (Tischler, Berater, Anwalt) + UWG-Selbstcheck | ERSTDRAFT 2026-05-16 |
 | [legal-drafts/](legal-drafts/) | **Eigenarbeits-Volltexte** der Plattform-Rechtstexte (Pivot 2026-05-15) — DSE + AVV + Impressum Volltext + AGB-Selbstcheck erstdrafted | ERSTDRAFT 2026-05-16 |
 | [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |

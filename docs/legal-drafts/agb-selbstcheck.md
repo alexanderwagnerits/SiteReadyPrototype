@@ -43,7 +43,7 @@
 - `[ANWALT-PRUEFUNG SPAETER]` Selbsterklaerungs-Beweiswirkung in der Praxis (OGH-Judikatur zu B2B-Selbsterklaerungen — Vorrang Inhalt vs Erscheinungsbild?)
 
 ### Status
-**`[OK MIT MINOR-EMPFEHLUNGEN]`** — keine Bau-Blocker, UI-Hinweis-Box implementieren.
+`[ERLEDIGT 2026-05-16]` — AGB § 1 Abs. 4 um Sonderkuendigungsrecht ergaenzt. UI-Items als Phase-0-Bau-Pflicht in `PRODUCT.md` § 5.1 dokumentiert (Hinweis-Box, UID-optional, Selbsterklaerungs-Checkbox mit activity_log-Eintrag).
 
 ---
 
@@ -82,7 +82,7 @@
 - `[ANWALT-PRUEFUNG SPAETER]` AI-Act Art. 50 — Wer haftet, wenn Footer-Hinweis fehlt? Aktuell impliziert AGB Anbieter-Pflicht, aber das ist nicht eindeutig.
 
 ### Status
-**`[OK MIT MINOR-EMPFEHLUNGEN]`** — Abs. 6 zur AI-Act-Kennzeichnung ergaenzen vor Live.
+`[ERLEDIGT 2026-05-16]` — AGB § 5 Abs. 6 ergaenzt: ab 2026-08-02 automatischer Footer-Hinweis nach Art. 50 EU-AI-Act, Kunde verpflichtet diesen unveraendert zu belassen, Anbieter darf serve-time wiederherstellen.
 
 ---
 
@@ -154,7 +154,7 @@
 - `[ANWALT-PRUEFUNG SPAETER]` Abs. 2 Freistellungs-Klausel — Reichweite (auch Prozess-Kosten? Anwaltskosten?) explizit fassen
 
 ### Status
-**`[OK MIT MINOR-EMPFEHLUNGEN]`** — Abs. 4 (abuse-Prozess) ergaenzen vor Live.
+`[ERLEDIGT 2026-05-16]` — AGB § 7 Abs. 4 ergaenzt: abuse@instantpage.at als Meldestelle, Notice-and-Takedown nach § 16 ECG + DSA, 3-Werktage-Erstantwort-Zusage.
 
 ---
 
@@ -245,10 +245,10 @@ AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll)
 
 | Klausel | Status | Top-Aktion vor Live |
 |---|---|---|
-| § 1 B2B-Beschraenkung | `[OK MIT MINOR-EMPFEHLUNGEN]` | UI-Hinweis-Box im Bestellprozess |
-| § 5 KI-Inhalte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 6 AI-Act-Kennzeichnung ergaenzen |
-| § 6 Generierte Rechtstexte | `[FLAG ERLEDIGT 2026-05-16]` | Marketing-Wording in BRAND.md auf „Impressum und Datenschutz automatisch erstellt" umgestellt (siehe [`marketing-agb-audit.md`](marketing-agb-audit.md) Option B') |
-| § 7 Bildrechte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 4 abuse-Prozess ergaenzen |
+| § 1 B2B-Beschraenkung | `[ERLEDIGT 2026-05-16]` | AGB Abs. 4: Sonderkuendigungsrecht bei Falsch-Erklaerung ergaenzt. UI-Items in `PRODUCT.md` § 5.1 als Phase-0-Bau-Pflicht dokumentiert (Hinweis-Box + UID-optional + Selbsterklaerungs-Checkbox) |
+| § 5 KI-Inhalte | `[ERLEDIGT 2026-05-16]` | AGB Abs. 6 AI-Act-Kennzeichnung (Art. 50 EU-AI-Act, Stichtag 2026-08-02) ergaenzt |
+| § 6 Generierte Rechtstexte | `[ERLEDIGT 2026-05-16]` | Marketing-Wording in BRAND.md auf „Impressum und Datenschutz automatisch erstellt" umgestellt (siehe [`marketing-agb-audit.md`](marketing-agb-audit.md) Option B') |
+| § 7 Bildrechte | `[ERLEDIGT 2026-05-16]` | AGB Abs. 4 abuse@instantpage.at-Prozess + Notice-and-Takedown (§ 16 ECG / DSA) + 3-Werktage-Erstantwort ergaenzt |
 | § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
 | § 9 Abs. 5 Aktionsrabatte | `[FLAG ERLEDIGT 2026-05-16]` | Email-Template [`aktionsrabatt-ende.md`](../email-templates/aktionsrabatt-ende.md) erstellt (14-Tage-Erinnerung vor Rabatt-Ende) |
 | Quer: Re-Gen-Trigger | `[FLAG ERLEDIGT 2026-05-16]` | § 4 Abs. 5 ergaenzt (Re-Generation-Trigger bei Branchen-/Anrede-Wechsel mit Portal-Warnung) |

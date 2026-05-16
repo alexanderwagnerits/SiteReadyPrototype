@@ -528,6 +528,18 @@ Gruppierung nach Wert-Kategorien (Memory `feedback_pricing_features.md`: stärks
 
 → Vollständige Spezifikation in [`RECIPE-SYSTEM.md`](RECIPE-SYSTEM.md) Abschnitt "Onboarding-Flow". Diese Doku verweist nur, hält keine eigene Beschreibung — Drift-Schutz.
 
+### 5.1 B2B-Pflicht-UX (`[BAU Phase 0]`)
+
+> Aus AGB-Selbstcheck `[ERLEDIGT 2026-05-16]` § 1 B2B-Beschraenkung: drei UX-Bau-Items vor Live-Schaltung verhindern KSchG-Drift + § 864a ABGB-Risiko (ungewoehnliche Klausel).
+
+| Bau-Item | Wo | Anti-Risiko |
+|---|---|---|
+| **Hinweis-Box im Bestellprozess** | Vor Checkout-Formular: sichtbare Box „Dieses Angebot richtet sich ausschliesslich an Unternehmer im Sinne § 1 KSchG. Privatkunden sind ausgeschlossen — siehe AGB § 1." | KSchG-Anspruch via „ungewoehnliche Klausel" (§ 864a ABGB) abgewehrt — Klausel war prominent sichtbar |
+| **UID-Eingabefeld als „optional"** | Bestellformular: UID-Feld mit Beschriftung „UID-Nummer (optional — bei Kleinunternehmern nicht zwingend)". Leeres Feld = Kleinunternehmer-Status moeglich, keine Validierungs-Pflicht | Schuetzt AT-Kleinunternehmer-Kunden, konsistent mit eigener Kleinunternehmer-Position |
+| **Selbsterklaerungs-Checkbox** | Pflicht-Checkbox: „Ich bestaetige, im Rahmen meiner unternehmerischen Taetigkeit zu handeln (siehe AGB § 1 Abs. 3)." Logging in `activity_log` mit `event_type='b2b_self_declaration'` | Beweismittel fuer AGB § 1 Abs. 3-4 (Selbsterklaerung als Vertragsbestandteil) |
+
+**Kein Phase-0-Code-Block in PRODUCT.md fuer UI-Implementation** — Detail wird im Live-Bau im Onboarding-Flow umgesetzt, hier nur Pflicht-Liste der UX-Items.
+
 ## 6. Trial + Cancellation
 
 Strategie-Entscheidungen aus [`LIVE-COMPLIANCE.md` § 1](LIVE-COMPLIANCE.md#1-strategie-entscheidungen):

@@ -291,7 +291,7 @@ DPA-Status-Marker:
 
 (3) Der Kunde bestätigt mit Vertragsabschluss durch ausdrückliche Selbsterklärung, im Rahmen seiner unternehmerischen Tätigkeit zu handeln, und gibt seinen Firmenwortlaut sowie die Geschäftsanschrift wahrheitsgemäß an. Eine UID-Nummer, GISA-Zahl oder Firmenbuchnummer ist optional anzugeben, sofern vorhanden — eine Verpflichtung zur Angabe besteht insbesondere bei Kleinunternehmern, Soloselbstständigen oder gewerblich tätigen Vereinen ohne UID-Nummer nicht.
 
-(4) Bei Falschangabe der Unternehmer-Eigenschaft haftet der Kunde für sämtliche daraus entstehenden Folgen, einschließlich entgangener Steuervorteile und zusätzlicher Verpflichtungen.
+(4) Bei Falschangabe der Unternehmer-Eigenschaft haftet der Kunde für sämtliche daraus entstehenden Folgen, einschließlich entgangener Steuervorteile und zusätzlicher Verpflichtungen. Der Anbieter ist in diesem Fall zur außerordentlichen Kündigung des Vertrags mit sofortiger Wirkung berechtigt; bereits geleistete Zahlungen werden anteilig nach erbrachter Leistung abgerechnet.
 
 (5) Allgemeine Geschäftsbedingungen des Kunden gelten nicht, auch wenn der Anbieter ihnen nicht ausdrücklich widerspricht.
 
@@ -346,6 +346,8 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 (5) Die aktive Freigabe der generierten Inhalte erfolgt durch den Kunden über einen verpflichtenden Bestätigungs-Klick im Portal vor der Live-Schaltung. Mit diesem Klick erklärt der Kunde, die Inhalte zur Kenntnis genommen zu haben und die Verantwortung für deren Veröffentlichung zu übernehmen. Der Zeitpunkt der Freigabe wird vom Anbieter dokumentiert (siehe § 1.5 Aktivitätenprotokoll).
 
+(6) Ab dem 2. August 2026 (Geltungsbeginn der Transparenzpflichten nach Art. 50 EU-AI-Act, Verordnung (EU) 2024/1689) ergänzt der Anbieter die generierte Website automatisch um einen Hinweis im Footer, dass Texte unter Einsatz von KI-Systemen erstellt wurden. Der Kunde ist verpflichtet, diesen Hinweis in unveränderter Form zu belassen. Ein Entfernen oder Verändern des Hinweises ist nicht zulässig. Bei Verstoß ist der Anbieter berechtigt, den Hinweis serve-time wiederherzustellen.
+
 ### § 6 Generierte Rechtstexte (Eigenklausel)
 
 (1) Die vom Anbieter bereitgestellten Vorlagen für Impressum und Datenschutzerklärung werden auf Basis der vom Kunden eingegebenen Daten und der vom Kunden aktivierten Plattform-Module automatisiert generiert.
@@ -363,6 +365,8 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 (2) Der Kunde stellt den Anbieter von sämtlichen Ansprüchen Dritter frei, die wegen einer Rechtsverletzung durch vom Kunden eingestellte Inhalte gegen den Anbieter erhoben werden.
 
 (3) Der Anbieter ist berechtigt, Inhalte bei begründetem Hinweis auf Rechtsverletzungen oder Verstöße gegen geltendes Recht zu entfernen oder die betroffene Website vorübergehend zu sperren.
+
+(4) Hinweise auf Rechtsverletzungen — insbesondere Verletzungen von Urheber-, Marken-, Persönlichkeits- oder Datenschutzrechten Dritter — sind an abuse@instantpage.at zu richten. Der Anbieter bearbeitet eingehende Hinweise im Rahmen des Notice-and-Takedown-Verfahrens gemäß § 16 ECG und den einschlägigen Bestimmungen des Digital Services Act und reagiert in der Regel innerhalb von drei Werktagen mit einer ersten Rückmeldung.
 
 ### § 8 Verantwortlichkeit für die Website (Betreiber-Klausel)
 

@@ -332,6 +332,8 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 (4) Der Kunde sichert seine Zugangsdaten ab, aktiviert Zwei-Faktor-Authentifizierung sofern angeboten und meldet Sicherheitsvorfälle unverzüglich.
 
+(5) Wesentliche Änderungen an den Stammdaten des Kunden (insbesondere Berufsgruppe oder Anrede-Form „Sie / du") können eine automatische Neu-Generierung der Website-Texte auslösen. Der Anbieter weist den Kunden im Self-Service-Portal vor einer solchen Änderung darauf hin; nach Bestätigung durch den Kunden gehen zuvor manuell vorgenommene Text-Anpassungen verloren. Der Kunde ist verpflichtet, neu generierte Inhalte nach § 4 Abs. 3 sowie § 5 Abs. 5 erneut zu prüfen und vor Veröffentlichung aktiv freizugeben.
+
 ### § 5 KI-generierte Inhalte (Eigenklausel)
 
 (1) Texte, Beschreibungen und Vorschläge auf der generierten Website werden unter Einsatz von KI-Sprachmodellen erstellt.

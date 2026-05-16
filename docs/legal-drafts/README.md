@@ -10,7 +10,8 @@ Dieses Verzeichnis enthaelt die ausformulierten Volltexte der Plattform-Rechtste
 | Datenschutzerklaerung | `LIVE-COMPLIANCE.md` § 8 | [`datenschutz-plattform.md`](datenschutz-plattform.md) |
 | AVV (Hauptteil + Anhaenge) | `LIVE-COMPLIANCE.md` § 6 | [`avv-plattform.md`](avv-plattform.md) — Hauptteil als SCC-Verweis (EU 2021/915), Anhaenge I-IV ausformuliert |
 | Impressum | `LIVE-COMPLIANCE.md` § 7 | [`impressum-plattform.md`](impressum-plattform.md) |
-| AGB-Selbstcheck | `LIVE-COMPLIANCE.md` § 5 | [`agb-selbstcheck.md`](agb-selbstcheck.md) — 6 Eigenklauseln + Quer-Themen, 2 FLAGs vor Live |
+| AGB-Selbstcheck | `LIVE-COMPLIANCE.md` § 5 | [`agb-selbstcheck.md`](agb-selbstcheck.md) — 6 Eigenklauseln + Quer-Themen + Nachtrag §§ 16-18 (Plan-Portfolio-Erweiterung) |
+| Marketing-AGB-Wording-Audit | FLAG § 6 aus agb-selbstcheck.md | [`marketing-agb-audit.md`](marketing-agb-audit.md) — „AT-Compliance integriert" vs § 6 Abs. 2; 3 Optionen, Option B empfohlen |
 
 ## Workflow
 

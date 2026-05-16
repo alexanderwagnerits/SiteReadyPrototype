@@ -245,12 +245,14 @@ AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll)
 |---|---|---|
 | § 1 B2B-Beschraenkung | `[OK MIT MINOR-EMPFEHLUNGEN]` | UI-Hinweis-Box im Bestellprozess |
 | § 5 KI-Inhalte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 6 AI-Act-Kennzeichnung ergaenzen |
-| § 6 Generierte Rechtstexte | **`[FLAG — MARKETING-AGB-PRUEFUNG VOR LIVE]`** | Marketing-Wording-Audit (User-Entscheidung) |
+| § 6 Generierte Rechtstexte | **`[AUDIT-DRAFT 2026-05-16, User-Entscheidung offen]`** | Marketing-Wording-Audit in [`marketing-agb-audit.md`](marketing-agb-audit.md) — Option B (empfohlen): „integriert" → „vorausgefuellt"/„inkludiert" |
 | § 7 Bildrechte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 4 abuse-Prozess ergaenzen |
 | § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
 | § 9 Abs. 5 Aktionsrabatte | `[FLAG ERLEDIGT 2026-05-16]` | Email-Template [`aktionsrabatt-ende.md`](../email-templates/aktionsrabatt-ende.md) erstellt (14-Tage-Erinnerung vor Rabatt-Ende) |
-| Quer: Re-Gen-Trigger | `[FLAG — AGB-ERGAENZUNG]` | § 4 Abs. 5 ergaenzen |
-| §§ 16, 17, 18 (Plan-Portfolio-Erweiterung 2026-05-16) | `[NACHTRAG — Selbstcheck ausstehend]` | siehe Nachtrag-Block unten |
+| Quer: Re-Gen-Trigger | `[FLAG ERLEDIGT 2026-05-16]` | § 4 Abs. 5 ergaenzt (Re-Generation-Trigger bei Branchen-/Anrede-Wechsel mit Portal-Warnung) |
+| § 16 Einrichtungs-Service (Plan-Portfolio-Erweiterung) | `[OK MIT MINOR-EMPFEHLUNG]` | Preis-Variable aus AGB rausziehen (siehe Nachtrag-Block) |
+| § 17 Custom-Sites (Plan-Portfolio-Erweiterung) | **`[FLAG — 4 EMPFEHLUNGEN]`** | Form / Mitverantwortung / Preis-Variable / Source-Files (siehe Nachtrag-Block) |
+| § 18 Whitelabel-Verweis (Plan-Portfolio-Erweiterung) | `[OK MIT MINOR-EMPFEHLUNG]` | Einzelvertrags-Zeitpunkt + Vorrang-Regel (siehe Nachtrag-Block) |
 
 ### Restrisiko-Einschaetzung
 Vergleichbar mit `LIVE-COMPLIANCE.md` § 18 — ohne Anwalt vor Live etwa **20 % Restrisiko** in den Eigenklauseln. Hauptrisiko liegt in § 6 (Marketing-AGB-Diskrepanz), nicht in der AGB selbst — defensive Wording-Anpassung im Marketing reduziert das Risiko deutlich.
@@ -267,24 +269,130 @@ Die FLAG-markierten Punkte werden bei Anwalts-Audit als priorisierte Pruefliste 
 
 ---
 
-## Nachtrag 2026-05-16 — Neue Eigenklauseln §§ 16, 17, 18 (Plan-Portfolio-Erweiterung)
+## Nachtrag 2026-05-16 — Eigenklauseln §§ 16, 17, 18 (Plan-Portfolio-Erweiterung)
 
-> **Status:** Selbstcheck-Pass dieser drei neuen Klauseln **noch ausstehend**. Erstdraft im AGB-Volltext erfolgt, Plausibilitaets-Pruefung wie fuer §§ 1, 5, 6, 7, 8 wird in Folge-Session nachgezogen.
+> **Status:** Selbstcheck-Pass durchgegangen 2026-05-16.
 
-Drei neue AGB-Klauseln durch Plan-Portfolio-Erweiterung (siehe `PRODUCT.md` § 3.5/3.6/3.7):
+### § 16 — Einrichtungs-Service (Werkleistung, 149 EUR)
 
-- **§ 16 Einrichtungs-Service** — Werkleistung, 149 EUR einmalig, nicht refundierbar nach Erbringung, Werkvertrag-Klausel-Pattern
-- **§ 17 Custom-Sites — Sonderleistungen** — Werkvertrag ab 990 EUR + Custom-Hosting & Care 79 EUR/Mo mit 1 Std Wartung/Monat, schriftliche Abnahme vor Live, reglementierte-Berufe-Defensiv-Mechanik
-- **§ 18 Whitelabel-Agentur-Verweis** — Programme laufen ueber Einzelvertrag, Standard-AGB nur subsidiaer
+**Ist-Stand:**
+- Abs. 1-3: Werkleistung, Leistungsumfang, Nicht-Bestandteile klar abgegrenzt
+- Abs. 4: 149 EUR netto, Vorab-Zahlung via Stripe, Kleinunternehmer-Hinweis
+- Abs. 5: Abnahme durch Freigabe-Klick = keine Erstattung
+- Abs. 6: nur in Kombination mit Subscription, Trial gilt nur fuer Subscription-Teil
+- Abs. 7: Verfuegbarkeit nach Terminvereinbarung
 
-**Pruef-Punkte fuer Nachtrags-Selbstcheck:**
-- § 16: Werkleistungs-Definition vs SaaS-Subscription sauber abgegrenzt? Trial-Mechanik-Konsistenz mit § 5 Abs. 5 (Freigabe-Klick als Abnahme)?
-- § 17 Abs. 3 (schriftliche Abnahme): Form-Anforderung („schriftlich") in B2B-Kontext durchsetzbar mit E-Mail-Bestaetigung?
-- § 17 Abs. 5 lit. c (1 Std Wartung/Monat): „kein Carry-over" — koennte als „groebliche Benachteiligung" (§ 879 Abs. 3 ABGB) angegriffen werden, wenn 12 Monate keine Wartung in Anspruch genommen wird und Kunde dann keine Akkumulation erhaelt? Verteidigungs-Linie: Wartungs-Bereitschaft hat eigenen Wert, nicht nur reaktive Inanspruchnahme
-- § 17 Abs. 4 (reglementierte Berufe): Wagner IT-Solutions-Mitverantwortung als Bau-Leistender ausreichend abgegrenzt durch „schriftliche Abnahme + Kunden-Verantwortung"?
-- § 18: Pauschal-Verweis auf Einzelvertrag rechtssicher fuer komplette Whitelabel-Programme? Mindest-Inhalt im Einzelvertrag (AVV-Sub-Auftrag, Endkunden-Insolvenz-Mechanik) als Anhang noetig?
+**Plausibilitaets-Check:**
 
-**Anwalts-Flag:** § 17 Abs. 5 lit. c (Wartungs-Carry-over) + § 18 (Whitelabel-Konstruktion) sind Top-Themen fuer Anwalts-Audit, sobald Trigger-Schwelle erreicht ist (`LIVE-COMPLIANCE.md` § 18).
+✅ Werkleistungs-Definition sauber abgegrenzt von SaaS-Subscription
+✅ Freigabe-Klick-Mechanik konsistent mit § 5 Abs. 5 (Aktivitaetsprotokoll)
+✅ Trial-Mechanik-Bypass fuer Werkleistung B2B-zulaessig
+✅ Verfuegbarkeit-Klausel schuetzt vor Volumen-Druck (keine harte SLA-Verpflichtung)
+
+**Schwachstellen:**
+- **Preis im AGB-Volltext (Abs. 4):** 149 EUR steht direkt im Klausel-Text — bei Preis-Aenderung muss AGB ueber § 14 (Anpassung) re-akzeptiert werden. Aufwaendig. **Empfehlung:** Klausel umformulieren auf „im jeweils aktiv beworbenen Preis (Pricing-Page)" + Hinweis dass der Preis im Bestellprozess transparent angezeigt wird. Reduziert AGB-Update-Pflicht.
+- Form-Anforderung Terminvereinbarung nicht spezifiziert — derzeit „nach Terminvereinbarung" als Soft-Klausel. Bei E-Mail-only-Vereinbarung ok.
+
+**Konsistenz:**
+- DSE § 3.1: keine separate DSE-Behandlung des Setup-Service noetig (Daten = Plattform-Stammdaten)
+- AVV: keine Anhang-IV-Aenderung
+- BRAND.md § 7: Setup-Service-Karte als Pricing-Element konsistent zu Voice „Wir bauen Ihre Website"
+- email-templates: aktionsrabatt-ende.md NICHT betroffen (Newcomer-Rabatt gilt nur fuer Subscription, nicht Setup-Service)
+
+**Status:** **`[OK MIT MINOR-EMPFEHLUNG]`** — Preis-Variable aus AGB-Volltext rausziehen, Verweis auf Pricing-Page.
+
+---
+
+### § 17 — Custom-Sites Sonderleistungen (Werkvertrag, ab 990 EUR + 79 EUR/Mo)
+
+**Ist-Stand:**
+- Abs. 1: Werkvertrag §§ 1165 ff. ABGB
+- Abs. 2: Einzelvereinbarung Preis ab 990 EUR + Umfang + Lieferzeit
+- Abs. 3: schriftliche Abnahme vor Live-Schaltung, Audit-Trail
+- Abs. 4: reglementierte Berufe — Kunden-Verantwortung
+- Abs. 5 lit. a-d: Custom Hosting & Care 79 EUR/Mo Leistungsumfang (Infrastruktur, Monitoring, 1 Std Wartung kein Carry-over, Priority-Support 24h)
+- Abs. 6: Nicht-inkludiert + 70 EUR/Std-Verrechnung
+- Abs. 7: Custom-Site unter eigener Marke
+- Abs. 8: Beendigung-Mechanik + keine Quelldateien-Pflicht
+
+**Plausibilitaets-Check:**
+
+✅ Werkvertrag-Verweis (§§ 1165 ff. ABGB) korrekt — Custom-Bau ist klassische Werkleistung
+✅ Schriftliche Abnahme = B2B-konform durchsetzbar, E-Mail-Form reicht
+✅ Custom-Site-Branding (Abs. 7) konsistent mit Brand-Strategie
+✅ Hosting & Care 79 EUR/Mo mit Wartungs-Mechanik = Industry-Standard fuer Web-Agentur-Hosting
+✅ 70 EUR/Std-Aufpreis fuer Mehrbedarf transparent
+
+**Schwachstellen — drei davon mit Handlungs-Bedarf:**
+
+1. **Abs. 2 Form-Anforderung fehlt:** „Einzelvereinbarung Preis und Umfang" — keine Form gefordert. **Empfehlung:** „schriftlich oder in Textform" ergaenzen, um muendliche Auftrags-Drift zu vermeiden.
+
+2. **Abs. 4 reglementierte Berufe — Mitverantwortungs-Defensive duenn:** Wagner IT-Solutions ist als Bau-Leistender mitverantwortlich (§ 2 + § 16 UWG), wenn Custom-Site fuer einen Anwalt/Arzt UWG-relevante Werbung enthaelt. Abs. 4 schiebt die Verantwortung dem Kunden zu, schuetzt aber nicht vor Gehilfen-Haftung. **Empfehlung:** Zusatz „Der Anbieter erbringt keine berufsrechtliche Beratung; die Beurteilung der berufsrechtlichen Zulaessigkeit obliegt allein dem Kunden, gegebenenfalls unter Beiziehung einer fachkundigen Stelle (Kammer, Innung, Rechtsanwalt). Der Anbieter ist berechtigt, die Erstellung einer Custom-Site abzulehnen, wenn Anhaltspunkte fuer berufsrechtliche Verstoesse erkennbar werden." Gibt Wagner IT-Solutions ein Ablehnungs-Recht ohne Vertragsbruch.
+
+3. **Abs. 5 lit. c — Wartungs-Carry-over:** „nicht in Anspruch genommene Stunden verfallen am Monatsende ohne Uebertragung in den Folgemonat" — koennte als „groebliche Benachteiligung" (§ 879 Abs. 3 ABGB) gelesen werden, wenn 12 Monate keine Wartung in Anspruch genommen wird und Kunde dann auf Anfrage „verbrauchte Stunden" geltend macht. **Verteidigungs-Linie:** Wartungs-Bereitschaft hat eigenen Wert (Infrastruktur-Vorhalt, Priority-Support-Slot), unabhaengig von tatsaechlicher Inanspruchnahme. **Empfehlung:** im OPS-Workflow aktiv kommunizieren — wenn Kunde 3 Monate keine Wartung nutzt, Mail „Sie haben dieses Quartal keine Wartung in Anspruch genommen — soll ich auf etwas blicken?" Reduziert Beschwerde-Risiko + zeigt Wert der Bereitschaft.
+
+4. **Abs. 6 70-EUR-Stundensatz im AGB-Volltext:** wie bei § 16 Abs. 4 — Preis-Drift-Risiko. **Empfehlung:** „zum jeweils aktuellen Standard-Stundensatz des Anbieters, der dem Kunden vor Beauftragung mitgeteilt wird".
+
+5. **Abs. 8 keine Quelldateien-Uebergabe** koennte als „ungewoehnliche Klausel" (§ 864a ABGB) angegriffen werden. Kunde der 990+ EUR fuer Custom-Bau zahlt erwartet emotional ggf. Source-Files. **Verteidigungs-Linie:** im AT-Werkvertrags-Recht gehen Source-Files nicht ohne explizite Vereinbarung an den Werkbesteller (analog Bauvertrag: Architekt liefert Bauwerk, nicht Plaene). **Empfehlung:** in jedem Custom-Site-Einzelvertrag explizit klarstellen — entweder „Source-Files bleiben Eigentum Anbieter" oder „Uebergabe auf Anfrage gegen Aufpreis X EUR". Anti-Drift in den OPS-Vorlagen.
+
+**Konsistenz:**
+- AVV Anhang IV: pro Custom-Site muss Annex erstellt werden (Datenkategorien individuell). Konsistent mit AVV § 1 Abs. 1 (Anhaenge als Bestandteil).
+- DSE: keine generelle Aenderung, individuelle DSE pro Custom-Site (Kunden-eigene DSE auf der Custom-Site)
+- BRAND.md § 5: Voice-Spannung — Custom-Sites = Wagner IT-Solutions als Agentur, nicht instantpage-Brand. AGB § 17 spricht „Anbieter" — formal korrekt, weil Wagner IT-Solutions e.U. der Vertragspartner ist. Brand-Trennung lebt im Marketing, nicht im AGB.
+
+**Anwalts-Flags (zwei wichtige):**
+- `[ANWALT-PRUEFUNG WICHTIG]` Abs. 4 Reglementierte-Berufe-Mitverantwortung — vor erstem Custom-Bau fuer Anwalt/Arzt/Apotheke Anwalts-Audit dringend
+- `[ANWALT-PRUEFUNG WICHTIG]` Abs. 5 lit. c Wartungs-Carry-over — bei Trigger-Schwelle 30 zahlende Kunden formale Pruefung
+
+**Status:** **`[FLAG — 4 EMPFEHLUNGEN VOR LIVE]`** — Abs. 2 (Form), Abs. 4 (Mitverantwortung), Abs. 6 (Preis-Variable), Abs. 8 (Source-Files-Klarstellung in OPS-Vorlage) ergaenzen.
+
+---
+
+### § 18 — Whitelabel-Agentur-Verweis (Subsidiaer-Klausel)
+
+**Ist-Stand:**
+- Whitelabel-Programme nur ueber Einzelvertrag
+- Standard-AGB subsidiaer
+- AVV-Drei-Parteien-Konstellation im Einzelvertrag
+
+**Plausibilitaets-Check:**
+
+✅ Pauschal-Verweis fuer Phase 1 OK (kein aktives Whitelabel-Geschaeft)
+✅ AVV-Verweis korrekt — Drei-Parteien-Konstellation braucht explizite Einzelvertrags-Regelung
+
+**Schwachstellen:**
+
+1. **Wann muss der Einzelvertrag geschlossen werden?** Aktuell nicht im AGB klargestellt. **Empfehlung:** Zusatz „Der Einzelvertrag ist VOR Aktivierung der ersten Whitelabel-Site abzuschliessen. Ohne wirksamen Einzelvertrag und gesonderten AVV stehen Whitelabel-Funktionen nicht zur Verfuegung." Schliesst Lue Lue („wir aktivieren mal, Vertrag kommt spaeter").
+2. **Wie verhaelt sich Standard-AGB zu Einzelvertrag bei Widerspruch?** Aktuell „subsidiaer". Klar genug, aber bei langen Einzelvertraegen kann „subsidiaer" zu Auslegungs-Streit fuehren. **Empfehlung:** „Bei Widersprueche zwischen Standard-AGB und Whitelabel-Einzelvertrag haben die Bestimmungen des Einzelvertrags Vorrang."
+
+**Konsistenz:**
+- ARCHITECTURE.md § 4: `agency_id`-Spalte vorbereitet, Phase-2-Aktivierung
+- PRODUCT.md § 3.7: „Co-Branded Light"-Mechanik definiert, Pricing-Modell auf Anfrage
+- AVV-Volltext: aktuell Zweiparteien-Konstruktion (Kunde-Anbieter), Whitelabel braucht Drei-Parteien-Annex — Phase-2-Spec
+
+**Anwalts-Flag:**
+- `[ANWALT-PRUEFUNG WICHTIG]` Vor erster Whitelabel-Aktivierung: Einzelvertrags-Muster + Drei-Parteien-AVV ist Anwalts-Pflicht (Pivot 2026-05-15 erlaubt Eigenarbeit nur fuer Standard-Themen, Whitelabel-Konstruktion ist juristisch komplex genug fuer 2-4h Anwalts-Zeit)
+
+**Status:** **`[OK MIT MINOR-EMPFEHLUNGEN]`** — Zeitpunkt-Klarstellung + Vorrang-Regel ergaenzen.
+
+---
+
+### Zusammenfassung Nachtrag
+
+| Klausel | Status | Top-Aktion vor Live |
+|---|---|---|
+| § 16 Einrichtungs-Service | `[OK MIT MINOR-EMPFEHLUNG]` | Preis-Variable aus AGB-Volltext rausziehen |
+| § 17 Custom-Sites | **`[FLAG — 4 EMPFEHLUNGEN]`** | Abs. 2 Form / Abs. 4 Mitverantwortung / Abs. 6 Preis-Variable / Abs. 8 Source-Files-OPS |
+| § 18 Whitelabel-Verweis | `[OK MIT MINOR-EMPFEHLUNG]` | Einzelvertrags-Zeitpunkt + Vorrang-Regel |
+
+### Restrisiko-Update
+
+Vergleichbar mit `LIVE-COMPLIANCE.md` § 18 — ohne Anwalt vor Live etwa **20-25 % Restrisiko** in den Eigenklauseln. Plan-Portfolio-Erweiterung erhoeht das Risiko leicht (3 neue Klauseln), aber Werkvertrag-Pattern ist gut etabliert.
+
+**Wichtigste neue Anwalts-Audit-Trigger:**
+- Erster Custom-Site-Auftrag fuer reglementierten Beruf (Anwalt/Arzt/Apotheke)
+- Erste Whitelabel-Aktivierung (Einzelvertrags-Muster + Drei-Parteien-AVV)
+- 30+ zahlende Kunden (Standard-Trigger fuer Gesamt-Audit)
 
 ---
 

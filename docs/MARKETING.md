@@ -223,6 +223,8 @@ Maximal **3 Touchpoints** vor Pause — vermeidet Spam-Wahrnehmung, kollidiert n
 
 **Mail-Templates:** Erstdrafts 2026-05-16 in [`docs/sales-templates/`](sales-templates/) — je 1 Template pro Erstziel-Sparte (Tischler, Berater, Anwalt) mit Mail 1 + Follow-up Mail 2 + Footer + Personalisierungs-Checkliste + UWG-Selbstcheck-Liste in `sales-templates/README.md`. Voice strikt sachlich, kein Standard-Cold-Mail-Pattern, eine Branchen-spezifische Beobachtung pro Mail.
 
+**Einrichtungs-Service als optionaler Outreach-Hook `[ERWEITERUNG 2026-05-16]`:** Bei „weiss-nicht-Lager"-Leads (Inhaber schreckt vor Self-Service-Onboarding) kann der Einrichtungs-Service (149 EUR einmalig, siehe `PRODUCT.md` § 3.5) als Mail-2-Aufhaenger verwendet werden: „Falls Self-Service-Aufwand zu viel klingt — wir richten die Seite gemeinsam mit Ihnen in einem Call ein, fuer 149 EUR einmalig zusaetzlich zum Plan." Bewusst nicht in Mail 1 (vermeidet Service-Overload, primaer-Brand bleibt Self-Service).
+
 **Volumen-Ziel Pre-Launch + Monat 1:**
 - 50 Leads pro Sparte pro Region = 150 Leads total in 3 Sparten
 - 3 Sparten × 1 Region = 150 personalisierte Touchpoints

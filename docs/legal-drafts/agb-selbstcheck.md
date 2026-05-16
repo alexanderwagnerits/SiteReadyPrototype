@@ -250,6 +250,7 @@ AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll)
 | § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
 | § 9 Abs. 5 Aktionsrabatte | **`[FLAG — ERINNERUNGS-MAIL VOR LIVE]`** | Email-Template `aktionsrabatt-ende.md` |
 | Quer: Re-Gen-Trigger | `[FLAG — AGB-ERGAENZUNG]` | § 4 Abs. 5 ergaenzen |
+| §§ 16, 17, 18 (Plan-Portfolio-Erweiterung 2026-05-16) | `[NACHTRAG — Selbstcheck ausstehend]` | siehe Nachtrag-Block unten |
 
 ### Restrisiko-Einschaetzung
 Vergleichbar mit `LIVE-COMPLIANCE.md` § 18 — ohne Anwalt vor Live etwa **20 % Restrisiko** in den Eigenklauseln. Hauptrisiko liegt in § 6 (Marketing-AGB-Diskrepanz), nicht in der AGB selbst — defensive Wording-Anpassung im Marketing reduziert das Risiko deutlich.
@@ -266,8 +267,30 @@ Die FLAG-markierten Punkte werden bei Anwalts-Audit als priorisierte Pruefliste 
 
 ---
 
+## Nachtrag 2026-05-16 — Neue Eigenklauseln §§ 16, 17, 18 (Plan-Portfolio-Erweiterung)
+
+> **Status:** Selbstcheck-Pass dieser drei neuen Klauseln **noch ausstehend**. Erstdraft im AGB-Volltext erfolgt, Plausibilitaets-Pruefung wie fuer §§ 1, 5, 6, 7, 8 wird in Folge-Session nachgezogen.
+
+Drei neue AGB-Klauseln durch Plan-Portfolio-Erweiterung (siehe `PRODUCT.md` § 3.5/3.6/3.7):
+
+- **§ 16 Einrichtungs-Service** — Werkleistung, 149 EUR einmalig, nicht refundierbar nach Erbringung, Werkvertrag-Klausel-Pattern
+- **§ 17 Custom-Sites — Sonderleistungen** — Werkvertrag ab 990 EUR + Custom-Hosting & Care 79 EUR/Mo mit 1 Std Wartung/Monat, schriftliche Abnahme vor Live, reglementierte-Berufe-Defensiv-Mechanik
+- **§ 18 Whitelabel-Agentur-Verweis** — Programme laufen ueber Einzelvertrag, Standard-AGB nur subsidiaer
+
+**Pruef-Punkte fuer Nachtrags-Selbstcheck:**
+- § 16: Werkleistungs-Definition vs SaaS-Subscription sauber abgegrenzt? Trial-Mechanik-Konsistenz mit § 5 Abs. 5 (Freigabe-Klick als Abnahme)?
+- § 17 Abs. 3 (schriftliche Abnahme): Form-Anforderung („schriftlich") in B2B-Kontext durchsetzbar mit E-Mail-Bestaetigung?
+- § 17 Abs. 5 lit. c (1 Std Wartung/Monat): „kein Carry-over" — koennte als „groebliche Benachteiligung" (§ 879 Abs. 3 ABGB) angegriffen werden, wenn 12 Monate keine Wartung in Anspruch genommen wird und Kunde dann keine Akkumulation erhaelt? Verteidigungs-Linie: Wartungs-Bereitschaft hat eigenen Wert, nicht nur reaktive Inanspruchnahme
+- § 17 Abs. 4 (reglementierte Berufe): Wagner IT-Solutions-Mitverantwortung als Bau-Leistender ausreichend abgegrenzt durch „schriftliche Abnahme + Kunden-Verantwortung"?
+- § 18: Pauschal-Verweis auf Einzelvertrag rechtssicher fuer komplette Whitelabel-Programme? Mindest-Inhalt im Einzelvertrag (AVV-Sub-Auftrag, Endkunden-Insolvenz-Mechanik) als Anhang noetig?
+
+**Anwalts-Flag:** § 17 Abs. 5 lit. c (Wartungs-Carry-over) + § 18 (Whitelabel-Konstruktion) sind Top-Themen fuer Anwalts-Audit, sobald Trigger-Schwelle erreicht ist (`LIVE-COMPLIANCE.md` § 18).
+
+---
+
 ## Aenderungs-Log
 
 | Datum | aenderung | Autor |
 |---|---|---|
 | 2026-05-16 | Erstdraft Selbstcheck-Pass durch 6 Eigenklauseln + Quer-Themen | Eigenarbeit |
+| 2026-05-16 | Nachtrag-Block fuer neue Klauseln §§ 16, 17, 18 (Plan-Portfolio-Erweiterung, Selbstcheck ausstehend) | Eigenarbeit |

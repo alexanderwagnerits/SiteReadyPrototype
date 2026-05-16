@@ -440,6 +440,65 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 (4) Änderungen und Ergänzungen dieses Vertrags bedürfen der Textform.
 
+### § 16 Einrichtungs-Service (Eigenklausel, Werkleistung)
+
+(1) Der Einrichtungs-Service ist eine optionale, einmalige Werkleistung des Anbieters zur Unterstützung des Kunden bei der erstmaligen Einrichtung der Website. Er ist nicht Bestandteil der monatlichen Plan-Leistungen.
+
+(2) Der Leistungsumfang des Einrichtungs-Service umfasst:
+
+a) ein gemeinsames Telefonat oder Video-Call von 30 bis 60 Minuten zur gemeinsamen Befuellung des Onboarding-Fragebogens
+b) Beratung bei der Auswahl von bis zu 15 Fotos aus vom Kunden bereitgestelltem Material oder Stockfoto-Quellen
+c) Hilfestellung bei der DNS-Konfiguration für die Anbindung einer eigenen Domain
+d) Begleitung des Freigabe-Klicks vor der Live-Schaltung
+
+(3) Nicht vom Leistungsumfang umfasst sind insbesondere:
+
+a) das Verfassen oder umfassende Anpassen von Custom-Texten (es wird der reguläre KI-Generator des Anbieters verwendet)
+b) die Beschaffung von professionellen Fotografien
+c) die Erstellung eines Logos oder anderer Markenelemente
+d) eine inhaltliche Pflege der Website nach Live-Schaltung
+
+(4) Die Vergütung für den Einrichtungs-Service ist im Voraus fällig und beträgt 149 EUR netto (ohne Umsatzsteuer-Ausweis, Kleinunternehmer-Hinweis nach § 9 Abs. 1). Die Vergütung wird über Stripe als einmalige Zahlung abgewickelt.
+
+(5) Mit Abnahme der Leistung durch den Freigabe-Klick gilt der Einrichtungs-Service als erbracht. Eine Erstattung der Vergütung nach Erbringung der Leistung ist ausgeschlossen.
+
+(6) Der Einrichtungs-Service kann nur in Kombination mit einer monatlichen Plan-Subscription (Starter oder Professional) gebucht werden. Die Trial-Phase nach § 10 gilt ausschließlich für den Subscription-Teil und beginnt mit dem Freigabe-Klick.
+
+(7) Die Verfügbarkeit erfolgt nach Terminvereinbarung. Eine Terminanfrage wird typischerweise innerhalb von 5 Werktagen beantwortet.
+
+### § 17 Custom-Sites — Sonderleistungen (Eigenklausel, Werkvertrag)
+
+(1) Auf gesonderte Anfrage erstellt der Anbieter individuell gebaute Websites (im Folgenden „Custom-Sites"), die nicht auf den Standard-Recipes und dem KI-Generator der Plattform basieren. Custom-Sites sind Werkleistungen im Sinne der §§ 1165 ff. ABGB.
+
+(2) Der konkrete Leistungsumfang, der Festpreis und die Lieferzeit werden im Einzelnen vor Auftragsannahme schriftlich vereinbart. Der Festpreis beginnt bei 990 EUR netto und ist nach oben offen, abhängig vom Projektumfang.
+
+(3) Die Abnahme der Custom-Site erfolgt schriftlich durch den Kunden vor der Live-Schaltung. Mit der schriftlichen Abnahme erklärt der Kunde, die Custom-Site inhaltlich, gestalterisch und rechtlich geprüft zu haben und übernimmt die alleinige Verantwortung für die veröffentlichten Inhalte. Der Anbieter dokumentiert den Zeitpunkt der Abnahme im Aktivitätenprotokoll.
+
+(4) Bei reglementierten Berufen (insbesondere Heilberufe, Rechts- und Wirtschaftsberatung) hat der Kunde die berufsrechtlichen Werbevorschriften eigenverantwortlich zu beachten und einzuhalten. Der Anbieter trifft eine konservative, defensive Gestaltung; die abschließende rechtliche Beurteilung obliegt dem Kunden.
+
+(5) Nach Live-Schaltung erfolgt die Bereitstellung der Custom-Site auf einer eigenen, kostenpflichtigen Hosting-Stufe „Custom Hosting & Care" zum Preis von 79 EUR netto pro Monat. Diese umfasst:
+
+a) Plattform-Infrastruktur (Hosting, SSL, DNS, tägliche Backups)
+b) Uptime-Monitoring und Sicherheits-Updates auf Plattform-Ebene
+c) eine Wartungs-Stunde pro Monat für kleinere Anpassungen (Bug-Fixes, kleine Text- oder Bild-Wechsel, kleine Layout-Justierungen). Nicht in Anspruch genommene Stunden verfallen am Monatsende ohne Übertragung in den Folgemonat
+d) Priority-Support mit 24-Stunden-Antwortzeit
+
+(6) Nicht im Custom-Hosting-Tarif enthalten sind insbesondere:
+
+a) größere Redesigns oder neue Funktionen
+b) Code-Anpassungen am Custom-Build über die monatliche Wartungs-Stunde hinaus
+c) Browser-Kompatibilitäts-Sweeps über den 1-Stunden-Rahmen hinaus
+
+Solche Leistungen werden gesondert mit 70 EUR netto pro Stunde verrechnet. Bei systematischem Mehrbedarf (regelmäßig mehr als 2 Stunden pro Monat) kann der Anbieter ein erweitertes Wartungs-Paket zwischen 49 und 79 EUR netto pro Monat anbieten.
+
+(7) Die Custom-Site erscheint nach außen unter der eigenen Marke des Kunden. Der Anbieter platziert keine eigenen Brand-Hinweise (insbesondere keinen „Powered by"-Footer) auf der Custom-Site.
+
+(8) Bei Beendigung des Vertragsverhältnisses gelten die Bestimmungen in § 10 und § 11 sinngemäß, mit der Maßgabe, dass die Custom-Site-Dateien nach dem Grace-Zeitraum endgültig gelöscht werden und keine Übergabe-Verpflichtung der Quelldateien an den Kunden besteht, sofern dies nicht im Einzelvertrag ausdrücklich vereinbart wurde.
+
+### § 18 Whitelabel-Agentur-Programm (Verweis auf Einzelvertrag)
+
+Whitelabel-Programme für Marketing-Agenturen mit eigenen KMU-Endkunden werden ausschließlich auf Basis individuell ausgehandelter Einzelverträge geschlossen. Diese Allgemeinen Geschäftsbedingungen gelten für solche Programme nur subsidiär, soweit der Einzelvertrag keine abweichenden Regelungen trifft. Die datenschutzrechtliche Stellung der Vertragsparteien (insbesondere Sub-Auftragsverarbeitungs-Verhältnis) wird im Einzelvertrag und in einem gesonderten AVV geregelt.
+
 ---
 
 ## 6. AVV — Auftragsverarbeitungsvertrag

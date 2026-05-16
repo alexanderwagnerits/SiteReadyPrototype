@@ -329,6 +329,14 @@ Die zentrale Order-Tabelle hält Firmendaten + Content + Status + Subscription p
 - `subscription_plan` ('monthly' / 'yearly')
 - `trial_expires_at` timestamptz
 
+**Plan-Typ + Sonderloesungen (`[ERWEITERT 2026-05-16]` — siehe `PRODUCT.md` § 3):**
+- `plan_type` enum (`'starter'` / `'professional'` / `'business'` / `'custom'`) — steuert Re-Generation-Trigger (Custom-Sites haben KEIN KI-Re-Gen)
+- `agency_id` uuid nullable, FK auf `agencies` Tabelle (Phase 2, Whitelabel-Programm) — Phase 1 nur Schema-Vorhalt, Spalte bleibt NULL bis Phase-2-Aktivierung
+- `custom_assets_path` text nullable — Storage-Verweis (z.B. `r2://orders/{order_id}/custom/`) fuer Custom-Sites; bei Standard-Plaenen NULL
+- `has_setup_service` bool default false — Markierung ob Einrichtungs-Service gebucht wurde (`INSTANT_SETUP_149` Stripe-One-Time-Product zusaetzlich zur Subscription)
+- `setup_service_completed_at` timestamptz nullable — Zeitstempel der Abnahme durch Freigabe-Klick (Audit-Trail)
+- `custom_site_acceptance_at` timestamptz nullable — schriftliche Abnahme der Custom-Site vor Live-Schaltung (AGB § 17 Abs. 3)
+
 **Hero-Headline (Live-Feature, Memory `project_hero_headline_pattern.md`):**
 - `hero_headline` text — Claude-generierte Kernbotschaft (H1)
 
@@ -708,6 +716,18 @@ Request: admin.instantpage.at/
 **DNS:** Wildcard `*.instantpage.at` als CNAME auf Cloudflare Pages — Cloudflare Universal SSL deckt Wildcard automatisch ab. Setup in Phase 0.
 
 **Lokale Entwicklung:** Chrome unterstützt `<sub>.localhost:3000` out-of-the-box — keine `/etc/hosts`-Manipulation nötig.
+
+**Custom-Sites Routing-Erweiterung `[ERWEITERT 2026-05-16]`:** Wenn `order.plan_type === 'custom'`, schaltet die Middleware auf einen alternativen Render-Pfad:
+
+```
+Request: cpg.instantpage.at/  (oder Custom-Domain wie cpg.at)
+  → middleware liest order: { plan_type: 'custom', custom_assets_path: 'r2://orders/{order_id}/custom/' }
+  → Bypass Plattform-Generator (kein /sites/[subdomain]/page.tsx-Render)
+  → Static-Files aus R2-Storage ausspielen mit Edge-Caching
+  → KI-Re-Generation-Trigger werden ignoriert (order.plan_type-Check in re-gen-handler.ts)
+```
+
+Custom-Site-Files werden ueber Inhaber-Upload in `r2://orders/{order_id}/custom/` deployt (Phase 0-1 manueller Upload via Wrangler oder Admin-UI, Phase 2 ggf. CI/CD-Pipeline). Re-Generation-Logik in `lib/generate/handler.ts` prueft `order.plan_type !== 'custom'` als Vorbedingung.
 
 ### 5.3 API-Endpoints
 

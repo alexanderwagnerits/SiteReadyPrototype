@@ -106,13 +106,23 @@ Zum Live-Start ausschließlich Österreich. Erweiterung auf DACH und EU ist für
 
 ## 3. Pricing + Pläne
 
-| Plan | Monatlich | Jährlich (pro Monat) | Status |
-|---|---|---|---|
-| Starter | 16 EUR | 14 EUR | aktiv |
-| Professional | 29 EUR | 25 EUR | aktiv |
-| Business | — | — | nur Teaser, noch nicht definiert |
+### 3.A Standard-Plaene (Self-Service, Day-1 buchbar)
 
-(Preise ohne USt-Ausweis — Kleinunternehmerregelung)
+| Plan | Monatlich | Jährlich (pro Monat) | Einmalpreis | Status |
+|---|---|---|---|---|
+| Starter | 16 EUR | 14 EUR | — | aktiv Day-1 |
+| Professional | 29 EUR | 25 EUR | — | aktiv Day-1 |
+| **Einrichtungs-Service** (Add-on zu Starter/Pro) | — | — | **149 EUR** | aktiv Day-1, siehe § 3.5 |
+
+### 3.B Sonderloesungen (auf Anfrage / Coming Soon)
+
+| Angebot | Preis | Status |
+|---|---|---|
+| Business-Plan | — | Coming Soon (Vormerken), Trigger ≥10 Pro-Kunden-Wuensche |
+| **Custom-Sites** (Multipage, eigene Marke, individuell gebaut) | **ab 990 EUR einmalig + 79 EUR/Mo Custom Hosting & Care** | auf Anfrage, siehe § 3.6 |
+| **Whitelabel-Agentur-Programm** (Co-Branded fuer Marketing-Agenturen mit Endkunden) | Volumen-Pauschale auf Einzelvertrag | auf Anfrage, siehe § 3.7 |
+
+(Alle Preise ohne USt-Ausweis — Kleinunternehmerregelung)
 
 **USt-Behandlung — Kleinunternehmerregelung:** Wagner IT-Solutions e.U. ist Kleinunternehmer (§ 6 Abs 1 Z 27 UStG, Umsatzgrenze 2026 = 55.000 €) — siehe `LIVE-COMPLIANCE.md` § 2. Daraus folgt:
 
@@ -342,19 +352,177 @@ Auto Quality-Check nach jeder Generierung — Score 0-100 (Title, Meta-Descripti
 
 → siehe `LIVE-COMPLIANCE.md` § 1 Strategie-Entscheidungen für weitere offene Punkte.
 
+## 3.5 Einrichtungs-Service (149 EUR einmalig)
+
+> **Status `[ENTSCHIEDEN 2026-05-16]` — Day-1 Live-Angebot.** Add-on zu Starter oder Professional, getrennte einmalige Werkleistung.
+
+### Was es ist
+
+Wir richten die Website gemeinsam mit dem Kunden ein, statt dass der Kunde den Self-Service-Fragebogen alleine durchgeht. Adressiert das „weiss-nicht-Lager" — KMU-Inhaber, die Tech-Reibung scheuen, aber mit Hilfe gerne ins Self-Service-Portal kommen.
+
+### Was drin ist (Scope-Grenze)
+
+- 30-60 Min Kunden-Call zur gemeinsamen Fragebogen-Befuellung
+- Foto-Auswahl-Beratung (max 10-15 Fotos aus Kunden-Material oder Stock)
+- Domain-Anbindung-Hilfe (DNS-Konfiguration auf Cloudflare-Pages-Zielsetzung)
+- Freigabe-Klick-Begleitung vor Live-Schaltung
+
+### Was NICHT drin ist
+
+- Custom-Texte schreiben (KI-Generator wird normal verwendet)
+- Foto-Beschaffung (Auswahl OK, aber keine professionellen Fotos organisieren)
+- Logo-Erstellung
+- Inhaltliche Pflege nach Live-Schaltung (kein Wartungs-Versprechen)
+
+### Lifecycle-Mechanik
+
+- **Stripe-One-Time-Product** `INSTANT_SETUP_149` separat zur Subscription
+- **Trial-Mechanik:** Setup-Service ist Werkleistung — nicht refundierbar nach Erbringung. 7-Tage-Trial gilt nur fuer den Subscription-Teil (Starter/Pro) ab Freigabe-Klick
+- **Volumen:** keine harte UI-Kappung Phase 1 („Verfuegbarkeit nach Terminvereinbarung, typisch 5 Werktage Vorlauf"). Re-Eval bei systematisch >5 Anfragen/Woche
+
+### Workflow (Inhaber-Side)
+
+1. Kunde bucht Setup-Service auf Pricing-Page (Stripe-Checkout zahlt 149 EUR sofort)
+2. Inhaber bekommt Webhook + Mail-Trigger („Neuer Setup-Termin")
+3. Inhaber kontaktiert Kunde via Mail mit 3 Terminvorschlaegen (vorgenerierte Vorlage)
+4. Call: Inhaber + Kunde fuellen Onboarding-Fragebogen gemeinsam aus → Plattform-Generator laeuft normal
+5. Kunde bekommt Plattform-Portal-Zugang fuer Eigen-Pflege ab Freigabe-Klick
+6. Trial-Phase startet erst ab Freigabe-Klick (vgl. `LIVE-COMPLIANCE.md` § 1 #24)
+
+### AGB-Verortung
+
+Werkvertrag-Klausel in `LIVE-COMPLIANCE.md` § 5 AGB § 16 (neu nach Erweiterung 2026-05-16).
+
+## 3.6 Custom-Sites — Professional Services (ab 990 EUR + 79 EUR/Mo)
+
+> **Status `[ENTSCHIEDEN 2026-05-16]` — auf Anfrage, Day-1 Angebot.** Custom-Bau-Werkleistung von Wagner IT-Solutions, Hosting auf instantpage-Infrastruktur unter eigener Marke des Kunden.
+
+### Was es ist
+
+Individuelle Site, die der Inhaber speziell baut — unabhaengig von Standard-Recipes und Plattform-Generator. Anwendungsfall: Multipage-Sites, Custom-Sections (Werkstuecke-Tabellen, Vorher-Nachher-Slider), Member-Bereiche, E-Commerce-Anbindung, branchen-spezifische Funktionen ohne Plattform-Standard-Tauglichkeit. Geliefert als statische Site oder mit Backend-Anbindung, wie es das Projekt verlangt.
+
+Referenz-Beispiel: **cpg.at** als erste Custom-Site einpflegbar sobald Live-Plattform steht.
+
+### Was drin ist (Bau-Werkleistung 990 EUR+)
+
+- Custom-Bau nach Kunden-Spec (HTML/CSS/JS, ggf. Backend-Anbindung)
+- Iteratives Mockup → Freigabe → Live-Schaltung
+- Domain-Anbindung
+- Plattform-Hosting-Setup (Cloudflare-Pages-Routing auf Custom-Assets)
+- AVV-Anhang-IV-Annex pro Custom-Site (Datenkategorien individuell)
+
+### Hosting & Care (79 EUR/Mo, eigener Tarif)
+
+**Drin:**
+- Plattform-Infrastruktur (Cloudflare Pages, SSL, DNS, Backups)
+- Uptime-Monitoring + Sicherheits-Updates auf Plattform-Ebene
+- **1 Stunde Wartung/Monat** inkludiert: Bug-Fixes, kleine Text-/Bild-Wechsel, kleine Layout-Justierungen. Kein Carry-over zwischen Monaten
+- Priority-Support 24h-Antwortzeit
+
+**Nicht drin (separate Verrechnung 70 EUR/Std netto):**
+- Groessere Redesigns, neue Features
+- Browser-Kompatibilitaets-Sweeps ueber den 1-Std-Rahmen hinaus
+- Code-Aenderungen am Custom-Build
+
+**Bei systematisch >2 Std/Monat Wartungs-Bedarf:** optionales Wartungs-Paket (49-79 EUR/Mo zusaetzlich, je nach Umfang) wird vorgeschlagen.
+
+### Brand-Kommunikation
+
+Custom-Sites laufen technisch auf instantpage-Infrastruktur, **erscheinen aber unter der eigenen Marke des Kunden** — kein „Powered by instantpage"-Footer. instantpage ist Hosting-Provider, im Admin-Center fuer Inhaber + Kunde sichtbar, **fuer Endkunden der Custom-Site unsichtbar**.
+
+### Reglementierte Berufe bei Custom-Sites
+
+Werbeverbote (§ 45 RL-BA 2015, § 53 ÄrzteG etc.) gelten bei Custom-Bau weiter. Wagner IT-Solutions ist als Bau-Leistender mit-verantwortlich.
+
+**Defensiv-Mechanik:**
+- Kunde nimmt Site vor Live-Schaltung schriftlich ab (Werkvertrag-Abnahme, nicht nur Freigabe-Klick)
+- Defensive Texte werden vom Kunden bereitgestellt oder gemeinsam formuliert — keine KI-Generierung mit Re-Gen-Trigger
+- Kunde verantwortet Werbevorschriften-Einhaltung explizit (AGB-Klausel)
+
+### Workflow
+
+1. Anfrage via Kontakt-Mail oder Pricing-Page-Formular
+2. Inhaber bewertet Scope + Aufwand-Schaetzung, sendet Angebot mit Fix-Preis ab 990 EUR
+3. Auftragsbestaetigung + Anzahlung (z.B. 50 %) ueber Stripe-Custom-Invoice
+4. Bau-Phase: iteratives Mockup → Kunden-Feedback → Iteration
+5. Schriftliche Abnahme durch Kunde vor Live-Schaltung
+6. Live-Schaltung + Custom-Hosting-Subscription startet (79 EUR/Mo)
+7. Wartungs-Stunden werden im `activity_log` getrackt
+
+### AGB-Verortung
+
+Werkvertrag-Klausel in `LIVE-COMPLIANCE.md` § 5 AGB § 17 (neu nach Erweiterung 2026-05-16).
+
+## 3.7 Whitelabel-Agentur-Programm (auf Anfrage, Phase 2-Vorbereitung)
+
+> **Status `[VORBEREITUNG 2026-05-16]` — Vormerk-Form Day-1, Spec-Sprint ab 5 ernsthaften Anfragen.** Co-Branded-Light fuer Marketing-Agenturen mit eigenen KMU-Endkunden.
+
+### Was es ist
+
+Marketing-Agentur betreut ihre KMU-Endkunden mit instantpage-Sites unter eigener Marke. instantpage liefert Infrastruktur + Admin-Center, Agentur uebernimmt Endkunden-Beziehung.
+
+### Was die Agentur bekommt (Co-Branded Light, Phase 2)
+
+- **Eigenes Admin-Center auf instantpage.at/agentur** — Liste aller betreuten Sites, schnelles Wechseln, Sammel-Login
+- **Sub-Konten fuer Mitarbeiter** der Agentur (optional)
+- **Eine Sammel-Rechnung pro Monat** statt 1 Rechnung pro Site — Stripe-Customer = Agentur, jede Site = Subscription-Item
+- **Volumen-Pauschale** (Preis-Modell wird nach 5+ Vormerker-Interviews finalisiert — bewusst offen kommuniziert als „Vorzugspreis fuer Erst-Agenturen")
+- **Direkte Site-Anlage** ohne Trial-Phase (Agentur weiss was sie tut)
+
+### Was auf den Endkunden-Sites passiert
+
+- URL: `kunde.instantpage.at` oder eigene Domain `www.kunde.at`
+- **Footer-Vermerk:** „Webseite betreut durch [Agentur-Logo] [Agentur-Name]" statt „Powered by instantpage"
+- Endkunde sieht instantpage-Brand nicht in der UI
+- Endkunden-Portal-Zugang: optional, je nach Agentur-Modell
+
+### Was es NICHT ist (Phase 3-Stretch)
+
+- Keine eigene Subdomain `sites.agentur.at`
+- Kein Agentur-Logo im Admin-UI (instantpage-Brand bleibt im Admin sichtbar)
+- Keine Custom-Domain auf Agentur-Ebene fuer alle Endkunden
+
+### Compliance-Konstellation
+
+- **Agentur = DSGVO-Verantwortlicher** fuer Endkunden-Daten
+- **Wagner IT-Solutions = Auftragsverarbeiter** ueber Agentur (Sub-Auftragsverhaeltnis)
+- AVV mit Agentur statt mit jedem einzelnen Endkunden — drei-Parteien-Vertrag (Endkunde-Agentur-Wagner) wird vor Phase-2-Aktivierung anwaltlich gepruelt
+- **Insolvenz-Szenario:** Bei Agentur-Insolvenz — Endkunden-Sites laufen 90 Tage Grace, Inhaber bietet Direkt-Uebernahme an. Detail-Mechanik mit Anwalt vor Aktivierung
+
+### Vormerk-Form Day-1
+
+Pricing-Page-Karte „Whitelabel-Agentur-Programm" mit Mail-Formular: „Tragen Sie sich ein — wir entwickeln gerade Konditionen, Erst-Agenturen bekommen Vorzugspreis fuer 12 Monate."
+
+### Architektonische Vorbereitung in Phase 0
+
+- DB-Spalte `orders.agency_id` nullable angelegt (kein Funktions-Code, nur Schema-Vorhalt)
+- Spec-Sprint ab 5+ ernsthaften Anfragen
+- AGB-Klausel kommt erst bei Phase-2-Aktivierung (keine Standard-AGB-Klausel jetzt — Whitelabel laeuft ueber Einzelvertrag pro Agentur)
+
+### AGB-Verortung
+
+Whitelabel-Programme werden im Einzelvertrag mit der jeweiligen Agentur geregelt — keine eigene Standard-AGB-Klausel. Verweis-Hinweis in `LIVE-COMPLIANCE.md` § 5 AGB § 1 oder § 17.
+
+---
+
 ## 4. Feature-Matrix pro Plan
 
 Gruppierung nach Wert-Kategorien (Memory `feedback_pricing_features.md`: stärkste Features zeigen, keine Selbstverständlichkeiten wie "responsive" oder "Logo-Upload").
 
-| Bereich | Starter (16 € / 14 € jährlich) | Professional (29 € / 25 € jährlich) |
-|---|---|---|
-| **Inhalte** | KI-Texte für deine Branche, branchenspezifische Leistungen, FAQ-Automatik | identisch |
-| **Rechtssicherheit** | Impressum + Datenschutzerklärung automatisch, Bildrechte-Workflow, kein Cookie-Banner auf der Kundensite | identisch |
-| **Sichtbarkeit** | Google-Maps eingebunden, Schema.org, Sitemap, mobile-optimiert | + AI-Sichtbarkeit (llms.txt für ChatGPT/Perplexity), IndexNow für Bing/Yandex |
-| **Domain** | Subdomain (firma.instantpage.at), SSL automatisch | + eigene Domain (www.firma.at) inkl. Setup-Anleitung |
-| **Erreichbarkeit** | Kontaktformular mit Mail-Zustellung | identisch |
-| **Kontrolle** | Self-Service-Portal mit Logo, Fotos, Bewertungen, Team, Galerie und FAQ | + Besucher-Statistiken (cookielos), monatlicher Website-Report, ohne instantpage-Branding |
-| **Hilfe** | Wissensdatenbank, Diagnose-Assistent, Support-Mail (24–48h Antwort) | identisch |
+| Bereich | Starter (16 € / 14 € jährlich) | Professional (29 € / 25 € jährlich) | Custom-Sites (ab 990 € + 79 €/Mo) |
+|---|---|---|---|
+| **Inhalte** | KI-Texte für deine Branche, branchenspezifische Leistungen, FAQ-Automatik | identisch | individuelle Inhalte, Multipage, Custom-Sections — nicht KI-generiert |
+| **Rechtssicherheit** | Impressum + Datenschutzerklärung automatisch, Bildrechte-Workflow, kein Cookie-Banner auf der Kundensite | identisch | Custom-Impressum + Custom-DSE (Kunde verantwortet), schriftliche Abnahme vor Live |
+| **Sichtbarkeit** | Google-Maps eingebunden, Schema.org, Sitemap, mobile-optimiert | + AI-Sichtbarkeit (llms.txt für ChatGPT/Perplexity), IndexNow für Bing/Yandex | individuell konfigurierbar |
+| **Domain** | Subdomain (firma.instantpage.at), SSL automatisch | + eigene Domain (www.firma.at) inkl. Setup-Anleitung | eigene Domain Standard, eigene Marke (kein instantpage-Branding) |
+| **Erreichbarkeit** | Kontaktformular mit Mail-Zustellung | identisch | Custom-Formulare nach Anforderung |
+| **Kontrolle** | Self-Service-Portal mit Logo, Fotos, Bewertungen, Team, Galerie und FAQ | + Besucher-Statistiken (cookielos), monatlicher Website-Report, ohne instantpage-Branding | Admin-Center fuer Hosting + Monitoring, inhaltliche Pflege durch Anbieter |
+| **Wartung** | Plattform-Updates, kein Code-Eingriff noetig | identisch | **1 Std/Monat inkludiert** (Bug-Fixes, kleine Aenderungen); Mehrbedarf 70 EUR/Std |
+| **Hilfe** | Wissensdatenbank, Diagnose-Assistent, Support-Mail (24–48h Antwort) | identisch | Priority-Support 24h-Antwort |
+
+**Add-On Einrichtungs-Service (149 EUR einmalig):** kombinierbar mit Starter oder Professional — gemeinsame Befuellung des Onboarding-Fragebogens, Foto-Beratung, Domain-Anbindung-Hilfe, Freigabe-Begleitung. Siehe § 3.5.
+
+**Business-Plan** = Coming Soon, **Whitelabel-Agentur** = auf Anfrage (Einzelvertrag, siehe § 3.7).
 
 ## 5. Pre-Purchase-Onboarding (Fragebogen)
 

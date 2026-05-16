@@ -377,6 +377,39 @@ Aktuell im Beta noch manuell. Bei Live-Schaltung als Resend-Templates (siehe § 
 - T+5: Erste-Hilfe-Tipps wenn Site noch `incomplete`
 - T-3 (vor Trial-Ende): Plan-Wahl-Reminder
 
+### 8.6 Custom-Sites Workflow `[NEU 2026-05-16, Phase 2 OPS-Item]`
+
+Custom-Sites (`PRODUCT.md` § 3.6, AGB § 17) haben einen Sonder-Workflow ausserhalb des Standard-Plattform-Onboardings.
+
+**Anfrage-zu-Live-Workflow:**
+
+1. **Anfrage:** Kunde nutzt Mail-Form auf Pricing-Page → Inhaber bekommt strukturierte Anfrage mit Projekt-Skizze
+2. **Angebot:** Inhaber bewertet Scope, sendet Festpreis-Angebot in Textform (E-Mail genügt, AGB § 17 Abs. 2)
+3. **Auftragsbestaetigung:** Anzahlung (typisch 50 %) ueber Stripe-Custom-Invoice → Bau-Start
+4. **Bau-Phase:** iterative Mockup-Freigaben mit Kunde
+5. **Schriftliche Abnahme** vor Live-Schaltung (E-Mail-Bestaetigung Kunde + Inhaber-Antwort genügen, AGB § 17 Abs. 3) → Eintrag in `activity_log` mit `event_type='custom_site_acceptance'`
+6. **Live-Schaltung:** Cloudflare-Pages-Routing auf R2-Custom-Assets, Custom-Hosting-Subscription startet
+7. **Schluss-Rechnung** ueber Stripe (Restbetrag nach Anzahlung)
+
+**Bauvertrags-Vorlage (Phase 2-Item, vor erstem Custom-Auftrag erstellen):**
+
+Pflicht-Inhalte je Custom-Site-Bauvertrag (zusaetzlich zu AGB § 17):
+- Projekt-Scope-Beschreibung mit Features-Liste
+- Festpreis + Zahlungs-Plan (typisch 50 % Anzahlung, 50 % nach Abnahme)
+- Lieferzeit + Iterations-Schleifen-Anzahl (typisch 2 Iterationen inklusive)
+- Source-File-Regelung explizit: "Source-Files (HTML/CSS/JS/Build-Files) bleiben Eigentum des Anbieters. Eine Übergabe an den Kunden ist nicht Vertragsgegenstand. Auf Anfrage kann gegen Aufpreis (typisch 30-50 % des Festpreises) eine Übergabe der Source-Files mit zeitlich befristeter Nutzungslizenz vereinbart werden." → schliesst Erwartungs-Drift, schuetzt AGB § 17 Abs. 8
+- Bei reglementierten Berufen (Anwalt/Arzt/Apotheke): explizite Pflicht-Bestaetigung, dass Kunde Werbevorschriften-Compliance verantwortet, inklusive Ablehnungs-Recht des Anbieters bei erkennbaren Verstoessen (AGB § 17 Abs. 4)
+- AVV-Anhang-IV-Annex pro Custom-Site: Datenkategorien individuell aufgelistet falls Site Daten verarbeitet (Login-Bereich, Reservierung mit Speicherung, E-Commerce etc.)
+
+**Wartungs-Stunden-Monitoring (Hosting-Tarif 79 EUR/Mo):**
+
+AGB § 17 Abs. 5 lit. c: 1 Std/Mo inkludiert, kein Carry-over. **Defensiv-Mechanik gegen Beschwerde-Risiko:**
+
+- Wartungs-Stunden werden im `activity_log` pro Custom-Site getrackt mit `event_type='custom_site_maintenance'` (Dauer, Datum, Beschreibung)
+- **Monatliche Check-In-Mail** an Kunde wenn 0 Stunden in 30 Tagen verbraucht: „Sie haben dieses Quartal keine Wartung in Anspruch genommen — sollen wir auf etwas blicken (Browser-Updates, Performance, etc.)? Antwort genügt." → reduziert UWG-Beschwerde-Risiko + zeigt Wert der Bereitschaft.
+- Quartalsweise Berichts-Mail an Kunde: „Quartal Q3/2026 — 2 von 3 inkludierten Wartungs-Stunden verwendet. Inhalt: Bug-Fix Footer-Link, Text-Anpassung Leistungen, ..." → Transparenz + Beweis-Audit-Trail.
+- Bei 3 Monaten ohne Inanspruchnahme zusaetzlich Goodwill-Aufschlag: kostenloser Performance- oder Browser-Check ohne Stundenverbrauch → Bestandskunden-Bindung.
+
 ---
 
 ## 9. Monitoring-Setup

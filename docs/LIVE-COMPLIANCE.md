@@ -460,7 +460,7 @@ b) die Beschaffung von professionellen Fotografien
 c) die Erstellung eines Logos oder anderer Markenelemente
 d) eine inhaltliche Pflege der Website nach Live-Schaltung
 
-(4) Die Vergütung für den Einrichtungs-Service ist im Voraus fällig und beträgt 149 EUR netto (ohne Umsatzsteuer-Ausweis, Kleinunternehmer-Hinweis nach § 9 Abs. 1). Die Vergütung wird über Stripe als einmalige Zahlung abgewickelt.
+(4) Die Vergütung für den Einrichtungs-Service ist im Voraus fällig und richtet sich nach dem jeweils auf der Pricing-Seite (instantpage.at/preise) ausgewiesenen Preis. Der Preis wird dem Kunden im Bestellprozess vor verbindlicher Buchung transparent angezeigt. Die Vergütung wird über Stripe als einmalige Zahlung abgewickelt (ohne Umsatzsteuer-Ausweis, Kleinunternehmer-Hinweis nach § 9 Abs. 1).
 
 (5) Mit Abnahme der Leistung durch den Freigabe-Klick gilt der Einrichtungs-Service als erbracht. Eine Erstattung der Vergütung nach Erbringung der Leistung ist ausgeschlossen.
 
@@ -472,11 +472,11 @@ d) eine inhaltliche Pflege der Website nach Live-Schaltung
 
 (1) Auf gesonderte Anfrage erstellt der Anbieter individuell gebaute Websites (im Folgenden „Custom-Sites"), die nicht auf den Standard-Recipes und dem KI-Generator der Plattform basieren. Custom-Sites sind Werkleistungen im Sinne der §§ 1165 ff. ABGB.
 
-(2) Der konkrete Leistungsumfang, der Festpreis und die Lieferzeit werden im Einzelnen vor Auftragsannahme schriftlich vereinbart. Der Festpreis beginnt bei 990 EUR netto und ist nach oben offen, abhängig vom Projektumfang.
+(2) Der konkrete Leistungsumfang, der Festpreis und die Lieferzeit werden im Einzelnen vor Auftragsannahme in Textform (E-Mail genügt) vereinbart. Der Festpreis beginnt bei 990 EUR netto und ist nach oben offen, abhängig vom Projektumfang. Ohne wirksame Einzelvereinbarung in Textform kommt kein Auftrag über eine Custom-Site zustande.
 
 (3) Die Abnahme der Custom-Site erfolgt schriftlich durch den Kunden vor der Live-Schaltung. Mit der schriftlichen Abnahme erklärt der Kunde, die Custom-Site inhaltlich, gestalterisch und rechtlich geprüft zu haben und übernimmt die alleinige Verantwortung für die veröffentlichten Inhalte. Der Anbieter dokumentiert den Zeitpunkt der Abnahme im Aktivitätenprotokoll.
 
-(4) Bei reglementierten Berufen (insbesondere Heilberufe, Rechts- und Wirtschaftsberatung) hat der Kunde die berufsrechtlichen Werbevorschriften eigenverantwortlich zu beachten und einzuhalten. Der Anbieter trifft eine konservative, defensive Gestaltung; die abschließende rechtliche Beurteilung obliegt dem Kunden.
+(4) Bei reglementierten Berufen (insbesondere Heilberufe, Rechts- und Wirtschaftsberatung) hat der Kunde die berufsrechtlichen Werbevorschriften eigenverantwortlich zu beachten und einzuhalten. Der Anbieter erbringt keine berufsrechtliche Beratung; die Beurteilung der berufsrechtlichen Zulässigkeit der Website-Inhalte obliegt allein dem Kunden, gegebenenfalls unter Beiziehung einer fachkundigen Stelle (Kammer, Innung, Rechtsanwalt). Der Anbieter trifft eine konservative, defensive Gestaltung; die abschließende rechtliche Beurteilung obliegt dem Kunden. Der Anbieter ist berechtigt, die Erstellung oder weitere Bereitstellung einer Custom-Site abzulehnen oder einzustellen, wenn Anhaltspunkte für berufsrechtliche oder sonstige rechtliche Verstöße erkennbar werden; bereits geleistete Anzahlungen werden in diesem Fall anteilig nach erbrachter Leistung abgerechnet.
 
 (5) Nach Live-Schaltung erfolgt die Bereitstellung der Custom-Site auf einer eigenen, kostenpflichtigen Hosting-Stufe „Custom Hosting & Care" zum Preis von 79 EUR netto pro Monat. Diese umfasst:
 
@@ -491,7 +491,7 @@ a) größere Redesigns oder neue Funktionen
 b) Code-Anpassungen am Custom-Build über die monatliche Wartungs-Stunde hinaus
 c) Browser-Kompatibilitäts-Sweeps über den 1-Stunden-Rahmen hinaus
 
-Solche Leistungen werden gesondert mit 70 EUR netto pro Stunde verrechnet. Bei systematischem Mehrbedarf (regelmäßig mehr als 2 Stunden pro Monat) kann der Anbieter ein erweitertes Wartungs-Paket zwischen 49 und 79 EUR netto pro Monat anbieten.
+Solche Leistungen werden gesondert zum jeweils aktuellen Standard-Stundensatz des Anbieters verrechnet, der dem Kunden vor Beauftragung in Textform mitgeteilt wird (Stand bei Vertragsschluss: 70 EUR netto pro Stunde). Bei systematischem Mehrbedarf (regelmäßig mehr als 2 Stunden pro Monat) kann der Anbieter ein erweitertes Wartungs-Paket zwischen 49 und 79 EUR netto pro Monat anbieten.
 
 (7) Die Custom-Site erscheint nach außen unter der eigenen Marke des Kunden. Der Anbieter platziert keine eigenen Brand-Hinweise (insbesondere keinen „Powered by"-Footer) auf der Custom-Site.
 
@@ -499,7 +499,11 @@ Solche Leistungen werden gesondert mit 70 EUR netto pro Stunde verrechnet. Bei s
 
 ### § 18 Whitelabel-Agentur-Programm (Verweis auf Einzelvertrag)
 
-Whitelabel-Programme für Marketing-Agenturen mit eigenen KMU-Endkunden werden ausschließlich auf Basis individuell ausgehandelter Einzelverträge geschlossen. Diese Allgemeinen Geschäftsbedingungen gelten für solche Programme nur subsidiär, soweit der Einzelvertrag keine abweichenden Regelungen trifft. Die datenschutzrechtliche Stellung der Vertragsparteien (insbesondere Sub-Auftragsverarbeitungs-Verhältnis) wird im Einzelvertrag und in einem gesonderten AVV geregelt.
+(1) Whitelabel-Programme für Marketing-Agenturen mit eigenen KMU-Endkunden werden ausschließlich auf Basis individuell ausgehandelter Einzelverträge geschlossen. Der Einzelvertrag ist VOR Aktivierung der ersten Whitelabel-Site abzuschließen; ohne wirksamen Einzelvertrag und gesonderten AVV stehen Whitelabel-Funktionen nicht zur Verfügung.
+
+(2) Diese Allgemeinen Geschäftsbedingungen gelten für Whitelabel-Programme nur subsidiär, soweit der Einzelvertrag keine abweichenden Regelungen trifft. Bei Widersprüchen zwischen diesen AGB und dem Whitelabel-Einzelvertrag haben die Bestimmungen des Einzelvertrags Vorrang.
+
+(3) Die datenschutzrechtliche Stellung der Vertragsparteien (insbesondere Sub-Auftragsverarbeitungs-Verhältnis zwischen Endkunde, Agentur und Anbieter) wird im Einzelvertrag und in einem gesonderten Auftragsverarbeitungsvertrag geregelt.
 
 ---
 

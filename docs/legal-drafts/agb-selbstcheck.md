@@ -252,9 +252,9 @@ AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll)
 | § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
 | § 9 Abs. 5 Aktionsrabatte | `[FLAG ERLEDIGT 2026-05-16]` | Email-Template [`aktionsrabatt-ende.md`](../email-templates/aktionsrabatt-ende.md) erstellt (14-Tage-Erinnerung vor Rabatt-Ende) |
 | Quer: Re-Gen-Trigger | `[FLAG ERLEDIGT 2026-05-16]` | § 4 Abs. 5 ergaenzt (Re-Generation-Trigger bei Branchen-/Anrede-Wechsel mit Portal-Warnung) |
-| § 16 Einrichtungs-Service (Plan-Portfolio-Erweiterung) | `[OK MIT MINOR-EMPFEHLUNG]` | Preis-Variable aus AGB rausziehen (siehe Nachtrag-Block) |
-| § 17 Custom-Sites (Plan-Portfolio-Erweiterung) | **`[FLAG — 4 EMPFEHLUNGEN]`** | Form / Mitverantwortung / Preis-Variable / Source-Files (siehe Nachtrag-Block) |
-| § 18 Whitelabel-Verweis (Plan-Portfolio-Erweiterung) | `[OK MIT MINOR-EMPFEHLUNG]` | Einzelvertrags-Zeitpunkt + Vorrang-Regel (siehe Nachtrag-Block) |
+| § 16 Einrichtungs-Service (Plan-Portfolio-Erweiterung) | `[ERLEDIGT 2026-05-16]` | Preis-Variable rausgezogen (AGB verweist auf Pricing-Seite + Bestellprozess) |
+| § 17 Custom-Sites (Plan-Portfolio-Erweiterung) | `[ERLEDIGT 2026-05-16]` | Abs. 2 Form (Textform), Abs. 4 Mitverantwortungs-Defensive + Ablehnungs-Recht, Abs. 6 Stundensatz-Variable. Abs. 5 lit. c + Abs. 8 in OPERATIONS § 8.6 als OPS-Workflow geloest |
+| § 18 Whitelabel-Verweis (Plan-Portfolio-Erweiterung) | `[ERLEDIGT 2026-05-16]` | Abs. 1 Einzelvertrags-Zeitpunkt + Abs. 2 Vorrang-Regel + Abs. 3 AVV-Sub-Konstellation ergänzt |
 
 ### Restrisiko-Einschaetzung
 Vergleichbar mit `LIVE-COMPLIANCE.md` § 18 — ohne Anwalt vor Live etwa **20 % Restrisiko** in den Eigenklauseln. Hauptrisiko liegt in § 6 (Marketing-AGB-Diskrepanz), nicht in der AGB selbst — defensive Wording-Anpassung im Marketing reduziert das Risiko deutlich.
@@ -301,7 +301,7 @@ Die FLAG-markierten Punkte werden bei Anwalts-Audit als priorisierte Pruefliste 
 - BRAND.md § 7: Setup-Service-Karte als Pricing-Element konsistent zu Voice „Wir bauen Ihre Website"
 - email-templates: aktionsrabatt-ende.md NICHT betroffen (Newcomer-Rabatt gilt nur fuer Subscription, nicht Setup-Service)
 
-**Status:** **`[OK MIT MINOR-EMPFEHLUNG]`** — Preis-Variable aus AGB-Volltext rausziehen, Verweis auf Pricing-Page.
+**Status:** `[ERLEDIGT 2026-05-16]` — Preis-Variable aus AGB-Volltext rausgezogen, Verweis auf Pricing-Seite + Bestellprozess.
 
 ---
 
@@ -346,7 +346,7 @@ Die FLAG-markierten Punkte werden bei Anwalts-Audit als priorisierte Pruefliste 
 - `[ANWALT-PRUEFUNG WICHTIG]` Abs. 4 Reglementierte-Berufe-Mitverantwortung — vor erstem Custom-Bau fuer Anwalt/Arzt/Apotheke Anwalts-Audit dringend
 - `[ANWALT-PRUEFUNG WICHTIG]` Abs. 5 lit. c Wartungs-Carry-over — bei Trigger-Schwelle 30 zahlende Kunden formale Pruefung
 
-**Status:** **`[FLAG — 4 EMPFEHLUNGEN VOR LIVE]`** — Abs. 2 (Form), Abs. 4 (Mitverantwortung), Abs. 6 (Preis-Variable), Abs. 8 (Source-Files-Klarstellung in OPS-Vorlage) ergaenzen.
+**Status:** `[ERLEDIGT 2026-05-16]` — Abs. 2 Form (Textform), Abs. 4 Mitverantwortungs-Defensive + Ablehnungs-Recht, Abs. 6 Stundensatz-Variable umgesetzt im AGB-Volltext. Abs. 5 lit. c (Wartungs-Carry-over) + Abs. 8 (Source-Files) in `OPERATIONS.md` § 8.6 als OPS-Workflow + Bauvertrag-Vorlagen-Pflicht-Inhalt dokumentiert.
 
 ---
 
@@ -375,7 +375,7 @@ Die FLAG-markierten Punkte werden bei Anwalts-Audit als priorisierte Pruefliste 
 **Anwalts-Flag:**
 - `[ANWALT-PRUEFUNG WICHTIG]` Vor erster Whitelabel-Aktivierung: Einzelvertrags-Muster + Drei-Parteien-AVV ist Anwalts-Pflicht (Pivot 2026-05-15 erlaubt Eigenarbeit nur fuer Standard-Themen, Whitelabel-Konstruktion ist juristisch komplex genug fuer 2-4h Anwalts-Zeit)
 
-**Status:** **`[OK MIT MINOR-EMPFEHLUNGEN]`** — Zeitpunkt-Klarstellung + Vorrang-Regel ergaenzen.
+**Status:** `[ERLEDIGT 2026-05-16]` — § 18 in 3 Absaetze gegliedert: Abs. 1 Einzelvertrags-Zeitpunkt vor Aktivierung, Abs. 2 Vorrang-Regel bei Widersprüche, Abs. 3 AVV-Sub-Auftragsverhaeltnis-Verweis.
 
 ---
 

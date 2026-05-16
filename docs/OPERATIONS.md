@@ -414,7 +414,22 @@ AGB § 17 Abs. 5 lit. c: 1 Std/Mo inkludiert, kein Carry-over. **Defensiv-Mechan
 
 > Hintergrund: sevDesk-Buchhaltung-Tier hat KEIN REST-API (erst Buchhaltung Pro). MiracleSync verlangt API-Zugang. Bis Volumen-Schwelle erreicht ist (~30-50 aktive Subscriptions), laeuft Stripe-zu-sevDesk-Sync manuell monatlich. Aufwand ~30-60 Min/Monat bei 0-30 Subscriptions, akzeptabel.
 
-**Stand 2026-05-16:** sevDesk-Setup live (Buchhaltung-Tier, Erste Business via PSD2, „Privat Konto" Verrechnungskonto). Wagner-IT-Solutions-Bestandskunden (CPG 490 EUR, Dr. Gehrer 100 EUR) laufen ueber wiederkehrende Rechnungen, Mai 2026 erster sevDesk-Monat. Stripe-Pipeline (instantpage-Kunden) noch nicht aktiv — Live-Verifikation in Phase 0.
+**Stand 2026-05-17 (Setup-Iteration Tag 2):** sevDesk-Setup live (Buchhaltung-Tier, Erste Business via PSD2, „Privat Konto" Verrechnungskonto). Wagner-IT-Solutions-Bestandskunden (CPG 490 EUR, Dr. Gehrer 100 EUR) laufen ueber wiederkehrende Rechnungen, **Mai 2026 = erster sevDesk-Monat**, Auto-Erzeugung am **31.05.2026** mit Leistungszeitraum 01.05.-31.05. (Nachfaellig-Logik). 9 alte Word-Rechnungen Jan-Apr 2026 (001-009) nachgepflegt via „Privat Konto" als Verrechnungskonto. Mac-Anlage 1.129 EUR aktiviert mit AfA 376,33 EUR/Jahr ueber 3 Jahre, gezahlt aus Privat (Verrechnung Basiskonto/2820). **E-Mail-Konto in sevDesk angebunden** 2026-05-17 fuer direkten Rechnungsversand (Detail-Konfiguration in Folge-Session: Standard-Mail-Template anpassen, Mai-IBAN-Hinweis als einmaliges Element). Stripe-Pipeline (instantpage-Kunden) noch nicht aktiv — Live-Verifikation in Phase 0.
+
+**Wiederkehrende Vorlagen — Monatsende-Logik mit Auto-Versand-Entwurf:**
+
+| Kunde | Erste Rechnung | Intervall | Nachfaellig | Versand-Modus |
+|---|---|---|---|---|
+| PG The Corporate Publishing Group GmbH (490 EUR) | 31.05.2026 | Monatlich | ✓ aktiviert | Entwurf (manuelle Pruefung + Versand) |
+| Dr. Sabine Gehrer (100 EUR) | 31.05.2026 | Monatlich | ✓ aktiviert | Entwurf |
+
+sevDesk erzeugt am 31.05. zwei Entwurfsrechnungen mit Leistungszeitraum 01.05.-31.05., Zahlungsziel 14.06. User prueft + versendet manuell ueber sevDesk-Mail-Versand. **Mai-Mail enthaelt einmaligen IBAN-Hinweis** auf neue Geschaefts-IBAN AT84 2011 1857 5281 8000 (vorbereitete Text-Vorlage im Chat-Verlauf). Ab Juni: Standard-Mail-Versand ohne IBAN-Hinweis.
+
+**Wagner-IT-Solutions-Nummerierungs-Stand 2026:**
+- 001-009/2026 (Jan-April): nachgepflegt aus Word-PDFs
+- 010-012/2026: Test/Storno verbraucht (010 storniert, 011 Stornorechnung, 012 Test geloescht)
+- **013/2026** + **014/2026**: erwartete Auto-Erzeugung am 31.05.2026 fuer CPG + Dr. Gehrer
+- ab Juni: weiterzaehlend
 
 **Monatlicher Workflow ab Stripe-Live:**
 

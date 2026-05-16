@@ -1,0 +1,273 @@
+# AGB-Selbstcheck — 5 Eigenklauseln + Newcomer-Rabatt-Klausel
+
+**Stand:** 2026-05-16
+**Status:** Eigenarbeit nach Compliance-Pivot 2026-05-15 (`LIVE-COMPLIANCE.md` § 17 Phase C, § 18). Anwalts-Audit Trigger-basiert spaeter.
+**Pruef-Objekt:** AGB-Skeleton in `LIVE-COMPLIANCE.md` § 5 (Volltext, B2B-only) — Fokus auf die 5 Eigenklauseln (§§ 1, 5, 6, 7, 8) plus § 9 Abs. 5 (Aktionsrabatte, Eigenklausel-Erweiterung 2026-05-15).
+**Methodik:** Pro Klausel — Plausibilitaets-Check + AT-spezifische Risiken (B2B-AGB-Inhaltskontrolle nach § 879 Abs. 3 ABGB, UWG, MedienG, ECG) + Konsistenz mit DSE/AVV/BRAND/MARKETING + Empfehlungen + Anwalts-Flags.
+
+> **Hinweis:** KSchG-Inhaltskontrolle ist NICHT anwendbar, weil B2B-only (§ 1 Abs. 2 AGB i.V.m. § 1 KSchG). Pruefung bleibt aber unter § 879 Abs. 3 ABGB (groebliche Benachteiligung) sowie § 864a ABGB (ungewoehnliche Klauseln).
+
+---
+
+## § 1 — Geltungsbereich, B2B-Beschraenkung (Eigenklausel)
+
+### Ist-Stand
+- Abs. 1: AGB-Geltung
+- Abs. 2: ausschliesslich an Unternehmer im Sinne § 1 KSchG
+- Abs. 3: Selbsterklaerungs-Mechanik, UID/GISA/FN optional
+- Abs. 4: Haftung des Kunden bei Falschangabe
+- Abs. 5: Vorrang vor Kunden-AGB
+
+### Plausibilitaets-Check
+**OK:**
+- Klare B2B-Abgrenzung — keine versteckten Verbraucher-Falle
+- UID nicht verlangt — schuetzt Kleinunternehmer (richtig, weil Eigen-Geschaeftsmodell selbst Kleinunternehmer ist und Konsistenz wichtig)
+- Selbsterklaerung als Vertrags-Bestandteil (Beweis-Mechanik)
+
+**Schwachstellen:**
+- Abs. 4 „Falschangabe → Haftung Kunde": durchsetzbar, aber praktisch schwer pruefbar. Risiko: bewusst-falsche Selbsterklaerung durch Verbraucher → Vertrag rechtlich kippelig (KSchG-Schutz koennte greifen, wenn Selbsterklaerung erkennbar unrichtig)
+- Abs. 5 (Vorrang vor Kunden-AGB) ist Standard, aber bei B2B mit groesseren Kunden (z.B. WKO-Verband o.ae.) muss ggf. individuelle Verhandlung moeglich bleiben → in Praxis selten relevant fuer KMU-Zielgruppe
+
+### Konsistenz
+- DSE § 1: Wagner IT-Solutions e.U. als Verantwortlicher — OK
+- AVV Cover: Verantwortlicher = Kunde, Auftragsverarbeiter = Anbieter — OK
+- Pricing-Page (PRODUCT.md): nirgendwo „auch fuer Privatpersonen" — OK
+- MARKETING § 2.2: Outreach-Ziele sind Unternehmer (WKO-Eintraege) — OK
+
+### Empfehlungen
+1. **Hinweis-Box im Bestellprozess** mit prominenter Anzeige „Diese Plattform ist nur fuer Unternehmer" — verhindert KSchG-Anspruch via „ungewoehnliche Klausel" (§ 864a ABGB). Spec im Portal-Onboarding.
+2. **UID-Eingabefeld als „optional, leer = Kleinunternehmer"** — UI-Logik macht den Sonderfall sichtbar, nicht versteckt.
+3. **Falsch-Erklaerungs-Konsequenz** koennte ergaenzt werden um „sofortige ausserordentliche Kuendigung" — bisher nur „Haftung" benannt. Defensiver waere zusaetzliches Sonderkuendigungsrecht.
+
+### Anwalts-Flags
+- `[ANWALT-PRUEFUNG SPAETER]` Selbsterklaerungs-Beweiswirkung in der Praxis (OGH-Judikatur zu B2B-Selbsterklaerungen — Vorrang Inhalt vs Erscheinungsbild?)
+
+### Status
+**`[OK MIT MINOR-EMPFEHLUNGEN]`** — keine Bau-Blocker, UI-Hinweis-Box implementieren.
+
+---
+
+## § 5 — KI-generierte Inhalte (Eigenklausel)
+
+### Ist-Stand
+- Abs. 1: KI-Einsatz transparent
+- Abs. 2: KI kann Fehler enthalten (Risiko-Hinweis)
+- Abs. 3: Pruefpflicht Kunde + Haftungsausschluss Anbieter
+- Abs. 4: Reglementierte Berufe — Eigenverantwortung
+- Abs. 5: Aktive Freigabe-Klick mit Audit-Trail
+
+### Plausibilitaets-Check
+**OK:**
+- Abs. 5 (Freigabe-Klick) ist die zentrale defensive Klausel — AI-Act § 13 „Kunden-Freigabe als Ausschlussgrund" aktiv genutzt (siehe `LIVE-COMPLIANCE.md` § 13 + § 1 #24)
+- Abs. 4 (Reglementierte Berufe) sauber, ergaenzt durch defensive KI-Prompt-Regeln (§ 10.2)
+- Transparenz-Pflicht aus DSGVO/AI-Act erfuellt durch Abs. 1
+
+**Schwachstellen:**
+- Abs. 3 Satz 2 (Haftungsausschluss): in B2B grundsaetzlich zulaessig, aber **muss** mit § 12 (Haftungsbegrenzung) konsistent sein. § 12 Abs. 4 nennt KI-Inhalte explizit als ausgeschlossen → **konsistent**
+- KEIN expliziter Verweis auf AI Act 2026-08-02 in § 5 — die Pflicht zur Footer-Kennzeichnung (Art. 50 AI Act) wird in DSE § 10.4 + LIVE-COMPLIANCE § 13 geregelt, aber AGB sollte zumindest Verweis enthalten
+
+### Konsistenz
+- DSE § 10 (KI-Verarbeitung): vollstaendiger, ausfuehrlicher — OK, AGB-Klausel kann kompakt bleiben
+- AVV Anhang I.7 (besondere Datenkategorien): Heilberufs-Daten ausgeschlossen — OK
+- BRAND.md § 5.3: Voice darf keine „garantiert fehlerfrei"-Aussagen machen — OK, im Marketing eingehalten
+- MARKETING.md: keine Heils-Versprechen — OK
+
+### Empfehlungen
+1. **Abs. 6 erweitern um AI-Act-Kennzeichnungs-Klarstellung:**
+   > „(6) Der Anbieter ergaenzt die Website ab 02.08.2026 automatisch um den nach Art. 50 EU-AI-Act erforderlichen Hinweis, dass Texte unter Einsatz von KI-Systemen erstellt wurden. Der Kunde ist verpflichtet, diesen Hinweis zu belassen."
+2. **Re-Generation-Trigger** (Branchenwechsel) sollte in § 5 oder § 4 explizit benannt sein — heute nur in `OPERATIONS.md` § 8
+
+### Anwalts-Flags
+- `[ANWALT-PRUEFUNG SPAETER]` Abs. 3 Haftungsausschluss vs § 879 Abs. 3 ABGB — „groebliche Benachteiligung" bei sehr fehlerhaften Generaten? (Verteidigungs-Linie: Pruefpflicht + Freigabe-Klick)
+- `[ANWALT-PRUEFUNG SPAETER]` AI-Act Art. 50 — Wer haftet, wenn Footer-Hinweis fehlt? Aktuell impliziert AGB Anbieter-Pflicht, aber das ist nicht eindeutig.
+
+### Status
+**`[OK MIT MINOR-EMPFEHLUNGEN]`** — Abs. 6 zur AI-Act-Kennzeichnung ergaenzen vor Live.
+
+---
+
+## § 6 — Generierte Rechtstexte (Eigenklausel)
+
+### Ist-Stand
+- Abs. 1: automatisierte Generierung aus Kunden-Daten + Modulen
+- Abs. 2: „Hilfestellung, ersetzen keine rechtliche Beratung"
+- Abs. 3: Bei reglementierten Berufen + Art-9-Daten + Sonderpflichten: Pruefung durch fachkundige Stelle
+- Abs. 4: DSE-Vorlage deckt nur Website-Besuch ab, nicht berufsspezifische Daten
+
+### Plausibilitaets-Check
+**OK:**
+- Klare Abgrenzung „keine Rechtsberatung" — kein RAO-Verstoss
+- Abs. 4 zentral wichtig: schliesst Patienten-/Mandanten-Daten-Verarbeitung explizit aus
+
+**Schwachstellen — und das ist der wichtigste Punkt im gesamten Selbstcheck:**
+- **MARKETING-AGB-DISKREPANZ-RISIKO:** Marketing kommuniziert „AT-Compliance integriert", „mit Impressum und Datenschutz", „Pflichtangaben automatisch" (BRAND.md § 7.0 About, § 7.3 Sub-Headlines). AGB § 6 Abs. 2 sagt „Hilfestellung, ersetzen keine rechtliche Beratung". Diese Spannung kann bei Streit als Irrefuehrung (§ 2 UWG) gelesen werden — „Kunde durfte sich auf Compliance verlassen, war aber Eigenverantwortung".
+- Defensiv-Empfehlung: Marketing-Voice ist bereits konservativ kalibriert (siehe `feedback_keine_rechtliche_pflichten.md`: „rechtliche Pflichten" tabu in Marketing) — aber „AT-Compliance integriert" ist Grenzbereich. **Pruefen ob „AT-Compliance integriert" → „AT-Pflichtfelder vorausgefuellt" robuster ist.**
+
+### Konsistenz
+- DSE § 10.2 (Aktive Freigabe): konsistent mit AGB § 6 Abs. 2 (Pruefpflicht)
+- AVV Anhang I.7 (besondere Datenkategorien NICHT umfasst): konsistent mit AGB § 6 Abs. 4
+- BRAND.md § 8.1 Verbotene Begriffe + LIVE-COMPLIANCE § 15: „100 % rechtssicher" verboten — OK
+- MARKETING.md: hat sich bereits an konservativer Linie ausgerichtet (Anti-Patterns § 5)
+
+### Empfehlungen
+1. **Marketing-Wording-Audit:** Pruefen, ob „AT-Compliance integriert" durch „AT-Pflichtfelder vorausgefuellt" oder „mit Impressum und Datenschutz" durchgaengig ersetzt werden sollte. Trade-off: Marketing-Wirkung vs UWG-Defensivitaet. **User-Entscheidung erforderlich.**
+2. **Onboarding-Disclaimer-Modal** bei Branchenwahl reglementierter Beruf — sichtbarer Hinweis, dass Vorlage in dieser Branche besonders sorgfaeltige Pruefung verlangt. Bereits in `LIVE-COMPLIANCE.md` § 10.4 spec'd — sicherstellen, dass Live-Implementation das vor Generation triggert.
+3. **Abs. 3 schaerfen:** „durch eine fachkundige Stelle" koennte praeziser sein — z.B. „durch einen Rechtsanwalt oder eine berufsstaendische Beratungsstelle (Kammer, Innung)". Verstaendlicher fuer Laien-KMU.
+
+### Anwalts-Flags
+- `[ANWALT-PRUEFUNG WICHTIG]` § 6 Abs. 2 vs. Marketing-Voice — § 2 UWG-Pruefung der Aussagen „AT-Compliance integriert" / „Pflichtangaben automatisch"
+- `[ANWALT-PRUEFUNG SPAETER]` Abs. 4 Patienten-/Mandanten-Daten-Ausschluss als ausreichende Haftungsbegrenzung bei Heilberufs-Kunden?
+
+### Status
+**`[FLAG — MARKETING-AGB-PRUEFUNG VOR LIVE]`** — Marketing-Wording-Audit ist der erste Anwalts-Audit-Punkt nach Trigger-Schwelle (siehe `anwalt-briefing.md` Paket 1 + 5).
+
+---
+
+## § 7 — Bildrechte und Inhaltsfreigabe (Eigenklausel)
+
+### Ist-Stand
+- Abs. 1: Kunde garantiert Nutzungsrechte
+- Abs. 2: Freistellung Anbieter von Drittansprueche
+- Abs. 3: Anbieter darf bei begruendetem Hinweis Inhalte entfernen/sperren
+
+### Plausibilitaets-Check
+**OK:**
+- Standard-B2B-Klausel — wirkt
+- Abs. 3 ist Notice-and-Takedown-Mechanik (§ 16 ECG, DSA Art. 14)
+
+**Schwachstellen:**
+- KEIN Verweis auf abuse@instantpage.at-Prozess — Kunde weiss nicht, wie er selbst gegen Drittinhalte reklamieren wuerde
+- KEINE Klausel zu AI-generierten Bildern (z.B. Stable Diffusion / GPT-4o): aktuell Plattform setzt nur eigene Foto-Uploads + Stockfotos via Unsplash ein → nicht akut. Aber Phase 2 (AI-Bilder im Generator) wuerde Klausel erfordern (Trainings-Daten-Risiken, Recht des „Trainings-Modells")
+
+### Konsistenz
+- LIVE-COMPLIANCE § 12.1 (Notice-and-Takedown): vollstaendiger Prozess dokumentiert — konsistent
+- AVV Anhang I.6 (Bild-Daten): explizit als Datenkategorie mit Speicherort — konsistent
+- DSE § 4 (Datenkategorien): „Bild-Daten" implizit in Plattform-Stammdaten — OK
+
+### Empfehlungen
+1. **Abs. 4 hinzufuegen:** „Hinweise auf Rechtsverletzungen sind an abuse@instantpage.at zu richten und werden gemaess Notice-and-Takedown-Verfahren (§ 16 ECG) bearbeitet."
+2. **Phase-2-Flag (AI-Bilder):** Wenn Bild-Generierungs-Modul eingefuehrt wird, AGB-Anpassung mit Klausel zur Trainings-Daten-Verantwortlichkeit + Lizenz-Status.
+
+### Anwalts-Flags
+- `[ANWALT-PRUEFUNG SPAETER]` Abs. 2 Freistellungs-Klausel — Reichweite (auch Prozess-Kosten? Anwaltskosten?) explizit fassen
+
+### Status
+**`[OK MIT MINOR-EMPFEHLUNGEN]`** — Abs. 4 (abuse-Prozess) ergaenzen vor Live.
+
+---
+
+## § 8 — Verantwortlichkeit fuer die Website (Betreiber-Klausel)
+
+### Ist-Stand
+- Abs. 1: Kunde = Medieninhaber + Diensteanbieter + DSGVO-Verantwortlicher
+- Abs. 2: Anbieter erbringt nur Hosting-/Generierungs-/Bereitstellungs-Leistungen (§ 16 ECG Provider-Privileg)
+- Abs. 3: Endnutzer-Daten-Verarbeitung im Auftrag (AVV)
+
+### Plausibilitaets-Check
+**OK — beste Klausel im Set:**
+- Klare Rollen-Trennung Medieninhaber / DSGVO-Verantwortlicher / Auftragsverarbeiter
+- § 16 ECG-Provider-Privileg sauber referenziert
+- AVV-Verweis konsistent
+
+**Keine Schwachstellen identifiziert.**
+
+### Konsistenz
+- DSE § 1 + § 2: Verantwortlicher = Anbieter fuer Plattform-Verarbeitungen — OK
+- AVV Cover + § 2: Verantwortlicher = Kunde fuer Endnutzer-Verarbeitungen — OK
+- Pricing/Marketing: keine Aussagen, die Anbieter zum Medieninhaber machen wuerden — OK
+
+### Empfehlungen
+**Keine** — Klausel ist textuell sehr sauber.
+
+### Anwalts-Flags
+- `[ANWALT-PRUEFUNG SPAETER]` Klarstellung bei Custom-Domain (Kunde verwendet eigene Domain): aendert sich an Medieninhaber-Rolle nichts, sollte aber ggf. in einer Anmerkung explizit erwaehnt werden
+
+### Status
+**`[OK]`** — keine Aenderung empfohlen.
+
+---
+
+## § 9 Abs. 5 — Aktionsrabatte (Eigenklausel-Erweiterung 2026-05-15)
+
+### Ist-Stand
+- Aktionsrabatt nur im aktiv beworbenen Zeitraum
+- Nach Ablauf: regulaerer Tarif, keine gesonderte Mitteilung
+- Anbieter darf Aktion jederzeit beenden
+- Bestandskunden: Rabatt fuer Restlaufzeit gesichert
+
+### Plausibilitaets-Check
+**OK:**
+- Bestandskunden-Schutz „behalten Rabatt fuer Restlaufzeit" mildert UWG-Bedenken
+- Klar formuliert, kein FOMO-Vibe
+
+**Schwachstellen:**
+- „ohne gesonderte Kuendigung oder Mitteilung": rechtlich zulaessig wenn im AGB transparent, aber **UX-Pflichtschuldigkeit**: eine 7-14-Tage-Erinnerungs-Mail vor Tarif-Wechsel ist nicht juristisch zwingend, aber stark empfehlenswert (Trust + Vermeidung „Dark-Pattern"-Vorwurf)
+- Newcomer-Rabatt 20% = relevanter Preisunterschied (16 → 19.20 EUR oder 29 → 34.80 EUR) — aufmerksame Kunden werden den Sprung bemerken, weniger aufmerksame sich beschweren
+
+### Konsistenz
+- MARKETING.md § 3.1 Newcomer-Rabatt: konsistent (Coupon `NEWCOMER-20-FIRSTYEAR`, kein Cap, Inhaber-getriggertes Ende)
+- BRAND.md § 7.4 CTA-Wording: keine Drueckersprache — OK
+- email-templates/welcome.md: Trigger nach Freigabe-Klick OK; **Erinnerungs-Mail vor Rabatt-Ende fehlt noch als Template** — siehe Empfehlung
+- Stripe-Coupon-Logik: `NEWCOMER-20-FIRSTYEAR` bei Newcomer aktiv, Ende nach 12 Monaten automatisch
+
+### Empfehlungen
+1. **Neues Email-Template:** `email-templates/aktionsrabatt-ende.md` — 14 Tage vor Ablauf, transparente Mitteilung „Ihr Newcomer-Rabatt endet am [DATUM], danach gilt [REGULAERER_PREIS]". Nicht im AGB verpflichtend, aber Trust-Hebel.
+2. **AGB-Wording schaerfen:** „ohne gesonderte Mitteilung" durch „Der Anbieter informiert den Kunden 14 Tage vor Ablauf des Rabattzeitraums per E-Mail" ersetzen wuerde Anti-Dark-Pattern-Argument staerken — Trade-off: Anbieter ist dann auch dazu verpflichtet, was OPS-Aufwand bedeutet (aber via Stripe-Webhook + Resend automatisierbar).
+3. **Pricing-Page-Transparenz:** Rabatt-Mechanik klar darstellen — bisher unklar, ob auf Pricing-Page explizit „20% nur erstes Jahr" steht.
+
+### Anwalts-Flags
+- `[ANWALT-PRUEFUNG WICHTIG]` § 2 UWG: ist der „Nach Ablauf automatisch regulaerer Tarif" als „dark pattern" oder „intransparent" angreifbar? Bestaerkt durch Bestandskunden-Schutz + ggf. Erinnerungs-Mail wahrscheinlich nicht — aber expliziter Audit-Punkt in `anwalt-briefing.md` Paket 5.
+
+### Status
+**`[FLAG — ERINNERUNGS-MAIL VOR LIVE]`** — neues Email-Template `aktionsrabatt-ende.md` + ggf. AGB-Wording-Schaerfung.
+
+---
+
+## Quer-Themen — Konsistenz ueber alle Eigenklauseln
+
+### Aktivitaetenprotokoll
+AGB § 5 Abs. 5 (Freigabe-Klick), § 1.5 LIVE-COMPLIANCE (Aktivitaetenprotokoll), DSE § 8 (Auskunfts-Recht) + AVV Anhang IV.3 (Activity-Logs) alle verweisen auf das Aktivitaetenprotokoll. Architektur in `ARCHITECTURE.md` § 4.7 (`live_freigaben`-Tabelle) — **konsistent**.
+
+### Reglementierte Berufe (mehrere § 5, § 6, § 10 LIVE-COMPLIANCE)
+- AGB § 5 Abs. 4, § 6 Abs. 3, § 6 Abs. 4 — alle defensiv formuliert
+- Onboarding-Disclaimer-Modal (LIVE-COMPLIANCE § 10.4) muss vor Generation triggern — Live-Implementations-Item
+- Termin-Anfrage-no-Anliegen-Default (LIVE-COMPLIANCE § 10.3) — Live-Implementations-Item
+
+### Anrede + Anrede-Override (AGB § 5 ↔ BRAND.md § 6 ↔ OPERATIONS § 8)
+- Re-Generation bei Anrede-Wechsel — heute spec'd in OPERATIONS, NICHT in AGB. Sollte irgendwo als „Re-Generation-Trigger fuer Texte ist Anrede-/Branchenwechsel" expliziert sein. Aktuell impliziert.
+- **Empfehlung:** AGB § 4 (Pflichten Kunde) Abs. 5 ergaenzen: „Wesentliche aenderungen an Stammdaten (Branche, Anrede) koennen eine Neu-Generation der Texte ausloesen. Der Anbieter weist im Portal vor dem Wechsel darauf hin."
+
+---
+
+## Zusammenfassung
+
+| Klausel | Status | Top-Aktion vor Live |
+|---|---|---|
+| § 1 B2B-Beschraenkung | `[OK MIT MINOR-EMPFEHLUNGEN]` | UI-Hinweis-Box im Bestellprozess |
+| § 5 KI-Inhalte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 6 AI-Act-Kennzeichnung ergaenzen |
+| § 6 Generierte Rechtstexte | **`[FLAG — MARKETING-AGB-PRUEFUNG VOR LIVE]`** | Marketing-Wording-Audit (User-Entscheidung) |
+| § 7 Bildrechte | `[OK MIT MINOR-EMPFEHLUNGEN]` | Abs. 4 abuse-Prozess ergaenzen |
+| § 8 Betreiber-Klausel | `[OK]` | keine Aenderung |
+| § 9 Abs. 5 Aktionsrabatte | **`[FLAG — ERINNERUNGS-MAIL VOR LIVE]`** | Email-Template `aktionsrabatt-ende.md` |
+| Quer: Re-Gen-Trigger | `[FLAG — AGB-ERGAENZUNG]` | § 4 Abs. 5 ergaenzen |
+
+### Restrisiko-Einschaetzung
+Vergleichbar mit `LIVE-COMPLIANCE.md` § 18 — ohne Anwalt vor Live etwa **20 % Restrisiko** in den Eigenklauseln. Hauptrisiko liegt in § 6 (Marketing-AGB-Diskrepanz), nicht in der AGB selbst — defensive Wording-Anpassung im Marketing reduziert das Risiko deutlich.
+
+Versicherungs-Backstop (R+V Berufshaftpflicht 173 EUR/Jahr) deckt finanzielle Folgen einzelner Klausel-Probleme bis zu den Haftungsgrenzen — siehe `LIVE-COMPLIANCE.md` § 3.
+
+### Anwalts-Audit-Trigger fuer dieses Memo
+- 30+ zahlende Kunden (`LIVE-COMPLIANCE.md` § 18)
+- Erste UWG- oder DSGVO-Abmahnung
+- Aufnahme AI-Bilder-Generator (Phase 2)
+- Aufnahme Patienten-/Mandanten-Daten-Modul
+
+Die FLAG-markierten Punkte werden bei Anwalts-Audit als priorisierte Pruefliste uebergeben (vorbereitet in `anwalt-briefing.md` Paket 1 + 5).
+
+---
+
+## Aenderungs-Log
+
+| Datum | aenderung | Autor |
+|---|---|---|
+| 2026-05-16 | Erstdraft Selbstcheck-Pass durch 6 Eigenklauseln + Quer-Themen | Eigenarbeit |

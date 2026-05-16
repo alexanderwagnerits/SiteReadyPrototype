@@ -444,6 +444,8 @@ d) bei reglementierten Berufen: Berufsbezeichnung, zuständige Kammer, Aufsichts
 
 ## 6. AVV — Auftragsverarbeitungsvertrag
 
+> **Volltext-Erstdraft 2026-05-16:** [`docs/legal-drafts/avv-plattform.md`](legal-drafts/avv-plattform.md) — Eigenarbeit, Hauptteil als SCC-Verweis (Durchfuehrungsbeschluss (EU) 2021/915), Anhaenge I-IV ausformuliert. Vor Live-Schaltung: DPA-Sign-off-Datum pro Subprozessor in Anhang III + Annahme-Mechanik im Onboarding-Flow (`PRODUCT.md` § 7).
+
 ### Aufbau
 
 **Hauptteil** = EU-Standardvertragsklauseln nach Durchführungsbeschluss (EU) 2021/915, Module Controller-Prozessor (Klauseln 1–10), wortgleich übernommen. Quelle: <https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:32021D0915>
@@ -516,6 +518,7 @@ Aktualisierungen werden auf instantpage.at/subprozessoren öffentlich gemacht. D
 
 ## 7. Plattform-Impressum (instantpage.at)
 
+> **Volltext-Erstdraft 2026-05-16:** [`docs/legal-drafts/impressum-plattform.md`](legal-drafts/impressum-plattform.md) — Eigenarbeit mit Stammdaten Wagner IT-Solutions § 2 (Adelheid-Popp-Gasse 14/1/36, 1220 Wien, FN 609574h, GISA 34399071, Kleinunternehmer ohne UID). Vor Live: WKO-Fachgruppe-Eintrag verifizieren (`[VERMUTET UBIT]`).
 > Skeleton zum Befüllen mit Stammdaten aus Abschnitt 2.
 
 ```
@@ -1194,10 +1197,10 @@ In TypeScript/Next.js-Rebuild integrieren. Memory: `project_production_refactor.
 - Beta-Tester informieren + Beta-Daten löschen
 - Markenanmeldung (sofern frei)
 - **Eigenarbeits-Lock** (Pivot 2026-05-15) — finale Selbst-Pruefung statt Anwalts-Audit:
-  - AGB-Skeleton § 5 final lesen (5 Eigenklauseln auf Plausibilitaet)
+  - AGB-Selbstcheck `[ERSTDRAFT 2026-05-16: docs/legal-drafts/agb-selbstcheck.md]` durchgegangen — 5 Eigenklauseln + § 9 Abs. 5 + Quer-Themen; 2 FLAG-Punkte (Marketing-AGB-Pruefung § 6, Erinnerungs-Mail § 9 Abs. 5) vor Live abarbeiten
   - DSE-Volltext-Draft `[ERSTDRAFT 2026-05-16: docs/legal-drafts/datenschutz-plattform.md]` durch Selbstcheck-Liste am Dateiende laufen lassen (Stammdaten-Replace, Subprozessoren-Sign-off-Datum, Konsistenz mit AVV/AGB/Impressum)
-  - AVV-Anhaenge I/III/IV gegen tatsaechlich genutzte Subprozessoren § 4 abgleichen
-  - Impressum-Volltext gegen § 7 + § 24 MedienG + § 5 ECG + § 14 UGB abgleichen
+  - AVV-Volltext-Draft `[ERSTDRAFT 2026-05-16: docs/legal-drafts/avv-plattform.md]` — Anhaenge I/III/IV gegen tatsaechlich genutzte Subprozessoren § 4 abgleichen + DPA-Sign-off-Datum eintragen
+  - Impressum-Volltext-Draft `[ERSTDRAFT 2026-05-16: docs/legal-drafts/impressum-plattform.md]` — WKO-Fachgruppe `[VERMUTET UBIT]` verifizieren, Konsistenz mit DSE/AGB
   - Cold-Outreach-Mail-Templates `[ERSTDRAFT 2026-05-16: docs/sales-templates/]` durch UWG-Selbstcheck (§ 7 UWG + DSGVO Art. 14) laufen lassen — Selbstcheck-Liste in `sales-templates/README.md`
   - **KEIN Anwalts-Termin** vor Live-Schaltung — Trigger-basiert spaeter (§ 18)
 

@@ -8,9 +8,9 @@ Dieses Verzeichnis enthaelt die ausformulierten Volltexte der Plattform-Rechtste
 | Dokument | Quelle Skeleton | Volltext |
 |---|---|---|
 | Datenschutzerklaerung | `LIVE-COMPLIANCE.md` § 8 | [`datenschutz-plattform.md`](datenschutz-plattform.md) |
-| AGB | `LIVE-COMPLIANCE.md` § 5 | _(bereits Volltext in LIVE-COMPLIANCE — vor Live noch § 5 Selbstcheck-Pass)_ |
-| AVV (Hauptteil + Anhaenge) | `LIVE-COMPLIANCE.md` § 6 | _(folgt — Anhang I-IV strukturiert vorhanden, Hauptteil = SCC Module Controller-Prozessor)_ |
-| Impressum | `LIVE-COMPLIANCE.md` § 7 | _(Skeleton in § 7, Volltext mit Stammdaten ausfuellen + AT-Anwalt-Audit-Trigger)_ |
+| AVV (Hauptteil + Anhaenge) | `LIVE-COMPLIANCE.md` § 6 | [`avv-plattform.md`](avv-plattform.md) — Hauptteil als SCC-Verweis (EU 2021/915), Anhaenge I-IV ausformuliert |
+| Impressum | `LIVE-COMPLIANCE.md` § 7 | [`impressum-plattform.md`](impressum-plattform.md) |
+| AGB-Selbstcheck | `LIVE-COMPLIANCE.md` § 5 | [`agb-selbstcheck.md`](agb-selbstcheck.md) — 6 Eigenklauseln + Quer-Themen, 2 FLAGs vor Live |
 
 ## Workflow
 

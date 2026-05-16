@@ -22,7 +22,7 @@
 | [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (6 Mechaniken + 5 Channels spec'd, Block-D-Decisions 2026-05-15 gelockt) | PHASE-1-LOCKED |
 | [email-templates/](email-templates/) | 10 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover) | Spec-fertig |
 | [sales-templates/](sales-templates/) | Cold-Outreach Mail-Templates Pre-Launch (Tischler, Berater, Anwalt) + UWG-Selbstcheck | ERSTDRAFT 2026-05-16 |
-| [legal-drafts/](legal-drafts/) | **Eigenarbeits-Volltexte** der Plattform-Rechtstexte (Pivot 2026-05-15) — DSE-Volltext erstdrafted | ERSTDRAFT 2026-05-16 |
+| [legal-drafts/](legal-drafts/) | **Eigenarbeits-Volltexte** der Plattform-Rechtstexte (Pivot 2026-05-15) — DSE + AVV + Impressum Volltext + AGB-Selbstcheck erstdrafted | ERSTDRAFT 2026-05-16 |
 | [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |
 | [_design/live-bau-backlog.md](_design/live-bau-backlog.md) | **Live-Bau-Backlog** — konsolidierte Inkremente pro Recipe + berufsgruppen-uebergreifende Patterns (Form-Varianten, KI-Prompt-Regeln, Quality-Score-Schwelle, Defaults-Maps) | aktuell |
 | [business-case-kosten.md](business-case-kosten.md) | Wirtschaftlichkeit, Margen | aktuell (April) |

@@ -104,7 +104,7 @@ Rechtliche **Pruefung** des bestehenden Drafts auf:
 
 ### Paket 5 — Marketing-Audit (Cold-Outreach + Aktionsrabatt)
 
-**Status:** Cold-Outreach-Strategie + Newcomer-Rabatt 20 % erstes Jahr spec'd (`docs/MARKETING.md` § 2.2 + § 3.1). Mail-Templates pro Erstziel-Sparte (Tischler, Berater, Anwalt) noch zu draften vor Live (`docs/sales-templates/`).
+**Status:** Cold-Outreach-Strategie + Newcomer-Rabatt 20 % erstes Jahr spec'd (`docs/MARKETING.md` § 2.2 + § 3.1). **Mail-Template-Erstdrafts 2026-05-16** fuer alle 3 Erstziel-Sparten (Tischler, Berater, Anwalt) in [`docs/sales-templates/`](sales-templates/) — Eigenarbeit + UWG-Selbstcheck-Liste in `README.md`. Anwalts-Audit-Trigger fuer dieses Paket: erste UWG-Abmahnung, DSB-Anfrage zu Outreach-Praxis, oder 30+ zahlende Kunden (siehe `LIVE-COMPLIANCE.md` § 18).
 
 **Auftrag an den Anwalt:**
 

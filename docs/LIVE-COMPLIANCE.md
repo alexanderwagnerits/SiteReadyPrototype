@@ -563,7 +563,8 @@ zur Teilnahme an einem Streitbeilegungsverfahren besteht nicht.)
 
 ## 8. Plattform-Datenschutzerklärung
 
-> Skeleton zum Befüllen — vollständig ausformuliert vor Live-Schaltung. Quelle: WKO-Checkliste DSGVO + WKO-Datenverarbeitung Webshop.
+> **Volltext-Erstdraft 2026-05-16:** [`docs/legal-drafts/datenschutz-plattform.md`](legal-drafts/datenschutz-plattform.md) — Eigenarbeit nach Compliance-Pivot 2026-05-15. Stammdaten-Platzhalter, RechtGPT-Plausibilitaets-Check und finale Konsistenz mit AVV/AGB/Impressum vor Live-Schaltung erforderlich (Selbstcheck-Liste am Dateiende). Anwalts-Audit Trigger-basiert spaeter (§ 18).
+> Die folgenden Pflicht-Bausteine bleiben als kompakter Index — Volltext-Klauseln im Draft-Dokument.
 
 ### Pflicht-Bausteine (kurz)
 
@@ -1194,10 +1195,10 @@ In TypeScript/Next.js-Rebuild integrieren. Memory: `project_production_refactor.
 - Markenanmeldung (sofern frei)
 - **Eigenarbeits-Lock** (Pivot 2026-05-15) — finale Selbst-Pruefung statt Anwalts-Audit:
   - AGB-Skeleton § 5 final lesen (5 Eigenklauseln auf Plausibilitaet)
-  - DSE-Volltext gegen 10 Pflicht-Bausteine § 8 abgleichen
+  - DSE-Volltext-Draft `[ERSTDRAFT 2026-05-16: docs/legal-drafts/datenschutz-plattform.md]` durch Selbstcheck-Liste am Dateiende laufen lassen (Stammdaten-Replace, Subprozessoren-Sign-off-Datum, Konsistenz mit AVV/AGB/Impressum)
   - AVV-Anhaenge I/III/IV gegen tatsaechlich genutzte Subprozessoren § 4 abgleichen
   - Impressum-Volltext gegen § 7 + § 24 MedienG + § 5 ECG + § 14 UGB abgleichen
-  - Cold-Outreach-Mail-Template UWG-Selbstcheck (§ 7 UWG + DSGVO Art. 14) — siehe MARKETING.md § 2.2
+  - Cold-Outreach-Mail-Templates `[ERSTDRAFT 2026-05-16: docs/sales-templates/]` durch UWG-Selbstcheck (§ 7 UWG + DSGVO Art. 14) laufen lassen — Selbstcheck-Liste in `sales-templates/README.md`
   - **KEIN Anwalts-Termin** vor Live-Schaltung — Trigger-basiert spaeter (§ 18)
 
 ### Phase D — Erste Wochen Live (laufend)

@@ -58,9 +58,9 @@ Inhaber: Alexander Wagner — Verleihungsstaat: Oesterreich
 
 ## Bankverbindung (auf Rechnungen)
 
-IBAN: AT88 2011 1843 5211 6200
+IBAN: AT84 2011 1857 5281 8000
 BIC: GIBAATWWXXX
-Bank: Erste Bank
+Bank: Erste Bank ("Erste Business" Geschaeftskonto)
 
 ## Online-Streitbeilegung
 

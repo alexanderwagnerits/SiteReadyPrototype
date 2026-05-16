@@ -72,7 +72,7 @@ Diese Schritte VOR Code-Beginn anstoßen — manche brauchen 1–2 Wochen.
 
 | Aktion | Lead-Time | Phase | Status |
 |---|---|---|---|
-| **Geschäftskonto Erste Bank eröffnen** ("Erste Business" basic ~7 €/Mo oder "Smart Business" ~14 €/Mo) — **vor Stripe-Live zwingend** (Stripe-KYC + Buchhaltung sauber + Optik) | 1–2 Wochen | Phase 0 | `[STARTBEREIT]` |
+| **Geschäftskonto Erste Bank eröffnen** ("Erste Business") — **vor Stripe-Live zwingend** | abgeschlossen | Phase 0 | ✅ **ERÖFFNET 2026-05-16** — IBAN AT84 2011 1857 5281 8000, BIC GIBAATWWXXX |
 | **sevDesk Buchhaltungs-Plan** (~25 €/Mo netto regulär, Aktion 7,47 €/Mo erste 6 Mo bei 12-Mo-Vertrag) — AT-Setup via `smallSettlement: 1` + SKRAT-Kontenrahmen. Plus **MiracleSync-Plugin** für Stripe→sevDesk-Auto-Sync (Sync 2026-05-08 verifiziert) — Plugin-Preis vor Live final klären. Trial gratis | ~30 Min Setup | Phase 0 | `[STARTBEREIT]` — Detail in `PRODUCT.md` § 3.0 |
 | **Stripe Invoice Template einrichten** mit AT-Pflichtangaben (FN, GISA, IBAN, Aufsichtsbehörde, Kleinunternehmer-Klausel im Footer) | 30 Min im Stripe-Dashboard | Phase 0 | `[STARTBEREIT]` — Detail in `PRODUCT.md` § 3.0 Phase 1 |
 | **Stripe-Code-Anpassung** — `create-checkout.js` + `stripe-webhook.js` für Customer.tax_exempt + Invoice-Creation; `get-invoices.js` von receipt_url auf invoice_pdf | ~2-4h Code | Phase 0 | `[STARTBEREIT]` — siehe `PRODUCT.md` § 3.0 |

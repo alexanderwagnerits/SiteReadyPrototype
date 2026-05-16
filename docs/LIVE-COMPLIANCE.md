@@ -125,7 +125,7 @@ Pflichtdaten zum Befüllen — Voraussetzung für Impressum, AGB, AVV, Datenschu
 | Aufsichtsbehörde nach GewO | **Magistrat der Stadt Wien** (laut GISA-Auszug, zentrale Gewerbebehoerde Wien) | `[FIXIERT]` 2026-05-04 |
 | WKO-Fachgruppe | Vermutlich **Fachgruppe Unternehmensberatung, Buchhaltung und Informationstechnologie (UBIT) Wien** — passt zum UBIT-Versicherungs-Rahmenvertrag | `[VERMUTET]` — User kann sich aktuell nicht im WKO-Login anmelden, final via WKO-Mitgliedsbeitrags-Vorschreibung oder direkter WKO-Anfrage verifizieren |
 | Rechtsvorschriften (Verweis im Impressum) | www.ris.bka.gv.at — GewO 1994, ECG, MedienG | `[FIXIERT]` 2026-05-04 |
-| Bankverbindung (IBAN) | **AT88 2011 1843 5211 6200**, BIC **GIBAATWWXXX**, Erste Bank | `[FIXIERT]` 2026-05-04 |
+| Bankverbindung Geschaeft (IBAN) | **AT84 2011 1857 5281 8000**, BIC **GIBAATWWXXX**, Erste Bank — Konto "Erste Business" | `[FIXIERT 2026-05-16]` Geschaeftskonto eroeffnet (ersetzt Privatkonto fuer alle Geschaefts-Buchungen) |
 | Telefon (geschäftlich) | **+43 676 5040088** | `[FIXIERT]` 2026-05-04 |
 | Mail (User/Inhaber) | alexander@wagner-its.com | `[FIXIERT]` 2026-05-04 |
 | Kontakt-Mail allgemein | **info@instantpage.at** | `[FIXIERT]` 2026-05-04 |

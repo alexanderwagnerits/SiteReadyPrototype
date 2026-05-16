@@ -176,7 +176,7 @@
 
 | Blocker | Lead-Time | Status | Bemerkung |
 |---|---|---|---|
-| **Geschaeftskonto Erste Business** | 1-2 Wochen | NICHT BEANTRAGT | kritischster Blocker — Stripe-Live braucht IBAN. Je laenger der Aufschub, desto spaeter Live |
+| **Geschaeftskonto Erste Business** | erledigt | ✅ **EROEFFNET 2026-05-16** (IBAN AT84 2011 1857 5281 8000, BIC GIBAATWWXXX) | groesster Blocker gefallen — Stripe-Live-Verifikation kann jetzt starten |
 | **sevDesk + MiracleSync Setup** | ~30 Min Setup | NICHT GESTARTET | Buchhaltung-Pipeline, vor Stripe-Live |
 | **Steuerberater Mini-Termin** | 1 Termin (~100 EUR) | NICHT ANGEFRAGT | bestaetigt Stripe-AT-Konformitaet + sevDesk-Setup + Workflow Voucher-Finalisierung |
 | **R+V Berufshaftpflicht** | online 3-5 Tage | entschieden 2026-05-06, nicht abgeschlossen | 173 EUR/Jahr Backstop, vor Live |

@@ -2,7 +2,7 @@
 
 > Markenrichtlinie fuer das Live-Produkt unter instantpage.at. Verbindlich fuer alle Marketing-Outputs, Plattform-UI, Sales-Material und externe Kommunikation.
 
-**Stand:** 2026-05-14 — `[FERTIG]`. Alle Brand-Entscheidungen getroffen (Hero-Headline-Konflikt aufgeloest 2026-05-13: Hero = Tagline). **Komplettes Brand-Kit eingebunden 2026-05-14** — SVG-Logos, PNG-Logo-Varianten, Favicon-Set, Apple-Touch-Icon, OG-Image, PDF-Vektor-Logos, Brand-Guidelines-PDF. § 2.4 Asset-To-Do erledigt.
+**Stand:** 2026-05-16 — `[FERTIG]`. Alle Brand-Entscheidungen getroffen (Hero-Headline-Konflikt aufgeloest 2026-05-13: Hero = Tagline). Brand-Kit eingebunden 2026-05-14. **Wording-Lock 2026-05-16:** „AT-Compliance integriert" durch „Impressum und Datenschutz automatisch erstellt" in § 7.0/7.1/7.3 ersetzt (UWG-Defensive + Ehrlichkeit gegenueber Generator-Mechanik, siehe `legal-drafts/marketing-agb-audit.md` Option B').
 
 ---
 

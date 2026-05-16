@@ -2,7 +2,7 @@
 
 > Living Document. Vision, Zielgruppe, Pricing, Plan-Features, Trial-Mechanik und Self-Service-Portal-Funktionen sind spec'd. Vor Live-Schaltung noch zu bestätigen: USt-Anzeige (Steuerberater-Termin) und Business-Plan-Definition (offen).
 
-**Stand:** 2026-05-06
+**Stand:** 2026-05-16 — § 3 Plan-Portfolio erweitert auf Standard (Starter/Pro) + Einrichtungs-Service 149 EUR Day-1 + Sonderloesungen (Business Coming-Soon, Custom-Sites ab 990+79/Mo auf Anfrage, Whitelabel-Agentur auf Anfrage); § 4 Feature-Matrix um Custom-Sites-Spalte erweitert; § 5.1 neu: B2B-Pflicht-UX-Items (Hinweis-Box + UID-optional + Selbsterklaerungs-Checkbox).
 
 ---
 

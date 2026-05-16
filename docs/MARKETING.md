@@ -2,7 +2,7 @@
 
 > Acquisition-Strategie und Wachstums-Mechaniken fuer das Live-Produkt. Branding, Voice und Tonalitaet → `BRAND.md`. Pricing-Mechanik → `PRODUCT.md` § 3.
 
-**Stand:** 2026-05-15 — `[PHASE-1-LOCKED]` Block-D-Entscheidungen abgeschlossen: Newcomer-Rabatt statt Gruendertarif, Multiplikator-Programm verschoben in Post-Live, Newsletter Phase 2, Erstziel-Sparten + Region fixiert, Channel-Mix bleibt Inhaber-Entscheidung.
+**Stand:** 2026-05-16 — `[PHASE-1-LOCKED]` Block-D-Entscheidungen abgeschlossen: Newcomer-Rabatt statt Gruendertarif, Multiplikator-Programm verschoben in Post-Live, Newsletter Phase 2, Erstziel-Sparten + Region fixiert, Channel-Mix bleibt Inhaber-Entscheidung. § 2.2 ergaenzt um Einrichtungs-Service als Mail-2-Outreach-Hook.
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **Index aller Repo-Dokus.** Living Documents — werden laufend ergänzt während Live-Bau.
 
-**Stand:** 2026-05-16
+**Stand:** 2026-05-16 — Session-Ende mit 11 Commits. Eigenarbeits-Volltexte aller Plattform-Rechtstexte fertig, Plan-Portfolio um Einrichtungs-Service + Custom-Sites + Whitelabel-Verweis erweitert, AGB-Selbstcheck komplett durch, Marketing-Wording-Lock, WKO-Sprechtag 2026-05-20 vorbereitet (Cheatsheet + Brand-Alternativen-Plan-B).
 
 ---
 
@@ -22,6 +22,8 @@
 | [MARKETING.md](MARKETING.md) | Acquisition-Channels + Growth-Mechaniken (6 Mechaniken + 5 Channels spec'd, Block-D-Decisions 2026-05-15 gelockt) | PHASE-1-LOCKED |
 | [email-templates/](email-templates/) | 11 Lifecycle-/On-Demand-Templates (Welcome, Trial, Cancellation, Payment-Failed, Support, Domain-Setup, Datenpanne, Beta-Cutover, Aktionsrabatt-Ende) | Spec-fertig |
 | [wko-sprechtag-2026-05-20.md](wko-sprechtag-2026-05-20.md) | WKO-Markensprechtag-Vorbereitung (16 Fragen-Liste, Recherche-Stand, Klassen-Strategie) | 2026-05-16 |
+| [wko-sprechtag-cheatsheet.md](wko-sprechtag-cheatsheet.md) | 1-Pager-Cheatsheet fuer den Termin (Top 5 Fragen, Stammdaten, Was-mitnehmen) | 2026-05-16 |
+| [brand-alternativen.md](brand-alternativen.md) | Plan B Brand-Wechsel-Skizze falls „InstantPage" nicht schutzfaehig — 4 Cluster-Vorschlaege + Aktivierungs-Trigger | 2026-05-16 |
 | [sales-templates/](sales-templates/) | Cold-Outreach Mail-Templates Pre-Launch (Tischler, Berater, Anwalt) + UWG-Selbstcheck | ERSTDRAFT 2026-05-16 |
 | [legal-drafts/](legal-drafts/) | **Eigenarbeits-Volltexte** der Plattform-Rechtstexte (Pivot 2026-05-15) — DSE + AVV + Impressum Volltext + AGB-Selbstcheck erstdrafted | ERSTDRAFT 2026-05-16 |
 | [_design/](_design/) | Design-Detail-Specs: Theme-Tokens, Recipe-Konfig, Benchmarks, Konkurrenz-Analyse, Portal-Design, Quality-Standards, Asset-Strategie, Mikro-Interaktionen | Sektions-spezifisch |

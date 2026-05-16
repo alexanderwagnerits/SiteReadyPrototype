@@ -2,7 +2,7 @@
 
 > **Skeleton.** Wird befüllt während Phase 3 + 4 des Live-Bau (siehe `MIGRATION-PLAN.md`).
 
-**Stand:** 2026-05-06
+**Stand:** 2026-05-16 — § 2 Email-Templates auf 11 Stueck erweitert (aktionsrabatt-ende.md neu), § 8.6 neu: Custom-Sites-Workflow + Bauvertrags-Vorlage-Pflicht-Inhalte + Wartungs-Stunden-Monitoring-Mechanik.
 
 ---
 

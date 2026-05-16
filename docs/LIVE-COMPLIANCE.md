@@ -2,7 +2,7 @@
 
 > **Living Document.** Sammelt alle rechts- und compliance-relevanten Themen für den Übergang Prototyp → Live-Produkt. Nicht alle Punkte müssen sofort entschieden werden — offene Stellen sind als `[OFFEN]` markiert.
 
-**Stand:** 2026-05-15
+**Stand:** 2026-05-16 — Eigenarbeits-Volltexte fuer Plattform-Rechtstexte fertig (DSE/AVV/Impressum/AGB-Selbstcheck in `legal-drafts/`). AGB-Klausel-Updates: § 1 Abs. 4 Sonderkuendigungsrecht, § 4 Abs. 5 Re-Gen-Trigger, § 5 Abs. 6 AI-Act-Kennzeichnung, § 7 Abs. 4 Abuse-Prozess, §§ 16-18 Plan-Portfolio-Klauseln (Einrichtungs-Service, Custom-Sites, Whitelabel-Verweis) + Marketing-Wording-Lock („Impressum und Datenschutz automatisch erstellt"). AGB-Selbstcheck-Memo: alle FLAGs erledigt.
 **Markt:** AT-only (Phase 1)
 **Brand:** instantpage.at (Brand) — Wagner IT-Solutions e.U. (Rechtsträger, FN 609574h)
 **Strategie:** siehe „Compliance-Strategie" unten

@@ -2,7 +2,7 @@
 
 > **Living Document.** Tech-Stack, DB-Schema, Repo-Struktur, Routing, API, Auth, Deployment, Backup, Security spec'd. Detail-Audits in Phase 0.
 
-**Stand:** 2026-05-14
+**Stand:** 2026-05-16 — DB-Schema fuer Plan-Portfolio-Erweiterung (plan_type='custom', agency_id, custom_assets_path, has_setup_service, setup_service_completed_at, custom_site_acceptance_at) + Custom-Sites-Routing-Erweiterung in § 5.2 dokumentiert.
 
 ---
 
